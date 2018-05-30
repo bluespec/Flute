@@ -1,0 +1,8 @@
+*~
+README.html
+*.bo
+*.ba
+obj_dir
+elf_to_hex
+Mem.hex
+exe*
