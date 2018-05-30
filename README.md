@@ -3,8 +3,8 @@ RISC-V CPU, simple 5-stage in-order pipeline, for low-end applications needing M
 
 Flute is one of a family of free, open-source RISC-V CPUs created by Bluespec, Inc.
 
-- [Piccolo](https://github.com/Piccolo): 3-stage, in-order pipeline
-- [Flute](https://github.com/Flute): 5-stage, in-order pipeline
+- [Piccolo](https://github.com/bluespec/Piccolo): 3-stage, in-order pipeline
+- [Flute](https://github.com/bluespec/Flute): 5-stage, in-order pipeline
 
 Flute is intended for low-end to medium applications that require
 64-bit operation, an MMU (Virtual Memory) and more performance than
