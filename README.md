@@ -30,7 +30,7 @@ repository are for two specific configurations:
     - Supports external, timer and software interrupts
     - Sv32 and Sv39 Virtual Memory schemes
     - Passes all riscv-isa tests for RV64AIMSU
-    - Boots the Linux kernel
+    - Boots the Linux kernel [ *2018-10-02: almost, but not yet; hopefully in a few days.* ]
 
 If you want to generate other Verilog variants, you'll need a Bluespec
 `bsc` compiler [Note: Bluespec, Inc. provides free licenses to
