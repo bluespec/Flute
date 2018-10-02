@@ -1,0 +1,7 @@
+`verilator_config
+lint_off -msg WIDTH
+lint_off -msg CASEINCOMPLETE
+lint_off -msg STMTDLY
+lint_off -msg UNSIGNED
+lint_off -msg CMPCONST
+`verilog

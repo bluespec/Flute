@@ -1,8 +1,12 @@
 *~
 README.html
+build
 *.bo
 *.ba
+*.o
 obj_dir
 elf_to_hex
 Mem.hex
 exe*
+*.log
+*_edited.v

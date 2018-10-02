@@ -1,0 +1,156 @@
+// Copyright (c) 2016-2018 Bluespec, Inc. All Rights Reserved
+
+package CPU_StageF;
+
+// ================================================================
+// This is Stage F ("fetch") of the "Flute_V3" CPU.
+
+// ================================================================
+// Exports
+
+export
+CPU_StageF_IFC (..),
+mkCPU_StageF;
+
+// ================================================================
+// BSV library imports
+
+import FIFOF        :: *;
+import GetPut       :: *;
+import ClientServer :: *;
+
+// ----------------
+// BSV additional libs
+
+import Cur_Cycle :: *;
+
+// ================================================================
+// Project imports
+
+import ISA_Decls         :: *;
+import CPU_Globals       :: *;
+import Near_Mem_IFC      :: *;
+import Branch_Predictor  :: *;
+
+// ================================================================
+// Interface
+
+interface CPU_StageF_IFC;
+   // ---- Reset
+   interface Server #(Token, Token) server_reset;
+
+   // ---- Output
+   (* always_ready *)
+   method Output_StageF out;
+
+   (* always_ready *)
+   method Action deq;
+
+   // ---- Input
+   (* always_ready *)
+   method Action enq (Epoch            epoch,
+		      Maybe #(WordXL)  m_old_pc,
+		      WordXL           pc,
+		      Priv_Mode        priv,
+		      Bit #(1)         sstatus_SUM,
+		      Bit #(1)         mstatus_MXR,
+		      WordXL           satp);
+
+   (* always_ready *)
+   method Action set_full (Bool full);
+
+endinterface
+
+// ================================================================
+// Implementation module
+
+module mkCPU_StageF #(Bit #(4)  verbosity,
+		      IMem_IFC  icache)
+                    (CPU_StageF_IFC);
+
+   FIFOF #(Token)  f_reset_reqs <- mkFIFOF;
+   FIFOF #(Token)  f_reset_rsps <- mkFIFOF;
+
+   Wire #(Bool)      dw_redirecting <- mkDWire (False);
+
+   Reg #(Bool)       rg_full  <- mkReg (False);
+   Reg #(Epoch)      rg_epoch <- mkReg (0);               // Toggles on redirections
+   Reg #(Priv_Mode)  rg_priv  <- mkRegU;
+
+   Branch_Predictor_IFC branch_predictor <- mkBranch_Predictor;
+
+   // ----------------------------------------------------------------
+   // BEHAVIOR
+
+   rule rl_reset;
+      f_reset_reqs.deq;
+      rg_full  <= False;
+      rg_epoch <= 0;
+      f_reset_rsps.enq (?);
+   endrule
+
+   // ----------------
+   // Combinational output function
+
+   function Output_StageF fv_out;
+      let d = Data_StageF_to_StageD {pc:       icache.pc,
+				     epoch:    rg_epoch,
+				     priv:     rg_priv,
+				     exc:      icache.exc,
+				     exc_code: icache.exc_code,
+				     instr:    icache.instr,
+				     pred_pc:  branch_predictor.predict_rsp};
+
+      let ostatus = (  (! rg_full) ? OSTATUS_EMPTY
+		     : (  (! icache.valid) ? OSTATUS_BUSY
+			: OSTATUS_PIPE));                    // instr or exception
+
+      let output_stageF = Output_StageF {ostatus: ostatus, data_to_stageD: d};
+
+      return output_stageF;
+   endfunction: fv_out
+
+   // ================================================================
+   // INTERFACE
+
+   // ---- Reset
+   interface server_reset = toGPServer (f_reset_reqs, f_reset_rsps);
+
+   // ---- Output
+   method Output_StageF out;
+      return fv_out;
+   endmethod
+
+   method Action deq ();
+      noAction;
+   endmethod
+
+   // ---- Input
+   method Action enq (Epoch            epoch,
+		      Maybe #(WordXL)  m_old_pc,
+		      WordXL           pc,
+		      Priv_Mode        priv,
+		      Bit #(1)         sstatus_SUM,
+		      Bit #(1)         mstatus_MXR,
+		      WordXL           satp);
+      if (verbosity > 1) begin
+	 $write   ("    CPU_StageF.enq:  pc:0x%0h  epoch:%0d  priv:%0d", pc, epoch, priv);
+	 $display ("  sstatus_SUM:%0d  mstatus_MXR:%0d  satp:0x%0h  m_old_pc:",
+		   sstatus_SUM, mstatus_MXR, satp, fshow (m_old_pc));
+      end
+
+      icache.req (f3_LW, pc, priv, sstatus_SUM, mstatus_MXR, satp);
+      branch_predictor.predict_req (pc, m_old_pc);    // TODO: ASID.VA vs PA?
+
+      rg_epoch <= epoch;
+      rg_priv  <= priv;
+   endmethod
+
+   method Action set_full (Bool full);
+      rg_full <= full;
+   endmethod
+endmodule
+
+// ================================================================
+
+endpackage
