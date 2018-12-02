@@ -37,6 +37,11 @@ import GPR_RegFile      :: *;
 import CSR_RegFile      :: *;
 import EX_ALU_functions :: *;
 
+`ifdef ISA_C
+// 'C' extension (16b compressed instructions)
+import CPU_Decode_C     :: *;
+`endif
+
 // ================================================================
 // Interface
 
@@ -114,7 +119,11 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
    // ALU function
    let alu_inputs = ALU_Inputs {cur_priv:       cur_priv,
 				pc:             rg_stage_input.pc,
+				is_i32_not_i16: True,    // TODO: fix with 'C' info
 				instr:          rg_stage_input.instr,
+`ifdef ISA_C
+				instr_C:        instr_C,
+`endif
 				decoded_instr:  rg_stage_input.decoded_instr,
 				rs1_val:        rs1_val_bypassed,
 				rs2_val:        rs2_val_bypassed,
@@ -122,6 +131,19 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
 				misa:           csr_regfile.read_misa};
 
    let alu_outputs = fv_ALU (alu_inputs);
+
+   let data_to_stage2 = Data_Stage1_to_Stage2 {priv:      cur_priv,
+					       pc:        rg_stage_input.pc,
+					       instr:     rg_stage_input.instr,
+					       op_stage2: alu_outputs.op_stage2,
+					       rd:        alu_outputs.rd,
+					       addr:      alu_outputs.addr,
+					       val1:      alu_outputs.val1,
+					       val2:      alu_outputs.val2
+`ifdef INCLUDE_TANDEM_VERIF
+					       , trace_data: alu_outputs.trace_data
+`endif
+					       };
 
    // ----------------
    // Combinational output function
@@ -140,14 +162,20 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
 	 output_stage1.control        = CONTROL_DISCARD;
 
 	 // For debugging only
-	 output_stage1.data_to_stage2 = Data_Stage1_to_Stage2 {priv:      cur_priv,
-							       pc:        rg_stage_input.pc,
-							       instr:     rg_stage_input.instr,
-							       op_stage2: OP_Stage2_ALU,
-							       rd:        0,
-							       addr:      ?,
-							       val1:      ?,
-							       val2:      ? };
+	 let data_to_stage2 = Data_Stage1_to_Stage2 {priv:      cur_priv,
+						     pc:        rg_stage_input.pc,
+						     instr:     rg_stage_input.instr,
+						     op_stage2: OP_Stage2_ALU,
+						     rd:        0,
+						     addr:      ?,
+						     val1:      ?,
+						     val2:      ?
+`ifdef INCLUDE_TANDEM_VERIF
+						     , trace_data: alu_outputs.trace_data
+`endif
+						     };
+
+	 output_stage1.data_to_stage2 = data_to_stage2;
       end
 
       // Stall if bypass pending for rs1 or rs2
@@ -161,7 +189,7 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
 	 output_stage1.control   = CONTROL_TRAP;
 	 output_stage1.trap_info = Trap_Info {epc:      rg_stage_input.pc,
 					      exc_code: rg_stage_input.exc_code,
-					      badaddr:  rg_stage_input.pc};    // TODO: '?', perhaps?
+					      tval:     rg_stage_input.pc};    // TODO: imem.tval
       end
 
       // ALU outputs: pipe (straight/branch)
@@ -172,31 +200,25 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
 			? OSTATUS_PIPE
 			: OSTATUS_NONPIPE);
 
-	 // TODO: change name 'badaddr' to 'tval'
-	 let badaddr = 0;
+	 // Compute MTVAL in case of traps
+	 let tval = 0;
 	 if (alu_outputs.exc_code == exc_code_ILLEGAL_INSTRUCTION)
-	    badaddr = zeroExtend (rg_stage_input.instr);
+	    tval = zeroExtend (rg_stage_input.instr);    // The instruction
 	 else if (alu_outputs.exc_code == exc_code_INSTR_ADDR_MISALIGNED)
-	    badaddr = alu_outputs.addr;    // branch target pc
+	    tval = alu_outputs.addr;                     // branch target pc
+	 else if (alu_outputs.exc_code == exc_code_BREAKPOINT)
+	    tval = rg_stage_input.pc;                    // The faulting virtual address
+
 	 let trap_info = Trap_Info {epc:      rg_stage_input.pc,
 				    exc_code: alu_outputs.exc_code,
-				    badaddr:  badaddr};  // v1.10 - mtval
+				    tval:     tval};
 
 	 let next_pc = ((alu_outputs.control == CONTROL_BRANCH) ? alu_outputs.addr : rg_stage_input.pc + 4);
 	 let redirect = (next_pc != rg_stage_input.pred_pc);
 
-	 let data_to_stage2 = Data_Stage1_to_Stage2 {priv:      cur_priv,
-						     pc:        rg_stage_input.pc,
-						     instr:     rg_stage_input.instr,
-						     op_stage2: alu_outputs.op_stage2,
-						     rd:        alu_outputs.rd,
-						     addr:      alu_outputs.addr,
-						     val1:      alu_outputs.val1,
-						     val2:      alu_outputs.val2 };
-
 	 output_stage1.ostatus        = ostatus;
-	 output_stage1.trap_info      = trap_info;
 	 output_stage1.control        = alu_outputs.control;
+	 output_stage1.trap_info      = trap_info;
 	 output_stage1.redirect       = redirect;
 	 output_stage1.next_pc        = next_pc;
 	 output_stage1.data_to_stage2 = data_to_stage2;

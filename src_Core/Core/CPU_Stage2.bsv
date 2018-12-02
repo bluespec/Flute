@@ -11,7 +11,7 @@ package CPU_Stage2;
 //    MBox ("M" extension ops, integer multiply/divide)
 //    FDBox ("FD" extension ops, single and double precision floating point)
 
-// This stage sends out Tandem Verifier information
+// This stage sends out Tandem Verifier information for pipelined instructions
 
 // Note: $displays are indented by (stage num x 4) spaces.
 // for traditional pipeline display
@@ -45,9 +45,7 @@ import Cur_Cycle  :: *;
 
 import ISA_Decls     :: *;
 
-`ifdef INCLUDE_TANDEM_VERIF
 import TV_Info       :: *;
-`endif
 
 import CPU_Globals   :: *;
 import Near_Mem_IFC  :: *;
@@ -137,23 +135,12 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 
    let  trap_info_dmem = Trap_Info {epc:      rg_stage2.pc,
 				    exc_code: dcache.exc_code,
-				    badaddr:  rg_stage2.addr };
+				    tval:     rg_stage2.addr };
 
 `ifdef ISA_FD
    let  trap_info_fbox = Trap_Info {epc:      rg_stage2.pc,
 				    exc_code: fbox.exc_code,
-				    badaddr:  0 }; // v1.10 - mtval
-`endif
-
-`ifdef INCLUDE_TANDEM_VERIF
-   let  to_verifier_base = Info_CPU_to_Verifier {exc_taken: False,
-						 pc:        rg_stage2.pc,
-						 addr:      rg_stage2.addr,
-						 data1:     rg_stage2.val1,
-						 data2:     rg_stage2.val2,
-					         instr_valid: True,
-						 instr:     rg_stage2.instr
-						};
+				    tval:     0 };
 `endif
 
    // ----------------------------------------------------------------
@@ -176,10 +163,8 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 	 output_stage2 = Output_Stage2 {ostatus:         OSTATUS_EMPTY,
 					trap_info:       ?,
 					data_to_stage3:  ?,
-					bypass:          no_bypass
-`ifdef INCLUDE_TANDEM_VERIF
-					, to_verifier:     ?
-`endif
+					bypass:          no_bypass,
+					trace_data:      ?
 					};
       end
 
@@ -191,14 +176,16 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 	 let bypass = bypass_base;
 	 bypass.bypass_state = BYPASS_RD_RDVAL;
 
+	 let trace_data   = ?;
+`ifdef INCLUDE_TANDEM_VERIF
+	 trace_data = rg_stage2.trace_data;
+`endif
+
 	 output_stage2 = Output_Stage2 {ostatus:         OSTATUS_PIPE,
 					trap_info:       ?,
 					data_to_stage3:  data_to_stage3,
-					bypass:          bypass
-`ifdef INCLUDE_TANDEM_VERIF
-					, to_verifier:     to_verifier_base
-`endif
-					};
+					bypass:          bypass,
+					trace_data:      trace_data};
       end
 
       // This stage is doing a LOAD or AMO
@@ -226,20 +213,17 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 	       bypass.rd_val       = result;
 	    end
 
+	    let trace_data   = ?;
 `ifdef INCLUDE_TANDEM_VERIF
-	    let to_verifier   = to_verifier_base;
-	    to_verifier.data1 = result;
-	    to_verifier.data2 = truncate (dcache.st_amo_val);
+	    trace_data   = rg_stage2.trace_data;
 `endif
+	    trace_data.word1 = result;
 
 	    output_stage2 = Output_Stage2 {ostatus:         ostatus,
 					   trap_info:       trap_info_dmem,
 					   data_to_stage3:  data_to_stage3,
-					   bypass:          bypass
-`ifdef INCLUDE_TANDEM_VERIF
-					   , to_verifier:     to_verifier
-`endif
-					   };
+					   bypass:          bypass,
+					   trace_data:      trace_data};
 	 end
 
       // This stage is doing a STORE
@@ -255,14 +239,16 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 	 data_to_stage3.rd       = 0;
 	 data_to_stage3.rd_val   = ?;
 
+	 let trace_data   = ?;
+`ifdef INCLUDE_TANDEM_VERIF
+	 trace_data   = rg_stage2.trace_data;
+`endif
+
 	 output_stage2 = Output_Stage2 {ostatus:        ostatus,
 					trap_info:      trap_info_dmem,
 					data_to_stage3: data_to_stage3,
-					bypass:         no_bypass
-`ifdef INCLUDE_TANDEM_VERIF
- 					, to_verifier:    to_verifier_base
-`endif
-					};
+					bypass:         no_bypass,
+					trace_data:     trace_data};
       end
 
 `ifdef SHIFT_SERIAL
@@ -280,19 +266,17 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 	 bypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
 	 bypass.rd_val       = result;
 
+	 let trace_data   = ?;
 `ifdef INCLUDE_TANDEM_VERIF
-	 let to_verifier = to_verifier_base;
-	 to_verifier.data1 = result;
+	 trace_data   = rg_stage2.trace_data;
 `endif
+	 trace_data.word1 = result;
 
 	 output_stage2 = Output_Stage2 {ostatus:         ostatus,
 					trap_info:       ?,
 					data_to_stage3:  data_to_stage3,
-					bypass:          bypass
-`ifdef INCLUDE_TANDEM_VERIF
-					, to_verifier:     to_verifier
-`endif
-					};
+					bypass:          bypass,
+					trace_data:      trace_data};
       end
 `endif
 
@@ -311,19 +295,17 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 	 bypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
 	 bypass.rd_val       = result;
 
+	 let trace_data   = ?;
 `ifdef INCLUDE_TANDEM_VERIF
-	 let to_verifier = to_verifier_base;
-	 to_verifier.data1 = result;
+	 trace_data   = rg_stage2.trace_data;
 `endif
+	 trace_data.word1 = result;
 
 	 output_stage2 = Output_Stage2 {ostatus:         ostatus,
 					trap_info:       ?,
 					data_to_stage3:  data_to_stage3,
-					bypass:          bypass
-`ifdef INCLUDE_TANDEM_VERIF
-					, to_verifier:     to_verifier
-`endif
-					};
+					bypass:          bypass,
+					trace_data:      trace_data};
       end
 `endif
 
@@ -346,19 +328,17 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 	 bypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
 	 bypass.rd_val       = result;
 
+	 let trace_data   = ?;
 `ifdef INCLUDE_TANDEM_VERIF
-	 let to_verifier = to_verifier_base;
-	 to_verifier.data1 = result;
+	 trace_data   = rg_stage2.trace_data;
 `endif
+	 trace_data.word1 = result;
 
 	 output_stage2 = Output_Stage2 {ostatus:         ostatus,
 					trap_info:       trap_info_fbox,
 					data_to_stage3:  data_to_stage3,
-					bypass:          bypass
-`ifdef INCLUDE_TANDEM_VERIF
-					, to_verifier:     to_verifier
-`endif
-					};
+					bypass:          bypass,
+					trace_data:      trace_data};
       end
 `endif
 

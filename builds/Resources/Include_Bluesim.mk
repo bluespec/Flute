@@ -23,10 +23,12 @@ all: compile  mkSim
 # ----------------
 # Search path for bsc for .bsv files
 
-REPO = ../..
+REPO ?= ../..
 
 CORE_DIRS = $(REPO)/src_Core/ISA:$(REPO)/src_Core/RegFiles:$(REPO)/src_Core/Core:$(REPO)/src_Core/Near_Mem_VM:$(REPO)/src_Core/BSV_Additional_Libs
+
 TESTBENCH_DIRS  = $(REPO)/src_Testbench/Top:$(REPO)/src_Testbench/SoC:$(REPO)/src_Testbench/Fabrics/AXI4_Lite
+
 BSC_PATH = -p $(CORE_DIRS):$(TESTBENCH_DIRS):+
 
 # ----------------
@@ -42,7 +44,7 @@ BSC_FLAGS += -keep-fires -aggressive-conditions -no-warn-action-shadowing \
 		-suppress-warnings G0020 \
 		-D Near_Mem_Caches \
 		-D FABRIC64 \
-		+RTS -K64M -RTS  -show-range-conflict
+		+RTS -K128M -RTS  -show-range-conflict
 
 TMP_DIRS  = -bdir build  -simdir build  -info-dir build
 
@@ -72,17 +74,19 @@ mkSim:
 		$(TMP_DIRS) \
 		-e $(TOPMODULE) -o ./$(SIM_EXE_FILE) \
 		$(BSC_C_FLAGS) \
-		$(REPO)/src_Testbench/Top/C_ConsoleIO_functions.c
+		$(REPO)/src_Testbench/Top/C_Imported_Functions.c
 	@echo "INFO: linked bsc-compiled objects into Bluesim executable"
 
 # ================================================================
 # Test: run the executable on the standard RISCV ISA test specified in TEST
 
+VERBOSITY ?= +v1
+
 .PHONY: test
 test:
 	make -C  $(REPO)/Tests/elf_to_hex
 	$(REPO)/Tests/elf_to_hex/elf_to_hex  $(REPO)/Tests/isa/$(TEST)  Mem.hex
-	./$(SIM_EXE_FILE)  +v1  +tohost
+	./$(SIM_EXE_FILE)  $(VERBOSITY)  +tohost
 
 # ================================================================
 

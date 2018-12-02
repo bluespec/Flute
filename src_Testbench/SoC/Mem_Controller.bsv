@@ -173,6 +173,9 @@ interface Mem_Controller_IFC;
 
    // To raw memory (outside the SoC)
    interface MemoryClient #(Bits_per_Raw_Mem_Addr, Bits_per_Raw_Mem_Word)  to_raw_mem;
+
+   // For ISA tests: watch memory writes to <tohost> addr
+   method Action set_watch_tohost (Bool watch_tohost, Bit #(64) tohost_addr);
 endinterface
 
 // ================================================================
@@ -225,6 +228,12 @@ module mkMem_Controller (Mem_Controller_IFC);
    Reg #(Bool)          rg_cached_clean        <- mkRegU;
    Reg #(Raw_Mem_Addr)  rg_cached_raw_mem_addr <- mkRegU;
    Reg #(Raw_Mem_Word)  rg_cached_raw_mem_word <- mkRegU;
+
+   // Ad hoc ISA-test simulation support: watch <tohost> and stop on non-zero write.
+   // The default tohost_addr here is fragile (may change on recompilation of tests).
+   // Proper value can be provided with 'set_watch_tohost' method from symbol table
+   Reg #(Bool)      rg_watch_tohost <- mkReg (True);
+   Reg #(Bit #(64)) rg_tohost_addr  <- mkReg ('h_8000_1000);
 
    // ================================================================
    // BEHAVIOR
@@ -464,15 +473,13 @@ module mkMem_Controller (Mem_Controller_IFC);
       end
 
       // For simulation testing of riscv-tests/isa only:
-      Bool         monitor_tohost <- $test$plusargs ("tohost");
-      Fabric_Addr  addr_tohost    = 'h_8000_1000;
-      if ((monitor_tohost)
-	  && (f_reqs.first.addr == addr_tohost)
+      if ((rg_watch_tohost)
+	  && (f_reqs.first.addr == rg_tohost_addr)
 	  && (word64_new != 0))
 	 begin
 
 	    $display ("%0d: Mem_Controller.rl_process_wr_req: addr 0x%0h (<tohost>) data 0x%0h",
-		      cur_cycle, addr_tohost, word64_new);
+		      cur_cycle, f_reqs.first.addr, word64_new);
 	    let exit_value = (word64_new >> 1);
 	    if (exit_value == 0)
 	       $display ("PASS");
@@ -564,7 +571,8 @@ module mkMem_Controller (Mem_Controller_IFC);
    method Action  set_addr_map (Fabric_Addr addr_base, Fabric_Addr addr_lim) if (rg_state == STATE_READY);
       rg_addr_base <= addr_base;
       rg_addr_lim  <= addr_lim;
-      $display ("%0d: Mem_Controller.set_addr_map: addr_base 0x%0h addr_lim 0x%0h", cur_cycle, addr_base, addr_lim);
+      $display ("%0d: Mem_Controller.set_addr_map: addr_base 0x%0h addr_lim 0x%0h",
+		cur_cycle, addr_base, addr_lim);
 
 `ifdef INCLUDE_INITIAL_MEMZERO
       rg_cached_raw_mem_addr <= 0;
@@ -579,6 +587,12 @@ module mkMem_Controller (Mem_Controller_IFC);
 
    // To raw memory (outside the SoC)
    interface  to_raw_mem = toGPClient (f_raw_mem_reqs, f_raw_mem_rsps);
+
+   // For ISA tests: watch memory writes to <tohost> addr
+   method Action set_watch_tohost (Bool watch_tohost, Bit #(64) tohost_addr);
+      rg_watch_tohost <= watch_tohost;
+      rg_tohost_addr  <= tohost_addr;
+   endmethod
 endmodule
 
 // ================================================================

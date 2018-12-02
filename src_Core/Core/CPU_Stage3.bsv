@@ -118,11 +118,6 @@ module mkCPU_Stage3 #(Bit #(4)         verbosity,
 	       $display ("    S3.fa_deq: write Rd 0x%0h, rd_val 0x%0h",
 			 rg_stage3.rd, rg_stage3.rd_val);
 	 end
-
-	 // Increment csr_INSTRET.
-	 // Note: this instr cannot be a CSRRx updating INSTRET, since
-	 // CSRRx is done completely in Stage1.
-	 csr_regfile.csr_minstret_incr;
       endaction
    endfunction
 

@@ -30,6 +30,9 @@ import BuildVector  :: *;
 
 typedef 3 NO_OF_PRIVMODES;
 
+// ================================================================
+// XLEN and related constants
+
 `ifdef RV32
 
 typedef 32 XLEN;
@@ -96,8 +99,9 @@ function  Byte_in_Word  fn_addr_to_byte_in_wordxl (Addr a);
    return a [addr_hi_byte_in_wordxl : addr_lo_byte_in_wordxl ];
 endfunction
 
-// ----------------
-// can have one or two fpu sizes (should they be merged sooner than later ?)
+// ================================================================
+// FLEN and related constants, for floating point data
+// Can have one or two fpu sizes (should they be merged sooner than later ?).
 
 // Cannot define ISA_D unless ISA_F is also defined
 // ISA_F - 32 bit FPU
@@ -125,6 +129,12 @@ typedef  Vector #(Bytes_per_WordFL, Byte)      WordFL_B;
 
 `endif
 
+`ifdef ISA_F
+`define ISA_F_OR_D
+`elif ISA_D
+`define ISA_F_OR_D
+`endif
+
 // ================================================================
 // Tokens are used for signalling/synchronization, and have no payload
 
@@ -133,11 +143,17 @@ typedef Bit #(0) Token;
 // ================================================================
 // Instruction fields
 
+// This is used for encoding Tandem Verifier traces
+typedef enum { ISIZE16BIT, ISIZE32BIT
+   } ISize deriving (Bits, Eq, FShow);
+
 typedef  Bit #(32)  Instr;
 typedef  Bit #(7)   Opcode;
 typedef  Bit #(5)   RegName;       // 32 registers, 0..31
 typedef  32         NumRegs;
 Integer  numRegs = valueOf (NumRegs);
+
+Instr  illegal_instr = 32'h0000_0000;
 
 function  Opcode     instr_opcode   (Instr x); return x [6:0]; endfunction
 
@@ -271,6 +287,47 @@ function Tuple2# (Bool, Bool) fv_decode_gpr_read (Decoded_Instr di);
 endfunction
 
 // ================================================================
+// Instruction constructors
+// Used in 'C' decode to construct equivalent 32-bit instructions
+
+// R-type
+function Instr  mkInstr_R_type (Bit #(7) funct7, RegName rs2, RegName rs1, Bit #(3) funct3, RegName rd, Bit #(7) opcode);
+   let instr = { funct7, rs2, rs1, funct3, rd, opcode };
+   return instr;
+endfunction
+
+// I-type
+function Instr  mkInstr_I_type (Bit #(12) imm12, RegName rs1, Bit #(3) funct3, RegName rd, Bit #(7) opcode);
+   let instr = { imm12, rs1, funct3, rd, opcode };
+   return instr;
+endfunction
+
+// S-type
+
+function Instr  mkInstr_S_type (Bit #(12) imm12, RegName rs2, RegName rs1, Bit #(3) funct3, Bit #(7) opcode);
+   let instr = { imm12 [11:5], rs2, rs1, funct3, imm12 [4:0], opcode };
+   return instr;
+endfunction
+
+// B-type
+function Instr  mkInstr_B_type (Bit #(13) imm13, RegName rs2, RegName rs1, Bit #(3) funct3, Bit #(7) opcode);
+   let instr = { imm13 [12], imm13 [10:5], rs2, rs1, funct3, imm13 [4:1], imm13 [11], opcode };
+   return instr;
+endfunction
+
+// U-type
+function Instr  mkInstr_U_type (Bit #(20) imm20, RegName rd, Bit #(7) opcode);
+   let instr = { imm20, rd, opcode };
+   return instr;
+endfunction
+
+// J-type
+function Instr  mkInstr_J_type (Bit #(21) imm21, RegName rd, Bit #(7) opcode);
+   let instr = { imm21 [20], imm21 [10:1], imm21 [11], imm21 [19:12], rd, opcode };
+   return instr;
+endfunction
+
+// ================================================================
 // Symbolic register names
 
 RegName x0  =  0;    RegName x1  =  1;    RegName x2  =  2;    RegName x3  =  3;
@@ -319,10 +376,12 @@ deriving (Eq, Bits, FShow);
 // ================================================================
 // LOAD/STORE instructions
 
-Bit #(2) f3_SIZE_B = 2'b00;
-Bit #(2) f3_SIZE_H = 2'b01;
-Bit #(2) f3_SIZE_W = 2'b10;
-Bit #(2) f3_SIZE_D = 2'b11;
+typedef Bit #(2) MemReqSize;
+
+MemReqSize f3_SIZE_B = 2'b00;
+MemReqSize f3_SIZE_H = 2'b01;
+MemReqSize f3_SIZE_W = 2'b10;
+MemReqSize f3_SIZE_D = 2'b11;
 
 // ----------------
 // Load instructions
@@ -461,6 +520,16 @@ Bit #(3) f3_ADDIW = 3'b000;
 Bit #(3) f3_SLLIW = 3'b001;
 Bit #(3) f3_SRxIW = 3'b101; Bit #(3) f3_SRLIW = 3'b101; Bit #(3) f3_SRAIW = 3'b101;
 
+// OP_IMM.SLLI/SRLI/SRAI for RV32
+Bit #(7)  msbs7_SLLI = 7'b_000_0000;
+Bit #(7)  msbs7_SRLI = 7'b_000_0000;
+Bit #(7)  msbs7_SRAI = 7'b_010_0000;
+
+// OP_IMM.SLLI/SRLI/SRAI for RV64
+Bit #(6)  msbs6_SLLI = 6'b_00_0000;
+Bit #(6)  msbs6_SRLI = 6'b_00_0000;
+Bit #(6)  msbs6_SRAI = 6'b_01_0000;
+
 // ================================================================
 // Integer Register-Register Instructions
 
@@ -476,6 +545,12 @@ Bit #(10) f10_SRL    = 10'b000_0000_101;
 Bit #(10) f10_SRA    = 10'b010_0000_101;
 Bit #(10) f10_OR     = 10'b000_0000_110;
 Bit #(10) f10_AND    = 10'b000_0000_111;
+
+Bit #(7) funct7_ADD  = 7'b_000_0000;    Bit #(3) funct3_ADD = 3'b_000;
+Bit #(7) funct7_SUB  = 7'b_010_0000;    Bit #(3) funct3_SUB = 3'b_000;
+Bit #(7) funct7_XOR  = 7'b_000_0000;    Bit #(3) funct3_XOR = 3'b_100;
+Bit #(7) funct7_OR   = 7'b_000_0000;    Bit #(3) funct3_OR  = 3'b_110;
+Bit #(7) funct7_AND  = 7'b_000_0000;    Bit #(3) funct3_AND = 3'b_111;
 
 // ----------------
 // MUL/DIV/REM family
@@ -515,6 +590,9 @@ Bit #(10) f10_SLLW   = 10'b000_0000_001;
 Bit #(10) f10_SRLW   = 10'b000_0000_101;
 Bit #(10) f10_SRAW   = 10'b010_0000_101;
 
+Bit #(7) funct7_ADDW = 7'b_000_0000;    Bit #(3) funct3_ADDW  = 3'b_000;
+Bit #(7) funct7_SUBW = 7'b_010_0000;    Bit #(3) funct3_SUBW  = 3'b_000;
+
 Bit #(10) f10_MULW   = 10'b000_0001_000;
 Bit #(10) f10_DIVW   = 10'b000_0001_100;
 Bit #(10) f10_DIVUW  = 10'b000_0001_101;
@@ -550,6 +628,7 @@ Bit #(3) f3_BGEU  = 3'b111;
 Opcode op_JAL  = 7'b11_011_11;
 
 Opcode op_JALR = 7'b11_001_11;
+Bit #(3) funct3_JALR = 3'b000;
 
 // ================================================================
 // Floating Point Instructions
@@ -700,87 +779,92 @@ endfunction
 // ----------------
 // User-level CSR addresses
 
-CSR_Addr   csr_ustatus        = 12'h000;    // User status
-CSR_Addr   csr_uie            = 12'h004;    // User interrupt-enable
-CSR_Addr   csr_utvec          = 12'h005;    // User trap handler base address
+CSR_Addr   csr_addr_ustatus        = 12'h000;    // User status
+CSR_Addr   csr_addr_uie            = 12'h004;    // User interrupt-enable
+CSR_Addr   csr_addr_utvec          = 12'h005;    // User trap handler base address
 
-CSR_Addr   csr_uscratch       = 12'h040;    // Scratch register for trap handlers
-CSR_Addr   csr_uepc           = 12'h041;    // User exception program counter
-CSR_Addr   csr_ucause         = 12'h042;    // User trap cause
-CSR_Addr   csr_ubadaddr       = 12'h043;    // User bad address
-CSR_Addr   csr_uip            = 12'h044;    // User interrupt pending
+CSR_Addr   csr_addr_uscratch       = 12'h040;    // Scratch register for trap handlers
+CSR_Addr   csr_addr_uepc           = 12'h041;    // User exception program counter
+CSR_Addr   csr_addr_ucause         = 12'h042;    // User trap cause
+CSR_Addr   csr_addr_utval          = 12'h043;    // User bad address or instruction
+CSR_Addr   csr_addr_uip            = 12'h044;    // User interrupt pending
 
-CSR_Addr   csr_fflags         = 12'h001;    // Floating-point accrued exceptions
-CSR_Addr   csr_frm            = 12'h002;    // Floating-point Dynamic Rounding Mode
-CSR_Addr   csr_fcsr           = 12'h003;    // Floating-point Control and Status Register (frm + fflags)
+CSR_Addr   csr_addr_fflags         = 12'h001;    // Floating-point accrued exceptions
+CSR_Addr   csr_addr_frm            = 12'h002;    // Floating-point Dynamic Rounding Mode
+CSR_Addr   csr_addr_fcsr           = 12'h003;    // Floating-point Control and Status Register (frm + fflags)
 
-CSR_Addr   csr_cycle          = 12'hC00;    // Cycle counter for RDCYCLE
-CSR_Addr   csr_time           = 12'hC01;    // Timer for RDTIME
-CSR_Addr   csr_instret        = 12'hC02;    // Instructions retired counter for RDINSTRET
+CSR_Addr   csr_addr_cycle          = 12'hC00;    // Cycle counter for RDCYCLE
+CSR_Addr   csr_addr_time           = 12'hC01;    // Timer for RDTIME
+CSR_Addr   csr_addr_instret        = 12'hC02;    // Instructions retired counter for RDINSTRET
 
-CSR_Addr   csr_hpmcounter3    = 12'hC03;    // Performance-monitoring counter
-CSR_Addr   csr_hpmcounter4    = 12'hC04;    // Performance-monitoring counter
-CSR_Addr   csr_hpmcounter5    = 12'hC05;    // Performance-monitoring counter
-CSR_Addr   csr_hpmcounter6    = 12'hC06;    // Performance-monitoring counter
-CSR_Addr   csr_hpmcounter7    = 12'hC07;    // Performance-monitoring counter
-CSR_Addr   csr_hpmcounter8    = 12'hC08;    // Performance-monitoring counter
-CSR_Addr   csr_hpmcounter9    = 12'hC09;    // Performance-monitoring counter
-CSR_Addr   csr_hpmcounter10   = 12'hC0A;    // Performance-monitoring counter
-CSR_Addr   csr_hpmcounter11   = 12'hC0B;    // Performance-monitoring counter
-CSR_Addr   csr_hpmcounter12   = 12'hC0C;    // Performance-monitoring counter
-CSR_Addr   csr_hpmcounter13   = 12'hC0D;    // Performance-monitoring counter
-CSR_Addr   csr_hpmcounter14   = 12'hC0E;    // Performance-monitoring counter
-CSR_Addr   csr_hpmcounter15   = 12'hC0F;    // Performance-monitoring counter
-CSR_Addr   csr_hpmcounter16   = 12'hC10;    // Performance-monitoring counter
-CSR_Addr   csr_hpmcounter17   = 12'hC11;    // Performance-monitoring counter
-CSR_Addr   csr_hpmcounter18   = 12'hC12;    // Performance-monitoring counter
-CSR_Addr   csr_hpmcounter19   = 12'hC13;    // Performance-monitoring counter
-CSR_Addr   csr_hpmcounter20   = 12'hC14;    // Performance-monitoring counter
-CSR_Addr   csr_hpmcounter21   = 12'hC15;    // Performance-monitoring counter
-CSR_Addr   csr_hpmcounter22   = 12'hC16;    // Performance-monitoring counter
-CSR_Addr   csr_hpmcounter23   = 12'hC17;    // Performance-monitoring counter
-CSR_Addr   csr_hpmcounter24   = 12'hC18;    // Performance-monitoring counter
-CSR_Addr   csr_hpmcounter25   = 12'hC19;    // Performance-monitoring counter
-CSR_Addr   csr_hpmcounter26   = 12'hC1A;    // Performance-monitoring counter
-CSR_Addr   csr_hpmcounter27   = 12'hC1B;    // Performance-monitoring counter
-CSR_Addr   csr_hpmcounter28   = 12'hC1C;    // Performance-monitoring counter
-CSR_Addr   csr_hpmcounter29   = 12'hC1D;    // Performance-monitoring counter
-CSR_Addr   csr_hpmcounter30   = 12'hC1E;    // Performance-monitoring counter
-CSR_Addr   csr_hpmcounter31   = 12'hC1F;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter3    = 12'hC03;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter4    = 12'hC04;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter5    = 12'hC05;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter6    = 12'hC06;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter7    = 12'hC07;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter8    = 12'hC08;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter9    = 12'hC09;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter10   = 12'hC0A;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter11   = 12'hC0B;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter12   = 12'hC0C;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter13   = 12'hC0D;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter14   = 12'hC0E;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter15   = 12'hC0F;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter16   = 12'hC10;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter17   = 12'hC11;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter18   = 12'hC12;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter19   = 12'hC13;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter20   = 12'hC14;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter21   = 12'hC15;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter22   = 12'hC16;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter23   = 12'hC17;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter24   = 12'hC18;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter25   = 12'hC19;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter26   = 12'hC1A;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter27   = 12'hC1B;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter28   = 12'hC1C;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter29   = 12'hC1D;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter30   = 12'hC1E;    // Performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter31   = 12'hC1F;    // Performance-monitoring counter
 
-CSR_Addr   csr_cycleh         = 12'hC80;    // Upper 32 bits of csr_cycle (RV32I only)
-CSR_Addr   csr_timeh          = 12'hC81;    // Upper 32 bits of csr_time (RV32I only)
-CSR_Addr   csr_instreth       = 12'hC82;    // Upper 32 bits of csr_instret (RV32I only)
+CSR_Addr   csr_addr_cycleh         = 12'hC80;    // Upper 32 bits of csr_cycle (RV32I only)
+CSR_Addr   csr_addr_timeh          = 12'hC81;    // Upper 32 bits of csr_time (RV32I only)
+CSR_Addr   csr_addr_instreth       = 12'hC82;    // Upper 32 bits of csr_instret (RV32I only)
 
-CSR_Addr   csr_hpmcounter3h   = 12'hC83;    // Upper 32 bits of performance-monitoring counter
-CSR_Addr   csr_hpmcounter4h   = 12'hC84;    // Upper 32 bits of performance-monitoring counter
-CSR_Addr   csr_hpmcounter5h   = 12'hC85;    // Upper 32 bits of performance-monitoring counter
-CSR_Addr   csr_hpmcounter6h   = 12'hC86;    // Upper 32 bits of performance-monitoring counter
-CSR_Addr   csr_hpmcounter7h   = 12'hC87;    // Upper 32 bits of performance-monitoring counter
-CSR_Addr   csr_hpmcounter8h   = 12'hC88;    // Upper 32 bits of performance-monitoring counter
-CSR_Addr   csr_hpmcounter9h   = 12'hC89;    // Upper 32 bits of performance-monitoring counter
-CSR_Addr   csr_hpmcounter10h  = 12'hC8A;    // Upper 32 bits of performance-monitoring counter
-CSR_Addr   csr_hpmcounter11h  = 12'hC8B;    // Upper 32 bits of performance-monitoring counter
-CSR_Addr   csr_hpmcounter12h  = 12'hC8C;    // Upper 32 bits of performance-monitoring counter
-CSR_Addr   csr_hpmcounter13h  = 12'hC8D;    // Upper 32 bits of performance-monitoring counter
-CSR_Addr   csr_hpmcounter14h  = 12'hC8E;    // Upper 32 bits of performance-monitoring counter
-CSR_Addr   csr_hpmcounter15h  = 12'hC8F;    // Upper 32 bits of performance-monitoring counter
-CSR_Addr   csr_hpmcounter16h  = 12'hC90;    // Upper 32 bits of performance-monitoring counter
-CSR_Addr   csr_hpmcounter17h  = 12'hC91;    // Upper 32 bits of performance-monitoring counter
-CSR_Addr   csr_hpmcounter18h  = 12'hC92;    // Upper 32 bits of performance-monitoring counter
-CSR_Addr   csr_hpmcounter19h  = 12'hC93;    // Upper 32 bits of performance-monitoring counter
-CSR_Addr   csr_hpmcounter20h  = 12'hC94;    // Upper 32 bits of performance-monitoring counter
-CSR_Addr   csr_hpmcounter21h  = 12'hC95;    // Upper 32 bits of performance-monitoring counter
-CSR_Addr   csr_hpmcounter22h  = 12'hC96;    // Upper 32 bits of performance-monitoring counter
-CSR_Addr   csr_hpmcounter23h  = 12'hC97;    // Upper 32 bits of performance-monitoring counter
-CSR_Addr   csr_hpmcounter24h  = 12'hC98;    // Upper 32 bits of performance-monitoring counter
-CSR_Addr   csr_hpmcounter25h  = 12'hC99;    // Upper 32 bits of performance-monitoring counter
-CSR_Addr   csr_hpmcounter26h  = 12'hC9A;    // Upper 32 bits of performance-monitoring counter
-CSR_Addr   csr_hpmcounter27h  = 12'hC9B;    // Upper 32 bits of performance-monitoring counter
-CSR_Addr   csr_hpmcounter28h  = 12'hC9C;    // Upper 32 bits of performance-monitoring counter
-CSR_Addr   csr_hpmcounter29h  = 12'hC9D;    // Upper 32 bits of performance-monitoring counter
-CSR_Addr   csr_hpmcounter30h  = 12'hC9E;    // Upper 32 bits of performance-monitoring counter
-CSR_Addr   csr_hpmcounter31h  = 12'hC9F;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter3h   = 12'hC83;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter4h   = 12'hC84;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter5h   = 12'hC85;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter6h   = 12'hC86;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter7h   = 12'hC87;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter8h   = 12'hC88;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter9h   = 12'hC89;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter10h  = 12'hC8A;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter11h  = 12'hC8B;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter12h  = 12'hC8C;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter13h  = 12'hC8D;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter14h  = 12'hC8E;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter15h  = 12'hC8F;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter16h  = 12'hC90;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter17h  = 12'hC91;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter18h  = 12'hC92;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter19h  = 12'hC93;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter20h  = 12'hC94;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter21h  = 12'hC95;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter22h  = 12'hC96;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter23h  = 12'hC97;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter24h  = 12'hC98;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter25h  = 12'hC99;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter26h  = 12'hC9A;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter27h  = 12'hC9B;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter28h  = 12'hC9C;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter29h  = 12'hC9D;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter30h  = 12'hC9E;    // Upper 32 bits of performance-monitoring counter
+CSR_Addr   csr_addr_hpmcounter31h  = 12'hC9F;    // Upper 32 bits of performance-monitoring counter
+
+// ================================================================
+// 'C' Extension ("compressed" instructions)
+
+`include "ISA_Decls_C.bsv"
 
 // ================================================================
 // Supervisor-Level ISA defs

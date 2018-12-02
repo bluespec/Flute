@@ -6,13 +6,16 @@ package Top_HW_Side;
 // mkTop_HW_Side is the top-level system for simulation.
 // mkMem_Model is a memory model.
 
-// **** CAVEAT FOR IVERILOG USERS: The 'ConsoleIO' sections below are
-// disabled for IVerilog.  Those sections concern polling for tty
-// input for the SoC's UART.  They depend on imported C which is
-// non-trivial in IVerilog because IVerilog still depends on the older
-// Verilog VPI standard instead of the newer DPI-C standard.  Until we
-// find a clean solution, IVerilog sim will not have access to UART
-// input (it can still do UART output)
+// **** CAVEAT FOR IVERILOG USERS: The 'C_Imports' sections below are
+// disabled for IVerilog until we find a clean solution.  They depend
+// on imported C which is non-trivial in IVerilog because IVerilog
+// still depends on the older Verilog VPI standard instead of the
+// newer DPI-C standard.  C-imported functions are used for:
+//     UART input polling and character-reading
+//     Writing tandem-verfication encoded trace data
+
+// (Note: UART output does not depend on C-imported functions and so
+// will work ok even in IVerilog)
 
 // ================================================================
 // BSV lib imports
@@ -31,16 +34,13 @@ import GetPut_Aux :: *;
 // Project imports
 
 import ISA_Decls      :: *;
+import TV_Info        :: *;
 import SoC_Top        :: *;
 import Mem_Controller :: *;
 import Mem_Model      :: *;
 
 `ifndef IVERILOG
-import ConsoleIO      :: *;
-`endif
-
-`ifdef INCLUDE_TANDEM_VERIF
-import Tandem_Verif_Out :: *;
+import C_Imports      :: *;
 `endif
 
 // ================================================================
@@ -53,10 +53,6 @@ module mkTop_HW_Side (Empty) ;
 
    SoC_Top_IFC    soc_top   <- mkSoC_Top;
    Mem_Model_IFC  mem_model <- mkMem_Model;
-
-`ifdef INCLUDE_TANDEM_VERIF
-   Tandem_Verif_Out_IFC tv_out <- mkTandem_Verif_Out;
-`endif
 
    // Connect SoC to raw memory
    let memCnx <- mkConnection (soc_top.to_raw_mem, mem_model.mem_server);
@@ -75,20 +71,72 @@ module mkTop_HW_Side (Empty) ;
 
       rg_banner_printed <= True;
 
+      // Set CPU verbosity and logdelay (simulation only)
+      Bool v1 <- $test$plusargs ("v1");
+      Bool v2 <- $test$plusargs ("v2");
+      Bit #(4)  verbosity = ((v2 ? 2 : (v1 ? 1 : 0)));
+      Bit #(64) logdelay  = 0;    // # of instructions after which to set verbosity
+      soc_top.set_verbosity  (verbosity, logdelay);
+
+      // Note: see 'CAVEAT FOR IVERILOG USERS' above
+`ifndef IVERILOG
+      // Load tohost addr from symbol-table file
+      Bool watch_tohost <- $test$plusargs ("tohost");
+      Bit #(64) tohost_addr = 0;
+      tohost_addr  <- c_get_symbol_val ("tohost");
+      $display ("INFO: watch_tohost = %0d, tohost_addr = 0x%0h",
+		pack (watch_tohost), tohost_addr);
+      soc_top.set_watch_tohost (watch_tohost, tohost_addr);
+`endif
+
 `ifdef INCLUDE_TANDEM_VERIF
-      tv_out.reset;
+
+      // Note: see 'CAVEAT FOR IVERILOG USERS' above
+`ifndef IVERILOG
+      let success <- c_trace_file_open ('h_AA);
+      if (success == 0) begin
+	 $display ("ERROR: Top_HW_Side.rl_step0: error opening trace file.");
+	 $finish (1);
+      end
+      else
+	 $display ("Top_HW_Side.rl_step0: opened trace file.");
+`else
+      $display ("Warning: tandem verification output logs not available in IVerilog");
+`endif
+
 `endif
    endrule
 
    // ----------------
-   // Tandem verifier: drain and output/discard packets
+   // Tandem verifier: drain and output vectors of bytes
 
 `ifdef INCLUDE_TANDEM_VERIF
-   rule rl_drain_tandem;
-      let tv_packet <- soc_top.verify_out.get;
-      tv_out.tv_out.put (tv_packet);
+   rule rl_tv_vb_out;
+      let tv_info <- soc_top.tv_verifier_info_get.get;
+      let n  = tv_info.num_bytes;
+      let vb = tv_info.vec_bytes;
 
-      // $display ("%0d: Top_HW_Side.rl_drain_tandem: drained a TV packet", cur_cycle, fshow (tv_packet));
+`ifndef IVERILOG
+      Bit #(32) success = 1;
+
+      for (Bit #(32) j = 0; j < fromInteger (valueOf (TV_VB_SIZE)); j = j + 8) begin
+	 Bit #(64) w64 = { vb [j+7], vb [j+6], vb [j+5], vb [j+4], vb [j+3], vb [j+2], vb [j+1], vb [j] };
+	 let success1 <- c_trace_file_load_word64_in_buffer (j, w64);
+      end
+
+      if (success == 0)
+	 $display ("ERROR: Top_HW_Side.rl_tv_vb_out: error loading %0d bytes into buffer", n);
+      else begin
+	 // Send the data
+	 success <- c_trace_file_write_buffer (n);
+	 if (success == 0)
+	    $display ("ERROR: Top_HW_Side.rl_tv_vb_out: error writing out bytevec data buffer (%0d bytes)", n);
+      end
+
+      if (success == 0) begin
+	 $finish (1);
+      end
+`endif
    endrule
 `endif
 

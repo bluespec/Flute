@@ -90,6 +90,9 @@ deriving (Bits, Eq, FShow);
 // The outermost interface of the SoC
 
 interface SoC_Top_IFC;
+   // Set core's verbosity
+   method Action  set_verbosity (Bit #(4)  verbosity, Bit #(64)  logdelay);
+
 `ifdef INCLUDE_GDB_CONTROL
    // To external controller (E.g., GDB)
    interface Server #(Control_Req, Control_Rsp) server_external_control;
@@ -97,7 +100,7 @@ interface SoC_Top_IFC;
 
 `ifdef INCLUDE_TANDEM_VERIF
    // To tandem verifier
-   interface Get #(Info_CPU_to_Verifier) verify_out;
+   interface Get #(Info_CPU_to_Verifier) tv_verifier_info_get;
 `endif
 
    // External real memory
@@ -106,6 +109,9 @@ interface SoC_Top_IFC;
    // UART0 to external console
    interface Get #(Bit #(8)) get_to_console;
    interface Put #(Bit #(8)) put_from_console;
+
+   // For ISA tests: watch memory writes to <tohost> addr
+   method Action set_watch_tohost (Bool watch_tohost, Bit #(64) tohost_addr);
 endinterface
 
 // ================================================================
@@ -344,6 +350,10 @@ module mkSoC_Top (SoC_Top_IFC);
    // ================================================================
    // INTERFACE
 
+   method Action  set_verbosity (Bit #(4)  verbosity, Bit #(64)  logdelay);
+      brvf_core.set_verbosity (verbosity, logdelay);
+   endmethod
+
    // To external controller (E.g., GDB)
 `ifdef INCLUDE_GDB_CONTROL
    interface server_external_control = toGPServer (f_external_control_reqs, f_external_control_rsps);
@@ -351,7 +361,7 @@ module mkSoC_Top (SoC_Top_IFC);
 
 `ifdef INCLUDE_TANDEM_VERIF
    // To tandem verifier
-   interface verify_out = brvf_core.tv_verifier_info_get;
+   interface tv_verifier_info_get = brvf_core.tv_verifier_info_get;
 `endif
 
    // External real memory
@@ -360,6 +370,11 @@ module mkSoC_Top (SoC_Top_IFC);
    // UART to external console
    interface get_to_console   = uart0.get_to_console;
    interface put_from_console = uart0.put_from_console;
+
+   // For ISA tests: watch memory writes to <tohost> addr
+   method Action set_watch_tohost (Bool watch_tohost, Bit #(64) tohost_addr);
+      mem0_controller.set_watch_tohost (watch_tohost, tohost_addr);
+   endmethod
 endmodule: mkSoC_Top
 
 // ================================================================

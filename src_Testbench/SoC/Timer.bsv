@@ -110,10 +110,10 @@ module mkTimer (Timer_IFC);
    // ----------------
    // Timer registers
 
-   Reg #(Bit #(64)) crg_time [2]        <- mkCRegU (2);
-   Reg #(Bit #(64)) crg_timecmp [2]     <- mkCRegU (2);
+   Reg #(Bit #(64)) crg_time [2]        <- mkCReg (2, 1);
+   Reg #(Bit #(64)) crg_timecmp [2]     <- mkCReg (2, 0);
 
-   Reg #(Bool) rg_mtip <- mkRegU;
+   Reg #(Bool) rg_mtip <- mkReg (True);
 
    // Timer interrupt queue
    FIFOF #(Bool) f_timer_interrupt_req <- mkFIFOF;
@@ -148,7 +148,7 @@ module mkTimer (Timer_IFC);
       rg_state            <= MODULE_STATE_READY;
       crg_time [1]        <= 1;
       crg_timecmp [1]     <= 0;
-      rg_mtip             <= False;
+      rg_mtip             <= True;
       rg_msip             <= False;
 
       f_reset_rsps.enq (?);

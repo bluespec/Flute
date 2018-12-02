@@ -36,141 +36,141 @@ endfunction
 // ================================================================
 // Machine-level CSRs
 
-CSR_Addr   csr_mvendorid      = 12'hF11;    // Vendor ID
-CSR_Addr   csr_marchid        = 12'hF12;    // Architecture ID
-CSR_Addr   csr_mimpid         = 12'hF13;    // Implementation ID
-CSR_Addr   csr_mhartid        = 12'hF14;    // Hardware thread ID
+CSR_Addr   csr_addr_mvendorid      = 12'hF11;    // Vendor ID
+CSR_Addr   csr_addr_marchid        = 12'hF12;    // Architecture ID
+CSR_Addr   csr_addr_mimpid         = 12'hF13;    // Implementation ID
+CSR_Addr   csr_addr_mhartid        = 12'hF14;    // Hardware thread ID
 
-CSR_Addr   csr_addr_mstatus   = 12'h300;    // Machine status
-CSR_Addr   csr_misa           = 12'h301;    // ISA and extensions
-CSR_Addr   csr_medeleg        = 12'h302;    // Machine exception delegation
-CSR_Addr   csr_mideleg        = 12'h303;    // Machine interrupt delegation
-CSR_Addr   csr_mie            = 12'h304;    // Machine interrupt-enable
-CSR_Addr   csr_mtvec          = 12'h305;    // Machine trap handler base address
-CSR_Addr   csr_mcounteren     = 12'h306;    // Machine counter enable
+CSR_Addr   csr_addr_mstatus        = 12'h300;    // Machine status
+CSR_Addr   csr_addr_misa           = 12'h301;    // ISA and extensions
+CSR_Addr   csr_addr_medeleg        = 12'h302;    // Machine exception delegation
+CSR_Addr   csr_addr_mideleg        = 12'h303;    // Machine interrupt delegation
+CSR_Addr   csr_addr_mie            = 12'h304;    // Machine interrupt-enable
+CSR_Addr   csr_addr_mtvec          = 12'h305;    // Machine trap handler base address
+CSR_Addr   csr_addr_mcounteren     = 12'h306;    // Machine counter enable
 
-CSR_Addr   csr_mscratch       = 12'h340;    // Scratch reg for machine trap handlers
-CSR_Addr   csr_mepc           = 12'h341;    // Machine exception program counter
-CSR_Addr   csr_mcause         = 12'h342;    // Machine trap cause
-CSR_Addr   csr_mtval          = 12'h343;    // Machine bad address
-CSR_Addr   csr_mip            = 12'h344;    // Machine interrupt pending
+CSR_Addr   csr_addr_mscratch       = 12'h340;    // Scratch reg for machine trap handlers
+CSR_Addr   csr_addr_mepc           = 12'h341;    // Machine exception program counter
+CSR_Addr   csr_addr_mcause         = 12'h342;    // Machine trap cause
+CSR_Addr   csr_addr_mtval          = 12'h343;    // Machine bad address
+CSR_Addr   csr_addr_mip            = 12'h344;    // Machine interrupt pending
 
-CSR_Addr   csr_pmpcfg0        = 12'h3A0;    // PMP Config
-CSR_Addr   csr_pmpcfg1        = 12'h3A1;    // PMP Config
-CSR_Addr   csr_pmpcfg2        = 12'h3A2;    // PMP Config
-CSR_Addr   csr_pmpcfg3        = 12'h3A3;    // PMP Config
-CSR_Addr   csr_pmpaddr0       = 12'h3B0;    // PMP address register
-CSR_Addr   csr_pmpaddr1       = 12'h3B1;    // PMP address register
-CSR_Addr   csr_pmpaddr2       = 12'h3B2;    // PMP address register
-CSR_Addr   csr_pmpaddr3       = 12'h3B3;    // PMP address register
-CSR_Addr   csr_pmpaddr4       = 12'h3B4;    // PMP address register
-CSR_Addr   csr_pmpaddr5       = 12'h3B5;    // PMP address register
-CSR_Addr   csr_pmpaddr6       = 12'h3B6;    // PMP address register
-CSR_Addr   csr_pmpaddr7       = 12'h3B7;    // PMP address register
-CSR_Addr   csr_pmpaddr8       = 12'h3B8;    // PMP address register
-CSR_Addr   csr_pmpaddr9       = 12'h3B9;    // PMP address register
-CSR_Addr   csr_pmpaddr10      = 12'h3BA;    // PMP address register
-CSR_Addr   csr_pmpaddr11      = 12'h3BB;    // PMP address register
-CSR_Addr   csr_pmpaddr12      = 12'h3BC;    // PMP address register
-CSR_Addr   csr_pmpaddr13      = 12'h3BD;    // PMP address register
-CSR_Addr   csr_pmpaddr14      = 12'h3BE;    // PMP address register
-CSR_Addr   csr_pmpaddr15      = 12'h3BF;    // PMP address register
+CSR_Addr   csr_addr_pmpcfg0        = 12'h3A0;    // PMP Config
+CSR_Addr   csr_addr_pmpcfg1        = 12'h3A1;    // PMP Config
+CSR_Addr   csr_addr_pmpcfg2        = 12'h3A2;    // PMP Config
+CSR_Addr   csr_addr_pmpcfg3        = 12'h3A3;    // PMP Config
+CSR_Addr   csr_addr_pmpaddr0       = 12'h3B0;    // PMP address register
+CSR_Addr   csr_addr_pmpaddr1       = 12'h3B1;    // PMP address register
+CSR_Addr   csr_addr_pmpaddr2       = 12'h3B2;    // PMP address register
+CSR_Addr   csr_addr_pmpaddr3       = 12'h3B3;    // PMP address register
+CSR_Addr   csr_addr_pmpaddr4       = 12'h3B4;    // PMP address register
+CSR_Addr   csr_addr_pmpaddr5       = 12'h3B5;    // PMP address register
+CSR_Addr   csr_addr_pmpaddr6       = 12'h3B6;    // PMP address register
+CSR_Addr   csr_addr_pmpaddr7       = 12'h3B7;    // PMP address register
+CSR_Addr   csr_addr_pmpaddr8       = 12'h3B8;    // PMP address register
+CSR_Addr   csr_addr_pmpaddr9       = 12'h3B9;    // PMP address register
+CSR_Addr   csr_addr_pmpaddr10      = 12'h3BA;    // PMP address register
+CSR_Addr   csr_addr_pmpaddr11      = 12'h3BB;    // PMP address register
+CSR_Addr   csr_addr_pmpaddr12      = 12'h3BC;    // PMP address register
+CSR_Addr   csr_addr_pmpaddr13      = 12'h3BD;    // PMP address register
+CSR_Addr   csr_addr_pmpaddr14      = 12'h3BE;    // PMP address register
+CSR_Addr   csr_addr_pmpaddr15      = 12'h3BF;    // PMP address register
 
-CSR_Addr   csr_mcycle         = 12'hB00;    // Machine cycle counter
-CSR_Addr   csr_minstret       = 12'hB02;    // Machine Instructions retired counter
+CSR_Addr   csr_addr_mcycle         = 12'hB00;    // Machine cycle counter
+CSR_Addr   csr_addr_minstret       = 12'hB02;    // Machine Instructions retired counter
 
-CSR_Addr   csr_mhpmcounter3   = 12'hB03;    // Machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter4   = 12'hB04;    // Machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter5   = 12'hB05;    // Machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter6   = 12'hB06;    // Machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter7   = 12'hB07;    // Machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter8   = 12'hB08;    // Machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter9   = 12'hB09;    // Machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter10  = 12'hB0A;    // Machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter11  = 12'hB0B;    // Machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter12  = 12'hB0C;    // Machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter13  = 12'hB0D;    // Machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter14  = 12'hB0E;    // Machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter15  = 12'hB0F;    // Machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter16  = 12'hB10;    // Machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter17  = 12'hB11;    // Machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter18  = 12'hB12;    // Machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter19  = 12'hB13;    // Machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter20  = 12'hB14;    // Machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter21  = 12'hB15;    // Machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter22  = 12'hB16;    // Machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter23  = 12'hB17;    // Machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter24  = 12'hB18;    // Machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter25  = 12'hB19;    // Machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter26  = 12'hB1A;    // Machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter27  = 12'hB1B;    // Machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter28  = 12'hB1C;    // Machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter29  = 12'hB1D;    // Machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter30  = 12'hB1E;    // Machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter31  = 12'hB1F;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter3   = 12'hB03;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter4   = 12'hB04;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter5   = 12'hB05;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter6   = 12'hB06;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter7   = 12'hB07;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter8   = 12'hB08;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter9   = 12'hB09;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter10  = 12'hB0A;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter11  = 12'hB0B;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter12  = 12'hB0C;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter13  = 12'hB0D;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter14  = 12'hB0E;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter15  = 12'hB0F;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter16  = 12'hB10;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter17  = 12'hB11;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter18  = 12'hB12;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter19  = 12'hB13;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter20  = 12'hB14;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter21  = 12'hB15;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter22  = 12'hB16;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter23  = 12'hB17;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter24  = 12'hB18;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter25  = 12'hB19;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter26  = 12'hB1A;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter27  = 12'hB1B;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter28  = 12'hB1C;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter29  = 12'hB1D;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter30  = 12'hB1E;    // Machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter31  = 12'hB1F;    // Machine performance-monitoring counter
 
-CSR_Addr   csr_mcycleh        = 12'hB80;    // Upper 32 bits of csr_mcycle (RV32I only)
-CSR_Addr   csr_minstreth      = 12'hB82;    // Upper 32 bits of csr_minstret (RV32I only)
+CSR_Addr   csr_addr_mcycleh        = 12'hB80;    // Upper 32 bits of csr_mcycle (RV32I only)
+CSR_Addr   csr_addr_minstreth      = 12'hB82;    // Upper 32 bits of csr_minstret (RV32I only)
 
-CSR_Addr   csr_mhpmcounter3h  = 12'hB83;    // Upper 32 bits of machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter4h  = 12'hB84;    // Upper 32 bits of machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter5h  = 12'hB85;    // Upper 32 bits of machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter6h  = 12'hB86;    // Upper 32 bits of machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter7h  = 12'hB87;    // Upper 32 bits of machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter8h  = 12'hB88;    // Upper 32 bits of machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter9h  = 12'hB89;    // Upper 32 bits of machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter10h = 12'hB8A;    // Upper 32 bits of machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter11h = 12'hB8B;    // Upper 32 bits of machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter12h = 12'hB8C;    // Upper 32 bits of machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter13h = 12'hB8D;    // Upper 32 bits of machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter14h = 12'hB8E;    // Upper 32 bits of machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter15h = 12'hB8F;    // Upper 32 bits of machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter16h = 12'hB90;    // Upper 32 bits of machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter17h = 12'hB91;    // Upper 32 bits of machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter18h = 12'hB92;    // Upper 32 bits of machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter19h = 12'hB93;    // Upper 32 bits of machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter20h = 12'hB94;    // Upper 32 bits of machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter21h = 12'hB95;    // Upper 32 bits of machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter22h = 12'hB96;    // Upper 32 bits of machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter23h = 12'hB97;    // Upper 32 bits of machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter24h = 12'hB98;    // Upper 32 bits of machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter25h = 12'hB99;    // Upper 32 bits of machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter26h = 12'hB9A;    // Upper 32 bits of machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter27h = 12'hB9B;    // Upper 32 bits of machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter28h = 12'hB9C;    // Upper 32 bits of machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter29h = 12'hB9D;    // Upper 32 bits of machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter30h = 12'hB9E;    // Upper 32 bits of machine performance-monitoring counter
-CSR_Addr   csr_mhpmcounter31h = 12'hB9F;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter3h  = 12'hB83;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter4h  = 12'hB84;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter5h  = 12'hB85;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter6h  = 12'hB86;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter7h  = 12'hB87;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter8h  = 12'hB88;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter9h  = 12'hB89;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter10h = 12'hB8A;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter11h = 12'hB8B;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter12h = 12'hB8C;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter13h = 12'hB8D;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter14h = 12'hB8E;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter15h = 12'hB8F;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter16h = 12'hB90;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter17h = 12'hB91;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter18h = 12'hB92;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter19h = 12'hB93;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter20h = 12'hB94;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter21h = 12'hB95;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter22h = 12'hB96;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter23h = 12'hB97;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter24h = 12'hB98;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter25h = 12'hB99;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter26h = 12'hB9A;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter27h = 12'hB9B;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter28h = 12'hB9C;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter29h = 12'hB9D;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter30h = 12'hB9E;    // Upper 32 bits of machine performance-monitoring counter
+CSR_Addr   csr_addr_mhpmcounter31h = 12'hB9F;    // Upper 32 bits of machine performance-monitoring counter
 
-CSR_Addr   csr_mhpmevent3     = 12'h323;    // Machine performance-monitoring event selector
-CSR_Addr   csr_mhpmevent4     = 12'h324;    // Machine performance-monitoring event selector
-CSR_Addr   csr_mhpmevent5     = 12'h325;    // Machine performance-monitoring event selector
-CSR_Addr   csr_mhpmevent6     = 12'h326;    // Machine performance-monitoring event selector
-CSR_Addr   csr_mhpmevent7     = 12'h327;    // Machine performance-monitoring event selector
-CSR_Addr   csr_mhpmevent8     = 12'h328;    // Machine performance-monitoring event selector
-CSR_Addr   csr_mhpmevent9     = 12'h329;    // Machine performance-monitoring event selector
-CSR_Addr   csr_mhpmevent10    = 12'h32A;    // Machine performance-monitoring event selector
-CSR_Addr   csr_mhpmevent11    = 12'h32B;    // Machine performance-monitoring event selector
-CSR_Addr   csr_mhpmevent12    = 12'h32C;    // Machine performance-monitoring event selector
-CSR_Addr   csr_mhpmevent13    = 12'h32D;    // Machine performance-monitoring event selector
-CSR_Addr   csr_mhpmevent14    = 12'h32E;    // Machine performance-monitoring event selector
-CSR_Addr   csr_mhpmevent15    = 12'h32F;    // Machine performance-monitoring event selector
-CSR_Addr   csr_mhpmevent16    = 12'h330;    // Machine performance-monitoring event selector
-CSR_Addr   csr_mhpmevent17    = 12'h331;    // Machine performance-monitoring event selector
-CSR_Addr   csr_mhpmevent18    = 12'h332;    // Machine performance-monitoring event selector
-CSR_Addr   csr_mhpmevent19    = 12'h333;    // Machine performance-monitoring event selector
-CSR_Addr   csr_mhpmevent20    = 12'h334;    // Machine performance-monitoring event selector
-CSR_Addr   csr_mhpmevent21    = 12'h335;    // Machine performance-monitoring event selector
-CSR_Addr   csr_mhpmevent22    = 12'h336;    // Machine performance-monitoring event selector
-CSR_Addr   csr_mhpmevent23    = 12'h337;    // Machine performance-monitoring event selector
-CSR_Addr   csr_mhpmevent24    = 12'h338;    // Machine performance-monitoring event selector
-CSR_Addr   csr_mhpmevent25    = 12'h339;    // Machine performance-monitoring event selector
-CSR_Addr   csr_mhpmevent26    = 12'h33A;    // Machine performance-monitoring event selector
-CSR_Addr   csr_mhpmevent27    = 12'h33B;    // Machine performance-monitoring event selector
-CSR_Addr   csr_mhpmevent28    = 12'h33C;    // Machine performance-monitoring event selector
-CSR_Addr   csr_mhpmevent29    = 12'h33D;    // Machine performance-monitoring event selector
-CSR_Addr   csr_mhpmevent30    = 12'h33E;    // Machine performance-monitoring event selector
-CSR_Addr   csr_mhpmevent31    = 12'h33F;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent3     = 12'h323;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent4     = 12'h324;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent5     = 12'h325;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent6     = 12'h326;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent7     = 12'h327;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent8     = 12'h328;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent9     = 12'h329;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent10    = 12'h32A;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent11    = 12'h32B;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent12    = 12'h32C;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent13    = 12'h32D;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent14    = 12'h32E;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent15    = 12'h32F;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent16    = 12'h330;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent17    = 12'h331;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent18    = 12'h332;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent19    = 12'h333;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent20    = 12'h334;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent21    = 12'h335;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent22    = 12'h336;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent23    = 12'h337;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent24    = 12'h338;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent25    = 12'h339;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent26    = 12'h33A;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent27    = 12'h33B;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent28    = 12'h33C;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent29    = 12'h33D;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent30    = 12'h33E;    // Machine performance-monitoring event selector
+CSR_Addr   csr_addr_mhpmevent31    = 12'h33F;    // Machine performance-monitoring event selector
 
 CSR_Addr   csr_addr_tselect   = 12'h7A0;    // Debug/Trace trigger register select
 CSR_Addr   csr_addr_tdata1    = 12'h7A1;    // First Debug/Trace trigger data
@@ -492,52 +492,6 @@ endfunction
 
 // ================================================================
 // MIP and MIE fields (interrupt pending, interrupt enable)
-
-typedef struct {
-   Vector #(Num_Priv_Modes, Bit #(1)) eips;
-   Vector #(Num_Priv_Modes, Bit #(1)) tips;
-   Vector #(Num_Priv_Modes, Bit #(1)) sips;
-   } MIP
-deriving (Bits, FShow);
-
-typedef struct {
-   Vector #(Num_Priv_Modes, Bit #(1)) eies;
-   Vector #(Num_Priv_Modes, Bit #(1)) ties;
-   Vector #(Num_Priv_Modes, Bit #(1)) sies;
-   } MIE
-deriving (Bits, FShow);
-
-function WordXL mip_to_word (MIP mip);
-   return extend (pack (mip));
-endfunction
-
-function MIP word_to_mip (WordXL x, MIP mip);
-   // MEIP, MTIP, and MSIP are externally controlled
-   Bit #(12) mask = 'h333;
-   Bit #(12) unchanged_bits = pack (mip) & (~ mask);
-   Bit #(12) changed_bits = truncate (x) & mask;
-   return unpack (unchanged_bits | changed_bits);
-endfunction
-
-function MIP mip_reset_value;
-   return unpack (0);
-endfunction
-
-function WordXL mie_to_word (MIE mie);
-   return extend (pack (mie));
-endfunction
-
-function MIE word_to_mie (WordXL x);
-   return MIE {
-      eies: unpack ( {x[11], 1'b0, x[9], x[8]} ),
-      ties: unpack ( {x[7] , 1'b0, x[5], x[4]} ),
-      sies: unpack ( {x[3] , 1'b0, x[1], x[0]} )
-   };
-endfunction
-
-function MIE mie_reset_value;
-   return unpack (0);
-endfunction
 
 Integer mip_usip_bitpos =  0;
 Integer mip_ssip_bitpos =  1;

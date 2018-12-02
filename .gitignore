@@ -9,4 +9,8 @@ elf_to_hex
 Mem.hex
 exe*
 *.log
+Tests/Logs
 *_edited.v
+*.trace_mem_load
+AA_*
+symbol_table.txt

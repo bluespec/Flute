@@ -17,7 +17,7 @@ fv_ALU;
 // ================================================================
 // BSV library imports
 
-// None
+import Vector :: *;
 
 // ----------------
 // BSV additional libs
@@ -29,6 +29,7 @@ fv_ALU;
 
 import ISA_Decls   :: *;
 import CPU_Globals :: *;
+import TV_Info     :: *;
 
 // ================================================================
 // ALU inputs
@@ -36,7 +37,11 @@ import CPU_Globals :: *;
 typedef struct {
    Priv_Mode      cur_priv;
    Addr           pc;
+   Bool           is_i32_not_i16;
    Instr          instr;
+`ifdef ISA_C
+   Instr_C        instr_C;
+`endif
    Decoded_Instr  decoded_instr;
    WordXL         rs1_val;
    WordXL         rs2_val;
@@ -44,6 +49,23 @@ typedef struct {
    MISA           misa;
    } ALU_Inputs
 deriving (Bits, FShow);
+
+// ----------------
+// These functions pick the instruction size and instruction bits to
+// be sent in the trace to a tandem verifier
+
+function ISize  fv_trace_isize (ALU_Inputs  inputs);
+   return (inputs.is_i32_not_i16 ? ISIZE32BIT : ISIZE16BIT);
+endfunction
+
+function Bit #(32)  fv_trace_instr (ALU_Inputs  inputs);
+   Bit #(32) result = inputs.instr;
+`ifdef ISA_C
+   if (! inputs.is_i32_not_i16)
+      result = zeroExtend (inputs.instr_C);
+`endif
+   return result;
+endfunction
 
 // ================================================================
 // ALU outputs
@@ -65,18 +87,36 @@ typedef struct {
    WordXL     val2;     // Branch: branch target (for Tandem Verification)
 		        // OP_Stage2_ST: store-val
                         // OP_Stage2_M, OP_Stage2_FD: arg2
+
+   Trace_Data trace_data;
    } ALU_Outputs
 deriving (Bits, FShow);
 
-ALU_Outputs alu_outputs_base = ALU_Outputs {control:   CONTROL_STRAIGHT,
-					    exc_code:  exc_code_ILLEGAL_INSTRUCTION,
-					    op_stage2: ?,
-					    rd:        ?,
-					    addr:      ?,
-					    val1:      ?,
-					    val2:      ? };
+ALU_Outputs alu_outputs_base
+= ALU_Outputs {control:   CONTROL_STRAIGHT,
+	       exc_code:  exc_code_ILLEGAL_INSTRUCTION,
+	       op_stage2: ?,
+	       rd:        ?,
+	       addr:      ?,
+	       val1:      ?,
+	       val2:      ?,
+	       trace_data: ?};
 
 // ================================================================
+// The fall-through PC is PC+4 for normal 32b instructions,
+// and PC+2 for 'C' (16b compressed) instructions.
+
+function Addr fall_through_pc (ALU_Inputs  inputs);
+   Addr next_pc = inputs.pc + 4;
+`ifdef ISA_C
+   if (! inputs.is_i32_not_i16)
+      next_pc = inputs.pc + 2;
+`endif
+   return next_pc;
+endfunction
+
+// ================================================================
+// Alternate implementation of shifts using multiplication in DSPs
 
 // ----------------------------------------------------------------
 /* TODO: DELETE? 'factor' RegFile for shift ops
@@ -141,7 +181,7 @@ function WordXL fn_shrl (WordXL x, Bit #(TLog #(XLEN)) shamt);
    return z;
 endfunction
 
-// ----------------------------------------------------------------
+// ================================================================
 // BRANCH
 
 function ALU_Outputs fv_BRANCH (ALU_Inputs inputs);
@@ -166,17 +206,26 @@ function ALU_Outputs fv_BRANCH (ALU_Inputs inputs);
    else if (funct3 == f3_BGEU) branch_taken = (rs1_val  >= rs2_val);
    else                        trap = True;
 
-   trap = (trap ||
-	   (branch_taken && (branch_target [1] == 1'b1)));
+   Bool misaligned_target = (branch_target [1] == 1'b1);
+`ifdef ISA_C
+   misaligned_target = False;
+`endif
+
+   trap = (trap  ||  (branch_taken && misaligned_target));
 
    let alu_outputs = alu_outputs_base;
+   let next_pc     = (branch_taken ? branch_target : fall_through_pc (inputs));
    alu_outputs.control   = (trap ? CONTROL_TRAP : (branch_taken ? CONTROL_BRANCH : CONTROL_STRAIGHT));
    alu_outputs.exc_code  = exc_code_INSTR_ADDR_MISALIGNED;
    alu_outputs.op_stage2 = OP_Stage2_ALU;
    alu_outputs.rd        = 0;
-   alu_outputs.addr      = (branch_taken ? branch_target : (inputs.pc + 4));
+   alu_outputs.addr      = next_pc;
    alu_outputs.val2      = branch_target;    // For tandem verifier only
 
+   // Normal trace output (if no trap)
+   alu_outputs.trace_data = mkTrace_OTHER (next_pc,
+					   fv_trace_isize (inputs),
+					   fv_trace_instr (inputs));
    return alu_outputs;
 endfunction
 
@@ -186,21 +235,33 @@ endfunction
 function ALU_Outputs fv_JAL (ALU_Inputs inputs);
    IntXL offset  = extend (unpack (inputs.decoded_instr.imm21_UJ));
    Addr  next_pc = pack (unpack (inputs.pc) + offset);
-   Addr  ret_pc  = inputs.pc + 4;
+   Addr  ret_pc  = fall_through_pc (inputs);
 
    // nsharma: 2017-05-26 Bug fix
    // nsharma: next_pc[0] should be cleared for JAL/JALR
    // riscv-spec-v2.2. Secn 2.5. Page 16
-   next_pc[0] = 1'b0;
+   // TODO: but the offset is scaled by 2, so is this necessary?
+   next_pc [0] = 1'b0;
+
+   Bool misaligned_target = (next_pc [1] == 1'b1);
+`ifdef ISA_C
+   misaligned_target = False;
+`endif
 
    let alu_outputs = alu_outputs_base;
-   alu_outputs.control   = ((next_pc [1] == 1'b0) ? CONTROL_BRANCH : CONTROL_TRAP);
+   alu_outputs.control   = (misaligned_target ? CONTROL_TRAP : CONTROL_BRANCH);
    alu_outputs.exc_code  = exc_code_INSTR_ADDR_MISALIGNED;
    alu_outputs.op_stage2 = OP_Stage2_ALU;
    alu_outputs.rd        = inputs.decoded_instr.rd;
    alu_outputs.addr      = next_pc;
    alu_outputs.val1      = ret_pc;
 
+   // Normal trace output (if no trap)
+   alu_outputs.trace_data = mkTrace_I_RD (next_pc,
+					  fv_trace_isize (inputs),
+					  fv_trace_instr (inputs),
+					  inputs.decoded_instr.rd,
+					  ret_pc);
    return alu_outputs;
 endfunction
 
@@ -216,21 +277,32 @@ function ALU_Outputs fv_JALR (ALU_Inputs inputs);
    IntXL s_rs2_val = unpack (rs2_val);
    IntXL offset    = extend (unpack (inputs.decoded_instr.imm12_I));
    Addr  next_pc   = pack (s_rs1_val + offset);
-   Addr  ret_pc    = inputs.pc + 4;
+   Addr  ret_pc    = fall_through_pc (inputs);
 
    // nsharma: 2017-05-26 Bug fix
    // nsharma: next_pc[0] should be cleared for JAL/JALR
    // riscv-spec-v2.2. Secn 2.5. Page 16
-   next_pc[0] = 1'b0;
+   next_pc [0] = 1'b0;
+
+   Bool misaligned_target = (next_pc [1] == 1'b1);
+`ifdef ISA_C
+   misaligned_target = False;
+`endif
 
    let alu_outputs = alu_outputs_base;
-   alu_outputs.control   = ((next_pc [1] == 1'b0) ? CONTROL_BRANCH : CONTROL_TRAP);
+   alu_outputs.control   = (misaligned_target ? CONTROL_TRAP : CONTROL_BRANCH);
    alu_outputs.exc_code  = exc_code_INSTR_ADDR_MISALIGNED;
    alu_outputs.op_stage2 = OP_Stage2_ALU;
    alu_outputs.rd        = inputs.decoded_instr.rd;
    alu_outputs.addr      = next_pc;
    alu_outputs.val1      = ret_pc;
 
+   // Normal trace output (if no trap)
+   alu_outputs.trace_data = mkTrace_I_RD (next_pc,
+					  fv_trace_isize (inputs),
+					  fv_trace_instr (inputs),
+					  inputs.decoded_instr.rd,
+					  ret_pc);
    return alu_outputs;
 endfunction
 
@@ -304,6 +376,12 @@ function ALU_Outputs fv_OP_and_OP_IMM_shifts (ALU_Inputs inputs);
    alu_outputs.val2 = val2;
 `endif
 
+   // Normal trace output (if no trap)
+   alu_outputs.trace_data = mkTrace_I_RD (fall_through_pc (inputs),
+					  fv_trace_isize (inputs),
+					  fv_trace_instr (inputs),
+					  inputs.decoded_instr.rd,
+					  rd_val);
    return alu_outputs;
 endfunction: fv_OP_and_OP_IMM_shifts
 
@@ -350,6 +428,12 @@ function ALU_Outputs fv_OP_and_OP_IMM (ALU_Inputs inputs);
    alu_outputs.rd        = inputs.decoded_instr.rd;
    alu_outputs.val1      = rd_val;
 
+   // Normal trace output (if no trap)
+   alu_outputs.trace_data = mkTrace_I_RD (fall_through_pc (inputs),
+					  fv_trace_isize (inputs),
+					  fv_trace_instr (inputs),
+					  inputs.decoded_instr.rd,
+					  rd_val);
    return alu_outputs;
 endfunction: fv_OP_and_OP_IMM
 
@@ -400,6 +484,12 @@ function ALU_Outputs fv_OP_IMM_32 (ALU_Inputs inputs);
    alu_outputs.rd        = inputs.decoded_instr.rd;
    alu_outputs.val1      = rd_val;
 
+   // Normal trace output (if no trap)
+   alu_outputs.trace_data = mkTrace_I_RD (fall_through_pc (inputs),
+					  fv_trace_isize (inputs),
+					  fv_trace_instr (inputs),
+					  inputs.decoded_instr.rd,
+					  rd_val);
    return alu_outputs;
 endfunction: fv_OP_IMM_32
 
@@ -442,6 +532,12 @@ function ALU_Outputs fv_OP_32 (ALU_Inputs inputs);
    alu_outputs.rd        = inputs.decoded_instr.rd;
    alu_outputs.val1      = rd_val;
 
+   // Normal trace output (if no trap)
+   alu_outputs.trace_data = mkTrace_I_RD (fall_through_pc (inputs),
+					  fv_trace_isize (inputs),
+					  fv_trace_instr (inputs),
+					  inputs.decoded_instr.rd,
+					  rd_val);
    return alu_outputs;
 endfunction: fv_OP_32
 
@@ -458,6 +554,12 @@ function ALU_Outputs fv_LUI (ALU_Inputs inputs);
    alu_outputs.rd        = inputs.decoded_instr.rd;
    alu_outputs.val1      = rd_val;
 
+   // Normal trace output (if no trap)
+   alu_outputs.trace_data = mkTrace_I_RD (fall_through_pc (inputs),
+					  fv_trace_isize (inputs),
+					  fv_trace_instr (inputs),
+					  inputs.decoded_instr.rd,
+					  rd_val);
    return alu_outputs;
 endfunction
 
@@ -471,6 +573,12 @@ function ALU_Outputs fv_AUIPC (ALU_Inputs inputs);
    alu_outputs.rd        = inputs.decoded_instr.rd;
    alu_outputs.val1      = rd_val;
 
+   // Normal trace output (if no trap)
+   alu_outputs.trace_data = mkTrace_I_RD (fall_through_pc (inputs),
+					  fv_trace_isize (inputs),
+					  fv_trace_instr (inputs),
+					  inputs.decoded_instr.rd,
+					  rd_val);
    return alu_outputs;
 endfunction
 
@@ -501,6 +609,13 @@ function ALU_Outputs fv_LD (ALU_Inputs inputs);
    alu_outputs.rd        = inputs.decoded_instr.rd;
    alu_outputs.addr      = eaddr;
 
+   // Normal trace output (if no trap)
+   alu_outputs.trace_data = mkTrace_I_LOAD (fall_through_pc (inputs),
+					    fv_trace_isize (inputs),
+					    fv_trace_instr (inputs),
+					    inputs.decoded_instr.rd,
+					    ?,
+					    eaddr);
    return alu_outputs;
 endfunction
 
@@ -528,6 +643,12 @@ function ALU_Outputs fv_ST (ALU_Inputs inputs);
    alu_outputs.addr      = eaddr;
    alu_outputs.val2      = inputs.rs2_val;
 
+   // Normal trace output (if no trap)
+   alu_outputs.trace_data = mkTrace_STORE (fall_through_pc (inputs),
+					   fv_trace_isize (inputs),
+					   fv_trace_instr (inputs),
+					   inputs.rs2_val,
+					   eaddr);
    return alu_outputs;
 endfunction
 
@@ -543,6 +664,10 @@ function ALU_Outputs fv_MISC_MEM (ALU_Inputs inputs);
 			      ? CONTROL_FENCE
 			      : CONTROL_TRAP));
 
+   // Normal trace output (if no trap)
+   alu_outputs.trace_data = mkTrace_OTHER (fall_through_pc (inputs),
+					   fv_trace_isize (inputs),
+					   fv_trace_instr (inputs));
    return alu_outputs;
 endfunction
 
@@ -552,6 +677,11 @@ endfunction
 function ALU_Outputs fv_SYSTEM (ALU_Inputs inputs);
    let funct3      = inputs.decoded_instr.funct3;
    let alu_outputs = alu_outputs_base;
+
+   // Normal trace output (if no trap)
+   alu_outputs.trace_data = mkTrace_OTHER (fall_through_pc (inputs),
+					   fv_trace_isize (inputs),
+					   fv_trace_instr (inputs));
 
    if (funct3  == f3_PRIV) begin
 `ifdef ISA_PRIV_S
@@ -684,13 +814,22 @@ function ALU_Outputs fv_AMO (ALU_Inputs inputs);
    Bool legal_width = (   (funct3 == f3_AMO_W)
 		       || ((xlen == 64) && (funct3 == f3_AMO_D)) );
 
+   let eaddr = inputs.rs1_val;
+
    let alu_outputs = alu_outputs_base;
    alu_outputs.control   = ((legal_f5 && legal_width) ? CONTROL_STRAIGHT : CONTROL_TRAP);
    alu_outputs.op_stage2 = OP_Stage2_AMO;
-   alu_outputs.addr      = inputs.rs1_val;
+   alu_outputs.addr      = eaddr;
    alu_outputs.val1      = zeroExtend (inputs.decoded_instr.funct7);
    alu_outputs.val2      = inputs.rs2_val;
 
+   // Normal trace output (if no trap)
+   alu_outputs.trace_data = mkTrace_AMO (fall_through_pc (inputs),
+					 fv_trace_isize (inputs),
+					 fv_trace_instr (inputs),
+					 inputs.decoded_instr.rd, ?,
+					 inputs.rs2_val,
+					 eaddr);
    return alu_outputs;
 endfunction
 `endif
@@ -720,6 +859,13 @@ function ALU_Outputs fv_ALU (ALU_Inputs inputs);
 	 alu_outputs.rd        = inputs.decoded_instr.rd;
 	 alu_outputs.val1      = inputs.rs1_val;
 	 alu_outputs.val2      = inputs.rs2_val;
+
+	 // Normal trace output (if no trap)
+	 alu_outputs.trace_data = mkTrace_I_RD (fall_through_pc (inputs),
+						fv_trace_isize (inputs),
+						fv_trace_instr (inputs),
+						inputs.decoded_instr.rd,
+						?);
       end
 
 `ifdef RV64
@@ -732,6 +878,13 @@ function ALU_Outputs fv_ALU (ALU_Inputs inputs);
 	 alu_outputs.rd        = inputs.decoded_instr.rd;
 	 alu_outputs.val1      = inputs.rs1_val;
 	 alu_outputs.val2      = inputs.rs2_val;
+
+	 // Normal trace output (if no trap)
+	 alu_outputs.trace_data = mkTrace_I_RD (fall_through_pc (inputs),
+						fv_trace_isize (inputs),
+						fv_trace_instr (inputs),
+						inputs.decoded_instr.rd,
+						?);
       end
 `endif
 `endif
@@ -793,6 +946,16 @@ function ALU_Outputs fv_ALU (ALU_Inputs inputs);
 
    else begin
       alu_outputs.control = CONTROL_TRAP;
+
+      // Normal trace output (if no trap)
+      alu_outputs.trace_data = mkTrace_TRAP (fall_through_pc (inputs),
+					     fv_trace_isize (inputs),
+					     fv_trace_instr (inputs),
+					     ?,
+					     ?,
+					     ?,
+					     ?,
+					     ?);
    end
 
    return alu_outputs;

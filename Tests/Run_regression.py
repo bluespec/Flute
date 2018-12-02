@@ -3,37 +3,39 @@
 # Copyright (c) 2018 Bluespec, Inc.
 # See LICENSE for license details
 
-usage_line = \
-"Usage:    CMD    <simulation_executable>  <arch_string>  <root-dir-for-ISA-tests>  <logs_dir>  <optional_verbosity>\n"
+usage_line = (
+    "  Usage:\n"
+    "    $ CMD    <simulation_executable>  <root-dir-for-ISA-tests>  <logs_dir>  <opt arch>  <opt verbosity>\n"
+)
 
-help_lines = \
-"  Runs the RISC-V simulation executable with ELF files from root-dir and its sub-directories.\n" \
-"  Only runs it on those ELF files that are relevant to the provided arch_string." \
-"  For each ELF file FOO, saves simulation output in <logs_dir>/FOO.log. \n" \
-"  The optional verbosity flag is:\n" \
-"      v1:    Print instruction trace during simulation\n" \
-"      v2:    Print pipeline stage state during simulation\n" \
-"\n" \
-"  Example:    $ CMD ../sim_verilator/exe_HW_sim  RV32IMU  ./isa  ./Logs  v1\n" \
-"      will run the verilator simulation executable on the following RISC-V ISA tests\n" \
-"            isa/rv32ui-p*\n"    \
-"            isa/rv32mi-p*\n"    \
-"            isa/rv32um-p*\n"    \
-"  and leave a transcript of each test's simulation output in files like ./Logs/rv32ui-p-add.log\n" \
-"  Each log will contain an instruction trace (because of the 'v1' arg).\n"
+help_lines = (
+    "  Runs the RISC-V simulation executable on ELF files taken from root-dir and its sub-directories.\n"
+    "\n"
+    "  Runs it only on those ELF files that are relevant to an architecture.\n"
+    "    If <opt arch> is given, that is the architecture.\n"
+    "    Otherwise, the archictecture must be in the simulation executable pathname (see example below).\n"
+    "\n"
+    "  For each ELF file FOO, saves simulation output in <logs_dir>/FOO.log. \n"
+    "\n"
+    "  If <opt verbosity> is given, it must be one of the following:\n"
+    "      v1:    Print instruction trace during simulation\n"
+    "      v2:    Print pipeline stage state during simulation\n"
+    "\n"
+    "  Example:\n"
+    "      $ CMD ../builds/RV32IMU_verilator/exe_HW_sim  ./isa  ./Logs  v1\n"
+    "    will run the verilator simulation executable on the following RISC-V ISA tests:\n"
+    "            isa/rv32ui-p*\n"
+    "            isa/rv32mi-p*\n"
+    "            isa/rv32um-p*\n"
+    "    which are relevant for architecture RV32IMU (taken from the simulation executable path)\n"
+    "    and will leave a transcript of each test's simulation output in files like ./Logs/rv32ui-p-add.log\n"
+    "    Each log will contain an instruction trace (because of the 'v1' arg).\n"
+)
 
 import sys
 import os
 import stat
 import subprocess
-
-# ================================================================
-# Ignores files with the following in their names
-
-ignore_list = [".",                   # Files with extensions (e.g., foo.dump)
-               "rv32uc", "rv64uc",    # C (compressed) not yet implemented
-               "rv32uf", "rv64uf",    # Single precision floating point not yet implemented
-               "rv32ud", "rv64ud"]    # Double precision floating point not yet implemented
 
 # ================================================================
 
@@ -48,7 +50,7 @@ def main (argv = None):
     print ("Use flag --help  or --h for a help message")
     if ((len (argv) <= 1) or
         (argv [1] == '-h') or (argv [1] == '--help') or
-        ((len (argv) != 5) and (len (argv) != 6))):
+        (len (argv) < 4)):
 
         sys.stdout.write (usage_line.replace ("CMD", argv [0]))
         sys.stdout.write ("\n")
@@ -56,31 +58,49 @@ def main (argv = None):
         sys.stdout.write ("\n")
         return 0
 
-
     sim_path = os.path.abspath (os.path.normpath (argv [1]))
+    if not (os.path.exists (sim_path)):
+        sys.stderr.write ("ERROR: The given simulation path does not seem to exist?\n")
+        sys.stderr.write ("    Simulation path: " + sim_path + "\n")
+        sys.exit (1)
 
-    test_families = select_test_families (argv [2])
+    # Get the architecture string from optional argument or else from sim executable path
+    arch_string = None
+    for arg in argv [4:]:
+        if arg.startswith ("RV"):
+            sys.stdout.write ("Taking architecture string from command-line arg {0}\n".format (arg))
+            arch_string = extract_arch_string (arg)
+    if arch_string == None:
+        sys.stdout.write ("Taking architecture string from simulation-executable path\n")
+        arch_string = extract_arch_string (sim_path)
+    if (arch_string == None):
+        sys.stderr.write ("ERROR: no architecture specified?\n")
+        sys.stdout.write ("\n")
+        sys.stdout.write (usage_line.replace ("CMD", argv [0]))
+        sys.stdout.write ("\n")
+        sys.stdout.write (help_lines.replace ("CMD", argv [0]))
+        sys.stdout.write ("\n")
+        return 1
+    sys.stdout.write ("Architecture is: {0}\n".format (arch_string))
+
+    test_families = select_test_families (arch_string)
     print ("Testing the following families of ISA tests")
     for tf in test_families:
         print ("    " + tf)
 
-    elfs_path = os.path.abspath (os.path.normpath (argv [3]))
+    elfs_path = os.path.abspath (os.path.normpath (argv [2]))
 
-    logs_path = os.path.abspath (os.path.normpath (argv [4]))
+    logs_path = os.path.abspath (os.path.normpath (argv [3]))
     if not (os.path.exists (logs_path) and os.path.isdir (logs_path)):
         print ("Creating dir: " + logs_path)
         os.mkdir (logs_path)
 
     verbosity = 0
-    if (len (argv) == 6):
-        if (argv [5] == "v1"):
+    for arg in argv [4:]:
+         if arg == "v1":
             verbosity = 1
-        elif (argv [6] == "v2"):
+         elif arg == "v2":
             verbosity = 2
-        else:
-            sys.stdout.write ("Unknown command-line argument: {0}\n".format (argv [5]))
-            print ("Use flag --help  or --h for a help message")
-            return -1
 
     # Perform the recursive traversal
     max_level = 20
@@ -90,6 +110,36 @@ def main (argv = None):
     sys.stdout.write ("Executed: {0} tests\n".format (num_executed))
     sys.stdout.write ("PASS:     {0} tests\n".format (num_passed))
 
+
+# ================================================================
+# Extract the architecture string (e.g., RV64AIMSU) from the string s
+
+def extract_arch_string (s):
+    s1     = s.upper()
+    j_rv32 = s1.find ("RV32")
+    j_rv64 = s1.find ("RV64")
+
+    if (j_rv32 >= 0):
+        j = j_rv32
+    elif (j_rv64 >= 0):
+        j = j_rv64
+    else:
+        sys.stderr.write ("ERROR: cannot find architecture string beginning with RV32 or RV64 in: \n")
+        sys.stderr.write ("    '" + s + "'\n")
+        sys.exit (1)
+
+    k = j + 4
+    rv = s1 [j:k]
+
+    extns = ""
+    while (k < len (s)):
+        ch = s [k]
+        if (ch < "A") or (ch > "Z"): break
+        extns = extns + s [k]
+        k     = k + 1
+
+    arch = rv + extns
+    return arch
 
 # ================================================================
 # Select ISA test families based on provided arch string
@@ -179,8 +229,8 @@ def do_regular_file_function (level, dirname, basename, sim_path, test_families,
 
     full_filename = os.path.join (dirname, basename)
 
-    # Ignore filename if has .dump extension (not an ELF file)
-    if basename.find (".dump") != -1: return
+    # Ignore filename if has any extension (heuristic that it's not an ELF file)
+    if "." in basename: return
 
     # Ignore filename if does not match test_families
     ignore = True
@@ -189,6 +239,10 @@ def do_regular_file_function (level, dirname, basename, sim_path, test_families,
     if ignore:
         # print ("Ignoring file: " + full_filename)
         return
+
+    # TEMPORARY FILTER WHILE DEBUGGING:
+    # if basename.find ("rv64ui-v-add") == -1: return
+    # sys.stdout.write ("WARNING: TEMPORARY FILTER IN EFFECT; REMOVE AFTER DEBUGGING\n")
 
     # For debugging only
     # prefix = ""
@@ -202,7 +256,8 @@ def do_regular_file_function (level, dirname, basename, sim_path, test_families,
     if (verbosity == 1): command2.append ("+v1")
     elif (verbosity == 2): command2.append ("+v2")
 
-    sys.stdout.write ("Test {0}\n".format (basename))
+    num_executed = num_executed + 1
+    sys.stdout.write ("Test {0}: {1}\n".format (num_executed, basename))
 
     sys.stdout.write ("    Exec:")
     for x in command1:
@@ -217,7 +272,6 @@ def do_regular_file_function (level, dirname, basename, sim_path, test_families,
     # Run command as a sub-process
     completed_process1 = run_command (command1)
     completed_process2 = run_command (command2)
-    num_executed = num_executed + 1
     passed = completed_process2.stdout.find ("PASS") != -1
     if passed:
         sys.stdout.write ("    PASS")
@@ -225,6 +279,7 @@ def do_regular_file_function (level, dirname, basename, sim_path, test_families,
     else:
         sys.stdout.write ("    FAIL")
 
+    # Save stdouts in log file
     log_filename = os.path.join (logs_path, basename + ".log")
     sys.stdout.write ("      Writing log: {0}.log\n".format (basename))
 
@@ -232,6 +287,12 @@ def do_regular_file_function (level, dirname, basename, sim_path, test_families,
     fd.write (completed_process1.stdout)
     fd.write (completed_process2.stdout)
     fd.close ()
+
+    # If Tandem Verification trace file was created, save it as well
+    if os.path.exists ("./trace_out.dat"):
+        trace_filename = os.path.join (logs_path, basename + ".trace_data")
+        os.rename ("./trace_out.dat", trace_filename)
+        sys.stdout.write ("    Trace output saved in: {0}\n".format (trace_filename))
 
     return
 

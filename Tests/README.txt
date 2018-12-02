@@ -20,24 +20,20 @@ tests being built, such as this:
     <riscv-tools build dir>/riscv64-unknown-elf/share/riscv-tests/isa/rv32ui-p-add
 
 >================================================================
-The Makefile has two commands to run regressions on ISA tests.
+The Makefile has a command to run regressions on ISA tests.
 
-    $ make test32
-    $ make test64
+    $ make test
 
-The former uses one of the RV32 simulators in the 'builds' directory
-and runs it on all relevant RV32 ISA tests.  A per-ISA log is captured
-in the 'Logs/' directory.
+In the Makefile, you will see definitions for ARCH (such as `RV32IMU`)
+and SIM (such as `verilator`), which together specify which simulator
+will be run (`builds/<ARCH>_SIM/exe_HW_sim`).  You can change the ARCH
+and SIM definitions in the Makefile for a different simulator, or
+redefine them on the `make` command line.
 
-The latter uses one of the RV64 simulators in the 'builds' directory
-and runs it on all relevant RV64 ISA tests.  A per-ISA log is captured
-in the 'Logs/' directory.
-
-Please edit the Makefile if you want to use a different simulator
-build.
-
-Each of these 'make' commands uses the Python program
-'Run_regression.py', described below to orchestrate the work.
+It will run the the Python program 'Run_regression.py', described
+below, to run the simulator on all the ISA tests relevant to the
+architecture ARCH.  A per-ISA-test log is captured in the 'Logs/'
+directory.
 
 >================================================================
 With the Python program './Run_regression.py' you can run a regression
@@ -53,25 +49,34 @@ for usage information.
 
 Example:
 
-    $ ./Run_regression.py  ../sim_verilator/exe_HW_sim  RV32IMU  ./isa  ./Logs  v1
+    $ ./Run_regression.py  ../RV32IMU_verilator/exe_HW_sim  ./isa  ./Logs  v1
 
 will run the verilator simulation executable on the all RISC-V ISA
 tests that match the following:
 
     ./isa/rv32ui-p*
-
     ./isa/rv32mi-p*
-
     ./isa/rv32um-p*
 
 and leave a transcript of each test's simulation output in files like
     ./Logs/rv32ui-p-add.log
 Each log will contain an instruction trace.
 
-If you regenerate any of the simulation executables with different
-'bsc' flags, e.g., RV64 instead of RV32, or 'A' (atomics), or 'S'
-(supervisor), you can provide those letters on the command line
-architecture spec (RV64IMASU) to run the the relevant ISA tests for
-those features.
+Example:
 
+    $ ./Run_regression.py  ../RV64AIMSU_verilator/exe_HW_sim  ./isa  ./Logs  v1
+
+will run the verilator simulation executable on the all RISC-V ISA
+tests that match the following:
+
+    ./isa/rv64ui-p*
+    ./isa/rv64um-p*
+    ./isa/rv64ua-p*
+    ./isa/rv64mi-p*
+    ./isa/rv64si-p*
+
+    ./isa/rv64ui-v*
+    ./isa/rv64um-v*
+    ./isa/rv64ua-v*
+    
 >================================================================

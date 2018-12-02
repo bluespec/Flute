@@ -5,7 +5,7 @@
 # This file is not a standalone Makefile, but 'include'd by 'Makefile' in the sub-directories
 
 # ================================================================
-# bsc flags to build for RV32 I, M, U
+# bsc flags to build for RV32 A, I, M, U
 
 # Implementation choice: SHIFT_BARREL, SHIFT_SERIAL, SHIFT_MULT, SHIFT_NONE
 # Implementation choice: MULT_SYNTH, MULT_SERIAL
@@ -13,11 +13,13 @@
 BSC_FLAGS ?= -D RV32 \
 	     -D SHIFT_BARREL \
 	     -D MULT_SYNTH \
-	     -D CSR_REGFILE_UM \
+	     -D CSR_REGFILE_MSU \
 	     -D ISA_PRIV_M \
 	     -D ISA_PRIV_U \
 	     -D ISA_M \
-	     -D INCLUDE_TANDEM_VERIF
+	     -D ISA_A
+
+# Default ISA test
 
 TEST ?= rv32ui-p-add
 

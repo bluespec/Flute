@@ -15,99 +15,347 @@ package TV_Info;
 // Bluespec library imports
 
 import DefaultValue :: *;
+import Vector       :: *;
 
 // ================================================================
-// The struct fields represent the following, for each instruction:
-// dut_exc_taken      True if the DUT took an exception (interrupt/trap), False otherwise
-//
-// dut_pc             PC of the current instruction
-//                    Will be same as new CSR_MEPC on exceptions
-//                    Set to pc_tv_cmd for debug module activity (reset, mem/reg writes)
-//
-// dut_addr           New PC for exception branch, jump, xRET: new PC
-//                    Mem effective addr for mem ops and AMOs
-//                    CSR addr for CSRR{S,C,W}
-//
-// dut_data1          New rd_val for ALU ops, LOAD, LOAD_FP, LR, SC, CSRR{S,C,W}
-//                    New csr_mstatus for exceptions and xRET
-//                    RV32: New rd_val [31:0] for FP Instructions (lower 32b for 'double' results)
-//                    RV64: New rd_val for FP Instructions
-//
-// dut_data2          New csr_cause for exceptions
-//                    New mem data for STORE, STORE_FP, SC, AMO
-//                    New CSR data for CSRR{S,C,W}
-//                    RV32: New rd_val [63:32] for FP Instructions (upper 32b for 'double' results)
-//
-// dut_instr_valid    True if the next argument 'dut_instr' is valid, False otherwise
-// dut_instr          The instruction executed by the DUT
+// Project imports
+
+import ISA_Decls    :: *;
 
 // ================================================================
-// For RV32 CPUs.
-// TODO: change name to Info_RV32_... for symmetry with RV64
 
-`ifdef RV32
+typedef enum {// These are not from instruction flow and do not have a PC or instruction
+	      TRACE_RESET,
+	      TRACE_GPR_WRITE,
+	      TRACE_FPR_WRITE,
+	      TRACE_CSR_WRITE,
+	      TRACE_MEM_WRITE,
+
+	      // These are from instruction flow and have a PC and instruction
+	      TRACE_OTHER,
+	      TRACE_I_RD,   TRACE_F_RD,
+ 	      TRACE_I_LOAD,  TRACE_F_LOAD,
+	      TRACE_STORE,
+	      TRACE_AMO,
+	      TRACE_TRAP,
+	      TRACE_RET,
+	      TRACE_CSRRX,
+
+	      // These are from an interrupt and has a PC but no instruction
+	      TRACE_INTR
+	      } Trace_Op
+deriving (Bits, Eq, FShow);
 
 typedef struct {
-   Bool       exc_taken;
-   Bit #(32)  pc;
-   Bit #(32)  addr;
-   Bit #(32)  data1;
-   Bit #(32)  data2;
-   Bool       instr_valid;
+   Trace_Op   op;
+   WordXL     pc;
+   ISize      instr_sz;
    Bit #(32)  instr;
-} Info_CPU_to_Verifier deriving (Bits, FShow);
+   RegName    rd;
+   WordXL     word1;
+   WordXL     word2;
+   Bit #(64)  word3;    // Wider than WordXL because can contain paddr (in RV32, paddr can be 34 bits)
+   WordXL     word4;
+   } Trace_Data
+deriving (Bits);
 
-instance DefaultValue #(Info_CPU_to_Verifier);
-   defaultValue = Info_CPU_to_Verifier {
-        exc_taken    : False
-      , pc           : 0
-      , addr         : 0
-      , data1        : 0
-      , data2        : 0
-      , instr_valid  : False
-      , instr        : 0
-   };
-endinstance
+// RESET
+// op    pc    instr_sz    instr    rd    word1    word2    word3    word4
+// x
+function Trace_Data mkTrace_RESET ();
+   Trace_Data td = ?;
+   td.op       = TRACE_RESET;
+   return td;
+endfunction
 
-`endif
+// GPR_WRITE
+// op    pc    instr_sz    instr    rd    word1    word2    word3    word4
+// x                                 x    rdval
+function Trace_Data mkTrace_GPR_WRITE (RegName rd, WordXL rdval);
+   Trace_Data td = ?;
+   td.op       = TRACE_GPR_WRITE;
+   td.rd       = rd;
+   td.word1    = rdval;
+   return td;
+endfunction
+
+// FPR_WRITE
+// op    pc    instr_sz    instr    rd    word1    word2    word3    word4
+// x                                 x    rdval
+function Trace_Data mkTrace_FPR_WRITE (RegName rd, WordXL rdval);
+   Trace_Data td = ?;
+   td.op       = TRACE_FPR_WRITE;
+   td.rd       = rd;
+   td.word1    = rdval;
+   return td;
+endfunction
+
+// CSR_WRITE
+// op    pc    instr_sz    instr    rd    word1    word2    word3    word4
+// x                                                        csraddr  csrval
+function Trace_Data mkTrace_CSR_WRITE (CSR_Addr csraddr, WordXL csrval);
+   Trace_Data td = ?;
+   td.op       = TRACE_CSR_WRITE;
+   td.word3    = zeroExtend (csraddr);
+   td.word4    = csrval;
+   return td;
+endfunction
+
+// MEM_WRITE
+// op    pc    instr_sz    instr    rd    word1    word2    word3    word4
+// x                                         sz    stval    paddr
+function Trace_Data mkTrace_MEM_WRITE (MemReqSize sz, WordXL stval, Bit #(64) paddr);
+   Trace_Data td = ?;
+   td.op       = TRACE_MEM_WRITE;
+   td.word1    = zeroExtend (sz);
+   td.word2    = stval;
+   td.word3    = paddr;
+   return td;
+endfunction
+
+// OTHER
+// op    pc    instr_sz    instr    rd    word1    word2    word3    word4
+// x     x     x           x
+function Trace_Data mkTrace_OTHER (WordXL pc, ISize isize, Bit #(32) instr);
+   Trace_Data td = ?;
+   td.op       = TRACE_OTHER;
+   td.pc       = pc;
+   td.instr_sz = isize;
+   td.instr    = instr;
+   return td;
+endfunction
+
+// I_RD
+// op    pc    instr_sz    instr    rd    word1    word2    word3    word4
+// x     x     x           x        x     rdval
+function Trace_Data mkTrace_I_RD (WordXL pc, ISize isize, Bit #(32) instr, RegName rd, WordXL rdval);
+   Trace_Data td = ?;
+   td.op       = TRACE_I_RD;
+   td.pc       = pc;
+   td.instr_sz = isize;
+   td.instr    = instr;
+   td.rd       = rd;
+   td.word1    = rdval;
+   return td;
+endfunction
+
+// F_RD
+// op    pc    instr_sz    instr    rd    word1    word2    word3    word4
+// x     x     x           x        x     rdval
+function Trace_Data mkTrace_F_RD (WordXL pc, ISize isize, Bit #(32) instr, RegName rd, WordXL rdval);
+   Trace_Data td = ?;
+   td.op       = TRACE_F_RD;
+   td.pc       = pc;
+   td.instr_sz = isize;
+   td.instr    = instr;
+   td.rd       = rd;
+   td.word1    = rdval;
+   return td;
+endfunction
+
+// I_LOAD
+// op    pc    instr_sz    instr    rd    word1    word2    word3    word4
+// x     x     x           x        x     rdval             eaddr
+function Trace_Data mkTrace_I_LOAD (WordXL pc, ISize isize, Bit #(32) instr, RegName rd, WordXL rdval, WordXL eaddr);
+   Trace_Data td = ?;
+   td.op       = TRACE_I_LOAD;
+   td.pc       = pc;
+   td.instr_sz = isize;
+   td.instr    = instr;
+   td.rd       = rd;
+   td.word1    = rdval;
+   td.word3    = zeroExtend (eaddr);
+   return td;
+endfunction
+
+// F_LOAD
+// op    pc    instr_sz    instr    rd    word1    word2    word3    word4
+// x     x     x           x        x     rdval             eaddr
+function Trace_Data mkTrace_F_LOAD (WordXL pc, ISize isize, Bit #(32) instr, RegName rd, WordXL rdval, WordXL eaddr);
+   Trace_Data td = ?;
+   td.op       = TRACE_F_LOAD;
+   td.pc       = pc;
+   td.instr_sz = isize;
+   td.instr    = instr;
+   td.rd       = rd;
+   td.word1    = rdval;
+   td.word3    = zeroExtend (eaddr);
+   return td;
+endfunction
+
+// STORE
+// op    pc    instr_sz    instr    rd    word1    word2    word3    word4
+// x     x     x           x                       stval    eaddr
+function Trace_Data mkTrace_STORE (WordXL pc, ISize isize, Bit #(32) instr, WordXL stval, WordXL eaddr);
+   Trace_Data td = ?;
+   td.op       = TRACE_STORE;
+   td.pc       = pc;
+   td.instr_sz = isize;
+   td.instr    = instr;
+   td.word2    = stval;
+   td.word3    = zeroExtend (eaddr);
+   return td;
+endfunction
+
+// AMO
+// op    pc    instr_sz    instr    rd    word1    word2    word3    word4
+// x     x     x           x        x     rdval    stval    eaddr
+function Trace_Data mkTrace_AMO (WordXL pc, ISize isize, Bit #(32) instr,
+				 RegName rd, WordXL rdval, WordXL stval, WordXL eaddr);
+   Trace_Data td = ?;
+   td.op       = TRACE_AMO;
+   td.pc       = pc;
+   td.instr_sz = isize;
+   td.instr    = instr;
+   td.rd       = rd;
+   td.word1    = rdval;
+   td.word2    = stval;
+   td.word3    = zeroExtend (eaddr);
+   return td;
+endfunction
+
+// TRAP
+// op    pc    instr_sz    instr    rd    word1    word2    word3    word4
+// x     x     x           x        priv  mstatus  mcause   mepc     mtval
+function Trace_Data mkTrace_TRAP (WordXL pc, ISize isize, Bit #(32) instr,
+				  Priv_Mode  priv, WordXL mstatus, WordXL mcause, WordXL mepc, WordXL mtval);
+   Trace_Data td = ?;
+   td.op       = TRACE_TRAP;
+   td.pc       = pc;
+   td.instr_sz = isize;
+   td.instr    = instr;
+   td.rd       = zeroExtend (priv);
+   td.word1    = mstatus;
+   td.word2    = mcause;
+   td.word3    = zeroExtend (mepc);
+   td.word4    = mtval;
+   return td;
+endfunction
+
+// RET
+// op    pc    instr_sz    instr    rd    word1    word2    word3    word4
+// x     x     x           x        priv  mstatus
+function Trace_Data mkTrace_RET (WordXL pc, ISize isize, Bit #(32) instr, Priv_Mode  priv, WordXL mstatus);
+   Trace_Data td = ?;
+   td.op       = TRACE_RET;
+   td.pc       = pc;
+   td.instr_sz = isize;
+   td.instr    = instr;
+   td.rd       = zeroExtend (priv);
+   td.word1    = mstatus;
+   return td;
+endfunction
+
+// CSRRX
+// op    pc    instr_sz    instr    rd    word1    word2    word3    word4
+// x     x     x           x        x     rdval    csrvalid csraddr  csrval
+function Trace_Data mkTrace_CSRRX (WordXL pc, ISize isize, Bit #(32) instr,
+				   RegName rd, WordXL rdval, Bool csrvalid, CSR_Addr csraddr, WordXL csrval);
+   Trace_Data td = ?;
+   td.op       = TRACE_CSRRX;
+   td.pc       = pc;
+   td.instr_sz = isize;
+   td.instr    = instr;
+   td.rd       = rd;
+   td.word1    = rdval;
+   td.word2    = (csrvalid ? 1 : 0);
+   td.word3    = zeroExtend (csraddr);
+   td.word4    = csrval;
+   return td;
+endfunction
+
+// INTR
+// op    pc    instr_sz    instr    rd    word1    word2    word3    word4
+// x     x                          priv  mstatus  mcause   mepc     mtval
+function Trace_Data mkTrace_INTR (WordXL pc,
+				  Priv_Mode  priv, WordXL mstatus, WordXL mcause, WordXL mepc, WordXL mtval);
+   Trace_Data td = ?;
+   td.op       = TRACE_INTR;
+   td.pc       = pc;
+   td.rd       = zeroExtend (priv);
+   td.word1    = mstatus;
+   td.word2    = mcause;
+   td.word3    = zeroExtend (mepc);
+   td.word4    = mtval;
+   return td;
+endfunction
 
 // ================================================================
-// For RV64 CPUs.
+// Display of Trace_Data for debugging
 
-`ifdef RV64
+instance FShow #(Trace_Data);
+   function Fmt fshow (Trace_Data td);
+      Fmt fmt = $format ("Trace_Data{", fshow (td.op));
 
-typedef struct {
-   Bool       exc_taken;
-   Bit #(64)  pc;
-   Bit #(64)  addr;
-   Bit #(64)  data1;
-   Bit #(64)  data2;
-   Bool       instr_valid;
-   Bit #(32)  instr;
-} Info_CPU_to_Verifier deriving (Bits, FShow);
+      if (td.op == TRACE_RESET) begin
+      end
 
-instance DefaultValue #(Info_CPU_to_Verifier);
-   defaultValue = Info_CPU_to_Verifier {
-        exc_taken    : False
-      , pc           : 0
-      , addr         : 0
-      , data1        : 0
-      , data2        : 0
-      , instr_valid  : False
-      , instr        : 0
-   };
+      else if ((td.op == TRACE_GPR_WRITE) || (td.op == TRACE_FPR_WRITE))
+	 fmt = fmt + $format (" rd %0d  rdval %0h", td.rd, td.word1);
+
+      else if (td.op == TRACE_CSR_WRITE)
+	 fmt = fmt + $format (" csraddr %0h  csrval %0h", td.word3, td.word4);
+
+      else if (td.op == TRACE_MEM_WRITE)
+	 fmt = fmt + $format (" sz %0d  stval %0h  paddr %0h", td.word1, td.word2, td.word3);
+
+      else begin
+	 fmt = fmt + $format (" pc %0h", td.pc);
+
+	 if (td.op != TRACE_INTR)
+	    fmt = fmt + $format (" instr.%0d %0h:", pack (td.instr_sz), td.instr);
+
+	 if ((td.op == TRACE_I_RD) || (td.op == TRACE_F_RD))
+	    fmt = fmt + $format (" rd %0d  rdval %0h", td.rd, td.word1);
+
+	 else if ((td.op == TRACE_I_LOAD) || (td.op == TRACE_F_LOAD))
+	    fmt = fmt + $format (" rd %0d  rdval %0h  eaddr %0h",
+				 td.rd, td.word1, td.word3);
+
+	 else if (td.op == TRACE_STORE)
+	    fmt = fmt + $format (" stval %0h  eaddr %0h", td.word2, td.word3);
+
+	 else if (td.op == TRACE_AMO)
+	    fmt = fmt + $format (" rd %0d  rdval %0h  stval %0h  eaddr %0h",
+				 td.rd, td.word1, td.word2, td.word3);
+
+	 else if (td.op == TRACE_CSRRX)
+	    fmt = fmt + $format (" rd %0d  rdval %0h  csraddr %0h  csrval %0h",
+				 td.rd, td.word1, td.word3, td.word4);
+
+	 else if ((td.op == TRACE_TRAP) || (td.op == TRACE_INTR))
+	    fmt = fmt + $format (" priv %0d  mstatus %0h  mcause %0h  mepc %0h  mtval %0h",
+				 td.rd, td.word1, td.word2, td.word3, td.word4);
+
+	 else if (td.op == TRACE_RET)
+	    fmt = fmt + $format (" priv %0d  mstatus %0h", td.rd, td.word1);
+      end
+
+      fmt = fmt + $format ("}");
+      return fmt;
+   endfunction
 endinstance
 
-`endif
+// ================================================================
+// Trace_Data is encoded in module mkTV_Encode into vectors of bytes,
+// which are eventually streamed out to an on-line tandem verifier/
+// analyzer (or to a file for off-line tandem-verification/analysis).
 
-Integer pc_tv_cmd = 'hffffffff;
-Integer tv_cmd_reset = 0;
-Integer tv_cmd_mem_write8 = 1;
-Integer tv_cmd_mem_write16 = 2;
-Integer tv_cmd_mem_write32 = 3;
-Integer tv_cmd_mem_write64 = 4;
-Integer tv_cmd_reg_write = 5;
-Integer tv_cmd_mip = 6;
+// Various 'transactions' produce a Trace_Data struct (e.g., reset,
+// each instruction retirement, each GDB write to registers or memory,
+// etc.).  Each struct is encoded into a vector of bytes; the number
+// of bytes depends on the kind of transaction and various encoding
+// choices.
+
+typedef 72   TV_VB_SIZE;    // max bytes needed for each transaction
+typedef  Vector #(TV_VB_SIZE, Byte)  TV_Vec_Bytes;
+
+// ================================================================
+
+typedef struct {
+   Bit #(32)     num_bytes;
+   TV_Vec_Bytes  vec_bytes;
+} Info_CPU_to_Verifier deriving (Bits, FShow);
 
 // ================================================================
 

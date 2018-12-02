@@ -19,20 +19,20 @@
 // ================================================================
 // Supervisor-level CSRs
 
-CSR_Addr   csr_addr_sstatus   = 12'h100;    // Supervisor status
-CSR_Addr   csr_sedeleg        = 12'h102;    // Supervisor exception delegation
-CSR_Addr   csr_sideleg        = 12'h103;    // Supervisor interrupt delegation
-CSR_Addr   csr_sie            = 12'h104;    // Supervisor interrupt enable
-CSR_Addr   csr_stvec          = 12'h105;    // Supervisor trap handler base address
-CSR_Addr   csr_scounteren     = 12'h106;    // Supervisor counter enable
+CSR_Addr   csr_addr_sstatus    = 12'h100;    // Supervisor status
+CSR_Addr   csr_addr_sedeleg    = 12'h102;    // Supervisor exception delegation
+CSR_Addr   csr_addr_sideleg    = 12'h103;    // Supervisor interrupt delegation
+CSR_Addr   csr_addr_sie        = 12'h104;    // Supervisor interrupt enable
+CSR_Addr   csr_addr_stvec      = 12'h105;    // Supervisor trap handler base address
+CSR_Addr   csr_addr_scounteren = 12'h106;    // Supervisor counter enable
 
-CSR_Addr   csr_sscratch       = 12'h140;    // Scratch reg for supervisor trap handlers
-CSR_Addr   csr_sepc           = 12'h141;    // Supervisor exception program counter
-CSR_Addr   csr_scause         = 12'h142;    // Supervisor trap cause
-CSR_Addr   csr_stval          = 12'h143;    // Supervisor bad address or instruction
-CSR_Addr   csr_sip            = 12'h144;    // Supervisor interrupt pending
+CSR_Addr   csr_addr_sscratch   = 12'h140;    // Scratch reg for supervisor trap handlers
+CSR_Addr   csr_addr_sepc       = 12'h141;    // Supervisor exception program counter
+CSR_Addr   csr_addr_scause     = 12'h142;    // Supervisor trap cause
+CSR_Addr   csr_addr_stval      = 12'h143;    // Supervisor bad address or instruction
+CSR_Addr   csr_addr_sip        = 12'h144;    // Supervisor interrupt pending
 
-CSR_Addr   csr_satp           = 12'h180;    // Supervisor address translation and protection
+CSR_Addr   csr_addr_satp       = 12'h180;    // Supervisor address translation and protection
 
 // ----------------
 // Bit-fields of the CSR_SSTATUS register
@@ -60,31 +60,6 @@ function Bit #(TSub #(XLEN,5)) scause_mbz_5 (WordXL scause_val); return scause_v
 function Bit #(4) scause_exception_code (WordXL scause_val); return scause_val [3:0]; endfunction
 
 // ================================================================
-// SIP and SIE (these are restricted views of MIP and MIE)
-
-function WordXL sip_to_word (MIP sip, Bit #(12) mideleg);
-   Bit #(12) mask = 'h333 & mideleg;
-   return extend (pack (sip) & mask);
-endfunction
-
-function MIP word_to_sip (WordXL x, MIP mip, Bit #(12) mideleg);
-   Bit #(12) mask = 'h333 & mideleg;
-   Bit #(12) unchanged_bits = pack (mip) & (~ mask);
-   Bit #(12) changed_bits = truncate (x) & mask;
-   return unpack (unchanged_bits | changed_bits);
-endfunction
-
-function WordXL sie_to_word (MIE sie, Bit #(12) mideleg);
-   Bit #(12) mask = 'h333 & mideleg;
-   return extend (pack (sie) & mask);
-endfunction
-
-function MIE word_to_sie (WordXL x, MIE mie, Bit #(12) mideleg);
-   Bit #(12) mask = 'h333 & mideleg;
-   Bit #(12) unchanged_bits = pack (mie) & (~ mask);
-   Bit #(12) changed_bits = truncate (x) & mask;
-   return unpack (unchanged_bits | changed_bits);
-endfunction
 
 `ifdef ISA_PRIV_S
 // ================================================================

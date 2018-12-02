@@ -4,6 +4,7 @@ package CSR_MSTATUS;
 
 // ================================================================
 // CSR (Control and Status Register) Register MSTATUS
+// and its restricted views as SSTATUS and USTATUS.
 
 // ================================================================
 // BSV library imports
@@ -51,7 +52,10 @@ endinterface
 // ================================================================
 // IMPLEMENTATION
 
-module mkCSR_MSTATUS #(MISA misa_reset_value) (CSR_MSTATUS_IFC);
+// TODO: bsc Internal Error in Verilog gen due to parameter being an expression
+//       Uncomment next line after bsc fix
+// (* synthesize *)
+module mkCSR_MSTATUS #(parameter MISA misa_reset_value) (CSR_MSTATUS_IFC);
    
    Reg #(WordXL) rg_mstatus <- mkReg (fv_mstatus_reset_value (misa_reset_value));
 
@@ -90,12 +94,12 @@ module mkCSR_MSTATUS #(MISA misa_reset_value) (CSR_MSTATUS_IFC);
    endmethod
 
    method ActionValue #(WordXL) fav_sstatus_write (MISA misa,  WordXL wordxl);
-      let wordxl1 = fv_fixup_mstatus (misa,
-				      fv_sstatus_to_mstatus (misa,
-							     rg_mstatus,
-							     wordxl));
-      rg_mstatus <= wordxl1;
-      return wordxl1;
+      let new_mstatus = fv_fixup_mstatus (misa,
+					  fv_sstatus_to_mstatus (misa,
+								 rg_mstatus,
+								 wordxl));
+      rg_mstatus <= new_mstatus;
+      return fv_mstatus_to_sstatus (new_mstatus);
    endmethod
 `endif
 
@@ -145,7 +149,8 @@ endfunction
 // Restricted view of MSTATUS as SSTATUS
 
 // Fields of mstatus that are visible in sstatus
-WordXL sstatus_mask = (  ('b11 << mstatus_uxl_bitpos)    // will be 0 in RV64
+WordXL sstatus_mask = (  ('b1  << mstatus_sd_bitpos)
+		       | ('b11 << mstatus_uxl_bitpos)    // will be 0 in RV64
 		       | ('b1  << mstatus_mxr_bitpos)
 		       | ('b1  << mstatus_sum_bitpos)
 		       | ('b11 << mstatus_xs_bitpos)
@@ -253,6 +258,8 @@ function WordXL fv_fixup_mstatus (MISA misa, WordXL  wordxl);
    Bit #(1) sum  = wordxl [mstatus_sum_bitpos];
    Bit #(1) mprv = wordxl [mstatus_mprv_bitpos];
 
+   Bit #(1) sd   = (((fs == fs_xs_dirty) || (xs == fs_xs_dirty)) ? 1 : 0);
+
    // Assemble fixed-up mstatus
    Bit #(23) fixed_up_val_23 = {tsr, tw, tvm, mxr, sum, mprv,
 				xs, fs,
@@ -260,7 +267,9 @@ function WordXL fv_fixup_mstatus (MISA misa, WordXL  wordxl);
 				mpie, wpri_6, spie, upie,
 				mie,  wpri_2, sie,  uie};
 
-   WordXL fixed_up_val = zeroExtend (fixed_up_val_23);
+   WordXL fixed_up_val = (( zeroExtend (sd) << mstatus_sd_bitpos)
+			  | zeroExtend (fixed_up_val_23));
+
    if (misa.mxl == misa_mxl_64)
       fixed_up_val = (  (zeroExtend (sxl) << mstatus_sxl_bitpos)
 		      | (zeroExtend (uxl) << mstatus_uxl_bitpos)
