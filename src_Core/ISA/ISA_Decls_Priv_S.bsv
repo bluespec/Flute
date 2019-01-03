@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2018 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2013-2019 Bluespec, Inc. All Rights Reserved
 
 // ================================================================
 // WARNING: this is an 'include' file, not a separate BSV package!

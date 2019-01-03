@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2018 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved
 
 package CPU_Globals;
 
@@ -79,6 +79,28 @@ instance FShow #(Bypass);
    endfunction
 endinstance
 
+`ifdef ISA_F
+typedef struct {
+   Bypass_State  bypass_state;
+   RegName       rd;
+   WordFL        rd_val;
+   } FBypass
+deriving (Bits);
+
+instance FShow #(FBypass);
+   function Fmt fshow (FBypass x);
+      let fmt0 = $format ("FBypass {");
+      let fmt1 = ((x.bypass_state == BYPASS_RD_NONE)
+		  ? $format ("FRd -")
+		  : $format ("FRd %0d ", x.rd) + ((x.bypass_state == BYPASS_RD)
+						 ? $format ("-")
+						 : $format ("frd_val:%h", x.rd_val)));
+      let fmt2 = $format ("}");
+      return fmt0 + fmt1 + fmt2;
+   endfunction
+endinstance
+`endif
+
 // ----------------
 // Baseline bypass info
 
@@ -86,6 +108,11 @@ Bypass no_bypass = Bypass {bypass_state: BYPASS_RD_NONE,
 			   rd: ?,
 			   rd_val: ? };
 
+`ifdef ISA_F
+FBypass no_fbypass = FBypass {bypass_state: BYPASS_RD_NONE,
+			   rd: ?,
+			   rd_val: ? };
+`endif
 // ----------------
 // Bypass functions for GPRs
 // Returns '(busy, val)'
@@ -98,6 +125,19 @@ function Tuple2 #(Bool, Word) fn_gpr_bypass (Bypass bypass, RegName rd, Word rd_
 		: rd_val);
    return tuple2 (busy, val);
 endfunction
+
+`ifdef ISA_F
+// FBypass functions for FPRs
+// Returns '(busy, val)'
+// 'busy' means that the RegName is valid and matches, but the value is not available yet
+function Tuple2 #(Bool, WordFL) fn_fpr_bypass (FBypass bypass, RegName rd, WordFL rd_val);
+   Bool busy = ((bypass.bypass_state == BYPASS_RD) && (bypass.rd == rd));
+   WordFL val= (  ((bypass.bypass_state == BYPASS_RD_RDVAL) && (bypass.rd == rd))
+		? bypass.rd_val
+		: rd_val);
+   return tuple2 (busy, val);
+endfunction
+`endif
 
 // ================================================================
 // Trap information
@@ -302,7 +342,7 @@ typedef enum {  OP_Stage2_ALU         // Pass-through (non mem, M, FD, AMO)
 	      , OP_Stage2_AMO
 `endif
 
-`ifdef ISA_FD
+`ifdef ISA_F
 	      , OP_Stage2_FD
 `endif
    } Op_Stage2
@@ -311,17 +351,35 @@ deriving (Eq, Bits, FShow);
 typedef struct {
    Priv_Mode  priv;
    Addr       pc;
-   Instr      instr;    // For debugging. Just funct3 is enough for functionality.
+   Instr      instr;    // For debugging. Just funct3, funct7 are enough for
+                        // functionality.
    Op_Stage2  op_stage2;
    RegName    rd;
    Addr       addr;     // Branch, jump: newPC
                         // Mem ops and AMOs: mem addr
-
-   Word       val1;     // OP_Stage2_ALU: rd_val
+`ifdef ISA_D
+   // When D is enabled, the val from Stage1 to Stage2 should be sized to
+   // max (sizeOf (WordXL), sizeOf (WordFL))
+   // Using lower-level Bit types here as the data in vals always be raw bit
+   // data
+   WordFL     val1;     // OP_Stage2_ALU: rd_val
                         // OP_Stage2_M and OP_Stage2_FD: arg1
 
-   Word       val2;     // OP_Stage2_ST: store-val;
+   WordFL     val2;     // OP_Stage2_ST: store-val;
                         // OP_Stage2_M and OP_Stage2_FD: arg2
+`else
+   WordXL     val1;     // OP_Stage2_ALU: rd_val
+                        // OP_Stage2_M and OP_Stage2_FD: arg1
+
+   WordXL     val2;     // OP_Stage2_ST: store-val;
+                        // OP_Stage2_M and OP_Stage2_FD: arg2
+`endif
+
+`ifdef ISA_F
+   WordFL     val3;     // OP_Stage2_FD: arg3
+   Bool       rd_in_fpr;// The rd should update into FPR
+   Bit #(3)   rounding_mode;    // rounding mode from fcsr_frm or instr.rm
+`endif
 
 `ifdef INCLUDE_TANDEM_VERIF
    Trace_Data  trace_data;
@@ -347,6 +405,9 @@ typedef struct {
 
    // feedback
    Bypass                 bypass;
+`ifdef ISA_F
+   FBypass                fbypass;
+`endif
 
    // feedforward data
    Data_Stage2_to_Stage3  data_to_stage3;
@@ -382,14 +443,38 @@ typedef struct {
 
    Bool      rd_valid;
    RegName   rd;
-   Word      rd_val;
+
+`ifdef ISA_F
+   Bool      upd_flags;
+   Bool      rd_in_fpr;
+   Bit #(5)  fpr_flags;
+`endif
+`ifdef ISA_D
+   // When FP is enabled, the rd_val from Stage2 to Stage3 should be sized to
+   // max (sizeOf (WordXL), sizeOf (WordFL))
+   // Using lower-level Bit types here as the data in rd_val always be raw
+   // bit data
+   WordFL    rd_val;
+`else
+   WordXL    rd_val;
+`endif
    } Data_Stage2_to_Stage3
 deriving (Bits);
 
 instance FShow #(Data_Stage2_to_Stage3);
    function Fmt fshow (Data_Stage2_to_Stage3 x);
       Fmt fmt =   $format ("data_to_Stage3 {pc:%h  instr:%h  priv:%0d\n", x.pc, x.instr, x.priv);
-      fmt = fmt + $format ("        rd_valid:", fshow (x.rd_valid), " rd:%0d  rd_val:%h\n", x.rd, x.rd_val);
+      fmt = fmt + $format ("        rd_valid:", fshow (x.rd_valid));
+
+`ifdef ISA_F
+      if (x.rd_in_fpr)
+         fmt = fmt + $format ("  fflags: %05b", fshow (x.fpr_flags));
+
+      if (x.rd_in_fpr)
+         fmt = fmt + $format ("  frd:%0d  rd_val:%h\n", x.rd, x.rd_val);
+      else
+`endif
+         fmt = fmt + $format ("  grd:%0d  rd_val:%h\n", x.rd, x.rd_val);
       return fmt;
    endfunction
 endinstance
@@ -400,6 +485,9 @@ endinstance
 typedef struct {
    Stage_OStatus  ostatus;
    Bypass         bypass;
+`ifdef ISA_F
+   FBypass        fbypass;
+`endif
    } Output_Stage3
 deriving (Bits);
 
