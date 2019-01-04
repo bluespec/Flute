@@ -70,6 +70,11 @@ interface CPU_IFC;
    // GPR access
    interface MemoryServer #(5,  XLEN)  hart0_gpr_mem_server;
 
+`ifdef ISA_F
+   // FPR access
+   interface MemoryServer #(5,  FLEN) hart0_fpr_mem_server;
+`endif
+
    // CSR access
    interface MemoryServer #(12, XLEN)  hart0_csr_mem_server;
 `endif
