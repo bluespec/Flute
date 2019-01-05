@@ -736,7 +736,10 @@ function Bool fv_is_rd_in_GPR (Bit #(7) funct7, RegName rs2);
                        && (rs2 == 3);
 
 `endif
+   // FCLASS.D also maps to this -- both write to GPR
    let is_FMV_X_D    =    (funct7 == f7_FMV_X_D);
+   // FEQ.D, FLE.D, FLT.D map to this
+   let is_FCMP_D     =    (funct7 == f7_FCMP_S);
 `endif
 
     let is_FCVT_W_S  =    (funct7 == f7_FCVT_W_S)
@@ -750,7 +753,11 @@ function Bool fv_is_rd_in_GPR (Bit #(7) funct7, RegName rs2);
                        && (rs2 == 3);
 `endif
 
+   // FCLASS.S also maps to this -- both write to GPR
    let is_FMV_X_W    =    (funct7 == f7_FMV_X_W);
+
+   // FEQ.S, FLE.S, FLT.S map to this
+   let is_FCMP_S     =    (funct7 == f7_FCMP_S);
 
     return (
           False
@@ -762,6 +769,7 @@ function Bool fv_is_rd_in_GPR (Bit #(7) funct7, RegName rs2);
        || is_FCVT_LU_D
 `endif
        || is_FMV_X_D
+       || is_FCMP_D
 `endif
 `ifdef RV64
        || is_FCVT_L_S
@@ -770,6 +778,7 @@ function Bool fv_is_rd_in_GPR (Bit #(7) funct7, RegName rs2);
        || is_FCVT_W_S
        || is_FCVT_WU_S
        || is_FMV_X_W
+       || is_FCMP_S
     );
 endfunction
 
@@ -841,9 +850,9 @@ function Bool fv_is_fp_instr_legal (
           || ((f7 == f7_FCMP_S)   && ( rm == 0))
           || ((f7 == f7_FCMP_S)   && ( rm == 1))
           || ((f7 == f7_FCMP_S)   && ( rm == 2))
-          ||  (f7 == f7_FMV_X_W) 
-          ||  (f7 == f7_FMV_W_X) 
-          ||  (f7 == f7_FCLASS_S)
+          || ((f7 == f7_FMV_X_W)  && ( rm == 0))
+          || ((f7 == f7_FMV_W_X)  && ( rm == 0))
+          || ((f7 == f7_FCLASS_S) && ( rm == 1))
 `ifdef ISA_D
           ||  (f7 == f7_FADD_D)  
           ||  (f7 == f7_FSUB_D)  
@@ -874,9 +883,9 @@ function Bool fv_is_fp_instr_legal (
           || ((f7 == f7_FCMP_D)   && ( rm == 0))
           || ((f7 == f7_FCMP_D)   && ( rm == 1))
           || ((f7 == f7_FCMP_D)   && ( rm == 2))
-          ||  (f7 == f7_FMV_X_D) 
-          ||  (f7 == f7_FMV_D_X) 
-          ||  (f7 == f7_FCLASS_D)
+          || ((f7 == f7_FMV_X_D)  && ( rm == 0))
+          || ((f7 == f7_FMV_D_X)  && ( rm == 0))
+          || ((f7 == f7_FCLASS_D) && ( rm == 1))
 `endif
          ) return True;
       else return False;

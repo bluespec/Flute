@@ -145,6 +145,20 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
       endaction
    endfunction
 
+   // Check if FSingle is a +0
+   function Bool fv_FSingleIsPositiveZero ( FSingle x );
+      return ( isZero (x) && !(x.sign) );
+   endfunction
+
+   // Check if FDouble is a +0
+   function Bool fv_FDoubleIsPositiveZero ( FDouble x );
+      return ( isZero (x) && !(x.sign) );
+   endfunction
+
+   // Definitions of Q-NaNs for single and double precision
+   Bit #(32) canonicalNaN32 = 32'h7fc00000;
+   Bit #(64) canonicalNaN64 = 64'h7ff8000000000000;
+
    // =============================================================
    // Decode sub-opcodes (a direct lift from the spec)
    match {.opc, .f7, .rs2, .rm, .v1, .v2, .v3} = requestR.Valid;
@@ -183,9 +197,9 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
    let isFLE_D       = (opc == op_FP) && (f7 == f7_FCMP_D) && (rm == 0);
    let isFLT_D       = (opc == op_FP) && (f7 == f7_FCMP_D) && (rm == 1);
    let isFEQ_D       = (opc == op_FP) && (f7 == f7_FCMP_D) && (rm == 2);
-   let isFMV_X_D     = (opc == op_FP) && (f7 == f7_FMV_X_D);
-   let isFMV_D_X     = (opc == op_FP) && (f7 == f7_FMV_D_X);
-   let isFCLASS_D    = (opc == op_FP) && (f7 == f7_FCLASS_D);
+   let isFMV_X_D     = (opc == op_FP) && (f7 == f7_FMV_X_D) && (rm == 0);
+   let isFMV_D_X     = (opc == op_FP) && (f7 == f7_FMV_D_X) && (rm == 0);
+   let isFCLASS_D    = (opc == op_FP) && (f7 == f7_FCLASS_D) && (rm == 1);
 `endif
 
    let isFMADD_S     = (opc == op_FMADD)  && (f2 == 0);
@@ -219,9 +233,9 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
    let isFLE_S       = (opc == op_FP) && (f7 == f7_FCMP_S) && (rm == 0);
    let isFLT_S       = (opc == op_FP) && (f7 == f7_FCMP_S) && (rm == 1);
    let isFEQ_S       = (opc == op_FP) && (f7 == f7_FCMP_S) && (rm == 2);
-   let isFMV_X_W     = (opc == op_FP) && (f7 == f7_FMV_X_W);
-   let isFMV_W_X     = (opc == op_FP) && (f7 == f7_FMV_W_X);
-   let isFCLASS_S    = (opc == op_FP) && (f7 == f7_FCLASS_S);
+   let isFMV_X_W     = (opc == op_FP) && (f7 == f7_FMV_X_W) && (rm == 0);
+   let isFMV_W_X     = (opc == op_FP) && (f7 == f7_FMV_W_X) && (rm == 0);
+   let isFCLASS_S    = (opc == op_FP) && (f7 == f7_FCLASS_S) && (rm == 1);
 
    // =============================================================
    // Prepare the operands. The operands come in as raw 64 bits. They need to be
@@ -412,57 +426,76 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
 
    rule doFMIN_S ( validReq && isFMIN_S );
       Bit #(64) res = ?;
+      let rs1IsPos0 = fv_FSingleIsPositiveZero (sV1);
+      let rs2IsPos0 = fv_FSingleIsPositiveZero (sV2);
+      let rs1IsNeg0 = isNegativeZero (sV1);
+      let rs2IsNeg0 = isNegativeZero (sV2);
       // One or both of the values are NaNs
-      if (cmpres_s == UO) begin
-         if ( isSNaN (sV1) && isSNaN (sV2) )
-            res = fv_nanbox (extend (pack (nanQuiet (sV1))));
-         else if ( isSNaN (sV1) )
-            res = fv_nanbox (extend (pack ( sV2 )));
-         else if ( isSNaN (sV2) )
-            res = fv_nanbox (extend (pack ( sV1 )));
-         else if ( isQNaN (sV1) && isQNaN (sV2) )
-            res = fv_nanbox (extend (pack (nanQuiet (sV1))));
-         else if ( isQNaN (sV1) )
-            res = fv_nanbox (extend (pack ( sV2 )));
-         else if ( isQNaN (sV2) )
-            res = fv_nanbox (extend (pack ( sV1 )));
-      end
-
-      // Both values are numbers
+      if ( isSNaN (sV1) && isSNaN (sV2) )
+         res = fv_nanbox (extend (pack ( canonicalNaN32 )));
+      else if ( isSNaN (sV1) )
+         res = fv_nanbox (extend (pack ( sV2 )));
+      else if ( isSNaN (sV2) )
+         res = fv_nanbox (extend (pack ( sV1 )));
+      else if ( isQNaN (sV1) && isQNaN (sV2) )
+         res = fv_nanbox (extend (pack ( canonicalNaN32 )));
+      else if ( isQNaN (sV1) )
+         res = fv_nanbox (extend (pack ( sV2 )));
+      else if ( isQNaN (sV2) )
+         res = fv_nanbox (extend (pack ( sV1 )));
+      else if ( rs1IsNeg0 && rs2IsPos0 )
+         res = fv_nanbox (extend (pack ( sV1 )));
+      else if ( rs2IsNeg0 && rs1IsPos0 )
+         res = fv_nanbox (extend (pack ( sV2 )));
       else
          res = (cmpres_s == LT) ? fv_nanbox (extend (pack (sV1)))
                                 : fv_nanbox (extend (pack (sV2)));
 
-      fa_driveResponse (res, 0);
-      resultR     <= tagged Valid (tuple2 (res, 0));
+      // flag generation
+      FloatingPoint::Exception e = defaultValue;
+      if ( isSNaN (sV1) || isSNaN (sV2) ) e.invalid_op = True;
+      let fcsr = exception_to_fcsr(e);
+
+      fa_driveResponse (res, fcsr);
+      resultR     <= tagged Valid (tuple2 (res, fcsr));
       stateR      <= FBOX_RSP;
    endrule
 
    rule doFMAX_S ( validReq && isFMAX_S );
       Bit #(64) res = ?;
-      // One or both of the values are NaNs
-      if (cmpres_s == UO) begin
-         if ( isSNaN (sV1) && isSNaN (sV2) )
-            res = fv_nanbox (extend (pack (nanQuiet (sV1))));
-         else if ( isSNaN (sV1) )
-            res = fv_nanbox (extend (pack ( sV2 )));
-         else if ( isSNaN (sV2) )
-            res = fv_nanbox (extend (pack ( sV1 )));
-         else if ( isQNaN (sV1) && isQNaN (sV2) )
-            res = fv_nanbox (extend (pack (nanQuiet (sV1))));
-         else if ( isQNaN (sV1) )
-            res = fv_nanbox (extend (pack ( sV2 )));
-         else if ( isQNaN (sV2) )
-            res = fv_nanbox (extend (pack ( sV1 )));
-      end
+      let rs1IsPos0 = fv_FSingleIsPositiveZero (sV1);
+      let rs2IsPos0 = fv_FSingleIsPositiveZero (sV2);
+      let rs1IsNeg0 = isNegativeZero (sV1);
+      let rs2IsNeg0 = isNegativeZero (sV2);
 
-      // Both values are numbers
+      // One or both of the values are NaNs
+      if ( isSNaN (sV1) && isSNaN (sV2) )
+         res = fv_nanbox (extend (pack ( canonicalNaN32 )));
+      else if ( isSNaN (sV1) )
+         res = fv_nanbox (extend (pack ( sV2 )));
+      else if ( isSNaN (sV2) )
+         res = fv_nanbox (extend (pack ( sV1 )));
+      else if ( isQNaN (sV1) && isQNaN (sV2) )
+         res = fv_nanbox (extend (pack ( canonicalNaN32 )));
+      else if ( isQNaN (sV1) )
+         res = fv_nanbox (extend (pack ( sV2 )));
+      else if ( isQNaN (sV2) )
+         res = fv_nanbox (extend (pack ( sV1 )));
+      else if ( rs1IsNeg0 && rs2IsPos0 )
+         res = fv_nanbox (extend (pack ( sV2 )));
+      else if ( rs2IsNeg0 && rs1IsPos0 )
+         res = fv_nanbox (extend (pack ( sV1 )));
       else
          res = (cmpres_s == LT) ? fv_nanbox (extend (pack (sV2)))
                                 : fv_nanbox (extend (pack (sV1)));
 
-      fa_driveResponse (res, 0);
-      resultR     <= tagged Valid (tuple2 (res, 0));
+      // flag generation
+      FloatingPoint::Exception e = defaultValue;
+      if ( isSNaN (sV1) || isSNaN (sV2) ) e.invalid_op = True;
+      let fcsr = exception_to_fcsr(e);
+
+      fa_driveResponse (res, fcsr);
+      resultR     <= tagged Valid (tuple2 (res, fcsr));
       stateR      <= FBOX_RSP;
    endrule
 
@@ -482,30 +515,63 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
    endrule
 
    rule doFEQ_S ( validReq && isFEQ_S );
-      Bit #(64) res = (cmpres_s==EQ ? 1 : 0);
+      // Generate the results
+      Bit #(64) res = ?;
+      
+      if (  isSNaN (sV1)
+         || isSNaN (sV2)
+         || isQNaN (sV1)
+         || isQNaN (sV2)) res = 0;
+      else
+         res = (cmpres_s == EQ) ? 1 : 0; 
+
+      // Generate the flags
       FloatingPoint::Exception e = defaultValue;
       if (isSNaN(sV1) || isSNaN(sV2)) e.invalid_op = True;
       let fcsr = exception_to_fcsr(e);
+
       fa_driveResponse (res, fcsr);
       resultR     <= tagged Valid (tuple2 (res, fcsr));
       stateR      <= FBOX_RSP;
    endrule
 
    rule doFLT_S ( validReq && isFLT_S );
-      Bit #(64) res = (cmpres_s==LT ? 1 : 0);
+      // Generate the results
+      Bit #(64) res = ?;
+      
+      if (  isSNaN (sV1)
+         || isSNaN (sV2)
+         || isQNaN (sV1)
+         || isQNaN (sV2)) res = 0;
+      else
+         res = (cmpres_s==LT) ? 1 : 0;
+
+      // Generate the flags
       FloatingPoint::Exception e = defaultValue;
       if (isNaN(sV1) || isNaN(sV2)) e.invalid_op = True;
       let fcsr = exception_to_fcsr(e);
+
       fa_driveResponse (res, fcsr);
       resultR     <= tagged Valid (tuple2 (res, fcsr));
       stateR      <= FBOX_RSP;
    endrule
 
    rule doFLE_S ( validReq && isFLE_S );
-      Bit #(64) res = (((cmpres_s==LT) || (cmpres_s==EQ)) ? 1 : 0);
+      // Generate the results
+      Bit #(64) res = ?;
+      
+      if (  isSNaN (sV1)
+         || isSNaN (sV2)
+         || isQNaN (sV1)
+         || isQNaN (sV2)) res = 0;
+      else
+         res = ((cmpres_s==LT) || (cmpres_s==EQ)) ? 1 : 0;
+
+      // Generate the flags
       FloatingPoint::Exception e = defaultValue;
       if (isNaN(sV1) || isNaN(sV2)) e.invalid_op = True;
       let fcsr = exception_to_fcsr(e);
+
       fa_driveResponse (res, fcsr);
       resultR     <= tagged Valid (tuple2 (res, fcsr));
       stateR      <= FBOX_RSP;
@@ -722,82 +788,135 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
    rule doFMIN_D ( validReq && isFMIN_D );
       // One or both of the values are NaNs
       Bit #(64) res = ?;
-      if (cmpres_d == UO) begin
-         if ( isSNaN (dV1) && isSNaN (dV2) )
-            res = pack (nanQuiet (dV1));
-         else if ( isSNaN (dV1) )
-            res = pack ( dV2 );
-         else if ( isSNaN (dV2) )
-            res = pack ( dV1 );
-         else if ( isQNaN (dV1) && isQNaN (dV2) )
-            res = pack (nanQuiet (dV1));
-         else if ( isQNaN (dV1) )
-            res = pack ( dV2 );
-         else if ( isQNaN (dV2) )
-            res = pack ( dV1 );
-      end
+      let rs1IsPos0 = fv_FDoubleIsPositiveZero (dV1);
+      let rs2IsPos0 = fv_FDoubleIsPositiveZero (dV2);
+      let rs1IsNeg0 = isNegativeZero (dV1);
+      let rs2IsNeg0 = isNegativeZero (dV2);
 
-      // Both values are numbers
+      if ( isSNaN (dV1) && isSNaN (dV2) )
+         res = pack (canonicalNaN64);
+      else if ( isSNaN (dV1) )
+         res = pack ( dV2 );
+      else if ( isSNaN (dV2) )
+         res = pack ( dV1 );
+      else if ( isQNaN (dV1) && isQNaN (dV2) )
+         res = pack (canonicalNaN64);
+      else if ( isQNaN (dV1) )
+         res = pack ( dV2 );
+      else if ( isQNaN (dV2) )
+         res = pack ( dV1 );
+      else if ( rs1IsNeg0 && rs2IsPos0 )
+         res = pack ( dV1 );
+      else if ( rs2IsNeg0 && rs1IsPos0 )
+         res = pack ( dV2 );
       else
          res = (cmpres_d == LT) ? pack (dV1) : pack (dV2);
 
-      fa_driveResponse (res, 0);
-      resultR     <= tagged Valid (tuple2 (res, 0));
+      // flag generation
+      FloatingPoint::Exception e = defaultValue;
+      if ( isSNaN (sV1) || isSNaN (sV2) ) e.invalid_op = True;
+      let fcsr = exception_to_fcsr(e);
+
+      fa_driveResponse (res, fcsr);
+      resultR     <= tagged Valid (tuple2 (res, fcsr));
       stateR      <= FBOX_RSP;
    endrule
 
    rule doFMAX_D ( validReq && isFMAX_D );
       // One or both of the values are NaNs
       Bit #(64) res = ?;
-      if (cmpres_d == UO) begin
-         if ( isSNaN (dV1) && isSNaN (dV2) )
-            res = pack (nanQuiet (dV1));
-         else if ( isSNaN (dV1) )
-            res = pack ( dV2 );
-         else if ( isSNaN (dV2) )
-            res = pack ( dV1 );
-         else if ( isQNaN (dV1) && isQNaN (dV2) )
-            res = pack (nanQuiet (dV1));
-         else if ( isQNaN (dV1) )
-            res = pack ( dV2 );
-         else if ( isQNaN (dV2) )
-            res = pack ( dV1 );
-      end
+      let rs1IsPos0 = fv_FDoubleIsPositiveZero (dV1);
+      let rs2IsPos0 = fv_FDoubleIsPositiveZero (dV2);
+      let rs1IsNeg0 = isNegativeZero (dV1);
+      let rs2IsNeg0 = isNegativeZero (dV2);
 
-      // Both values are numbers
+      if ( isSNaN (dV1) && isSNaN (dV2) )
+         res = pack ( canonicalNaN64 );
+      else if ( isSNaN (dV1) )
+         res = pack ( dV2 );
+      else if ( isSNaN (dV2) )
+         res = pack ( dV1 );
+      else if ( isQNaN (dV1) && isQNaN (dV2) )
+         res = pack ( canonicalNaN64 );
+      else if ( isQNaN (dV1) )
+         res = pack ( dV2 );
+      else if ( isQNaN (dV2) )
+         res = pack ( dV1 );
+      else if ( rs1IsNeg0 && rs2IsPos0 )
+         res = pack ( dV2 );
+      else if ( rs2IsNeg0 && rs1IsPos0 )
+         res = pack ( dV1 );
       else
          res = (cmpres_s == LT) ? pack (dV2) : pack (dV1);
 
-      fa_driveResponse (res, 0);
-      resultR     <= tagged Valid (tuple2 (res, 0));
+      // flag generation
+      FloatingPoint::Exception e = defaultValue;
+      if ( isSNaN (sV1) || isSNaN (sV2) ) e.invalid_op = True;
+      let fcsr = exception_to_fcsr(e);
+
+      fa_driveResponse (res, fcsr);
+      resultR     <= tagged Valid (tuple2 (res, fcsr));
       stateR      <= FBOX_RSP;
    endrule
 
    rule doFEQ_D ( validReq && isFEQ_D );
-      Bit #(64) res = (cmpres_d==EQ ? 1 : 0);
+      // Generate the results
+      Bit #(64) res = ?;
+      
+      if (  isSNaN (dV1)
+         || isSNaN (dV2)
+         || isQNaN (dV1)
+         || isQNaN (dV2)) res = 0;
+      else
+         res = (cmpres_d == EQ) ? 1 : 0; 
+
+      // Generate the flags
       FloatingPoint::Exception e = defaultValue;
       if (isSNaN(dV1) || isSNaN(dV2)) e.invalid_op = True;
       let fcsr = exception_to_fcsr(e);
+
       fa_driveResponse (res, fcsr);
       resultR     <= tagged Valid (tuple2 (res, fcsr));
       stateR      <= FBOX_RSP;
    endrule
 
    rule doFLT_D ( validReq && isFLT_D );
-      Bit #(64) res = (cmpres_d==LT ? 1 :0);
+      // Generate the results
+      Bit #(64) res = ?;
+      
+      if (  isSNaN (dV1)
+         || isSNaN (dV2)
+         || isQNaN (dV1)
+         || isQNaN (dV2)) res = 0;
+      else
+         res = (cmpres_d==LT) ? 1 : 0;
+
+      // Generate the flags
       FloatingPoint::Exception e = defaultValue;
       if (isNaN(dV1) || isNaN(dV2)) e.invalid_op = True;
       let fcsr = exception_to_fcsr(e);
+
       fa_driveResponse (res, fcsr);
       resultR     <= tagged Valid (tuple2 (res, fcsr));
       stateR      <= FBOX_RSP;
    endrule
 
    rule doFLE_D ( validReq && isFLE_D );
-      Bit #(64) res = (((cmpres_d==LT) || (cmpres_d==EQ)) ? 1 : 0);
+      // Generate the results
+      Bit #(64) res = ?;
+      
+      if (  isSNaN (dV1)
+         || isSNaN (dV2)
+         || isQNaN (dV1)
+         || isQNaN (dV2)) res = 0;
+      else
+         res = ((cmpres_d==LT) || (cmpres_d==EQ)) ? 1 : 0;
+
+      // Generate the flags
       FloatingPoint::Exception e = defaultValue;
       if (isNaN(dV1) || isNaN(dV2)) e.invalid_op = True;
       let fcsr = exception_to_fcsr(e);
+
       fa_driveResponse (res, fcsr);
       resultR     <= tagged Valid (tuple2 (res, fcsr));
       stateR      <= FBOX_RSP;
