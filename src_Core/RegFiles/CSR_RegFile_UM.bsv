@@ -55,6 +55,16 @@ interface CSR_RegFile_IFC;
    (* always_ready *)
    method Action write_csr (CSR_Addr csr_addr, Word word);
 
+`ifdef ISA_F
+   // Read FCSR.FRM
+   (* always_ready *)
+   method Bit #(3) read_frm;
+
+   // Update FCSR.FFLAGS
+   (* always_ready *)
+   method Action update_fcsr_fflags (Bit #(5) flags);
+`endif
+
    // Read MISA
    (* always_ready *)
    method MISA read_misa;
@@ -793,6 +803,18 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
    method MISA read_misa;
       return misa;
    endmethod
+
+`ifdef ISA_F
+   // Read FCSR.FRM
+   method Bit# (3) read_frm;
+      return rg_frm;
+   endmethod
+
+   // Update FCSR.FFLAGS
+   method Action update_fcsr_fflags (Bit#(5) flags);
+      rg_fflags <= rg_fflags | flags;
+   endmethod
+`endif
 
    // Read MSTATUS
    method WordXL read_mstatus;

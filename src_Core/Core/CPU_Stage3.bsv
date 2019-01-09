@@ -1,9 +1,9 @@
-// Copyright (c) 2016-2018 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved
 
 package CPU_Stage3;
 
 // ================================================================
-// This is Stage 3 of the "Flute" CPU.
+// This is Stage 3 of the "Piccolo" CPU.
 // It is the WB ("Write Back") stage:
 // - Writes back a GPR register value (if the instr has an Rd)
 // - Updates CSR INSTRET
@@ -43,6 +43,9 @@ import Cur_Cycle :: *;
 
 import ISA_Decls   :: *;
 import GPR_RegFile :: *;
+`ifdef ISA_F
+import FPR_RegFile :: *;
+`endif
 import CSR_RegFile :: *;
 import CPU_Globals :: *;
 
@@ -76,6 +79,9 @@ endinterface
 
 module mkCPU_Stage3 #(Bit #(4)         verbosity,
 		      GPR_RegFile_IFC  gpr_regfile,
+`ifdef ISA_F
+		      FPR_RegFile_IFC  fpr_regfile,
+`endif
 		      CSR_RegFile_IFC  csr_regfile)
                     (CPU_Stage3_IFC);
 
@@ -88,6 +94,35 @@ module mkCPU_Stage3 #(Bit #(4)         verbosity,
    // ----------------------------------------------------------------
    // BEHAVIOR
 
+   let bypass_base = Bypass {bypass_state: BYPASS_RD_NONE
+			   , rd:           rg_stage3.rd
+`ifdef ISA_D
+                          // WordXL        WordFL (64)
+			   , rd_val:       truncate (rg_stage3.rd_val) 
+`else
+                          // WordXL        WordXL
+			   , rd_val:       rg_stage3.rd_val
+`endif
+                           };
+
+`ifdef ISA_F
+   let fbypass_base = FBypass {bypass_state: BYPASS_RD_NONE
+			   , rd:           rg_stage3.rd
+`ifdef ISA_D
+                          // WordFL        WordFL
+			   , rd_val:       rg_stage3.rd_val 
+`else
+`ifdef RV64
+                          // WordFL (32)   WordXL (64)
+			   , rd_val:       truncate (rg_stage3.rd_val)
+`else
+                          // WordFL (32)   WordXL (32)
+			   , rd_val:       rg_stage3.rd_val
+`endif
+`endif
+                           };
+`endif
+
    rule rl_reset;
       f_reset_reqs.deq;
       rg_full <= False;
@@ -98,12 +133,29 @@ module mkCPU_Stage3 #(Bit #(4)         verbosity,
    // Combinational output function
 
    function Output_Stage3 fv_out;
-      return Output_Stage3 {ostatus: (rg_full ? OSTATUS_PIPE : OSTATUS_EMPTY),
-			    bypass:  Bypass {bypass_state: ((rg_full && rg_stage3.rd_valid)
-							    ? BYPASS_RD_RDVAL
-							    : BYPASS_RD_NONE),
-					     rd:           rg_stage3.rd,
-					     rd_val:       rg_stage3.rd_val }};
+      let bypass = bypass_base;
+`ifdef ISA_F
+      let fbypass = fbypass_base;
+      if (rg_stage3.rd_in_fpr) begin
+         bypass.bypass_state = BYPASS_RD_NONE;
+         fbypass.bypass_state = (rg_full && rg_stage3.rd_valid) ? BYPASS_RD_RDVAL
+                                                                : BYPASS_RD_NONE;
+      end
+      else begin
+         fbypass.bypass_state = BYPASS_RD_NONE;
+         bypass.bypass_state = (rg_full && rg_stage3.rd_valid) ? BYPASS_RD_RDVAL
+                                                               : BYPASS_RD_NONE;
+      end
+`else
+      bypass.bypass_state = (rg_full && rg_stage3.rd_valid) ? BYPASS_RD_RDVAL
+                                                            : BYPASS_RD_NONE;
+`endif
+      return Output_Stage3 {ostatus: (rg_full ? OSTATUS_PIPE : OSTATUS_EMPTY)
+                            , bypass : bypass
+`ifdef ISA_F
+                            , fbypass: fbypass
+`endif
+			   };
    endfunction
 
    // ----------------
@@ -113,10 +165,40 @@ module mkCPU_Stage3 #(Bit #(4)         verbosity,
       action
 	 // Writeback Rd if valid
 	 if (rg_stage3.rd_valid) begin
-	    gpr_regfile.write_rd (rg_stage3.rd, rg_stage3.rd_val);
+`ifdef ISA_F
+            // Write to FPR
+            if (rg_stage3.rd_in_fpr)
+`ifdef ISA_D
+               fpr_regfile.write_rd (rg_stage3.rd, rg_stage3.rd_val);
+`else
+               fpr_regfile.write_rd (rg_stage3.rd, truncate (rg_stage3.rd_val));
+`endif
+            // Write to GPR in a FD system
+            else
+`ifdef RV64
+               gpr_regfile.write_rd (rg_stage3.rd, rg_stage3.rd_val);
+`endif
+`ifdef RV32
+               gpr_regfile.write_rd (rg_stage3.rd, truncate (rg_stage3.rd_val));
+`endif
+`else
+            // Write to GPR in a non-FD system
+            gpr_regfile.write_rd (rg_stage3.rd, rg_stage3.rd_val);
+`endif
 	    if (verbosity > 1)
-	       $display ("    S3.fa_deq: write Rd 0x%0h, rd_val 0x%0h",
-			 rg_stage3.rd, rg_stage3.rd_val);
+`ifdef ISA_F
+               if (rg_stage3.rd_in_fpr)
+                  $display ("    S3.fa_deq: write FRd 0x%0h, rd_val 0x%0h",
+                            rg_stage3.rd, rg_stage3.rd_val);
+               else
+`endif
+                  $display ("    S3.fa_deq: write GRd 0x%0h, rd_val 0x%0h",
+                            rg_stage3.rd, rg_stage3.rd_val);
+`ifdef ISA_F
+            // Update FCSR.fflags
+            if (rg_stage3.upd_flags)
+               csr_regfile.update_fcsr_fflags (rg_stage3.fpr_flags);
+`endif
 	 end
       endaction
    endfunction

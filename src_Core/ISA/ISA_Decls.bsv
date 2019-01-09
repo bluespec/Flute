@@ -1,14 +1,18 @@
-// Copyright (c) 2013-2018 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2013-2019 Bluespec, Inc. All Rights Reserved
 
 // ================================================================
 // ISA defs for UC Berkeley RISC V
 //
 // References (from riscv.org):
-//   "The RISC-V Instruction Set Manual
-//    Volume I: User-Level ISA, Version 2.2, May 7, 2017"
+//     The RISC-V Instruction Set Manual
+//     Volume I: Unprivileged ISA
+//     Document Version 20181106-Base-Ratification
+//     November 6, 2018
 //
-//   "The RISC-V Instruction Set Manual
-//    Volume II: Privileged Architecture, Version 1.10, May 7, 2017"
+//     The RISC-V Instruction Set Manual
+//     Volume II: Privileged Architecture
+//     Document Version 20181203-Base-Ratification
+//     December 3, 2018
 //
 // ================================================================
 
@@ -120,7 +124,7 @@ Bool hasFpu64 = False;
 `endif
 
 typedef  Bit #(FLEN) FP_Value;
-typedef  Bit #(FLEN)  WordFL;    // Raw (unsigned) floating point data
+typedef  Bit #(FLEN)  WordFL;    // Floating point data
 
 typedef  TDiv #(FLEN, Bits_per_Byte)           Bytes_per_WordFL;
 typedef  TLog #(Bytes_per_WordFL)              Bits_per_Byte_in_WordFL;
@@ -130,9 +134,9 @@ typedef  Vector #(Bytes_per_WordFL, Byte)      WordFL_B;
 `endif
 
 `ifdef ISA_F
-`define ISA_F_OR_D
-`elif ISA_D
-`define ISA_F_OR_D
+`ifdef ISA_D
+`define ISA_F_AND_D
+`endif
 `endif
 
 // ================================================================
@@ -209,9 +213,6 @@ typedef struct {
    RegName   rs3;
    CSR_Addr  csr;
 
-`ifdef ISA_F
-   Bit #(2)  funct2;
-`endif
    Bit #(3)  funct3;
    Bit #(5)  funct5;
    Bit #(7)  funct7;
@@ -239,9 +240,6 @@ function Decoded_Instr fv_decode (Instr instr);
 			 rs3:       instr_rs3      (instr),
 			 csr:       instr_csr      (instr),
 
-`ifdef ISA_F
-			 funct2:    instr_funct2   (instr),
-`endif
 			 funct3:    instr_funct3   (instr),
 			 funct5:    instr_funct5   (instr),
 			 funct7:    instr_funct7   (instr),
@@ -264,27 +262,27 @@ endfunction
 // on integrating the FPU as certain instruction now do not require the GPR
 // anymore
 //                IsFP, GPRRd
-function Tuple2# (Bool, Bool) fv_decode_gpr_read (Decoded_Instr di);
-`ifdef ISA_F
-   // FP_LD and FP_ST are treated as non-FP operation as far as GPR reads
-   // are concerned
-   if (di.opcode != op_FP) begin
-      return (tuple2 (False, True));   // Regular op with GPR read
-   end
-
-   // This is an FP operation. The following f5 values would work for F and
-   // D subsets
-   else begin
-      if (   (di.funct5 == f5_FCVT_F_X)
-          || (di.funct5 == f5_FMV_W_X))
-         return (tuple2 (True, True)); // FP op with GPR read
-      else
-         return (tuple2 (True, False));// FP op with no GPR read
-   end
-`else
-   return (tuple2 (False, True));      // Regular op with GPR read
-`endif
-endfunction
+// function Tuple2# (Bool, Bool) fv_decode_gpr_read (Decoded_Instr di);
+// `ifdef ISA_F
+//    // FP_LD and FP_ST are treated as non-FP operation as far as GPR reads
+//    // are concerned
+//    if (di.opcode != op_FP) begin
+//       return (tuple2 (False, True));   // Regular op with GPR read
+//    end
+// 
+//    // This is an FP operation. The following f5 values would work for F and
+//    // D subsets
+//    else begin
+//       if (   (di.funct5 == f5_FCVT_F_X)
+//           || (di.funct5 == f5_FMV_W_X))
+//          return (tuple2 (True, True)); // FP op with GPR read
+//       else
+//          return (tuple2 (True, False));// FP op with no GPR read
+//    end
+// `else
+//    return (tuple2 (False, True));      // Regular op with GPR read
+// `endif
+// endfunction
 
 // ================================================================
 // Instruction constructors
@@ -630,65 +628,297 @@ Opcode op_JAL  = 7'b11_011_11;
 Opcode op_JALR = 7'b11_001_11;
 Bit #(3) funct3_JALR = 3'b000;
 
+`ifdef ISA_F
 // ================================================================
 // Floating Point Instructions
+// Enumeration of floating point opcodes for decode within the FPU
+typedef enum {
+     FPAdd
+   , FPSub
+   , FPMul
+   , FPDiv
+   , FPSqrt
+   , FPMAdd
+   , FPMSub
+   , FPNMAdd
+   , FPNMSub } FpuOp deriving (Bits, Eq, FShow);
+
+// Enumeration of rounding modes
+typedef enum {
+     Rnd_Nearest_Even
+   , Rnd_Zero
+   , Rnd_Minus_Inf
+   , Rnd_Plus_Inf
+   , Rnd_Nearest_Max_Mag
+} RoundMode deriving (Bits, Eq, FShow);
+
 // Funct2 encoding
-Bit #(2) f2_S      = 2'b00;
-Bit #(2) f2_D      = 2'b01;
-Bit #(2) f2_Q      = 2'b11;
+Bit #(2) f2_S           = 2'b00;
+Bit #(2) f2_D           = 2'b01;
+Bit #(2) f2_Q           = 2'b11;
 
 // Floating point Load-Store
-// X is W (32-bit) for ISA_F, D (64-bit) for ISA_D
-Opcode op_FLX      = 7'b00_00_111;
-Opcode op_FSX      = 7'b01_00_111;
+Opcode   op_FSTORE      = 7'b_01_001_11;
+Opcode   op_FLOAD       = 7'b_00_001_11;
+Bit #(3) f3_FSW         = 3'b010;
+Bit #(3) f3_FSD         = 3'b011;
+Bit #(3) f3_FLW         = 3'b010;
+Bit #(3) f3_FLD         = 3'b011;
 
 // Fused FP Multiply Add/Sub instructions
-Opcode op_FMADD    = 7'b10_00_011;
-Opcode op_FMSUB    = 7'b10_00_111;
-Opcode op_FNMSUB   = 7'b10_01_011;
-Opcode op_FNMADD   = 7'b10_01_111;
+Opcode   op_FMADD       = 7'b10_00_011;
+Opcode   op_FMSUB       = 7'b10_00_111;
+Opcode   op_FNMSUB      = 7'b10_01_011;
+Opcode   op_FNMADD      = 7'b10_01_111;
 
 // All other FP intructions
-Opcode op_FP = 7'b10_10_011;
+Opcode   op_FP          = 7'b10_10_011;
 
-Bit #(5) f5_FADD     = 5'b00000;
-Bit #(5) f5_FSUB     = 5'b00001;
-Bit #(5) f5_FMUL     = 5'b00010;
-Bit #(5) f5_FDIV     = 5'b00011;
-Bit #(5) f5_FSQRT    = 5'b01011;
-Bit #(5) f5_FSGNJ    = 5'b00100;
-Bit #(5) f5_FSGNJN   = 5'b00100;
-Bit #(5) f5_FSGNJX   = 5'b00100;
-Bit #(5) f5_FMIN     = 5'b00101;
-Bit #(5) f5_FMAX     = 5'b00101;
-Bit #(5) f5_FEQ      = 5'b10100;
-Bit #(5) f5_FLT      = 5'b10100;
-Bit #(5) f5_FLE      = 5'b10100;
-Bit #(5) f5_FCLASS   = 5'b11100;
+Bit #(7) f7_FADD_D      = 7'h1 ;
+Bit #(7) f7_FSUB_D      = 7'h5 ;
+Bit #(7) f7_FMUL_D      = 7'h9 ;
+Bit #(7) f7_FDIV_D      = 7'hD ;
+Bit #(7) f7_FSQRT_D     = 7'h2D;
+Bit #(7) f7_FCMP_D      = 7'h51;
+Bit #(7) f7_FMIN_D      = 7'h15;
+Bit #(7) f7_FMAX_D      = 7'h15;
+Bit #(7) f7_FSGNJ_D     = 7'h11;
 
-// FP convert instructions
-// To be read as FCVT_DEST_SRC
-// X could be W (32-bit), or L (64-bit) and represents the width of the GPR
-// F could be S or D depending on the funct2 field
-Bit #(5) f5_FCVT_X_F = 5'b11000;
-Bit #(5) f5_FCVT_F_X = 5'b11010;
+Bit #(7) f7_FADD_S      = 7'h0 ;
+Bit #(7) f7_FSUB_S      = 7'h4 ;
+Bit #(7) f7_FMUL_S      = 7'h8 ;
+Bit #(7) f7_FDIV_S      = 7'hC ;
+Bit #(7) f7_FSQRT_S     = 7'h2C;
+Bit #(7) f7_FCMP_S      = 7'h50;
+Bit #(7) f7_FMIN_S      = 7'h14;
+Bit #(7) f7_FMAX_S      = 7'h14;
+Bit #(7) f7_FSGNJ_S     = 7'h10;
 
-// For the FMV instructions there is an inconsistency in naming between F and D
-// subsets. Here the W/D represents the width of the data being moved (32-b) and
-// not its interpretations as SP/DP.
-// Confusingly, for the D subset, the spec uses "D" to indicate 64-bit instead
-// of L.
-Bit #(5) f5_FMV_X_W  = 5'b11100;
-Bit #(5) f5_FMV_W_X  = 5'b11110;
+Bit #(7) f7_FCVT_W_S    = 7'h60;
+Bit #(7) f7_FCVT_WU_S   = 7'h60;
+Bit #(7) f7_FCVT_S_W    = 7'h68;
+Bit #(7) f7_FCVT_S_WU   = 7'h68;
+
+Bit #(7) f7_FCVT_L_S    = 7'h60;
+Bit #(7) f7_FCVT_LU_S   = 7'h60;
+Bit #(7) f7_FCVT_S_L    = 7'h68;
+Bit #(7) f7_FCVT_S_LU   = 7'h68;
+
+Bit #(7) f7_FCVT_S_D    = 7'h20;
+Bit #(7) f7_FCVT_D_S    = 7'h21;
+Bit #(7) f7_FCVT_W_D    = 7'h61;
+Bit #(7) f7_FCVT_WU_D   = 7'h61;
+Bit #(7) f7_FCVT_D_W    = 7'h69;
+Bit #(7) f7_FCVT_D_WU   = 7'h69;
+
+Bit #(7) f7_FCVT_L_D    = 7'h61;
+Bit #(7) f7_FCVT_LU_D   = 7'h61;
+Bit #(7) f7_FCVT_D_L    = 7'h69;
+Bit #(7) f7_FCVT_D_LU   = 7'h69;
+
+Bit #(7) f7_FMV_X_D     = 7'h71;
+Bit #(7) f7_FMV_D_X     = 7'h79;
+Bit #(7) f7_FCLASS_D    = 7'h71;
+Bit #(7) f7_FMV_X_W     = 7'h70;
+Bit #(7) f7_FMV_W_X     = 7'h78;
+Bit #(7) f7_FCLASS_S    = 7'h70;
+
+// fv_is_rd_in_GPR: Checks if the request generates a result which
+// should be written into the GPR
+function Bool fv_is_rd_in_GPR (Bit #(7) funct7, RegName rs2);
 
 `ifdef ISA_D
-Bit #(5) f5_FMV_X_D  = 5'b11100;
-Bit #(5) f5_FMV_D_X  = 5'b11110;
+    let is_FCVT_W_D  =    (funct7 == f7_FCVT_W_D)
+                       && (rs2 == 0);
+    let is_FCVT_WU_D =    (funct7 == f7_FCVT_WU_D)
+                       && (rs2 == 1);
+`ifdef RV64
+    let is_FCVT_L_D  =    (funct7 == f7_FCVT_L_D)
+                       && (rs2 == 2);
+    let is_FCVT_LU_D =    (funct7 == f7_FCVT_LU_D)
+                       && (rs2 == 3);
 
-// Only for ISA_D -- S <-> D conversion. The func2 constains the destination,
-// and rs2 contains the source type
-Bit #(5) f5_FCVT_S_D = 5'b01000;
-Bit #(5) f5_FCVT_D_S = 5'b01000;
+`endif
+   // FCLASS.D also maps to this -- both write to GPR
+   let is_FMV_X_D    =    (funct7 == f7_FMV_X_D);
+   // FEQ.D, FLE.D, FLT.D map to this
+   let is_FCMP_D     =    (funct7 == f7_FCMP_D);
+`endif
+
+    let is_FCVT_W_S  =    (funct7 == f7_FCVT_W_S)
+                       && (rs2 == 0);
+    let is_FCVT_WU_S =    (funct7 == f7_FCVT_WU_S)
+                       && (rs2 == 1);
+`ifdef RV64
+    let is_FCVT_L_S  =    (funct7 == f7_FCVT_L_S)
+                       && (rs2 == 2);
+    let is_FCVT_LU_S =    (funct7 == f7_FCVT_LU_S)
+                       && (rs2 == 3);
+`endif
+
+   // FCLASS.S also maps to this -- both write to GPR
+   let is_FMV_X_W    =    (funct7 == f7_FMV_X_W);
+
+   // FEQ.S, FLE.S, FLT.S map to this
+   let is_FCMP_S     =    (funct7 == f7_FCMP_S);
+
+    return (
+          False
+`ifdef ISA_D
+       || is_FCVT_W_D
+       || is_FCVT_WU_D
+`ifdef RV64
+       || is_FCVT_L_D
+       || is_FCVT_LU_D
+`endif
+       || is_FMV_X_D
+       || is_FCMP_D
+`endif
+`ifdef RV64
+       || is_FCVT_L_S
+       || is_FCVT_LU_S
+`endif
+       || is_FCVT_W_S
+       || is_FCVT_WU_S
+       || is_FMV_X_W
+       || is_FCMP_S
+    );
+endfunction
+
+// Check if a rounding mode value in the FCSR.FRM is valid
+function Bool fv_fcsr_frm_valid (Bit #(3) frm);
+   return (   (frm != 3'b101) 
+           && (frm != 3'b110)
+           && (frm != 3'b111)
+          );
+endfunction 
+
+// Check if a rounding mode value in the instr is valid
+function Bool fv_inst_frm_valid (Bit #(3) frm);
+   return (   (frm != 3'b101) 
+           && (frm != 3'b110)
+          );
+endfunction
+
+// fv_rounding_mode_check
+// Returns the correct rounding mode considering the values in the
+// FCSR and the instruction and checks legality
+function Tuple2# (Bit #(3), Bool) fv_rmode_check (
+   Bit #(3) inst_frm, Bit #(3) fcsr_frm);
+   let rm = (inst_frm == 3'h7) ? fcsr_frm : inst_frm;
+   let rm_is_legal  = (inst_frm == 3'h7) ? fv_fcsr_frm_valid (fcsr_frm)
+                                         : fv_inst_frm_valid (inst_frm);
+   return (tuple2 (rm, rm_is_legal));
+endfunction
+
+// A D instruction requires misa.f to be set as well as misa.d
+function Bool fv_is_fp_instr_legal (
+   Bit #(7) f7, Bit #(3) rm, RegName rs2, Opcode fopc);
+   Bit #(2) f2 = f7[1:0];
+   Bool is_legal = True;
+   if (   (fopc == op_FMADD )
+       || (fopc == op_FMSUB )
+       || (fopc == op_FNMADD)
+       || (fopc == op_FNMSUB))
+`ifdef ISA_D
+      return ((f2 == f2_S) || (f2 == f2_D)); // Both SP and DP are legal
+`else
+      return (f2 == f2_S);                   // Only SP is legal
+`endif
+   else
+      if (    (f7 == f7_FADD_S)  
+          ||  (f7 == f7_FSUB_S)  
+          ||  (f7 == f7_FMUL_S)  
+`ifdef ISA_FD_DIV
+          ||  (f7 == f7_FDIV_S)  
+          ||  (f7 == f7_FSQRT_S) 
+`endif
+          || ((f7 == f7_FSGNJ_S)  && ( rm == 0))
+          || ((f7 == f7_FSGNJ_S)  && ( rm == 1))
+          || ((f7 == f7_FSGNJ_S)  && ( rm == 2))
+          || ((f7 == f7_FCVT_W_S) && (rs2 == 0))
+          || ((f7 == f7_FCVT_WU_S)&& (rs2 == 1))
+`ifdef RV64
+          || ((f7 == f7_FCVT_L_S) && (rs2 == 2))
+          || ((f7 == f7_FCVT_LU_S)&& (rs2 == 3))
+`endif                            
+          || ((f7 == f7_FCVT_S_W) && (rs2 == 0))
+          || ((f7 == f7_FCVT_S_WU)&& (rs2 == 1))             
+`ifdef RV64                       
+          || ((f7 == f7_FCVT_S_L) && (rs2 == 2))
+          || ((f7 == f7_FCVT_S_LU)&& (rs2 == 3))
+`endif
+          || ((f7 == f7_FMIN_S)   && ( rm == 0))
+          || ((f7 == f7_FMAX_S)   && ( rm == 1))
+          || ((f7 == f7_FCMP_S)   && ( rm == 0))
+          || ((f7 == f7_FCMP_S)   && ( rm == 1))
+          || ((f7 == f7_FCMP_S)   && ( rm == 2))
+          || ((f7 == f7_FMV_X_W)  && ( rm == 0))
+          || ((f7 == f7_FMV_W_X)  && ( rm == 0))
+          || ((f7 == f7_FCLASS_S) && ( rm == 1))
+`ifdef ISA_D
+          ||  (f7 == f7_FADD_D)  
+          ||  (f7 == f7_FSUB_D)  
+          ||  (f7 == f7_FMUL_D)  
+`ifdef ISA_FD_DIV
+          ||  (f7 == f7_FDIV_D)  
+          ||  (f7 == f7_FSQRT_D) 
+`endif
+          || ((f7 == f7_FSGNJ_D)  && ( rm == 0))
+          || ((f7 == f7_FSGNJ_D)  && ( rm == 1))
+          || ((f7 == f7_FSGNJ_D)  && ( rm == 2))
+          || ((f7 == f7_FCVT_W_D) && (rs2 == 0))
+          || ((f7 == f7_FCVT_WU_D)&& (rs2 == 1))
+`ifdef RV64
+          || ((f7 == f7_FCVT_L_D) && (rs2 == 2))
+          || ((f7 == f7_FCVT_LU_D)&& (rs2 == 3))
+`endif                            
+          || ((f7 == f7_FCVT_D_W) && (rs2 == 0))
+          || ((f7 == f7_FCVT_D_WU)&& (rs2 == 1))             
+`ifdef RV64                       
+          || ((f7 == f7_FCVT_D_L) && (rs2 == 2))
+          || ((f7 == f7_FCVT_D_LU)&& (rs2 == 3))
+`endif
+          || ((f7 == f7_FCVT_D_S) && (rs2 == 0))
+          || ((f7 == f7_FCVT_S_D) && (rs2 == 1))
+          || ((f7 == f7_FMIN_D)   && ( rm == 0))
+          || ((f7 == f7_FMAX_D)   && ( rm == 1))
+          || ((f7 == f7_FCMP_D)   && ( rm == 0))
+          || ((f7 == f7_FCMP_D)   && ( rm == 1))
+          || ((f7 == f7_FCMP_D)   && ( rm == 2))
+          || ((f7 == f7_FMV_X_D)  && ( rm == 0))
+          || ((f7 == f7_FMV_D_X)  && ( rm == 0))
+          || ((f7 == f7_FCLASS_D) && ( rm == 1))
+`endif
+         ) return True;
+      else return False;
+endfunction
+
+// Returns True if the first operand (val1) should be taken from the GPR
+// instead of the FPR for a FP opcode
+function Bool fv_fp_val1_from_gpr (Opcode opcode, Bit#(7) f7, RegName rs2);
+   return (
+         (opcode == op_FP)
+      && (   False
+`ifdef ISA_D
+          || ((f7 == f7_FCVT_D_W)  && (rs2 == 0))
+          || ((f7 == f7_FCVT_D_WU) && (rs2 == 1))
+`ifdef RV64
+          || ((f7 == f7_FCVT_D_L)  && (rs2 == 2))
+          || ((f7 == f7_FCVT_D_LU) && (rs2 == 3))
+`endif
+          || ((f7 == f7_FMV_D_X))
+`endif
+          || ((f7 == f7_FCVT_S_W)  && (rs2 == 0))
+          || ((f7 == f7_FCVT_S_WU) && (rs2 == 1))
+`ifdef RV64
+          || ((f7 == f7_FCVT_S_L)  && (rs2 == 2))
+          || ((f7 == f7_FCVT_S_LU) && (rs2 == 3))
+`endif
+          || ((f7 == f7_FMV_W_X))
+          )
+   );
+endfunction
 `endif
 
 // ================================================================

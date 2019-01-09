@@ -1,4 +1,5 @@
-// Copyright (c) 2016-2018 Bluespec, Inc. All Rights Reserved
+// vim: tw=80:tabstop=8:softtabstop=3:shiftwidth=3:expandtab:
+// Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved
 
 package CPU;
 
@@ -170,12 +171,14 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
 
    CPU_Stage1_IFC  stage1 <- mkCPU_Stage1 (cur_verbosity,
 					   gpr_regfile,
-`ifdef ISA_F
-					   fpr_regfile,
-`endif
-					   csr_regfile,
 					   stage2.out.bypass,
 					   stage3.out.bypass,
+`ifdef ISA_F
+					   fpr_regfile,
+					   stage2.out.fbypass,
+					   stage3.out.fbypass,
+`endif
+					   csr_regfile,
 					   rg_epoch,
 					   rg_cur_priv);
 
@@ -392,13 +395,19 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
       $display ("    ", fshow_mstatus (misa, mstatus));
 
       $display ("    Stage3: ", fshow (stage3.out));
-      $display ("        Bypass to Stage1: ", fshow (stage3.out.bypass));
+      $display ("        Bypass  to Stage1: ", fshow (stage3.out.bypass));
+`ifdef ISA_F
+      $display ("        FBypass to Stage1: ", fshow (stage3.out.fbypass));
+`endif
       $display ("    Stage2: pc 0x%08h instr 0x%08h priv %0d",
 		stage2.out.data_to_stage3.pc,
 		stage2.out.data_to_stage3.instr,
 		stage2.out.data_to_stage3.priv);
       $display ("        ", fshow (stage2.out));
-      $display ("        Bypass to Stage1: ", fshow (stage2.out.bypass));
+      $display ("        Bypass  to Stage1: ", fshow (stage2.out.bypass));
+`ifdef ISA_F
+      $display ("        FBypass to Stage1: ", fshow (stage2.out.fbypass));
+`endif
 
       $display ("    Stage1: pc 0x%08h instr 0x%08h priv %0d",
 		stage1.out.data_to_stage2.pc,
@@ -753,8 +762,16 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
       let funct3   = instr_funct3 (instr);
       let rd       = instr_rd     (instr);
 
+`ifdef ISA_F
+      // With FP, the val is always Bit #(64)
+      WordXL stg2_val1= truncate (stage1.out.data_to_stage2.val1);
+`else
+      WordXL stg2_val1= stage1.out.data_to_stage2.val1;
+`endif
+
+
       let rs1_val  = (  (funct3 == f3_CSRRW)
-		      ? stage1.out.data_to_stage2.val1    // CSRRW
+		      ? stg2_val1                         // CSRRW
 		      : extend (rs1));                    // CSRRWI
 
       Bool read_not_write = False;    // CSRRW always writes the CSR
@@ -831,9 +848,16 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
       let funct3   = instr_funct3 (instr);
       let rd       = instr_rd     (instr);
 
+`ifdef ISA_F
+      // With FP, the val is always Bit #(64)
+      WordXL stg2_val1= truncate (stage1.out.data_to_stage2.val1);
+`else
+      WordXL stg2_val1= stage1.out.data_to_stage2.val1;
+`endif
+
       let rs1_val  = (  ((funct3 == f3_CSRRS) || (funct3 == f3_CSRRC))
-		      ? stage1.out.data_to_stage2.val1    // CSRRS,  CSRRC
-		      : extend (rs1));                    // CSRRSI, CSRRCI
+		      ? stg2_val1                        // CSRRS,  CSRRC
+		      : extend (rs1));                   // CSRRSI, CSRRCI
 
       Bool read_not_write = (rs1_val == 0);    // CSRR_S_or_C only reads, does not write CSR, if rs1_val == 0
       Bool permitted = csr_regfile.access_permitted_2 (rg_cur_priv, csr_addr, read_not_write);
@@ -843,7 +867,7 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
 	 // Debug
 	 fa_emit_instr_trace (minstret, stage1.out.data_to_stage2.pc, instr, rg_cur_priv);
 	 if (cur_verbosity > 1) begin
-	    $display ("    rl_stage1_CSRR_W: Trap on CSR permissions: Rs1 %0d Rs1_val 0x%0h csr 0x%0h Rd %0d",
+	    $display ("    rl_stage1_CSRR_S_or_C: Trap on CSR permissions: Rs1 %0d Rs1_val 0x%0h csr 0x%0h Rd %0d",
 		      rs1, rs1_val, csr_addr, rd);
 	 end
       end
