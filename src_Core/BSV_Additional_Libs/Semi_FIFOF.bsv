@@ -1,4 +1,4 @@
-// Copyright (c) 2017 Bluespec, Inc.  All Rights Reserved
+// Copyright (c) 2017-2019 Bluespec, Inc.  All Rights Reserved
 
 package Semi_FIFOF;
 

@@ -1,6 +1,6 @@
 *~
 README.html
-build
+build_dir
 *.bo
 *.ba
 *.o
@@ -14,3 +14,4 @@ Tests/Logs
 *.trace_mem_load
 AA_*
 symbol_table.txt
+vpi_wrapper_*

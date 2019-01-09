@@ -1,4 +1,4 @@
-// Copyright (c) 2018 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2018-2019 Bluespec, Inc. All Rights Reserved.
 
 package BRVF_Core;
 
@@ -40,8 +40,11 @@ import BRVF_Core_IFC  :: *;
 `ifdef INCLUDE_TANDEM_VERIF
 import TV_Info        :: *;
 import TV_Encode      :: *;
+`endif
 
+// TV_Taps needed when both GDB_CONTROL and TANDEM_VERIF are present
 `ifdef INCLUDE_GDB_CONTROL
+`ifdef INCLUDE_TANDEM_VERIF
 import TV_Taps        :: *;
 `endif
 `endif
@@ -127,7 +130,6 @@ module mkBRVF_Core #(parameter Bit #(64)  pc_reset_value)  (BRVF_Core_IFC);
    // Direct DM-to-CPU connections
 
 `ifdef INCLUDE_GDB_CONTROL
-   // ----------------------------------------------------------------
    // DM to CPU connections for run-control and other misc requests
    mkConnection (debug_module.hart0_client_run_halt, cpu.hart0_server_run_halt);
    mkConnection (debug_module.hart0_get_other_req,   cpu.hart0_put_other_req);
@@ -190,6 +192,7 @@ module mkBRVF_Core #(parameter Bit #(64)  pc_reset_value)  (BRVF_Core_IFC);
       f_trace_data_merged.enq (tmp);
    endrule
 `endif
+   // for ifdef ISA_F_OR_D
 
    // Create a tap for DM's CSR writes, and merge-in the trace data.
    DM_CSR_Tap_IFC  dm_csr_tap <- mkDM_CSR_Tap;
@@ -208,6 +211,7 @@ module mkBRVF_Core #(parameter Bit #(64)  pc_reset_value)  (BRVF_Core_IFC);
    endrule
 
 `else
+   // for ifdef INCLUDE_TANDEM_VERIF
    // ----------------------------------------------------------------
    // DM present, no TV
 
@@ -225,8 +229,10 @@ module mkBRVF_Core #(parameter Bit #(64)  pc_reset_value)  (BRVF_Core_IFC);
    // DM's bus master is directly the bus master
    let dm_master_local = debug_module.master;
 `endif
+   // for ifdef INCLUDE_TANDEM_VERIF
 
-`else    // not INCLUDE_GDB_CONTROL
+`else
+   // for ifdef INCLUDE_GDB_CONTROL
 
 `ifdef INCLUDE_TANDEM_VERIF
    // ----------------------------------------------------------------
@@ -237,6 +243,7 @@ module mkBRVF_Core #(parameter Bit #(64)  pc_reset_value)  (BRVF_Core_IFC);
 `endif
 
 `endif
+   // for ifdef INCLUDE_GDB_CONTROL
 
    // ================================================================
    // INTERFACE

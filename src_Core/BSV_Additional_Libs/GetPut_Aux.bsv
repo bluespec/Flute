@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2017 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2013-2019 Bluespec, Inc. All Rights Reserved.
 
 package GetPut_Aux;
 

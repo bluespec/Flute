@@ -1,4 +1,3 @@
-// vim: tw=80:tabstop=8:softtabstop=3:shiftwidth=3:expandtab:
 // Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved
 
 package CPU_Stage1;

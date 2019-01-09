@@ -1,4 +1,3 @@
-// vim: tw=80:tabstop=8:softtabstop=3:shiftwidth=3:expandtab:
 // Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved
 
 package CPU;
@@ -448,7 +447,7 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
 	 $display (" (RV32)");
       else
 	 $display (" (RV64)");
-      $display ("Copyright (c) 2016-2018 Bluespec, Inc. All Rights Reserved.");
+      $display ("Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved.");
       $display ("================================================================");
 
       gpr_regfile.server_reset.request.put (?);

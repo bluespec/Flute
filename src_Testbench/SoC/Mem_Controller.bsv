@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2018 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved
 
 package Mem_Controller;
 
@@ -232,7 +232,7 @@ module mkMem_Controller (Mem_Controller_IFC);
    // Ad hoc ISA-test simulation support: watch <tohost> and stop on non-zero write.
    // The default tohost_addr here is fragile (may change on recompilation of tests).
    // Proper value can be provided with 'set_watch_tohost' method from symbol table
-   Reg #(Bool)      rg_watch_tohost <- mkReg (True);
+   Reg #(Bool)      rg_watch_tohost <- mkReg (False);
    Reg #(Bit #(64)) rg_tohost_addr  <- mkReg ('h_8000_1000);
 
    // ================================================================

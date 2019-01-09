@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2018 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved.
 
 package SoC_Top;
 
@@ -69,9 +69,6 @@ import Axi4LRegFile ::*;
 
 // ================================================================
 // PC reset value
-
-// Original from older RISC-V specs
-// Bit #(64)  pc_reset_value    = 'h0200;
 
 // Entry point for Boot ROM used in Spike/Rocket
 // (boot code jumps later to 'h_8000_0000)
@@ -228,6 +225,22 @@ module mkSoC_Top (SoC_Top_IFC);
    endrule
 
    // ================================================================
+   // RESET BEHAVIOR WITHOUT DEBUG MODULE
+
+   rule rl_reset_start_2 (rg_state == SOC_START);
+      brvf_core.cpu_reset_server.request.put (?);
+      mem0_controller.server_reset.request.put (?);
+      uart0.server_reset.request.put (?);
+      timer0.server_reset.request.put (?);
+
+      fabric.reset;
+
+      rg_state <= SOC_RESETTING;
+
+      $display ("%0d: SoC_Top. Reset start ...", cur_cycle);
+   endrule
+
+   // ================================================================
    // BEHAVIOR WITH DEBUG MODULE
 
 `ifdef INCLUDE_GDB_CONTROL
@@ -280,7 +293,7 @@ module mkSoC_Top (SoC_Top_IFC);
    endrule
 
    // ----------------------------------------------------------------
-   // NDM reset request (reset all except Debug Module) from debug module
+   // NDM reset (all except Debug Module) request from debug module
 
    rule rl_reset_start (rg_state != SOC_RESETTING);
       let req <- brvf_core.dm_ndm_reset_req_get.get;
@@ -294,9 +307,8 @@ module mkSoC_Top (SoC_Top_IFC);
 
       rg_state <= SOC_RESETTING;
 
-      if (verbosity != 0) begin
-         $display ("%0d: SoC_Top: ndm resetting (all except debug module) ...", cur_cycle);
-      end
+      $display ("%0d: SoC_Top.rl_reset_start (Debug Module NDM reset, all except debug module) ...",
+		cur_cycle);
    endrule
 `endif
 
@@ -319,31 +331,26 @@ module mkSoC_Top (SoC_Top_IFC);
 
       rg_state <= SOC_IDLE;
 
+`ifdef INCLUDE_GDB_CONTROL
+      $display ("%0d: SoC_Top: NDM reset complete (all except debug module)", cur_cycle);
+`else
+      $display ("%0d: SoC_Top. Reset complete ...", cur_cycle);
+`endif
+
       if (verbosity != 0) begin
-         $display ("%0d: SoC_Top: ndm resetting (all except debug module) ... complete", cur_cycle);
 	 $display ("  Address map:");
-	 $display ("  Boot ROM:        0x%0h .. 0x%0h", soc_map.m_boot_rom_addr_base,        soc_map.m_boot_rom_addr_lim);
-	 $display ("  Mem0 Controller: 0x%0h .. 0x%0h", soc_map.m_mem0_controller_addr_base, soc_map.m_mem0_controller_addr_lim);
-	 $display ("  Timer0:          0x%0h .. 0x%0h", soc_map.m_timer0_addr_base,          soc_map.m_timer0_addr_lim);
-	 $display ("  UART0:           0x%0h .. 0x%0h", soc_map.m_uart0_addr_base,           soc_map.m_uart0_addr_lim);
-      end
-   endrule
-
-   // ================================================================
-   // BEHAVIOR WITHOUT DEBUG MODULE
-
-   rule rl_reset_start_2 (rg_state == SOC_START);
-      brvf_core.cpu_reset_server.request.put (?);
-      mem0_controller.server_reset.request.put (?);
-      uart0.server_reset.request.put (?);
-      timer0.server_reset.request.put (?);
-
-      fabric.reset;
-
-      rg_state <= SOC_RESETTING;
-
-      if (verbosity != 0) begin
-         $display ("%0d: SoC_Top.rl_reset_start: ...", cur_cycle);
+	 $display ("  Boot ROM:        0x%0h .. 0x%0h",
+		   soc_map.m_boot_rom_addr_base,
+		   soc_map.m_boot_rom_addr_lim);
+	 $display ("  Mem0 Controller: 0x%0h .. 0x%0h",
+		   soc_map.m_mem0_controller_addr_base,
+		   soc_map.m_mem0_controller_addr_lim);
+	 $display ("  Timer0:          0x%0h .. 0x%0h",
+		   soc_map.m_timer0_addr_base,
+		   soc_map.m_timer0_addr_lim);
+	 $display ("  UART0:           0x%0h .. 0x%0h",
+		   soc_map.m_uart0_addr_base,
+		   soc_map.m_uart0_addr_lim);
       end
    endrule
 

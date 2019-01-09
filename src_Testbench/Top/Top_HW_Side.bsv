@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2018 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2013-2019 Bluespec, Inc. All Rights Reserved.
 
 package Top_HW_Side;
 
@@ -43,6 +43,10 @@ import Mem_Model      :: *;
 import C_Imports      :: *;
 `endif
 
+`ifdef INCLUDE_GDB_CONTROL
+import External_Control :: *;
+`endif
+
 // ================================================================
 // Top-level module.
 // Instantiates the SoC.
@@ -57,7 +61,7 @@ module mkTop_HW_Side (Empty) ;
    // Connect SoC to raw memory
    let memCnx <- mkConnection (soc_top.to_raw_mem, mem_model.mem_server);
 
-   // ----------------------------------------------------------------
+   // ================================================================
    // BEHAVIOR
 
    Reg #(Bool) rg_banner_printed <- mkReg (False);
@@ -66,7 +70,7 @@ module mkTop_HW_Side (Empty) ;
    rule rl_step0 (! rg_banner_printed);
       $display ("================================================================");
       $display ("Bluespec RISC-V standalone system simulation v1.2");
-      $display ("Copyright (c) 2017-2018 Bluespec, Inc. All Rights Reserved.");
+      $display ("Copyright (c) 2017-2019 Bluespec, Inc. All Rights Reserved.");
       $display ("================================================================");
 
       rg_banner_printed <= True;
@@ -78,9 +82,10 @@ module mkTop_HW_Side (Empty) ;
       Bit #(64) logdelay  = 0;    // # of instructions after which to set verbosity
       soc_top.set_verbosity  (verbosity, logdelay);
 
-      // Note: see 'CAVEAT FOR IVERILOG USERS' above
-`ifndef IVERILOG
+      // ----------------
       // Load tohost addr from symbol-table file
+`ifndef IVERILOG
+      // Note: see 'CAVEAT FOR IVERILOG USERS' above
       Bool watch_tohost <- $test$plusargs ("tohost");
       Bit #(64) tohost_addr = 0;
       tohost_addr  <- c_get_symbol_val ("tohost");
@@ -89,13 +94,15 @@ module mkTop_HW_Side (Empty) ;
       soc_top.set_watch_tohost (watch_tohost, tohost_addr);
 `endif
 
+      // ----------------
+      // Open file for Tandem Verification trace output
 `ifdef INCLUDE_TANDEM_VERIF
-
-      // Note: see 'CAVEAT FOR IVERILOG USERS' above
 `ifndef IVERILOG
+      // Note: see 'CAVEAT FOR IVERILOG USERS' above
       let success <- c_trace_file_open ('h_AA);
       if (success == 0) begin
 	 $display ("ERROR: Top_HW_Side.rl_step0: error opening trace file.");
+	 $display ("    Aborting.");
 	 $finish (1);
       end
       else
@@ -103,11 +110,27 @@ module mkTop_HW_Side (Empty) ;
 `else
       $display ("Warning: tandem verification output logs not available in IVerilog");
 `endif
-
 `endif
+
+      // ----------------
+      // Open connection to remote debug client
+`ifdef INCLUDE_GDB_CONTROL
+`ifndef IVERILOG
+      // Note: see 'CAVEAT FOR IVERILOG USERS' above
+      let dmi_status <- c_debug_client_connect (dmi_default_tcp_port);
+      if (dmi_status != dmi_status_ok) begin
+	 $display ("ERROR: Top_HW_Side.rl_step0: error opening debug client connection.");
+	 $display ("    Aborting.");
+	 $finish (1);
+      end
+`else
+      $display ("Warning: Debug client connection not available in IVerilog");
+`endif
+`endif
+
    endrule
 
-   // ----------------
+   // ================================================================
    // Tandem verifier: drain and output vectors of bytes
 
 `ifdef INCLUDE_TANDEM_VERIF
@@ -140,7 +163,7 @@ module mkTop_HW_Side (Empty) ;
    endrule
 `endif
 
-   // ----------------
+   // ================================================================
    // UART console I/O
 
    // Relay system console output to terminal
@@ -170,7 +193,62 @@ module mkTop_HW_Side (Empty) ;
 
 `endif
 
-   // ----------------------------------------------------------------
+   // ================================================================
+   // Interaction with remote debug client
+
+`ifdef INCLUDE_GDB_CONTROL
+   rule rl_debug_client_request_recv;
+      Bit #(64) req <- c_debug_client_request_recv ('hAA);
+      Bit #(8)  status = req [63:56];
+      Bit #(32) data   = req [55:24];
+      Bit #(16) addr   = req [23:8];
+      Bit #(8)  op     = req [7:0];
+      if (status == dmi_status_err) begin
+	 $display ("%0d: Top_HW_Side.rl_debug_client_request_recv: receive error; aborting",
+		   cur_cycle);
+	 $finish (1);
+      end
+      else if (status == dmi_status_ok) begin
+	 // $write ("%0d: Top_HW_Side.rl_debug_client_request_recv:", cur_cycle);
+	 if (op == dmi_op_read) begin
+	    // $display (" READ 0x%0h", addr);
+	    let control_req = Control_Req {op: external_control_req_op_read_control_fabric,
+					   arg1: zeroExtend (addr),
+					   arg2: 0};
+	    soc_top.server_external_control.request.put (control_req);
+	 end
+	 else if (op == dmi_op_write) begin
+	    // $display (" WRITE 0x%0h 0x%0h", addr, data);
+	    let control_req = Control_Req {op: external_control_req_op_write_control_fabric,
+					   arg1: zeroExtend (addr),
+					   arg2: zeroExtend (data)};
+	    soc_top.server_external_control.request.put (control_req);
+	 end
+	 else if (op == dmi_op_shutdown) begin
+	    $display ("Top_HW_Side.rl_debug_client_request_recv: SHUTDOWN");
+	    $finish (0);
+	 end
+	 else if (op == dmi_op_start_command) begin    // For debugging only
+	    // $display (" START COMMAND ================================");
+	 end
+	 else
+	    $display (" Top_HW_Side.rl_debug_client_request_recv: UNRECOGNIZED OP %0d; ignoring", op);
+      end
+   endrule
+
+   rule rl_debug_client_response_send;
+      let control_rsp <- soc_top.server_external_control.response.get;
+      // $display ("Top_HW_Side.rl_debug_client_response_send: 0x%0h", control_rsp.result);
+      let status <- c_debug_client_response_send (truncate (control_rsp.result));
+      if (status == dmi_status_err) begin
+	 $display ("%0d: Top_HW_Side.rl_debug_client_response_send: send error; aborting",
+		   cur_cycle);
+	 $finish (1);
+      end
+   endrule
+`endif
+
+   // ================================================================
    // INTERFACE
 
    //  None (this is top-level)

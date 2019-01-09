@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2018 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2013-2019 Bluespec, Inc. All Rights Reserved
 
 package SoC_Map;
 

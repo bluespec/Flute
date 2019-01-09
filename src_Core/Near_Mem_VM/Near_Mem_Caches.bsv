@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2018 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved.
 
 // Near_Mem_IFC is an abstraction of two alternatives: caches or TCM
 // (TCM = Tightly Coupled Memory).  Both are memories that are

@@ -1,4 +1,4 @@
-// Copyright (c) 2018 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2018-2019 Bluespec, Inc. All Rights Reserved.
 
 package BRVF_Core_IFC;
 

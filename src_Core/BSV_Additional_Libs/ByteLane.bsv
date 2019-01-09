@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2018 Bluespec, Inc.  All Rights Reserved
+// Copyright (c) 2017-2019 Bluespec, Inc.  All Rights Reserved
 
 package ByteLane;
 
@@ -43,6 +43,16 @@ function Bit #(TMul #(n,8)) fn_strobe_to_mask (Bit #(n) strobe);
 
    Vector #(n, Bit #(8)) v = genWith (fn_bit_j_to_byte_j);
    return pack (v);
+endfunction
+
+// ================================================================
+// Update an n-byte word taking into account an n-bit strobe
+
+function Bit# (TMul #(n,8)) fn_update_strobed_bytes (Bit# (TMul #(n,8)) old_data,
+						     Bit# (TMul #(n,8)) new_data,
+						     Bit #(n)           strobe);
+   Bit# (TMul #(n,8)) mask = fn_strobe_to_mask (strobe);
+   return ((old_data & (~ mask))  |  (new_data & mask));
 endfunction
 
 // ================================================================
