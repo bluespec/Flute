@@ -1,10 +1,9 @@
-// vim: tw=80:tabstop=8:softtabstop=3:shiftwidth=3:expandtab:
 // Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved
 
 package CPU_Stage2;
 
 // ================================================================
-// This is Stage 2 of the "Flute" CPU.
+// This is Stage 2 of the "Piccolo" CPU.
 // It is the "DM" stage ("Data Memory"), which is the main function.
 
 // However, this stage also contains all other (potentially) long-latency
@@ -237,11 +236,36 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 
 	    WordXL result = truncate (dcache.word64);
 
+            let funct3 = instr_funct3 (rg_stage2.instr);
+
 	    let data_to_stage3 = data_to_stage3_base;
 	    data_to_stage3.rd_valid = (ostatus == OSTATUS_PIPE);
+`ifdef ISA_F
+            // A FPR load
+            if (rg_stage2.rd_in_fpr) begin
+               // A FLW result
+               if (funct3 == f3_FLW)
 `ifdef ISA_D
-	    data_to_stage3.rd_val   = dcache.word64;
+                  // needs nan-boxing when destined for a DP register file
+                  data_to_stage3.rd_val = fv_nanbox (dcache.word64);
 `else
+                  data_to_stage3.rd_val = result;
+`endif
+               // A FLD result
+               else
+                  data_to_stage3.rd_val = dcache.word64;
+            end
+
+            // A GPR load in a FD system
+            else
+`ifdef ISA_D
+               // rd_val is 64-bit to handle FP values
+               data_to_stage3.rd_val   = dcache.word64;
+`else
+               data_to_stage3.rd_val   = result;
+`endif
+`else
+            // A GPR load in a non-FD system
 	    data_to_stage3.rd_val   = result;
 `endif
 
@@ -249,26 +273,27 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 	    let bypass = bypass_base;
 
 `ifdef ISA_F
-            // When FP is enabled the LD result may be meant for a FPR or a GPR.
+            // In a system with FD, the LD result may be meant for FPR or GPR
             // Check before updating the appropriate bypass channel
             let upd_fpr             = rg_stage2.rd_in_fpr;
 	    let fbypass             = fbypass_base;
             data_to_stage3.rd_in_fpr= upd_fpr;
 
+            // Bypassing FPR value. We are not using dcache.word64 or result
+            // here as nanboxing has been taken care of in the data being sent
+            // to stage3
             if (upd_fpr) begin
 	       fbypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
-`ifdef ISA_D
-	       fbypass.rd_val       = dcache.word64;
-`else
-	       fbypass.rd_val       = result;
-`endif
+	       fbypass.rd_val       = data_to_stage3.rd_val;
             end
 
+            // Bypassing GPR value in a FD system
             else if (rg_stage2.rd != 0) begin    // TODO: is this test necessary?
 	       bypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
 	       bypass.rd_val       = result;
 	    end
 `else
+            // Bypassing GPR value in a non-FD system. LD result meant for GPR
 	    if (rg_stage2.rd != 0) begin    // TODO: is this test necessary?
 	       bypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
 	       bypass.rd_val       = result;

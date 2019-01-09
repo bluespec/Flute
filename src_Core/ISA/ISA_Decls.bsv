@@ -1,15 +1,18 @@
-// vim: tw=80:tabstop=8:softtabstop=3:shiftwidth=3:expandtab:
 // Copyright (c) 2013-2019 Bluespec, Inc. All Rights Reserved
 
 // ================================================================
 // ISA defs for UC Berkeley RISC V
 //
 // References (from riscv.org):
-//   "The RISC-V Instruction Set Manual
-//    Volume I: User-Level ISA, Version 2.2, May 7, 2017"
+//     The RISC-V Instruction Set Manual
+//     Volume I: Unprivileged ISA
+//     Document Version 20181106-Base-Ratification
+//     November 6, 2018
 //
-//   "The RISC-V Instruction Set Manual
-//    Volume II: Privileged Architecture, Version 1.10, May 7, 2017"
+//     The RISC-V Instruction Set Manual
+//     Volume II: Privileged Architecture
+//     Document Version 20181203-Base-Ratification
+//     December 3, 2018
 //
 // ================================================================
 
@@ -739,7 +742,7 @@ function Bool fv_is_rd_in_GPR (Bit #(7) funct7, RegName rs2);
    // FCLASS.D also maps to this -- both write to GPR
    let is_FMV_X_D    =    (funct7 == f7_FMV_X_D);
    // FEQ.D, FLE.D, FLT.D map to this
-   let is_FCMP_D     =    (funct7 == f7_FCMP_S);
+   let is_FCMP_D     =    (funct7 == f7_FCMP_D);
 `endif
 
     let is_FCVT_W_S  =    (funct7 == f7_FCVT_W_S)

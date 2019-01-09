@@ -7,13 +7,6 @@ package RISCV_FBox;
 // This package executes the 'F, D' extension instructions
 
 // ================================================================
-// Exports
-
-export
-RISCV_FBox_IFC (..),
-mkRISCV_FBox;
-
-// ================================================================
 // BSV Library imports
 
 import FIFOF         :: *;
@@ -74,6 +67,66 @@ interface RISCV_FBox_IFC;
 endinterface
 
 // ================================================================
+// Some helper function
+// Definitions of Q-NaNs for single and double precision
+Bit #(32) canonicalNaN32 = 32'h7fc00000;
+Bit #(64) canonicalNaN64 = 64'h7ff8000000000000;
+
+// Convert the rounding mode into the format understood by the FPU/PNU
+function RoundMode fv_getRoundMode (Bit #(3) rm);
+   case (rm)
+      3'h0: return (Rnd_Nearest_Even);
+      3'h1: return (Rnd_Zero);
+      3'h2: return (Rnd_Minus_Inf);
+      3'h3: return (Rnd_Plus_Inf);
+      3'h4: return (Rnd_Nearest_Even); // XXX Different in v2.2 of spec
+      default: return (Rnd_Nearest_Even);
+   endcase
+endfunction
+
+// Converts the exception coming from the FPU/PNU to the format for the FCSR
+function Bit #(5) exception_to_fcsr( FloatingPoint::Exception x );
+   let nv  = x.invalid_op ? 1'b1 : 1'b0 ;
+   let dz  = x.divide_0   ? 1'b1 : 1'b0 ;
+   let of  = x.overflow   ? 1'b1 : 1'b0 ;
+   let uf  = x.underflow  ? 1'b1 : 1'b0 ;
+   let nx  = x.inexact    ? 1'b1 : 1'b0 ;
+   return pack ({nv, dz, of, uf, nx});
+endfunction
+
+// Take a single precision value and nanboxes it to be able to write it to a
+// 64-bit FPR register file. This is necessary if single precision operands
+// used with a register file capable of holding double precision values
+function Bit #(64) fv_nanbox (Bit #(64) x);
+   Bit #(64) fill_bits = (64'h1 << 32) - 1;  // [31: 0] all ones
+   Bit #(64) fill_mask = (fill_bits << 32);  // [63:32] all ones
+   return (x | fill_mask);
+endfunction
+
+// Take a 64-bit value and check if it is properly nanboxed if operating in a DP
+// capable environment. If not properly nanboxed, return canonicalNaN32
+function FSingle fv_unbox (Bit #(64) x);
+`ifdef ISA_D
+   if (x [63:32] == 32'hffffffff)
+      return (unpack (x [31:0]));
+   else
+      return (unpack (canonicalNaN32));
+`else  
+   return (unpack (x [31:0]));
+`endif
+endfunction
+
+// Check if FSingle is a +0
+function Bool fv_FSingleIsPositiveZero ( FSingle x );
+   return ( isZero (x) && !(x.sign) );
+endfunction
+
+// Check if FDouble is a +0
+function Bool fv_FDoubleIsPositiveZero ( FDouble x );
+   return ( isZero (x) && !(x.sign) );
+endfunction
+
+// ================================================================
 
 (* synthesize *)
 module mkRISCV_FBox (RISCV_FBox_IFC);
@@ -105,38 +158,6 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
    FPU_IFC                 fpu                  <- mkFPU;
 
    // =============================================================
-   // Some helper function
-   // Convert the rounding mode into the format understood by the FPU/PNU
-   function RoundMode fv_getRoundMode (Bit #(3) rm);
-      case (rm)
-         3'h0: return (Rnd_Nearest_Even);
-         3'h1: return (Rnd_Zero);
-         3'h2: return (Rnd_Minus_Inf);
-         3'h3: return (Rnd_Plus_Inf);
-         3'h4: return (Rnd_Nearest_Even); // XXX Different in v2.2 of spec
-         default: return (Rnd_Nearest_Even);
-      endcase
-   endfunction
-
-   // Converts the exception coming from the FPU/PNU to the format for the FCSR
-   function Bit #(5) exception_to_fcsr( FloatingPoint::Exception x );
-      let nv  = x.invalid_op ? 1'b1 : 1'b0 ;
-      let dz  = x.divide_0   ? 1'b1 : 1'b0 ;
-      let of  = x.overflow   ? 1'b1 : 1'b0 ;
-      let uf  = x.underflow  ? 1'b1 : 1'b0 ;
-      let nx  = x.inexact    ? 1'b1 : 1'b0 ;
-      return pack ({nv, dz, of, uf, nx});
-   endfunction
-
-   // Take a single precision value and nanboxes it to be able to write it to a
-   // 64-bit FPR register file. This is necessary if single precision operands
-   // used with a register file capable of holding double precision values
-   function Bit #(64) fv_nanbox (Bit #(64) x);
-      Bit #(64) fill_bits = (64'h1 << 32) - 1;  // [31: 0] all ones
-      Bit #(64) fill_mask = (fill_bits << 32);  // [63:32] all ones
-      return (x | fill_mask);
-   endfunction
-
    // Drive response to the pipeline
    function Action fa_driveResponse (Bit #(64) res, Bit #(5) flags);
       action
@@ -144,20 +165,6 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
       dw_result   <= tuple2 (res, flags);
       endaction
    endfunction
-
-   // Check if FSingle is a +0
-   function Bool fv_FSingleIsPositiveZero ( FSingle x );
-      return ( isZero (x) && !(x.sign) );
-   endfunction
-
-   // Check if FDouble is a +0
-   function Bool fv_FDoubleIsPositiveZero ( FDouble x );
-      return ( isZero (x) && !(x.sign) );
-   endfunction
-
-   // Definitions of Q-NaNs for single and double precision
-   Bit #(32) canonicalNaN32 = 32'h7fc00000;
-   Bit #(64) canonicalNaN64 = 64'h7ff8000000000000;
 
    // =============================================================
    // Decode sub-opcodes (a direct lift from the spec)
@@ -239,13 +246,17 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
 
    // =============================================================
    // Prepare the operands. The operands come in as raw 64 bits. They need to be
-   // type cast as FSingle of FDouble
+   // type cast as FSingle of FDouble. This is also where the nanbox check needs
+   // to be done. If we are executing in a DP capable environment, all SP 64-bit
+   // rs values should be properly nanboxed. Otherwise, they will be treated as
+   // as canonicalNaN32
    FSingle sV1, sV2, sV3;
    FDouble dV1, dV2, dV3;
 
-   sV1 = unpack (v1[31:0]);
-   sV2 = unpack (v2[31:0]);
-   sV3 = unpack (v3[31:0]);
+   sV1 = fv_unbox (v1);
+   sV2 = fv_unbox (v2);
+   sV3 = fv_unbox (v3);
+
    dV1 = unpack (v1);
    dV2 = unpack (v2);
    dV3 = unpack (v3);
@@ -507,7 +518,10 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
    endrule
 
    rule doFMV_X_W ( validReq && isFMV_X_W );
-      Bit #(64) res = signExtend (pack ( sV1 ));
+      // The FMV treats the data in the FPR and GPR as raw data and does not
+      // interpret it. So for this instruction we use the raw bits coming from
+      // the FPR
+      Bit #(64) res = signExtend ( v1[31:0] );
 
       fa_driveResponse (res, 0);
       resultR     <= tagged Valid (tuple2 (res, 0));
@@ -578,21 +592,21 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
    endrule
 
    rule doFCLASS_S ( validReq && isFCLASS_S );
-      Bit #(64) res = ?;
+      Bit #(64) res = 1;
       if (isNaN(sV1)) begin
-	 res = isQNaN(sV1) ? 9 : 8;
+	 res = isQNaN(sV1) ? (res << 9) : (res << 8);
       end
       else if (isInfinity(sV1)) begin
-	 res = sV1.sign ? 0 : 7;
+	 res = sV1.sign ? res        : (res << 7);
       end
       else if (isZero(sV1)) begin
-	 res = sV1.sign ? 3 : 4;
+	 res = sV1.sign ? (res << 3) : (res << 4);
       end
       else if (isSubNormal(sV1)) begin
-	 res = sV1.sign ? 2 : 5;
+	 res = sV1.sign ? (res << 2) : (res << 5);
       end
       else begin
-	 res = sV1.sign ? 1 : 6;
+	 res = sV1.sign ? (res << 1) : (res << 6);
       end
 
       fa_driveResponse (res, 0);
@@ -657,7 +671,7 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
       let r1 = FDouble {  sign: dV2.sign
                         , exp:  dV1.exp
                         , sfd:  dV1.sfd};
-      Bit #(64) res = extend (pack (r1));
+      Bit #(64) res = pack (r1);
 
       fa_driveResponse (res, 0);
       resultR     <= tagged Valid (tuple2 (res, 0));
@@ -669,7 +683,7 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
                         , exp:   dV1.exp
                         , sfd:   dV1.sfd};
 
-      Bit #(64) res = extend (pack (r1));
+      Bit #(64) res = pack (r1);
       fa_driveResponse (res, 0);
       resultR     <= tagged Valid (tuple2 (res, 0));
       stateR      <= FBOX_RSP;
@@ -679,7 +693,7 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
       let r1 = FDouble {  sign:  (dV1.sign != dV2.sign)
                         , exp:   dV1.exp
                         , sfd:   dV1.sfd};
-      Bit #(64) res = extend (pack (r1));
+      Bit #(64) res = pack (r1);
       fa_driveResponse (res, 0);
       resultR     <= tagged Valid (tuple2 (res, 0));
       stateR      <= FBOX_RSP;
@@ -814,7 +828,7 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
 
       // flag generation
       FloatingPoint::Exception e = defaultValue;
-      if ( isSNaN (sV1) || isSNaN (sV2) ) e.invalid_op = True;
+      if ( isSNaN (dV1) || isSNaN (dV2) ) e.invalid_op = True;
       let fcsr = exception_to_fcsr(e);
 
       fa_driveResponse (res, fcsr);
@@ -847,11 +861,11 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
       else if ( rs2IsNeg0 && rs1IsPos0 )
          res = pack ( dV1 );
       else
-         res = (cmpres_s == LT) ? pack (dV2) : pack (dV1);
+         res = (cmpres_d == LT) ? pack (dV2) : pack (dV1);
 
       // flag generation
       FloatingPoint::Exception e = defaultValue;
-      if ( isSNaN (sV1) || isSNaN (sV2) ) e.invalid_op = True;
+      if ( isSNaN (dV1) || isSNaN (dV2) ) e.invalid_op = True;
       let fcsr = exception_to_fcsr(e);
 
       fa_driveResponse (res, fcsr);
@@ -937,21 +951,21 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
    endrule
 
    rule doFCLASS_D ( validReq && isFCLASS_D );
-      Bit #(64) res = ?;
+      Bit #(64) res = 1;
       if (isNaN(dV1)) begin
-	 res = isQNaN(dV1) ? 9 : 8;
+	 res = isQNaN(dV1) ? (res << 9) : (res << 8);
       end
       else if (isInfinity(dV1)) begin
-	 res = dV1.sign ? 0 : 7;
+	 res = dV1.sign ? res        : (res << 7);
       end
       else if (isZero(dV1)) begin
-	 res = dV1.sign ? 3 : 4;
+	 res = dV1.sign ? (res << 3) : (res << 4);
       end
       else if (isSubNormal(dV1)) begin
-	 res = dV1.sign ? 2 : 5;
+	 res = dV1.sign ? (res << 2) : (res << 5);
       end
       else begin
-	 res = dV1.sign ? 1 : 6;
+	 res = dV1.sign ? (res << 1) : (res << 6);
       end
 
       fa_driveResponse (res, 0);
