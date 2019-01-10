@@ -4,7 +4,7 @@ package CPU;
 
 // ================================================================
 // This is the "Flute_V3" CPU, implementing the RISC-V ISA.
-// - RV32/64, AIMSU, 5-stage in order pipeline with branch prediction.
+// - RV32/64, ACDFIMSU, 5-stage in order pipeline with branch prediction.
 // - Optional Debug Module connection
 // - Optional Tandem Verification connection.
 
@@ -51,6 +51,11 @@ import FPR_RegFile :: *;
 import CSR_RegFile :: *;
 import CPU_Globals :: *;
 import CPU_IFC     :: *;
+
+`ifdef ISA_C
+// 'C' extension (16b compressed instructions)
+import CPU_Fetch_C      :: *;
+`endif
 
 import CPU_StageF :: *;    // Fetch
 import CPU_StageD :: *;    // Decode
@@ -138,6 +143,13 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
    // Near mem (caches or TCM, for example)
    Near_Mem_IFC  near_mem <- mkNear_Mem;
 
+   // Take imem as is from near_mem, or use wrapper for 'C' extension
+`ifdef ISA_C
+   IMem_IFC imem <- mkCPU_Fetch_C (near_mem.imem);
+`else
+   IMem_IFC imem = near_mem.imem;
+`endif
+
    // ----------------
    // For debugging
 
@@ -181,9 +193,9 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
 					   rg_epoch,
 					   rg_cur_priv);
 
-   CPU_StageD_IFC  stageD <- mkCPU_StageD (cur_verbosity);
+   CPU_StageD_IFC  stageD <- mkCPU_StageD (cur_verbosity, misa);
 
-   CPU_StageF_IFC  stageF <- mkCPU_StageF (cur_verbosity, near_mem.imem);
+   CPU_StageF_IFC  stageF <- mkCPU_StageF (cur_verbosity, imem);
 
    // ----------------
    // Halt requests (interrupts, debugger stop-request, or dcsr.step step-request).
@@ -564,6 +576,11 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
    // a cycle before restarting the pipe by re-fetching the next
    // instr, since the fetch may need the just-written CSR value.
 
+`ifdef ISA_C
+   // TODO: analyze this carefully; added to resolve a blockage
+   (* descending_urgency = "imem_rl_fetch_next_32b, rl_pipe" *)
+`endif
+
    rule rl_pipe (   (rg_state == CPU_RUNNING)
 		 && (! pipe_is_empty)
 		 && (! pipe_has_nonpipe)
@@ -763,14 +780,14 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
 
 `ifdef ISA_F
       // With FP, the val is always Bit #(64)
-      WordXL stg2_val1= truncate (stage1.out.data_to_stage2.val1);
+      // TODO: is this ifdef necessary? Can't we always use 'truncate'?
+      WordXL stage2_val1= truncate (stage1.out.data_to_stage2.val1);
 `else
-      WordXL stg2_val1= stage1.out.data_to_stage2.val1;
+      WordXL stage2_val1= stage1.out.data_to_stage2.val1;
 `endif
 
-
       let rs1_val  = (  (funct3 == f3_CSRRW)
-		      ? stg2_val1                         // CSRRW
+		      ? stage2_val1                       // CSRRW
 		      : extend (rs1));                    // CSRRWI
 
       Bool read_not_write = False;    // CSRRW always writes the CSR
@@ -849,13 +866,13 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
 
 `ifdef ISA_F
       // With FP, the val is always Bit #(64)
-      WordXL stg2_val1= truncate (stage1.out.data_to_stage2.val1);
+      WordXL stage2_val1= truncate (stage1.out.data_to_stage2.val1);
 `else
-      WordXL stg2_val1= stage1.out.data_to_stage2.val1;
+      WordXL stage2_val1= stage1.out.data_to_stage2.val1;
 `endif
 
       let rs1_val  = (  ((funct3 == f3_CSRRS) || (funct3 == f3_CSRRC))
-		      ? stg2_val1                        // CSRRS,  CSRRC
+		      ? stage2_val1                      // CSRRS,  CSRRC
 		      : extend (rs1));                   // CSRRSI, CSRRCI
 
       Bool read_not_write = (rs1_val == 0);    // CSRR_S_or_C only reads, does not write CSR, if rs1_val == 0
@@ -1089,6 +1106,11 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
 
    // ================================================================
    // Stage1: nonpipe special: SFENCE.VMA
+
+`ifdef ISA_C
+   // TODO: analyze this carefully; added to resolve a blockage
+   (* descending_urgency = "imem_rl_fetch_next_32b, rl_stage1_SFENCE_VMA" *)
+`endif
 
    rule rl_stage1_SFENCE_VMA (   (rg_state== CPU_RUNNING)
 			      && (! halting)

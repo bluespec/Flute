@@ -72,7 +72,7 @@ interface CPU_IFC;
 
 `ifdef ISA_F
    // FPR access
-   interface MemoryServer #(5,  FLEN) hart0_fpr_mem_server;
+   interface MemoryServer #(5,  FLEN)  hart0_fpr_mem_server;
 `endif
 
    // CSR access

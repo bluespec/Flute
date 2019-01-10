@@ -3,7 +3,7 @@
 package CPU_Stage2;
 
 // ================================================================
-// This is Stage 2 of the "Piccolo" CPU.
+// This is Stage 2 of the "Flute" CPU.
 // It is the "DM" stage ("Data Memory"), which is the main function.
 
 // However, this stage also contains all other (potentially) long-latency
@@ -122,28 +122,29 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 
    // ----------------
 
-   let bypass_base = Bypass {bypass_state: BYPASS_RD_NONE
-			   , rd:           rg_stage2.rd
+   let bypass_base = Bypass {bypass_state: BYPASS_RD_NONE,
+			     rd:           rg_stage2.rd,
 `ifdef ISA_D
-			   , rd_val:       truncate (rg_stage2.val1) 
+			     // TODO: is this ifdef necessary? Can't we always truncate?
+			     rd_val:       truncate (rg_stage2.val1)
 `else
-			   , rd_val:       rg_stage2.val1 
+			     rd_val:       rg_stage2.val1
 `endif
-                           };
+			     };
 
 `ifdef ISA_F
-   let fbypass_base = FBypass {bypass_state: BYPASS_RD_NONE
-			   , rd:           rg_stage2.rd
+   let fbypass_base = FBypass {bypass_state: BYPASS_RD_NONE,
+			       rd:           rg_stage2.rd,
 `ifdef ISA_D
-			   , rd_val:       rg_stage2.val1 
+			       rd_val:       rg_stage2.val1
 `else
 `ifdef RV64
-			   , rd_val:       extend (rg_stage2.val1) 
+			       rd_val:       extend (rg_stage2.val1)
 `else
-			   , rd_val:       rg_stage2.val1 
+			       rd_val:       rg_stage2.val1
 `endif
 `endif
-                           };
+			       };
 `endif
 
    let data_to_stage3_base = Data_Stage2_to_Stage3 {priv:      rg_stage2.priv,
@@ -156,8 +157,7 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 `endif
 						    rd_valid:  False,
 						    rd:        rg_stage2.rd,
-						    rd_val:    rg_stage2.val1
-                                                 };
+						    rd_val:    rg_stage2.val1};
 
    let  trap_info_dmem = Trap_Info {epc:      rg_stage2.pc,
 				    exc_code: dcache.exc_code,
@@ -433,7 +433,7 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
          data_to_stage3.fpr_flags= fflags;
 
          // result is meant for a FPR
-         let bypass              = bypass_base;
+	 let bypass              = bypass_base;
          let fbypass             = fbypass_base;
          if (upd_fpr) begin
             fbypass.bypass_state    = ((ostatus==OSTATUS_PIPE) ? BYPASS_RD_RDVAL
@@ -457,7 +457,7 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
          end
 
          // -----
-	 let trace_data          = ?;
+	 let trace_data = ?;
 `ifdef INCLUDE_TANDEM_VERIF
 	 trace_data   = rg_stage2.trace_data;
 `endif
@@ -537,72 +537,71 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 `ifdef SHIFT_SERIAL
 	 // If Shifter box op, initiate it
 	 else if (x.op_stage2 == OP_Stage2_SH)
-	    shifter_box.req (
-                 unpack (funct3 [2])
+	    shifter_box.req (unpack (funct3 [2]),
 `ifdef ISA_D
 `ifdef RV32
-               , truncate (x.val1)
-               , truncate (x.val2));
+			     truncate (x.val1),
+			     truncate (x.val2)
 `else
-               , x.val1
-               , x.val2);
+			     x.val1,
+			     x.val2
 `endif
 `else
-               , x.val1
-               , x.val2);
+			     x.val1,
+			     x.val2
 `endif
+			     );
 `endif
 
 `ifdef ISA_M
 	 // If MBox op, initiate it
 	 else if (x.op_stage2 == OP_Stage2_M) begin
 	    Bool is_OP_not_OP_32 = (x.instr [3] == 1'b0);
-            mbox.req (
-                 is_OP_not_OP_32
-               , funct3
+            mbox.req (is_OP_not_OP_32,
+		      funct3,
 `ifdef ISA_D
 `ifdef RV64
-               , x.val1
-               , x.val2);
+		      x.val1,
+		      x.val2
 `else
-               , truncate (x.val1)
-               , truncate (x.val2));
+		      truncate (x.val1),
+		      truncate (x.val2)
 `endif
 `else
-               , x.val1
-               , x.val2);
+		      x.val1,
+		      x.val2
 `endif
+		      );
 	 end
 `endif
 
 `ifdef ISA_F
 	 // If FBox op, initiate it
-         else if (x.op_stage2 == OP_Stage2_FD) begin
-            // Instr fields required for decode for F/D opcodes
+	 else if (x.op_stage2 == OP_Stage2_FD) begin
+	    // Instr fields required for decode for F/D opcodes
             let opcode = instr_opcode (x.instr);
 	    let funct7 = instr_funct7 (x.instr);
             let rs2    = instr_rs2    (x.instr);
 
-	    fbox.req (
-                 opcode
-               , funct7
-               , x.rounding_mode // rm
-               , rs2
+	    fbox.req (opcode,
+		      funct7,
+		      x.rounding_mode, // rm
+		      rs2,
 `ifdef ISA_D
-               , x.val1
-               , x.val2
-               , x.val3 
+		      x.val1,
+		      x.val2,
+		      x.val3 
 `else
 `ifdef RV32
-               , extend (x.val1)
-               , extend (x.val2)
+		      extend (x.val1),
+		      extend (x.val2),
 `else
-               , x.val1
-               , x.val2
+		      x.val1,
+		      x.val2,
 `endif
-               , extend (x.val3)
+		      extend (x.val3)
 `endif
-            );
+		      );
          end
 `endif
       endaction

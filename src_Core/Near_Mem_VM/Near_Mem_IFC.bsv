@@ -106,10 +106,12 @@ interface IMem_IFC;
 
    // CPU side: IMem response
    (* always_ready *)  method Bool     valid;
+   (* always_ready *)  method Bool     is_i32_not_i16;
    (* always_ready *)  method WordXL   pc;
    (* always_ready *)  method Instr    instr;
    (* always_ready *)  method Bool     exc;
    (* always_ready *)  method Exc_Code exc_code;
+   (* always_ready *)  method WordXL   tval;        // can be different from PC
 endinterface
 
 // ================================================================
