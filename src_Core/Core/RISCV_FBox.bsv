@@ -79,7 +79,7 @@ function RoundMode fv_getRoundMode (Bit #(3) rm);
       3'h1: return (Rnd_Zero);
       3'h2: return (Rnd_Minus_Inf);
       3'h3: return (Rnd_Plus_Inf);
-      3'h4: return (Rnd_Nearest_Even); // XXX Different in v2.2 of spec
+      3'h4: return (Rnd_Nearest_Away_Zero); // XXX Is this RMM?
       default: return (Rnd_Nearest_Even);
    endcase
 endfunction
@@ -397,6 +397,12 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
    rule doFCVT_L_S ( validReq && isFCVT_L_S );
       FSingle f = sV1;
       match {.v, .e} = Tuple2#(Int#(64),FloatingPoint::Exception)'(vFloatToFixed( 6'd0, f, rmd));
+
+      // Handle infinity and NaNs
+      if (   (isNaN (f))
+          || (!(f.sign) && (isInfinity (f)))) 
+         v = (1<<63) - 1;
+
       Bit #(64) res = ( pack (v) );
       let fcsr = exception_to_fcsr(e);
       fa_driveResponse (res, fcsr);
@@ -406,7 +412,28 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
 
    rule doFCVT_LU_S ( validReq && isFCVT_LU_S );
       FSingle f = sV1;
-      match {.v, .e} = Tuple2#(UInt#(64),FloatingPoint::Exception)'(vFloatToFixed( 6'd0, f,rmd ));
+
+      // Handle negative operands separately. Pass the absolute value to the
+      // converter
+      FSingle absf = f; absf.sign = False;
+      match {.v, .e} = Tuple2#(UInt#(64),FloatingPoint::Exception)'(vFloatToFixed( 6'd0, absf,rmd ));
+
+      // Extra work if the operand is negative. The original convert function
+      // prioritizes the sign of the operand before inexact checks
+      if (f.sign) begin
+         // Result is zero
+         v = 0;
+         // No exceptions were signalled, signal invalid exception, otherwise
+         // let original exception remain
+         if (pack (e) == 0)
+            e.invalid_op = True;
+      end
+
+      // Handle infinity and NaNs
+      if (   (isNaN (f))
+          || (!(f.sign) && (isInfinity (f)))) 
+         v = 64'hffffffffffffffff;
+
       Bit #(64) res = ( pack (v) );
       let fcsr = exception_to_fcsr(e);
       fa_driveResponse (res, fcsr);
@@ -418,6 +445,12 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
    rule doFCVT_W_S ( validReq && isFCVT_W_S );
       FSingle f = sV1;
       match {.v, .e} = Tuple2#(Int#(32),FloatingPoint::Exception)'(vFloatToFixed( 6'd0, f, rmd ));
+
+      // Handle infinity and NaNs
+      if (   (isNaN (f))
+          || (!(f.sign) && (isInfinity (f)))) 
+         v = (1<<31) - 1;
+
       Bit #(64) res = signExtend (pack (v));
       let fcsr = exception_to_fcsr(e);
       fa_driveResponse (res, fcsr);
@@ -427,8 +460,31 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
 
    rule doFCVT_WU_S ( validReq && isFCVT_WU_S );
       FSingle f = sV1;
-      match {.v, .e} = Tuple2#(UInt#(32),FloatingPoint::Exception)'(vFloatToFixed( 6'd0, f, rmd ));
-      Bit #(64) res = zeroExtend(pack (v));
+
+      // Handle negative operands separately. Pass the absolute value to the
+      // converter
+      FSingle absf = f; absf.sign = False;
+      match {.v, .e} = Tuple2#(UInt#(32),FloatingPoint::Exception)'(vFloatToFixed( 6'd0, absf, rmd ));
+
+      // Extra work if the operand is negative. The original convert function
+      // prioritizes the sign of the operand before inexact checks
+      if (f.sign) begin
+         // Result is zero
+         v = 0;
+         // No exceptions were signalled, signal invalid exception, otherwise
+         // let original exception remain
+         if (pack (e) == 0)
+            e.invalid_op = True;
+      end
+
+      // Handle infinity and NaNs
+      if (   (isNaN (f))
+          || (!(f.sign) && (isInfinity (f)))) 
+         v = 32'hffffffff;
+
+      // This is meant for the GPR. If the GPR is 64-bit, the 32-bit result is
+      // stored, sign-extended as per the v2.2 of the spec
+      Bit #(64) res = signExtend(pack (v));
       let fcsr = exception_to_fcsr(e);
       fa_driveResponse (res, fcsr);
       resultR     <= tagged Valid (tuple2 (res, fcsr));
@@ -722,6 +778,12 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
    rule doFCVT_W_D ( validReq && isFCVT_W_D );
       FDouble f = dV1;
       match {.v, .e} = Tuple2#(Int#(32),FloatingPoint::Exception)'(vFloatToFixed( 6'd0, f, rmd ));
+
+      // Handle infinity and NaNs
+      if (   (isNaN (f))
+          || (!(f.sign) && (isInfinity (f)))) 
+         v = (1<<31) - 1;
+
       Bit #(64) res = signExtend(pack (v));
       let fcsr = exception_to_fcsr(e);
       fa_driveResponse (res, fcsr);
@@ -731,8 +793,31 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
 
    rule doFCVT_WU_D ( validReq && isFCVT_WU_D );
       FDouble f = dV1;
-      match {.v, .e} = Tuple2#(UInt#(32),FloatingPoint::Exception)'(vFloatToFixed( 6'd0, f, rmd ));
-      Bit #(64) res = zeroExtend(pack(v));
+
+      // Handle negative operands separately. Pass the absolute value to the
+      // converter
+      FDouble absf = f; absf.sign = False;
+      match {.v, .e} = Tuple2#(UInt#(32),FloatingPoint::Exception)'(vFloatToFixed( 6'd0, absf, rmd ));
+
+      // Extra work if the operand is negative. The original convert function
+      // prioritizes the sign of the operand before inexact checks
+      if (f.sign) begin
+         // Result is zero
+         v = 0;
+         // No exceptions were signalled, signal invalid exception, otherwise
+         // let original exception remain
+         if (pack (e) == 0)
+            e.invalid_op = True;
+      end
+
+      // Handle infinity and NaNs
+      if (   (isNaN (f))
+          || (!(f.sign) && (isInfinity (f)))) 
+         v = 32'hffffffff;
+
+      // This is meant for the GPR. If the GPR is 64-bit, the 32-bit result is
+      // stored, sign-extended as per the v2.2 of the spec
+      Bit #(64) res = signExtend(pack(v));
       let fcsr = exception_to_fcsr(e);
       fa_driveResponse (res, fcsr);
       resultR     <= tagged Valid (tuple2 (res, fcsr));
@@ -763,6 +848,12 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
    rule doFCVT_L_D ( validReq && isFCVT_L_D );
       FDouble f = dV1;
       match {.v, .e} = Tuple2#(Int#(64),FloatingPoint::Exception)'(vFloatToFixed( 6'd0, f, rmd ));
+
+      // Handle infinity and NaNs
+      if (   (isNaN (f))
+          || (!(f.sign) && (isInfinity (f)))) 
+         v = (1<<63) - 1;
+
       Bit #(64) res = pack (v);
       let fcsr = exception_to_fcsr(e);
       fa_driveResponse (res, fcsr);
@@ -772,7 +863,28 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
 
    rule doFCVT_LU_D ( validReq && isFCVT_LU_D );
       FDouble f = dV1;
-      match {.v, .e} = Tuple2#(UInt#(64),FloatingPoint::Exception)'(vFloatToFixed( 6'd0, f, rmd ));
+
+      // Handle negative operands separately. Pass the absolute value to the
+      // converter
+      FDouble absf = f; absf.sign = False;
+      match {.v, .e} = Tuple2#(UInt#(64),FloatingPoint::Exception)'(vFloatToFixed( 6'd0, absf,rmd ));
+
+      // Extra work if the operand is negative. The original convert function
+      // prioritizes the sign of the operand before inexact checks
+      if (f.sign) begin
+         // Result is zero
+         v = 0;
+         // No exceptions were signalled, signal invalid exception, otherwise
+         // let original exception remain
+         if (pack (e) == 0)
+            e.invalid_op = True;
+      end
+
+      // Handle infinity and NaNs
+      if (   (isNaN (f))
+          || (!(f.sign) && (isInfinity (f)))) 
+         v = 64'hffffffffffffffff;
+
       Bit #(64) res = pack (v);
       let fcsr    = exception_to_fcsr(e);
       fa_driveResponse (res, fcsr);
