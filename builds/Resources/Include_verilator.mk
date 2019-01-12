@@ -60,7 +60,7 @@ simulator:
 		$(REPO)/src_Testbench/Top/C_Imported_Functions.c
 	@echo "INFO: Linking verilated files"
 	cd obj_dir; \
-	   ln -s -f $(VERILATOR_RESOURCES)/sim_main.cpp; \
+	   ln -s -f  ../$(VERILATOR_RESOURCES)/sim_main.cpp  sim_main.cpp; \
 	   make -j -f V$(TOPMODULE)_edited.mk  $(VTOP); \
 	   cp -p  $(VTOP)  ../$(SIM_EXE_FILE)
 	@echo "INFO: Created verilator executable:    $(SIM_EXE_FILE)"
