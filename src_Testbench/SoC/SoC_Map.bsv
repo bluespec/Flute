@@ -45,7 +45,6 @@ export  boot_rom_slave_num;
 export  tcm_back_door_slave_num;
 export  mem0_controller_slave_num;
 export  uart0_slave_num;
-export  timer0_slave_num;
 
 `ifdef INCLUDE_ACCEL0
 export  accel0_master_num;
@@ -92,9 +91,9 @@ Integer bytes_per_mem0 = kB_per_mem0 * 'h400;
 Integer bytes_per_uart0 = 'h80;
 
 // ----------------
-// TIMER0
+// NEAR_MEM_IO
 
-Integer bytes_per_timer0 = 'hc000;
+Integer bytes_per_near_mem_io = 'hc000;
 
 // ----------------
 // ACCEL0
@@ -127,9 +126,9 @@ interface SoC_Map_IFC;
    (* always_ready *)   method  Fabric_Addr  m_uart0_addr_base;
    (* always_ready *)   method  Fabric_Addr  m_uart0_addr_lim;
 
-   (* always_ready *)   method  Fabric_Addr  m_timer0_addr_size;
-   (* always_ready *)   method  Fabric_Addr  m_timer0_addr_base;
-   (* always_ready *)   method  Fabric_Addr  m_timer0_addr_lim;
+   (* always_ready *)   method  Fabric_Addr  m_near_mem_io_addr_size;
+   (* always_ready *)   method  Fabric_Addr  m_near_mem_io_addr_base;
+   (* always_ready *)   method  Fabric_Addr  m_near_mem_io_addr_lim;
 
 `ifdef INCLUDE_ACCEL0
    (* always_ready *)   method  Fabric_Addr  m_accel0_addr_size;
@@ -145,6 +144,9 @@ interface SoC_Map_IFC;
 
    (* always_ready *)
    method  Bool  m_is_IO_addr (Fabric_Addr addr);
+
+   (* always_ready *)
+   method  Bool  m_is_near_mem_IO_addr (Fabric_Addr addr);
 endinterface
 
 // ----------------
@@ -197,14 +199,14 @@ module mkSoC_Map (SoC_Map_IFC);
    endfunction
 
    // ----------------------------------------------------------------
-   // Timer 0
+   // Near_Mem_IO
 
-   Fabric_Addr timer0_addr_size = fromInteger (bytes_per_timer0);
-   Fabric_Addr timer0_addr_base = 'h_0200_0000;
-   Fabric_Addr timer0_addr_lim  = timer0_addr_base + timer0_addr_size;
+   Fabric_Addr near_mem_io_addr_size = fromInteger (bytes_per_near_mem_io);
+   Fabric_Addr near_mem_io_addr_base = 'h_0200_0000;
+   Fabric_Addr near_mem_io_addr_lim  = near_mem_io_addr_base + near_mem_io_addr_size;
 
-   function Bool is_timer0_addr (Fabric_Addr addr);
-      return ((timer0_addr_base <= addr) && (addr < timer0_addr_lim));
+   function Bool is_near_mem_io_addr (Fabric_Addr addr);
+      return ((near_mem_io_addr_base <= addr) && (addr < near_mem_io_addr_lim));
    endfunction
 
    // ----------------------------------------------------------------
@@ -237,7 +239,7 @@ module mkSoC_Map (SoC_Map_IFC);
 
    function Bool fn_is_IO_addr (Fabric_Addr addr);
       return (   is_uart0_addr  (addr)
-	      || is_timer0_addr (addr)
+	      || is_near_mem_io_addr (addr)
 `ifdef INCLUDE_ACCEL0
 	      || is_accel0_addr (addr)
 `endif
@@ -266,9 +268,9 @@ module mkSoC_Map (SoC_Map_IFC);
    method  Fabric_Addr  m_uart0_addr_base = uart0_addr_base;
    method  Fabric_Addr  m_uart0_addr_lim  = uart0_addr_lim;
 
-   method  Fabric_Addr  m_timer0_addr_size = timer0_addr_size;
-   method  Fabric_Addr  m_timer0_addr_base = timer0_addr_base;
-   method  Fabric_Addr  m_timer0_addr_lim  = timer0_addr_lim;
+   method  Fabric_Addr  m_near_mem_io_addr_size = near_mem_io_addr_size;
+   method  Fabric_Addr  m_near_mem_io_addr_base = near_mem_io_addr_base;
+   method  Fabric_Addr  m_near_mem_io_addr_lim  = near_mem_io_addr_lim;
 
 `ifdef INCLUDE_ACCEL0
    method  Fabric_Addr  m_accel0_addr_size = accel0_addr_size;
@@ -283,6 +285,8 @@ module mkSoC_Map (SoC_Map_IFC);
 `endif
 
    method  Bool  m_is_IO_addr (Fabric_Addr addr) = fn_is_IO_addr (addr);
+
+   method  Bool  m_is_near_mem_IO_addr (Fabric_Addr addr) = is_near_mem_io_addr (addr);
 endmodule
 
 // ================================================================
@@ -313,15 +317,15 @@ Integer accel0_master_num       = 3;
 
 `ifdef HTIF_MEMORY
 `ifdef INCLUDE_ACCEL0
-typedef 7 Num_Slaves;
-`else
-typedef 6 Num_Slaves;
-`endif
-`else
-`ifdef INCLUDE_ACCEL0
 typedef 6 Num_Slaves;
 `else
 typedef 5 Num_Slaves;
+`endif
+`else
+`ifdef INCLUDE_ACCEL0
+typedef 5 Num_Slaves;
+`else
+typedef 4 Num_Slaves;
 `endif
 `endif
 
@@ -329,7 +333,6 @@ Integer tcm_back_door_slave_num   = 0;
 Integer boot_rom_slave_num        = 1;
 Integer mem0_controller_slave_num = 2;
 Integer uart0_slave_num           = 3;
-Integer timer0_slave_num          = 4;
 
 `ifdef INCLUDE_ACCEL0
 Integer accel0_slave_num          = 5;

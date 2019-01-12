@@ -728,10 +728,10 @@ function ALU_Outputs fv_ST (ALU_Inputs inputs);
 `endif
 `else
 `ifdef RV32
-   alu_outputs.val2      = (opcode == op_FSTORE)   ? inputs.frs2_val
+   alu_outputs.val2      = (opcode == op_STORE_FP) ? inputs.frs2_val
                                                    : inputs.rs2_val;
 `else
-   alu_outputs.val2      = (opcode == op_FSTORE)   ? extend (inputs.frs2_val)
+   alu_outputs.val2      = (opcode == op_STORE_FP) ? extend (inputs.frs2_val)
                                                    : inputs.rs2_val;
 `endif
 `endif

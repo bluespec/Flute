@@ -117,7 +117,9 @@ interface CSR_RegFile_IFC;
    method MIP read_csr_mip;
 
    // Interrupts
+   (* always_ready, always_enabled *)
    method Action external_interrupt_req (Bool set_not_clear);
+
    method Action timer_interrupt_req    (Bool set_not_clear);
    method Action software_interrupt_req (Bool set_not_clear);
 

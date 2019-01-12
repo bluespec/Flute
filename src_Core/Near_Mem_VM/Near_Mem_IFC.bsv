@@ -75,6 +75,16 @@ interface Near_Mem_IFC;
    method Action sfence_vma;
 
    // ----------------
+   // Interrupts from nearby memory-mapped IO (timer, SIP, ...)
+
+   // Timer interrupt
+   // True/False = set/clear interrupt-pending in CPU's MTIP
+   interface Get #(Bool)  get_timer_interrupt_req;
+
+   // Software interrupt
+   interface Get #(Bool)  get_sw_interrupt_req;
+
+   // ----------------
    // Back-door slave interface from fabric into Near_Mem
    interface AXI4_Lite_Slave_IFC #(Wd_Addr, Wd_Data, Wd_User) near_mem_slave;
 endinterface

@@ -39,6 +39,12 @@ uint8_t c_trygetchar (uint8_t  dummy);
 extern
 uint32_t c_putchar (uint8_t ch);
 
+// ****************************************************************
+// ****************************************************************
+// ****************************************************************
+
+// Functions for reading in various parameters
+
 // ================================================================
 // c_get_symbol_val ()
 // Returns the value of a symbol (a memory address) from a symbol-table file.
@@ -94,6 +100,10 @@ uint32_t c_trace_file_close (uint8_t dummy);
 // ****************************************************************
 // ****************************************************************
 
+// Functions for communication with remote debug client.
+
+// ================================================================
+
 #define  DMI_OP_READ           1
 #define  DMI_OP_WRITE          2
 #define  DMI_OP_SHUTDOWN       3
@@ -103,33 +113,17 @@ uint32_t c_trace_file_close (uint8_t dummy);
 #define  DMI_STATUS_OK       1
 #define  DMI_STATUS_UNAVAIL  2
 
-// ================================================================
-// Open a TCP socket as a server listening on the specified port.
-// Return fail/ok.
+extern
+uint8_t  c_debug_client_connect (const uint16_t tcp_port);
 
 extern
-uint8_t  c_tcp_server_open (const uint16_t tcp_port);
-
-// ================================================================
-// Close the specified server socket.
-// Return fail/ok.
+uint8_t c_debug_client_disconnect (uint8_t dummy);
 
 extern
-uint8_t  c_tcp_server_close (uint8_t dummy);
-
-// ================================================================
-// Send 4-byte response 'data' to remote client.
-// Returns fail/ok status
+uint64_t c_debug_client_request_recv (uint8_t dummy);
 
 extern
-uint8_t c_tx_data (const uint32_t data);
-
-// ================================================================
-// Receive 7-byte request from remote client
-// Result is:    { status, data_b3, data_b2, data_b1, data_b0, addr_b1, addr_b0, op }
-
-extern
-uint64_t c_rx_data (uint8_t dummy);
+uint8_t c_debug_client_response_send (const uint32_t data);
 
 // ****************************************************************
 // ****************************************************************

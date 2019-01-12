@@ -54,7 +54,7 @@ import CPU_IFC     :: *;
 
 `ifdef ISA_C
 // 'C' extension (16b compressed instructions)
-import CPU_Fetch_C      :: *;
+import CPU_Fetch_C :: *;
 `endif
 
 import CPU_StageF :: *;    // Fetch
@@ -125,7 +125,10 @@ endfunction
 // ================================================================
 
 (* synthesize *)
-module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
+module mkCPU #(parameter Bit #(64)  pc_reset_value,
+	       parameter Bit #(64)  near_mem_io_addr_base,
+	       parameter Bit #(64)  near_mem_io_addr_lim)
+             (CPU_IFC);
 
    // ----------------
    // General purpose registers and CSRs
@@ -141,7 +144,7 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
    let minstret = csr_regfile.read_csr_minstret;
 
    // Near mem (caches or TCM, for example)
-   Near_Mem_IFC  near_mem <- mkNear_Mem;
+   Near_Mem_IFC  near_mem <- mkNear_Mem (near_mem_io_addr_base, near_mem_io_addr_lim);
 
    // Take imem as is from near_mem, or use wrapper for 'C' extension
 `ifdef ISA_C
@@ -167,6 +170,9 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
    Reg #(CPU_State)  rg_state    <- mkReg (CPU_RESET1);
    Reg #(Priv_Mode)  rg_cur_priv <- mkRegU;
    Reg #(Epoch)      rg_epoch    <- mkRegU;
+
+   // Save next_pc across split-phase FENCE.I and other split-phase ops
+   Reg #(WordXL) rg_next_pc <- mkRegU;
 
    // ----------------
    // Pipeline stages
@@ -336,21 +342,21 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
 `ifdef INCLUDE_GDB_CONTROL
 	 // Debugger stop-request
 	 if ((! do_halt) && rg_stop_req && (cur_verbosity != 0))
-	    $display ("    CPU.fa_start_ifetch: debugger stop-request: PC = 0x%08h", next_pc);
+	    $display ("    CPU.fa_start_ifetch: halting due to stop_req: PC = 0x%08h", next_pc);
 
 	 do_halt = (do_halt || rg_stop_req);
 
 	 // dcsr.step step-request
 	 if ((! do_halt) && rg_step_req && (cur_verbosity != 0))
-	    $display ("    CPU.fa_start_ifetch: dcsr.step-request");
-
+	    $display (" CPU.fa_start_ifetch: halting due to step req: PC = 0x%08h",
+		      next_pc);
 	 do_halt = (do_halt || rg_step_req);
 
-	 // If single-step mode, set step-request to cause a stop at next fetch
-	 if (csr_regfile.read_dcsr_step) begin
+	 // If not halting now, and dcsr.step=1, set rg_step_req to cause a stop at next fetch
+	 if ((! do_halt) && (csr_regfile.read_dcsr_step)) begin
 	    rg_step_req <= True;
 	    if (cur_verbosity != 0)
-	       $display ("    CPU.fa_start_ifetch: step request");
+	       $display ("    CPU.fa_start_ifetch: dcsr.step=1; will stop at next fetch");
 	 end
 `endif
 
@@ -389,7 +395,7 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
 	 rg_start_CPI_instrs <= csr_regfile.read_csr_minstret;
 
 	 if (cur_verbosity != 0)
-	    $display ("    restart with PC = 0x%0h", resume_pc);
+	    $display ("    fa_restart: RUNNING with PC = 0x%0h", resume_pc);
       endaction
    endfunction
 
@@ -515,7 +521,7 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
       rg_state <= CPU_DEBUG_MODE;
 
       if (cur_verbosity != 0)
-	 $display ("    entering DEBUG_MODE");
+	 $display ("    CPU entering DEBUG_MODE");
 `else
       WordXL dpc = truncate (pc_reset_value);
       fa_restart (dpc);
@@ -929,7 +935,7 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
 	 // Debug
 	 fa_emit_instr_trace (minstret, stage1.out.data_to_stage2.pc, instr, rg_cur_priv);
 	 if (cur_verbosity > 1) begin
-	    $display ("    S1: write CSRRW/CSRRWI Rs1 %0d Rs1_val 0x%0h csr 0x%0h csr_val 0x%0h Rd %0d",
+	    $display ("    S1: write CSRR_S_or_C: Rs1 %0d Rs1_val 0x%0h csr 0x%0h csr_val 0x%0h Rd %0d",
 		      rs1, rs1_val, csr_addr, csr_val, rd);
 	 end
       end
@@ -959,7 +965,7 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
    // ================================================================
    // Stage1: nonpipe special: MRET/SRET/URET
 
-   rule rl_stage1_xRET (   (rg_state== CPU_RUNNING)
+   rule rl_stage1_xRET (   (rg_state == CPU_RUNNING)
 			&& (! halting)
 			&& (stage3.out.ostatus == OSTATUS_EMPTY)
 			&& (stage2.out.ostatus == OSTATUS_EMPTY)
@@ -1014,8 +1020,10 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
 			   && (stageF.out.ostatus != OSTATUS_BUSY));
       if (cur_verbosity > 1) $display ("%0d:  CPU.rl_stage1_FENCE_I", mcycle);
 
-      rg_state <= CPU_FENCE_I;
+      // Save stage1.out.next_pc since it will be destroyed by FENCE.I op
+      rg_next_pc <= stage1.out.next_pc;
       near_mem.server_fence_i.request.put (?);
+      rg_state <= CPU_FENCE_I;
 
       // Accounting
       csr_regfile.csr_minstret_incr;
@@ -1032,6 +1040,9 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
 	 $display ("%0d: CPU.rl_stage1_FENCE_I", mcycle);
    endrule
 
+   // ----------------
+   // Finish FENCE.I
+
    rule rl_finish_FENCE_I (rg_state == CPU_FENCE_I);
       if (cur_verbosity > 1) $display ("%0d:  CPU.rl_finish_FENCE_I", mcycle);
 
@@ -1042,7 +1053,7 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
       rg_state <= CPU_RUNNING;
       let new_epoch <- fav_update_epoch;
       let m_old_pc   = tagged Invalid;
-      fa_start_ifetch (new_epoch, m_old_pc, stage1.out.next_pc, rg_cur_priv);
+      fa_start_ifetch (new_epoch, m_old_pc, rg_next_pc, rg_cur_priv);
       stageF.set_full (True);
 
       stageD.set_full (False);
@@ -1064,8 +1075,9 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
 			 && (stageF.out.ostatus != OSTATUS_BUSY));
       if (cur_verbosity > 1) $display ("%0d:  CPU.rl_stage1_FENCE", mcycle);
 
-      rg_state <= CPU_FENCE;
+      rg_next_pc <= stage1.out.next_pc;
       near_mem.server_fence.request.put (?);
+      rg_state <= CPU_FENCE;
 
       // Accounting
       csr_regfile.csr_minstret_incr;
@@ -1082,19 +1094,20 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
 	 $display ("%0d: CPU.rl_stage1_FENCE", mcycle);
    endrule
 
+   // ----------------
    // Finish FENCE
 
    rule rl_finish_FENCE (rg_state == CPU_FENCE);
       if (cur_verbosity > 1) $display ("%0d:  CPU.rl_finish_FENCE", mcycle);
 
-      // Await mem system FENCE.I completion
+      // Await mem system FENCE completion
       let dummy <- near_mem.server_fence.response.get;
 
       // Resume pipe
       rg_state <= CPU_RUNNING;
       let new_epoch <- fav_update_epoch;
       let m_old_pc   = tagged Invalid;
-      fa_start_ifetch (new_epoch, m_old_pc, stage1.out.next_pc, rg_cur_priv);
+      fa_start_ifetch (new_epoch, m_old_pc, rg_next_pc, rg_cur_priv);
       stageF.set_full (True);
 
       stageD.set_full (False);
@@ -1121,9 +1134,10 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
 			      && (stageF.out.ostatus != OSTATUS_BUSY));
       if (cur_verbosity > 1) $display ("%0d:  CPU.rl_stage1_SFENCE_VMA", mcycle);
 
-      rg_state <= CPU_SFENCE_VMA;
+      rg_next_pc <= stage1.out.next_pc;
       // Tell Near_Mem to do its SFENCE_VMA
       near_mem.sfence_vma;
+      rg_state <= CPU_SFENCE_VMA;
 
       // Accounting
       csr_regfile.csr_minstret_incr;
@@ -1140,6 +1154,9 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
 	 $display ("%0d: CPU.rl_stage1_SFENCE_VMA", mcycle);
    endrule: rl_stage1_SFENCE_VMA
 
+   // ----------------
+   // Finish SFENCE.VMA
+
    rule rl_finish_SFENCE_VMA (rg_state == CPU_SFENCE_VMA);
       if (cur_verbosity > 1) $display ("%0d:  CPU.rl_finish_SFENCE_VMA", mcycle);
 
@@ -1150,7 +1167,7 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
 
       let new_epoch <- fav_update_epoch;
       let m_old_pc   = tagged Invalid;
-      fa_start_ifetch (new_epoch, m_old_pc, stage1.out.next_pc, rg_cur_priv);
+      fa_start_ifetch (new_epoch, m_old_pc, rg_next_pc, rg_cur_priv);
       stageF.set_full (True);
 
       stageD.set_full (False);
@@ -1172,7 +1189,8 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
 		       && (stageF.out.ostatus != OSTATUS_BUSY));
       if (cur_verbosity > 1) $display ("%0d:  CPU.rl_stage1_WFI", mcycle);
 
-      rg_state <= CPU_WFI_PAUSED;
+      rg_next_pc <= stage1.out.next_pc;
+      rg_state   <= CPU_WFI_PAUSED;
 
       // Accounting
       csr_regfile.csr_minstret_incr;
@@ -1198,15 +1216,14 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
 
       // Debug
       if (cur_verbosity >= 1)
-	 $display ("    WFI resume: minstret:%0d  PC:0x%0h  instr:0x%0h  priv:%0d",
-		   minstret, stage1.out.data_to_stage2.pc, stage1.out.data_to_stage2.instr, rg_cur_priv);
+	 $display ("    WFI resume");
 
       // Resume pipe (it will handle the interrupt, if one is pending)
       rg_state <= CPU_RUNNING;
 
       let new_epoch <- fav_update_epoch;
       let m_old_pc   = tagged Invalid;
-      fa_start_ifetch (new_epoch, m_old_pc, stage1.out.next_pc, rg_cur_priv);
+      fa_start_ifetch (new_epoch, m_old_pc, rg_next_pc, rg_cur_priv);
       stageF.set_full (True);
 
       stageD.set_full (False);
@@ -1337,14 +1354,13 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
    endrule: rl_trap_BREAK_to_Debug_Mode
 
    // Handle the flush responses from the caches when the flush was initiated
-   // on entering CPU_PAUSED state
+   // on entering CPU_GDB_PAUSING state
    rule rl_BREAK_cache_flush_finish (rg_state == CPU_GDB_PAUSING);
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_BREAK_cache_flush_finish", mcycle);
-
       let ack <- near_mem.server_fence_i.response.get;
       rg_state <= CPU_DEBUG_MODE;
 
-      fa_report_CPI;
+      if (cur_verbosity > 1)
+	 $display ("%0d: CPU.rl_BREAK_cache_flush_finish", mcycle);
    endrule
 
    // ----------------
@@ -1352,7 +1368,8 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
 
    rule rl_reset_from_Debug_Mode (   (rg_state == CPU_DEBUG_MODE)
 				  && f_reset_reqs.notEmpty);
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_reset_from_Debug_Mode", mcycle);
+      if (cur_verbosity > 1)
+	 $display ("%0d:  CPU.rl_reset_from_Debug_Mode", mcycle);
 
       rg_state <= CPU_RESET1;
    endrule
@@ -1460,6 +1477,23 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
       // Accounting: none (instruction is abandoned)
    endrule: rl_stage1_stop
 `endif
+
+   // ================================================================
+   // ================================================================
+   // ================================================================
+   // Connect timer and software interrupts
+
+   rule rl_relay_sw_interrupts;
+      let x <- near_mem.get_sw_interrupt_req.get;
+      csr_regfile.software_interrupt_req (x);
+      // $display ("%0d: CPU.rl_relay_sw_interrupts: relaying: %d", mcycle, pack (x));
+   endrule
+
+   rule rl_relay_timer_interrupts;
+      let x <- near_mem.get_timer_interrupt_req.get;
+      csr_regfile.timer_interrupt_req (x);
+      // $display ("%0d: CPU.rl_relay_timer_interrupts: relaying: %d", mcycle, pack (x));
+   endrule
 
    // ================================================================
    // ================================================================
@@ -1614,11 +1648,9 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value)  (CPU_IFC);
    interface  near_mem_slave = near_mem.near_mem_slave;
 
    // ----------------
-   // Interrupts
+   // External interrupts
 
    method Action  external_interrupt_req (x) = csr_regfile.external_interrupt_req (x);
-   method Action  software_interrupt_req (x) = csr_regfile.software_interrupt_req (x);
-   method Action  timer_interrupt_req (x)    = csr_regfile.timer_interrupt_req (x);
 
    // ----------------
    // For tracing

@@ -401,7 +401,11 @@ instance FShow #(Data_Stage1_to_Stage2);
    function Fmt fshow (Data_Stage1_to_Stage2 x);
       Fmt fmt =   $format ("data_to_Stage 2 {pc:%h  instr:%h  priv:%0d\n", x.pc, x.instr, x.priv);
       fmt = fmt + $format ("            op_stage2:", fshow (x.op_stage2), "  rd:%0d\n", x.rd);
+`ifdef ISA_F
+      fmt = fmt + $format ("            addr:%h  val1:%h  val2:%h  val3:%h}", x.addr, x.val1, x.val2, x.val3);
+`else
       fmt = fmt + $format ("            addr:%h  val1:%h  val2:%h}", x.addr, x.val1, x.val2);
+`endif
       return fmt;
    endfunction
 endinstance
@@ -477,7 +481,7 @@ instance FShow #(Data_Stage2_to_Stage3);
       fmt = fmt + $format ("        rd_valid:", fshow (x.rd_valid));
 
 `ifdef ISA_F
-      if (x.rd_in_fpr)
+      if (x.upd_flags)
          fmt = fmt + $format ("  fflags: %05b", fshow (x.fpr_flags));
 
       if (x.rd_in_fpr)

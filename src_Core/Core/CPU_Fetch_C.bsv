@@ -7,7 +7,7 @@ package CPU_Fetch_C;
 
 // The input parameter interface is for 32-bit-aligned 32-bit instruction-fetches.
 
-// This module completely encapsulates the logic needed extend it to
+// This module completely encapsulates the logic needed to extend it to
 // 16-bit "compressed" instructions ('C' extension)
 // which then also includes 16-bit-aligned 32-bit instructions.
 
@@ -36,6 +36,8 @@ import Near_Mem_IFC :: *;
 // ================================================================
 
 module mkCPU_Fetch_C #(IMem_IFC  imem32) (IMem_IFC);
+
+   // Assert: imem32.is_32b_not_16b == True
 
    Integer verbosity = 0;
 

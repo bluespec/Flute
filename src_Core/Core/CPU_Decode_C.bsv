@@ -80,15 +80,15 @@ function Instr fv_decode_C (MISA misa, Bit #(2) xl, Instr_C instr_C);
 `endif
 
 `ifdef ISA_F
-   match { .valid_C_FLWSP,    .i_C_FLWSP }    = fv_decode_C_LWSP     (misa, xl, instr_C);
-   match { .valid_C_FSWSP,    .i_C_FSWSP }    = fv_decode_C_SWSP     (misa, xl, instr_C);
+   match { .valid_C_FLWSP,    .i_C_FLWSP }    = fv_decode_C_FLWSP    (misa, xl, instr_C);
+   match { .valid_C_FSWSP,    .i_C_FSWSP }    = fv_decode_C_FSWSP    (misa, xl, instr_C);
    match { .valid_C_FLW,      .i_C_FLW }      = fv_decode_C_FLW      (misa, xl, instr_C);
    match { .valid_C_FSW,      .i_C_FSW }      = fv_decode_C_FSW      (misa, xl, instr_C);
 `endif
 
 `ifdef ISA_D
-   match { .valid_C_FLDSP,    .i_C_FLDSP }    = fv_decode_C_LDSP     (misa, xl, instr_C);
-   match { .valid_C_FSDSP,    .i_C_FSDSP }    = fv_decode_C_SDSP     (misa, xl, instr_C);
+   match { .valid_C_FLDSP,    .i_C_FLDSP }    = fv_decode_C_FLDSP    (misa, xl, instr_C);
+   match { .valid_C_FSDSP,    .i_C_FSDSP }    = fv_decode_C_FSDSP    (misa, xl, instr_C);
    match { .valid_C_FLD,      .i_C_FLD }      = fv_decode_C_FLD      (misa, xl, instr_C);
    match { .valid_C_FSD,      .i_C_FSD }      = fv_decode_C_FSD      (misa, xl, instr_C);
 `endif
