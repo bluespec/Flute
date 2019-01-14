@@ -130,10 +130,23 @@ module mkP2_Core #(parameter Bit #(64)  pc_reset_value,
       core.set_verbosity (?, ?);
    endrule
 
+   // ================================================================
+   // NDM reset from Debug Module (for all except Debug Module)
+
 `ifdef INCLUDE_GDB_CONTROL
-   // Non-Debug-Module Reset (reset all except DM)
-   rule rl_always;
-      let x <- core.dm_ndm_reset_req_get.get;
+   Reg #(Bool) rg_resetting <- mkReg (False);
+
+   rule rl_reset_start (! rg_resetting);
+      let req <- core.dm_ndm_reset_req_get.get;
+      core.cpu_reset_server.request.put (?);
+      rg_resetting <= True;
+      $display ("P1_Core.rl_reset_start (Debug Module NDM reset, all except debug module) ...");
+   endrule
+
+   rule rl_reset_complete (rg_resetting);
+      let cpu_rsp <- core.cpu_reset_server.response.get;
+      rg_resetting <= False;
+      $display ("P1_Core: NDM reset complete (all except debug module)");
    endrule
 `endif
 
