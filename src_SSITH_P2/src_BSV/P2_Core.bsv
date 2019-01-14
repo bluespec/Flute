@@ -117,10 +117,6 @@ module mkP2_Core #(parameter Bit #(64)  pc_reset_value,
    // ================================================================
    // Tie-offs (not used in SSITH GFE)
 
-   // Soft reset
-   Client #(Bit #(0), Bit #(0)) reset_client_stub = client_stub;
-   mkConnection (reset_client_stub, core.cpu_reset_server);
-
    // CPU Back-door slave interface from fabric
    AXI4_Lite_Master_IFC #(Wd_Addr, Wd_Data, Wd_User) axi_master_stub = dummy_AXI4_Lite_Master_ifc;
    mkConnection (axi_master_stub, core.cpu_slave);
