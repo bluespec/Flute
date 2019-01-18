@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2017 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved.
 
 // EdgeFIFOFs are 1-element FIFOFs used as generic interfaces by IPs
 // where they connect to interconnect fabrics.  The overall interface

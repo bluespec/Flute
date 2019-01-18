@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2018 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved
 
 package Timer;
 
@@ -52,6 +52,7 @@ import  ConfigReg     :: *;
 import Cur_Cycle  :: *;
 import GetPut_Aux :: *;
 import Semi_FIFOF :: *;
+import ByteLane   :: *;
 
 // ================================================================
 // Project imports
@@ -182,6 +183,10 @@ module mkTimer (Timer_IFC);
 
    rule rl_process_rd_req (rg_state == MODULE_STATE_READY);
       let rda <- pop_o (slave_xactor.o_rd_addr);
+      if (cfg_verbosity > 1) begin
+	 $display ("%0d: Timer.rl_process_rd_req: rg_mtip = %0d", cur_cycle, rg_mtip);
+	 $display ("    ", fshow (rda));
+      end
 
       let byte_addr = rda.araddr - rg_addr_base;
 
@@ -209,9 +214,7 @@ module mkTimer (Timer_IFC);
       slave_xactor.i_rd_data.enq (rdr);
 
       if (cfg_verbosity > 1) begin
-	 $display ("%0d: Timer.rl_process_rd_req: ", cur_cycle);
-	 $display ("        ", fshow (rda));
-	 $display ("     => ", fshow (rdr));
+	 $display ("    <= ", fshow (rdr));
       end
    endrule
 
@@ -221,6 +224,12 @@ module mkTimer (Timer_IFC);
    rule rl_process_wr_req (rg_state == MODULE_STATE_READY);
       let wra <- pop_o (slave_xactor.o_wr_addr);
       let wrd <- pop_o (slave_xactor.o_wr_data);
+
+      if (cfg_verbosity > 1) begin
+	 $display ("%0d: Timer.rl_process_wr_req: rg_mtip = %0d", cur_cycle, rg_mtip);
+	 $display ("    ", fshow (wra));
+	 $display ("    ", fshow (wrd));
+      end
 
       let byte_addr = wra.awaddr - rg_addr_base;
 
@@ -233,52 +242,67 @@ module mkTimer (Timer_IFC);
 			rg_msip <= new_msip;
 			f_sw_interrupt_req.enq (new_msip);
 			if (cfg_verbosity > 1)
-			   $display ("%0d: Timer.rl_process_wr_req: new MSIP = %0d",
-			             cur_cycle, new_msip);
+			   $display ("    new MSIP = %0d", new_msip);
 		     end
 		  end
 	 'h_4000: begin
-		     // XXX Consult the actual size of the request?
-		     if (valueOf (Wd_Data) == 32)
-			// 32b fabric: data is only lower 32b
-			crg_timecmp [1] <= { crg_timecmp [1] [63:32], wrd.wdata [31:0] };
-		     else
-			// 64b fabric: data is full 64b
-			crg_timecmp [1] <= zeroExtend (wrd.wdata);
+		     Bit #(64) old_timecmp = crg_timecmp [1];
+		     Bit #(64) new_timecmp = fn_update_strobed_bytes (old_timecmp,
+								      zeroExtend (wrd.wdata),
+								      zeroExtend (wrd.wstrb));
+		     crg_timecmp [1] <= new_timecmp;
 
-		     if (cfg_verbosity > 1)
-			$display ("%0d: Timer.rl_process_wr_req: Setting MTIMECMP = %0d (MTIME = %0d); delta = %0d",
-				  cur_cycle, wrd.wdata, crg_time [1], wrd.wdata - crg_time [1]);
+		     if (cfg_verbosity > 1) begin
+			$display ("    Writing MTIMECMP");
+			$display ("        old MTIMECMP         = 0x%0h", old_timecmp);
+			$display ("        new MTIMECMP         = 0x%0h", new_timecmp);
+			$display ("        cur MTIME            = 0x%0h", crg_time [1]);
+			$display ("        new MTIMECMP - MTIME = 0x%0h", new_timecmp - crg_time [1]);
+		     end
 		  end
 	 'h_BFF8: begin
-		     // XXX Consult the actual size of the request?
-		     if (valueOf (Wd_Data) == 32)
-			// 32b fabric: data is only lower 32b
-			crg_time [1] <= { crg_time [1] [63:32], wrd.wdata [31:0] };
-		     else
-			// 64b fabric: data is full 64b
-			crg_time [1] <= zeroExtend (wrd.wdata);
+		     Bit #(64) old_time = crg_time [1];
+		     Bit #(64) new_time = fn_update_strobed_bytes (old_time,
+								   zeroExtend (wrd.wdata),
+								   zeroExtend (wrd.wstrb));
+		     crg_time [1] <= new_time;
 
-		     if (cfg_verbosity > 1)
-			$display ("%0d: Timer.rl_process_wr_req: Setting MTIME = %0d (old: %0d)",
-				  cur_cycle, wrd.wdata, crg_time [1]);
+		     if (cfg_verbosity > 1) begin
+			$display ("    Writing MTIME");
+			$display ("        old MTIME = 0x%0h", old_time);
+			$display ("        new MTIME = 0x%0h", new_time);
+		     end
 		  end
 
-	 // The following ALIGN4B reads are only needed for 32b fabrics
+	 // The following ALIGN4B writes are only needed for 32b fabrics
 	 'h_0004: noAction;
 	 'h_4004: begin
-		     // XXX Consult the actual size of the request?
-		     crg_timecmp [1] <= { wrd.wdata [31:0], crg_timecmp [1] [31:0] };
+		     Bit #(64) old_timecmp = crg_timecmp [1];
+		     Bit #(64) new_timecmp = fn_update_strobed_bytes (old_timecmp,
+								      { wrd.wdata [31:0], 32'h0 },
+								      { wrd.wstrb [3:0], 4'h0 });
+		     crg_timecmp [1] <= new_timecmp;
+
+		     if (cfg_verbosity > 1) begin
+			$display ("    Writing MTIMECMP");
+			$display ("        old MTIMECMP         = 0x%0h", old_timecmp);
+			$display ("        new MTIMECMP         = 0x%0h", new_timecmp);
+			$display ("        cur MTIME            = 0x%0h", crg_time [1]);
+			$display ("        new MTIMECMP - MTIME = 0x%0h", new_timecmp - crg_time [1]);
+		     end
 		  end
 	 'h_BFFC: begin
-		     // XXX Consult the actual size of the request?
-		     crg_time [1] <= { wrd.wdata [31:0], crg_time [1] [31:0] };
+		     Bit #(64) old_time = crg_time [1];
+		     Bit #(64) new_time = fn_update_strobed_bytes (old_time,
+								   { wrd.wdata [31:0], 32'h0 },
+								   { wrd.wstrb [3:0], 4'h0 });
+		     crg_time [1] <= new_time;
 
-		     if (cfg_verbosity > 1)
-			$display ("%0d: Timer.rl_process_wr_req: Setting [MTIMEH (old %0h) <= new %0h]; [MTIMEL = %0h]",
-				  cur_cycle,
-				  crg_time [1] [63:32], wrd.wdata [31:0],
-				  crg_time [1] [31:0]);
+		     if (cfg_verbosity > 1) begin
+			$display ("    Writing MTIME");
+			$display ("        old MTIME = 0x%0h", old_time);
+			$display ("        new MTIME = 0x%0h", new_time);
+		     end
 		  end
 
 	 default: begin
@@ -294,10 +318,7 @@ module mkTimer (Timer_IFC);
       slave_xactor.i_wr_resp.enq (wrr);
 
       if (cfg_verbosity > 1) begin
-	 $display ("%0d: Timer.rl_process_wr_req", cur_cycle);
-	 $display ("        ", fshow (wra));
-	 $display ("        ", fshow (wrd));
-	 $display ("     => ", fshow (wrr));
+	 $display ("    <= ", fshow (wrr));
       end
    endrule
 

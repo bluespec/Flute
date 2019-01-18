@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2018 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2013-2019 Bluespec, Inc. All Rights Reserved
 
 package SoC_Fabric;
 
@@ -60,11 +60,6 @@ module mkFabric (Fabric_IFC);
       else if (   (soc_map.m_uart0_addr_base <= addr)
 	       && (addr < soc_map.m_uart0_addr_lim))
 	 return tuple2 (True, fromInteger (uart0_slave_num));
-
-      // Timer
-      else if (   (soc_map.m_timer0_addr_base <= addr)
-	       && (addr < soc_map.m_timer0_addr_lim))
-	 return tuple2 (True, fromInteger (timer0_slave_num));
 
 `ifdef HTIF_MEMORY
       else if (   (soc_map.m_htif_addr_base <= addr)

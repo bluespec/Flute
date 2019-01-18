@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2017 Bluespec, Inc., All Rights Reserved
+// Copyright (c) 2015-2019 Bluespec, Inc., All Rights Reserved
 // Author: Rishiyur S. Nikhil
 
 // A "credit counter" which can be incremented and decremented concurrently.

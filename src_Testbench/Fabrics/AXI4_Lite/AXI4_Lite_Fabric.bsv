@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2017 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2013-2019 Bluespec, Inc. All Rights Reserved
 
 package AXI4_Lite_Fabric;
 
@@ -61,6 +61,8 @@ module mkAXI4_Lite_Fabric #(function Tuple2 #(Bool, Bit #(TLog #(num_slaves)))
 
    Reg #(Bit #(4)) cfg_verbosity  <- mkConfigReg (0);
 
+   Reg #(Bool) rg_reset <- mkReg (True);
+
    // Transactors facing masters
    Vector #(num_masters, AXI4_Lite_Slave_Xactor_IFC  #(wd_addr, wd_data, wd_user))
       xactors_from_masters <- replicateM (mkAXI4_Lite_Slave_Xactor);
@@ -85,10 +87,37 @@ module mkAXI4_Lite_Fabric #(function Tuple2 #(Bool, Bit #(TLog #(num_slaves)))
    // ----------------------------------------------------------------
    // BEHAVIOR
 
+   rule rl_reset (rg_reset);
+      $display ("%0d: AXI4_Lite_Fabric.rl_reset", cur_cycle);
+      for (Integer mi = 0; mi < valueOf (num_masters); mi = mi + 1) begin
+	 xactors_from_masters [mi].reset;
+
+	 v_f_wr_sjs [mi].clear;
+	 v_f_wr_err_user [mi].clear;
+
+	 v_f_rd_sjs [mi].clear;
+	 v_f_rd_err_user [mi].clear;
+      end
+
+      for (Integer sj = 0; sj < valueOf (num_slaves); sj = sj + 1) begin
+	 xactors_to_slaves [sj].reset;
+	 v_f_wr_mis [sj].clear;
+	 v_f_rd_mis [sj].clear;
+      end
+      rg_reset <= False;
+   endrule
+
+   // ----------------------------------------------------------------
+   // Help functions for moving data from masters to slaves
+
+   Integer num_slaves_i = valueOf (num_slaves);
+
    function Bool wr_move_from_mi_to_sj (Integer mi, Integer sj);
       let addr = xactors_from_masters [mi].o_wr_addr.first.awaddr;
       match { .legal, .slave_num } = fn_addr_to_slave_num (addr);
-      return (legal && (slave_num == fromInteger (sj)));
+      return (legal
+	      && (   (num_slaves_i == 1)
+		  || (slave_num == fromInteger (sj))));
    endfunction
 
    function Bool wr_illegal_sj (Integer mi);
@@ -100,7 +129,9 @@ module mkAXI4_Lite_Fabric #(function Tuple2 #(Bool, Bit #(TLog #(num_slaves)))
    function Bool rd_move_from_mi_to_sj (Integer mi, Integer sj);
       let addr = xactors_from_masters [mi].o_rd_addr.first.araddr;
       match { .legal, .slave_num } = fn_addr_to_slave_num (addr);
-      return (legal && (slave_num == fromInteger (sj)));
+      return (legal
+	      && (   (num_slaves_i == 1)
+		  || (slave_num == fromInteger (sj))));
    endfunction
 
    function Bool rd_illegal_sj (Integer mi);
@@ -269,25 +300,13 @@ module mkAXI4_Lite_Fabric #(function Tuple2 #(Bool, Bit #(TLog #(num_slaves)))
    // ----------------------------------------------------------------
    // INTERFACE
 
-   function AXI4_Lite_Slave_IFC  #(wd_addr, wd_data, wd_user) f1 (Integer j) = xactors_from_masters [j].axi_side;
-   function AXI4_Lite_Master_IFC #(wd_addr, wd_data, wd_user) f2 (Integer j) = xactors_to_slaves    [j].axi_side;
+   function AXI4_Lite_Slave_IFC  #(wd_addr, wd_data, wd_user) f1 (Integer j)
+      = xactors_from_masters [j].axi_side;
+   function AXI4_Lite_Master_IFC #(wd_addr, wd_data, wd_user) f2 (Integer j)
+      = xactors_to_slaves    [j].axi_side;
 
-   method Action reset;
-      for (Integer mi = 0; mi < valueOf (num_masters); mi = mi + 1) begin
-	 xactors_from_masters [mi].reset;
-
-	 v_f_wr_sjs [mi].clear;
-	 v_f_wr_err_user [mi].clear;
-
-	 v_f_rd_sjs [mi].clear;
-	 v_f_rd_err_user [mi].clear;
-      end
-
-      for (Integer sj = 0; sj < valueOf (num_slaves); sj = sj + 1) begin
-	 xactors_to_slaves [sj].reset;
-	 v_f_wr_mis [sj].clear;
-	 v_f_rd_mis [sj].clear;
-      end
+   method Action reset () if (! rg_reset);
+      rg_reset <= True;
    endmethod
 
    method Action set_verbosity (Bit #(4) verbosity);

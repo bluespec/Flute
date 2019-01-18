@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2018 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved
 
 package CPU_StageF;
 
@@ -65,7 +65,7 @@ endinterface
 // Implementation module
 
 module mkCPU_StageF #(Bit #(4)  verbosity,
-		      IMem_IFC  icache)
+		      IMem_IFC  imem)
                     (CPU_StageF_IFC);
 
    FIFOF #(Token)  f_reset_reqs <- mkFIFOF;
@@ -93,16 +93,18 @@ module mkCPU_StageF #(Bit #(4)  verbosity,
    // Combinational output function
 
    function Output_StageF fv_out;
-      let d = Data_StageF_to_StageD {pc:       icache.pc,
-				     epoch:    rg_epoch,
-				     priv:     rg_priv,
-				     exc:      icache.exc,
-				     exc_code: icache.exc_code,
-				     instr:    icache.instr,
-				     pred_pc:  branch_predictor.predict_rsp};
+      let d = Data_StageF_to_StageD {pc:              imem.pc,
+				     epoch:           rg_epoch,
+				     priv:            rg_priv,
+				     is_i32_not_i16:  imem.is_i32_not_i16,
+				     exc:             imem.exc,
+				     exc_code:        imem.exc_code,
+				     tval:            imem.tval,
+				     instr:           imem.instr,
+				     pred_pc:         branch_predictor.predict_rsp};
 
       let ostatus = (  (! rg_full) ? OSTATUS_EMPTY
-		     : (  (! icache.valid) ? OSTATUS_BUSY
+		     : (  (! imem.valid) ? OSTATUS_BUSY
 			: OSTATUS_PIPE));                    // instr or exception
 
       let output_stageF = Output_StageF {ostatus: ostatus, data_to_stageD: d};
@@ -139,7 +141,7 @@ module mkCPU_StageF #(Bit #(4)  verbosity,
 		   sstatus_SUM, mstatus_MXR, satp, fshow (m_old_pc));
       end
 
-      icache.req (f3_LW, pc, priv, sstatus_SUM, mstatus_MXR, satp);
+      imem.req (f3_LW, pc, priv, sstatus_SUM, mstatus_MXR, satp);
       branch_predictor.predict_req (pc, m_old_pc);    // TODO: ASID.VA vs PA?
 
       rg_epoch <= epoch;

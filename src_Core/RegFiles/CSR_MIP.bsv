@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2018 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved
 
 package CSR_MIP;
 
@@ -50,7 +50,9 @@ interface CSR_MIP_IFC;
    method ActionValue #(WordXL) fav_uip_write (MISA  misa, WordXL  wordxl);
 `endif
 
+   (* always_ready, always_enabled *)
    method Action external_interrupt_req (Bool req);
+
    method Action software_interrupt_req (Bool req);
    method Action timer_interrupt_req (Bool req);
 endinterface

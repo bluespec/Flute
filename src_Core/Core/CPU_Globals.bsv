@@ -113,6 +113,7 @@ FBypass no_fbypass = FBypass {bypass_state: BYPASS_RD_NONE,
 			   rd: ?,
 			   rd_val: ? };
 `endif
+
 // ----------------
 // Bypass functions for GPRs
 // Returns '(busy, val)'
@@ -181,8 +182,10 @@ typedef struct {
    Addr       pc;
    Epoch      epoch;              // Branch prediction epoch
    Priv_Mode  priv;               // Priv at which instr was fetched
+   Bool       is_i32_not_i16;     // True if a regular 32b instr, not a compressed (16b) instr
    Bool       exc;                // True if exc in icache access
    Exc_Code   exc_code;
+   WordXL     tval;               // Trap value; can be different from PC, with 'C' extension
    Instr      instr;              // Valid if no exception
    WordXL     pred_pc;            // Predicted next pc
    } Data_StageF_to_StageD
@@ -235,10 +238,14 @@ typedef struct {
    Priv_Mode      priv;               // Priv at which instr was fetched
    Epoch          epoch;              // Branch prediction epoch
 
+   Bool           is_i32_not_i16;     // True if a regular 32b instr, not a compressed (16b) instr
+
    Bool           exc;                // True if exc in icache access
    Exc_Code       exc_code;
+   WordXL         tval;               // Trap value; can be different from PC, with 'C' extension
 
    Instr          instr;              // Valid if no exception
+   Instr_C        instr_C;            // Valid if no exception; original compressed instruction
    WordXL         pred_pc;            // Predicted next pc
    Decoded_Instr  decoded_instr;
    } Data_StageD_to_Stage1
@@ -246,11 +253,14 @@ deriving (Bits);
 
 instance FShow #(Data_StageD_to_Stage1);
    function Fmt fshow (Data_StageD_to_Stage1 x);
-      Fmt fmt = $format ("data_to_Stage1 {pc:%h  priv:%0d  epoch:%0d", x.pc, x.priv, x.epoch);
+      Fmt fmt = $format ("data_to_Stage1 {pc:%0h  priv:%0d  epoch:%0d", x.pc, x.priv, x.epoch);
       if (x.exc)
-	 fmt = fmt + $format ("  ", fshow_trap_Exc_Code (x.exc_code));
-      else
-	 fmt = fmt + $format ("  instr:%h  pred_pc:%h", x.instr, x.pred_pc);
+	 fmt = fmt + $format ("  ", fshow_trap_Exc_Code (x.exc_code), " tval %0h", x.tval);
+      else begin
+	 if (x.is_i32_not_i16)
+	    fmt = fmt + $format ("  instr_C:%0h", x.instr_C);
+	 fmt = fmt + $format ("  instr:%0h  pred_pc:%0h", x.instr, x.pred_pc);
+      end
       fmt = fmt + $format ("}");
       return fmt;
    endfunction
@@ -391,7 +401,11 @@ instance FShow #(Data_Stage1_to_Stage2);
    function Fmt fshow (Data_Stage1_to_Stage2 x);
       Fmt fmt =   $format ("data_to_Stage 2 {pc:%h  instr:%h  priv:%0d\n", x.pc, x.instr, x.priv);
       fmt = fmt + $format ("            op_stage2:", fshow (x.op_stage2), "  rd:%0d\n", x.rd);
+`ifdef ISA_F
+      fmt = fmt + $format ("            addr:%h  val1:%h  val2:%h  val3:%h}", x.addr, x.val1, x.val2, x.val3);
+`else
       fmt = fmt + $format ("            addr:%h  val1:%h  val2:%h}", x.addr, x.val1, x.val2);
+`endif
       return fmt;
    endfunction
 endinstance
@@ -467,7 +481,7 @@ instance FShow #(Data_Stage2_to_Stage3);
       fmt = fmt + $format ("        rd_valid:", fshow (x.rd_valid));
 
 `ifdef ISA_F
-      if (x.rd_in_fpr)
+      if (x.upd_flags)
          fmt = fmt + $format ("  fflags: %05b", fshow (x.fpr_flags));
 
       if (x.rd_in_fpr)

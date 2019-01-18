@@ -3,7 +3,7 @@
 package CPU_Stage3;
 
 // ================================================================
-// This is Stage 3 of the "Piccolo" CPU.
+// This is Stage 3 of the "Flute" CPU.
 // It is the WB ("Write Back") stage:
 // - Writes back a GPR register value (if the instr has an Rd)
 // - Updates CSR INSTRET
@@ -94,33 +94,33 @@ module mkCPU_Stage3 #(Bit #(4)         verbosity,
    // ----------------------------------------------------------------
    // BEHAVIOR
 
-   let bypass_base = Bypass {bypass_state: BYPASS_RD_NONE
-			   , rd:           rg_stage3.rd
+   let bypass_base = Bypass {bypass_state: BYPASS_RD_NONE,
+			     rd:           rg_stage3.rd,
 `ifdef ISA_D
-                          // WordXL        WordFL (64)
-			   , rd_val:       truncate (rg_stage3.rd_val) 
+			     // WordXL        WordFL (64)
+			     rd_val:       truncate (rg_stage3.rd_val)
 `else
-                          // WordXL        WordXL
-			   , rd_val:       rg_stage3.rd_val
+			     // WordXL        WordXL
+			     rd_val:       rg_stage3.rd_val
 `endif
-                           };
+			     };
 
 `ifdef ISA_F
-   let fbypass_base = FBypass {bypass_state: BYPASS_RD_NONE
-			   , rd:           rg_stage3.rd
+   let fbypass_base = FBypass {bypass_state: BYPASS_RD_NONE,
+			       rd:           rg_stage3.rd,
 `ifdef ISA_D
-                          // WordFL        WordFL
-			   , rd_val:       rg_stage3.rd_val 
+			       // WordFL        WordFL
+			       rd_val:       rg_stage3.rd_val 
 `else
 `ifdef RV64
-                          // WordFL (32)   WordXL (64)
-			   , rd_val:       truncate (rg_stage3.rd_val)
+			       // WordFL (32)   WordXL (64)
+			       rd_val:       truncate (rg_stage3.rd_val)
 `else
-                          // WordFL (32)   WordXL (32)
-			   , rd_val:       rg_stage3.rd_val
+			       // WordFL (32)   WordXL (32)
+			       rd_val:       rg_stage3.rd_val
 `endif
 `endif
-                           };
+			       };
 `endif
 
    rule rl_reset;
@@ -150,12 +150,13 @@ module mkCPU_Stage3 #(Bit #(4)         verbosity,
       bypass.bypass_state = (rg_full && rg_stage3.rd_valid) ? BYPASS_RD_RDVAL
                                                             : BYPASS_RD_NONE;
 `endif
-      return Output_Stage3 {ostatus: (rg_full ? OSTATUS_PIPE : OSTATUS_EMPTY)
-                            , bypass : bypass
+
+      return Output_Stage3 {ostatus: (rg_full ? OSTATUS_PIPE : OSTATUS_EMPTY),
+			    bypass : bypass
 `ifdef ISA_F
-                            , fbypass: fbypass
+			    , fbypass: fbypass
 `endif
-			   };
+			    };
    endfunction
 
    // ----------------
@@ -185,6 +186,7 @@ module mkCPU_Stage3 #(Bit #(4)         verbosity,
             // Write to GPR in a non-FD system
             gpr_regfile.write_rd (rg_stage3.rd, rg_stage3.rd_val);
 `endif
+
 	    if (verbosity > 1)
 `ifdef ISA_F
                if (rg_stage3.rd_in_fpr)
@@ -194,6 +196,7 @@ module mkCPU_Stage3 #(Bit #(4)         verbosity,
 `endif
                   $display ("    S3.fa_deq: write GRd 0x%0h, rd_val 0x%0h",
                             rg_stage3.rd, rg_stage3.rd_val);
+
 `ifdef ISA_F
             // Update FCSR.fflags
             if (rg_stage3.upd_flags)

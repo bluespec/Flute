@@ -1,4 +1,3 @@
-// vim: tw=80:tabstop=8:softtabstop=3:shiftwidth=3:expandtab:
 // Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved
 
 package CPU_Stage1;
@@ -91,6 +90,9 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
    Reg #(Bool)                  rg_full        <- mkReg (False);
    Reg #(Data_StageD_to_Stage1) rg_stage_input <- mkRegU;
 
+   MISA misa   = csr_regfile.read_misa;
+   Bit #(2) xl = ((xlen == 32) ? misa_mxl_32 : misa_mxl_64);
+
    // ----------------------------------------------------------------
    // BEHAVIOR
 
@@ -147,47 +149,44 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
 `endif
 
    // ALU function
-   let alu_inputs = ALU_Inputs {
-        cur_priv        : cur_priv
-      , pc              : rg_stage_input.pc
-      , is_i32_not_i16  : True     // TODO: fix with 'C' info
-      , instr           : rg_stage_input.instr
+   let alu_inputs = ALU_Inputs {cur_priv      : cur_priv,
+				pc            : rg_stage_input.pc,
+				is_i32_not_i16: rg_stage_input.is_i32_not_i16,
+				instr         : rg_stage_input.instr,
 `ifdef ISA_C
-      , instr_C         : instr_C
+				instr_C       : rg_stage_input.instr_C,
 `endif
-      , decoded_instr   : rg_stage_input.decoded_instr
-      , rs1_val         : rs1_val_bypassed
-      , rs2_val         : rs2_val_bypassed
+				decoded_instr : rg_stage_input.decoded_instr,
+				rs1_val       : rs1_val_bypassed,
+				rs2_val       : rs2_val_bypassed,
 `ifdef ISA_F
-      , frs1_val        : frs1_val_bypassed
-      , frs2_val        : frs2_val_bypassed
-      , frs3_val        : frs3_val_bypassed
-      , fcsr_frm        : csr_regfile.read_frm
+				frs1_val      : frs1_val_bypassed,
+				frs2_val      : frs2_val_bypassed,
+				frs3_val      : frs3_val_bypassed,
+				fcsr_frm      : csr_regfile.read_frm,
 `endif
-      , mstatus         : csr_regfile.read_mstatus
-      , misa            : csr_regfile.read_misa
-   }; 
+				mstatus       : csr_regfile.read_mstatus,
+				misa          : csr_regfile.read_misa};
+
    let alu_outputs = fv_ALU (alu_inputs);
 
-   let data_to_stage2 = Data_Stage1_to_Stage2 {
-        priv            : cur_priv
-      , pc              : rg_stage_input.pc
-      , instr           : rg_stage_input.instr
-      , op_stage2       : alu_outputs.op_stage2
-      , rd              : alu_outputs.rd
-      , addr            : alu_outputs.addr
-      , val1            : alu_outputs.val1
-      , val2            : alu_outputs.val2
+   let data_to_stage2 = Data_Stage1_to_Stage2 {pc           : rg_stage_input.pc,
+					       instr        : rg_stage_input.instr,
+					       op_stage2    : alu_outputs.op_stage2,
+					       rd           : alu_outputs.rd,
+					       addr         : alu_outputs.addr,
+					       val1         : alu_outputs.val1,
+					       val2         : alu_outputs.val2,
 `ifdef ISA_F
-      , val3            : alu_outputs.val3
-      , rd_in_fpr       : alu_outputs.rd_in_fpr
-      , rounding_mode   : alu_outputs.rm
+					       val3         : alu_outputs.val3,
+					       rd_in_fpr    : alu_outputs.rd_in_fpr,
+					       rounding_mode: alu_outputs.rm,
 `endif
-
 `ifdef INCLUDE_TANDEM_VERIF
-      , trace_data      : alu_outputs.trace_data
+					       trace_data : alu_outputs.trace_data,
 `endif
-   };
+					       priv         : cur_priv
+					       };
 
    // ----------------
    // Combinational output function
@@ -206,22 +205,22 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
 	 output_stage1.control        = CONTROL_DISCARD;
 
 	 // For debugging only
-	 let data_to_stage2 = Data_Stage1_to_Stage2 {priv:      cur_priv,
-						     pc:        rg_stage_input.pc,
+	 let data_to_stage2 = Data_Stage1_to_Stage2 {pc:        rg_stage_input.pc,
 						     instr:     rg_stage_input.instr,
 						     op_stage2: OP_Stage2_ALU,
 						     rd:        0,
 						     addr:      ?,
 						     val1:      ?,
-						     val2:      ?
+						     val2:      ?,
 `ifdef ISA_F
-                                                   , val3            : ?
-                                                   , rd_in_fpr       : ?
-                                                   , rounding_mode   : ?
+						     val3            : ?,
+						     rd_in_fpr       : ?,
+						     rounding_mode   : ?,
 `endif
 `ifdef INCLUDE_TANDEM_VERIF
-						   , trace_data: alu_outputs.trace_data
+						     trace_data: alu_outputs.trace_data,
 `endif
+						     priv:      cur_priv
 						     };
 
 	 output_stage1.data_to_stage2 = data_to_stage2;
@@ -238,7 +237,8 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
 	 output_stage1.control   = CONTROL_TRAP;
 	 output_stage1.trap_info = Trap_Info {epc:      rg_stage_input.pc,
 					      exc_code: rg_stage_input.exc_code,
-					      tval:     rg_stage_input.pc};    // TODO: imem.tval
+					      tval:     rg_stage_input.tval};
+	 output_stage1.data_to_stage2 = data_to_stage2;
       end
 
       // ALU outputs: pipe (straight/branch)
@@ -254,7 +254,7 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
 	 if (alu_outputs.exc_code == exc_code_ILLEGAL_INSTRUCTION)
 	    tval = zeroExtend (rg_stage_input.instr);    // The instruction
 	 else if (alu_outputs.exc_code == exc_code_INSTR_ADDR_MISALIGNED)
-	    tval = alu_outputs.addr;                     // branch target pc
+	    tval = alu_outputs.addr;                     // The branch target pc
 	 else if (alu_outputs.exc_code == exc_code_BREAKPOINT)
 	    tval = rg_stage_input.pc;                    // The faulting virtual address
 
@@ -262,7 +262,10 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
 				    exc_code: alu_outputs.exc_code,
 				    tval:     tval};
 
-	 let next_pc = ((alu_outputs.control == CONTROL_BRANCH) ? alu_outputs.addr : rg_stage_input.pc + 4);
+	 let fall_through_pc = rg_stage_input.pc + (rg_stage_input.is_i32_not_i16 ? 4 : 2);
+	 let next_pc = ((alu_outputs.control == CONTROL_BRANCH)
+			? alu_outputs.addr
+			: fall_through_pc);
 	 let redirect = (next_pc != rg_stage_input.pred_pc);
 
 	 output_stage1.ostatus        = ostatus;

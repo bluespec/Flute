@@ -631,6 +631,7 @@ Bit #(3) funct3_JALR = 3'b000;
 `ifdef ISA_F
 // ================================================================
 // Floating Point Instructions
+// TODO: these are implementation choices; should not be in ISA_Decls
 // Enumeration of floating point opcodes for decode within the FPU
 typedef enum {
      FPAdd
@@ -658,8 +659,8 @@ Bit #(2) f2_D           = 2'b01;
 Bit #(2) f2_Q           = 2'b11;
 
 // Floating point Load-Store
-Opcode   op_FSTORE      = 7'b_01_001_11;
-Opcode   op_FLOAD       = 7'b_00_001_11;
+Opcode   op_LOAD_FP     = 7'b_00_001_11;
+Opcode   op_STORE_FP    = 7'b_01_001_11;
 Bit #(3) f3_FSW         = 3'b010;
 Bit #(3) f3_FSD         = 3'b011;
 Bit #(3) f3_FLW         = 3'b010;

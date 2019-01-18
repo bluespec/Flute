@@ -1,3 +1,5 @@
+// Copyright (c) 2018-2019 Bluespec, Inc. All Rights Reserved
+
 // Top-level driver for "verilated" objects (Verilog compiled with verilator)
 
 #include <verilated.h>

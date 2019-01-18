@@ -1,4 +1,3 @@
-// vim: tw=80:tabstop=8:softtabstop=3:shiftwidth=3:expandtab:
 // Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved
 
 package EX_ALU_functions;
@@ -108,20 +107,20 @@ typedef struct {
    } ALU_Outputs
 deriving (Bits, FShow);
 
-ALU_Outputs alu_outputs_base = ALU_Outputs {
-     control   : CONTROL_STRAIGHT
-   , exc_code  : exc_code_ILLEGAL_INSTRUCTION
-   , op_stage2 : ?
-   , rd        : ?
-   , addr      : ?
-   , val1      : ?
-   , val2      : ?
+ALU_Outputs alu_outputs_base
+= ALU_Outputs {control   : CONTROL_STRAIGHT,
+	       exc_code  : exc_code_ILLEGAL_INSTRUCTION,
+	       op_stage2 : ?,
+	       rd        : ?,
+	       addr      : ?,
+	       val1      : ?,
+	       val2      : ?,
 `ifdef ISA_F
-   , val3      : ?
-   , rd_in_fpr : False
-   , rm        : ?
+	       val3      : ?,
+	       rd_in_fpr : False,
+	       rm        : ?,
 `endif
-   , trace_data: ?};
+	       trace_data: ?};
 
 // ================================================================
 // The fall-through PC is PC+4 for normal 32b instructions,
@@ -242,9 +241,10 @@ function ALU_Outputs fv_BRANCH (ALU_Inputs inputs);
    alu_outputs.rd        = 0;
    alu_outputs.addr      = next_pc;
 `ifdef ISA_D
+   // TODO: is this ifdef needed? Can't we always use 'extend()'?
    alu_outputs.val2      = extend (branch_target);    // For tandem verifier only
 `else
-   alu_outputs.val2      = (branch_target);    // For tandem verifier only
+   alu_outputs.val2      = branch_target;    // For tandem verifier only
 `endif
 
    // Normal trace output (if no trap)
@@ -663,6 +663,7 @@ function ALU_Outputs fv_LD (ALU_Inputs inputs);
 		    || (funct3 == f3_LWU)
 		    || (funct3 == f3_LD)
 `endif
+		    // TODO: what about FLW?
 `ifdef ISA_D
 		    || (funct3 == f3_FLD)
 `endif
@@ -674,7 +675,7 @@ function ALU_Outputs fv_LD (ALU_Inputs inputs);
    alu_outputs.rd        = inputs.decoded_instr.rd;
    alu_outputs.addr      = eaddr;
 `ifdef ISA_F
-   alu_outputs.rd_in_fpr = (opcode == op_FLOAD);
+   alu_outputs.rd_in_fpr = (opcode == op_LOAD_FP);
 `endif
 
    // Normal trace output (if no trap)
@@ -704,8 +705,9 @@ function ALU_Outputs fv_ST (ALU_Inputs inputs);
 `ifdef RV64
 		    || (funct3 == f3_SD)
 `endif
+		    // TODO: what about FSW?
 `ifdef ISA_D
-		    || (funct3 == f3_SD)
+		    || (funct3 == f3_FSD)
 `endif
 		    );
 
@@ -718,18 +720,18 @@ function ALU_Outputs fv_ST (ALU_Inputs inputs);
 `ifdef ISA_F
 `ifdef ISA_D
 `ifdef RV64
-   alu_outputs.val2      = (opcode == op_FSTORE)   ? inputs.frs2_val
+   alu_outputs.val2      = (opcode == op_STORE_FP) ? inputs.frs2_val
                                                    : inputs.rs2_val;
 `else
-   alu_outputs.val2      = (opcode == op_FSTORE)   ? inputs.frs2_val
+   alu_outputs.val2      = (opcode == op_STORE_FP) ? inputs.frs2_val
                                                    : extend (inputs.rs2_val);
 `endif
 `else
 `ifdef RV32
-   alu_outputs.val2      = (opcode == op_FSTORE)   ? inputs.frs2_val
+   alu_outputs.val2      = (opcode == op_STORE_FP) ? inputs.frs2_val
                                                    : inputs.rs2_val;
 `else
-   alu_outputs.val2      = (opcode == op_FSTORE)   ? extend (inputs.frs2_val)
+   alu_outputs.val2      = (opcode == op_STORE_FP) ? extend (inputs.frs2_val)
                                                    : inputs.rs2_val;
 `endif
 `endif
@@ -741,7 +743,7 @@ function ALU_Outputs fv_ST (ALU_Inputs inputs);
    alu_outputs.trace_data = mkTrace_STORE (fall_through_pc (inputs),
 					   fv_trace_isize (inputs),
 					   fv_trace_instr (inputs),
-                                           // XXX Revisit. Need to size
+                                           // XXX TODO Revisit. Need to size
                                            // appropriately for FP
 `ifdef ISA_D
 					   truncate(alu_outputs.val2),
@@ -899,10 +901,11 @@ function ALU_Outputs fv_SYSTEM (ALU_Inputs inputs);
    return alu_outputs;
 endfunction: fv_SYSTEM
 
-`ifdef ISA_F
 // ----------------------------------------------------------------
 // FP Ops
 // Just pass through to the FP stage
+
+`ifdef ISA_F
 function ALU_Outputs fv_FP (ALU_Inputs inputs);
    let opcode = inputs.decoded_instr.opcode;
    let funct3 = inputs.decoded_instr.funct3;
@@ -1126,10 +1129,10 @@ function ALU_Outputs fv_ALU (ALU_Inputs inputs);
 `endif
 
 `ifdef ISA_F
-   else if (   (inputs.decoded_instr.opcode == op_FLOAD))
+   else if (   (inputs.decoded_instr.opcode == op_LOAD_FP))
       alu_outputs = fv_LD (inputs);
 
-   else if (   (inputs.decoded_instr.opcode == op_FSTORE))
+   else if (   (inputs.decoded_instr.opcode == op_STORE_FP))
       alu_outputs = fv_ST (inputs);
 
    else if (   (inputs.decoded_instr.opcode == op_FP)

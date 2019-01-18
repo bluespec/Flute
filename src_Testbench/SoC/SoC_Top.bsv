@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2018 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved.
 
 package SoC_Top;
 
@@ -40,12 +40,11 @@ import SoC_Map     :: *;
 import SoC_Fabric  :: *;
 
 // SoC components (CPU, mem, and IPs)
-import BRVF_Core_IFC  :: *;
-import BRVF_Core      :: *;
+import Core_IFC :: *;
+import Core     :: *;
 
 import Boot_ROM       :: *;
 import Mem_Controller :: *;
-import Timer          :: *;
 import UART_Model     :: *;
 
 `ifdef INCLUDE_CAMERA_MODEL
@@ -66,19 +65,6 @@ import Debug_Module     :: *;
 `endif
 
 import Axi4LRegFile ::*;
-
-// ================================================================
-// PC reset value
-
-// Original from older RISC-V specs
-// Bit #(64)  pc_reset_value    = 'h0200;
-
-// Entry point for Boot ROM used in Spike/Rocket
-// (boot code jumps later to 'h_8000_0000)
-Bit #(64)  pc_reset_value    = 'h_0000_1000;
-
-// Entry point for code generated for Spike/Rocket
-// Bit #(64)  pc_reset_value    = 'h_8000_0000;
 
 // ================================================================
 // Local types and constants
@@ -115,6 +101,25 @@ interface SoC_Top_IFC;
 endinterface
 
 // ================================================================
+// Constant addresses of interest
+
+// ----------------
+// PC reset value
+
+// Entry point for Boot ROM used in Spike/Rocket
+// (boot code jumps later to 'h_8000_0000)
+Bit #(64)  pc_reset_value    = 'h_0000_1000;
+
+// Entry point for code generated for Spike/Rocket
+// Bit #(64)  pc_reset_value    = 'h_8000_0000;
+
+// ----------------
+// Near-mem-IO (timer, SIP, ... memory-mapped locations)
+
+Bit #(64)  near_mem_io_addr_base = 'h_0200_0000;
+Bit #(64)  near_mem_io_addr_lim  = 'h_0200_c000;
+
+// ================================================================
 // The module
 
 (* synthesize *)
@@ -127,7 +132,7 @@ module mkSoC_Top (SoC_Top_IFC);
    SoC_Map_IFC soc_map <- mkSoC_Map;
 
    // CPU + Debug module
-   BRVF_Core_IFC  brvf_core <- mkBRVF_Core (pc_reset_value);
+   Core_IFC  core <- mkCore;
 
    // SoC Fabric
    Fabric_IFC  fabric <- mkFabric;
@@ -139,7 +144,6 @@ module mkSoC_Top (SoC_Top_IFC);
    Mem_Controller_IFC  mem0_controller <- mkMem_Controller;
 
    // SoC IPs
-   Timer_IFC  timer0 <- mkTimer;
    UART_IFC   uart0  <- mkUART;
 
 `ifdef INCLUDE_ACCEL0
@@ -152,14 +156,14 @@ module mkSoC_Top (SoC_Top_IFC);
    // Note: see 'SoC_Map' for 'master_num' definitions
 
    // CPU IMem master to fabric
-   mkConnection (brvf_core.cpu_imem_master,  fabric.v_from_masters [imem_master_num]);
+   mkConnection (core.cpu_imem_master,  fabric.v_from_masters [imem_master_num]);
 
    // CPU DMem master to fabric
-   mkConnection (brvf_core.cpu_dmem_master,  fabric.v_from_masters [dmem_master_num]);
+   mkConnection (core.cpu_dmem_master,  fabric.v_from_masters [dmem_master_num]);
 
 `ifdef INCLUDE_GDB_CONTROL
    // Debug Module system buf interface (mem interface) to fabric
-   mkConnection (brvf_core.dm_master,  fabric.v_from_masters [debug_module_master_num]);
+   mkConnection (core.dm_master,  fabric.v_from_masters [debug_module_master_num]);
 `else
    AXI4_Lite_Master_IFC #(Wd_Addr, Wd_Data, Wd_User) dummy_dm_master = dummy_AXI4_Lite_Master_ifc;
    mkConnection (dummy_dm_master,  fabric.v_from_masters [debug_module_master_num]);
@@ -178,16 +182,13 @@ module mkSoC_Top (SoC_Top_IFC);
    mkConnection (fabric.v_to_slaves [boot_rom_slave_num], boot_rom.slave);
 
    // Fabric to CPU's Near_Mem back door
-   mkConnection (fabric.v_to_slaves [tcm_back_door_slave_num],   brvf_core.cpu_slave);
+   mkConnection (fabric.v_to_slaves [tcm_back_door_slave_num],   core.cpu_slave);
 
    // Fabric to Mem Controller
    mkConnection (fabric.v_to_slaves [mem0_controller_slave_num], mem0_controller.slave);
 
    // Fabric to UART0
    mkConnection (fabric.v_to_slaves [uart0_slave_num],           uart0.slave);
-
-   // Fabric to Timer0
-   mkConnection (fabric.v_to_slaves [timer0_slave_num],          timer0.slave);
 
 `ifdef INCLUDE_ACCEL0
    // Fabric to accel_aes0
@@ -201,30 +202,41 @@ module mkSoC_Top (SoC_Top_IFC);
 `endif
 
    // ----------------
-   // Connect interrupt sources for CPU interrupt request inputs.
+   // Connect interrupt sources for CPU external interrupt request inputs.
+   // Currently only one source of interrupts: UART
+   // Future: PLIC
 
-   // External interrupts. TODO: connect to external interrupt controller
-   rule rl_connect_external_interrupt_request (False);
-      Bool req = ?;
-      brvf_core.cpu_external_interrupt_req (req);
-      if (verbosity > 1)
-	 $display ("%0d: SoC_Top.rl_connect_external_interrupt_request: ", cur_cycle, fshow (req));
+   // Reg #(Bool) rg_intr_prev <- mkReg (False);    // For debugging only
+
+   (* fire_when_enabled, no_implicit_conditions *)
+   rule rl_connect_external_interrupt_request;
+      Bool intr = uart0.intr;
+
+      core.cpu_external_interrupt_req (intr);
+
+      /* For debugging only
+      if ((! rg_intr_prev) && intr)
+	 $display ("SoC_Top: intr posedge");
+      else if (rg_intr_prev && (! intr))
+	 $display ("SoC_Top: intr negedge");
+
+      rg_intr_prev <= intr;
+      */
    endrule
 
-   // Timer interrupt
-   rule rl_connect_timer_interrupt_request;
-      let req <- timer0.get_timer_interrupt_req.get;
-      brvf_core.cpu_timer_interrupt_req (req);
-      if (verbosity > 1)
-	 $display ("%0d: SoC_Top.rl_connect_timer_interrupt_request: ", cur_cycle, fshow (req));
-   endrule
+   // ================================================================
+   // RESET BEHAVIOR WITHOUT DEBUG MODULE
 
-   // Software interrupt
-   rule rl_connect_software_interrupt_request;
-      let req <- timer0.get_sw_interrupt_req.get;
-      brvf_core.cpu_software_interrupt_req (req);
-      if (verbosity > 1)
-	 $display ("%0d: SoC_Top.rl_connect_software_interrupt_request: ", cur_cycle, fshow (req));
+   rule rl_reset_start_2 (rg_state == SOC_START);
+      core.cpu_reset_server.request.put (?);
+      mem0_controller.server_reset.request.put (?);
+      uart0.server_reset.request.put (?);
+
+      fabric.reset;
+
+      rg_state <= SOC_RESETTING;
+
+      $display ("%0d: SoC_Top. Reset start ...", cur_cycle);
    endrule
 
    // ================================================================
@@ -241,7 +253,7 @@ module mkSoC_Top (SoC_Top_IFC);
 
    rule rl_handle_external_req_read_request (req.op == external_control_req_op_read_control_fabric);
       f_external_control_reqs.deq;
-      brvf_core.dm_dmi.read_addr (truncate (req.arg1));
+      core.dm_dmi.read_addr (truncate (req.arg1));
       if (verbosity != 0) begin
 	 $display ("%0d: SoC_Top.rl_handle_external_req_read_request", cur_cycle);
          $display ("    ", fshow (req));
@@ -249,7 +261,7 @@ module mkSoC_Top (SoC_Top_IFC);
    endrule
 
    rule rl_handle_external_req_read_response;
-      let x <- brvf_core.dm_dmi.read_data;
+      let x <- core.dm_dmi.read_data;
       let rsp = Control_Rsp {status: external_control_rsp_status_ok, result: signExtend (x)};
       f_external_control_rsps.enq (rsp);
       if (verbosity != 0) begin
@@ -260,7 +272,7 @@ module mkSoC_Top (SoC_Top_IFC);
 
    rule rl_handle_external_req_write (req.op == external_control_req_op_write_control_fabric);
       f_external_control_reqs.deq;
-      brvf_core.dm_dmi.write (truncate (req.arg1), truncate (req.arg2));
+      core.dm_dmi.write (truncate (req.arg1), truncate (req.arg2));
       // let rsp = Control_Rsp {status: external_control_rsp_status_ok, result: 0};
       // f_external_control_rsps.enq (rsp);
       if (verbosity != 0) begin
@@ -280,31 +292,28 @@ module mkSoC_Top (SoC_Top_IFC);
    endrule
 
    // ----------------------------------------------------------------
-   // NDM reset request (reset all except Debug Module) from debug module
+   // NDM reset (all except Debug Module) request from debug module
 
    rule rl_reset_start (rg_state != SOC_RESETTING);
-      let req <- brvf_core.dm_ndm_reset_req_get.get;
+      let req <- core.dm_ndm_reset_req_get.get;
 
-      brvf_core.cpu_reset_server.request.put (?);
+      core.cpu_reset_server.request.put (?);
       mem0_controller.server_reset.request.put (?);
       uart0.server_reset.request.put (?);
-      timer0.server_reset.request.put (?);
 
       fabric.reset;
 
       rg_state <= SOC_RESETTING;
 
-      if (verbosity != 0) begin
-         $display ("%0d: SoC_Top: ndm resetting (all except debug module) ...", cur_cycle);
-      end
+      $display ("%0d: SoC_Top.rl_reset_start (Debug Module NDM reset, all except debug module) ...",
+		cur_cycle);
    endrule
 `endif
 
    rule rl_reset_complete (rg_state == SOC_RESETTING);
-      let cpu_rsp             <- brvf_core.cpu_reset_server.response.get;
+      let cpu_rsp             <- core.cpu_reset_server.response.get;
       let mem0_controller_rsp <- mem0_controller.server_reset.response.get;
       let uart0_rsp           <- uart0.server_reset.response.get;
-      let timer0_rsp          <- timer0.server_reset.response.get;
 
       // Initialize address maps of slave IPs
       boot_rom.set_addr_map (soc_map.m_boot_rom_addr_base,
@@ -315,35 +324,25 @@ module mkSoC_Top (SoC_Top_IFC);
 
       uart0.set_addr_map (soc_map.m_uart0_addr_base, soc_map.m_uart0_addr_lim);
 
-      timer0.set_addr_map (soc_map.m_timer0_addr_base, soc_map.m_timer0_addr_lim);
-
       rg_state <= SOC_IDLE;
 
-      if (verbosity != 0) begin
-         $display ("%0d: SoC_Top: ndm resetting (all except debug module) ... complete", cur_cycle);
-	 $display ("  Address map:");
-	 $display ("  Boot ROM:        0x%0h .. 0x%0h", soc_map.m_boot_rom_addr_base,        soc_map.m_boot_rom_addr_lim);
-	 $display ("  Mem0 Controller: 0x%0h .. 0x%0h", soc_map.m_mem0_controller_addr_base, soc_map.m_mem0_controller_addr_lim);
-	 $display ("  Timer0:          0x%0h .. 0x%0h", soc_map.m_timer0_addr_base,          soc_map.m_timer0_addr_lim);
-	 $display ("  UART0:           0x%0h .. 0x%0h", soc_map.m_uart0_addr_base,           soc_map.m_uart0_addr_lim);
-      end
-   endrule
-
-   // ================================================================
-   // BEHAVIOR WITHOUT DEBUG MODULE
-
-   rule rl_reset_start_2 (rg_state == SOC_START);
-      brvf_core.cpu_reset_server.request.put (?);
-      mem0_controller.server_reset.request.put (?);
-      uart0.server_reset.request.put (?);
-      timer0.server_reset.request.put (?);
-
-      fabric.reset;
-
-      rg_state <= SOC_RESETTING;
+`ifdef INCLUDE_GDB_CONTROL
+      $display ("%0d: SoC_Top: NDM reset complete (all except debug module)", cur_cycle);
+`else
+      $display ("%0d: SoC_Top. Reset complete ...", cur_cycle);
+`endif
 
       if (verbosity != 0) begin
-         $display ("%0d: SoC_Top.rl_reset_start: ...", cur_cycle);
+	 $display ("  SoC address map:");
+	 $display ("  Boot ROM:        0x%0h .. 0x%0h",
+		   soc_map.m_boot_rom_addr_base,
+		   soc_map.m_boot_rom_addr_lim);
+	 $display ("  Mem0 Controller: 0x%0h .. 0x%0h",
+		   soc_map.m_mem0_controller_addr_base,
+		   soc_map.m_mem0_controller_addr_lim);
+	 $display ("  UART0:           0x%0h .. 0x%0h",
+		   soc_map.m_uart0_addr_base,
+		   soc_map.m_uart0_addr_lim);
       end
    endrule
 
@@ -351,7 +350,7 @@ module mkSoC_Top (SoC_Top_IFC);
    // INTERFACE
 
    method Action  set_verbosity (Bit #(4)  verbosity, Bit #(64)  logdelay);
-      brvf_core.set_verbosity (verbosity, logdelay);
+      core.set_verbosity (verbosity, logdelay);
    endmethod
 
    // To external controller (E.g., GDB)
@@ -361,7 +360,7 @@ module mkSoC_Top (SoC_Top_IFC);
 
 `ifdef INCLUDE_TANDEM_VERIF
    // To tandem verifier
-   interface tv_verifier_info_get = brvf_core.tv_verifier_info_get;
+   interface tv_verifier_info_get = core.tv_verifier_info_get;
 `endif
 
    // External real memory

@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# Copyright (c) 2018 Bluespec, Inc. All Rights Reserved.
+# Copyright (c) 2018-2019 Bluespec, Inc. All Rights Reserved.
 # ================================================================
 # Reads a memhex file created by gen_bootroom.cc
 # and constructs a BSV function representating that rom.

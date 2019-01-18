@@ -1,14 +1,23 @@
-# Flute
+# Open-source RISC-V CPUs from Bluespec, Inc.
 
-Flute is one of a family of free, open-source RISC-V CPUs created by Bluespec, Inc.
+This is one of a family of free, open-source RISC-V CPUs created by Bluespec, Inc.
 
 - [Piccolo](https://github.com/bluespec/Piccolo): 3-stage, in-order pipeline
+
+  Piccolo is intended for low-end applications (Embedded Systems, IoT, microcontrollers, etc.).
+
 - [Flute](https://github.com/bluespec/Flute): 5-stage, in-order pipeline
+
+  Flute is intended for low-end to medium applications that require
+  64-bit operation, an MMU (Virtual Memory) and more performance than
+  Piccolo-class processors.
+
 - [Bassoon](https://github.com/bluespec/Bassoon): deep, out-of-order pipeline [Coming!]
 
-Flute is intended for low-end to medium applications that require
-64-bit operation, an MMU (Virtual Memory) and more performance than
-Piccolo-class processors.
+The three repo structures are nearly identical, and the ways to build
+and run are identical.  This README is identical--please substitute
+"Piccolo" or "Flute" or "Basoon" below wherever you see <CPU>.
+
 
 ### About the source codes (in BSV and Verilog)
 
@@ -18,19 +27,29 @@ to allow generating many possible configurations, some of which are
 adequate to boot a Linux kernel.
 
 The pre-generated synthesizable Verilog RTL source files in this
-repository are for two specific configurations:
+repository are for a few specific configurations:
 
-1. RV32IMU with 'M' extension (integer multiply/divide)
+1. RV32ACIMU:    **(DARPA SSITH users: this is the "P1" processor)**
+    - RV32I: base RV32 integer instructions
+    - 'A' extension: atomic memory ops
+    - 'C' extension: compressed instructions
+    - 'M' extension: integer multiply/divide instructions
     - Privilege levels M (machine) and U (user)
-    - Supports external, timer and software interrupts
-    - Passes all riscv-isa tests for RV32IMU
+    - Supports external, timer, software and non-maskable interrupts
+    - Passes all riscv-isa tests for RV32ACIMU
+    - Boots FreeRTOS
 
-2. RV64AIMSU with 'A' extension (atomic memory ops) and 'M' extension (integer multiply/divide)
+2. RV64ACDFIMSU
+    - RV64I: base RV64 integer instructions
+    - 'A' extension: atomic memory ops
+    - 'C' extension: compressed instructions
+    - 'D' extension: double-precision floating point instructions
+    - 'F' extension: single-precision floating point instructions
+    - 'M' extension: integer multiply/divide instructions
     - Privilege levels M (machine), S (Supervisor) and U (user)
-    - Supports external, timer and software interrupts
-    - Sv32 and Sv39 Virtual Memory schemes
-    - Passes all riscv-isa tests for RV64AIMSU
-    - Boots the Linux kernel [ *2018-10-02: almost, but not yet; hopefully in a few days.* ]
+    - Supports external, timer, software and non-maskable interrupts
+    - Passes all riscv-isa tests for RV64ACDFIMSU
+    - Boots the Linux kernel
 
 If you want to generate other Verilog variants, you'll need a Bluespec
 `bsc` compiler [Note: Bluespec, Inc. provides free licenses to
@@ -39,11 +58,12 @@ academia and for non-profit research].
 The BSV source code supports:
 
 - RV32I or RV64I
-- Optional serial shifter (smaller hardware, slower) or barrel shifter (more HW, faster) for shift instructions
-- Optional 'M' (integer multiply/divide)
-- Optional 'A' (Atomic Memory Ops)
-- Privilege M (machine), S (supervisor) and U (user)
-- For privilege S, MMUs for Sv32 Virtual Memory for RV32 and Sv39 Virtual Memory for RV64
+- Optional 'A', 'C', 'D', 'F' and 'M' extensions
+- Privilege level options M, MU and MSU
+- For privilege S, virtual memory schemes Sv32 (RV32) and Sv39 (RV64)
+
+- Hardware implementation option: serial shifter (smaller hardware, slower) or barrel shifter (more HW, faster) for shift instructions
+- Hardware implementation option: serial integer multiplier (smaller hardware, slower) or synthesized (more HW, faster)
 - AXI4-Lite Fabric interfaces, with optional 32-bit or 64-bit datapaths (independent of RV32/RV64 choice)
 - and several other localized options
 
@@ -54,39 +74,41 @@ one can run RISC-V binaries in simulation by loading standard mem hex
 files and executing in Bluespec's Bluesim, Verilator simulation or
 iVerilog simulation.  The testbench contains an AXI4-Lite interconnect
 fabric that connects the CPU to models of a boot ROM, a memory, a
-timer and a UART for console I/O [Note: UART input is not currently
-available using iverilog].
+timer and a UART for console I/O.
 
-This repository contains six sample build directories, to build
-RV32IMU or RV64AIMSU simulators, using Bluespec Bluesim simulation, a
-Verilator Verilog simulation, or an Icarus Verilog ("iverilog")
-simulation.
+[Note: **iverilog functionality is currently limited** because we are
+still working out robust mechanisms to import C code, which is used in
+parts of the testbench.]
+
+This repository contains several sample build directories, to build
+RV32ACIMU or RV64ACDFIMSU simulators, using Bluespec Bluesim
+simulation, Verilator Verilog simulation, or Icarus Verilog
+("iverilog") simulation.
 
 The generated Verilog is synthesizable. Bluespec tests all this code
-regularly on Xilinx FPGAs.
+on Xilinx FPGAs.
 
 #### Plans
 
-- We will be adding the RISC-V 'C' option (compressed instructions). [Expected October 2018]
-- We will be adding the RISC-V 'F' and 'D' options (single and double precision floating point). [Expected November 2018]
-- Continuous micro-architectural improvements for performance and hardware area. [Ongoing]
+- Ongoing continuous micro-architectural improvements for performance and hardware area.
 
 ----------------------------------------------------------------
 ## Source codes
 
 This repository contains two levels of source code: Verilog and BSV.
 
-**Verilog RTL** can be found in the following directories:
+**Verilog RTL** can be found in directories with names suffixed in
+'_verilator' or '_iverilog' in the 'builds' directory:
 
-        builds/RV32IMU_verilator/Verilog_RTL/
-        builds/RV32IMU_iverilog/Verilog_RTL/
-        builds/RV64AIMSU_verilator/Verilog_RTL/
-        builds/RV64AIMSU_iverilog/Verilog_RTL/
+        builds/..._<verilator or iverilog>/Verilog_RTL/
 
-This is _synthesizable_ RTL (and hence acceptable to Verilator).  It
-can be simulated in any Verilog simulator (we provide Makefiles to
-build simulation executables for Verilator and for Icarus Verilog
-(iverilog)).
+[There is no difference between Verilog in a Verilator directory
+vs. the corresponding iverilog directory. ]
+
+The Verilog RTL is _synthesizable_ (and hence acceptable to
+Verilator).  It can be simulated in any Verilog simulator (we provide
+Makefiles to build simulation executables for Verilator and for Icarus
+Verilog (iverilog)).
 
 The RTL represents RISC-V CPU RTL, plus a rudimentary surrounding SoC
 enabling immediate simulation here, and which is rich enough to enable
@@ -107,6 +129,7 @@ library RTL can be found in the directory `src_bsc_lib_RTL`.
         this is instantiated twice to provide completely separate
         channels (MMU and Cache) for instructions and data.
    - `BSV_Additional_Libs/`: generic utilities (not CPU-specific)
+   - `Debug_Module/`: RISC-V Debug Module to debug the CPU from GDB or other debuggers
 
 - `src_Testbench/`, for the surrounding testbench, with sub-directories:
 
@@ -127,30 +150,23 @@ sets of choices for the various parameters.  The generated RTL is not
 parameterized.
 
 To generate Verilog variants with other parameter choices, the user
-will need Bluespec's `bsc` compiler.  See the `BSC_FLAGS` in following
-Makefiles for examples of how the build is configured for different
-ISA features:
+will need Bluespec's `bsc` compiler.  See the next section for
+examples of how the build is configured for different ISA features.
 
-        builds/Resources/Include_RV32IMU.mk
-        builds/Resources/Include_RV64AIMSU.mk
-
-
-In fact the CPU can also support a standard RISC-V Debug Module, and a
-"Tandem Verifier" to check it for correctness on an
-instruction-by-instruction basis.  Please contact Bluespec, Inc. if
-you are interested in such variants.
+In fact the CPU also supports a "Tandem Verifier" that produces an
+instruction-by-instruction trace that can be checked for correctness
+against a RISC-V Golden Reference Model.  Please contact Bluespec,
+Inc. for more information.
 
 ----------------------------------------------------------------
 ### Building and running from the Verilog sources, out of the box
 
-- In any of the following directories:
+In any of the Verilog-build directories:
 
-            builds/RV32IMU_verilator/
-            builds/RV64AIMSU_verilator/
-            builds/RV32IMU_iverilog/
-            builds/RV64AIMSU_iverilog/
+            builds/<ARCH>_<CPU>_verilator/
+            builds/<ARCH>_<CPU>_iverilog/
 
-  - `$ make mkSim` will create a Verilog simulation executable using Verilator or iverilog, respectively
+  - `$ make simulator` will create a Verilog simulation executable using Verilator or iverilog, respectively
 
   - `$ make test` will run the executable on the standard RISC-V ISA
         test `rv32ui-p-add` or `rv64ui-p-add`, which is one of the
@@ -165,13 +181,16 @@ you are interested in such variants.
     the other tests in the `Tests/isa/` directory by pointing at the
     chosen ELF file.
 
-Note: an RV32IMU simulator will only successfully run ELF files
-compiled for RV32IM, privilege U and M; running it on any other ELF
-file will result in illegal instruction traps.  An RV64AIMSU simulator
-will only successfully run ELF files compiled for RV64AIMSU, privilege
-U, S and M; running it on any other ELF file will result in illegal
-instruction traps.
+  - `$ make isa_tests` will run the executable on
+      all the standard RISC-V ISA tests relevant for ARCH (regression testing).
+      This uses the Python script `Tests/Run_regression.py`.
+      Please see the documentation at the top of that program for details.
 
+Note: an RV32ACIMU simulator will only successfully run ELF files
+compiled for RV32ACIMU, privilege U and M; running it on any other ELF
+file will result in illegal instruction traps.  An RV64ACDFIMSU
+simulator will successfully run ELF files compiled for RV64ACDFIMSU,
+privilege U, S and M.
 
 #### Tool dependencies:
 
@@ -186,59 +205,51 @@ problems with earlier versions of both tools.
         Verilator 3.922 2018-03-17 rev verilator_3_920-32-gdf3d1a4
 
 ----------------------------------------------------------------
-### Running regressions of all standard RISC-V ISA tests
-
-In the Tests/ directory there is a Python program using which you can
-run the simulation executables (Bluesim, verilator or iverilog) on all
-the relevant standard RISC-V ISA tests (a few hundred tests).  Please
-see Tests/README.txt for more details.
-
-----------------------------------------------------------------
 ### What you can build and run if you have Bluespec's `bsc` compiler
 
 [Note: Bluespec, Inc. provides free licenses to academia and for non-profit research].
 
-In either of the following directories:
+Note: even without Bluespec's `bsc` compiler, you can use the Verilog
+sources in any of the `builds/<ARCH>_<CPU>_verilator/Verilog_RTL`
+directories-- build and run Verilog simulations, incorporate the
+Verilog CPU into your own SoC, etc.  This section describes additional
+things you can do with a `bsc` compiler.
 
-        builds/RV32IMU_Bluesim
-        builds/RV64AIMSU_Bluesim
+#### Building a Bluesim simulator
 
-  - `$ make compile link`
+In any of the following directories:
 
-will compile and link a Bluesim executable.  Then,
+        builds/<ARCH>_<CPU>_bluesim
 
-  - `$ make test`
+  - `$ make compile simulator`
 
-will run it on the `rv32ui-p-add` or `rv64ui-p-add` test.  This is one
-of the tests in the `Tests/isa/` directory.  Examining the `test:`
-target in `Makefile`, we see that it first runs the program
-`Tests/elf_to_hex/elf_to_hex` on the `rv32ui-p-add` or `rv64ui-p-add`
-ELF file to create a `Mem.hex` file, and then runs the simulation
-executable which loads this `Mem.hex` file into its memory.
+will compile and link a Bluesim executable.  Then, you can `make test`
+or `make isa_tests` as described above to run an individual ISA test
+or run regressions on the full suite of relevant ISA tests.
 
-Following the pattern of `$ make test`, the user can run any of the
-other tests in the `Tests/isa/` directory by pointing at the chosen
-ELF file.
+#### Re-generating Verilog RTL
 
-Note: an RV32IMU simulator will only successfully run ELF files
-compiled for RV32IM, privilege U and M; running it on any other ELF
-file will result in illegal instruction traps.  An RV64AIMSU simulator
-will only successfully run ELF files compiled for RV64AIMSU, privilege
-U, S and M; running it on any other ELF file will result in illegal
-instruction traps.
-
-You can also regenerate the Verilog RTL in the
-`build/RV32IMU_verilator/`, `build/RV32IMU_iverilog/`
-`build/RV64AIMSU_verilator/`or `build/RV64AIMSU_iverilog/`
+You can regenerate the Verilog RTL in any of the
+`build/<ARCH>_<CPU>_verilator/` or `build/<ARCH>_<CPU>_iverilog/`
 directories.  Example:
 
-  - `$ cd  builds/RV32IMU_verilator`
-  - `$ make gen_RTL`
+        $ cd  builds/RV32ACIMU_<CPU>_verilator
+        $ make compile
 
-In each of the `builds/RV...` directories, you can edit the Makefile
-to pass different flags and macros to `bsc` which will generate
-different variants of the CPU as described above (RV32I/64I,
-with/without M, with/without A, with/without privilege S and MMUs,
-etc.)
+#### Creating a new architecture configuration
+
+In the `builds/` directory, you can create a new sub-directory to
+build a new configuration of interest.  For example:
+
+        $ cd  builds
+	$ Resources/mkBuild_Dir.py  ..  RV32CI  bluesim
+
+will create a new directory: `builds\RV32CIU_<CPU>_bluesim`
+populated with a `Makefile` to compile and link a bluesim simulation
+for an RV32 CPU with 'I' and 'C' ISA options.  You can build and run
+that simulator as usual:
+
+        $ cd  builds/RV32CIU_<CPU>_bluesim
+        $ make compile simulator test isa_tests
 
 ----------------------------------------------------------------

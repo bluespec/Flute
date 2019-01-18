@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2018 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved.
 
 // Near_Mem_IFC encapsulates the MMU and L1 cache.
 // It is 'near' the CPU (1-cycle access in common case).
@@ -75,6 +75,16 @@ interface Near_Mem_IFC;
    method Action sfence_vma;
 
    // ----------------
+   // Interrupts from nearby memory-mapped IO (timer, SIP, ...)
+
+   // Timer interrupt
+   // True/False = set/clear interrupt-pending in CPU's MTIP
+   interface Get #(Bool)  get_timer_interrupt_req;
+
+   // Software interrupt
+   interface Get #(Bool)  get_sw_interrupt_req;
+
+   // ----------------
    // Back-door slave interface from fabric into Near_Mem
    interface AXI4_Lite_Slave_IFC #(Wd_Addr, Wd_Data, Wd_User) near_mem_slave;
 endinterface
@@ -106,10 +116,12 @@ interface IMem_IFC;
 
    // CPU side: IMem response
    (* always_ready *)  method Bool     valid;
+   (* always_ready *)  method Bool     is_i32_not_i16;
    (* always_ready *)  method WordXL   pc;
    (* always_ready *)  method Instr    instr;
    (* always_ready *)  method Bool     exc;
    (* always_ready *)  method Exc_Code exc_code;
+   (* always_ready *)  method WordXL   tval;        // can be different from PC
 endinterface
 
 // ================================================================

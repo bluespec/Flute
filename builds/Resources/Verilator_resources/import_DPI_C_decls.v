@@ -1,7 +1,14 @@
+// Copyright (c) 2018-2019 Bluespec, Inc. All Rights Reserved
+
 // Hand-written System Verilog import statements for imported C functions
 
+// ****************************************************************
+// ****************************************************************
+// ****************************************************************
+
+// Functions for console I/O
+
 // ================================================================
-// import "BDPI" function ActionValue #(Bit #(8)) c_trygetchar (Bit #(8) dummy);
 
 import "DPI-C"
 function  byte unsigned  c_trygetchar (byte unsigned  dummy);
@@ -16,6 +23,12 @@ function  int unsigned  c_putchar (byte unsigned  ch);
 
 import "DPI-C"
 function longint unsigned  c_get_symbol_val (string symbol);
+
+// ****************************************************************
+// ****************************************************************
+// ****************************************************************
+
+// Functions for Tandem Verification trace file output.
 
 // ================================================================
 
@@ -33,5 +46,23 @@ function  int unsigned  c_trace_file_write_buffer (int unsigned  n);
 
 import "DPI-C"
 function  int unsigned  c_trace_file_close (byte unsigned dummy);
+
+// ****************************************************************
+// ****************************************************************
+// ****************************************************************
+
+// ================================================================
+
+import "DPI-C"
+function  byte unsigned  c_debug_client_connect (shortint  tcp_port);
+
+import "DPI-C"
+function  byte unsigned  c_debug_client_disconnect (byte unsigned  dummy);
+
+import "DPI-C"
+function  longint unsigned  c_debug_client_request_recv (byte unsigned  dummy);
+
+import "DPI-C"
+function  byte unsigned  c_debug_client_response_send (int unsigned  data);
 
 // ================================================================
