@@ -893,8 +893,17 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
 `endif
 
    rule doFCVT_S_D ( validReq && isFCVT_S_D );
+      Bit #(64) res;
       Tuple2#(FSingle,FloatingPoint::Exception) f = convert( dV1 , rmd , False );
-      Bit #(64) res = fv_nanbox (extend (pack ( tpl_1(f) )));
+
+      // The convert function retains the original SFD bits in the conversion.
+      // The RISC-V spec expects qNaNs to be the canonical NaNs. So, if the
+      // output is a qNaN make it into a canonical NaN (zero out SFD, except q)
+      if (isQNaN (tpl_1 (f)))
+         res = fv_nanbox (extend ( canonicalNaN32 ));
+      else
+         res = fv_nanbox (extend (pack ( tpl_1(f) )));
+
       let fcsr = exception_to_fcsr( tpl_2(f) );
       fa_driveResponse (res, fcsr);
       resultR     <= tagged Valid (tuple2 (res, fcsr));
@@ -902,8 +911,17 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
    endrule
 
    rule doFCVT_D_S ( validReq && isFCVT_D_S );
+      Bit #(64) res;
       Tuple2#(FDouble,FloatingPoint::Exception) f = convert( sV1 , rmd , False );
-      Bit #(64) res = pack ( tpl_1(f) );
+
+      // The convert function retains the original SFD bits in the conversion.
+      // The RISC-V spec expects qNaNs to be the canonical NaNs. So, if the
+      // output is a qNaN make it into a canonical NaN (zero out SFD, except q)
+      if (isQNaN (tpl_1 (f)))
+         res = canonicalNaN64;
+      else
+         res = pack ( tpl_1(f) );
+
       let fcsr = exception_to_fcsr( tpl_2(f) );
       fa_driveResponse (res, fcsr);
       resultR     <= tagged Valid (tuple2 (res, fcsr));
