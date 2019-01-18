@@ -36,9 +36,12 @@ import GetPut_Aux :: *;
 import Core_IFC :: *;
 import Core     :: *;
 
-// Main fabric
-import AXI4_Lite_Types  :: *;
-import AXI4_Lite_Fabric :: *;
+// Main Fabric
+import AXI4_Lite_Types         :: *;
+import AXI4_Lite_Fabric        :: *;
+import AXI4_Types              :: *;
+import AXI4_AXI4_Lite_Adapters :: *;
+
 import Fabric_Defs      :: *;
 
 // 2x1 AXI4_Lite fabric to mux IMem and Debug Module masters into a single master
@@ -63,10 +66,12 @@ interface P2_Core_IFC;
    // Core CPU interfaces
 
    // CPU IMem and DM to Fabric master interface
-   interface AXI4_Lite_Master_IFC #(Wd_Addr, Wd_Data, Wd_User) master0;
+   // interface AXI4_Lite_Master_IFC #(Wd_Addr, Wd_Data, Wd_User) master0;
+   interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) master0;
 
    // CPU DMem to Fabric master interface
-   interface AXI4_Lite_Master_IFC #(Wd_Addr, Wd_Data, Wd_User) master1;
+   // interface AXI4_Lite_Master_IFC #(Wd_Addr, Wd_Data, Wd_User) master1;
+   interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) master1;
 
    // External interrupts
    (* always_ready, always_enabled *)
@@ -92,27 +97,12 @@ interface P2_Core_IFC;
 endinterface
 
 // ================================================================
-// PC reset value
-
-// Entry point for Boot ROM used in Spike/Rocket
-// (boot code jumps later to 'h_8000_0000)
-Bit #(64)  pc_reset_value    = 'h_0000_1000;
-
-// Entry point for code generated for Spike/Rocket
-// Bit #(64)  pc_reset_value    = 'h_8000_0000;
-
-// ================================================================
 
 (* synthesize *)
-module mkP2_Core #(parameter Bit #(64)  pc_reset_value,
-		   parameter Bit #(64)  near_mem_io_addr_base,
-		   parameter Bit #(64)  near_mem_io_addr_lim)
-                 (P2_Core_IFC);
+module mkP2_Core (P2_Core_IFC);
 
    // CPU + Debug module
-   Core_IFC::Core_IFC  core <- mkCore (pc_reset_value,
-				       near_mem_io_addr_base,
-				       near_mem_io_addr_lim);
+   Core_IFC::Core_IFC  core <- mkCore;
 
    // ================================================================
    // Tie-offs (not used in SSITH GFE)
@@ -127,36 +117,38 @@ module mkP2_Core #(parameter Bit #(64)  pc_reset_value,
    endrule
 
    // ================================================================
-   // NDM reset from Debug Module (for all except Debug Module)
+   // Reset on startup, and also on NDM reset from Debug Module
+   // (NDM reset from Debug Module = reset all except Debug Module)
 
-`ifdef INCLUDE_GDB_CONTROL
-   Reg #(Bool) rg_resetting <- mkReg (False);
+   Reg#(Bool) rg_once <- mkReg(False);
 
-   rule rl_reset_start (! rg_resetting);
-      let req <- core.dm_ndm_reset_req_get.get;
+   rule rl_once (! rg_once);
       core.cpu_reset_server.request.put (?);
-      rg_resetting <= True;
-      $display ("P1_Core.rl_reset_start (Debug Module NDM reset, all except debug module) ...");
+      rg_once <= True;
    endrule
 
-   rule rl_reset_complete (rg_resetting);
-      let cpu_rsp <- core.cpu_reset_server.response.get;
-      rg_resetting <= False;
-      $display ("P1_Core: NDM reset complete (all except debug module)");
+   rule rl_reset_response;
+      let tmp <- core.cpu_reset_server.response.get;
    endrule
-`endif
+
+   rule rl_ndmreset (rg_once);
+      let tmp <- core.dm_ndm_reset_req_get.get;
+      rg_once <= False;
+   endrule
 
    // ================================================================
-
-`ifdef INCLUDE_GDB_CONTROL
    // Merge IMem and Debug Module AXI4-Lite Masters
    // since Flute uses 3 masters (IMem, DMem and Debug Module)
    // but SSITH GFE only has 2 masters
 
+`ifdef INCLUDE_GDB_CONTROL
    Fabric_2x1_IFC  fabric_2x1 <- mkFabric_2x1;
 
    mkConnection (core.cpu_imem_master, fabric_2x1.v_from_masters [0]);
    mkConnection (core.dm_master,       fabric_2x1.v_from_masters [1]);
+   let imem_dm_master = fabric_2x1.v_to_slaves [0];
+`else
+   let imem_dm_master = core.cpu_imem_master;
 `endif
 
    // ================================================================
@@ -225,10 +217,12 @@ module mkP2_Core #(parameter Bit #(64)  pc_reset_value,
    // INTERFACE
 
    // CPU IMem to Fabric master interface
-   interface AXI4_Lite_Master_IFC master0 = fabric_2x1.v_to_slaves [0];
+   // interface AXI4_Lite_Master_IFC master0 = imem_dm_master;
+   interface AXI4_Master_IFC master0 = fn_AXI4_Lite_Master_IFC_to_AXI4_Master_IFC (imem_dm_master);
 
    // CPU DMem to Fabric master interface
-   interface AXI4_Lite_Master_IFC master1 = core.cpu_dmem_master;
+   // interface AXI4_Lite_Master_IFC master1 = core.cpu_dmem_master;
+   interface AXI4_Master_IFC master1 = fn_AXI4_Lite_Master_IFC_to_AXI4_Master_IFC (core.cpu_dmem_master);
 
    // External interrupts
    method Action cpu_external_interrupt (req) = core.cpu_external_interrupt_req (req);

@@ -46,13 +46,57 @@ import Fabric_Defs     :: *;
 import AXI4_Lite_Types :: *;
 
 // ================================================================
-// Local constants and types
+// UART registers and their address offsets
 
-// Module state
-typedef enum {STATE_START,
-	      STATE_READY
-   } State
-deriving (Bits, Eq, FShow);
+Bit #(3)  addr_UART_rbr  = 3'h_0;    // receiver buffer register (read only)
+Bit #(3)  addr_UART_thr  = 3'h_0;    // transmitter holding register (write only)
+Bit #(3)  addr_UART_ier  = 3'h_1;    // interrupt enable register
+Bit #(3)  addr_UART_iir  = 3'h_2;    // interrupt id register    (read-only)
+Bit #(3)  addr_UART_lcr  = 3'h_3;    // line control reg
+Bit #(3)  addr_UART_mcr  = 3'h_4;    // modem control reg
+Bit #(3)  addr_UART_lsr  = 3'h_5;    // line status reg     (read-only)
+Bit #(3)  addr_UART_msr  = 3'h_6;    // modem status reg    (read-only)
+Bit #(3)  addr_UART_scr  = 3'h_7;    // scratch pad reg
+
+// Aliased registers, depending on control bits
+Bit #(3)  addr_UART_dll  = 3'h_0;    // divisor latch low
+Bit #(3)  addr_UART_dlm  = 3'h_1;    // divisor latch high
+Bit #(3)  addr_UART_fcr  = 3'h_2;    // fifo control reg    (write-only)
+
+// Bit fields of ier (Interrupt Enable Register)
+Bit #(8)  uart_ier_erbfi = 8'h_01;     // Enable Received Data Available Interrupt
+Bit #(8)  uart_ier_etbei = 8'h_02;     // Enable Transmitter Holding Register Empty Interrupt
+Bit #(8)  uart_ier_elsi  = 8'h_04;     // Enable Receiver Line Status Interrupt
+Bit #(8)  uart_ier_edssi = 8'h_08;     // Enable Modem Status Interrupt
+
+// iir values (Interrupt Identification Register) in decreasing priority of interrupts
+Bit #(8)  uart_iir_none  = 8'h_01;     // None (no interrupts pending)
+Bit #(8)  uart_iir_rls   = 8'h_06;     // Receiver Line Status
+Bit #(8)  uart_iir_rda   = 8'h_04;     // Received Data Available
+Bit #(8)  uart_iir_cti   = 8'h_0C;     // Character Timeout Indication
+Bit #(8)  uart_iir_thre  = 8'h_02;     // Transmitter Holding Register Empty
+Bit #(8)  uart_iir_ms    = 8'h_00;     // Modem Status
+
+// Bit fields of LCR
+Bit #(8)  uart_lcr_dlab  = 8'h_80;     // Divisor latch access bit
+Bit #(8)  uart_lcr_bc    = 8'h_40;     // Break control
+Bit #(8)  uart_lcr_sp    = 8'h_20;     // Stick parity
+Bit #(8)  uart_lcr_eps   = 8'h_10;     // Even parity
+Bit #(8)  uart_lcr_pen   = 8'h_08;     // Parity enable
+Bit #(8)  uart_lcr_stb   = 8'h_04;     // # of stop bits (0=1b,1=2b)
+Bit #(8)  uart_lcr_wls   = 8'h_03;     // word len (0:5b,1:6b,2:7b,3:8b)
+
+// Bit fields of LSR
+Bit #(8)  uart_lsr_rxfe  = 8'h_80;    // Receiver FIFO error
+Bit #(8)  uart_lsr_temt  = 8'h_40;    // Transmitter empty
+Bit #(8)  uart_lsr_thre  = 8'h_20;    // THR empty
+Bit #(8)  uart_lsr_bi    = 8'h_10;    // Break interrupt
+Bit #(8)  uart_lsr_fe    = 8'h_08;    // Framing Error
+Bit #(8)  uart_lsr_pe    = 8'h_04;    // Parity Error
+Bit #(8)  uart_lsr_oe    = 8'h_02;    // Overrun Error
+Bit #(8)  uart_lsr_dr    = 8'h_01;    // Data Ready
+
+Bit #(8)  uart_lsr_reset_value = (uart_lsr_temt | uart_lsr_thre);
 
 // ================================================================
 // Interface
@@ -70,35 +114,32 @@ interface UART_IFC;
    // To external console
    interface Get #(Bit #(8))  get_to_console;
    interface Put #(Bit #(8))  put_from_console;
+
+   // Interrupt pending
+   (* always_ready *)
+   method Bool  intr;
 endinterface
 
 // ================================================================
-// Definitions of various bits in UART regs
-// This is not a complete def for all the regs, just those actually used in this model
+// Local types and constants
 
-typedef enum {LCR_WLS5 = 8'h00,
-	      LCR_WLS6 = 8'h01,
-	      LCR_WLS7 = 8'h02,
-	      LCR_WLS8 = 8'h03,
-	      LCR_STB  = 8'h04,
-	      LCR_PEN  = 8'h08,
-	      LCR_EPS  = 8'h10,
-	      LCR_SP   = 8'h20,
-	      LCR_BC   = 8'h40,
-	      LCR_DLAB = 8'h80
-   }  LCR_T
-deriving (Eq, Bits, FShow);
+// Module state
+typedef enum {STATE_START,
+	      STATE_READY
+   } Module_State
+deriving (Bits, Eq, FShow);
 
-typedef enum {LSR_DR   = 8'h01,
-	      LSR_OE   = 8'h02,
-	      LSR_PE   = 8'h04,
-	      LSR_FE   = 8'h08,
-	      LSR_BI   = 8'h10,
-	      LSR_THRE = 8'h20,
-	      LSR_TEMT = 8'h40,
-	      LSR_RXFE = 8'h80
-   } LSR_T
-deriving (Eq, Bits, FShow);
+// ----------------
+// Split a bus address into (offset in UART, lsbs)
+
+function Tuple3 #(Bit #(2), Bit #(3), Bit #(3)) split_addr (Bit #(64) addr);
+   // 8-byte stride
+   Bit #(2)  msbs   = addr [7:6];
+   Bit #(3)  offset = addr [5:3];
+   Bit #(3)  lsbs   = addr [2:0];
+
+   return tuple3 (msbs, offset, lsbs);
+endfunction
 
 // ================================================================
 
@@ -107,9 +148,9 @@ module mkUART (UART_IFC);
 
    Reg #(Bit #(8)) cfg_verbosity <- mkConfigReg (0);
 
-   Reg #(State)       rg_state     <- mkReg (STATE_START);
-   Reg #(Fabric_Addr) rg_addr_base <- mkRegU;
-   Reg #(Fabric_Addr) rg_addr_lim  <- mkRegU;
+   Reg #(Module_State) rg_state     <- mkReg (STATE_START);
+   Reg #(Fabric_Addr)  rg_addr_base <- mkRegU;
+   Reg #(Fabric_Addr)  rg_addr_lim  <- mkRegU;
 
    FIFOF #(Bit #(0)) f_reset_reqs <- mkFIFOF;
    FIFOF #(Bit #(0)) f_reset_rsps <- mkFIFOF;
@@ -117,45 +158,82 @@ module mkUART (UART_IFC);
    // ----------------
    // Connector to fabric
 
-   AXI4_Lite_Slave_Xactor_IFC #(Wd_Addr, Wd_Data, Wd_User) slave_xactor <- mkAXI4_Lite_Slave_Xactor;
+   AXI4_Lite_Slave_Xactor_IFC #(Wd_Addr, Wd_Data, Wd_User)
+      slave_xactor <- mkAXI4_Lite_Slave_Xactor;
 
    // ----------------
+   // character queues to and from the console
 
    FIFOF #(Bit #(8)) f_from_console <- mkFIFOF;
    FIFOF #(Bit #(8)) f_to_console   <- mkFIFOF;
 
+   // ----------------
    // These are the 16550 UART registers
-   // A separate rg_rbr is not necessary as we are driving RX Data directly from
-   // f_from_console.first
-   Reg #(Bit #(8))  rg_thr <- mkRegU;    // 0x00    a.k.a. txd
-   Reg #(Bit #(8))  rg_dll <- mkRegU;    // 0x00
+   // See fn_addr_offset() above for meaning of 'addr offset'
 
-   Reg #(Bit #(8))  rg_ier <- mkRegU;    // 0x04    a.k.a. dlm
-   Reg #(Bit #(8))  rg_dlh <- mkRegU;    // 0x04
+   Reg #(Bit #(8))  rg_rbr <- mkRegU;       // addr offset 0
+   Reg #(Bit #(8))  rg_thr <- mkRegU;       // addr offset 0
+   Reg #(Bit #(8))  rg_dll <- mkReg (0);    // addr offset 0
 
-   Reg #(Bit #(8))  rg_iir <- mkRegU;    // 0x08
-   Reg #(Bit #(8))  rg_fcr <- mkRegU;    // 0x08
+   Reg #(Bit #(8))  rg_ier <- mkReg (0);    // addr offset 1
+   Reg #(Bit #(8))  rg_dlm <- mkReg (0);    // addr offset 1
 
-   Reg #(Bit #(8))  rg_lcr <- mkRegU;    // 0x0c
-   Reg #(Bit #(8))  rg_mcr <- mkRegU;    // 0x10
-   // Transmit is always ready. DR field is set when there is data in the
-   // f_from_console. All other fields are unused. As no status bits are being
-   // set (except DR), do not need a complete register here. Not removing in
-   // order to leave scope for extending functionality. 
-   Reg #(Bit #(8))  rg_lsr <- mkReg (8'b01100000);    // 0x14
-   Reg #(Bit #(8))  rg_msr <- mkRegU;    // 0x18
-   Reg #(Bit #(8))  rg_scr <- mkRegU;    // 0x1c
+   // IIR is a virtual read-only register computed from other regs
+   Reg #(Bit #(8))  rg_fcr <- mkReg (0);    // addr offset 2
+
+   Reg #(Bit #(8))  rg_lcr <- mkReg (0);    // addr offset 3
+   Reg #(Bit #(8))  rg_mcr <- mkReg (0);    // addr offset 4
+   Reg #(Bit #(8))  rg_lsr <- mkReg (uart_lsr_reset_value);    // addr offset 5
+   Reg #(Bit #(8))  rg_msr <- mkReg (0);    // addr offset 6
+   Reg #(Bit #(8))  rg_scr <- mkReg (0);    // addr offset 7
+
+   // ----------------
+   // Virtual read-only register IIR
+
+   function Bit #(8) fn_iir ();
+      Bit #(8) iir = 0;
+
+      if (   ((rg_ier & uart_ier_erbfi) != 0)    // Rx interrupt enabled
+	  && ((rg_lsr & uart_lsr_dr)    != 0))   // data ready
+	 iir = uart_iir_rda;
+
+      else if ((rg_ier & uart_ier_etbei) != 0)   // Tx Holding Reg Empty intr enabled
+	 iir = uart_iir_thre;
+
+      return iir;
+   endfunction
+
+   // ----------------
+   // Test if an interrupt is pending
+
+   function Bool fn_intr ();
+      let iir = fn_iir ();
+      Bool eip = ((iir & uart_iir_none) == 0);
+      return eip;
+   endfunction
 
    // ================================================================
    // BEHAVIOR
 
    // ----------------------------------------------------------------
-   // Reset
+   // Soft reset (on token in f_reset_reqs)
 
    rule rl_reset;
       f_reset_reqs.deq;
+
+      rg_dll <= 0;
+      rg_ier <= 0;
+      rg_dlm <= 0;
+      rg_fcr <= 0;
+      rg_lcr <= 0;
+      rg_mcr <= 0;
+      rg_lsr <= uart_lsr_reset_value;
+      rg_msr <= 0;
+      rg_scr <= 0;
+
       slave_xactor.reset;
       rg_state <= STATE_READY;
+
       f_reset_rsps.enq (?);
 
       if (cfg_verbosity != 0)
@@ -168,45 +246,62 @@ module mkUART (UART_IFC);
    rule rl_process_rd_req (rg_state == STATE_READY);
       let rda <- pop_o (slave_xactor.o_rd_addr);
 
-      let byte_addr  = rda.araddr - rg_addr_base;
+      let byte_addr = rda.araddr - rg_addr_base;
+      let { msbs, offset, lsbs } = split_addr (zeroExtend (byte_addr));
 
-      Fabric_Data    rdata = 0;
-      AXI4_Lite_Resp rresp = AXI4_LITE_OKAY;
+      Bit #(8)       rdata_byte = 0;
+      AXI4_Lite_Resp rresp      = AXI4_LITE_OKAY;
 
-      if (byte_addr [2:0] != 0) begin
+      if (lsbs != 0) begin
 	 $display ("%0d: ERROR: UART.rl_process_rd_req: misaligned addr", cur_cycle);
 	 $display ("            ", fshow (rda));
 	 rresp = AXI4_LITE_SLVERR;
       end
-      else
-      case (byte_addr [7:3])
-         5'h00: begin
-		   // Drive RX_DATA from the first entry of f_from_console
-		   let ch = f_from_console.first;
-		   f_from_console.deq;
-		   rdata = {0, ch};
-		end
-	 5'h01: rdata = {0, rg_ier};
-	 5'h02: rdata = {0, rg_iir};
-	 5'h03: rdata = {0, rg_lcr};
-	 5'h04: rdata = {0, rg_mcr};
-	 5'h05: begin
-		   // Transmit is always ready (from reset).
-		   //  Receive is ready if f_from_console is not empty.
-		   let lsr = (f_from_console.notEmpty
-			      ? (rg_lsr | pack (LSR_DR))
-			      : rg_lsr);
-		   rdata = {0, lsr};
-		end
-	 5'h06: rdata = {0, rg_msr};
-	 5'h07: rdata = {0, rg_scr};
-	 default: begin
-		     $display ("%0d: ERROR: UART.rl_process_rd_req: unrecognized addr", cur_cycle);
-		     $display ("            ", fshow (rda));
-		     rresp = AXI4_LITE_SLVERR;
-		  end
-      endcase
+      else if (msbs != 0) begin
+	 $display ("%0d: ERROR: UART.rl_process_rd_req: unrecognized addr", cur_cycle);
+	 $display ("            ", fshow (rda));
+	 rresp = AXI4_LITE_SLVERR;
+      end
 
+      // offset 0: RBR
+      else if ((offset == addr_UART_rbr) && ((rg_lcr & uart_lcr_dlab) == 0)) begin
+	 // Read an input char
+	 rg_lsr <= (rg_lsr & (~ uart_lsr_dr));    // Reset data-ready
+	 rdata_byte = rg_rbr;
+      end
+      // offset 0: DLL
+      else if ((offset == addr_UART_dll) && ((rg_lcr & uart_lcr_dlab) != 0))
+	 rdata_byte = rg_dll;
+
+      // offset 1: IER
+      else if ((offset == addr_UART_ier) && ((rg_lcr & uart_lcr_dlab) == 0))
+	 rdata_byte = rg_ier;
+      // offset 1: DLM
+      else if ((offset == addr_UART_dlm) && ((rg_lcr & uart_lcr_dlab) != 0))
+	 rdata_byte = rg_dlm;
+
+      // offset 2: IIR (read-only)
+      else if (offset == addr_UART_iir) rdata_byte  = fn_iir();
+
+      // offset 3: LCR
+      else if (offset == addr_UART_lcr) rdata_byte  = { 0, rg_lcr };
+      // offset 4: MCR
+      else if (offset == addr_UART_mcr) rdata_byte  = { 0, rg_mcr };
+      // offset 5: LSR
+      else if (offset == addr_UART_lsr) rdata_byte  = { 0, rg_lsr };
+      // offset 6: MSR
+      else if (offset == addr_UART_msr) rdata_byte  = { 0, rg_msr };
+      // offset 7: SCR
+      else if (offset == addr_UART_scr) rdata_byte  = { 0, rg_scr };
+
+      else begin
+	 $display ("%0d: ERROR: UART.rl_process_rd_req: unrecognized addr", cur_cycle);
+	 $display ("            ", fshow (rda));
+	 rresp = AXI4_LITE_SLVERR;
+      end
+
+      // Send read-response to bus
+      Fabric_Data rdata = zeroExtend (rdata_byte);
       let rdr = AXI4_Lite_Rd_Data {rresp: rresp, rdata: rdata, ruser: rda.aruser};
       slave_xactor.i_rd_data.enq (rdr);
 
@@ -224,41 +319,67 @@ module mkUART (UART_IFC);
       let wra <- pop_o (slave_xactor.o_wr_addr);
       let wrd <- pop_o (slave_xactor.o_wr_data);
 
-      Bit #(64) wdata = zeroExtend (wrd.wdata);
-      Bit #(8)  wstrb = zeroExtend (wrd.wstrb);
+      Bit #(64) wdata     = zeroExtend (wrd.wdata);
+      Bit #(8)  wstrb     = zeroExtend (wrd.wstrb);
+      Bit #(8)  data_byte = wdata [7:0];
 
-      let byte_addr  = wra.awaddr - rg_addr_base;
+      let byte_addr = wra.awaddr - rg_addr_base;
+      let { msbs, offset, lsbs } = split_addr (zeroExtend (byte_addr));
 
       AXI4_Lite_Resp bresp = AXI4_LITE_OKAY;
 
-      if ((byte_addr [2:0] != 0) || (wstrb[0] != 1'b1))  begin
+      if ((lsbs != 0) || (wstrb [0] == 1'b0))  begin
 	 $display ("%0d: ERROR: UART.rl_process_wr_req: misaligned addr", cur_cycle);
 	 $display ("            ", fshow (wra));
 	 $display ("            ", fshow (wrd));
 	 bresp = AXI4_LITE_SLVERR;
       end
-      else
-      case (byte_addr [7:3])
-         5'h00: if ((rg_lcr & pack (LCR_DLAB)) == 0) begin
-		   Bit #(8) ch = wdata [7:0];
-		   rg_thr <= ch;
-		   f_to_console.enq (ch);
-		end
-	 5'h01: rg_ier <= wdata [7:0];
-	 5'h02: rg_iir <= wdata [7:0];
-	 5'h03: rg_lcr <= wdata [7:0];
-	 5'h04: rg_mcr <= wdata [7:0];
-	 5'h05: rg_lsr <= wdata [7:0];
-	 5'h06: rg_msr <= wdata [7:0];
-	 5'h07: rg_scr <= wdata [7:0];
-	 default: begin
-		     $display ("%0d: ERROR: UART.rl_process_wr_req: unrecognized addr", cur_cycle);
-		     $display ("            ", fshow (wra));
-		     $display ("            ", fshow (wrd));
-		     bresp = AXI4_LITE_SLVERR;
-		  end
-      endcase
+      else if (msbs != 0) begin
+	 $display ("%0d: ERROR: UART.rl_process_wr_req: unrecognized addr", cur_cycle);
+	 $display ("            ", fshow (wra));
+	 $display ("            ", fshow (wrd));
+	 bresp = AXI4_LITE_SLVERR;
+      end
 
+      // offset 0: THR
+      else if ((offset == addr_UART_thr) && ((rg_lcr & uart_lcr_dlab) == 0)) begin
+	 // Write a char to the serial line
+	 rg_thr <= data_byte;
+	 f_to_console.enq (data_byte);
+      end
+      // offset 0: DLL
+      else if ((offset == addr_UART_dll) && ((rg_lcr & uart_lcr_dlab) != 0))
+	 rg_dll <= data_byte;
+
+      // offset 1: IER
+      else if ((offset == addr_UART_ier) && ((rg_lcr & uart_lcr_dlab) == 0))
+	 rg_ier <= data_byte;
+      // offset 1: DLM
+      else if ((offset == addr_UART_dlm) && ((rg_lcr & uart_lcr_dlab) != 0))
+	 rg_dlm <= data_byte;
+
+      // offset 2: FCR (write-only)
+      else if (offset == addr_UART_fcr) rg_fcr <= data_byte;
+
+      // offset 3: LCR
+      else if (offset == addr_UART_lcr) rg_lcr <= data_byte;
+      // offset 4: MCR
+      else if (offset == addr_UART_mcr) rg_mcr <= data_byte;
+      // offset 5: LSR
+      else if (offset == addr_UART_lsr) noAction;    // LSR is read-only
+      // offset 6: MSR
+      else if (offset == addr_UART_msr) noAction;    // MSR is read-only
+      // offset 7: SCR
+      else if (offset == addr_UART_scr) rg_scr <= data_byte;
+
+      else begin
+	 $display ("%0d: ERROR: UART.rl_process_wr_req: unrecognized addr", cur_cycle);
+	 $display ("            ", fshow (wra));
+	 $display ("            ", fshow (wrd));
+	 bresp = AXI4_LITE_SLVERR;
+      end
+
+      // Send write-response to bus
       let wrr = AXI4_Lite_Wr_Resp {bresp: bresp, buser: wra.awuser};
       slave_xactor.i_wr_resp.enq (wrr);
 
@@ -270,6 +391,23 @@ module mkUART (UART_IFC);
       end
    endrule
 
+   // ----------------------------------------------------------------
+   // Receive a char from the serial line when RBR is empty (i.e., LSR.DR is 0),
+   // and deposit it into RBR
+   // and set it full (LSR.DR = 1)
+
+   rule rl_receive ((rg_lsr & uart_lsr_dr) == 0);
+      let ch <- pop (f_from_console);
+      rg_rbr <= ch;
+
+      let new_lsr = (rg_lsr | uart_lsr_dr);    // Set data-ready
+      rg_lsr <= new_lsr;
+
+      if (cfg_verbosity > 1)
+	 $display ("UART_Model.rl_receive: received char 0x%0h; new_lsr = 0x%0h",
+		   ch, new_lsr);
+   endrule
+
    // ================================================================
    // INTERFACE
 
@@ -278,12 +416,12 @@ module mkUART (UART_IFC);
 
    // set_addr_map should be called after this module's reset
    method Action  set_addr_map (Fabric_Addr addr_base, Fabric_Addr addr_lim);
-      if (addr_base [1:0] != 0)
-	 $display ("%0d: WARNING: UART.set_addr_map: addr_base 0x%0h is not 4-Byte-aligned",
+      if (addr_base [2:0] != 0)
+	 $display ("%0d: WARNING: UART.set_addr_map: addr_base 0x%0h is not 8-Byte-aligned",
 		   cur_cycle, addr_base);
 
-      if (addr_lim [1:0] != 0)
-	 $display ("%0d: WARNING: UART.set_addr_map: addr_lim 0x%0h is not 4-Byte-aligned",
+      if (addr_lim [2:0] != 0)
+	 $display ("%0d: WARNING: UART.set_addr_map: addr_lim 0x%0h is not 8-Byte-aligned",
 		   cur_cycle, addr_lim);
 
       rg_addr_base <= addr_base;
@@ -296,6 +434,11 @@ module mkUART (UART_IFC);
    // To external console
    interface  put_from_console = toPut (f_from_console);
    interface  get_to_console   = toGet (f_to_console);
+
+   // Interrupt pending
+   method Bool  intr;
+      return fn_intr ();
+   endmethod
 endmodule
 
 // ================================================================

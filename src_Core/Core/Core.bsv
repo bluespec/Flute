@@ -52,18 +52,13 @@ import TV_Taps :: *;
 // The Core module
 
 (* synthesize *)
-module mkCore #(parameter Bit #(64)  pc_reset_value,
-		parameter Bit #(64)  near_mem_io_addr_base,
-		parameter Bit #(64)  near_mem_io_addr_lim)
-              (Core_IFC);
+module mkCore (Core_IFC);
 
    // ================================================================
    // STATE
 
    // The CPU and queues for reset reqs and rsps from SoC
-   CPU_IFC  cpu <- mkCPU (pc_reset_value,
-			  near_mem_io_addr_base,
-			  near_mem_io_addr_lim);
+   CPU_IFC  cpu <- mkCPU;
 
    // Reset requests from SoC and responses to SoC
    FIFOF #(Bit #(0)) f_reset_reqs <- mkFIFOF;

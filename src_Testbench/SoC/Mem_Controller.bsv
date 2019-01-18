@@ -148,7 +148,7 @@ endfunction
 // Local constants and types
 
 // Module state
-typedef enum {STATE_POWER_ON_RESET, 
+typedef enum {STATE_POWER_ON_RESET,
 `ifdef INCLUDE_INITIAL_MEMZERO
 	      STATE_ZEROING_MEM,           // while zero-ing out memory
 `endif
@@ -175,7 +175,7 @@ interface Mem_Controller_IFC;
    interface MemoryClient #(Bits_per_Raw_Mem_Addr, Bits_per_Raw_Mem_Word)  to_raw_mem;
 
    // For ISA tests: watch memory writes to <tohost> addr
-   method Action set_watch_tohost (Bool watch_tohost, Bit #(64) tohost_addr);
+   method Action set_watch_tohost (Bool watch_tohost, Fabric_Addr tohost_addr);
 endinterface
 
 // ================================================================
@@ -232,8 +232,8 @@ module mkMem_Controller (Mem_Controller_IFC);
    // Ad hoc ISA-test simulation support: watch <tohost> and stop on non-zero write.
    // The default tohost_addr here is fragile (may change on recompilation of tests).
    // Proper value can be provided with 'set_watch_tohost' method from symbol table
-   Reg #(Bool)      rg_watch_tohost <- mkReg (False);
-   Reg #(Bit #(64)) rg_tohost_addr  <- mkReg ('h_8000_1000);
+   Reg #(Bool)        rg_watch_tohost <- mkReg (False);
+   Reg #(Fabric_Addr) rg_tohost_addr  <- mkReg ('h_8000_1000);
 
    // ================================================================
    // BEHAVIOR
@@ -589,7 +589,7 @@ module mkMem_Controller (Mem_Controller_IFC);
    interface  to_raw_mem = toGPClient (f_raw_mem_reqs, f_raw_mem_rsps);
 
    // For ISA tests: watch memory writes to <tohost> addr
-   method Action set_watch_tohost (Bool watch_tohost, Bit #(64) tohost_addr);
+   method Action set_watch_tohost (Bool watch_tohost, Fabric_Addr tohost_addr);
       rg_watch_tohost <= watch_tohost;
       rg_tohost_addr  <= tohost_addr;
    endmethod

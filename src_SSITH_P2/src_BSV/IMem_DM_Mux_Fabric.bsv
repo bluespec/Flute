@@ -24,9 +24,9 @@ import Fabric_Defs      :: *;    // for Wd_Addr, Wd_Data, Wd_User
 // Slave address decoder
 // Any addr is legal, and there is only one slave to service it.
 
-typedef Bit #(0)  Slave_Num;
+typedef Bit #(0)  Slave_Num_2x1;
 
-function Tuple2 #(Bool, Slave_Num) fn_addr_to_slave_num  (Fabric_Addr addr);
+function Tuple2 #(Bool, Slave_Num_2x1) fn_addr_to_slave_num_2x1  (Fabric_Addr addr);
    return tuple2 (True, ?);
 endfunction
 
@@ -45,7 +45,7 @@ typedef AXI4_Lite_Fabric_IFC #(2,         // Num_Masters
 module mkFabric_2x1 (Fabric_2x1_IFC);
 
    AXI4_Lite_Fabric_IFC #(2, 1, Wd_Addr, Wd_Data, Wd_User)
-       fabric <- mkAXI4_Lite_Fabric (fn_addr_to_slave_num);
+       fabric <- mkAXI4_Lite_Fabric (fn_addr_to_slave_num_2x1);
 
    return fabric;
 endmodule

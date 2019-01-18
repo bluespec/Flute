@@ -372,7 +372,9 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
    // Overall state of this module
    Reg #(Module_State)  rg_state  <- mkReg (MODULE_PRERESET);
 
-   // SoC_Map is needed only for method m_is_IO_addr to distinguish mem (cached) and IO (non-cached) addrs
+   // SoC_Map is needed for methods
+   // - m_is_IO_addr to distinguish mem (cached) and IO (non-cached) addrs
+   // - m_is_near_mem_IO_addr to identify near-mem I/O addresses
    SoC_Map_IFC soc_map <- mkSoC_Map;
 
    // Reset request/response: REQUESTOR_RESET_IFC, REQUESTOR_FLUSH_IFC

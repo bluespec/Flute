@@ -23,7 +23,6 @@ import ISA_Decls :: *;
 import DM_Common :: *;
 
 import Fabric_Defs     :: *;
-import SoC_Map         :: *;
 import AXI4_Lite_Types :: *;
 
 // ================================================================

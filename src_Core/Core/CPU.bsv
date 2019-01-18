@@ -77,6 +77,9 @@ import Near_Mem_TCM :: *;
 import Debug_Module :: *;
 `endif
 
+// System address map and pc_reset value
+import SoC_Map :: *;
+
 // ================================================================
 // Assertion check.  TODO: move to a local lib
 
@@ -125,10 +128,11 @@ endfunction
 // ================================================================
 
 (* synthesize *)
-module mkCPU #(parameter Bit #(64)  pc_reset_value,
-	       parameter Bit #(64)  near_mem_io_addr_base,
-	       parameter Bit #(64)  near_mem_io_addr_lim)
-             (CPU_IFC);
+module mkCPU (CPU_IFC);
+
+   // ----------------
+   // System address map and pc reset value
+   SoC_Map_IFC  soc_map  <- mkSoC_Map;
 
    // ----------------
    // General purpose registers and CSRs
@@ -144,7 +148,7 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value,
    let minstret = csr_regfile.read_csr_minstret;
 
    // Near mem (caches or TCM, for example)
-   Near_Mem_IFC  near_mem <- mkNear_Mem (near_mem_io_addr_base, near_mem_io_addr_lim);
+   Near_Mem_IFC  near_mem <- mkNear_Mem;
 
    // Take imem as is from near_mem, or use wrapper for 'C' extension
 `ifdef ISA_C
@@ -523,7 +527,7 @@ module mkCPU #(parameter Bit #(64)  pc_reset_value,
       if (cur_verbosity != 0)
 	 $display ("    CPU entering DEBUG_MODE");
 `else
-      WordXL dpc = truncate (pc_reset_value);
+      WordXL dpc = truncate (soc_map.m_pc_reset_value);
       fa_restart (dpc);
 `endif
    endrule: rl_reset_complete

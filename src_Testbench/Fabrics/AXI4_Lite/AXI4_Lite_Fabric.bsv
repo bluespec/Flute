@@ -110,10 +110,14 @@ module mkAXI4_Lite_Fabric #(function Tuple2 #(Bool, Bit #(TLog #(num_slaves)))
    // ----------------------------------------------------------------
    // Help functions for moving data from masters to slaves
 
+   Integer num_slaves_i = valueOf (num_slaves);
+
    function Bool wr_move_from_mi_to_sj (Integer mi, Integer sj);
       let addr = xactors_from_masters [mi].o_wr_addr.first.awaddr;
       match { .legal, .slave_num } = fn_addr_to_slave_num (addr);
-      return (legal && (slave_num == fromInteger (sj)));
+      return (legal
+	      && (   (num_slaves_i == 1)
+		  || (slave_num == fromInteger (sj))));
    endfunction
 
    function Bool wr_illegal_sj (Integer mi);
@@ -125,7 +129,9 @@ module mkAXI4_Lite_Fabric #(function Tuple2 #(Bool, Bit #(TLog #(num_slaves)))
    function Bool rd_move_from_mi_to_sj (Integer mi, Integer sj);
       let addr = xactors_from_masters [mi].o_rd_addr.first.araddr;
       match { .legal, .slave_num } = fn_addr_to_slave_num (addr);
-      return (legal && (slave_num == fromInteger (sj)));
+      return (legal
+	      && (   (num_slaves_i == 1)
+		  || (slave_num == fromInteger (sj))));
    endfunction
 
    function Bool rd_illegal_sj (Integer mi);

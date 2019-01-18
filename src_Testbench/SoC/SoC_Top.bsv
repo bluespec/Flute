@@ -132,9 +132,7 @@ module mkSoC_Top (SoC_Top_IFC);
    SoC_Map_IFC soc_map <- mkSoC_Map;
 
    // CPU + Debug module
-   Core_IFC  core <- mkCore (pc_reset_value,
-			     near_mem_io_addr_base,
-			     near_mem_io_addr_lim);
+   Core_IFC  core <- mkCore;
 
    // SoC Fabric
    Fabric_IFC  fabric <- mkFabric;
@@ -205,13 +203,25 @@ module mkSoC_Top (SoC_Top_IFC);
 
    // ----------------
    // Connect interrupt sources for CPU external interrupt request inputs.
-   // TODO: connect SoC interrupt sources (e.g., UART) to CPU interrupt input
+   // Currently only one source of interrupts: UART
+   // Future: PLIC
 
+   // Reg #(Bool) rg_intr_prev <- mkReg (False);    // For debugging only
+
+   (* fire_when_enabled, no_implicit_conditions *)
    rule rl_connect_external_interrupt_request;
-      Bool req = False;
-      core.cpu_external_interrupt_req (req);
-      if (verbosity > 1)
-	 $display ("%0d: SoC_Top.rl_connect_external_interrupt_request: ", cur_cycle, fshow (req));
+      Bool intr = uart0.intr;
+
+      core.cpu_external_interrupt_req (intr);
+
+      /* For debugging only
+      if ((! rg_intr_prev) && intr)
+	 $display ("SoC_Top: intr posedge");
+      else if (rg_intr_prev && (! intr))
+	 $display ("SoC_Top: intr negedge");
+
+      rg_intr_prev <= intr;
+      */
    endrule
 
    // ================================================================

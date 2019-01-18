@@ -38,6 +38,7 @@ import TV_Info        :: *;
 import SoC_Top        :: *;
 import Mem_Controller :: *;
 import Mem_Model      :: *;
+import Fabric_Defs    :: *;
 
 `ifndef IVERILOG
 import C_Imports      :: *;
@@ -87,8 +88,8 @@ module mkTop_HW_Side (Empty) ;
 `ifndef IVERILOG
       // Note: see 'CAVEAT FOR IVERILOG USERS' above
       Bool watch_tohost <- $test$plusargs ("tohost");
-      Bit #(64) tohost_addr = 0;
-      tohost_addr  <- c_get_symbol_val ("tohost");
+      let tha <- c_get_symbol_val ("tohost");
+      Fabric_Addr tohost_addr = truncate (tha);
       $display ("INFO: watch_tohost = %0d, tohost_addr = 0x%0h",
 		pack (watch_tohost), tohost_addr);
       soc_top.set_watch_tohost (watch_tohost, tohost_addr);
@@ -185,8 +186,14 @@ module mkTop_HW_Side (Empty) ;
    rule rl_relay_console_in;
       if (rg_console_in_poll == 0) begin
 	 Bit #(8) ch <- c_trygetchar (?);
-	 if (ch != 0)
+	 if (ch != 0) begin
 	    soc_top.put_from_console.put (ch);
+	    /*
+	    $write ("%0d: Top_HW_Side.bsv.rl_relay_console: ch = 0x%0h", cur_cycle, ch);
+	    if (ch >= 'h20) $write (" ('%c')", ch);
+	    $display ("");
+	    */
+	 end
       end
       rg_console_in_poll <= rg_console_in_poll + 1;
    endrule

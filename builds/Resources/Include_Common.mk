@@ -20,6 +20,8 @@ help:
 	@echo '                           (Bluesim, verilator or iverilog)'
 	@echo '    make  all          = make  compile  simulator'
 	@echo ''
+	@echo '    make  run_example  Runs simulation executable on ELF given by EXAMPLE'
+	@echo ''
 	@echo '    make  test         Runs simulation executable on rv32ui-p-add or rv64ui-p-add'
 	@echo '    make  isa_tests    Runs simulation executable on all relevant standard RISC-V ISA tests'
 	@echo ''
@@ -51,6 +53,17 @@ BSC_COMPILATION_FLAGS += \
 	-keep-fires -aggressive-conditions -no-warn-action-shadowing    \
 	-suppress-warnings G0020    \
 	+RTS -K128M -RTS  -show-range-conflict
+
+# ================================================================
+# Runs simulation executable on ELF given by EXAMPLE
+
+EXAMPLE ?= PLEASE_DEFINE_EXAMPLE_PATH_TO_ELF
+
+.PHONY: run_example
+run_example:
+	make -C  $(TESTS_DIR)/elf_to_hex
+	$(TESTS_DIR)/elf_to_hex/elf_to_hex  $(EXAMPLE)  Mem.hex
+	./exe_HW_sim  $(VERBOSITY)  +exit
 
 # ================================================================
 # Test: run the executable on the standard RISCV ISA test specified in TEST

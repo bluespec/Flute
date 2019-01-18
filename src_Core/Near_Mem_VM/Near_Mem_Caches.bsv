@@ -44,6 +44,9 @@ import AXI4_Lite_Types :: *;
 import Near_Mem_IO     :: *;
 import Fabric_Defs     :: *;
 
+// System address map and pc_reset value
+import SoC_Map :: *;
+
 // ================================================================
 // Exports
 
@@ -57,12 +60,14 @@ typedef enum {STATE_RESET, STATE_RESETTING, STATE_READY } State
 deriving (Bits, Eq, FShow);
 
 (* synthesize *)
-module mkNear_Mem #(parameter Bit #(64)  near_mem_io_addr_base,
-		    parameter Bit #(64)  near_mem_io_addr_lim)
-                  (Near_Mem_IFC);
+module mkNear_Mem (Near_Mem_IFC);
 
    Reg #(Bit #(4)) cfg_verbosity <- mkConfigReg (0);
    Reg #(State)    rg_state      <- mkReg (STATE_READY);
+
+   // ----------------
+   // System address map and pc reset value
+   SoC_Map_IFC  soc_map  <- mkSoC_Map;
 
    // Reset response queue
    FIFOF #(Token) f_reset_rsps <- mkFIFOF;
@@ -94,7 +99,8 @@ module mkNear_Mem #(parameter Bit #(64)  near_mem_io_addr_base,
       let _dummy2 <- dcache.server_reset.response.get;
       let _dummy3 <- near_mem_io.server_reset.response.get;
 
-      near_mem_io.set_addr_map (near_mem_io_addr_base, near_mem_io_addr_lim);
+      near_mem_io.set_addr_map (soc_map.m_near_mem_io_addr_base,
+				soc_map.m_near_mem_io_addr_lim);
 
       f_reset_rsps.enq (?);
       rg_state <= STATE_READY;
