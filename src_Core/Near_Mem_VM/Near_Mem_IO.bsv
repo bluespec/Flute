@@ -159,11 +159,11 @@ module mkNear_Mem_IO (Near_Mem_IO_IFC);
       f_timer_interrupt_req.clear;
       f_sw_interrupt_req.clear;
 
-      rg_state            <= MODULE_STATE_READY;
-      crg_time [1]        <= 1;
-      crg_timecmp [1]     <= 0;
-      rg_mtip             <= True;
-      rg_msip             <= False;
+      rg_state        <= MODULE_STATE_READY;
+      crg_time [1]    <= 1;
+      crg_timecmp [1] <= 0;
+      rg_mtip         <= True;
+      rg_msip         <= False;
 
       f_reset_rsps.enq (?);
 
@@ -171,19 +171,30 @@ module mkNear_Mem_IO (Near_Mem_IO_IFC);
 	 $display ("%0d: Near_Mem_IO.rl_reset", cur_cycle);
    endrule
 
+   rule rl_soft_reset (f_reset_reqs.notEmpty);
+      rg_state <= MODULE_STATE_START;
+   endrule
+
    // ----------------------------------------------------------------
    // Keep time and generate interrupt
 
    // Increment time, but saturate, do not wrap-around
    (* fire_when_enabled, no_implicit_conditions *)
-   rule rl_tick_timer ((rg_state == MODULE_STATE_READY) && (crg_time [0] != '1));
+   rule rl_tick_timer (   (rg_state == MODULE_STATE_READY)
+		       && (crg_time [0] != '1)
+		       && (! f_reset_reqs.notEmpty));
+
       crg_time [0] <= crg_time [0] + 1;
    endrule
 
    // Compare and generate timer interrupt request
+
    Bool new_mtip = (crg_time [0] >= crg_timecmp [0]);
+
    rule rl_compare ((rg_state == MODULE_STATE_READY)
-		    && (rg_mtip != new_mtip));
+		    && (rg_mtip != new_mtip)
+		    && (! f_reset_reqs.notEmpty));
+
       rg_mtip <= new_mtip;
       f_timer_interrupt_req.enq (new_mtip);
       if (cfg_verbosity > 1)
@@ -194,7 +205,9 @@ module mkNear_Mem_IO (Near_Mem_IO_IFC);
    // ----------------------------------------------------------------
    // Handle 'memory'-read requests
 
-   rule rl_process_rd_req ((rg_state == MODULE_STATE_READY) && f_reqs.first.read_not_write);
+   rule rl_process_rd_req (   (rg_state == MODULE_STATE_READY)
+			   && (! f_reset_reqs.notEmpty)
+			   && f_reqs.first.read_not_write);
       let req <- pop (f_reqs);
       if (cfg_verbosity > 1) begin
 	 $display ("%0d: Near_Mem_IO.rl_process_rd_req: rg_mtip = %0d", cur_cycle, rg_mtip);
@@ -234,7 +247,9 @@ module mkNear_Mem_IO (Near_Mem_IO_IFC);
    // ----------------------------------------------------------------
    // Handle 'memory'-write requests
 
-   rule rl_process_wr_req ((rg_state == MODULE_STATE_READY) && (! f_reqs.first.read_not_write));
+   rule rl_process_wr_req (   (rg_state == MODULE_STATE_READY)
+			   && (! f_reset_reqs.notEmpty)
+			   && (! f_reqs.first.read_not_write));
       let req <- pop (f_reqs);
 
       if (cfg_verbosity > 1) begin

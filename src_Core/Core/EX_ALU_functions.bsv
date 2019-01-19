@@ -231,12 +231,16 @@ function ALU_Outputs fv_BRANCH (ALU_Inputs inputs);
    misaligned_target = False;
 `endif
 
-   trap = (trap  ||  (branch_taken && misaligned_target));
+   Exc_Code exc_code = exc_code_ILLEGAL_INSTRUCTION;
+   if ((! trap) && branch_taken && misaligned_target) begin
+      trap = True;
+      exc_code = exc_code_INSTR_ADDR_MISALIGNED;
+   end
 
    let alu_outputs = alu_outputs_base;
    let next_pc     = (branch_taken ? branch_target : fall_through_pc (inputs));
    alu_outputs.control   = (trap ? CONTROL_TRAP : (branch_taken ? CONTROL_BRANCH : CONTROL_STRAIGHT));
-   alu_outputs.exc_code  = exc_code_INSTR_ADDR_MISALIGNED;
+   alu_outputs.exc_code  = exc_code;
    alu_outputs.op_stage2 = OP_Stage2_ALU;
    alu_outputs.rd        = 0;
    alu_outputs.addr      = next_pc;
