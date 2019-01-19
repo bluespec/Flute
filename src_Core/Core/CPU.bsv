@@ -47,6 +47,7 @@ import TV_Info   :: *;
 import GPR_RegFile :: *;
 `ifdef ISA_F
 import FPR_RegFile :: *;
+import RISCV_FBox  :: *;
 `endif
 import CSR_RegFile :: *;
 import CPU_Globals :: *;
@@ -158,6 +159,13 @@ module mkCPU (CPU_IFC);
 `endif
 
    // ----------------
+   // Floating point box
+
+`ifdef ISA_F
+   RISCV_FBox_IFC fbox <- mkRISCV_FBox;
+`endif
+
+   // ----------------
    // For debugging
 
    // Verbosity: 0=quiet; 1=instruction trace; 2=more detail
@@ -188,7 +196,13 @@ module mkCPU (CPU_IFC);
 `endif
 					  csr_regfile);
 
-   CPU_Stage2_IFC stage2 <- mkCPU_Stage2 (cur_verbosity, csr_regfile, near_mem.dmem);
+   CPU_Stage2_IFC stage2 <- mkCPU_Stage2 (
+                                           cur_verbosity,
+                                           csr_regfile,
+`ifdef ISA_F
+                                           fbox,
+`endif
+                                           near_mem.dmem);
 
    CPU_Stage1_IFC  stage1 <- mkCPU_Stage1 (cur_verbosity,
 					   gpr_regfile,
@@ -478,6 +492,9 @@ module mkCPU (CPU_IFC);
 `endif
       csr_regfile.server_reset.request.put (?);
       near_mem.server_reset.request.put (?);
+`ifdef ISA_F
+      fbox.server_reset.request.put (?);
+`endif
 
       stageF.server_reset.request.put (?);
       stageD.server_reset.request.put (?);
@@ -508,6 +525,9 @@ module mkCPU (CPU_IFC);
 `endif
       let ack_csr <- csr_regfile.server_reset.response.get;
       let ack_nm  <- near_mem.server_reset.response.get;
+`ifdef ISA_F
+      let ack_fb  <- fbox.server_reset.response.get;
+`endif
 
       let ackF <- stageF.server_reset.response.get;
       let ackD <- stageD.server_reset.response.get;

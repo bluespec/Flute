@@ -44,6 +44,8 @@ typedef enum {
 } FBoxState deriving (Bits, Eq, FShow);
 
 interface RISCV_FBox_IFC;
+   // ---- Reset
+   interface Server #(Token, Token) server_reset;
    method Action set_verbosity (Bit #(4) verbosity);
 
    // FBox interface: request
@@ -58,7 +60,7 @@ interface RISCV_FBox_IFC;
       , Bit #(64)                   v3
    );
 
-   // MBox interface: response
+   // FBox interface: response
    (* always_ready *)
    method Bool valid;
    (* always_ready *)
@@ -136,6 +138,9 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
 
    Reg   #(FBoxState)      stateR               <- mkReg (FBOX_REQ);
 
+   FIFOF #(Token)          resetReqsF           <- mkFIFOF;
+   FIFOF #(Token)          resetRspsF           <- mkFIFOF;
+
    Reg   #(Maybe #(Tuple7 #(
         Opcode
       , Bit #(7)
@@ -143,7 +148,7 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
       , Bit #(3)
       , Bit #(64)
       , Bit #(64)
-      , Bit #(64))))       requestR             <- mkReg (tagged Invalid);
+      , Bit #(64))))       requestR             <- mkRegU;
 
    Reg   #(Bool)           dw_valid             <- mkDWire (False);
    Reg   #(Tuple2 #(
@@ -152,7 +157,7 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
 
    Reg   #(Maybe #(Tuple2 #(
         Bit #(64)
-      , Bit #(5))))        resultR              <- mkReg (tagged Invalid);
+      , Bit #(5))))        resultR              <- mkRegU;
    
    FPU_IFC                 fpu                  <- mkFPU;
 
@@ -263,6 +268,18 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
    let rmd = fv_getRoundMode (rm);
 
    // =============================================================
+   // Behavior
+
+   // Reset the box
+   rule rl_reset;
+      resetReqsF.deq;
+      resetRspsF.enq (?);
+
+      // The actions for reset
+      requestR <= tagged Invalid;
+      resultR  <= tagged Invalid;
+   endrule
+
    // These rules execute the operations, either dispatch to the FPU/PNU or
    // locally here in the F-Box
    Bool validReq = isValid (requestR) && (stateR == FBOX_REQ) ;
@@ -1132,6 +1149,9 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
 
    // =============================================================
    // INTERFACE
+   // ---- Reset
+   interface server_reset = toGPServer (resetReqsF, resetRspsF);
+
    method Action set_verbosity (Bit #(4) verbosity);
       cfg_verbosity <= verbosity;
    endmethod
@@ -1163,7 +1183,6 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
    method Tuple2#(Bit#(64), Bit#(5)) word;
       return dw_result;
    endmethod
-
 endmodule
 
 // ================================================================
