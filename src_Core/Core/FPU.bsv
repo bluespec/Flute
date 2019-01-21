@@ -27,7 +27,7 @@ typedef Tuple2#( FloatU, FloatingPoint::Exception )       Fpu_Rsp;
 typedef Tuple2#( FDouble, FloatingPoint::Exception )      FpuR;
 
 interface FPU_IFC;
-   interface Server #( Fpu_Req, Fpu_Rsp ) server_fpu_core;
+   interface Server #( Fpu_Req, Fpu_Rsp ) server_core;
 
    // ---- Reset
    interface Server #(Token, Token) server_reset;
@@ -167,6 +167,6 @@ module mkFPU ( FPU_IFC );
    // INTERFACE
    // ---- Reset
    interface server_reset = toGPServer (resetReqsF, resetRspsF);
-   interface server_fpu_core = toGPServer ( iFifo, oFifo );
+   interface server_core = toGPServer ( iFifo, oFifo );
 endmodule
 endpackage

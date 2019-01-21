@@ -299,50 +299,50 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
    // Single precision operations
    let cmpres_s = compareFP ( sV1, sV2 );
    rule doFADD_S ( validReq && isFADD_S );
-      fpu.server_fpu_core.request.put (tuple5 (tagged S sV1, tagged S sV2, ?, rmd, FPAdd));
+      fpu.server_core.request.put (tuple5 (tagged S sV1, tagged S sV2, ?, rmd, FPAdd));
 
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFSUB_S ( validReq && isFSUB_S );
-      fpu.server_fpu_core.request.put (tuple5 (tagged S sV1, tagged S sV2, ?, rmd, FPSub));
+      fpu.server_core.request.put (tuple5 (tagged S sV1, tagged S sV2, ?, rmd, FPSub));
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFMUL_S ( validReq && isFMUL_S );
-      fpu.server_fpu_core.request.put (tuple5 (tagged S sV1, tagged S sV2, ?, rmd, FPMul));
+      fpu.server_core.request.put (tuple5 (tagged S sV1, tagged S sV2, ?, rmd, FPMul));
 
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFMADD_S ( validReq && isFMADD_S );
-      fpu.server_fpu_core.request.put( tuple5( tagged S sV1, tagged S sV2, tagged S sV3, rmd, FPMAdd ) );
+      fpu.server_core.request.put( tuple5( tagged S sV1, tagged S sV2, tagged S sV3, rmd, FPMAdd ) );
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFMSUB_S ( validReq && isFMSUB_S );
-      fpu.server_fpu_core.request.put( tuple5( tagged S sV1, tagged S sV2, tagged S sV3, rmd, FPMSub ) );
+      fpu.server_core.request.put( tuple5( tagged S sV1, tagged S sV2, tagged S sV3, rmd, FPMSub ) );
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFNMADD_S ( validReq && isFNMADD_S );
-      fpu.server_fpu_core.request.put( tuple5( tagged S sV1, tagged S sV2, tagged S sV3, rmd, FPNMAdd ) );
+      fpu.server_core.request.put( tuple5( tagged S sV1, tagged S sV2, tagged S sV3, rmd, FPNMAdd ) );
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFNMSUB_S ( validReq && isFNMSUB_S );
-      fpu.server_fpu_core.request.put( tuple5( tagged S sV1, tagged S sV2, tagged S sV3, rmd, FPNMSub ) );
+      fpu.server_core.request.put( tuple5( tagged S sV1, tagged S sV2, tagged S sV3, rmd, FPNMSub ) );
       stateR <= FBOX_BUSY;
    endrule
 
 `ifdef ISA_FD_DIV
    rule doFDIV_S ( validReq && isFDIV_S );
-      fpu.server_fpu_core.request.put( tuple5( tagged S sV1, tagged S sV2, ?, rmd, FPDiv) );
+      fpu.server_core.request.put( tuple5( tagged S sV1, tagged S sV2, ?, rmd, FPDiv) );
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFSQRT_S ( validReq && isFSQRT_S );
-      fpu.server_fpu_core.request.put( tuple5( tagged S sV1, ?, ?, rmd, FPSqrt) );
+      fpu.server_core.request.put( tuple5( tagged S sV1, ?, ?, rmd, FPSqrt) );
       stateR <= FBOX_BUSY;
    endrule
 `endif
@@ -703,50 +703,50 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
    // Double precision operations
    let cmpres_d = compareFP ( dV1, dV2 );
    rule doFADD_D ( validReq && isFADD_D );
-      fpu.server_fpu_core.request.put (tuple5 (tagged D dV1, tagged D dV2, ?, rmd, FPAdd));
+      fpu.server_core.request.put (tuple5 (tagged D dV1, tagged D dV2, ?, rmd, FPAdd));
 
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFSUB_D ( validReq && isFSUB_D );
-      fpu.server_fpu_core.request.put (tuple5 (tagged D dV1, tagged D dV2, ?, rmd, FPSub));
+      fpu.server_core.request.put (tuple5 (tagged D dV1, tagged D dV2, ?, rmd, FPSub));
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFMUL_D ( validReq && isFMUL_D );
-      fpu.server_fpu_core.request.put (tuple5 (tagged D dV1, tagged D dV2, ?, rmd, FPMul));
+      fpu.server_core.request.put (tuple5 (tagged D dV1, tagged D dV2, ?, rmd, FPMul));
 
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFMADD_D ( validReq && isFMADD_D );
-      fpu.server_fpu_core.request.put( tuple5( tagged D dV1, tagged D dV2, tagged D dV3, rmd, FPMAdd ) );
+      fpu.server_core.request.put( tuple5( tagged D dV1, tagged D dV2, tagged D dV3, rmd, FPMAdd ) );
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFMSUB_D ( validReq && isFMSUB_D );
-      fpu.server_fpu_core.request.put( tuple5( tagged D dV1, tagged D dV2, tagged D dV3, rmd, FPMSub ) );
+      fpu.server_core.request.put( tuple5( tagged D dV1, tagged D dV2, tagged D dV3, rmd, FPMSub ) );
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFNMADD_D ( validReq && isFNMADD_D );
-      fpu.server_fpu_core.request.put( tuple5( tagged D dV1, tagged D dV2, tagged D dV3, rmd, FPNMAdd ) );
+      fpu.server_core.request.put( tuple5( tagged D dV1, tagged D dV2, tagged D dV3, rmd, FPNMAdd ) );
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFNMSUB_D ( validReq && isFNMSUB_D );
-      fpu.server_fpu_core.request.put( tuple5( tagged D dV1, tagged D dV2, tagged D dV3, rmd, FPNMSub ) );
+      fpu.server_core.request.put( tuple5( tagged D dV1, tagged D dV2, tagged D dV3, rmd, FPNMSub ) );
       stateR <= FBOX_BUSY;
    endrule
 
 `ifdef ISA_FD_DIV
    rule doFDIV_D ( validReq && isFDIV_D );
-      fpu.server_fpu_core.request.put( tuple5( tagged D dV1, tagged D dV2, ?, rmd, FPDiv) );
+      fpu.server_core.request.put( tuple5( tagged D dV1, tagged D dV2, ?, rmd, FPDiv) );
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFSQRT_D ( validReq && isFSQRT_D );
-      fpu.server_fpu_core.request.put( tuple5( tagged D dV1, ?, ?, rmd, FPSqrt) );
+      fpu.server_core.request.put( tuple5( tagged D dV1, ?, ?, rmd, FPSqrt) );
       stateR <= FBOX_BUSY;
    endrule
 `endif
@@ -1136,7 +1136,7 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
 
    // This rule collects the response from FPU for compute opcodes
    rule rl_get_fpu_result ((stateR == FBOX_BUSY));
-      Fpu_Rsp r      <- fpu.server_fpu_core.response.get();
+      Fpu_Rsp r      <- fpu.server_core.response.get();
       match {.v, .e}  = r;
       Bit #(64) res = ?;
 
