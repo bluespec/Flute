@@ -96,6 +96,7 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
    FIFOF #(Token) f_reset_reqs <- mkFIFOF;
    FIFOF #(Token) f_reset_rsps <- mkFIFOF;
 
+   Reg #(Bool)                  rg_resetting   <- mkReg (False);
    Reg #(Bool)                  rg_full   <- mkReg (False);
    Reg #(Data_Stage1_to_Stage2) rg_stage2 <- mkRegU;    // From Stage 1
 
@@ -173,9 +174,16 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
    // ----------------------------------------------------------------
    // BEHAVIOR
 
-   rule rl_reset;
+   rule rl_reset_begin;
       f_reset_reqs.deq;
       rg_full <= False;
+      rg_resetting <= True;
+      fbox.server_reset.request.put (?);
+   endrule
+
+   rule rl_reset_end (rg_resetting);
+      rg_resetting <= False;
+      let res <- fbox.server_reset.response.get;
       f_reset_rsps.enq (?);
    endrule
 

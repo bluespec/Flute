@@ -38,6 +38,7 @@ typedef struct {
 } FBoxResult deriving (Bits, Eq, FShow);
 
 typedef enum {
+   FBOX_RST,                     // FBox is resetting
    FBOX_REQ,                     // FBox is accepting a request
    FBOX_BUSY,                    // FBox waiting for a response
    FBOX_RSP                      // FBox driving response
@@ -45,6 +46,9 @@ typedef enum {
 
 interface RISCV_FBox_IFC;
    method Action set_verbosity (Bit #(4) verbosity);
+
+   // ---- Reset
+   interface Server #(Token, Token) server_reset;
 
    // FBox interface: request
    (* always_ready *)
@@ -130,11 +134,14 @@ endfunction
 (* synthesize *)
 module mkRISCV_FBox (RISCV_FBox_IFC);
 
+   FIFOF #(Token)          resetReqsF           <- mkFIFOF;
+   FIFOF #(Token)          resetRspsF           <- mkFIFOF;
+
    Reg   #(Bit #(4))       cfg_verbosity        <- mkConfigReg (0);
 
    FIFOF #(Bool)           frmFpuF              <- mkFIFOF;
 
-   Reg   #(FBoxState)      stateR               <- mkReg (FBOX_REQ);
+   Reg   #(FBoxState)      stateR               <- mkReg (FBOX_RST);
 
    Reg   #(Maybe #(Tuple7 #(
         Opcode
@@ -143,7 +150,7 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
       , Bit #(3)
       , Bit #(64)
       , Bit #(64)
-      , Bit #(64))))       requestR             <- mkReg (tagged Invalid);
+      , Bit #(64))))       requestR             <- mkRegU;
 
    Reg   #(Bool)           dw_valid             <- mkDWire (False);
    Reg   #(Tuple2 #(
@@ -152,7 +159,7 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
 
    Reg   #(Maybe #(Tuple2 #(
         Bit #(64)
-      , Bit #(5))))        resultR              <- mkReg (tagged Invalid);
+      , Bit #(5))))        resultR              <- mkRegU;
    
    FPU_IFC                 fpu                  <- mkFPU;
 
@@ -263,6 +270,28 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
    let rmd = fv_getRoundMode (rm);
 
    // =============================================================
+   // BEHAVIOR
+
+   // Triggered on receiving a reset token -- necessary to start
+   // operations
+   rule rl_reset_begin;
+      resetReqsF.deq;
+      frmFpuF.clear;
+
+      requestR <= tagged Invalid;
+      resultR  <= tagged Invalid;
+      stateR   <= FBOX_RST;
+
+      fpu.server_reset.request.put (?);
+   endrule
+   
+   // Complete the reset when response from the FPU is received
+   rule rl_reset_end (stateR == FBOX_RST);
+      stateR   <= FBOX_REQ;
+      let res  <- fpu.server_reset.response.get;
+      resetRspsF.enq (?);
+   endrule
+
    // These rules execute the operations, either dispatch to the FPU/PNU or
    // locally here in the F-Box
    Bool validReq = isValid (requestR) && (stateR == FBOX_REQ) ;
@@ -270,50 +299,50 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
    // Single precision operations
    let cmpres_s = compareFP ( sV1, sV2 );
    rule doFADD_S ( validReq && isFADD_S );
-      fpu.request.put (tuple5 (tagged S sV1, tagged S sV2, ?, rmd, FPAdd));
+      fpu.server_fpu_core.request.put (tuple5 (tagged S sV1, tagged S sV2, ?, rmd, FPAdd));
 
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFSUB_S ( validReq && isFSUB_S );
-      fpu.request.put (tuple5 (tagged S sV1, tagged S sV2, ?, rmd, FPSub));
+      fpu.server_fpu_core.request.put (tuple5 (tagged S sV1, tagged S sV2, ?, rmd, FPSub));
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFMUL_S ( validReq && isFMUL_S );
-      fpu.request.put (tuple5 (tagged S sV1, tagged S sV2, ?, rmd, FPMul));
+      fpu.server_fpu_core.request.put (tuple5 (tagged S sV1, tagged S sV2, ?, rmd, FPMul));
 
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFMADD_S ( validReq && isFMADD_S );
-      fpu.request.put( tuple5( tagged S sV1, tagged S sV2, tagged S sV3, rmd, FPMAdd ) );
+      fpu.server_fpu_core.request.put( tuple5( tagged S sV1, tagged S sV2, tagged S sV3, rmd, FPMAdd ) );
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFMSUB_S ( validReq && isFMSUB_S );
-      fpu.request.put( tuple5( tagged S sV1, tagged S sV2, tagged S sV3, rmd, FPMSub ) );
+      fpu.server_fpu_core.request.put( tuple5( tagged S sV1, tagged S sV2, tagged S sV3, rmd, FPMSub ) );
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFNMADD_S ( validReq && isFNMADD_S );
-      fpu.request.put( tuple5( tagged S sV1, tagged S sV2, tagged S sV3, rmd, FPNMAdd ) );
+      fpu.server_fpu_core.request.put( tuple5( tagged S sV1, tagged S sV2, tagged S sV3, rmd, FPNMAdd ) );
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFNMSUB_S ( validReq && isFNMSUB_S );
-      fpu.request.put( tuple5( tagged S sV1, tagged S sV2, tagged S sV3, rmd, FPNMSub ) );
+      fpu.server_fpu_core.request.put( tuple5( tagged S sV1, tagged S sV2, tagged S sV3, rmd, FPNMSub ) );
       stateR <= FBOX_BUSY;
    endrule
 
 `ifdef ISA_FD_DIV
    rule doFDIV_S ( validReq && isFDIV_S );
-      fpu.request.put( tuple5( tagged S sV1, tagged S sV2, ?, rmd, FPDiv) );
+      fpu.server_fpu_core.request.put( tuple5( tagged S sV1, tagged S sV2, ?, rmd, FPDiv) );
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFSQRT_S ( validReq && isFSQRT_S );
-      fpu.request.put( tuple5( tagged S sV1, ?, ?, rmd, FPSqrt) );
+      fpu.server_fpu_core.request.put( tuple5( tagged S sV1, ?, ?, rmd, FPSqrt) );
       stateR <= FBOX_BUSY;
    endrule
 `endif
@@ -674,50 +703,50 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
    // Double precision operations
    let cmpres_d = compareFP ( dV1, dV2 );
    rule doFADD_D ( validReq && isFADD_D );
-      fpu.request.put (tuple5 (tagged D dV1, tagged D dV2, ?, rmd, FPAdd));
+      fpu.server_fpu_core.request.put (tuple5 (tagged D dV1, tagged D dV2, ?, rmd, FPAdd));
 
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFSUB_D ( validReq && isFSUB_D );
-      fpu.request.put (tuple5 (tagged D dV1, tagged D dV2, ?, rmd, FPSub));
+      fpu.server_fpu_core.request.put (tuple5 (tagged D dV1, tagged D dV2, ?, rmd, FPSub));
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFMUL_D ( validReq && isFMUL_D );
-      fpu.request.put (tuple5 (tagged D dV1, tagged D dV2, ?, rmd, FPMul));
+      fpu.server_fpu_core.request.put (tuple5 (tagged D dV1, tagged D dV2, ?, rmd, FPMul));
 
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFMADD_D ( validReq && isFMADD_D );
-      fpu.request.put( tuple5( tagged D dV1, tagged D dV2, tagged D dV3, rmd, FPMAdd ) );
+      fpu.server_fpu_core.request.put( tuple5( tagged D dV1, tagged D dV2, tagged D dV3, rmd, FPMAdd ) );
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFMSUB_D ( validReq && isFMSUB_D );
-      fpu.request.put( tuple5( tagged D dV1, tagged D dV2, tagged D dV3, rmd, FPMSub ) );
+      fpu.server_fpu_core.request.put( tuple5( tagged D dV1, tagged D dV2, tagged D dV3, rmd, FPMSub ) );
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFNMADD_D ( validReq && isFNMADD_D );
-      fpu.request.put( tuple5( tagged D dV1, tagged D dV2, tagged D dV3, rmd, FPNMAdd ) );
+      fpu.server_fpu_core.request.put( tuple5( tagged D dV1, tagged D dV2, tagged D dV3, rmd, FPNMAdd ) );
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFNMSUB_D ( validReq && isFNMSUB_D );
-      fpu.request.put( tuple5( tagged D dV1, tagged D dV2, tagged D dV3, rmd, FPNMSub ) );
+      fpu.server_fpu_core.request.put( tuple5( tagged D dV1, tagged D dV2, tagged D dV3, rmd, FPNMSub ) );
       stateR <= FBOX_BUSY;
    endrule
 
 `ifdef ISA_FD_DIV
    rule doFDIV_D ( validReq && isFDIV_D );
-      fpu.request.put( tuple5( tagged D dV1, tagged D dV2, ?, rmd, FPDiv) );
+      fpu.server_fpu_core.request.put( tuple5( tagged D dV1, tagged D dV2, ?, rmd, FPDiv) );
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFSQRT_D ( validReq && isFSQRT_D );
-      fpu.request.put( tuple5( tagged D dV1, ?, ?, rmd, FPSqrt) );
+      fpu.server_fpu_core.request.put( tuple5( tagged D dV1, ?, ?, rmd, FPSqrt) );
       stateR <= FBOX_BUSY;
    endrule
 `endif
@@ -1107,7 +1136,7 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
 
    // This rule collects the response from FPU for compute opcodes
    rule rl_get_fpu_result ((stateR == FBOX_BUSY));
-      Fpu_Rsp r      <- fpu.response.get();
+      Fpu_Rsp r      <- fpu.server_fpu_core.response.get();
       match {.v, .e}  = r;
       Bit #(64) res = ?;
 
@@ -1135,6 +1164,9 @@ module mkRISCV_FBox (RISCV_FBox_IFC);
    method Action set_verbosity (Bit #(4) verbosity);
       cfg_verbosity <= verbosity;
    endmethod
+
+   // ---- Reset
+   interface server_reset = toGPServer (resetReqsF, resetRspsF);
 
    // FBox interface: request
    method Action req (
