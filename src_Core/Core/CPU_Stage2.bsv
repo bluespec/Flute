@@ -90,9 +90,6 @@ endinterface
 
 module mkCPU_Stage2 #(Bit #(4)         verbosity,
 		      CSR_RegFile_IFC  csr_regfile,    // for SATP and SSTATUS: TODO carry in Data_Stage1_to_Stage2
-`ifdef ISA_F
-                      RISCV_FBox_IFC   fbox,
-`endif
 		      DMem_IFC         dcache)
                     (CPU_Stage2_IFC);
 
@@ -114,6 +111,13 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 
 `ifdef ISA_M
    RISCV_MBox_IFC mbox <- mkRISCV_MBox;
+`endif
+
+   // ----------------
+   // Floating point box
+
+`ifdef ISA_F
+   RISCV_FBox_IFC fbox <- mkRISCV_FBox;
 `endif
 
    // ----------------
