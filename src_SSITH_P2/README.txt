@@ -29,3 +29,9 @@ into this socket:
     - Variations/alternatives by various SSITH project teams
 
 >================================================================
+Whenever there are changes to the Piccolo core, rerun:
+
+  $ make compile
+  $ cp Verilog_RTL/* xilinx_ip/hdl/
+
+>================================================================
