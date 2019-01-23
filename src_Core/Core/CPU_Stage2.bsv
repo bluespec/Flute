@@ -3,7 +3,7 @@
 package CPU_Stage2;
 
 // ================================================================
-// This is Stage 2 of the CPU.
+// This is Stage 2 of the "Flute" CPU.
 // It is the "DM" stage ("Data Memory"), which is the main function.
 
 // However, this stage also contains all other (potentially) long-latency
@@ -61,6 +61,7 @@ import RISCV_MBox  :: *;
 
 `ifdef ISA_F
 import RISCV_FBox  :: *;
+import FBox_Core   :: *;   // For fv_nanbox function
 `endif
 
 // ================================================================
@@ -467,7 +468,7 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
          // -----
 	 let trace_data = ?;
 `ifdef INCLUDE_TANDEM_VERIF
-	 trace_data = rg_stage2.trace_data;
+	 trace_data   = rg_stage2.trace_data;
 `endif
          // XXX Revisit. word1 should be sized similar to val (always 64-bit) if
          // FPU is enabled
@@ -564,7 +565,6 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 `ifdef ISA_M
 	 // If MBox op, initiate it
 	 else if (x.op_stage2 == OP_Stage2_M) begin
-            // Instr fields required for decode for F/D opcodes
 	    Bool is_OP_not_OP_32 = (x.instr [3] == 1'b0);
             mbox.req (is_OP_not_OP_32,
 		      funct3,
