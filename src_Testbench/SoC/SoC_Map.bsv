@@ -100,10 +100,10 @@ module mkSoC_Map (SoC_Map_IFC);
    endfunction
 
    // ----------------------------------------------------------------
-   // Near_Mem_IO (CLINT)
+   // Near_Mem_IO (including CLINT, the core-local interruptor)
 
-   Fabric_Addr near_mem_io_addr_base = 'h_6300_0000;
-   Fabric_Addr near_mem_io_addr_size = 'h_0001_0000;    // 64K
+   Fabric_Addr near_mem_io_addr_base = 'h_0200_0000;
+   Fabric_Addr near_mem_io_addr_size = 'h_0000_C000;    // 48K
    Fabric_Addr near_mem_io_addr_lim  = near_mem_io_addr_base + near_mem_io_addr_size;
 
    function Bool fn_is_near_mem_io_addr (Fabric_Addr addr);

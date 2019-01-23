@@ -3,7 +3,7 @@
 package CPU_Stage3;
 
 // ================================================================
-// This is Stage 3 of the "Flute" CPU.
+// This is Stage 3 of the CPU.
 // It is the WB ("Write Back") stage:
 // - Writes back a GPR register value (if the instr has an Rd)
 // - Updates CSR INSTRET
@@ -110,7 +110,7 @@ module mkCPU_Stage3 #(Bit #(4)         verbosity,
 			       rd:           rg_stage3.rd,
 `ifdef ISA_D
 			       // WordFL        WordFL
-			       rd_val:       rg_stage3.rd_val 
+			       rd_val:       rg_stage3.rd_val
 `else
 `ifdef RV64
 			       // WordFL (32)   WordXL (64)

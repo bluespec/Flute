@@ -94,8 +94,8 @@ module mkDM_Mem_Tap (DM_Mem_Tap_IFC);
       else
 	 dynamicAssert(False, "mkDM_Mem_Tap: unsupported byte enables");
 `else
-      paddr = truncate (wr_addr.awaddr);
-      stval = truncate (wr_data.wdata);
+      paddr = zeroExtend (wr_addr.awaddr);
+      stval = zeroExtend (wr_data.wdata);
 `endif      
       Trace_Data td = mkTrace_MEM_WRITE (f3_SIZE_W, truncate (stval), paddr);
       f_trace_data.enq (td);
