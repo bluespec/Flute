@@ -60,7 +60,7 @@ import RISCV_MBox  :: *;
 `endif
 
 `ifdef ISA_F
-import RISCV_FBox  :: *;
+import FBox_Top    :: *;
 import FBox_Core   :: *;   // For fv_nanbox function
 `endif
 
@@ -119,7 +119,7 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
    // Floating point box
 
 `ifdef ISA_F
-   RISCV_FBox_IFC fbox <- mkRISCV_FBox;
+   FBox_Top_IFC fbox <- mkFBox_Top;
 `endif
 
    // ----------------

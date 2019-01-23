@@ -1,6 +1,6 @@
 // Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved
 
-package RISCV_FBox;
+package FBox_Top;
 
 // ================================================================
 // This package implements the FBox. The FBox executes the F and D
@@ -32,7 +32,7 @@ import FBox_Core :: *;
 // ================================================================
 // FBox interface
 
-interface RISCV_FBox_IFC;
+interface FBox_Top_IFC;
    // ---- Reset
    interface Server #(Token, Token) server_reset;
 
@@ -58,7 +58,7 @@ endinterface
 // ================================================================
 
 (* synthesize *)
-module mkRISCV_FBox (RISCV_FBox_IFC);
+module mkFBox_Top (FBox_Top_IFC);
 
    FBox_Core_IFC           fbox_core            <- mkFBox_Core;
 
