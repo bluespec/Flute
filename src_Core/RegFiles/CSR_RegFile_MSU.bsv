@@ -66,7 +66,11 @@ interface CSR_RegFile_IFC;
 
    // Update FCSR.FFLAGS
    (* always_ready *)
-   method Action update_fcsr_fflags (Bit #(5) flags);
+   method Action ma_update_fcsr_fflags (Bit #(5) flags);
+
+   // Update MSTATUS.FS
+   (* always_ready *)
+   method Action ma_update_mstatus_fs (Bit #(2) fs);
 `endif
 
    // Read MISA
@@ -1009,8 +1013,15 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
    endmethod
 
    // Update FCSR.FFLAGS
-   method Action update_fcsr_fflags (Bit#(5) flags);
+   method Action ma_update_fcsr_fflags (Bit#(5) flags);
       rg_fflags <= rg_fflags | flags;
+   endmethod
+
+   // Update MSTATUS.FS
+   method Action ma_update_mstatus_fs (Bit #(2) fs);
+      let old_mstatus = csr_mstatus.fv_read;
+      let new_mstatus = fv_assign_bits (old_mstatus, fromInteger (mstatus_fs_bitpos), fs);
+      csr_mstatus.fa_write (misa, new_mstatus);
    endmethod
 `endif
 

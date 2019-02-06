@@ -200,7 +200,11 @@ module mkCPU_Stage3 #(Bit #(4)         verbosity,
 `ifdef ISA_F
             // Update FCSR.fflags
             if (rg_stage3.upd_flags)
-               csr_regfile.update_fcsr_fflags (rg_stage3.fpr_flags);
+               csr_regfile.ma_update_fcsr_fflags (rg_stage3.fpr_flags);
+
+            // Update MSTATUS.FS
+            if (rg_stage3.upd_flags || rg_stage3.rd_in_fpr)
+               csr_regfile.ma_update_mstatus_fs (fs_xs_dirty);
 `endif
 	 end
       endaction
