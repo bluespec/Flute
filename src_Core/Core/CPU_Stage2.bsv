@@ -3,7 +3,7 @@
 package CPU_Stage2;
 
 // ================================================================
-// This is Stage 2 of the CPU.
+// This is Stage 2 of the "Flute" CPU.
 // It is the "DM" stage ("Data Memory"), which is the main function.
 
 // However, this stage also contains all other (potentially) long-latency
@@ -60,7 +60,8 @@ import RISCV_MBox  :: *;
 `endif
 
 `ifdef ISA_F
-import RISCV_FBox  :: *;
+import FBox_Top    :: *;
+import FBox_Core   :: *;   // For fv_nanbox function
 `endif
 
 // ================================================================
@@ -96,6 +97,7 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
    FIFOF #(Token) f_reset_reqs <- mkFIFOF;
    FIFOF #(Token) f_reset_rsps <- mkFIFOF;
 
+   Reg #(Bool)                  rg_resetting   <- mkReg (False);
    Reg #(Bool)                  rg_full   <- mkReg (False);
    Reg #(Data_Stage1_to_Stage2) rg_stage2 <- mkRegU;    // From Stage 1
 
@@ -117,7 +119,7 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
    // Floating point box
 
 `ifdef ISA_F
-   RISCV_FBox_IFC fbox <- mkRISCV_FBox;
+   FBox_Top_IFC fbox <- mkFBox_Top;
 `endif
 
    // ----------------
@@ -173,9 +175,16 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
    // ----------------------------------------------------------------
    // BEHAVIOR
 
-   rule rl_reset;
+   rule rl_reset_begin;
       f_reset_reqs.deq;
       rg_full <= False;
+      rg_resetting <= True;
+      fbox.server_reset.request.put (?);
+   endrule
+
+   rule rl_reset_end (rg_resetting);
+      rg_resetting <= False;
+      let res <- fbox.server_reset.response.get;
       f_reset_rsps.enq (?);
    endrule
 
@@ -459,7 +468,7 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
          // -----
 	 let trace_data = ?;
 `ifdef INCLUDE_TANDEM_VERIF
-	 trace_data = rg_stage2.trace_data;
+	 trace_data   = rg_stage2.trace_data;
 `endif
          // XXX Revisit. word1 should be sized similar to val (always 64-bit) if
          // FPU is enabled
@@ -556,7 +565,6 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 `ifdef ISA_M
 	 // If MBox op, initiate it
 	 else if (x.op_stage2 == OP_Stage2_M) begin
-            // Instr fields required for decode for F/D opcodes
 	    Bool is_OP_not_OP_32 = (x.instr [3] == 1'b0);
             mbox.req (is_OP_not_OP_32,
 		      funct3,

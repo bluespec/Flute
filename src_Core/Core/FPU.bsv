@@ -23,13 +23,20 @@ typedef union tagged {
 
 typedef Tuple5#( FloatU,FloatU,FloatU,RoundMode,FpuOp) Fpu_Req;
 typedef Tuple2#( FloatU, FloatingPoint::Exception )       Fpu_Rsp;
-typedef Server#( Fpu_Req, Fpu_Rsp )             FPU_IFC;
 
 typedef Tuple2#( FDouble, FloatingPoint::Exception )      FpuR;
+
+interface FPU_IFC;
+   interface Server #( Fpu_Req, Fpu_Rsp ) server_core;
+
+   // ---- Reset
+   interface Server #(Token, Token) server_reset;
+endinterface
 
 (* synthesize *)
 module mkFPU ( FPU_IFC );
 `ifdef ISA_FD_FDIV
+   // XXX: Incomplete
    Server#(Tuple2#(UInt#(114),UInt#(57)),Tuple2#(UInt#(57),UInt#(57))) _div <- mkNonPipelinedDivider(2);
    Server#(UInt#(116),Tuple2#(UInt#(116),Bool)) _sqrt                       <- mkNonPipelinedSquareRooter(2);
 
@@ -38,6 +45,9 @@ module mkFPU ( FPU_IFC );
 `endif
 
    Server#( Tuple4#(Maybe#(FDouble),FDouble,FDouble,RoundMode), FpuR ) fpu_madd   <- mkFloatingPointFusedMultiplyAccumulate;
+
+   FIFOF #(Token)          resetReqsF           <- mkFIFOF;
+   FIFOF #(Token)          resetRspsF           <- mkFIFOF;
 
    FIFOF#( Fpu_Req )  iFifo        <- mkFIFOF; // TODO: bypass fifos?
    FIFOF#( Fpu_Rsp )  oFifo        <- mkFIFOF; // TODO: bypass fifos?
@@ -142,8 +152,21 @@ module mkFPU ( FPU_IFC );
       end
    endrule
 
-   interface request  = toPut( iFifo );
-   interface response = toGet( oFifo );
+   rule rl_reset;
+      resetReqsF.deq;
+      iFifo.clear;
+      oFifo.clear;
+      rmdFifo.clear;
+      isDoubleFifo.clear;
+      isNegateFifo.clear;
+      resetRspsF.enq (?);
+   endrule
 
+
+   // =============================================================
+   // INTERFACE
+   // ---- Reset
+   interface server_reset = toGPServer (resetReqsF, resetRspsF);
+   interface server_core = toGPServer ( iFifo, oFifo );
 endmodule
 endpackage

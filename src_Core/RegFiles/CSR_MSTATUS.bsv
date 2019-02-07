@@ -142,6 +142,11 @@ function WordXL fv_mstatus_reset_value (MISA misa);
    end
 
    mstatus = fv_assign_bits (mstatus, fromInteger (mstatus_mpp_bitpos), u_Priv_Mode);
+
+`ifdef ISA_F
+   // When F/D is present, FS bit needs to be set to initial value on reset
+   mstatus = fv_assign_bits (mstatus, fromInteger (mstatus_fs_bitpos), fs_xs_initial);
+`endif
    return mstatus;
 endfunction
 

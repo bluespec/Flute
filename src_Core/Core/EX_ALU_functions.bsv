@@ -660,6 +660,7 @@ function ALU_Outputs fv_LD (ALU_Inputs inputs);
    WordXL eaddr = pack (s_rs1_val + imm_s);
 
    let funct3 = inputs.decoded_instr.funct3;
+
    Bool legal_LD = (   (funct3 == f3_LB) || (funct3 == f3_LBU)
 		    || (funct3 == f3_LH) || (funct3 == f3_LHU)
 		    || (funct3 == f3_LW)
@@ -667,14 +668,22 @@ function ALU_Outputs fv_LD (ALU_Inputs inputs);
 		    || (funct3 == f3_LWU)
 		    || (funct3 == f3_LD)
 `endif
-		    // TODO: what about FLW?
+`ifdef ISA_F
+		    || (funct3 == f3_FLW)
+`endif
 `ifdef ISA_D
 		    || (funct3 == f3_FLD)
 `endif
 		    );
 
+   Bool legal_FP_LD = (
+      (opcode == op_LOAD_FP) ? (fv_mstatus_fs (inputs.mstatus) != fs_xs_off)
+                             : True);
+
    let alu_outputs = alu_outputs_base;
-   alu_outputs.control   = ((! legal_LD) ? CONTROL_TRAP : CONTROL_STRAIGHT);
+   
+   alu_outputs.control   = ((legal_LD && legal_FP_LD) ? CONTROL_STRAIGHT
+                                                      : CONTROL_TRAP);
    alu_outputs.op_stage2 = OP_Stage2_LD;
    alu_outputs.rd        = inputs.decoded_instr.rd;
    alu_outputs.addr      = eaddr;
@@ -709,14 +718,21 @@ function ALU_Outputs fv_ST (ALU_Inputs inputs);
 `ifdef RV64
 		    || (funct3 == f3_SD)
 `endif
-		    // TODO: what about FSW?
+`ifdef ISA_F
+		    || (funct3 == f3_FSW)
+`endif
 `ifdef ISA_D
 		    || (funct3 == f3_FSD)
 `endif
 		    );
 
+   Bool legal_FP_ST = (
+      (opcode == op_STORE_FP) ? (fv_mstatus_fs (inputs.mstatus) != fs_xs_off)
+                              : True);
+
    let alu_outputs = alu_outputs_base;
-   alu_outputs.control   = ((! legal_ST) ? CONTROL_TRAP : CONTROL_STRAIGHT);
+   alu_outputs.control   = ((legal_ST && legal_FP_ST) ? CONTROL_STRAIGHT
+                                                      : CONTROL_TRAP);
    alu_outputs.op_stage2 = OP_Stage2_ST;
    alu_outputs.addr      = eaddr;
 
@@ -920,8 +936,15 @@ function ALU_Outputs fv_FP (ALU_Inputs inputs);
    // Is the rounding mode legal
    match {.rm, .rm_is_legal} = fv_rmode_check  (funct3, inputs.fcsr_frm);
 
-   // Is the instruction legal
-   let inst_is_legal = fv_is_fp_instr_legal (funct7, rm, rs2, opcode);
+   // Is the instruction legal -- if MSTATUS.FS = fs_xs_off, FP instructions
+   // are always illegal
+   let inst_is_legal = (
+      (fv_mstatus_fs (inputs.mstatus) == fs_xs_off) ? False
+                                                    : fv_is_fp_instr_legal (
+                                                           funct7
+                                                         , rm
+                                                         , rs2
+                                                         , opcode));
 
    let alu_outputs = alu_outputs_base;
    alu_outputs.control   = ((inst_is_legal && rm_is_legal)  ? CONTROL_STRAIGHT

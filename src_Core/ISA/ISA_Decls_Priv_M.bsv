@@ -294,8 +294,12 @@ Bit #(2) fs_xs_initial  = 2'h1;
 Bit #(2) fs_xs_clean    = 2'h2;
 Bit #(2) fs_xs_dirty    = 2'h3;
 
-// Virtual field SD is computed from FS and XS
+// Extract MSTATUS.FS field
+function Bit #(2) fv_mstatus_fs (WordXL mstatus);
+   return (fv_get_bits (mstatus, fromInteger (mstatus_fs_bitpos)));
+endfunction
 
+// Virtual field SD is computed from FS and XS
 function Bit #(1) fv_mstatus_sd (WordXL  mstatus);
    Bit #(2) xs = fv_get_bits (mstatus, fromInteger (mstatus_xs_bitpos));
    Bit #(2) fs = fv_get_bits (mstatus, fromInteger (mstatus_fs_bitpos));
