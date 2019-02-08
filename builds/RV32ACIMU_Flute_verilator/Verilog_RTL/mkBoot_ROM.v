@@ -10,25 +10,46 @@
 // slave_awready                  O     1 reg
 // slave_wready                   O     1 reg
 // slave_bvalid                   O     1 reg
+// slave_bid                      O     4 reg
 // slave_bresp                    O     2 reg
 // slave_arready                  O     1 reg
 // slave_rvalid                   O     1 reg
-// slave_rresp                    O     2 reg
+// slave_rid                      O     4 reg
 // slave_rdata                    O    64 reg
+// slave_rresp                    O     2 reg
+// slave_rlast                    O     1 reg
 // CLK                            I     1 clock
 // RST_N                          I     1 reset
 // set_addr_map_addr_base         I    64 reg
 // set_addr_map_addr_lim          I    64 reg
 // slave_awvalid                  I     1
+// slave_awid                     I     4 reg
 // slave_awaddr                   I    64 reg
+// slave_awlen                    I     8 reg
+// slave_awsize                   I     3 reg
+// slave_awburst                  I     2 reg
+// slave_awlock                   I     1 reg
+// slave_awcache                  I     4 reg
 // slave_awprot                   I     3 reg
+// slave_awqos                    I     4 reg
+// slave_awregion                 I     4 reg
 // slave_wvalid                   I     1
+// slave_wid                      I     4 reg
 // slave_wdata                    I    64 reg
 // slave_wstrb                    I     8 reg
+// slave_wlast                    I     1 reg
 // slave_bready                   I     1
 // slave_arvalid                  I     1
+// slave_arid                     I     4 reg
 // slave_araddr                   I    64 reg
+// slave_arlen                    I     8 reg
+// slave_arsize                   I     3 reg
+// slave_arburst                  I     2 reg
+// slave_arlock                   I     1 reg
+// slave_arcache                  I     4 reg
 // slave_arprot                   I     3 reg
+// slave_arqos                    I     4 reg
+// slave_arregion                 I     4 reg
 // slave_rready                   I     1
 // EN_set_addr_map                I     1
 //
@@ -58,34 +79,58 @@ module mkBoot_ROM(CLK,
 		  RDY_set_addr_map,
 
 		  slave_awvalid,
+		  slave_awid,
 		  slave_awaddr,
+		  slave_awlen,
+		  slave_awsize,
+		  slave_awburst,
+		  slave_awlock,
+		  slave_awcache,
 		  slave_awprot,
+		  slave_awqos,
+		  slave_awregion,
 
 		  slave_awready,
 
 		  slave_wvalid,
+		  slave_wid,
 		  slave_wdata,
 		  slave_wstrb,
+		  slave_wlast,
 
 		  slave_wready,
 
 		  slave_bvalid,
+
+		  slave_bid,
 
 		  slave_bresp,
 
 		  slave_bready,
 
 		  slave_arvalid,
+		  slave_arid,
 		  slave_araddr,
+		  slave_arlen,
+		  slave_arsize,
+		  slave_arburst,
+		  slave_arlock,
+		  slave_arcache,
 		  slave_arprot,
+		  slave_arqos,
+		  slave_arregion,
 
 		  slave_arready,
 
 		  slave_rvalid,
 
-		  slave_rresp,
+		  slave_rid,
 
 		  slave_rdata,
+
+		  slave_rresp,
+
+		  slave_rlast,
 
 		  slave_rready);
   input  CLK;
@@ -99,22 +144,35 @@ module mkBoot_ROM(CLK,
 
   // action method slave_m_awvalid
   input  slave_awvalid;
+  input  [3 : 0] slave_awid;
   input  [63 : 0] slave_awaddr;
+  input  [7 : 0] slave_awlen;
+  input  [2 : 0] slave_awsize;
+  input  [1 : 0] slave_awburst;
+  input  slave_awlock;
+  input  [3 : 0] slave_awcache;
   input  [2 : 0] slave_awprot;
+  input  [3 : 0] slave_awqos;
+  input  [3 : 0] slave_awregion;
 
   // value method slave_m_awready
   output slave_awready;
 
   // action method slave_m_wvalid
   input  slave_wvalid;
+  input  [3 : 0] slave_wid;
   input  [63 : 0] slave_wdata;
   input  [7 : 0] slave_wstrb;
+  input  slave_wlast;
 
   // value method slave_m_wready
   output slave_wready;
 
   // value method slave_m_bvalid
   output slave_bvalid;
+
+  // value method slave_m_bid
+  output [3 : 0] slave_bid;
 
   // value method slave_m_bresp
   output [1 : 0] slave_bresp;
@@ -126,8 +184,16 @@ module mkBoot_ROM(CLK,
 
   // action method slave_m_arvalid
   input  slave_arvalid;
+  input  [3 : 0] slave_arid;
   input  [63 : 0] slave_araddr;
+  input  [7 : 0] slave_arlen;
+  input  [2 : 0] slave_arsize;
+  input  [1 : 0] slave_arburst;
+  input  slave_arlock;
+  input  [3 : 0] slave_arcache;
   input  [2 : 0] slave_arprot;
+  input  [3 : 0] slave_arqos;
+  input  [3 : 0] slave_arregion;
 
   // value method slave_m_arready
   output slave_arready;
@@ -135,11 +201,17 @@ module mkBoot_ROM(CLK,
   // value method slave_m_rvalid
   output slave_rvalid;
 
-  // value method slave_m_rresp
-  output [1 : 0] slave_rresp;
+  // value method slave_m_rid
+  output [3 : 0] slave_rid;
 
   // value method slave_m_rdata
   output [63 : 0] slave_rdata;
+
+  // value method slave_m_rresp
+  output [1 : 0] slave_rresp;
+
+  // value method slave_m_rlast
+  output slave_rlast;
 
   // value method slave_m_ruser
 
@@ -148,11 +220,13 @@ module mkBoot_ROM(CLK,
 
   // signals for module outputs
   wire [63 : 0] slave_rdata;
+  wire [3 : 0] slave_bid, slave_rid;
   wire [1 : 0] slave_bresp, slave_rresp;
   wire RDY_set_addr_map,
        slave_arready,
        slave_awready,
        slave_bvalid,
+       slave_rlast,
        slave_rvalid,
        slave_wready;
 
@@ -171,7 +245,7 @@ module mkBoot_ROM(CLK,
   wire rg_module_ready$D_IN, rg_module_ready$EN;
 
   // ports of submodule slave_xactor_f_rd_addr
-  wire [66 : 0] slave_xactor_f_rd_addr$D_IN, slave_xactor_f_rd_addr$D_OUT;
+  wire [96 : 0] slave_xactor_f_rd_addr$D_IN, slave_xactor_f_rd_addr$D_OUT;
   wire slave_xactor_f_rd_addr$CLR,
        slave_xactor_f_rd_addr$DEQ,
        slave_xactor_f_rd_addr$EMPTY_N,
@@ -179,7 +253,7 @@ module mkBoot_ROM(CLK,
        slave_xactor_f_rd_addr$FULL_N;
 
   // ports of submodule slave_xactor_f_rd_data
-  wire [65 : 0] slave_xactor_f_rd_data$D_IN, slave_xactor_f_rd_data$D_OUT;
+  wire [70 : 0] slave_xactor_f_rd_data$D_IN, slave_xactor_f_rd_data$D_OUT;
   wire slave_xactor_f_rd_data$CLR,
        slave_xactor_f_rd_data$DEQ,
        slave_xactor_f_rd_data$EMPTY_N,
@@ -187,7 +261,7 @@ module mkBoot_ROM(CLK,
        slave_xactor_f_rd_data$FULL_N;
 
   // ports of submodule slave_xactor_f_wr_addr
-  wire [66 : 0] slave_xactor_f_wr_addr$D_IN, slave_xactor_f_wr_addr$D_OUT;
+  wire [96 : 0] slave_xactor_f_wr_addr$D_IN, slave_xactor_f_wr_addr$D_OUT;
   wire slave_xactor_f_wr_addr$CLR,
        slave_xactor_f_wr_addr$DEQ,
        slave_xactor_f_wr_addr$EMPTY_N,
@@ -195,7 +269,7 @@ module mkBoot_ROM(CLK,
        slave_xactor_f_wr_addr$FULL_N;
 
   // ports of submodule slave_xactor_f_wr_data
-  wire [71 : 0] slave_xactor_f_wr_data$D_IN;
+  wire [76 : 0] slave_xactor_f_wr_data$D_IN;
   wire slave_xactor_f_wr_data$CLR,
        slave_xactor_f_wr_data$DEQ,
        slave_xactor_f_wr_data$EMPTY_N,
@@ -203,7 +277,7 @@ module mkBoot_ROM(CLK,
        slave_xactor_f_wr_data$FULL_N;
 
   // ports of submodule slave_xactor_f_wr_resp
-  wire [1 : 0] slave_xactor_f_wr_resp$D_IN, slave_xactor_f_wr_resp$D_OUT;
+  wire [5 : 0] slave_xactor_f_wr_resp$D_IN, slave_xactor_f_wr_resp$D_OUT;
   wire slave_xactor_f_wr_resp$CLR,
        slave_xactor_f_wr_resp$DEQ,
        slave_xactor_f_wr_resp$EMPTY_N,
@@ -230,23 +304,24 @@ module mkBoot_ROM(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h784;
-  reg [31 : 0] v__h8832;
-  reg [31 : 0] v__h9086;
-  reg [31 : 0] v__h9196;
-  reg [31 : 0] v__h778;
-  reg [31 : 0] v__h8826;
-  reg [31 : 0] v__h9080;
-  reg [31 : 0] v__h9190;
+  reg [31 : 0] v__h808;
+  reg [31 : 0] v__h8928;
+  reg [31 : 0] v__h9221;
+  reg [31 : 0] v__h9331;
+  reg [31 : 0] v__h802;
+  reg [31 : 0] v__h8922;
+  reg [31 : 0] v__h9215;
+  reg [31 : 0] v__h9325;
   // synopsys translate_on
 
   // remaining internal signals
-  reg [63 : 0] data64__h926;
-  reg [31 : 0] CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1,
-	       CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2;
-  wire [63 : 0] byte_addr__h681;
-  wire NOT_slave_xactor_f_rd_addr_first_BITS_5_TO_3_E_ETC___d18,
-       NOT_slave_xactor_f_wr_addr_first__198_BITS_5_T_ETC___d1208;
+  reg [63 : 0] data64__h987;
+  reg [31 : 0] CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1,
+	       CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2;
+  wire [63 : 0] byte_addr__h705, rdata__h924;
+  wire [1 : 0] rdr_rresp__h957;
+  wire NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18,
+       NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218;
 
   // action method set_addr_map
   assign RDY_set_addr_map = 1'd1 ;
@@ -270,8 +345,11 @@ module mkBoot_ROM(CLK,
   // value method slave_m_bvalid
   assign slave_bvalid = slave_xactor_f_wr_resp$EMPTY_N ;
 
+  // value method slave_m_bid
+  assign slave_bid = slave_xactor_f_wr_resp$D_OUT[5:2] ;
+
   // value method slave_m_bresp
-  assign slave_bresp = slave_xactor_f_wr_resp$D_OUT ;
+  assign slave_bresp = slave_xactor_f_wr_resp$D_OUT[1:0] ;
 
   // action method slave_m_bready
   assign CAN_FIRE_slave_m_bready = 1'd1 ;
@@ -287,18 +365,24 @@ module mkBoot_ROM(CLK,
   // value method slave_m_rvalid
   assign slave_rvalid = slave_xactor_f_rd_data$EMPTY_N ;
 
-  // value method slave_m_rresp
-  assign slave_rresp = slave_xactor_f_rd_data$D_OUT[65:64] ;
+  // value method slave_m_rid
+  assign slave_rid = slave_xactor_f_rd_data$D_OUT[70:67] ;
 
   // value method slave_m_rdata
-  assign slave_rdata = slave_xactor_f_rd_data$D_OUT[63:0] ;
+  assign slave_rdata = slave_xactor_f_rd_data$D_OUT[66:3] ;
+
+  // value method slave_m_rresp
+  assign slave_rresp = slave_xactor_f_rd_data$D_OUT[2:1] ;
+
+  // value method slave_m_rlast
+  assign slave_rlast = slave_xactor_f_rd_data$D_OUT[0] ;
 
   // action method slave_m_rready
   assign CAN_FIRE_slave_m_rready = 1'd1 ;
   assign WILL_FIRE_slave_m_rready = 1'd1 ;
 
   // submodule slave_xactor_f_rd_addr
-  FIFO2 #(.width(32'd67), .guarded(32'd1)) slave_xactor_f_rd_addr(.RST(RST_N),
+  FIFO2 #(.width(32'd97), .guarded(32'd1)) slave_xactor_f_rd_addr(.RST(RST_N),
 								  .CLK(CLK),
 								  .D_IN(slave_xactor_f_rd_addr$D_IN),
 								  .ENQ(slave_xactor_f_rd_addr$ENQ),
@@ -309,7 +393,7 @@ module mkBoot_ROM(CLK,
 								  .EMPTY_N(slave_xactor_f_rd_addr$EMPTY_N));
 
   // submodule slave_xactor_f_rd_data
-  FIFO2 #(.width(32'd66), .guarded(32'd1)) slave_xactor_f_rd_data(.RST(RST_N),
+  FIFO2 #(.width(32'd71), .guarded(32'd1)) slave_xactor_f_rd_data(.RST(RST_N),
 								  .CLK(CLK),
 								  .D_IN(slave_xactor_f_rd_data$D_IN),
 								  .ENQ(slave_xactor_f_rd_data$ENQ),
@@ -320,7 +404,7 @@ module mkBoot_ROM(CLK,
 								  .EMPTY_N(slave_xactor_f_rd_data$EMPTY_N));
 
   // submodule slave_xactor_f_wr_addr
-  FIFO2 #(.width(32'd67), .guarded(32'd1)) slave_xactor_f_wr_addr(.RST(RST_N),
+  FIFO2 #(.width(32'd97), .guarded(32'd1)) slave_xactor_f_wr_addr(.RST(RST_N),
 								  .CLK(CLK),
 								  .D_IN(slave_xactor_f_wr_addr$D_IN),
 								  .ENQ(slave_xactor_f_wr_addr$ENQ),
@@ -331,7 +415,7 @@ module mkBoot_ROM(CLK,
 								  .EMPTY_N(slave_xactor_f_wr_addr$EMPTY_N));
 
   // submodule slave_xactor_f_wr_data
-  FIFO2 #(.width(32'd72), .guarded(32'd1)) slave_xactor_f_wr_data(.RST(RST_N),
+  FIFO2 #(.width(32'd77), .guarded(32'd1)) slave_xactor_f_wr_data(.RST(RST_N),
 								  .CLK(CLK),
 								  .D_IN(slave_xactor_f_wr_data$D_IN),
 								  .ENQ(slave_xactor_f_wr_data$ENQ),
@@ -342,7 +426,7 @@ module mkBoot_ROM(CLK,
 								  .EMPTY_N(slave_xactor_f_wr_data$EMPTY_N));
 
   // submodule slave_xactor_f_wr_resp
-  FIFO2 #(.width(32'd2), .guarded(32'd1)) slave_xactor_f_wr_resp(.RST(RST_N),
+  FIFO2 #(.width(32'd6), .guarded(32'd1)) slave_xactor_f_wr_resp(.RST(RST_N),
 								 .CLK(CLK),
 								 .D_IN(slave_xactor_f_wr_resp$D_IN),
 								 .ENQ(slave_xactor_f_wr_resp$ENQ),
@@ -380,7 +464,17 @@ module mkBoot_ROM(CLK,
   assign rg_module_ready$EN = EN_set_addr_map ;
 
   // submodule slave_xactor_f_rd_addr
-  assign slave_xactor_f_rd_addr$D_IN = { slave_araddr, slave_arprot } ;
+  assign slave_xactor_f_rd_addr$D_IN =
+	     { slave_arid,
+	       slave_araddr,
+	       slave_arlen,
+	       slave_arsize,
+	       slave_arburst,
+	       slave_arlock,
+	       slave_arcache,
+	       slave_arprot,
+	       slave_arqos,
+	       slave_arregion } ;
   assign slave_xactor_f_rd_addr$ENQ =
 	     slave_arvalid && slave_xactor_f_rd_addr$FULL_N ;
   assign slave_xactor_f_rd_addr$DEQ = CAN_FIRE_RL_rl_process_rd_req ;
@@ -388,23 +482,35 @@ module mkBoot_ROM(CLK,
 
   // submodule slave_xactor_f_rd_data
   assign slave_xactor_f_rd_data$D_IN =
-	     NOT_slave_xactor_f_rd_addr_first_BITS_5_TO_3_E_ETC___d18 ?
-	       66'h20000000000000000 :
-	       { 2'd0, data64__h926 } ;
+	     { slave_xactor_f_rd_addr$D_OUT[96:93],
+	       rdata__h924,
+	       rdr_rresp__h957,
+	       1'd1 } ;
   assign slave_xactor_f_rd_data$ENQ = CAN_FIRE_RL_rl_process_rd_req ;
   assign slave_xactor_f_rd_data$DEQ =
 	     slave_rready && slave_xactor_f_rd_data$EMPTY_N ;
   assign slave_xactor_f_rd_data$CLR = 1'b0 ;
 
   // submodule slave_xactor_f_wr_addr
-  assign slave_xactor_f_wr_addr$D_IN = { slave_awaddr, slave_awprot } ;
+  assign slave_xactor_f_wr_addr$D_IN =
+	     { slave_awid,
+	       slave_awaddr,
+	       slave_awlen,
+	       slave_awsize,
+	       slave_awburst,
+	       slave_awlock,
+	       slave_awcache,
+	       slave_awprot,
+	       slave_awqos,
+	       slave_awregion } ;
   assign slave_xactor_f_wr_addr$ENQ =
 	     slave_awvalid && slave_xactor_f_wr_addr$FULL_N ;
   assign slave_xactor_f_wr_addr$DEQ = CAN_FIRE_RL_rl_process_wr_req ;
   assign slave_xactor_f_wr_addr$CLR = 1'b0 ;
 
   // submodule slave_xactor_f_wr_data
-  assign slave_xactor_f_wr_data$D_IN = { slave_wdata, slave_wstrb } ;
+  assign slave_xactor_f_wr_data$D_IN =
+	     { slave_wid, slave_wdata, slave_wstrb, slave_wlast } ;
   assign slave_xactor_f_wr_data$ENQ =
 	     slave_wvalid && slave_xactor_f_wr_data$FULL_N ;
   assign slave_xactor_f_wr_data$DEQ = CAN_FIRE_RL_rl_process_wr_req ;
@@ -412,27 +518,37 @@ module mkBoot_ROM(CLK,
 
   // submodule slave_xactor_f_wr_resp
   assign slave_xactor_f_wr_resp$D_IN =
-	     NOT_slave_xactor_f_wr_addr_first__198_BITS_5_T_ETC___d1208 ?
-	       2'd2 :
-	       2'd0 ;
+	     { slave_xactor_f_wr_addr$D_OUT[96:93],
+	       NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218 ?
+		 2'b10 :
+		 2'b0 } ;
   assign slave_xactor_f_wr_resp$ENQ = CAN_FIRE_RL_rl_process_wr_req ;
   assign slave_xactor_f_wr_resp$DEQ =
 	     slave_bready && slave_xactor_f_wr_resp$EMPTY_N ;
   assign slave_xactor_f_wr_resp$CLR = 1'b0 ;
 
   // remaining internal signals
-  assign NOT_slave_xactor_f_rd_addr_first_BITS_5_TO_3_E_ETC___d18 =
-	     slave_xactor_f_rd_addr$D_OUT[5:3] != 3'b0 ||
-	     rg_addr_base > slave_xactor_f_rd_addr$D_OUT[66:3] ||
-	     slave_xactor_f_rd_addr$D_OUT[66:3] >= rg_addr_lim ;
-  assign NOT_slave_xactor_f_wr_addr_first__198_BITS_5_T_ETC___d1208 =
-	     slave_xactor_f_wr_addr$D_OUT[5:3] != 3'b0 ||
-	     rg_addr_base > slave_xactor_f_wr_addr$D_OUT[66:3] ||
-	     slave_xactor_f_wr_addr$D_OUT[66:3] >= rg_addr_lim ;
-  assign byte_addr__h681 = slave_xactor_f_rd_addr$D_OUT[66:3] - rg_addr_base ;
-  always@(byte_addr__h681)
+  assign NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18 =
+	     slave_xactor_f_rd_addr$D_OUT[31:29] != 3'b0 ||
+	     rg_addr_base > slave_xactor_f_rd_addr$D_OUT[92:29] ||
+	     slave_xactor_f_rd_addr$D_OUT[92:29] >= rg_addr_lim ;
+  assign NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218 =
+	     slave_xactor_f_wr_addr$D_OUT[31:29] != 3'b0 ||
+	     rg_addr_base > slave_xactor_f_wr_addr$D_OUT[92:29] ||
+	     slave_xactor_f_wr_addr$D_OUT[92:29] >= rg_addr_lim ;
+  assign byte_addr__h705 =
+	     slave_xactor_f_rd_addr$D_OUT[92:29] - rg_addr_base ;
+  assign rdata__h924 =
+	     NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18 ?
+	       64'd0 :
+	       data64__h987 ;
+  assign rdr_rresp__h957 =
+	     NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18 ?
+	       2'b10 :
+	       2'b0 ;
+  always@(byte_addr__h705)
   begin
-    case (byte_addr__h681)
+    case (byte_addr__h705)
       64'd16,
       64'd24,
       64'd56,
@@ -816,18 +932,18 @@ module mkBoot_ROM(CLK,
       64'd4072,
       64'd4080,
       64'd4088:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 = 32'h0;
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 = 32'h0;
       64'd32:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h54040000;
       64'd40:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h88030000;
       64'd48:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h11000000;
       64'd64:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h50030000;
       64'd96,
       64'd112,
@@ -838,22 +954,22 @@ module mkBoot_ROM(CLK,
       64'd488,
       64'd872,
       64'd888:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h04000000;
       64'd104, 64'd120, 64'd504, 64'd792, 64'd920:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h02000000;
       64'd128:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h16000000;
       64'd136:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h62626375;
       64'd144:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h656B6970;
       64'd152:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h65642D65;
       64'd160,
       64'd264,
@@ -873,16 +989,16 @@ module mkBoot_ROM(CLK,
       64'd816,
       64'd840,
       64'd880:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h03000000;
       64'd168:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h26000000;
       64'd176, 64'd640:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h732C7261;
       64'd184, 64'd648:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h7261622D;
       64'd192,
       64'd216,
@@ -894,224 +1010,224 @@ module mkBoot_ROM(CLK,
       64'd744,
       64'd752,
       64'd912:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h01000000;
       64'd248, 64'd896:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h80969800;
       64'd256:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h40757063;
       64'd272:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h3F000000;
       64'd288, 64'd560, 64'd768, 64'd848:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h4B000000;
       64'd304:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h4F000000;
       64'd320:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h06000000;
       64'd328:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h63736972;
       64'd344:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h56000000;
       64'd352:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h75616D69;
       64'd368:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h60000000;
       64'd376:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h76732C76;
       64'd392:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h69000000;
       64'd408:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h70757272;
       64'd416:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h6F72746E;
       64'd464, 64'd632, 64'd712, 64'd824:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h1B000000;
       64'd472:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h70632C76;
       64'd480:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h00006374;
       64'd520:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h38407972;
       64'd528:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h00303030;
       64'd536:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h07000000;
       64'd544:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h6F6D656D;
       64'd568:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h00000080;
       64'd576:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h00000010;
       64'd616:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h0F000000;
       64'd656:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h69730063;
       64'd664:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h7375622D;
       64'd680:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'hA7000000;
       64'd688:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h6E696C63;
       64'd696, 64'd808:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h30303030;
       64'd720:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h6C632C76;
       64'd736:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h10000000;
       64'd776:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h00000002;
       64'd784:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h00000C00;
       64'd800:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h74726175;
       64'd832:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h61303535;
       64'd856:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h000000C0;
       64'd864:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h40000000;
       64'd904:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h08000000;
       64'd928:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h09000000;
       64'd936:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h73736572;
       64'd944:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h2300736C;
       64'd952:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h6C65632D;
       64'd960:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h61706D6F;
       64'd968:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h6F6D0065;
       64'd976:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h656D6974;
       64'd984:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h6572662D;
       64'd992:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h64007963;
       64'd1000:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h79745F65;
       64'd1008:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h73006765;
       64'd1016:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h69720073;
       64'd1024:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h00617369;
       64'd1032:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h65707974;
       64'd1040:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h662D6B63;
       64'd1048:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h79636E65;
       64'd1056, 64'd1072:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h72726574;
       64'd1064:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h6C6C6563;
       64'd1080:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h746E6F63;
       64'd1088:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h70007265;
       64'd1096:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h7200656C;
       64'd1104:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h6E690073;
       64'd1112:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h73747075;
       64'd1120:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h65646E65;
       64'd1128:
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 	      32'h68732D67;
-      default: CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
+      default: CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 =
 		   32'hAAAAAAAA;
     endcase
   end
-  always@(byte_addr__h681)
+  always@(byte_addr__h705)
   begin
-    case (byte_addr__h681)
+    case (byte_addr__h705)
       64'd16:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h00028067;
       64'd24:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h80000000;
       64'd32:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'hEDFE0DD0;
       64'd40:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h38000000;
       64'd48:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h28000000;
       64'd56, 64'd560, 64'd768, 64'd848:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h10000000;
       64'd64:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'hCC000000;
       64'd72,
       64'd80,
@@ -1496,9 +1612,9 @@ module mkBoot_ROM(CLK,
       64'd4072,
       64'd4080,
       64'd4088:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 = 32'h0;
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 = 32'h0;
       64'd88, 64'd256, 64'd688, 64'd800:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h01000000;
       64'd96,
       64'd112,
@@ -1516,244 +1632,244 @@ module mkBoot_ROM(CLK,
       64'd872,
       64'd888,
       64'd904:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h03000000;
       64'd120, 64'd232, 64'd464:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h0F000000;
       64'd136, 64'd328:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h1B000000;
       64'd144:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h732C7261;
       64'd152:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h7261622D;
       64'd160, 64'd336:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h00000076;
       64'd168:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h12000000;
       64'd176, 64'd640:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h62626375;
       64'd184, 64'd648:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h656B6970;
       64'd192:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h00000065;
       64'd200:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h73757063;
       64'd248:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h2C000000;
       64'd264, 64'd704, 64'd816:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h00000030;
       64'd272, 64'd288, 64'd392, 64'd600, 64'd616:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h04000000;
       64'd280:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h00757063;
       64'd304:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h05000000;
       64'd312:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h79616B6F;
       64'd344:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h0A000000;
       64'd352:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h32337672;
       64'd360:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h00000073;
       64'd368, 64'd920:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h0B000000;
       64'd376, 64'd472, 64'd720:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h63736972;
       64'd384:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h00003233;
       64'd400:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h80969800;
       64'd408:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h65746E69;
       64'd416:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h6F632D74;
       64'd424:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h72656C6C;
       64'd440:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h79000000;
       64'd456:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h8A000000;
       64'd480:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h6E692D75;
       64'd496:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h9F000000;
       64'd504, 64'd512, 64'd584, 64'd608, 64'd624, 64'd792, 64'd928:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h02000000;
       64'd520:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h6F6D656D;
       64'd528:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h30303030;
       64'd544:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h3F000000;
       64'd552:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h00007972;
       64'd592:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h00636F73;
       64'd632:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h21000000;
       64'd656:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h6F732D65;
       64'd664:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h656C706D;
       64'd696:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h30324074;
       64'd712:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h0D000000;
       64'd728:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h30746E69;
       64'd744, 64'd912:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'hAE000000;
       64'd760:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h07000000;
       64'd808:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h30306340;
       64'd824:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h09000000;
       64'd832:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h3631736E;
       64'd880:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'hC2000000;
       64'd896:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h69000000;
       64'd936:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h64646123;
       64'd944:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h6C65632D;
       64'd952:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h657A6973;
       64'd960:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h6300736C;
       64'd968:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h6C626974;
       64'd976:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h006C6564;
       64'd984:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h65736162;
       64'd992:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h6E657571;
       64'd1000:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h63697665;
       64'd1008:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h72006570;
       64'd1016:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h75746174;
       64'd1024:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h2C766373;
       64'd1032:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h2D756D6D;
       64'd1040:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h6F6C6300;
       64'd1048:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h75716572;
       64'd1056:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h6E692300;
       64'd1064, 64'd1080:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h2D747075;
       64'd1072:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h6E690073;
       64'd1088:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h6C6C6F72;
       64'd1096:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h646E6168;
       64'd1104:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h65676E61;
       64'd1112:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h72726574;
       64'd1120:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h7478652D;
       64'd1128:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h65720064;
       64'd1136:
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 	      32'h00746669;
-      default: CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 =
+      default: CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 =
 		   32'hAAAAAAAA;
     endcase
   end
-  always@(byte_addr__h681 or
-	  CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 or
-	  CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2)
+  always@(byte_addr__h705 or
+	  CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1 or
+	  CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2)
   begin
-    case (byte_addr__h681)
-      64'd0: data64__h926 = 64'h0202859300000297;
-      64'd8: data64__h926 = 64'h0182A283F1402573;
-      default: data64__h926 =
-		   { CASE_byte_addr81_16_0x0_24_0x0_32_0x54040000_4_ETC__q1,
-		     CASE_byte_addr81_16_0x28067_24_0x80000000_32_0_ETC__q2 };
+    case (byte_addr__h705)
+      64'd0: data64__h987 = 64'h0202859300000297;
+      64'd8: data64__h987 = 64'h0182A283F1402573;
+      default: data64__h987 =
+		   { CASE_byte_addr05_16_0x0_24_0x0_32_0x54040000_4_ETC__q1,
+		     CASE_byte_addr05_16_0x28067_24_0x80000000_32_0_ETC__q2 };
     endcase
   end
 
@@ -1795,117 +1911,245 @@ module mkBoot_ROM(CLK,
     #0;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req &&
-	  NOT_slave_xactor_f_rd_addr_first_BITS_5_TO_3_E_ETC___d18)
+	  NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18)
 	begin
-	  v__h784 = $stime;
+	  v__h808 = $stime;
 	  #0;
 	end
-    v__h778 = v__h784 / 32'd10;
+    v__h802 = v__h808 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req &&
-	  NOT_slave_xactor_f_rd_addr_first_BITS_5_TO_3_E_ETC___d18)
+	  NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18)
 	$display("%0d: ERROR: Boot_ROM.rl_process_rd_req: unrecognized addr",
-		 v__h778);
+		 v__h802);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req &&
-	  NOT_slave_xactor_f_rd_addr_first_BITS_5_TO_3_E_ETC___d18)
+	  NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18)
 	$write("    ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req &&
-	  NOT_slave_xactor_f_rd_addr_first_BITS_5_TO_3_E_ETC___d18)
-	$write("AXI4_Lite_Rd_Addr { ", "araddr: ");
+	  NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18)
+	$write("AXI4_Rd_Addr { ", "arid: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req &&
-	  NOT_slave_xactor_f_rd_addr_first_BITS_5_TO_3_E_ETC___d18)
-	$write("'h%h", slave_xactor_f_rd_addr$D_OUT[66:3]);
+	  NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18)
+	$write("'h%h", slave_xactor_f_rd_addr$D_OUT[96:93]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req &&
-	  NOT_slave_xactor_f_rd_addr_first_BITS_5_TO_3_E_ETC___d18)
+	  NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18)
+	$write(", ", "araddr: ");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_rd_req &&
+	  NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18)
+	$write("'h%h", slave_xactor_f_rd_addr$D_OUT[92:29]);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_rd_req &&
+	  NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18)
+	$write(", ", "arlen: ");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_rd_req &&
+	  NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18)
+	$write("'h%h", slave_xactor_f_rd_addr$D_OUT[28:21]);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_rd_req &&
+	  NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18)
+	$write(", ", "arsize: ");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_rd_req &&
+	  NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18)
+	$write("'h%h", slave_xactor_f_rd_addr$D_OUT[20:18]);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_rd_req &&
+	  NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18)
+	$write(", ", "arburst: ");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_rd_req &&
+	  NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18)
+	$write("'h%h", slave_xactor_f_rd_addr$D_OUT[17:16]);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_rd_req &&
+	  NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18)
+	$write(", ", "arlock: ");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_rd_req &&
+	  NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18)
+	$write("'h%h", slave_xactor_f_rd_addr$D_OUT[15]);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_rd_req &&
+	  NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18)
+	$write(", ", "arcache: ");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_rd_req &&
+	  NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18)
+	$write("'h%h", slave_xactor_f_rd_addr$D_OUT[14:11]);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_rd_req &&
+	  NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18)
 	$write(", ", "arprot: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req &&
-	  NOT_slave_xactor_f_rd_addr_first_BITS_5_TO_3_E_ETC___d18)
-	$write("'h%h", slave_xactor_f_rd_addr$D_OUT[2:0]);
+	  NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18)
+	$write("'h%h", slave_xactor_f_rd_addr$D_OUT[10:8]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req &&
-	  NOT_slave_xactor_f_rd_addr_first_BITS_5_TO_3_E_ETC___d18)
+	  NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18)
+	$write(", ", "arqos: ");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_rd_req &&
+	  NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18)
+	$write("'h%h", slave_xactor_f_rd_addr$D_OUT[7:4]);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_rd_req &&
+	  NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18)
+	$write(", ", "arregion: ");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_rd_req &&
+	  NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18)
+	$write("'h%h", slave_xactor_f_rd_addr$D_OUT[3:0]);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_rd_req &&
+	  NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18)
 	$write(", ", "aruser: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req &&
-	  NOT_slave_xactor_f_rd_addr_first_BITS_5_TO_3_E_ETC___d18)
+	  NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18)
 	$write("'h%h", 1'd0, " }");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req &&
-	  NOT_slave_xactor_f_rd_addr_first_BITS_5_TO_3_E_ETC___d18)
+	  NOT_slave_xactor_f_rd_addr_first_BITS_31_TO_29_ETC___d18)
 	$write("\n");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req &&
-	  NOT_slave_xactor_f_wr_addr_first__198_BITS_5_T_ETC___d1208)
+	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
 	begin
-	  v__h8832 = $stime;
+	  v__h8928 = $stime;
 	  #0;
 	end
-    v__h8826 = v__h8832 / 32'd10;
+    v__h8922 = v__h8928 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req &&
-	  NOT_slave_xactor_f_wr_addr_first__198_BITS_5_T_ETC___d1208)
+	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
 	$display("%0d: ERROR: Boot_ROM.rl_process_wr_req: unrecognized addr",
-		 v__h8826);
+		 v__h8922);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req &&
-	  NOT_slave_xactor_f_wr_addr_first__198_BITS_5_T_ETC___d1208)
+	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
 	$write("    ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req &&
-	  NOT_slave_xactor_f_wr_addr_first__198_BITS_5_T_ETC___d1208)
-	$write("AXI4_Lite_Wr_Addr { ", "awaddr: ");
+	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
+	$write("AXI4_Wr_Addr { ", "awid: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req &&
-	  NOT_slave_xactor_f_wr_addr_first__198_BITS_5_T_ETC___d1208)
-	$write("'h%h", slave_xactor_f_wr_addr$D_OUT[66:3]);
+	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
+	$write("'h%h", slave_xactor_f_wr_addr$D_OUT[96:93]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req &&
-	  NOT_slave_xactor_f_wr_addr_first__198_BITS_5_T_ETC___d1208)
+	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
+	$write(", ", "awaddr: ");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_wr_req &&
+	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
+	$write("'h%h", slave_xactor_f_wr_addr$D_OUT[92:29]);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_wr_req &&
+	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
+	$write(", ", "awlen: ");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_wr_req &&
+	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
+	$write("'h%h", slave_xactor_f_wr_addr$D_OUT[28:21]);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_wr_req &&
+	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
+	$write(", ", "awsize: ");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_wr_req &&
+	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
+	$write("'h%h", slave_xactor_f_wr_addr$D_OUT[20:18]);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_wr_req &&
+	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
+	$write(", ", "awburst: ");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_wr_req &&
+	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
+	$write("'h%h", slave_xactor_f_wr_addr$D_OUT[17:16]);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_wr_req &&
+	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
+	$write(", ", "awlock: ");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_wr_req &&
+	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
+	$write("'h%h", slave_xactor_f_wr_addr$D_OUT[15]);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_wr_req &&
+	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
+	$write(", ", "awcache: ");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_wr_req &&
+	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
+	$write("'h%h", slave_xactor_f_wr_addr$D_OUT[14:11]);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_wr_req &&
+	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
 	$write(", ", "awprot: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req &&
-	  NOT_slave_xactor_f_wr_addr_first__198_BITS_5_T_ETC___d1208)
-	$write("'h%h", slave_xactor_f_wr_addr$D_OUT[2:0]);
+	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
+	$write("'h%h", slave_xactor_f_wr_addr$D_OUT[10:8]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req &&
-	  NOT_slave_xactor_f_wr_addr_first__198_BITS_5_T_ETC___d1208)
+	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
+	$write(", ", "awqos: ");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_wr_req &&
+	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
+	$write("'h%h", slave_xactor_f_wr_addr$D_OUT[7:4]);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_wr_req &&
+	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
+	$write(", ", "awregion: ");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_wr_req &&
+	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
+	$write("'h%h", slave_xactor_f_wr_addr$D_OUT[3:0]);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_process_wr_req &&
+	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
 	$write(", ", "awuser: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req &&
-	  NOT_slave_xactor_f_wr_addr_first__198_BITS_5_T_ETC___d1208)
+	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
 	$write("'h%h", 1'd0, " }");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req &&
-	  NOT_slave_xactor_f_wr_addr_first__198_BITS_5_T_ETC___d1208)
+	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
 	$write("\n");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_set_addr_map && set_addr_map_addr_base[2:0] != 3'd0)
 	begin
-	  v__h9086 = $stime;
+	  v__h9221 = $stime;
 	  #0;
 	end
-    v__h9080 = v__h9086 / 32'd10;
+    v__h9215 = v__h9221 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_set_addr_map && set_addr_map_addr_base[2:0] != 3'd0)
 	$display("%0d: WARNING: Boot_ROM.set_addr_map: addr_base 0x%0h is not 4-Byte-aligned",
-		 v__h9080,
+		 v__h9215,
 		 set_addr_map_addr_base);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_set_addr_map && set_addr_map_addr_lim[2:0] != 3'd0)
 	begin
-	  v__h9196 = $stime;
+	  v__h9331 = $stime;
 	  #0;
 	end
-    v__h9190 = v__h9196 / 32'd10;
+    v__h9325 = v__h9331 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_set_addr_map && set_addr_map_addr_lim[2:0] != 3'd0)
 	$display("%0d: WARNING: Boot_ROM.set_addr_map: addr_lim 0x%0h is not 4-Byte-aligned",
-		 v__h9190,
+		 v__h9325,
 		 set_addr_map_addr_lim);
   end
   // synopsys translate_on

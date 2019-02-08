@@ -13,56 +13,49 @@ package TV_Taps;
 // ================================================================
 // BSV library imports
 
-import Assert       :: *;
-import BUtils       :: *;
-import FIFOF        :: *;
-import GetPut       :: *;
-import ClientServer :: *;
-import Connectable  :: *;
-import Memory       :: *;
+import Assert        :: *;
+import BUtils        :: *;
+import FIFOF         :: *;
+import GetPut        :: *;
+import ClientServer  :: *;
+import Connectable   :: *;
+import Memory        :: *;
 
 // ----------------
 // BSV additional libs
 
-import Semi_FIFOF :: *;
-import GetPut_Aux :: *;
+import Semi_FIFOF  :: *;
+import GetPut_Aux  :: *;
 
 // ================================================================
 // Project imports
 
-import ISA_Decls :: *;
-import TV_Info   :: *;
+import ISA_Decls  :: *;
+import TV_Info    :: *;
 
-import AXI4_Lite_Types  :: *;
-import AXI4_Lite_Fabric :: *;
-import Fabric_Defs      :: *;
+import AXI4_Types   :: *;
+import Fabric_Defs  :: *;
 
 // ================================================================
 // DM-to-memory tap
 
 interface DM_Mem_Tap_IFC;
-   interface AXI4_Lite_Slave_IFC  #(Wd_Addr, Wd_Data, Wd_User)  slave;
-   interface AXI4_Lite_Master_IFC #(Wd_Addr, Wd_Data, Wd_User)  master;
-   interface Get #(Trace_Data)                                  trace_data_out;
+   interface AXI4_Slave_IFC  #(Wd_Id, Wd_Addr, Wd_Data, Wd_User)  slave;
+   interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User)  master;
+   interface Get #(Trace_Data)                                    trace_data_out;
 endinterface
 
 (* synthesize *)
 module mkDM_Mem_Tap (DM_Mem_Tap_IFC);
 
    // Transactor facing DM
-   AXI4_Lite_Slave_Xactor_IFC  #(Wd_Addr, Wd_Data, Wd_User) slave_xactor  <- mkAXI4_Lite_Slave_Xactor;
+   AXI4_Slave_Xactor_IFC  #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) slave_xactor  <- mkAXI4_Slave_Xactor;
 
    // Transactor facing memory bus
-   AXI4_Lite_Master_Xactor_IFC #(Wd_Addr, Wd_Data, Wd_User) master_xactor <- mkAXI4_Lite_Master_Xactor;
+   AXI4_Master_Xactor_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) master_xactor <- mkAXI4_Master_Xactor;
 
    // Tap output
    FIFOF #(Trace_Data)  f_trace_data <- mkFIFOF;
-
-`ifdef FABRIC64
-   staticAssert (valueOf (Wd_User) == 64, "mkDM_Mem_Tap only supports Wd_User of 64");
-`else
-   staticAssert (valueOf (Wd_User) == 32, "mkDM_Mem_Tap only supports Wd_User of 32");
-`endif
 
    // ----------------
    // AXI requests

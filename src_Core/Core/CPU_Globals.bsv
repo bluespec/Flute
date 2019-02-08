@@ -110,8 +110,8 @@ Bypass no_bypass = Bypass {bypass_state: BYPASS_RD_NONE,
 
 `ifdef ISA_F
 FBypass no_fbypass = FBypass {bypass_state: BYPASS_RD_NONE,
-			   rd: ?,
-			   rd_val: ? };
+			      rd: ?,
+			      rd_val: ? };
 `endif
 
 // ----------------
@@ -318,9 +318,8 @@ instance FShow #(Output_Stage1);
 	 else
 	    fmt = fmt + $format (" PIPE: ", fshow (x.control), " ", fshow (x.data_to_stage2));
 
-	 if (x.redirect) begin
+	 if (x.redirect)
 	    fmt = fmt + $format ("\n        redirect next_pc:%h", x.next_pc);
-	 end
       end
       return fmt;
    endfunction
@@ -402,9 +401,11 @@ instance FShow #(Data_Stage1_to_Stage2);
       Fmt fmt =   $format ("data_to_Stage 2 {pc:%h  instr:%h  priv:%0d\n", x.pc, x.instr, x.priv);
       fmt = fmt + $format ("            op_stage2:", fshow (x.op_stage2), "  rd:%0d\n", x.rd);
 `ifdef ISA_F
-      fmt = fmt + $format ("            addr:%h  val1:%h  val2:%h  val3:%h}", x.addr, x.val1, x.val2, x.val3);
+      fmt = fmt + $format ("            addr:%h  val1:%h  val2:%h  val3:%h}",
+			   x.addr, x.val1, x.val2, x.val3);
 `else
-      fmt = fmt + $format ("            addr:%h  val1:%h  val2:%h}", x.addr, x.val1, x.val2);
+      fmt = fmt + $format ("            addr:%h  val1:%h  val2:%h}",
+			   x.addr, x.val1, x.val2);
 `endif
       return fmt;
    endfunction

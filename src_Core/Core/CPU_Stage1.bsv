@@ -105,8 +105,8 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
    // ----------------
    // ALU
 
-   let decoded_instr = rg_stage_input.decoded_instr;
-   let funct3        = decoded_instr.funct3;
+   let decoded_instr  = rg_stage_input.decoded_instr;
+   let funct3         = decoded_instr.funct3;
 
    // Register rs1 read and bypass
    let rs1 = decoded_instr.rs1;
@@ -149,44 +149,43 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
 `endif
 
    // ALU function
-   let alu_inputs = ALU_Inputs {cur_priv      : cur_priv,
-				pc            : rg_stage_input.pc,
-				is_i32_not_i16: rg_stage_input.is_i32_not_i16,
-				instr         : rg_stage_input.instr,
+   let alu_inputs = ALU_Inputs {cur_priv       : cur_priv,
+				pc             : rg_stage_input.pc,
+				is_i32_not_i16 : rg_stage_input.is_i32_not_i16,
+				instr          : rg_stage_input.instr,
 `ifdef ISA_C
-				instr_C       : rg_stage_input.instr_C,
+				instr_C        : rg_stage_input.instr_C,
 `endif
-				decoded_instr : rg_stage_input.decoded_instr,
-				rs1_val       : rs1_val_bypassed,
-				rs2_val       : rs2_val_bypassed,
+				decoded_instr  : rg_stage_input.decoded_instr,
+				rs1_val        : rs1_val_bypassed,
+				rs2_val        : rs2_val_bypassed,
 `ifdef ISA_F
-				frs1_val      : frs1_val_bypassed,
-				frs2_val      : frs2_val_bypassed,
-				frs3_val      : frs3_val_bypassed,
-				fcsr_frm      : csr_regfile.read_frm,
+				frs1_val       : frs1_val_bypassed,
+				frs2_val       : frs2_val_bypassed,
+				frs3_val       : frs3_val_bypassed,
+				fcsr_frm       : csr_regfile.read_frm,
 `endif
-				mstatus       : csr_regfile.read_mstatus,
-				misa          : csr_regfile.read_misa};
+				mstatus        : csr_regfile.read_mstatus,
+				misa           : csr_regfile.read_misa };
 
    let alu_outputs = fv_ALU (alu_inputs);
 
-   let data_to_stage2 = Data_Stage1_to_Stage2 {pc           : rg_stage_input.pc,
-					       instr        : rg_stage_input.instr,
-					       op_stage2    : alu_outputs.op_stage2,
-					       rd           : alu_outputs.rd,
-					       addr         : alu_outputs.addr,
-					       val1         : alu_outputs.val1,
-					       val2         : alu_outputs.val2,
+   let data_to_stage2 = Data_Stage1_to_Stage2 {pc            : rg_stage_input.pc,
+					       instr         : rg_stage_input.instr,
+					       op_stage2     : alu_outputs.op_stage2,
+					       rd            : alu_outputs.rd,
+					       addr          : alu_outputs.addr,
+					       val1          : alu_outputs.val1,
+					       val2          : alu_outputs.val2,
 `ifdef ISA_F
-					       val3         : alu_outputs.val3,
-					       rd_in_fpr    : alu_outputs.rd_in_fpr,
-					       rounding_mode: alu_outputs.rm,
+					       val3          : alu_outputs.val3,
+					       rd_in_fpr     : alu_outputs.rd_in_fpr,
+					       rounding_mode : alu_outputs.rm,
 `endif
 `ifdef INCLUDE_TANDEM_VERIF
-					       trace_data : alu_outputs.trace_data,
+					       trace_data    : alu_outputs.trace_data,
 `endif
-					       priv         : cur_priv
-					       };
+					       priv          : cur_priv };
 
    // ----------------
    // Combinational output function

@@ -27,8 +27,8 @@ import Semi_FIFOF :: *;
 // ================================================================
 // Project imports
 
-import Fabric_Defs     :: *;
-import AXI4_Lite_Types :: *;
+import AXI4_Types  :: *;
+import Fabric_Defs :: *;
 
 // ================================================================
 // Include the auto-generated BSV-include file with the ROM function
@@ -49,7 +49,7 @@ interface Boot_ROM_IFC;
    method Action set_addr_map (Fabric_Addr addr_base, Fabric_Addr addr_lim);
 
    // Main Fabric Reqs/Rsps
-   interface AXI4_Lite_Slave_IFC #(Wd_Addr, Wd_Data, Wd_User) slave;
+   interface AXI4_Slave_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) slave;
 endinterface
 
 // ================================================================
@@ -68,7 +68,7 @@ module mkBoot_ROM (Boot_ROM_IFC);
    // ----------------
    // Connector to fabric
 
-   AXI4_Lite_Slave_Xactor_IFC #(Wd_Addr, Wd_Data, Wd_User) slave_xactor <- mkAXI4_Lite_Slave_Xactor;
+   AXI4_Slave_Xactor_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) slave_xactor <- mkAXI4_Slave_Xactor;
 
    // ----------------
 
@@ -101,10 +101,10 @@ module mkBoot_ROM (Boot_ROM_IFC);
 
       let byte_addr = rda.araddr - rg_addr_base;
 
-      AXI4_Lite_Resp rresp  = AXI4_LITE_OKAY;
-      Bit #(64)      data64 = 0;
+      AXI4_Resp  rresp  = axi4_resp_okay;
+      Bit #(64)  data64 = 0;
       if (! fn_addr_is_ok (rg_addr_base, rda.araddr, rg_addr_lim)) begin
-	 rresp = AXI4_LITE_SLVERR;
+	 rresp = axi4_resp_slverr;
 	 $display ("%0d: ERROR: Boot_ROM.rl_process_rd_req: unrecognized addr",  cur_cycle);
 	 $display ("    ", fshow (rda));
       end
@@ -119,7 +119,11 @@ module mkBoot_ROM (Boot_ROM_IFC);
       end
 	 
       Bit #(Wd_Data) rdata  = truncate (data64);
-      let rdr = AXI4_Lite_Rd_Data {rresp: rresp, rdata: rdata, ruser: rda.aruser};
+      let rdr = AXI4_Rd_Data {rid:   rda.arid,
+			      rdata: rdata,
+			      rresp: rresp,
+			      rlast: True,
+			      ruser: rda.aruser};
       slave_xactor.i_rd_data.enq (rdr);
 
       if (verbosity > 0) begin
@@ -136,14 +140,16 @@ module mkBoot_ROM (Boot_ROM_IFC);
       let wra <- pop_o (slave_xactor.o_wr_addr);
       let wrd <- pop_o (slave_xactor.o_wr_data);
 
-      AXI4_Lite_Resp bresp = AXI4_LITE_OKAY;
+      AXI4_Resp  bresp = axi4_resp_okay;
       if (! fn_addr_is_ok (rg_addr_base, wra.awaddr, rg_addr_lim)) begin
-	 bresp = AXI4_LITE_SLVERR;
+	 bresp = axi4_resp_slverr;
 	 $display ("%0d: ERROR: Boot_ROM.rl_process_wr_req: unrecognized addr",  cur_cycle);
 	 $display ("    ", fshow (wra));
       end
 
-      let wrr = AXI4_Lite_Wr_Resp {bresp: bresp, buser: wra.awuser};
+      let wrr = AXI4_Wr_Resp {bid:   wra.awid,
+			      bresp: bresp,
+			      buser: wra.awuser};
       slave_xactor.i_wr_resp.enq (wrr);
 
       if (verbosity > 0) begin

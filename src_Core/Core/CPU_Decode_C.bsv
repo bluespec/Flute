@@ -26,7 +26,6 @@ export fv_decode_C;
 // Project imports
 
 import ISA_Decls   :: *;
-import CPU_Globals :: *;
 
 // ================================================================
 

@@ -272,12 +272,12 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 `endif
       rg_abstractcs_cmderr <= DM_ABSTRACTCS_CMDERR_NONE;
       if (verbosity != 0)
-      `ifdef RV32
+`ifdef RV32
 	 $display ("(%0d): DM_Abstract_Commands: csr read data is 0x%08h", cur_cycle, rsp.data);
-      `endif
-      `ifdef RV64
+`endif
+`ifdef RV64
 	 $display ("(%0d): DM_Abstract_Commands: csr read data is 0x%016h", cur_cycle, rsp.data);
-      `endif
+`endif
 
       rg_abstractcs_busy <= False;
    endrule
@@ -290,26 +290,25 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 			    && rg_command_access_reg_write
 			    && is_gpr);
       if (verbosity != 0)
-      `ifdef RV32
+`ifdef RV32
 	 $display ("(%0d): DM_Abstract_Commands.write [command]: write GPR [0x%0h] <= 0x%08h", cur_cycle,
 	    gpr_addr, rg_data0);
-      `endif
-      `ifdef RV64
+`endif
+`ifdef RV64
 	 $display ("(%0d): DM_Abstract_Commands.write [command]: write GPR [0x%0h] <= 0x%016h", cur_cycle,
 	    gpr_addr, {rg_data1, rg_data0});
-      `endif
+`endif
 
-      let req = MemoryRequest {
-	   write: True
-	 , byteen: '1
-	 , address: gpr_addr
-      `ifdef RV32
-	 , data: rg_data0
-      `endif
-      `ifdef RV64
-         ,data: {rg_data1, rg_data0}
-      `endif
-      };
+      let req = MemoryRequest {write: True,
+			       byteen: '1,
+			       address: gpr_addr,
+`ifdef RV32
+			       data: rg_data0
+`endif
+`ifdef RV64
+			       data: {rg_data1, rg_data0}
+`endif
+			       };
 
       f_hart0_gpr_reqs.enq (req);
       rg_start_reg_access <= False;
@@ -344,12 +343,12 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 `endif
       rg_abstractcs_cmderr <= DM_ABSTRACTCS_CMDERR_NONE;
       if (verbosity != 0)
-      `ifdef RV32
+`ifdef RV32
 	 $display ("(%0d): DM_Abstract_Commands: gpr read data is 0x%08h", cur_cycle, rsp.data);
-      `endif
-      `ifdef RV64
+`endif
+`ifdef RV64
 	 $display ("(%0d): DM_Abstract_Commands: gpr read data is 0x%016h", cur_cycle, rsp.data);
-      `endif
+`endif
       rg_abstractcs_busy <= False;
    endrule
 
@@ -403,9 +402,9 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
       rg_command_access_reg_regno <= fromInteger (dm_command_access_reg_regno_gpr_0);
 
       rg_data0 <= 0;
-   `ifdef RV64
+`ifdef RV64
       rg_data1 <= 0;
-   `endif
+`endif
 
       if (verbosity != 0)
 	 $display ("(%0d): DM_Abstract_Commands: reset", cur_cycle);
@@ -421,9 +420,9 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 			      dm_addr_abstractcs:   virt_rg_abstractcs;
 			      dm_addr_command:      virt_rg_command;
 			      dm_addr_data0:        rg_data0;
-			   `ifdef RV64
+`ifdef RV64
 			      dm_addr_data1:        rg_data1;
-			   `endif
+`endif
 			      // dm_addr_data2..data3
 			      // dm_addr_abstractauto
 			      // dm_addr_progbuf0..15
@@ -457,21 +456,22 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 	    if (verbosity != 0)
 	       $display ("(%0d): DM_Abstract_Commands.write: [", cur_cycle, dm_addr_name, "] <= 0x%08h", dm_word);
 	 end
-      `ifdef RV64
+`ifdef RV64
 	 else if (dm_addr == dm_addr_data1) begin
 	    rg_data1 <= dm_word;
 
 	    if (verbosity != 0)
 	       $display ("(%0d): DM_Abstract_Commands.write: [", cur_cycle, dm_addr_name, "] <= 0x%08h", dm_word);
 	 end
-      `endif
+`endif
 	 else begin
 	    // dm_addr_data2..12
 	    // dm_addr_abstractauto
 	    // dm_addr_progbuf0..15
 	    rg_abstractcs_cmderr <= DM_ABSTRACTCS_CMDERR_NOT_SUPPORTED;
 
-	    $display ("(%0d): DM_Abstract_Commands.write: [", cur_cycle, dm_addr_name, "] <= 0x%08h: ERROR: not supported", dm_word);
+	    $display ("(%0d): DM_Abstract_Commands.write: [", cur_cycle, dm_addr_name,
+		      "] <= 0x%08h: ERROR: not supported", dm_word);
 	 end
       endaction
    endmethod

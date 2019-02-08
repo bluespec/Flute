@@ -10,7 +10,7 @@ package P2_Core;
 //        - Near_Mem (ICache and DCache)
 //        - Near_Mem_IO (Timer, Software-interrupt, and other mem-mapped-locations)
 //        - External interrupt request line
-//        - 2 x AXI4-Lite Master interfaces (from ICache, DCache and DM)
+//        - 2 x AXI4 Master interfaces (from DM and ICache, and from DCache)
 //    - RISC-V Debug Module (DM)
 //    - JTAG TAP interface for DM
 //    - Optional Tandem Verification trace stream output interface
@@ -37,14 +37,11 @@ import Core_IFC :: *;
 import Core     :: *;
 
 // Main Fabric
-import AXI4_Lite_Types         :: *;
-import AXI4_Lite_Fabric        :: *;
-import AXI4_Types              :: *;
-import AXI4_AXI4_Lite_Adapters :: *;
+import AXI4_Types   :: *;
+import AXI4_Fabric  :: *;
+import Fabric_Defs  :: *;
 
-import Fabric_Defs      :: *;
-
-// 2x1 AXI4_Lite fabric to mux IMem and Debug Module masters into a single master
+// 2x1 AXI4 fabric to mux IMem and Debug Module masters into a single master
 import IMem_DM_Mux_Fabric :: *;
 
 `ifdef INCLUDE_TANDEM_VERIF
@@ -66,11 +63,9 @@ interface P2_Core_IFC;
    // Core CPU interfaces
 
    // CPU IMem and DM to Fabric master interface
-   // interface AXI4_Lite_Master_IFC #(Wd_Addr, Wd_Data, Wd_User) master0;
    interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) master0;
 
    // CPU DMem to Fabric master interface
-   // interface AXI4_Lite_Master_IFC #(Wd_Addr, Wd_Data, Wd_User) master1;
    interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) master1;
 
    // External interrupts
@@ -108,7 +103,7 @@ module mkP2_Core (P2_Core_IFC);
    // Tie-offs (not used in SSITH GFE)
 
    // CPU Back-door slave interface from fabric
-   AXI4_Lite_Master_IFC #(Wd_Addr, Wd_Data, Wd_User) axi_master_stub = dummy_AXI4_Lite_Master_ifc;
+   AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) axi_master_stub = dummy_AXI4_Master_ifc;
    mkConnection (axi_master_stub, core.cpu_slave);
 
    // Set core's verbosity
@@ -137,7 +132,7 @@ module mkP2_Core (P2_Core_IFC);
    endrule
 
    // ================================================================
-   // Merge IMem and Debug Module AXI4-Lite Masters
+   // Merge IMem and Debug Module AXI4 Masters
    // since Flute uses 3 masters (IMem, DMem and Debug Module)
    // but SSITH GFE only has 2 masters
 
@@ -217,12 +212,10 @@ module mkP2_Core (P2_Core_IFC);
    // INTERFACE
 
    // CPU IMem to Fabric master interface
-   // interface AXI4_Lite_Master_IFC master0 = imem_dm_master;
-   interface AXI4_Master_IFC master0 = fn_AXI4_Lite_Master_IFC_to_AXI4_Master_IFC (imem_dm_master);
+   interface AXI4_Master_IFC master0 = imem_dm_master;
 
    // CPU DMem to Fabric master interface
-   // interface AXI4_Lite_Master_IFC master1 = core.cpu_dmem_master;
-   interface AXI4_Master_IFC master1 = fn_AXI4_Lite_Master_IFC_to_AXI4_Master_IFC (core.cpu_dmem_master);
+   interface AXI4_Master_IFC master1 = core.cpu_dmem_master;
 
    // External interrupts
    method Action cpu_external_interrupt (req) = core.cpu_external_interrupt_req (req);

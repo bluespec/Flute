@@ -32,6 +32,6 @@ into this socket:
 Whenever there are changes to the Piccolo core, rerun:
 
   $ make compile
-  $ cp Verilog_RTL/* xilinx_ip/hdl/
+      (which generates RTL and then $ cp Verilog_RTL/* xilinx_ip/hdl/)
 
 >================================================================

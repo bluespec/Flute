@@ -157,7 +157,7 @@ module mkSoC_Map (SoC_Map_IFC);
    // ----------------------------------------------------------------
    // Memory address predicate
    // Identifies memory addresses in the Fabric.
-   // (Caches needs this information to cache these addresses.)
+   // (Caches need this information to cache these addresses.)
 
    function Bool fn_is_mem_addr (Fabric_Addr addr);
       return (   fn_is_boot_rom_addr (addr)
@@ -169,7 +169,7 @@ module mkSoC_Map (SoC_Map_IFC);
    // ----------------------------------------------------------------
    // I/O address predicate
    // Identifies I/O addresses in the Fabric.
-   // (Caches needs this information to avoid cacheing these addresses.)
+   // (Caches need this information to avoid cacheing these addresses.)
 
    function Bool fn_is_IO_addr (Fabric_Addr addr);
       return (   fn_is_uart0_addr  (addr)

@@ -42,8 +42,8 @@ import Semi_FIFOF :: *;
 // ================================================================
 // Project imports
 
-import Fabric_Defs     :: *;
-import AXI4_Lite_Types :: *;
+import AXI4_Types  :: *;
+import Fabric_Defs :: *;
 
 // ================================================================
 // UART registers and their address offsets
@@ -109,7 +109,7 @@ interface UART_IFC;
    method Action set_addr_map (Fabric_Addr addr_base, Fabric_Addr addr_lim);
 
    // Main Fabric Reqs/Rsps
-   interface AXI4_Lite_Slave_IFC #(Wd_Addr, Wd_Data, Wd_User) slave;
+   interface AXI4_Slave_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) slave;
 
    // To external console
    interface Get #(Bit #(8))  get_to_console;
@@ -158,8 +158,7 @@ module mkUART (UART_IFC);
    // ----------------
    // Connector to fabric
 
-   AXI4_Lite_Slave_Xactor_IFC #(Wd_Addr, Wd_Data, Wd_User)
-      slave_xactor <- mkAXI4_Lite_Slave_Xactor;
+   AXI4_Slave_Xactor_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) slave_xactor <- mkAXI4_Slave_Xactor;
 
    // ----------------
    // character queues to and from the console
@@ -249,18 +248,18 @@ module mkUART (UART_IFC);
       let byte_addr = rda.araddr - rg_addr_base;
       let { msbs, offset, lsbs } = split_addr (zeroExtend (byte_addr));
 
-      Bit #(8)       rdata_byte = 0;
-      AXI4_Lite_Resp rresp      = AXI4_LITE_OKAY;
+      Bit #(8)  rdata_byte = 0;
+      AXI4_Resp rresp      = axi4_resp_okay;
 
       if (lsbs != 0) begin
 	 $display ("%0d: ERROR: UART.rl_process_rd_req: misaligned addr", cur_cycle);
 	 $display ("            ", fshow (rda));
-	 rresp = AXI4_LITE_SLVERR;
+	 rresp = axi4_resp_slverr;
       end
       else if (msbs != 0) begin
 	 $display ("%0d: ERROR: UART.rl_process_rd_req: unrecognized addr", cur_cycle);
 	 $display ("            ", fshow (rda));
-	 rresp = AXI4_LITE_SLVERR;
+	 rresp = axi4_resp_slverr;
       end
 
       // offset 0: RBR
@@ -297,12 +296,16 @@ module mkUART (UART_IFC);
       else begin
 	 $display ("%0d: ERROR: UART.rl_process_rd_req: unrecognized addr", cur_cycle);
 	 $display ("            ", fshow (rda));
-	 rresp = AXI4_LITE_SLVERR;
+	 rresp = axi4_resp_slverr;
       end
 
       // Send read-response to bus
       Fabric_Data rdata = zeroExtend (rdata_byte);
-      let rdr = AXI4_Lite_Rd_Data {rresp: rresp, rdata: rdata, ruser: rda.aruser};
+      let rdr = AXI4_Rd_Data {rid:   rda.arid,
+			      rdata: rdata,
+			      rresp: rresp,
+			      rlast: True,
+			      ruser: rda.aruser};
       slave_xactor.i_rd_data.enq (rdr);
 
       if (cfg_verbosity > 1) begin
@@ -326,19 +329,19 @@ module mkUART (UART_IFC);
       let byte_addr = wra.awaddr - rg_addr_base;
       let { msbs, offset, lsbs } = split_addr (zeroExtend (byte_addr));
 
-      AXI4_Lite_Resp bresp = AXI4_LITE_OKAY;
+      AXI4_Resp bresp = axi4_resp_okay;
 
       if ((lsbs != 0) || (wstrb [0] == 1'b0))  begin
 	 $display ("%0d: ERROR: UART.rl_process_wr_req: misaligned addr", cur_cycle);
 	 $display ("            ", fshow (wra));
 	 $display ("            ", fshow (wrd));
-	 bresp = AXI4_LITE_SLVERR;
+	 bresp = axi4_resp_slverr;
       end
       else if (msbs != 0) begin
 	 $display ("%0d: ERROR: UART.rl_process_wr_req: unrecognized addr", cur_cycle);
 	 $display ("            ", fshow (wra));
 	 $display ("            ", fshow (wrd));
-	 bresp = AXI4_LITE_SLVERR;
+	 bresp = axi4_resp_slverr;
       end
 
       // offset 0: THR
@@ -376,11 +379,13 @@ module mkUART (UART_IFC);
 	 $display ("%0d: ERROR: UART.rl_process_wr_req: unrecognized addr", cur_cycle);
 	 $display ("            ", fshow (wra));
 	 $display ("            ", fshow (wrd));
-	 bresp = AXI4_LITE_SLVERR;
+	 bresp = axi4_resp_slverr;
       end
 
       // Send write-response to bus
-      let wrr = AXI4_Lite_Wr_Resp {bresp: bresp, buser: wra.awuser};
+      let wrr = AXI4_Wr_Resp {bid:   wra.awid,
+			      bresp: bresp,
+			      buser: wra.awuser};
       slave_xactor.i_wr_resp.enq (wrr);
 
       if (cfg_verbosity > 1) begin

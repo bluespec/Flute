@@ -25,8 +25,7 @@ import GetPut_Aux :: *;
 // Project imports
 
 // Main fabric
-import AXI4_Lite_Types  :: *;
-import AXI4_Lite_Fabric :: *;
+import AXI4_Types  :: *;
 
 `ifdef INCLUDE_GDB_CONTROL
 import Debug_Module     :: *;
@@ -254,13 +253,13 @@ module mkCore (Core_IFC);
    // SoC fabric connections
 
    // IMem to Fabric master interface
-   interface AXI4_Lite_Master_IFC  cpu_imem_master = cpu.imem_master;
+   interface AXI4_Master_IFC  cpu_imem_master = cpu.imem_master;
 
    // DMem to Fabric master interface
-   interface AXI4_Lite_Master_IFC  cpu_dmem_master = cpu.dmem_master;
+   interface AXI4_Master_IFC  cpu_dmem_master = cpu.dmem_master;
 
    // Back-door slave interface from fabric
-   interface AXI4_Lite_Slave_IFC  cpu_slave = cpu.near_mem_slave;
+   interface AXI4_Slave_IFC  cpu_slave = cpu.near_mem_slave;
 
    // ----------------
    // External interrupts
@@ -300,7 +299,7 @@ module mkCore (Core_IFC);
 
    // Non-Debug-Module Reset (reset all except DM)
    interface Get  dm_ndm_reset_req_get = debug_module.get_ndm_reset_req;
-   interface AXI4_Lite_Master_IFC  dm_master = dm_master_local;
+   interface AXI4_Master_IFC  dm_master = dm_master_local;
 `endif
 
 endmodule

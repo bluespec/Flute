@@ -4,13 +4,11 @@
 
 .PHONY: help
 help:
-	@echo '    make  compile      Recompile Core (CPU, caches)'
+	@echo '    make  compile      Recompile Core (CPU, caches) into Verilog_RTL and copies into xilinx_ip/hdl'
 	@echo '                           NOTE: needs Bluespec bsc compiler'
-	@echo '                           For Bluesim: generates Bluesim intermediate files'
-	@echo '                           For Verilog simulation: generates RTL'
 	@echo ''
 	@echo '    make  clean        Remove intermediate build-files'
-	@echo '    make  full_clean   Restore to pristine state (pre-building anything)'
+	@echo '    make  full_clean   Restore this directory to pristine state'
 
 .PHONY: all
 all: compile
@@ -39,9 +37,7 @@ BSC_COMPILATION_FLAGS += \
 
 CORE_DIRS = $(REPO)/src_Core/ISA:$(REPO)/src_Core/RegFiles:$(REPO)/src_Core/Core:$(REPO)/src_Core/Near_Mem_VM:$(REPO)/src_Core/Debug_Module:$(REPO)/src_Core/BSV_Additional_Libs
 
-TESTBENCH_DIRS  = $(REPO)/src_Testbench/Fabrics/AXI4_Lite:$(REPO)/src_Testbench/Fabrics/AXI4:$(REPO)/src_Testbench/Fabrics/Adapters
-
-# TESTBENCH_DIRS  = $(REPO)/src_Testbench/Top:$(REPO)/src_Testbench/SoC:$(REPO)/src_Testbench/Fabrics/AXI4_Lite:$(REPO)/src_Testbench/Fabrics/AXI4:$(REPO)/src_Testbench/Fabrics/Adapters
+TESTBENCH_DIRS  = $(REPO)/src_Testbench/Fabrics/AXI4
 
 BSC_PATH = -p $(CORE_DIRS):src_BSV:$(TESTBENCH_DIRS):+:%/Libraries/TLM3:%/Libraries/Axi:%/Libraries/Axi4
 
@@ -55,7 +51,7 @@ TOPMODULE = mkP2_Core
 # bsc compilation flags
 
 BSC_COMPILATION_FLAGS += \
-	-keep-fires -aggressive-conditions -no-warn-action-shadowing    \
+	-keep-fires -aggressive-conditions -no-warn-action-shadowing -no-show-timestamps \
 	-suppress-warnings G0020    \
 	+RTS -K128M -RTS  -show-range-conflict
 
@@ -72,9 +68,11 @@ Verilog_RTL:
 
 .PHONY: compile
 compile:  build_dir  Verilog_RTL
-	@echo  "INFO: Verilog RTL generation ..."
+	@echo  "INFO: Generating RTL into Verilog_RTL ..."
 	bsc -u -elab -verilog  $(RTL_GEN_DIRS)  $(BSC_COMPILATION_FLAGS)  $(BSC_PATH)  $(TOPFILE)
-	@echo  "INFO: Verilog RTL generation finished"
+	@echo  "INFO: Generated RTL into Verilog_RTL"
+	cp  Verilog_RTL/*  xilinx_ip/hdl/
+	@echo  "INFO: Copied RTL from  Verilog_RTL/  to  xilinx_ip/hdl/"
 
 # ================================================================
 

@@ -373,78 +373,6 @@ endfunction
 // ----------------------------------------------------------------
 // 'dm_sbcs' register
 
-function DM_Word fn_mk_sbcs (Bool        sbsingleread,
-			     DM_sbaccess sbaccess,
-			     Bool        sbautoincrement,
-			     Bool        sbautoread,
-			     DM_sberror  sberror);
-   return {11'b0,
-	   pack (sbsingleread),
-	   pack (sbaccess),
-	   pack (sbautoincrement),
-	   pack (sbautoread),
-	   pack (sberror),
-	   // The following are read-only, so can set them to 0
-	   7'b0,    // sbasize
-	   1'b0,    // sbaccess128
-	   1'b0,    // sbaccess64
-	   1'b0,    // sbaccess32
-	   1'b0,    // sbaccess16
-	   1'b0};   // sbaccess8
-endfunction
-
-function Fmt fshow_sbcs (DM_Word dm_word);
-   return ($format ("sbsingleread ")       + fshow (fn_sbcs_sbsingleread (dm_word))
-	   + $format (" ")                 + fshow (fn_sbcs_sbaccess (dm_word))
-	   + $format (" sbautoincrement ") + fshow (fn_sbcs_sbautoincrement (dm_word))
-	   + $format (" sbautoread ")      + fshow (fn_sbcs_sbautoread (dm_word))
-	   + $format (" ")                 + fshow (fn_sbcs_sberror (dm_word)));
-endfunction
-
-function Bool fn_sbcs_sbsingleread (DM_Word dm_word);
-   return unpack (dm_word [20]);
-endfunction
-
-function DM_sbaccess fn_sbcs_sbaccess (DM_Word dm_word);
-   return unpack (dm_word [19:17]);
-endfunction
-
-function Bool fn_sbcs_sbautoincrement (DM_Word dm_word);
-   return unpack (dm_word [16]);
-endfunction
-
-function Bool fn_sbcs_sbautoread (DM_Word dm_word);
-   return unpack (dm_word [15]);
-endfunction
-
-function DM_sberror fn_sbcs_sberror (DM_Word dm_word);
-   return unpack (dm_word [14:12]);
-endfunction
-
-function Bit #(7) fn_sbcs_sbasize (DM_Word dm_word);
-   return dm_word [11:5];
-endfunction
-
-function Bool fn_sbcs_sbaccess128 (DM_Word dm_word);
-   return unpack (dm_word [4]);
-endfunction
-
-function Bool fn_sbcs_sbaccess64 (DM_Word dm_word);
-   return unpack (dm_word [3]);
-endfunction
-
-function Bool fn_sbcs_sbaccess32 (DM_Word dm_word);
-   return unpack (dm_word [2]);
-endfunction
-
-function Bool fn_sbcs_sbaccess16 (DM_Word dm_word);
-   return unpack (dm_word [1]);
-endfunction
-
-function Bool fn_sbcs_sbaccess8 (DM_Word dm_word);
-   return unpack (dm_word [0]);
-endfunction
-
 typedef enum {DM_SBACCESS_8_BIT,
 	      DM_SBACCESS_16_BIT,
 	      DM_SBACCESS_32_BIT,
@@ -473,6 +401,78 @@ typedef enum {DM_SBERROR_NONE,          // 0
 	      DM_SBERROR_UNDEF7_W1C     // 7, used in writes, to clear sberror
    } DM_sberror
 deriving (Bits, Eq, FShow);
+
+// Constructor
+
+function DM_Word fn_mk_sbcs_val (Bit #(3)     sbversion,
+				 Bool         sbbusyerror,
+				 Bool         sbbusy,
+				 Bool         sbreadonaddr,
+				 DM_sbaccess  sbaccess,
+				 Bool         sbautoincrement,
+				 Bool         sbreadondata,
+				 DM_sberror   sberror,
+				 Bit #(7)     sbasize,
+				 Bit #(1)     sbaccess128,
+				 Bit #(1)     sbaccess64,
+				 Bit #(1)     sbaccess32,
+				 Bit #(1)     sbaccess16,
+				 Bit #(1)     sbaccess8);
+   return {sbversion,
+	   6'b0,
+	   pack (sbbusyerror),
+	   pack (sbbusy),
+	   pack (sbreadonaddr),
+	   pack (sbaccess),
+	   pack (sbautoincrement),
+	   pack (sbreadondata),
+	   pack (sberror),
+	   sbasize,
+	   sbaccess128,
+	   sbaccess64,
+	   sbaccess32,
+	   sbaccess16,
+	   sbaccess8};
+endfunction
+
+// Selectors
+
+function Bit #(3)    fn_sbcs_sbversion       (DM_Word dm_word);  return unpack (dm_word [31:29]);  endfunction
+function Bool        fn_sbcs_sbbusyerror     (DM_Word dm_word);  return unpack (dm_word [22]);     endfunction
+function Bool        fn_sbcs_sbbusy          (DM_Word dm_word);  return unpack (dm_word [21]);     endfunction
+function Bool        fn_sbcs_sbreadonaddr    (DM_Word dm_word);  return unpack (dm_word [20]);     endfunction
+function DM_sbaccess fn_sbcs_sbaccess        (DM_Word dm_word);  return unpack (dm_word [19:17]);  endfunction
+function Bool        fn_sbcs_sbautoincrement (DM_Word dm_word);  return unpack (dm_word [16]);     endfunction
+function Bool        fn_sbcs_sbreadondata    (DM_Word dm_word);  return unpack (dm_word [15]);     endfunction
+function DM_sberror  fn_sbcs_sberror         (DM_Word dm_word);  return unpack (dm_word [14:12]);  endfunction
+function Bit #(7)    fn_sbcs_sbasize         (DM_Word dm_word);  return         dm_word [11:5];    endfunction
+function Bool        fn_sbcs_sbaccess128     (DM_Word dm_word);  return unpack (dm_word [4]);      endfunction
+function Bool        fn_sbcs_sbaccess64      (DM_Word dm_word);  return unpack (dm_word [3]);      endfunction
+function Bool        fn_sbcs_sbaccess32      (DM_Word dm_word);  return unpack (dm_word [2]);      endfunction
+function Bool        fn_sbcs_sbaccess16      (DM_Word dm_word);  return unpack (dm_word [1]);      endfunction
+function Bool        fn_sbcs_sbaccess8       (DM_Word dm_word);  return unpack (dm_word [0]);      endfunction
+
+// Debugging
+
+function Fmt fshow_sbcs (DM_Word dm_word);
+   return (  $format ("SBCS{")
+	   + $format ("sbversion %0d",      fn_sbcs_sbversion (dm_word))
+	   + $format (" sbbusyerror %0d",   fn_sbcs_sbbusyerror (dm_word))
+	   + $format (" sbbusy %0d",        fn_sbcs_sbbusy (dm_word))
+	   + $format (" sbreadonaddr ")     + fshow (fn_sbcs_sbreadonaddr (dm_word))
+	   + $format (" sbaccess ")         + fshow (fn_sbcs_sbaccess (dm_word))
+	   + $format (" sbautoincrement ")  + fshow (fn_sbcs_sbautoincrement (dm_word))
+	   + $format (" sbreadondata ")     + fshow (fn_sbcs_sbreadondata (dm_word))
+	   + $format (" sberror ")          + fshow (fn_sbcs_sberror (dm_word))
+	   + $format (" sbasize %0d",       fn_sbcs_sbasize (dm_word))
+	   + $format (" sbaccess")
+	   + ((fn_sbcs_sbaccess128 (dm_word)) ? $format ("_128") : $format ("x"))
+	   + ((fn_sbcs_sbaccess64  (dm_word)) ? $format ("_64")  : $format ("x"))
+	   + ((fn_sbcs_sbaccess32  (dm_word)) ? $format ("_32")  : $format ("x"))
+	   + ((fn_sbcs_sbaccess16  (dm_word)) ? $format ("_16")  : $format ("x"))
+	   + ((fn_sbcs_sbaccess8   (dm_word)) ? $format ("_8")   : $format ("x"))
+	   + $format ("}"));
+endfunction
 
 // ================================================================
 // DCSR 'cause' field values

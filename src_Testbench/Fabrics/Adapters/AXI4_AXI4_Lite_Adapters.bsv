@@ -85,6 +85,7 @@ function AXI4_Master_IFC #(wd_id, wd_addr, wd_data, wd_user)
       // output buses
       method Bool                      m_wvalid = axi4_lite.m_wvalid;
 
+      method Bit #(wd_id)              m_wid    = 0;
       method Bit #(wd_data)            m_wdata  = axi4_lite.m_wdata;
       method Bit #(TDiv #(wd_data, 8)) m_wstrb  = axi4_lite.m_wstrb;
       method Bool                      m_wlast  = True;

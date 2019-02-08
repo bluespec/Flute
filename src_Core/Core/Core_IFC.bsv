@@ -18,9 +18,8 @@ import ClientServer  :: *;
 // Project imports
 
 // Main fabric
-import AXI4_Lite_Types   :: *;
-import AXI4_Lite_Fabric  :: *;
-import Fabric_Defs       :: *;
+import AXI4_Types   :: *;
+import Fabric_Defs  :: *;
 
 `ifdef INCLUDE_TANDEM_VERIF
 import TV_Info  :: *;
@@ -42,13 +41,13 @@ interface Core_IFC;
    interface Server #(Bit #(0), Bit #(0))  cpu_reset_server;
 
    // CPU IMem to Fabric master interface
-   interface AXI4_Lite_Master_IFC #(Wd_Addr, Wd_Data, Wd_User) cpu_imem_master;
+   interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) cpu_imem_master;
 
    // CPU DMem to Fabric master interface
-   interface AXI4_Lite_Master_IFC #(Wd_Addr, Wd_Data, Wd_User) cpu_dmem_master;
+   interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) cpu_dmem_master;
 
    // CPU Back-door slave interface from fabric
-   interface AXI4_Lite_Slave_IFC #(Wd_Addr, Wd_Data, Wd_User) cpu_slave;
+   interface AXI4_Slave_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) cpu_slave;
 
    // External interrupts
    (* always_ready, always_enabled *)
@@ -83,7 +82,7 @@ interface Core_IFC;
    interface Get #(Bit #(0)) dm_ndm_reset_req_get;
 
    // Read/Write RISC-V memory
-   interface AXI4_Lite_Master_IFC #(Wd_Addr, Wd_Data, Wd_User) dm_master;
+   interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) dm_master;
 `endif
 endinterface
 

@@ -683,7 +683,7 @@ function ALU_Outputs fv_LD (ALU_Inputs inputs);
 `endif
 
    let alu_outputs = alu_outputs_base;
-   
+
    alu_outputs.control   = ((legal_LD && legal_FP_LD) ? CONTROL_STRAIGHT
                                                       : CONTROL_TRAP);
    alu_outputs.op_stage2 = OP_Stage2_LD;
@@ -942,13 +942,12 @@ function ALU_Outputs fv_FP (ALU_Inputs inputs);
 
    // Is the instruction legal -- if MSTATUS.FS = fs_xs_off, FP instructions
    // are always illegal
-   let inst_is_legal = (
-      (fv_mstatus_fs (inputs.mstatus) == fs_xs_off) ? False
-                                                    : fv_is_fp_instr_legal (
-                                                           funct7
-                                                         , rm
-                                                         , rs2
-                                                         , opcode));
+   let inst_is_legal = (  (fv_mstatus_fs (inputs.mstatus) == fs_xs_off)
+			? False
+			: fv_is_fp_instr_legal (funct7,
+						rm,
+						rs2,
+						opcode));
 
    let alu_outputs = alu_outputs_base;
    alu_outputs.control   = ((inst_is_legal && rm_is_legal)  ? CONTROL_STRAIGHT

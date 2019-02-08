@@ -20,7 +20,6 @@ export mkCPU;
 // ================================================================
 // BSV library imports
 
-import Vector       :: *;
 import Memory       :: *;
 import FIFOF        :: *;
 import SpecialFIFOs :: *;
@@ -38,7 +37,7 @@ import Semi_FIFOF :: *;
 // ================================================================
 // Project imports
 
-import AXI4_Lite_Types :: *;
+import AXI4_Types :: *;
 
 import ISA_Decls :: *;
 
@@ -54,7 +53,7 @@ import CPU_IFC     :: *;
 
 `ifdef ISA_C
 // 'C' extension (16b compressed instructions)
-import CPU_Fetch_C :: *;
+import CPU_Fetch_C  :: *;
 `endif
 
 import CPU_StageF :: *;    // Fetch
@@ -109,7 +108,7 @@ typedef enum {CPU_RESET1,
 	      CPU_CSRRX_RESTART,    // Restart pipe after a CSRRX instruction
 	      CPU_FENCE_I,          // While waiting for FENCE.I to complete in Near_Mem
 	      CPU_FENCE,            // While waiting for FENCE to complete in Near_Mem
-	      CPU_SFENCE_VMA,
+	      CPU_SFENCE_VMA,       // While waiting for FENCE.VMA to complete in Near_Mem
 
 	      CPU_WFI_PAUSED        // On WFI pause
    } CPU_State
@@ -172,7 +171,7 @@ module mkCPU (CPU_IFC);
    // ----------------
    // Major CPU states
    Reg #(CPU_State)  rg_state    <- mkReg (CPU_RESET1);
-   Reg #(Priv_Mode)  rg_cur_priv <- mkRegU;
+   Reg #(Priv_Mode)  rg_cur_priv <- mkReg (m_Priv_Mode);
    Reg #(Epoch)      rg_epoch    <- mkRegU;
 
    // Save next_pc across split-phase FENCE.I and other split-phase ops
@@ -293,7 +292,7 @@ module mkCPU (CPU_IFC);
    function Action fa_report_CPI;
       action
 	 Bit #(64) delta_CPI_cycles = mcycle - rg_start_CPI_cycles;
-	 Bit #(64) delta_CPI_instrs = csr_regfile.read_csr_minstret - rg_start_CPI_instrs;
+	 Bit #(64) delta_CPI_instrs = minstret - rg_start_CPI_instrs;
 
 	 // Make delta_CPI_instrs at least 1, to avoid divide-by-zero
 	 if (delta_CPI_instrs == 0)
@@ -340,7 +339,7 @@ module mkCPU (CPU_IFC);
 		     mstatus_MXR,
 		     csr_regfile.read_satp);
 
-	 // Set rg_halt if requested.
+	 // Set rg_halt if requested by GDB (stop req, step req)
 	 Bool do_halt = False;
 
 `ifdef INCLUDE_GDB_CONTROL
@@ -396,7 +395,7 @@ module mkCPU (CPU_IFC);
 `endif
 
 	 rg_start_CPI_cycles <= mcycle;
-	 rg_start_CPI_instrs <= csr_regfile.read_csr_minstret;
+	 rg_start_CPI_instrs <= minstret;
 
 	 if (cur_verbosity != 0)
 	    $display ("    fa_restart: RUNNING with PC = 0x%0h", resume_pc);
@@ -458,11 +457,6 @@ module mkCPU (CPU_IFC);
    rule rl_reset_start (rg_state == CPU_RESET1);
       let req <- pop (f_reset_reqs);
 
-`ifdef INCLUDE_GDB_CONTROL
-      rg_stop_req <= False;
-      rg_step_req <= False;
-`endif
-
       $display ("================================================================");
       $write   ("CPU: Bluespec  RISC-V  Flute  v3.0");
       if (rv_version == RV32)
@@ -493,6 +487,11 @@ module mkCPU (CPU_IFC);
       if (cur_verbosity != 0)
 	 $display ("%0d: CPU.rl_reset_start", mcycle);
 
+`ifdef INCLUDE_GDB_CONTROL
+      rg_stop_req <= False;
+      rg_step_req <= False;
+`endif
+
 `ifdef INCLUDE_TANDEM_VERIF
       let trace_data = mkTrace_RESET;
       f_trace_data.enq (trace_data);
@@ -500,6 +499,8 @@ module mkCPU (CPU_IFC);
       rg_prev_mip <= 0;
 `endif
    endrule: rl_reset_start
+
+   // ----------------
 
    rule rl_reset_complete (rg_state == CPU_RESET2);
       let ack_gpr <- gpr_regfile.server_reset.response.get;

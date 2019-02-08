@@ -66,9 +66,9 @@ import Cur_Cycle  :: *;
 // ================================================================
 // Project imports
 
-import ISA_Decls       :: *;
-import AXI4_Lite_Types :: *;
-import Fabric_Defs     :: *;
+import ISA_Decls    :: *;
+import AXI4_Types   :: *;
+import Fabric_Defs  :: *;
 
 import DM_Common            :: *;
 import DM_Run_Control       :: *;
@@ -112,7 +112,7 @@ interface Debug_Module_IFC;
    interface Get #(Token) get_ndm_reset_req;
 
    // Read/Write RISC-V memory
-   interface AXI4_Lite_Master_IFC #(Wd_Addr, Wd_Data, Wd_User) master;
+   interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) master;
 endinterface
 
 // ================================================================
@@ -279,7 +279,7 @@ module mkDebug_Module (Debug_Module_IFC);
    interface Get get_ndm_reset_req = dm_run_control.get_ndm_reset_req;
 
    // Read/Write RISC-V memory
-   interface AXI4_Lite_Master_IFC master = dm_system_bus.master;
+   interface AXI4_Master_IFC master = dm_system_bus.master;
 endmodule
 
 // ================================================================

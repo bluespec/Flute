@@ -5,6 +5,8 @@
 # Build all the "standard" builds and test them
 # This Makefile should be invoked in the 'builds' directory
 
+CPU=Flute
+
 .PHONY: help
 help:
 	@echo "    Usage:    make build_all"
@@ -40,11 +42,28 @@ build_all:
 .PHONY: build_and_test
 build_and_test:
 	Resources/mkBuild_Dir.py  ..  $(ARCH)  $(SIM)
-	logsave  build_and_test.log  make -C  $(ARCH)_Piccolo_$(SIM)  all  test  isa_tests
-	mv  build_and_test.log  $(ARCH)_Piccolo_$(SIM)
+	logsave  build_and_test.log  make -C  $(ARCH)_$(CPU)_$(SIM)  all  test  isa_tests
+	mv  build_and_test.log  $(ARCH)_$(CPU)_$(SIM)
 
 .PHONY: build_and_test_iverilog
 build_and_test_iverilog:
 	Resources/mkBuild_Dir.py  ..  $(ARCH)  $(SIM)
-	logsave  build_and_test.log  make -C  $(ARCH)_Piccolo_$(SIM)  all
-	mv  build_and_test.log  $(ARCH)_Piccolo_$(SIM)
+	logsave  build_and_test.log  make -C  $(ARCH)_$(CPU)_$(SIM)  all
+	mv  build_and_test.log  $(ARCH)_$(CPU)_$(SIM)
+
+.phony: full_clean
+full_clean:
+	make  -C RV32ACIMU_$(CPU)_bluesim     full_clean
+	make  -C RV32ACDFIMSU_$(CPU)_bluesim  full_clean
+	make  -C RV64ACIMU_$(CPU)_bluesim     full_clean
+	make  -C RV64ACDFIMSU_$(CPU)_bluesim  full_clean
+#
+	make  -C RV32ACIMU_$(CPU)_verilator     full_clean
+	make  -C RV32ACDFIMSU_$(CPU)_verilator  full_clean
+	make  -C RV64ACIMU_$(CPU)_verilator     full_clean
+	make  -C RV64ACDFIMSU_$(CPU)_verilator  full_clean
+#
+	make  -C RV32ACIMU_$(CPU)_iverilog     full_clean
+	make  -C RV32ACDFIMSU_$(CPU)_iverilog  full_clean
+	make  -C RV64ACIMU_$(CPU)_iverilog     full_clean
+	make  -C RV64ACDFIMSU_$(CPU)_iverilog  full_clean
