@@ -676,9 +676,11 @@ function ALU_Outputs fv_LD (ALU_Inputs inputs);
 `endif
 		    );
 
-   Bool legal_FP_LD = (
-      (opcode == op_LOAD_FP) ? (fv_mstatus_fs (inputs.mstatus) != fs_xs_off)
-                             : True);
+   Bool legal_FP_LD = True;
+`ifdef ISA_F
+   if (opcode == op_LOAD_FP)
+      legal_FP_LD = (fv_mstatus_fs (inputs.mstatus) != fs_xs_off);
+`endif
 
    let alu_outputs = alu_outputs_base;
    
@@ -726,9 +728,11 @@ function ALU_Outputs fv_ST (ALU_Inputs inputs);
 `endif
 		    );
 
-   Bool legal_FP_ST = (
-      (opcode == op_STORE_FP) ? (fv_mstatus_fs (inputs.mstatus) != fs_xs_off)
-                              : True);
+   Bool legal_FP_ST = True;
+`ifdef ISA_F
+   if (opcode == op_STORE_FP)
+      legal_FP_ST = (fv_mstatus_fs (inputs.mstatus) != fs_xs_off);
+`endif
 
    let alu_outputs = alu_outputs_base;
    alu_outputs.control   = ((legal_ST && legal_FP_ST) ? CONTROL_STRAIGHT

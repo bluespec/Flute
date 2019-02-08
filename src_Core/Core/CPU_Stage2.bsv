@@ -179,12 +179,18 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
       f_reset_reqs.deq;
       rg_full <= False;
       rg_resetting <= True;
+`ifdef ISA_F
       fbox.server_reset.request.put (?);
+`endif
    endrule
 
    rule rl_reset_end (rg_resetting);
       rg_resetting <= False;
+
+`ifdef ISA_F
       let res <- fbox.server_reset.response.get;
+`endif
+
       f_reset_rsps.enq (?);
    endrule
 
