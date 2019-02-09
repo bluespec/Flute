@@ -35,7 +35,7 @@ endinterface
 
 (* synthesize *)
 module mkFPU ( FPU_IFC );
-`ifdef ISA_FD_FDIV
+`ifdef ISA_FD_DIV
    // XXX: Incomplete
    Server#(Tuple2#(UInt#(114),UInt#(57)),Tuple2#(UInt#(57),UInt#(57))) _div <- mkNonPipelinedDivider(2);
    Server#(UInt#(116),Tuple2#(UInt#(116),Bool)) _sqrt                       <- mkNonPipelinedSquareRooter(2);
@@ -93,7 +93,7 @@ module mkFPU ( FPU_IFC );
          FPAdd:   fpu_madd.request.put(  tuple4(Valid(opd1), opd2,         one(False), rmd) );
          FPSub:   fpu_madd.request.put(  tuple4(Valid(opd1), negate(opd2), one(False), rmd) );
          FPMul:   fpu_madd.request.put(  tuple4(Invalid,     opd1,         opd2,       rmd) );
-`ifdef ISA_FD_FDIV
+`ifdef ISA_FD_DIV
          FPDiv:   fpu_div64.request.put( tuple3(opd1, opd2,         rmd) );
          FPSqrt:  fpu_sqr64.request.put( tuple2(opd1,               rmd) );
 `endif
@@ -105,7 +105,7 @@ module mkFPU ( FPU_IFC );
 
    endrule
 
-`ifdef ISA_FD_FDIV
+`ifdef ISA_FD_DIV
    (* mutually_exclusive = "getResDiv, getResSqr, getResMAdd" *)
    rule getResDiv;
       let res <- fpu_div64.response.get();
