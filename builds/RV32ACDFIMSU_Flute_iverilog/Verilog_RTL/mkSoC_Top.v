@@ -791,7 +791,7 @@ module mkSoC_Top(CLK,
        WILL_FIRE_to_raw_mem_response_put;
 
   // inputs to muxes for submodule ports
-  wire MUX_rg_state$write_1__SEL_1, MUX_rg_state$write_1__SEL_2;
+  wire MUX_rg_state$write_1__SEL_1;
 
   // declarations used by system tasks
   // synopsys translate_off
@@ -1603,8 +1603,13 @@ module mkSoC_Top(CLK,
   assign WILL_FIRE_RL_rl_reset_start_2 = MUX_rg_state$write_1__SEL_1 ;
 
   // rule RL_rl_reset_complete
-  assign CAN_FIRE_RL_rl_reset_complete = MUX_rg_state$write_1__SEL_2 ;
-  assign WILL_FIRE_RL_rl_reset_complete = MUX_rg_state$write_1__SEL_2 ;
+  assign CAN_FIRE_RL_rl_reset_complete =
+	     mem0_controller$RDY_server_reset_response_get &&
+	     uart0$RDY_server_reset_response_get &&
+	     mem0_controller$RDY_set_addr_map &&
+	     core$RDY_cpu_reset_server_response_get &&
+	     rg_state == 2'd1 ;
+  assign WILL_FIRE_RL_rl_reset_complete = CAN_FIRE_RL_rl_reset_complete ;
 
   // inputs to muxes for submodule ports
   assign MUX_rg_state$write_1__SEL_1 =
@@ -1613,12 +1618,6 @@ module mkSoC_Top(CLK,
 	     fabric$RDY_reset &&
 	     core$RDY_cpu_reset_server_request_put &&
 	     rg_state == 2'd0 ;
-  assign MUX_rg_state$write_1__SEL_2 =
-	     mem0_controller$RDY_set_addr_map &&
-	     mem0_controller$RDY_server_reset_response_get &&
-	     uart0$RDY_server_reset_response_get &&
-	     core$RDY_cpu_reset_server_response_get &&
-	     rg_state == 2'd1 ;
 
   // register rg_state
   assign rg_state$D_IN = WILL_FIRE_RL_rl_reset_start_2 ? 2'd1 : 2'd2 ;
@@ -1657,7 +1656,7 @@ module mkSoC_Top(CLK,
   assign boot_rom$slave_wlast = fabric$v_to_slaves_1_wlast ;
   assign boot_rom$slave_wstrb = fabric$v_to_slaves_1_wstrb ;
   assign boot_rom$slave_wvalid = fabric$v_to_slaves_1_wvalid ;
-  assign boot_rom$EN_set_addr_map = MUX_rg_state$write_1__SEL_2 ;
+  assign boot_rom$EN_set_addr_map = CAN_FIRE_RL_rl_reset_complete ;
 
   // submodule core
   assign core$cpu_dmem_master_arready = fabric$v_from_masters_2_arready ;
@@ -1715,7 +1714,8 @@ module mkSoC_Top(CLK,
   assign core$set_verbosity_logdelay = set_verbosity_logdelay ;
   assign core$set_verbosity_verbosity = set_verbosity_verbosity ;
   assign core$EN_cpu_reset_server_request_put = MUX_rg_state$write_1__SEL_1 ;
-  assign core$EN_cpu_reset_server_response_get = MUX_rg_state$write_1__SEL_2 ;
+  assign core$EN_cpu_reset_server_response_get =
+	     CAN_FIRE_RL_rl_reset_complete ;
   assign core$EN_set_verbosity = EN_set_verbosity ;
 
   // submodule fabric
@@ -1902,8 +1902,8 @@ module mkSoC_Top(CLK,
   assign mem0_controller$EN_server_reset_request_put =
 	     MUX_rg_state$write_1__SEL_1 ;
   assign mem0_controller$EN_server_reset_response_get =
-	     MUX_rg_state$write_1__SEL_2 ;
-  assign mem0_controller$EN_set_addr_map = MUX_rg_state$write_1__SEL_2 ;
+	     CAN_FIRE_RL_rl_reset_complete ;
+  assign mem0_controller$EN_set_addr_map = CAN_FIRE_RL_rl_reset_complete ;
   assign mem0_controller$EN_to_raw_mem_request_get =
 	     EN_to_raw_mem_request_get ;
   assign mem0_controller$EN_to_raw_mem_response_put =
@@ -1949,8 +1949,8 @@ module mkSoC_Top(CLK,
   assign uart0$slave_wstrb = fabric$v_to_slaves_3_wstrb ;
   assign uart0$slave_wvalid = fabric$v_to_slaves_3_wvalid ;
   assign uart0$EN_server_reset_request_put = MUX_rg_state$write_1__SEL_1 ;
-  assign uart0$EN_server_reset_response_get = MUX_rg_state$write_1__SEL_2 ;
-  assign uart0$EN_set_addr_map = MUX_rg_state$write_1__SEL_2 ;
+  assign uart0$EN_server_reset_response_get = CAN_FIRE_RL_rl_reset_complete ;
+  assign uart0$EN_set_addr_map = CAN_FIRE_RL_rl_reset_complete ;
   assign uart0$EN_get_to_console_get = EN_get_to_console_get ;
   assign uart0$EN_put_from_console_put = EN_put_from_console_put ;
 

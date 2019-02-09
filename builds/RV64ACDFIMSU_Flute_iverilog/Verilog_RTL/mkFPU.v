@@ -80,6 +80,127 @@ module mkFPU(CLK,
        RDY_server_reset_request_put,
        RDY_server_reset_response_get;
 
+  // inlined wires
+  reg [68 : 0] resWire$wget;
+  wire crg_done$EN_port0__write,
+       crg_done$EN_port1__write,
+       crg_done$port1__read,
+       crg_done$port2__read,
+       crg_done_1$EN_port0__write,
+       crg_done_1$EN_port1__write,
+       crg_done_1$port1__read,
+       crg_done_1$port2__read,
+       resWire$whas;
+
+  // register crg_done
+  reg crg_done;
+  wire crg_done$D_IN, crg_done$EN;
+
+  // register crg_done_1
+  reg crg_done_1;
+  wire crg_done_1$D_IN, crg_done_1$EN;
+
+  // register rg_b
+  reg [115 : 0] rg_b;
+  wire [115 : 0] rg_b$D_IN;
+  wire rg_b$EN;
+
+  // register rg_busy
+  reg rg_busy;
+  wire rg_busy$D_IN, rg_busy$EN;
+
+  // register rg_busy_1
+  reg rg_busy_1;
+  wire rg_busy_1$D_IN, rg_busy_1$EN;
+
+  // register rg_d
+  reg [57 : 0] rg_d;
+  wire [57 : 0] rg_d$D_IN;
+  wire rg_d$EN;
+
+  // register rg_index
+  reg [5 : 0] rg_index;
+  wire [5 : 0] rg_index$D_IN;
+  wire rg_index$EN;
+
+  // register rg_index_1
+  reg [5 : 0] rg_index_1;
+  wire [5 : 0] rg_index_1$D_IN;
+  wire rg_index_1$EN;
+
+  // register rg_q
+  reg [57 : 0] rg_q;
+  wire [57 : 0] rg_q$D_IN;
+  wire rg_q$EN;
+
+  // register rg_r
+  reg [115 : 0] rg_r;
+  wire [115 : 0] rg_r$D_IN;
+  wire rg_r$EN;
+
+  // register rg_r_1
+  reg [115 : 0] rg_r_1;
+  wire [115 : 0] rg_r_1$D_IN;
+  wire rg_r_1$EN;
+
+  // register rg_res
+  reg [116 : 0] rg_res;
+  wire [116 : 0] rg_res$D_IN;
+  wire rg_res$EN;
+
+  // register rg_s
+  reg [115 : 0] rg_s;
+  wire [115 : 0] rg_s$D_IN;
+  wire rg_s$EN;
+
+  // ports of submodule fpu_div64_fOperands_S0
+  wire [130 : 0] fpu_div64_fOperands_S0$D_IN, fpu_div64_fOperands_S0$D_OUT;
+  wire fpu_div64_fOperands_S0$CLR,
+       fpu_div64_fOperands_S0$DEQ,
+       fpu_div64_fOperands_S0$EMPTY_N,
+       fpu_div64_fOperands_S0$ENQ,
+       fpu_div64_fOperands_S0$FULL_N;
+
+  // ports of submodule fpu_div64_fResult_S5
+  wire [68 : 0] fpu_div64_fResult_S5$D_IN, fpu_div64_fResult_S5$D_OUT;
+  wire fpu_div64_fResult_S5$CLR,
+       fpu_div64_fResult_S5$DEQ,
+       fpu_div64_fResult_S5$EMPTY_N,
+       fpu_div64_fResult_S5$ENQ,
+       fpu_div64_fResult_S5$FULL_N;
+
+  // ports of submodule fpu_div64_fState_S1
+  wire [318 : 0] fpu_div64_fState_S1$D_IN, fpu_div64_fState_S1$D_OUT;
+  wire fpu_div64_fState_S1$CLR,
+       fpu_div64_fState_S1$DEQ,
+       fpu_div64_fState_S1$EMPTY_N,
+       fpu_div64_fState_S1$ENQ,
+       fpu_div64_fState_S1$FULL_N;
+
+  // ports of submodule fpu_div64_fState_S2
+  wire [147 : 0] fpu_div64_fState_S2$D_IN, fpu_div64_fState_S2$D_OUT;
+  wire fpu_div64_fState_S2$CLR,
+       fpu_div64_fState_S2$DEQ,
+       fpu_div64_fState_S2$EMPTY_N,
+       fpu_div64_fState_S2$ENQ,
+       fpu_div64_fState_S2$FULL_N;
+
+  // ports of submodule fpu_div64_fState_S3
+  wire [194 : 0] fpu_div64_fState_S3$D_IN, fpu_div64_fState_S3$D_OUT;
+  wire fpu_div64_fState_S3$CLR,
+       fpu_div64_fState_S3$DEQ,
+       fpu_div64_fState_S3$EMPTY_N,
+       fpu_div64_fState_S3$ENQ,
+       fpu_div64_fState_S3$FULL_N;
+
+  // ports of submodule fpu_div64_fState_S4
+  wire [138 : 0] fpu_div64_fState_S4$D_IN, fpu_div64_fState_S4$D_OUT;
+  wire fpu_div64_fState_S4$CLR,
+       fpu_div64_fState_S4$DEQ,
+       fpu_div64_fState_S4$EMPTY_N,
+       fpu_div64_fState_S4$ENQ,
+       fpu_div64_fState_S4$FULL_N;
+
   // ports of submodule fpu_madd_fOperand_S0
   wire [195 : 0] fpu_madd_fOperand_S0$D_IN, fpu_madd_fOperand_S0$D_OUT;
   wire fpu_madd_fOperand_S0$CLR,
@@ -176,6 +297,54 @@ module mkFPU(CLK,
        fpu_madd_fState_S8$ENQ,
        fpu_madd_fState_S8$FULL_N;
 
+  // ports of submodule fpu_sqr64_fOperand_S0
+  wire [66 : 0] fpu_sqr64_fOperand_S0$D_IN, fpu_sqr64_fOperand_S0$D_OUT;
+  wire fpu_sqr64_fOperand_S0$CLR,
+       fpu_sqr64_fOperand_S0$DEQ,
+       fpu_sqr64_fOperand_S0$EMPTY_N,
+       fpu_sqr64_fOperand_S0$ENQ,
+       fpu_sqr64_fOperand_S0$FULL_N;
+
+  // ports of submodule fpu_sqr64_fResult_S5
+  wire [68 : 0] fpu_sqr64_fResult_S5$D_IN, fpu_sqr64_fResult_S5$D_OUT;
+  wire fpu_sqr64_fResult_S5$CLR,
+       fpu_sqr64_fResult_S5$DEQ,
+       fpu_sqr64_fResult_S5$EMPTY_N,
+       fpu_sqr64_fResult_S5$ENQ,
+       fpu_sqr64_fResult_S5$FULL_N;
+
+  // ports of submodule fpu_sqr64_fState_S1
+  wire [194 : 0] fpu_sqr64_fState_S1$D_IN, fpu_sqr64_fState_S1$D_OUT;
+  wire fpu_sqr64_fState_S1$CLR,
+       fpu_sqr64_fState_S1$DEQ,
+       fpu_sqr64_fState_S1$EMPTY_N,
+       fpu_sqr64_fState_S1$ENQ,
+       fpu_sqr64_fState_S1$FULL_N;
+
+  // ports of submodule fpu_sqr64_fState_S2
+  wire [136 : 0] fpu_sqr64_fState_S2$D_IN, fpu_sqr64_fState_S2$D_OUT;
+  wire fpu_sqr64_fState_S2$CLR,
+       fpu_sqr64_fState_S2$DEQ,
+       fpu_sqr64_fState_S2$EMPTY_N,
+       fpu_sqr64_fState_S2$ENQ,
+       fpu_sqr64_fState_S2$FULL_N;
+
+  // ports of submodule fpu_sqr64_fState_S3
+  wire [195 : 0] fpu_sqr64_fState_S3$D_IN, fpu_sqr64_fState_S3$D_OUT;
+  wire fpu_sqr64_fState_S3$CLR,
+       fpu_sqr64_fState_S3$DEQ,
+       fpu_sqr64_fState_S3$EMPTY_N,
+       fpu_sqr64_fState_S3$ENQ,
+       fpu_sqr64_fState_S3$FULL_N;
+
+  // ports of submodule fpu_sqr64_fState_S4
+  wire [138 : 0] fpu_sqr64_fState_S4$D_IN, fpu_sqr64_fState_S4$D_OUT;
+  wire fpu_sqr64_fState_S4$CLR,
+       fpu_sqr64_fState_S4$DEQ,
+       fpu_sqr64_fState_S4$EMPTY_N,
+       fpu_sqr64_fState_S4$ENQ,
+       fpu_sqr64_fState_S4$FULL_N;
+
   // ports of submodule iFifo
   wire [201 : 0] iFifo$D_IN, iFifo$D_OUT;
   wire iFifo$CLR, iFifo$DEQ, iFifo$EMPTY_N, iFifo$ENQ, iFifo$FULL_N;
@@ -221,7 +390,12 @@ module mkFPU(CLK,
   wire rmdFifo$CLR, rmdFifo$DEQ, rmdFifo$EMPTY_N, rmdFifo$ENQ, rmdFifo$FULL_N;
 
   // rule scheduling signals
-  wire CAN_FIRE_RL_fpu_madd_s1_stage,
+  wire CAN_FIRE_RL_fpu_div64_s1_stage,
+       CAN_FIRE_RL_fpu_div64_s2_stage,
+       CAN_FIRE_RL_fpu_div64_s3_stage,
+       CAN_FIRE_RL_fpu_div64_s4_stage,
+       CAN_FIRE_RL_fpu_div64_s5_stage,
+       CAN_FIRE_RL_fpu_madd_s1_stage,
        CAN_FIRE_RL_fpu_madd_s2_stage,
        CAN_FIRE_RL_fpu_madd_s3_stage,
        CAN_FIRE_RL_fpu_madd_s4_stage,
@@ -230,14 +404,30 @@ module mkFPU(CLK,
        CAN_FIRE_RL_fpu_madd_s7_stage,
        CAN_FIRE_RL_fpu_madd_s8_stage,
        CAN_FIRE_RL_fpu_madd_s9_stage,
+       CAN_FIRE_RL_fpu_sqr64_s1_stage,
+       CAN_FIRE_RL_fpu_sqr64_s2_stage,
+       CAN_FIRE_RL_fpu_sqr64_s3_stage,
+       CAN_FIRE_RL_fpu_sqr64_s4_stage,
+       CAN_FIRE_RL_fpu_sqr64_s5_stage,
+       CAN_FIRE_RL_getResDiv,
        CAN_FIRE_RL_getResMAdd,
+       CAN_FIRE_RL_getResSqr,
        CAN_FIRE_RL_passResult,
        CAN_FIRE_RL_rl_reset,
        CAN_FIRE_RL_start_op,
+       CAN_FIRE_RL_work,
+       CAN_FIRE_RL_work_1,
+       CAN_FIRE___me_check_22,
+       CAN_FIRE___me_check_23,
        CAN_FIRE_server_core_request_put,
        CAN_FIRE_server_core_response_get,
        CAN_FIRE_server_reset_request_put,
        CAN_FIRE_server_reset_response_get,
+       WILL_FIRE_RL_fpu_div64_s1_stage,
+       WILL_FIRE_RL_fpu_div64_s2_stage,
+       WILL_FIRE_RL_fpu_div64_s3_stage,
+       WILL_FIRE_RL_fpu_div64_s4_stage,
+       WILL_FIRE_RL_fpu_div64_s5_stage,
        WILL_FIRE_RL_fpu_madd_s1_stage,
        WILL_FIRE_RL_fpu_madd_s2_stage,
        WILL_FIRE_RL_fpu_madd_s3_stage,
@@ -247,812 +437,1062 @@ module mkFPU(CLK,
        WILL_FIRE_RL_fpu_madd_s7_stage,
        WILL_FIRE_RL_fpu_madd_s8_stage,
        WILL_FIRE_RL_fpu_madd_s9_stage,
+       WILL_FIRE_RL_fpu_sqr64_s1_stage,
+       WILL_FIRE_RL_fpu_sqr64_s2_stage,
+       WILL_FIRE_RL_fpu_sqr64_s3_stage,
+       WILL_FIRE_RL_fpu_sqr64_s4_stage,
+       WILL_FIRE_RL_fpu_sqr64_s5_stage,
+       WILL_FIRE_RL_getResDiv,
        WILL_FIRE_RL_getResMAdd,
+       WILL_FIRE_RL_getResSqr,
        WILL_FIRE_RL_passResult,
        WILL_FIRE_RL_rl_reset,
        WILL_FIRE_RL_start_op,
+       WILL_FIRE_RL_work,
+       WILL_FIRE_RL_work_1,
+       WILL_FIRE___me_check_22,
+       WILL_FIRE___me_check_23,
        WILL_FIRE_server_core_request_put,
        WILL_FIRE_server_core_response_get,
        WILL_FIRE_server_reset_request_put,
        WILL_FIRE_server_reset_response_get;
 
+  // inputs to muxes for submodule ports
+  wire [116 : 0] MUX_rg_res$write_1__VAL_2;
+  wire [115 : 0] MUX_rg_b$write_1__VAL_1,
+		 MUX_rg_b$write_1__VAL_2,
+		 MUX_rg_r$write_1__VAL_1,
+		 MUX_rg_r$write_1__VAL_2,
+		 MUX_rg_r_1$write_1__VAL_2,
+		 MUX_rg_s$write_1__VAL_1,
+		 MUX_rg_s$write_1__VAL_2;
+  wire [57 : 0] MUX_rg_d$write_1__VAL_1, MUX_rg_q$write_1__VAL_2;
+  wire [5 : 0] MUX_rg_index$write_1__VAL_2, MUX_rg_index_1$write_1__VAL_2;
+  wire MUX_crg_done$port1__write_1__SEL_1,
+       MUX_crg_done_1$port1__write_1__SEL_1,
+       MUX_crg_done_1$port1__write_1__SEL_2,
+       MUX_rg_index$write_1__SEL_1;
+
   // remaining internal signals
-  reg [63 : 0] CASE_iFifoD_OUT_BITS_3_TO_0_0_460718241880001_ETC__q150,
-	       CASE_iFifoD_OUT_BITS_3_TO_0_0_IF_iFifo_first__ETC__q149,
-	       IF_iFifo_first__288_BITS_3_TO_0_289_EQ_0_290_O_ETC___d2814;
-  reg [62 : 0] CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q146,
-	       CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q147,
-	       CASE_fpu_madd_fState_S8D_OUT_BITS_70_TO_68_0__ETC__q148;
-  reg [51 : 0] CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q1,
-	       CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q2,
-	       CASE_guard07050_0b0_sfdin15272_BITS_56_TO_5_0b_ETC__q90,
-	       CASE_guard07050_0b0_sfdin15272_BITS_56_TO_5_0b_ETC__q91,
-	       CASE_guard16089_0b0_theResult___snd24025_BITS__ETC__q92,
-	       CASE_guard16089_0b0_theResult___snd24025_BITS__ETC__q93,
-	       CASE_guard36708_0b0_theResult___snd44620_BITS__ETC__q55,
-	       CASE_guard36708_0b0_theResult___snd44620_BITS__ETC__q56,
-	       CASE_guard45957_0b0_sfdin54179_BITS_56_TO_5_0b_ETC__q57,
-	       CASE_guard45957_0b0_sfdin54179_BITS_56_TO_5_0b_ETC__q58,
-	       CASE_guard54996_0b0_theResult___snd62932_BITS__ETC__q61,
-	       CASE_guard54996_0b0_theResult___snd62932_BITS__ETC__q62,
-	       CASE_guard7451_0b0_theResult___snd5387_BITS_56_ETC__q32,
-	       CASE_guard7451_0b0_theResult___snd5387_BITS_56_ETC__q33,
-	       CASE_guard7801_0b0_theResult___snd05713_BITS_5_ETC__q88,
-	       CASE_guard7801_0b0_theResult___snd05713_BITS_5_ETC__q89,
-	       CASE_guard8412_0b0_sfdin6634_BITS_56_TO_5_0b1__ETC__q30,
-	       CASE_guard8412_0b0_sfdin6634_BITS_56_TO_5_0b1__ETC__q31,
-	       CASE_guard9163_0b0_theResult___snd7075_BITS_56_ETC__q28,
-	       CASE_guard9163_0b0_theResult___snd7075_BITS_56_ETC__q29,
-	       _theResult___fst_sfd__h106486,
-	       _theResult___fst_sfd__h116076,
-	       _theResult___fst_sfd__h124828,
-	       _theResult___fst_sfd__h129627,
-	       _theResult___fst_sfd__h145393,
-	       _theResult___fst_sfd__h154983,
-	       _theResult___fst_sfd__h163735,
-	       _theResult___fst_sfd__h46440,
-	       _theResult___fst_sfd__h52080,
-	       _theResult___fst_sfd__h67848,
-	       _theResult___fst_sfd__h77438,
-	       _theResult___fst_sfd__h86190,
-	       _theResult___fst_sfd__h90720;
-  reg [22 : 0] CASE_guard73113_0b0_sfdin81206_BITS_56_TO_34_0_ETC__q133,
-	       CASE_guard73113_0b0_sfdin81206_BITS_56_TO_34_0_ETC__q134,
-	       CASE_guard81820_0b0_theResult___snd89819_BITS__ETC__q135,
-	       CASE_guard81820_0b0_theResult___snd89819_BITS__ETC__q136,
-	       CASE_guard90750_0b0_sfdin98972_BITS_56_TO_34_0_ETC__q137,
-	       CASE_guard90750_0b0_sfdin98972_BITS_56_TO_34_0_ETC__q138,
-	       CASE_guard99586_0b0_theResult___snd07609_BITS__ETC__q139,
-	       CASE_guard99586_0b0_theResult___snd07609_BITS__ETC__q140,
-	       _theResult___fst_sfd__h173086,
-	       _theResult___fst_sfd__h181807,
-	       _theResult___fst_sfd__h190389,
-	       _theResult___fst_sfd__h199573,
-	       _theResult___fst_sfd__h208209;
-  reg [10 : 0] CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q11,
-	       CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q12,
-	       CASE_guard07050_0b0_theResult___fst_exp15278_0_ETC__q84,
-	       CASE_guard07050_0b0_theResult___fst_exp15278_0_ETC__q85,
-	       CASE_guard16089_0b0_theResult___fst_exp24079_0_ETC__q86,
-	       CASE_guard16089_0b0_theResult___fst_exp24079_0_ETC__q87,
-	       CASE_guard36708_0b0_theResult___fst_exp44669_0_ETC__q49,
-	       CASE_guard36708_0b0_theResult___fst_exp44669_0_ETC__q50,
-	       CASE_guard45957_0b0_theResult___fst_exp54185_0_ETC__q51,
-	       CASE_guard45957_0b0_theResult___fst_exp54185_0_ETC__q52,
-	       CASE_guard54996_0b0_theResult___fst_exp62986_0_ETC__q53,
-	       CASE_guard54996_0b0_theResult___fst_exp62986_0_ETC__q54,
-	       CASE_guard7451_0b0_theResult___fst_exp5441_0b1_ETC__q26,
-	       CASE_guard7451_0b0_theResult___fst_exp5441_0b1_ETC__q27,
-	       CASE_guard7801_0b0_theResult___fst_exp05762_0b_ETC__q82,
-	       CASE_guard7801_0b0_theResult___fst_exp05762_0b_ETC__q83,
-	       CASE_guard8412_0b0_theResult___fst_exp6640_0b1_ETC__q24,
-	       CASE_guard8412_0b0_theResult___fst_exp6640_0b1_ETC__q25,
-	       CASE_guard9163_0b0_theResult___fst_exp7124_0b1_ETC__q22,
-	       CASE_guard9163_0b0_theResult___fst_exp7124_0b1_ETC__q23,
-	       _theResult___fst_exp__h106485,
-	       _theResult___fst_exp__h116075,
-	       _theResult___fst_exp__h124827,
-	       _theResult___fst_exp__h129626,
-	       _theResult___fst_exp__h145392,
-	       _theResult___fst_exp__h154982,
-	       _theResult___fst_exp__h163734,
-	       _theResult___fst_exp__h46439,
-	       _theResult___fst_exp__h52079,
-	       _theResult___fst_exp__h67847,
-	       _theResult___fst_exp__h77437,
-	       _theResult___fst_exp__h86189,
-	       _theResult___fst_exp__h90719;
-  reg [7 : 0] CASE_guard73113_0b0_theResult___fst_exp81212_0_ETC__q127,
-	      CASE_guard73113_0b0_theResult___fst_exp81212_0_ETC__q128,
-	      CASE_guard81820_0b0_theResult___fst_exp89868_0_ETC__q125,
-	      CASE_guard81820_0b0_theResult___fst_exp89868_0_ETC__q126,
-	      CASE_guard90750_0b0_theResult___fst_exp98978_0_ETC__q129,
-	      CASE_guard90750_0b0_theResult___fst_exp98978_0_ETC__q130,
-	      CASE_guard99586_0b0_theResult___fst_exp07663_0_ETC__q131,
-	      CASE_guard99586_0b0_theResult___fst_exp07663_0_ETC__q132,
-	      _theResult___fst_exp__h173085,
-	      _theResult___fst_exp__h181806,
-	      _theResult___fst_exp__h190388,
-	      _theResult___fst_exp__h199572,
-	      _theResult___fst_exp__h208208;
-  reg CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q141,
-      CASE_fpu_madd_fState_S8D_OUT_BITS_70_TO_68_0__ETC__q142,
-      CASE_guard07050_0b0_NOT_iFifoD_OUT_BIT_103_0b_ETC__q102,
-      CASE_guard07050_0b0_iFifoD_OUT_BIT_103_0b1_iF_ETC__q96,
-      CASE_guard16089_0b0_NOT_iFifoD_OUT_BIT_103_0b_ETC__q104,
-      CASE_guard16089_0b0_iFifoD_OUT_BIT_103_0b1_iF_ETC__q98,
-      CASE_guard36708_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q67,
-      CASE_guard36708_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q59,
-      CASE_guard45957_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q69,
-      CASE_guard45957_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q63,
-      CASE_guard54996_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q71,
-      CASE_guard54996_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q65,
-      CASE_guard73113_0b0_NOT_fpu_madd_fResult_S9D__ETC__q119,
-      CASE_guard73113_0b0_fpu_madd_fResult_S9D_OUT__ETC__q117,
-      CASE_guard7451_0b0_iFifoD_OUT_BIT_168_0b1_iFi_ETC__q38,
-      CASE_guard7801_0b0_NOT_iFifoD_OUT_BIT_103_0b1_ETC__q100,
-      CASE_guard7801_0b0_iFifoD_OUT_BIT_103_0b1_iFi_ETC__q94,
-      CASE_guard81820_0b0_NOT_fpu_madd_fResult_S9D__ETC__q120,
-      CASE_guard81820_0b0_fpu_madd_fResult_S9D_OUT__ETC__q118,
-      CASE_guard8412_0b0_iFifoD_OUT_BIT_168_0b1_iFi_ETC__q36,
-      CASE_guard90750_0b0_NOT_fpu_madd_fResult_S9D__ETC__q123,
-      CASE_guard90750_0b0_fpu_madd_fResult_S9D_OUT__ETC__q121,
-      CASE_guard9163_0b0_iFifoD_OUT_BIT_168_0b1_iFi_ETC__q34,
-      CASE_guard99586_0b0_NOT_fpu_madd_fResult_S9D__ETC__q124,
-      CASE_guard99586_0b0_fpu_madd_fResult_S9D_OUT__ETC__q122,
-      CASE_iFifoD_OUT_BITS_3_TO_0_0_fpu_madd_fOpera_ETC__q145,
-      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard07050_ETC__q103,
-      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard07050_ETC__q97,
-      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard16089_ETC__q105,
-      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard16089_ETC__q99,
-      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard36708_ETC__q60,
-      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard36708_ETC__q68,
-      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard45957_ETC__q64,
-      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard45957_ETC__q70,
-      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard54996_ETC__q66,
-      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard54996_ETC__q72,
-      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard7451__ETC__q39,
-      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard7801__ETC__q101,
-      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard7801__ETC__q95,
-      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard8412__ETC__q37,
-      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard9163__ETC__q35,
-      IF_iFifo_first__288_BITS_6_TO_4_313_EQ_0_382_O_ETC___d1511,
-      IF_iFifo_first__288_BITS_6_TO_4_313_EQ_0_382_O_ETC___d2219,
-      IF_iFifo_first__288_BITS_6_TO_4_313_EQ_0_382_O_ETC___d2773,
-      IF_iFifo_first__288_BITS_6_TO_4_313_EQ_0_382_O_ETC___d2994,
-      IF_iFifo_first__288_BITS_6_TO_4_313_EQ_0_382_O_ETC___d3539,
-      IF_rmdFifo_first__963_EQ_0_964_OR_rmdFifo_firs_ETC___d4213,
-      IF_rmdFifo_first__963_EQ_0_964_OR_rmdFifo_firs_ETC___d4585,
-      IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_I_ETC___d4008,
-      IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_I_ETC___d4509,
-      IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_I_ETC___d4573,
-      IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_I_ETC___d4594,
-      IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_r_ETC___d4208,
-      IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_r_ETC___d4558,
-      IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_r_ETC___d4582,
-      IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_r_ETC___d4603;
-  wire [139 : 0] IF_NOT_fpu_madd_fState_S4_first__48_BIT_130_54_ETC___d796;
-  wire [118 : 0] IF_fpu_madd_fOperand_S0_first_BITS_129_TO_119__ETC___d160;
-  wire [105 : 0] IF_0_CONCAT_IF_IF_7170_MINUS_fpu_madd_fState_S_ETC__q4,
-		 _theResult___fst__h20644,
-		 _theResult___snd__h34783,
-		 _theResult___snd__h34797,
-		 _theResult___snd__h34799,
-		 _theResult___snd__h34811,
-		 _theResult___snd__h34817,
-		 _theResult___snd__h34835,
-		 _theResult___snd__h34840,
-		 fpu_madd_fProd_S3_first__10_SRL_IF_7170_MINUS__ETC___d213,
-		 sfdBC__h19479,
-		 sfdin__h34760,
-		 x__h20713;
-  wire [68 : 0] IF_fpu_madd_fState_S8_first__161_BIT_67_164_AN_ETC___d1282;
-  wire [63 : 0] IF_IF_fpu_madd_fOperand_S0_first_BIT_195_THEN__ETC___d137,
-		IF_IF_fpu_madd_fOperand_S0_first_BIT_195_THEN__ETC___d140,
-		IF_fpu_madd_fOperand_S0_first_BITS_129_TO_119__ETC___d139,
-		IF_iFifo_first__288_BITS_102_TO_95_816_EQ_255__ETC___d3519,
-		IF_iFifo_first__288_BITS_102_TO_95_816_EQ_255__ETC___d3569,
-		IF_iFifo_first__288_BITS_167_TO_160_321_EQ_255_ETC___d2037,
-		IF_iFifo_first__288_BITS_37_TO_30_041_EQ_255_0_ETC___d2744,
-		IF_iFifo_first__288_BITS_37_TO_30_041_EQ_255_0_ETC___d2803,
-		IF_iFifo_first__288_BIT_136_815_THEN_IF_iFifo__ETC___d3521,
-		IF_iFifo_first__288_BIT_201_310_THEN_IF_iFifo__ETC___d2039,
-		IF_iFifo_first__288_BIT_71_040_THEN_IF_iFifo_f_ETC___d2746,
-		IF_iFifo_first__288_BIT_71_040_THEN_IF_iFifo_f_ETC___d2809,
-		IF_isDoubleFifo_first__592_THEN_IF_isNegateFif_ETC___d4842;
-  wire [62 : 0] IF_0b0_CONCAT_NOT_fpu_madd_fState_S8_first__16_ETC___d1266,
-		IF_IF_7170_MINUS_fpu_madd_fState_S3_first__96__ETC___d735,
-		IF_IF_fpu_madd_fOperand_S0_first_BIT_195_THEN__ETC___d132,
-		IF_IF_fpu_madd_fState_S7_first__52_BIT_128_58__ETC___d1153,
-		IF_fpu_madd_fOperand_S0_first_BITS_129_TO_119__ETC___d133,
-		IF_fpu_madd_fOperand_S0_first_BIT_195_THEN_fpu_ETC___d112,
-		IF_fpu_madd_fState_S3_first__96_BITS_12_TO_0_0_ETC___d737,
-		IF_iFifo_first__288_BITS_102_TO_95_816_EQ_255__ETC___d3518,
-		IF_iFifo_first__288_BITS_37_TO_30_041_EQ_255_0_ETC___d2743;
-  wire [56 : 0] IF_0_CONCAT_IF_IF_0b0_CONCAT_NOT_resWire_wget__ETC__q106,
-		IF_0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__ETC__q17,
-		IF_0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__ETC__q44,
-		IF_0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__ETC__q77,
-		IF_0_CONCAT_IF_IF_3970_MINUS_SEXT_resWire_wget_ETC__q112,
-		IF_0_CONCAT_IF_IF_fpu_madd_fState_S7_first__52_ETC__q9,
-		IF_0_CONCAT_IF_iFifo_first__288_BITS_102_TO_95_ETC__q73,
-		IF_0_CONCAT_IF_iFifo_first__288_BITS_102_TO_95_ETC__q80,
-		IF_0_CONCAT_IF_iFifo_first__288_BITS_167_TO_16_ETC__q13,
-		IF_0_CONCAT_IF_iFifo_first__288_BITS_167_TO_16_ETC__q20,
-		IF_0_CONCAT_IF_iFifo_first__288_BITS_37_TO_30__ETC__q40,
-		IF_0_CONCAT_IF_iFifo_first__288_BITS_37_TO_30__ETC__q47,
-		IF_0_CONCAT_IF_resWire_wget__595_BITS_67_TO_57_ETC__q108,
-		IF_0_CONCAT_IF_resWire_wget__595_BITS_67_TO_57_ETC__q115,
-		_0b0_CONCAT_NOT_iFifo_first__288_BITS_102_TO_95_ETC___d3004,
-		_0b0_CONCAT_NOT_iFifo_first__288_BITS_167_TO_16_ETC___d1521,
-		_0b0_CONCAT_NOT_iFifo_first__288_BITS_37_TO_30__ETC___d2229,
-		_0b0_CONCAT_NOT_resWire_wget__595_BITS_67_TO_57_ETC___d4223,
-		_theResult____h107040,
-		_theResult____h145947,
-		_theResult____h173103,
-		_theResult____h190740,
-		_theResult____h68402,
-		_theResult___snd__h105713,
-		_theResult___snd__h105715,
-		_theResult___snd__h105722,
-		_theResult___snd__h105728,
-		_theResult___snd__h105751,
-		_theResult___snd__h115289,
-		_theResult___snd__h115300,
-		_theResult___snd__h115302,
-		_theResult___snd__h115312,
-		_theResult___snd__h115318,
-		_theResult___snd__h115341,
-		_theResult___snd__h124025,
-		_theResult___snd__h124039,
-		_theResult___snd__h124045,
-		_theResult___snd__h124063,
-		_theResult___snd__h144620,
-		_theResult___snd__h144622,
-		_theResult___snd__h144629,
-		_theResult___snd__h144635,
-		_theResult___snd__h144658,
-		_theResult___snd__h154196,
-		_theResult___snd__h154207,
-		_theResult___snd__h154209,
-		_theResult___snd__h154219,
-		_theResult___snd__h154225,
-		_theResult___snd__h154248,
-		_theResult___snd__h162932,
-		_theResult___snd__h162946,
-		_theResult___snd__h162952,
-		_theResult___snd__h162970,
-		_theResult___snd__h181223,
-		_theResult___snd__h181234,
-		_theResult___snd__h181236,
-		_theResult___snd__h181246,
-		_theResult___snd__h181252,
-		_theResult___snd__h181275,
-		_theResult___snd__h189819,
-		_theResult___snd__h189821,
-		_theResult___snd__h189828,
-		_theResult___snd__h189834,
-		_theResult___snd__h189857,
-		_theResult___snd__h198989,
-		_theResult___snd__h199000,
-		_theResult___snd__h199002,
-		_theResult___snd__h199012,
-		_theResult___snd__h199018,
-		_theResult___snd__h199041,
-		_theResult___snd__h207609,
-		_theResult___snd__h207623,
-		_theResult___snd__h207629,
-		_theResult___snd__h207647,
-		_theResult___snd__h45209,
-		_theResult___snd__h45223,
-		_theResult___snd__h45225,
-		_theResult___snd__h45237,
-		_theResult___snd__h45243,
-		_theResult___snd__h45261,
-		_theResult___snd__h45266,
-		_theResult___snd__h67075,
-		_theResult___snd__h67077,
-		_theResult___snd__h67084,
-		_theResult___snd__h67090,
-		_theResult___snd__h67113,
-		_theResult___snd__h76651,
-		_theResult___snd__h76662,
-		_theResult___snd__h76664,
-		_theResult___snd__h76674,
-		_theResult___snd__h76680,
-		_theResult___snd__h76703,
-		_theResult___snd__h85387,
-		_theResult___snd__h85401,
-		_theResult___snd__h85407,
-		_theResult___snd__h85425,
-		fpu_madd_fState_S5_first__02_BITS_56_TO_0_11_S_ETC___d816,
-		guard__h36184,
-		result__h107653,
-		result__h146560,
-		result__h191353,
-		result__h36189,
-		result__h69015,
-		sfdA__h35394,
-		sfdBC__h35395,
-		sfd__h125871,
-		sfd__h165501,
-		sfd__h36936,
-		sfd__h48324,
-		sfd__h86964,
-		sfdin__h115272,
-		sfdin__h154179,
-		sfdin__h181206,
-		sfdin__h198972,
-		sfdin__h45186,
-		sfdin__h76634,
-		x__h107750,
-		x__h146657,
-		x__h191450,
-		x__h35757,
-		x__h35761,
-		x__h36176,
-		x__h36688,
-		x__h36697,
-		x__h69112;
-  wire [53 : 0] sfd__h105780,
-		sfd__h115370,
-		sfd__h124098,
-		sfd__h144687,
-		sfd__h154277,
-		sfd__h163005,
-		sfd__h45857,
-		sfd__h67142,
-		sfd__h76732,
-		sfd__h85460,
-		value__h173723;
-  wire [52 : 0] x__h18060, x__h18072;
-  wire [51 : 0] IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d2004,
-		IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d2006,
-		IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d2710,
-		IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d2712,
-		IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d3485,
-		IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d3487,
-		IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3459,
-		IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3461,
-		IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3504,
-		IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3506,
-		IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d1977,
-		IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d1979,
-		IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d2023,
-		IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d2025,
-		IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2684,
-		IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2686,
-		IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2729,
-		IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2731,
-		_theResult___fst_sfd__h106489,
-		_theResult___fst_sfd__h116079,
-		_theResult___fst_sfd__h124831,
-		_theResult___fst_sfd__h124840,
-		_theResult___fst_sfd__h124846,
-		_theResult___fst_sfd__h145396,
-		_theResult___fst_sfd__h154986,
-		_theResult___fst_sfd__h163738,
-		_theResult___fst_sfd__h163747,
-		_theResult___fst_sfd__h163753,
-		_theResult___fst_sfd__h398,
-		_theResult___fst_sfd__h67851,
-		_theResult___fst_sfd__h77441,
-		_theResult___fst_sfd__h86193,
-		_theResult___fst_sfd__h86202,
-		_theResult___fst_sfd__h86208,
-		_theResult___sfd__h106408,
-		_theResult___sfd__h115998,
-		_theResult___sfd__h124750,
-		_theResult___sfd__h145315,
-		_theResult___sfd__h154905,
-		_theResult___sfd__h163657,
-		_theResult___sfd__h46362,
-		_theResult___sfd__h67770,
-		_theResult___sfd__h77360,
-		_theResult___sfd__h86112,
-		_theResult___snd_fst_sfd__h106492,
-		_theResult___snd_fst_sfd__h124834,
-		_theResult___snd_fst_sfd__h125821,
-		_theResult___snd_fst_sfd__h145399,
-		_theResult___snd_fst_sfd__h163741,
-		_theResult___snd_fst_sfd__h48274,
-		_theResult___snd_fst_sfd__h67854,
-		_theResult___snd_fst_sfd__h86196,
-		_theResult___snd_fst_sfd__h86914,
-		out___1_sfd__h125570,
-		out___1_sfd__h48023,
-		out___1_sfd__h86663,
-		out_sfd__h106411,
-		out_sfd__h116001,
-		out_sfd__h124753,
-		out_sfd__h145318,
-		out_sfd__h154908,
-		out_sfd__h163660,
-		out_sfd__h46365,
-		out_sfd__h67773,
-		out_sfd__h77363,
-		out_sfd__h86115,
-		sfd__h3210,
-		sfd__h3213,
-		sfd__h3216;
-  wire [24 : 0] sfd__h181304,
-		sfd__h189886,
-		sfd__h199070,
-		sfd__h207682,
-		value__h130256,
-		value__h52711,
-		value__h91349;
-  wire [22 : 0] IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__595_B_ETC___d4761,
-		IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__595_B_ETC___d4763,
-		IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__595__ETC___d4807,
-		IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__595__ETC___d4809,
-		IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4780,
-		IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4782,
-		IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4826,
-		IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4828,
-		_theResult___fst_sfd__h181810,
-		_theResult___fst_sfd__h190392,
-		_theResult___fst_sfd__h199576,
-		_theResult___fst_sfd__h208212,
-		_theResult___fst_sfd__h208221,
-		_theResult___fst_sfd__h208227,
-		_theResult___sfd__h181729,
-		_theResult___sfd__h190311,
-		_theResult___sfd__h199495,
-		_theResult___sfd__h208131,
-		_theResult___snd_fst_sfd__h165451,
-		_theResult___snd_fst_sfd__h190395,
-		_theResult___snd_fst_sfd__h208215,
-		out_sfd__h181732,
-		out_sfd__h190314,
-		out_sfd__h199498,
-		out_sfd__h208134,
-		sfd__h208233;
-  wire [12 : 0] IF_fpu_madd_fState_S4_first__48_BITS_128_TO_11_ETC___d769,
-		IF_fpu_madd_fState_S4_first__48_BITS_64_TO_54__ETC___d764,
-		_7170_MINUS_fpu_madd_fState_S3_first__96_BITS_1_ETC___d208,
-		value__h34700,
-		value__h45124,
-		x__h20746,
-		x__h36288;
-  wire [11 : 0] IF_IF_7170_MINUS_fpu_madd_fState_S3_first__96__ETC___d232,
-		IF_IF_7170_MINUS_fpu_madd_fState_S3_first__96__ETC___d663,
-		IF_SEXT_iFifo_first__288_BITS_102_TO_95_816_MI_ETC___d3297,
-		IF_SEXT_iFifo_first__288_BITS_167_TO_160_321_M_ETC___d1814,
-		IF_SEXT_iFifo_first__288_BITS_37_TO_30_041_MIN_ETC___d2522,
-		IF_fpu_madd_fState_S7_first__52_BITS_126_TO_11_ETC___d1104,
-		IF_fpu_madd_fState_S7_first__52_BITS_126_TO_11_ETC___d869,
-		SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC___d2997,
-		SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC__q76,
-		SEXT_iFifo_first__288_BITS_167_TO_160_321_MINU_ETC___d1514,
-		SEXT_iFifo_first__288_BITS_167_TO_160_321_MINU_ETC__q16,
-		SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC___d2222,
-		SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC__q43,
-		SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC___d4216,
-		SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC__q111,
-		_3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d3716,
-		_3074_MINUS_SEXT_iFifo_first__288_BITS_102_TO_9_ETC___d3000,
-		_3074_MINUS_SEXT_iFifo_first__288_BITS_167_TO_1_ETC___d1517,
-		_3074_MINUS_SEXT_iFifo_first__288_BITS_37_TO_30_ETC___d2225,
-		_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_15_ETC___d1379,
-		_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_29_ETC___d2099,
-		_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_94_ETC___d2874,
-		_3970_MINUS_SEXT_resWire_wget__595_BITS_67_TO_5_ETC___d4219,
-		x__h107783,
-		x__h146690,
-		x__h191483,
-		x__h69145;
-  wire [10 : 0] IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d1920,
-		IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d1922,
-		IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d2627,
-		IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d2629,
-		IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d3402,
-		IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d3404,
-		IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3364,
-		IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3366,
-		IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3433,
-		IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3435,
-		IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d1881,
-		IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d1883,
-		IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d1951,
-		IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d1953,
-		IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2589,
-		IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2591,
-		IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2658,
-		IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2660,
-		IF_fpu_madd_fState_S8_first__161_BITS_65_TO_55_ETC___d1187,
-		IF_fpu_madd_fState_S8_first__161_BITS_65_TO_55_ETC___d1212,
-		SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC__q79,
-		SEXT_iFifo_first__288_BITS_167_TO_160_321_MINU_ETC__q19,
-		SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC__q46,
-		_theResult___exp__h106407,
-		_theResult___exp__h115997,
-		_theResult___exp__h124749,
-		_theResult___exp__h145314,
-		_theResult___exp__h154904,
-		_theResult___exp__h163656,
-		_theResult___exp__h46361,
-		_theResult___exp__h67769,
-		_theResult___exp__h77359,
-		_theResult___exp__h86111,
-		_theResult___fst_exp__h105753,
-		_theResult___fst_exp__h105759,
-		_theResult___fst_exp__h105762,
-		_theResult___fst_exp__h106488,
-		_theResult___fst_exp__h115278,
-		_theResult___fst_exp__h115343,
-		_theResult___fst_exp__h115349,
-		_theResult___fst_exp__h115352,
-		_theResult___fst_exp__h116078,
-		_theResult___fst_exp__h124031,
-		_theResult___fst_exp__h124070,
-		_theResult___fst_exp__h124076,
-		_theResult___fst_exp__h124079,
-		_theResult___fst_exp__h124830,
-		_theResult___fst_exp__h124839,
-		_theResult___fst_exp__h124842,
-		_theResult___fst_exp__h144660,
-		_theResult___fst_exp__h144666,
-		_theResult___fst_exp__h144669,
-		_theResult___fst_exp__h145395,
-		_theResult___fst_exp__h154185,
-		_theResult___fst_exp__h154250,
-		_theResult___fst_exp__h154256,
-		_theResult___fst_exp__h154259,
-		_theResult___fst_exp__h154985,
-		_theResult___fst_exp__h162938,
-		_theResult___fst_exp__h162977,
-		_theResult___fst_exp__h162983,
-		_theResult___fst_exp__h162986,
-		_theResult___fst_exp__h163737,
-		_theResult___fst_exp__h163746,
-		_theResult___fst_exp__h163749,
-		_theResult___fst_exp__h34766,
-		_theResult___fst_exp__h34769,
-		_theResult___fst_exp__h34788,
-		_theResult___fst_exp__h34803,
-		_theResult___fst_exp__h34842,
-		_theResult___fst_exp__h34848,
-		_theResult___fst_exp__h34851,
-		_theResult___fst_exp__h45192,
-		_theResult___fst_exp__h45195,
-		_theResult___fst_exp__h45214,
-		_theResult___fst_exp__h45229,
-		_theResult___fst_exp__h45268,
-		_theResult___fst_exp__h45274,
-		_theResult___fst_exp__h45277,
-		_theResult___fst_exp__h67115,
-		_theResult___fst_exp__h67121,
-		_theResult___fst_exp__h67124,
-		_theResult___fst_exp__h67850,
-		_theResult___fst_exp__h76640,
-		_theResult___fst_exp__h76705,
-		_theResult___fst_exp__h76711,
-		_theResult___fst_exp__h76714,
-		_theResult___fst_exp__h77440,
-		_theResult___fst_exp__h85393,
-		_theResult___fst_exp__h85432,
-		_theResult___fst_exp__h85438,
-		_theResult___fst_exp__h85441,
-		_theResult___fst_exp__h86192,
-		_theResult___fst_exp__h86201,
-		_theResult___fst_exp__h86204,
-		_theResult___snd_fst_exp__h106491,
-		_theResult___snd_fst_exp__h124833,
-		_theResult___snd_fst_exp__h145398,
-		_theResult___snd_fst_exp__h163740,
-		_theResult___snd_fst_exp__h67853,
-		_theResult___snd_fst_exp__h86195,
-		din_exp4683_MINUS_1023__q3,
-		din_exp__h34683,
-		din_inc___2_exp__h124895,
-		din_inc___2_exp__h124930,
-		din_inc___2_exp__h124956,
-		din_inc___2_exp__h163802,
-		din_inc___2_exp__h163837,
-		din_inc___2_exp__h163863,
-		din_inc___2_exp__h46446,
-		din_inc___2_exp__h86257,
-		din_inc___2_exp__h86292,
-		din_inc___2_exp__h86318,
-		fpu_madd_fOperand_S0D_OUT_BITS_129_TO_119_MIN_ETC__q143,
-		fpu_madd_fOperand_S0D_OUT_BITS_65_TO_55_MINUS_ETC__q144,
-		fpu_madd_fResult_S9D_OUT_BITS_67_TO_57_MINUS__ETC__q110,
-		fpu_madd_fState_S4D_OUT_BITS_128_TO_118_MINUS_ETC__q7,
-		fpu_madd_fState_S4D_OUT_BITS_64_TO_54_MINUS_1023__q6,
-		out_exp__h106410,
-		out_exp__h116000,
-		out_exp__h124752,
-		out_exp__h145317,
-		out_exp__h154907,
-		out_exp__h163659,
-		out_exp__h46364,
-		out_exp__h67772,
-		out_exp__h77362,
-		out_exp__h86114,
-		value5124_BITS_10_TO_0_MINUS_1023__q8,
-		x__h329;
-  wire [8 : 0] IF_SEXT_resWire_wget__595_BITS_67_TO_57_601_MI_ETC___d4517;
-  wire [7 : 0] IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__595_B_ETC___d4633,
-	       IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__595_B_ETC___d4635,
-	       IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__595__ETC___d4703,
-	       IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__595__ETC___d4705,
-	       IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4664,
-	       IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4666,
-	       IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4734,
-	       IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4736,
-	       SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC__q114,
-	       _theResult___exp__h181728,
-	       _theResult___exp__h190310,
-	       _theResult___exp__h199494,
-	       _theResult___exp__h208130,
-	       _theResult___fst_exp__h181212,
-	       _theResult___fst_exp__h181277,
-	       _theResult___fst_exp__h181283,
-	       _theResult___fst_exp__h181286,
-	       _theResult___fst_exp__h181809,
-	       _theResult___fst_exp__h189859,
-	       _theResult___fst_exp__h189865,
-	       _theResult___fst_exp__h189868,
-	       _theResult___fst_exp__h190391,
-	       _theResult___fst_exp__h198978,
-	       _theResult___fst_exp__h199043,
-	       _theResult___fst_exp__h199049,
-	       _theResult___fst_exp__h199052,
-	       _theResult___fst_exp__h199575,
-	       _theResult___fst_exp__h207615,
-	       _theResult___fst_exp__h207654,
-	       _theResult___fst_exp__h207660,
-	       _theResult___fst_exp__h207663,
-	       _theResult___fst_exp__h208211,
-	       _theResult___fst_exp__h208220,
-	       _theResult___fst_exp__h208223,
-	       _theResult___snd_fst_exp__h190394,
-	       _theResult___snd_fst_exp__h208214,
-	       din_inc___2_exp__h208249,
-	       din_inc___2_exp__h208275,
-	       din_inc___2_exp__h208310,
-	       din_inc___2_exp__h208336,
-	       exp__h208232,
-	       iFifoD_OUT_BITS_102_TO_95_MINUS_127__q75,
-	       iFifoD_OUT_BITS_167_TO_160_MINUS_127__q15,
-	       iFifoD_OUT_BITS_37_TO_30_MINUS_127__q42,
-	       out_exp__h181731,
-	       out_exp__h190313,
-	       out_exp__h199497,
-	       out_exp__h208133;
-  wire [6 : 0] IF_IF_7170_MINUS_fpu_madd_fState_S3_first__96__ETC___d661;
-  wire [5 : 0] IF_IF_0b0_CONCAT_NOT_resWire_wget__595_BITS_67_ETC___d3952,
-	       IF_IF_3074_MINUS_SEXT_iFifo_first__288_BITS_10_ETC___d3246,
-	       IF_IF_3074_MINUS_SEXT_iFifo_first__288_BITS_16_ETC___d1763,
-	       IF_IF_3074_MINUS_SEXT_iFifo_first__288_BITS_37_ETC___d2471,
-	       IF_IF_3970_MINUS_SEXT_resWire_wget__595_BITS_6_ETC___d4463,
-	       IF_IF_fpu_madd_fState_S7_first__52_BIT_128_58__ETC___d1102,
-	       IF_iFifo_first__288_BITS_102_TO_95_816_EQ_0_82_ETC___d2948,
-	       IF_iFifo_first__288_BITS_167_TO_160_321_EQ_0_3_ETC___d1462,
-	       IF_iFifo_first__288_BITS_37_TO_30_041_EQ_0_047_ETC___d2173,
-	       IF_resWire_wget__595_BITS_67_TO_57_601_EQ_0_60_ETC___d4167;
-  wire [4 : 0] IF_fpu_madd_fState_S3_first__96_BIT_151_97_THE_ETC___d726,
-	       _0_CONCAT_IF_IF_0b0_CONCAT_NOT_resWire_wget__59_ETC___d4861,
-	       _0_CONCAT_IF_IF_3970_MINUS_SEXT_resWire_wget__5_ETC___d4890,
-	       _0_CONCAT_IF_resWire_wget__595_BITS_67_TO_57_60_ETC___d4873,
-	       fpu_madd_fState_S3_first__96_BITS_86_TO_82_01__ETC___d702,
-	       fpu_madd_fState_S7_first__52_BITS_137_TO_133_5_ETC___d1143,
-	       fpu_madd_fState_S8_first__161_BITS_75_TO_71_23_ETC___d1244,
-	       resWire_wget__595_BITS_4_TO_0_843_OR_NOT_resWi_ETC___d4953;
-  wire [2 : 0] NOT_fpu_madd_fState_S3_first__96_BITS_12_TO_0__ETC___d724;
-  wire [1 : 0] IF_sfdin15272_BIT_4_THEN_2_ELSE_0__q78,
-	       IF_sfdin4760_BIT_53_THEN_2_ELSE_0__q5,
-	       IF_sfdin5186_BIT_4_THEN_2_ELSE_0__q10,
-	       IF_sfdin54179_BIT_4_THEN_2_ELSE_0__q45,
-	       IF_sfdin6634_BIT_4_THEN_2_ELSE_0__q18,
-	       IF_sfdin81206_BIT_33_THEN_2_ELSE_0__q107,
-	       IF_sfdin98972_BIT_33_THEN_2_ELSE_0__q113,
-	       IF_theResult___snd05713_BIT_4_THEN_2_ELSE_0__q74,
-	       IF_theResult___snd07609_BIT_33_THEN_2_ELSE_0__q116,
-	       IF_theResult___snd24025_BIT_4_THEN_2_ELSE_0__q81,
-	       IF_theResult___snd44620_BIT_4_THEN_2_ELSE_0__q41,
-	       IF_theResult___snd5387_BIT_4_THEN_2_ELSE_0__q21,
-	       IF_theResult___snd62932_BIT_4_THEN_2_ELSE_0__q48,
-	       IF_theResult___snd7075_BIT_4_THEN_2_ELSE_0__q14,
-	       IF_theResult___snd89819_BIT_33_THEN_2_ELSE_0__q109,
-	       _theResult___snd_fst__h34868,
-	       _theResult___snd_fst__h45294,
-	       _theResult___snd_snd__h35188,
-	       _theResult___snd_snd_snd__h35186,
-	       guardBC__h19483,
-	       guard__h107050,
-	       guard__h116089,
-	       guard__h136708,
-	       guard__h145957,
-	       guard__h154996,
-	       guard__h173113,
-	       guard__h181820,
-	       guard__h190750,
-	       guard__h199586,
-	       guard__h36940,
-	       guard__h59163,
-	       guard__h68412,
-	       guard__h77451,
-	       guard__h97801,
-	       x__h35223,
-	       x__h45577;
-  wire IF_3074_MINUS_0_CONCAT_IF_resWire_wget__595_BI_ETC___d4210,
-       IF_3074_MINUS_0_CONCAT_IF_resWire_wget__595_BI_ETC___d4584,
-       IF_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_ETC___d1508,
-       IF_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_ETC___d2218,
-       IF_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_ETC___d2772,
-       IF_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_ETC___d2993,
-       IF_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_ETC___d3538,
-       IF_IF_fpu_madd_fOperand_S0_first_BIT_195_THEN__ETC___d123,
-       IF_NOT_fpu_madd_fState_S3_first__96_BITS_12_TO_ETC___d704,
-       IF_NOT_fpu_madd_fState_S3_first__96_BITS_12_TO_ETC___d707,
-       IF_SEXT_iFifo_first__288_BITS_102_TO_95_816_MI_ETC___d3337,
-       IF_SEXT_iFifo_first__288_BITS_102_TO_95_816_MI_ETC___d3565,
-       IF_SEXT_iFifo_first__288_BITS_167_TO_160_321_M_ETC___d1854,
-       IF_SEXT_iFifo_first__288_BITS_37_TO_30_041_MIN_ETC___d2562,
-       IF_SEXT_iFifo_first__288_BITS_37_TO_30_041_MIN_ETC___d2799,
-       IF_SEXT_resWire_wget__595_BITS_67_TO_57_601_MI_ETC___d4560,
-       IF_SEXT_resWire_wget__595_BITS_67_TO_57_601_MI_ETC___d4605,
-       IF_SEXT_resWire_wget__595_BITS_67_TO_57_601_MI_ETC___d4919,
-       IF_SEXT_resWire_wget__595_BITS_67_TO_57_601_MI_ETC___d4932,
-       IF_SEXT_resWire_wget__595_BITS_67_TO_57_601_MI_ETC___d4945,
-       IF_fpu_madd_fOperand_S0_first_BIT_195_THEN_fpu_ETC___d128,
-       IF_fpu_madd_fOperand_S0_first_BIT_195_THEN_fpu_ETC___d148,
-       IF_fpu_madd_fOperand_S0_first_BIT_195_THEN_fpu_ETC___d62,
-       IF_fpu_madd_fState_S3_first__96_BITS_12_TO_0_0_ETC___d717,
-       IF_fpu_madd_fState_S3_first__96_BITS_12_TO_0_0_ETC___d722,
-       IF_fpu_madd_fState_S8_first__161_BIT_67_164_AN_ETC___d1261,
-       IF_iFifo_first__288_BITS_102_TO_95_816_EQ_0_82_ETC___d3339,
-       IF_iFifo_first__288_BITS_102_TO_95_816_EQ_0_82_ETC___d3567,
-       IF_iFifo_first__288_BITS_167_TO_160_321_EQ_0_3_ETC___d1856,
-       IF_iFifo_first__288_BITS_37_TO_30_041_EQ_0_047_ETC___d2564,
-       IF_iFifo_first__288_BITS_37_TO_30_041_EQ_0_047_ETC___d2801,
-       IF_isNegateFifo_first__594_THEN_IF_resWire_wge_ETC___d4609,
-       IF_resWire_wget__595_BITS_67_TO_57_601_EQ_0_60_ETC___d4562,
-       IF_resWire_wget__595_BITS_67_TO_57_601_EQ_0_60_ETC___d4607,
-       IF_resWire_wget__595_BITS_67_TO_57_601_EQ_0_60_ETC___d4894,
-       IF_resWire_wget__595_BITS_67_TO_57_601_EQ_0_60_ETC___d4905,
-       IF_resWire_wget__595_BITS_67_TO_57_601_EQ_0_60_ETC___d4921,
-       IF_resWire_wget__595_BITS_67_TO_57_601_EQ_0_60_ETC___d4934,
-       IF_resWire_wget__595_BITS_67_TO_57_601_EQ_0_60_ETC___d4947,
-       NOT_3074_MINUS_0_CONCAT_IF_resWire_wget__595_B_ETC___d4913,
-       NOT_3074_MINUS_0_CONCAT_IF_resWire_wget__595_B_ETC___d4941,
-       NOT_IF_fpu_madd_fOperand_S0_first_BIT_195_THEN_ETC___d147,
-       NOT_fpu_madd_fOperand_S0_first_BITS_129_TO_119_ETC___d124,
-       NOT_fpu_madd_fOperand_S0_first_BIT_130_2_EQ_fp_ETC___d55,
-       NOT_fpu_madd_fState_S3_first__96_BITS_12_TO_0__ETC___d711,
-       NOT_fpu_madd_fState_S4_first__48_BIT_130_54_59_ETC___d785,
-       NOT_iFifo_first__288_BIT_158_333_393_AND_NOT_i_ETC___d1435,
-       NOT_iFifo_first__288_BIT_28_053_104_AND_NOT_iF_ETC___d2146,
-       NOT_iFifo_first__288_BIT_93_828_879_AND_NOT_iF_ETC___d2921,
-       NOT_resWire_wget__595_BIT_56_611_010_AND_NOT_r_ETC___d4112,
-       SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC___d2998,
-       SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC___d2999,
-       SEXT_iFifo_first__288_BITS_167_TO_160_321_MINU_ETC___d1515,
-       SEXT_iFifo_first__288_BITS_167_TO_160_321_MINU_ETC___d1516,
-       SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC___d2223,
-       SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC___d2224,
-       SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC___d4217,
-       SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC___d4218,
-       _0_CONCAT_IF_IF_0b0_CONCAT_NOT_resWire_wget__59_ETC___d3954,
-       _0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__28_ETC___d1765,
-       _0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__28_ETC___d2473,
-       _0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__28_ETC___d3248,
-       _0_CONCAT_IF_IF_3970_MINUS_SEXT_resWire_wget__5_ETC___d4465,
-       _0_CONCAT_IF_IF_7170_MINUS_fpu_madd_fState_S3_f_ETC___d664,
-       _0_CONCAT_IF_IF_fpu_madd_fState_S7_first__52_BI_ETC___d1105,
-       _0_CONCAT_IF_iFifo_first__288_BITS_102_TO_95_81_ETC___d2950,
-       _0_CONCAT_IF_iFifo_first__288_BITS_102_TO_95_81_ETC___d3298,
-       _0_CONCAT_IF_iFifo_first__288_BITS_167_TO_160_3_ETC___d1464,
-       _0_CONCAT_IF_iFifo_first__288_BITS_167_TO_160_3_ETC___d1815,
-       _0_CONCAT_IF_iFifo_first__288_BITS_37_TO_30_041_ETC___d2175,
-       _0_CONCAT_IF_iFifo_first__288_BITS_37_TO_30_041_ETC___d2523,
-       _0_CONCAT_IF_resWire_wget__595_BITS_67_TO_57_60_ETC___d4169,
-       _0_CONCAT_IF_resWire_wget__595_BITS_67_TO_57_60_ETC___d4518,
-       _3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d3717,
-       _3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d3718,
-       _3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d4876,
-       _3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d4901,
-       _3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d4928,
-       _3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_15_ETC___d1380,
-       _3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_15_ETC___d1381,
-       _3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_29_ETC___d2100,
-       _3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_29_ETC___d2101,
-       _3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_94_ETC___d2875,
-       _3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_94_ETC___d2876,
-       _7170_MINUS_fpu_madd_fState_S3_first__96_BITS_1_ETC___d209,
-       fpu_madd_fOperand_S0_first_BITS_129_TO_119_7_E_ETC___d127,
-       fpu_madd_fOperand_S0_first_BITS_129_TO_119_7_E_ETC___d58,
-       fpu_madd_fOperand_S0_first_BIT_195_AND_fpu_mad_ETC___d56,
-       fpu_madd_fState_S3_first__96_BITS_12_TO_0_02_S_ETC___d203,
-       fpu_madd_fState_S3_first__96_BITS_12_TO_0_02_S_ETC___d205,
-       guard__h107648,
-       guard__h146555,
-       guard__h191348,
-       guard__h69010,
-       rmdFifo_i_notFull__287_AND_IF_iFifo_first__288_ETC___d1306,
-       sfdlsb__h20642;
+  reg [63 : 0] CASE_fpu_div64_fState_S4D_OUT_BITS_68_TO_66_0_ETC__q173,
+	       CASE_fpu_sqr64_fState_S4D_OUT_BITS_68_TO_66_0_ETC__q183,
+	       CASE_iFifoD_OUT_BITS_3_TO_0_0_460718241880001_ETC__q177,
+	       CASE_iFifoD_OUT_BITS_3_TO_0_0_IF_iFifo_first__ETC__q176,
+	       IF_iFifo_first__087_BITS_3_TO_0_088_EQ_0_089_O_ETC___d4623;
+  reg [62 : 0] CASE_fpu_div64_fState_S3D_OUT_BITS_124_TO_122_ETC__q175,
+	       CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0_0_ETC__q172,
+	       CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q171,
+	       CASE_fpu_div64_fState_S4D_OUT_BITS_68_TO_66_2_ETC__q169,
+	       CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q130,
+	       CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q131,
+	       CASE_fpu_madd_fState_S8D_OUT_BITS_70_TO_68_0__ETC__q132,
+	       CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0_0_ETC__q182,
+	       CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q181,
+	       CASE_fpu_sqr64_fState_S4D_OUT_BITS_68_TO_66_2_ETC__q179;
+  reg [51 : 0] CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q1,
+	       CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q2,
+	       CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q5,
+	       CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q6,
+	       CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q3,
+	       CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q4,
+	       CASE_guard03262_0b0_sfdin11484_BITS_56_TO_5_0b_ETC__q110,
+	       CASE_guard03262_0b0_sfdin11484_BITS_56_TO_5_0b_ETC__q111,
+	       CASE_guard12301_0b0_theResult___snd20237_BITS__ETC__q114,
+	       CASE_guard12301_0b0_theResult___snd20237_BITS__ETC__q115,
+	       CASE_guard32952_0b0_theResult___snd40864_BITS__ETC__q75,
+	       CASE_guard32952_0b0_theResult___snd40864_BITS__ETC__q76,
+	       CASE_guard42201_0b0_sfdin50423_BITS_56_TO_5_0b_ETC__q77,
+	       CASE_guard42201_0b0_sfdin50423_BITS_56_TO_5_0b_ETC__q78,
+	       CASE_guard51240_0b0_theResult___snd59176_BITS__ETC__q79,
+	       CASE_guard51240_0b0_theResult___snd59176_BITS__ETC__q80,
+	       CASE_guard55375_0b0_theResult___snd63287_BITS__ETC__q48,
+	       CASE_guard55375_0b0_theResult___snd63287_BITS__ETC__q49,
+	       CASE_guard64624_0b0_sfdin72846_BITS_56_TO_5_0b_ETC__q50,
+	       CASE_guard64624_0b0_sfdin72846_BITS_56_TO_5_0b_ETC__q51,
+	       CASE_guard73663_0b0_theResult___snd81599_BITS__ETC__q52,
+	       CASE_guard73663_0b0_theResult___snd81599_BITS__ETC__q53,
+	       CASE_guard94013_0b0_theResult___snd01925_BITS__ETC__q108,
+	       CASE_guard94013_0b0_theResult___snd01925_BITS__ETC__q109,
+	       _theResult___fst_sfd__h142620,
+	       _theResult___fst_sfd__h148292,
+	       _theResult___fst_sfd__h164060,
+	       _theResult___fst_sfd__h173650,
+	       _theResult___fst_sfd__h182402,
+	       _theResult___fst_sfd__h186932,
+	       _theResult___fst_sfd__h19468,
+	       _theResult___fst_sfd__h19957,
+	       _theResult___fst_sfd__h202698,
+	       _theResult___fst_sfd__h212288,
+	       _theResult___fst_sfd__h221040,
+	       _theResult___fst_sfd__h225871,
+	       _theResult___fst_sfd__h241637,
+	       _theResult___fst_sfd__h251227,
+	       _theResult___fst_sfd__h259979,
+	       _theResult___fst_sfd__h43554,
+	       _theResult___fst_sfd__h95988;
+  reg [22 : 0] CASE_guard69587_0b0_sfdin77680_BITS_56_TO_34_0_ETC__q162,
+	       CASE_guard69587_0b0_sfdin77680_BITS_56_TO_34_0_ETC__q163,
+	       CASE_guard78294_0b0_theResult___snd86293_BITS__ETC__q160,
+	       CASE_guard78294_0b0_theResult___snd86293_BITS__ETC__q161,
+	       CASE_guard87224_0b0_sfdin95446_BITS_56_TO_34_0_ETC__q164,
+	       CASE_guard87224_0b0_sfdin95446_BITS_56_TO_34_0_ETC__q165,
+	       CASE_guard96060_0b0_theResult___snd04083_BITS__ETC__q166,
+	       CASE_guard96060_0b0_theResult___snd04083_BITS__ETC__q167,
+	       _theResult___fst_sfd__h269560,
+	       _theResult___fst_sfd__h278281,
+	       _theResult___fst_sfd__h286863,
+	       _theResult___fst_sfd__h296047,
+	       _theResult___fst_sfd__h304683;
+  reg [10 : 0] CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q14,
+	       CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q15,
+	       CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q31,
+	       CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q32,
+	       CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q21,
+	       CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q22,
+	       CASE_guard03262_0b0_theResult___fst_exp11490_0_ETC__q104,
+	       CASE_guard03262_0b0_theResult___fst_exp11490_0_ETC__q105,
+	       CASE_guard12301_0b0_theResult___fst_exp20291_0_ETC__q106,
+	       CASE_guard12301_0b0_theResult___fst_exp20291_0_ETC__q107,
+	       CASE_guard32952_0b0_theResult___fst_exp40913_0_ETC__q69,
+	       CASE_guard32952_0b0_theResult___fst_exp40913_0_ETC__q70,
+	       CASE_guard42201_0b0_theResult___fst_exp50429_0_ETC__q71,
+	       CASE_guard42201_0b0_theResult___fst_exp50429_0_ETC__q72,
+	       CASE_guard51240_0b0_theResult___fst_exp59230_0_ETC__q73,
+	       CASE_guard51240_0b0_theResult___fst_exp59230_0_ETC__q74,
+	       CASE_guard55375_0b0_theResult___fst_exp63336_0_ETC__q42,
+	       CASE_guard55375_0b0_theResult___fst_exp63336_0_ETC__q43,
+	       CASE_guard64624_0b0_theResult___fst_exp72852_0_ETC__q44,
+	       CASE_guard64624_0b0_theResult___fst_exp72852_0_ETC__q45,
+	       CASE_guard73663_0b0_theResult___fst_exp81653_0_ETC__q46,
+	       CASE_guard73663_0b0_theResult___fst_exp81653_0_ETC__q47,
+	       CASE_guard94013_0b0_theResult___fst_exp01974_0_ETC__q102,
+	       CASE_guard94013_0b0_theResult___fst_exp01974_0_ETC__q103,
+	       _theResult___fst_exp__h142619,
+	       _theResult___fst_exp__h148291,
+	       _theResult___fst_exp__h164059,
+	       _theResult___fst_exp__h173649,
+	       _theResult___fst_exp__h182401,
+	       _theResult___fst_exp__h186931,
+	       _theResult___fst_exp__h19467,
+	       _theResult___fst_exp__h202697,
+	       _theResult___fst_exp__h212287,
+	       _theResult___fst_exp__h221039,
+	       _theResult___fst_exp__h225870,
+	       _theResult___fst_exp__h241636,
+	       _theResult___fst_exp__h251226,
+	       _theResult___fst_exp__h259978,
+	       _theResult___fst_exp__h43553,
+	       _theResult___fst_exp__h95987;
+  reg [7 : 0] CASE_guard69587_0b0_theResult___fst_exp77686_0_ETC__q154,
+	      CASE_guard69587_0b0_theResult___fst_exp77686_0_ETC__q155,
+	      CASE_guard78294_0b0_theResult___fst_exp86342_0_ETC__q152,
+	      CASE_guard78294_0b0_theResult___fst_exp86342_0_ETC__q153,
+	      CASE_guard87224_0b0_theResult___fst_exp95452_0_ETC__q156,
+	      CASE_guard87224_0b0_theResult___fst_exp95452_0_ETC__q157,
+	      CASE_guard96060_0b0_theResult___fst_exp04137_0_ETC__q158,
+	      CASE_guard96060_0b0_theResult___fst_exp04137_0_ETC__q159,
+	      _theResult___fst_exp__h269559,
+	      _theResult___fst_exp__h278280,
+	      _theResult___fst_exp__h286862,
+	      _theResult___fst_exp__h296046,
+	      _theResult___fst_exp__h304682;
+  reg CASE_fpu_div64_fOperands_S0D_OUT_BITS_2_TO_0__ETC__q9,
+      CASE_fpu_div64_fState_S3D_OUT_BITS_124_TO_122_ETC__q174,
+      CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q170,
+      CASE_fpu_div64_fState_S4D_OUT_BITS_68_TO_66_2_ETC__q168,
+      CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q126,
+      CASE_fpu_madd_fState_S8D_OUT_BITS_70_TO_68_0__ETC__q127,
+      CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q180,
+      CASE_fpu_sqr64_fState_S4D_OUT_BITS_68_TO_66_2_ETC__q178,
+      CASE_guard03262_0b0_NOT_iFifoD_OUT_BIT_103_0b_ETC__q122,
+      CASE_guard03262_0b0_iFifoD_OUT_BIT_103_0b1_iF_ETC__q116,
+      CASE_guard12301_0b0_NOT_iFifoD_OUT_BIT_103_0b_ETC__q124,
+      CASE_guard12301_0b0_iFifoD_OUT_BIT_103_0b1_iF_ETC__q118,
+      CASE_guard32952_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q87,
+      CASE_guard32952_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q81,
+      CASE_guard42201_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q89,
+      CASE_guard42201_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q83,
+      CASE_guard51240_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q91,
+      CASE_guard51240_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q85,
+      CASE_guard55375_0b0_iFifoD_OUT_BIT_168_0b1_iF_ETC__q54,
+      CASE_guard64624_0b0_iFifoD_OUT_BIT_168_0b1_iF_ETC__q56,
+      CASE_guard69587_0b0_NOT_resWirewget_BIT_68_0b_ETC__q145,
+      CASE_guard69587_0b0_resWirewget_BIT_68_0b1_re_ETC__q144,
+      CASE_guard73663_0b0_iFifoD_OUT_BIT_168_0b1_iF_ETC__q58,
+      CASE_guard78294_0b0_NOT_resWirewget_BIT_68_0b_ETC__q147,
+      CASE_guard78294_0b0_resWirewget_BIT_68_0b1_re_ETC__q146,
+      CASE_guard87224_0b0_NOT_resWirewget_BIT_68_0b_ETC__q149,
+      CASE_guard87224_0b0_resWirewget_BIT_68_0b1_re_ETC__q148,
+      CASE_guard94013_0b0_NOT_iFifoD_OUT_BIT_103_0b_ETC__q120,
+      CASE_guard94013_0b0_iFifoD_OUT_BIT_103_0b1_iF_ETC__q112,
+      CASE_guard96060_0b0_NOT_resWirewget_BIT_68_0b_ETC__q151,
+      CASE_guard96060_0b0_resWirewget_BIT_68_0b1_re_ETC__q150,
+      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard03262_ETC__q117,
+      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard03262_ETC__q123,
+      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard12301_ETC__q119,
+      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard12301_ETC__q125,
+      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard32952_ETC__q82,
+      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard32952_ETC__q88,
+      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard42201_ETC__q84,
+      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard42201_ETC__q90,
+      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard51240_ETC__q86,
+      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard51240_ETC__q92,
+      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard55375_ETC__q55,
+      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard64624_ETC__q57,
+      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard73663_ETC__q59,
+      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard94013_ETC__q113,
+      CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard94013_ETC__q121,
+      IF_iFifo_first__087_BITS_3_TO_0_088_EQ_0_089_O_ETC___d3110,
+      IF_iFifo_first__087_BITS_6_TO_4_118_EQ_0_191_O_ETC___d3320,
+      IF_iFifo_first__087_BITS_6_TO_4_118_EQ_0_191_O_ETC___d4028,
+      IF_iFifo_first__087_BITS_6_TO_4_118_EQ_0_191_O_ETC___d4582,
+      IF_iFifo_first__087_BITS_6_TO_4_118_EQ_0_191_O_ETC___d4803,
+      IF_iFifo_first__087_BITS_6_TO_4_118_EQ_0_191_O_ETC___d5348,
+      IF_rmdFifo_first__778_EQ_0_779_OR_rmdFifo_firs_ETC___d6028,
+      IF_rmdFifo_first__778_EQ_0_779_OR_rmdFifo_firs_ETC___d6400,
+      IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_I_ETC___d5823,
+      IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_I_ETC___d6324,
+      IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_I_ETC___d6388,
+      IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_I_ETC___d6409,
+      IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_r_ETC___d6023,
+      IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_r_ETC___d6373,
+      IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_r_ETC___d6397,
+      IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_r_ETC___d6418;
+  wire [194 : 0] IF_fpu_sqr64_fOperand_S0_first__059_BITS_65_TO_ETC___d1212;
+  wire [139 : 0] IF_NOT_fpu_madd_fState_S4_first__547_BIT_130_5_ETC___d2595;
+  wire [118 : 0] IF_fpu_madd_fOperand_S0_first__803_BITS_129_TO_ETC___d1959;
+  wire [115 : 0] IF_IF_rg_index_1_4_ULE_58_8_THEN_NOT_rg_b_9_EQ_ETC___d75,
+		 IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d49,
+		 IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d69,
+		 IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d73,
+		 IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d83,
+		 IF_rg_index_ULE_57_THEN_IF_rg_r_0_BIT_115_1_TH_ETC___d22,
+		 IF_rg_res_1_BIT_116_2_THEN_rg_res_1_BITS_115_T_ETC___d72,
+		 _theResult___fst__h1476,
+		 _theResult___fst__h1515,
+		 _theResult___fst__h1600,
+		 _theResult___snd_fst__h1478,
+		 _theResult___snd_fst__h1517,
+		 _theResult___snd_fst__h1602,
+		 _theResult___snd_snd__h1649,
+		 _theResult___snd_snd__h1715,
+		 _theResult___snd_snd_snd__h1481,
+		 _theResult___snd_snd_snd__h1520,
+		 _theResult___snd_snd_snd__h1605,
+		 b___1__h77160,
+		 b__h1608,
+		 b__h1712,
+		 b__h32583,
+		 r__h1659,
+		 r__h1663,
+		 r__h1724,
+		 r__h1753,
+		 s__h1658,
+		 s__h1723,
+		 sum__h1606,
+		 sum__h1710,
+		 value__h32541,
+		 x__h85931;
+  wire [113 : 0] x__h31426;
+  wire [105 : 0] IF_0_CONCAT_IF_IF_7170_MINUS_fpu_madd_fState_S_ETC__q24,
+		 _theResult___fst__h116827,
+		 _theResult___snd__h130966,
+		 _theResult___snd__h130980,
+		 _theResult___snd__h130982,
+		 _theResult___snd__h130994,
+		 _theResult___snd__h131000,
+		 _theResult___snd__h131018,
+		 _theResult___snd__h131023,
+		 fpu_madd_fProd_S3_first__009_SRL_IF_7170_MINUS_ETC___d2012,
+		 sfdBC__h115662,
+		 sfdin__h130943,
+		 x__h116896;
+  wire [68 : 0] IF_fpu_madd_fState_S8_first__960_BIT_67_963_AN_ETC___d3081;
+  wire [63 : 0] IF_IF_fpu_madd_fOperand_S0_first__803_BIT_195__ETC___d1936,
+		IF_IF_fpu_madd_fOperand_S0_first__803_BIT_195__ETC___d1939,
+		IF_fpu_div64_fOperands_S0_first__06_BITS_65_TO_ETC___d455,
+		IF_fpu_madd_fOperand_S0_first__803_BITS_129_TO_ETC___d1938,
+		IF_iFifo_first__087_BITS_102_TO_95_625_EQ_255__ETC___d5328,
+		IF_iFifo_first__087_BITS_102_TO_95_625_EQ_255__ETC___d5378,
+		IF_iFifo_first__087_BITS_167_TO_160_130_EQ_255_ETC___d3846,
+		IF_iFifo_first__087_BITS_37_TO_30_850_EQ_255_8_ETC___d4553,
+		IF_iFifo_first__087_BITS_37_TO_30_850_EQ_255_8_ETC___d4612,
+		IF_iFifo_first__087_BIT_136_624_THEN_IF_iFifo__ETC___d5330,
+		IF_iFifo_first__087_BIT_201_115_THEN_IF_iFifo__ETC___d3848,
+		IF_iFifo_first__087_BIT_71_849_THEN_IF_iFifo_f_ETC___d4555,
+		IF_iFifo_first__087_BIT_71_849_THEN_IF_iFifo_f_ETC___d4618,
+		IF_isDoubleFifo_first__407_THEN_IF_isNegateFif_ETC___d6657,
+		NOT_fpu_div64_fOperands_S0_first__06_BITS_129__ETC___d452,
+		fpu_div64_fState_S3_first__86_BIT_121_07_CONCA_ETC___d936;
+  wire [62 : 0] IF_0b0_CONCAT_NOT_fpu_div64_fState_S4_first__4_ETC___d980,
+		IF_0b0_CONCAT_NOT_fpu_madd_fState_S8_first__96_ETC___d3065,
+		IF_0b0_CONCAT_NOT_fpu_sqr64_fState_S4_first__6_ETC___d1724,
+		IF_IF_7170_MINUS_fpu_madd_fState_S3_first__995_ETC___d2534,
+		IF_IF_fpu_div64_fState_S3_first__86_BITS_120_T_ETC___d929,
+		IF_IF_fpu_madd_fOperand_S0_first__803_BIT_195__ETC___d1931,
+		IF_IF_fpu_madd_fState_S7_first__651_BIT_128_65_ETC___d2952,
+		IF_fpu_madd_fOperand_S0_first__803_BITS_129_TO_ETC___d1932,
+		IF_fpu_madd_fOperand_S0_first__803_BIT_195_804_ETC___d1911,
+		IF_fpu_madd_fState_S3_first__995_BITS_12_TO_0__ETC___d2536,
+		IF_fpu_sqr64_fState_S3_first__375_BIT_58_384_A_ETC___d1678,
+		IF_iFifo_first__087_BITS_102_TO_95_625_EQ_255__ETC___d5327,
+		IF_iFifo_first__087_BITS_37_TO_30_850_EQ_255_8_ETC___d4552;
+  wire [58 : 0] IF_0_CONCAT_IF_fpu_sqr64_fState_S3_first__375__ETC__q19,
+		_theResult___snd__h94767,
+		_theResult___snd__h94782,
+		_theResult___snd__h94784,
+		_theResult___snd__h94797,
+		_theResult___snd__h94803,
+		_theResult___snd__h94821,
+		_theResult___snd__h94826,
+		result__h85925,
+		sfdin__h94744,
+		x__h86149;
+  wire [57 : 0] IF_0_CONCAT_IF_IF_fpu_div64_fState_S3_first__8_ETC__q12,
+		IF_rg_index_ULE_57_THEN_rg_q_BITS_56_TO_0_CONC_ETC___d14,
+		IF_rg_r_BIT_115_THEN_rg_q_PLUS_NEG_INV_rg_q_59_ETC__q10,
+		_theResult____h32523,
+		_theResult___snd__h34715,
+		_theResult___snd__h42350,
+		_theResult___snd__h42365,
+		_theResult___snd__h42367,
+		_theResult___snd__h42380,
+		_theResult___snd__h42386,
+		_theResult___snd__h42404,
+		_theResult___snd__h42409,
+		_theResult___snd_snd_snd__h33963,
+		result__h32617,
+		result__h32648,
+		result__h32823,
+		rg_q_PLUS_NEG_INV_rg_q_59_60___d561,
+		sfd___1__h60702,
+		sfd__h44951,
+		sfd__h44953,
+		sfdin__h34118,
+		sfdin__h42327,
+		x__h32762,
+		x__h33052,
+		x__h60693;
+  wire [56 : 0] IF_0_CONCAT_IF_IF_0b0_CONCAT_NOT_resWire_wget__ETC__q133,
+		IF_0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__ETC__q37,
+		IF_0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__ETC__q64,
+		IF_0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__ETC__q97,
+		IF_0_CONCAT_IF_IF_3970_MINUS_SEXT_resWire_wget_ETC__q139,
+		IF_0_CONCAT_IF_IF_fpu_madd_fState_S7_first__65_ETC__q29,
+		IF_0_CONCAT_IF_iFifo_first__087_BITS_102_TO_95_ETC__q100,
+		IF_0_CONCAT_IF_iFifo_first__087_BITS_102_TO_95_ETC__q93,
+		IF_0_CONCAT_IF_iFifo_first__087_BITS_167_TO_16_ETC__q33,
+		IF_0_CONCAT_IF_iFifo_first__087_BITS_167_TO_16_ETC__q40,
+		IF_0_CONCAT_IF_iFifo_first__087_BITS_37_TO_30__ETC__q60,
+		IF_0_CONCAT_IF_iFifo_first__087_BITS_37_TO_30__ETC__q67,
+		IF_0_CONCAT_IF_resWire_wget__410_BITS_67_TO_57_ETC__q135,
+		IF_0_CONCAT_IF_resWire_wget__410_BITS_67_TO_57_ETC__q142,
+		_0b0_CONCAT_NOT_iFifo_first__087_BITS_102_TO_95_ETC___d4813,
+		_0b0_CONCAT_NOT_iFifo_first__087_BITS_167_TO_16_ETC___d3330,
+		_0b0_CONCAT_NOT_iFifo_first__087_BITS_37_TO_30__ETC___d4038,
+		_0b0_CONCAT_NOT_resWire_wget__410_BITS_67_TO_57_ETC___d6038,
+		_theResult____h164614,
+		_theResult____h203252,
+		_theResult____h242191,
+		_theResult____h269577,
+		_theResult____h287214,
+		_theResult___snd__h141392,
+		_theResult___snd__h141406,
+		_theResult___snd__h141408,
+		_theResult___snd__h141420,
+		_theResult___snd__h141426,
+		_theResult___snd__h141444,
+		_theResult___snd__h141449,
+		_theResult___snd__h163287,
+		_theResult___snd__h163289,
+		_theResult___snd__h163296,
+		_theResult___snd__h163302,
+		_theResult___snd__h163325,
+		_theResult___snd__h172863,
+		_theResult___snd__h172874,
+		_theResult___snd__h172876,
+		_theResult___snd__h172886,
+		_theResult___snd__h172892,
+		_theResult___snd__h172915,
+		_theResult___snd__h181599,
+		_theResult___snd__h181613,
+		_theResult___snd__h181619,
+		_theResult___snd__h181637,
+		_theResult___snd__h201925,
+		_theResult___snd__h201927,
+		_theResult___snd__h201934,
+		_theResult___snd__h201940,
+		_theResult___snd__h201963,
+		_theResult___snd__h211501,
+		_theResult___snd__h211512,
+		_theResult___snd__h211514,
+		_theResult___snd__h211524,
+		_theResult___snd__h211530,
+		_theResult___snd__h211553,
+		_theResult___snd__h220237,
+		_theResult___snd__h220251,
+		_theResult___snd__h220257,
+		_theResult___snd__h220275,
+		_theResult___snd__h240864,
+		_theResult___snd__h240866,
+		_theResult___snd__h240873,
+		_theResult___snd__h240879,
+		_theResult___snd__h240902,
+		_theResult___snd__h250440,
+		_theResult___snd__h250451,
+		_theResult___snd__h250453,
+		_theResult___snd__h250463,
+		_theResult___snd__h250469,
+		_theResult___snd__h250492,
+		_theResult___snd__h259176,
+		_theResult___snd__h259190,
+		_theResult___snd__h259196,
+		_theResult___snd__h259214,
+		_theResult___snd__h277697,
+		_theResult___snd__h277708,
+		_theResult___snd__h277710,
+		_theResult___snd__h277720,
+		_theResult___snd__h277726,
+		_theResult___snd__h277749,
+		_theResult___snd__h286293,
+		_theResult___snd__h286295,
+		_theResult___snd__h286302,
+		_theResult___snd__h286308,
+		_theResult___snd__h286331,
+		_theResult___snd__h295463,
+		_theResult___snd__h295474,
+		_theResult___snd__h295476,
+		_theResult___snd__h295486,
+		_theResult___snd__h295492,
+		_theResult___snd__h295515,
+		_theResult___snd__h304083,
+		_theResult___snd__h304097,
+		_theResult___snd__h304103,
+		_theResult___snd__h304121,
+		fpu_madd_fState_S5_first__601_BITS_56_TO_0_610_ETC___d2615,
+		guard__h132367,
+		result__h132372,
+		result__h165227,
+		result__h203865,
+		result__h242804,
+		result__h287827,
+		sfdA__h131577,
+		sfdBC__h131578,
+		sfd__h133119,
+		sfd__h144536,
+		sfd__h183176,
+		sfd__h222115,
+		sfd__h261975,
+		sfdin__h141369,
+		sfdin__h172846,
+		sfdin__h211484,
+		sfdin__h250423,
+		sfdin__h277680,
+		sfdin__h295446,
+		value__h32661,
+		x__h131940,
+		x__h131944,
+		x__h132359,
+		x__h132871,
+		x__h132880,
+		x__h165324,
+		x__h203962,
+		x__h242901,
+		x__h287924,
+		x__h31487;
+  wire [53 : 0] sfd__h142040,
+		sfd__h163354,
+		sfd__h172944,
+		sfd__h181672,
+		sfd__h201992,
+		sfd__h211582,
+		sfd__h220310,
+		sfd__h240931,
+		sfd__h250521,
+		sfd__h259249,
+		sfd__h42982,
+		sfd__h95416,
+		value__h270197,
+		value__h31429,
+		value__h53174;
+  wire [52 : 0] sfdA__h2035,
+		sfdA__h2039,
+		sfdB__h2036,
+		sfdB__h2041,
+		x__h114243,
+		x__h114255;
+  wire [51 : 0] IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d3813,
+		IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d3815,
+		IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d4519,
+		IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d4521,
+		IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d5294,
+		IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d5296,
+		IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5268,
+		IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5270,
+		IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5313,
+		IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5315,
+		IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3786,
+		IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3788,
+		IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3832,
+		IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3834,
+		IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4493,
+		IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4495,
+		IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4538,
+		IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4540,
+		IF_fpu_div64_fOperands_S0_first__06_BITS_65_TO_ETC___d450,
+		_theResult___fst_sfd__h164063,
+		_theResult___fst_sfd__h173653,
+		_theResult___fst_sfd__h182405,
+		_theResult___fst_sfd__h182414,
+		_theResult___fst_sfd__h182420,
+		_theResult___fst_sfd__h202701,
+		_theResult___fst_sfd__h212291,
+		_theResult___fst_sfd__h221043,
+		_theResult___fst_sfd__h221052,
+		_theResult___fst_sfd__h221058,
+		_theResult___fst_sfd__h241640,
+		_theResult___fst_sfd__h251230,
+		_theResult___fst_sfd__h259982,
+		_theResult___fst_sfd__h259991,
+		_theResult___fst_sfd__h259997,
+		_theResult___fst_sfd__h43557,
+		_theResult___fst_sfd__h95991,
+		_theResult___fst_sfd__h96608,
+		_theResult___sfd__h142542,
+		_theResult___sfd__h163982,
+		_theResult___sfd__h173572,
+		_theResult___sfd__h182324,
+		_theResult___sfd__h202620,
+		_theResult___sfd__h212210,
+		_theResult___sfd__h220962,
+		_theResult___sfd__h241559,
+		_theResult___sfd__h251149,
+		_theResult___sfd__h259901,
+		_theResult___sfd__h43476,
+		_theResult___sfd__h95910,
+		_theResult___snd_fst_sfd__h144486,
+		_theResult___snd_fst_sfd__h164066,
+		_theResult___snd_fst_sfd__h182408,
+		_theResult___snd_fst_sfd__h183126,
+		_theResult___snd_fst_sfd__h202704,
+		_theResult___snd_fst_sfd__h221046,
+		_theResult___snd_fst_sfd__h222065,
+		_theResult___snd_fst_sfd__h241643,
+		_theResult___snd_fst_sfd__h259985,
+		_theResult___snd_fst_sfd__h31362,
+		out___1_sfd__h144235,
+		out___1_sfd__h182875,
+		out___1_sfd__h221814,
+		out_sfd__h142545,
+		out_sfd__h163985,
+		out_sfd__h173575,
+		out_sfd__h182327,
+		out_sfd__h202623,
+		out_sfd__h212213,
+		out_sfd__h220965,
+		out_sfd__h241562,
+		out_sfd__h251152,
+		out_sfd__h259904,
+		out_sfd__h43479,
+		out_sfd__h95913,
+		sfd__h18934,
+		sfd__h18937,
+		sfd__h45004,
+		sfd__h99402,
+		sfd__h99405,
+		sfd__h99408;
+  wire [24 : 0] sfd__h277778,
+		sfd__h286360,
+		sfd__h295544,
+		sfd__h304156,
+		value__h148923,
+		value__h187561,
+		value__h226500;
+  wire [22 : 0] IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__410_B_ETC___d6576,
+		IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__410_B_ETC___d6578,
+		IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__410__ETC___d6622,
+		IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__410__ETC___d6624,
+		IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6595,
+		IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6597,
+		IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6641,
+		IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6643,
+		_theResult___fst_sfd__h278284,
+		_theResult___fst_sfd__h286866,
+		_theResult___fst_sfd__h296050,
+		_theResult___fst_sfd__h304686,
+		_theResult___fst_sfd__h304695,
+		_theResult___fst_sfd__h304701,
+		_theResult___sfd__h278203,
+		_theResult___sfd__h286785,
+		_theResult___sfd__h295969,
+		_theResult___sfd__h304605,
+		_theResult___snd_fst_sfd__h261925,
+		_theResult___snd_fst_sfd__h286869,
+		_theResult___snd_fst_sfd__h304689,
+		out_sfd__h278206,
+		out_sfd__h286788,
+		out_sfd__h295972,
+		out_sfd__h304608,
+		sfd__h304707;
+  wire [12 : 0] IF_fpu_div64_fOperands_S0_first__06_BITS_129_T_ETC___d352,
+		IF_fpu_madd_fState_S4_first__547_BITS_128_TO_1_ETC___d2568,
+		IF_fpu_madd_fState_S4_first__547_BITS_64_TO_54_ETC___d2563,
+		IF_fpu_sqr64_fOperand_S0_first__059_BITS_65_TO_ETC___d1195,
+		_7170_MINUS_fpu_madd_fState_S3_first__995_BITS__ETC___d2007,
+		value__h130883,
+		value__h141307,
+		value__h31374,
+		value__h31550,
+		x__h116929,
+		x__h132471,
+		x__h52551,
+		x__h52569;
+  wire [11 : 0] IF_IF_7170_MINUS_fpu_madd_fState_S3_first__995_ETC___d2031,
+		IF_IF_7170_MINUS_fpu_madd_fState_S3_first__995_ETC___d2462,
+		IF_IF_fpu_div64_fState_S3_first__86_BITS_120_T_ETC___d643,
+		IF_IF_fpu_div64_fState_S3_first__86_BITS_120_T_ETC___d882,
+		IF_SEXT_iFifo_first__087_BITS_102_TO_95_625_MI_ETC___d5106,
+		IF_SEXT_iFifo_first__087_BITS_167_TO_160_130_M_ETC___d3623,
+		IF_SEXT_iFifo_first__087_BITS_37_TO_30_850_MIN_ETC___d4331,
+		IF_fpu_madd_fState_S7_first__651_BITS_126_TO_1_ETC___d2668,
+		IF_fpu_madd_fState_S7_first__651_BITS_126_TO_1_ETC___d2903,
+		IF_fpu_sqr64_fOperand_S0_first__059_BITS_65_TO_ETC__q17,
+		IF_fpu_sqr64_fState_S3_first__375_BITS_121_TO__ETC___d1389,
+		IF_fpu_sqr64_fState_S3_first__375_BITS_121_TO__ETC___d1632,
+		SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC___d4806,
+		SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC__q96,
+		SEXT_iFifo_first__087_BITS_167_TO_160_130_MINU_ETC___d3323,
+		SEXT_iFifo_first__087_BITS_167_TO_160_130_MINU_ETC__q36,
+		SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC___d4031,
+		SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC__q63,
+		SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC___d6031,
+		SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC__q138,
+		_3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d5531,
+		_3074_MINUS_SEXT_iFifo_first__087_BITS_102_TO_9_ETC___d4809,
+		_3074_MINUS_SEXT_iFifo_first__087_BITS_167_TO_1_ETC___d3326,
+		_3074_MINUS_SEXT_iFifo_first__087_BITS_37_TO_30_ETC___d4034,
+		_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_15_ETC___d3188,
+		_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_29_ETC___d3908,
+		_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_94_ETC___d4683,
+		_3970_MINUS_SEXT_resWire_wget__410_BITS_67_TO_5_ETC___d6034,
+		x__h165357,
+		x__h203995,
+		x__h242934,
+		x__h287957;
+  wire [10 : 0] IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d3729,
+		IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d3731,
+		IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d4436,
+		IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d4438,
+		IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d5211,
+		IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d5213,
+		IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5173,
+		IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5175,
+		IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5242,
+		IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5244,
+		IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3690,
+		IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3692,
+		IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3760,
+		IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3762,
+		IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4398,
+		IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4400,
+		IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4467,
+		IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4469,
+		IF_fpu_div64_fOperands_S0_first__06_BITS_65_TO_ETC___d433,
+		IF_fpu_div64_fState_S4_first__43_BITS_64_TO_54_ETC___d977,
+		IF_fpu_madd_fState_S8_first__960_BITS_65_TO_55_ETC___d2986,
+		IF_fpu_madd_fState_S8_first__960_BITS_65_TO_55_ETC___d3011,
+		IF_fpu_sqr64_fState_S4_first__687_BITS_64_TO_5_ETC___d1721,
+		SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC__q99,
+		SEXT_iFifo_first__087_BITS_167_TO_160_130_MINU_ETC__q39,
+		SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC__q66,
+		_theResult___exp__h142541,
+		_theResult___exp__h163981,
+		_theResult___exp__h173571,
+		_theResult___exp__h182323,
+		_theResult___exp__h202619,
+		_theResult___exp__h212209,
+		_theResult___exp__h220961,
+		_theResult___exp__h241558,
+		_theResult___exp__h251148,
+		_theResult___exp__h259900,
+		_theResult___exp__h43475,
+		_theResult___exp__h95909,
+		_theResult___fst__h31322,
+		_theResult___fst_exp__h130949,
+		_theResult___fst_exp__h130952,
+		_theResult___fst_exp__h130971,
+		_theResult___fst_exp__h130986,
+		_theResult___fst_exp__h131025,
+		_theResult___fst_exp__h131031,
+		_theResult___fst_exp__h131034,
+		_theResult___fst_exp__h141375,
+		_theResult___fst_exp__h141378,
+		_theResult___fst_exp__h141397,
+		_theResult___fst_exp__h141412,
+		_theResult___fst_exp__h141451,
+		_theResult___fst_exp__h141457,
+		_theResult___fst_exp__h141460,
+		_theResult___fst_exp__h163327,
+		_theResult___fst_exp__h163333,
+		_theResult___fst_exp__h163336,
+		_theResult___fst_exp__h164062,
+		_theResult___fst_exp__h172852,
+		_theResult___fst_exp__h172917,
+		_theResult___fst_exp__h172923,
+		_theResult___fst_exp__h172926,
+		_theResult___fst_exp__h173652,
+		_theResult___fst_exp__h181605,
+		_theResult___fst_exp__h181644,
+		_theResult___fst_exp__h181650,
+		_theResult___fst_exp__h181653,
+		_theResult___fst_exp__h182404,
+		_theResult___fst_exp__h182413,
+		_theResult___fst_exp__h182416,
+		_theResult___fst_exp__h201965,
+		_theResult___fst_exp__h201971,
+		_theResult___fst_exp__h201974,
+		_theResult___fst_exp__h202700,
+		_theResult___fst_exp__h211490,
+		_theResult___fst_exp__h211555,
+		_theResult___fst_exp__h211561,
+		_theResult___fst_exp__h211564,
+		_theResult___fst_exp__h212290,
+		_theResult___fst_exp__h220243,
+		_theResult___fst_exp__h220282,
+		_theResult___fst_exp__h220288,
+		_theResult___fst_exp__h220291,
+		_theResult___fst_exp__h221042,
+		_theResult___fst_exp__h221051,
+		_theResult___fst_exp__h221054,
+		_theResult___fst_exp__h240904,
+		_theResult___fst_exp__h240910,
+		_theResult___fst_exp__h240913,
+		_theResult___fst_exp__h241639,
+		_theResult___fst_exp__h250429,
+		_theResult___fst_exp__h250494,
+		_theResult___fst_exp__h250500,
+		_theResult___fst_exp__h250503,
+		_theResult___fst_exp__h251229,
+		_theResult___fst_exp__h259182,
+		_theResult___fst_exp__h259221,
+		_theResult___fst_exp__h259227,
+		_theResult___fst_exp__h259230,
+		_theResult___fst_exp__h259981,
+		_theResult___fst_exp__h259990,
+		_theResult___fst_exp__h259993,
+		_theResult___fst_exp__h42284,
+		_theResult___fst_exp__h42287,
+		_theResult___fst_exp__h42290,
+		_theResult___fst_exp__h42333,
+		_theResult___fst_exp__h42336,
+		_theResult___fst_exp__h42356,
+		_theResult___fst_exp__h42372,
+		_theResult___fst_exp__h42411,
+		_theResult___fst_exp__h42417,
+		_theResult___fst_exp__h42420,
+		_theResult___fst_exp__h43556,
+		_theResult___fst_exp__h94750,
+		_theResult___fst_exp__h94753,
+		_theResult___fst_exp__h94773,
+		_theResult___fst_exp__h94789,
+		_theResult___fst_exp__h94828,
+		_theResult___fst_exp__h94834,
+		_theResult___fst_exp__h94837,
+		_theResult___fst_exp__h95990,
+		_theResult___snd_fst_exp__h164065,
+		_theResult___snd_fst_exp__h182407,
+		_theResult___snd_fst_exp__h202703,
+		_theResult___snd_fst_exp__h221045,
+		_theResult___snd_fst_exp__h241642,
+		_theResult___snd_fst_exp__h259984,
+		_theResult___snd_fst_exp__h31334,
+		_theResult___snd_fst_exp__h31337,
+		_theResult___snd_fst_exp__h31361,
+		din_exp30866_MINUS_1023__q23,
+		din_exp__h130866,
+		din_inc___2_exp__h142626,
+		din_inc___2_exp__h182469,
+		din_inc___2_exp__h182504,
+		din_inc___2_exp__h182530,
+		din_inc___2_exp__h221107,
+		din_inc___2_exp__h221142,
+		din_inc___2_exp__h221168,
+		din_inc___2_exp__h260046,
+		din_inc___2_exp__h260081,
+		din_inc___2_exp__h260107,
+		din_inc___2_exp__h43566,
+		din_inc___2_exp__h96000,
+		fpu_div64_fOperands_S0D_OUT_BITS_129_TO_119_M_ETC__q7,
+		fpu_div64_fOperands_S0D_OUT_BITS_65_TO_55_MIN_ETC__q8,
+		fpu_madd_fOperand_S0D_OUT_BITS_129_TO_119_MIN_ETC__q128,
+		fpu_madd_fOperand_S0D_OUT_BITS_65_TO_55_MINUS_ETC__q129,
+		fpu_madd_fState_S4D_OUT_BITS_128_TO_118_MINUS_ETC__q27,
+		fpu_madd_fState_S4D_OUT_BITS_64_TO_54_MINUS_1023__q26,
+		fpu_sqr64_fOperand_S0D_OUT_BITS_65_TO_55_MINU_ETC__q16,
+		fpu_sqr64_fState_S3D_OUT_BITS_121_TO_111_MINU_ETC__q18,
+		out_exp__h142544,
+		out_exp__h163984,
+		out_exp__h173574,
+		out_exp__h182326,
+		out_exp__h202622,
+		out_exp__h212212,
+		out_exp__h220964,
+		out_exp__h241561,
+		out_exp__h251151,
+		out_exp__h259903,
+		out_exp__h43478,
+		out_exp__h95912,
+		resWirewget_BITS_67_TO_57_MINUS_1023__q137,
+		theResult___fst_exp2290_MINUS_1023__q11,
+		value41307_BITS_10_TO_0_MINUS_1023__q28,
+		x__h31541,
+		x__h32769,
+		x__h96539;
+  wire [8 : 0] IF_SEXT_resWire_wget__410_BITS_67_TO_57_416_MI_ETC___d6332;
+  wire [7 : 0] IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__410_B_ETC___d6448,
+	       IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__410_B_ETC___d6450,
+	       IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__410__ETC___d6518,
+	       IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__410__ETC___d6520,
+	       IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6479,
+	       IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6481,
+	       IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6549,
+	       IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6551,
+	       SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC__q141,
+	       _theResult___exp__h278202,
+	       _theResult___exp__h286784,
+	       _theResult___exp__h295968,
+	       _theResult___exp__h304604,
+	       _theResult___fst_exp__h277686,
+	       _theResult___fst_exp__h277751,
+	       _theResult___fst_exp__h277757,
+	       _theResult___fst_exp__h277760,
+	       _theResult___fst_exp__h278283,
+	       _theResult___fst_exp__h286333,
+	       _theResult___fst_exp__h286339,
+	       _theResult___fst_exp__h286342,
+	       _theResult___fst_exp__h286865,
+	       _theResult___fst_exp__h295452,
+	       _theResult___fst_exp__h295517,
+	       _theResult___fst_exp__h295523,
+	       _theResult___fst_exp__h295526,
+	       _theResult___fst_exp__h296049,
+	       _theResult___fst_exp__h304089,
+	       _theResult___fst_exp__h304128,
+	       _theResult___fst_exp__h304134,
+	       _theResult___fst_exp__h304137,
+	       _theResult___fst_exp__h304685,
+	       _theResult___fst_exp__h304694,
+	       _theResult___fst_exp__h304697,
+	       _theResult___snd_fst_exp__h286868,
+	       _theResult___snd_fst_exp__h304688,
+	       din_inc___2_exp__h304723,
+	       din_inc___2_exp__h304749,
+	       din_inc___2_exp__h304784,
+	       din_inc___2_exp__h304810,
+	       exp__h304706,
+	       iFifoD_OUT_BITS_102_TO_95_MINUS_127__q95,
+	       iFifoD_OUT_BITS_167_TO_160_MINUS_127__q35,
+	       iFifoD_OUT_BITS_37_TO_30_MINUS_127__q62,
+	       out_exp__h278205,
+	       out_exp__h286787,
+	       out_exp__h295971,
+	       out_exp__h304607;
+  wire [6 : 0] IF_IF_7170_MINUS_fpu_madd_fState_S3_first__995_ETC___d2460,
+	       IF_fpu_sqr64_fState_S1_first__216_BIT_57_226_T_ETC___d1342,
+	       x__h85465;
+  wire [5 : 0] IF_IF_0b0_CONCAT_NOT_resWire_wget__410_BITS_67_ETC___d5767,
+	       IF_IF_3074_MINUS_SEXT_iFifo_first__087_BITS_10_ETC___d5055,
+	       IF_IF_3074_MINUS_SEXT_iFifo_first__087_BITS_16_ETC___d3572,
+	       IF_IF_3074_MINUS_SEXT_iFifo_first__087_BITS_37_ETC___d4280,
+	       IF_IF_3970_MINUS_SEXT_resWire_wget__410_BITS_6_ETC___d6278,
+	       IF_IF_fpu_div64_fState_S3_first__86_BITS_120_T_ETC___d880,
+	       IF_IF_fpu_madd_fState_S7_first__651_BIT_128_65_ETC___d2901,
+	       IF_fpu_sqr64_fOperand_S0_first__059_BITS_65_TO_ETC___d1193,
+	       IF_fpu_sqr64_fState_S3_first__375_BIT_58_384_T_ETC___d1630,
+	       IF_iFifo_first__087_BITS_102_TO_95_625_EQ_0_63_ETC___d4757,
+	       IF_iFifo_first__087_BITS_167_TO_160_130_EQ_0_1_ETC___d3271,
+	       IF_iFifo_first__087_BITS_37_TO_30_850_EQ_0_856_ETC___d3982,
+	       IF_resWire_wget__410_BITS_67_TO_57_416_EQ_0_42_ETC___d5982,
+	       b__h11457,
+	       b__h4039,
+	       x__h60732;
+  wire [4 : 0] IF_IF_fpu_div64_fState_S3_first__86_BITS_120_T_ETC___d926,
+	       IF_fpu_div64_fState_S3_first__86_BITS_120_TO_1_ETC___d921,
+	       IF_fpu_madd_fState_S3_first__995_BIT_151_996_T_ETC___d2525,
+	       _0_CONCAT_IF_IF_0b0_CONCAT_NOT_resWire_wget__41_ETC___d6676,
+	       _0_CONCAT_IF_IF_3970_MINUS_SEXT_resWire_wget__4_ETC___d6705,
+	       _0_CONCAT_IF_resWire_wget__410_BITS_67_TO_57_41_ETC___d6688,
+	       fpu_madd_fState_S3_first__995_BITS_86_TO_82_00_ETC___d2501,
+	       fpu_madd_fState_S7_first__651_BITS_137_TO_133__ETC___d2942,
+	       fpu_madd_fState_S8_first__960_BITS_75_TO_71_03_ETC___d3043,
+	       resWire_wget__410_BITS_4_TO_0_658_OR_NOT_resWi_ETC___d6768;
+  wire [2 : 0] IF_fpu_sqr64_fState_S3_first__375_BIT_195_376__ETC___d1671,
+	       NOT_fpu_madd_fState_S3_first__995_BITS_12_TO_0_ETC___d2523;
+  wire [1 : 0] IF_sfdin11484_BIT_4_THEN_2_ELSE_0__q98,
+	       IF_sfdin2327_BIT_5_THEN_2_ELSE_0__q13,
+	       IF_sfdin30943_BIT_53_THEN_2_ELSE_0__q25,
+	       IF_sfdin41369_BIT_4_THEN_2_ELSE_0__q30,
+	       IF_sfdin4744_BIT_6_THEN_2_ELSE_0__q20,
+	       IF_sfdin50423_BIT_4_THEN_2_ELSE_0__q65,
+	       IF_sfdin72846_BIT_4_THEN_2_ELSE_0__q38,
+	       IF_sfdin77680_BIT_33_THEN_2_ELSE_0__q134,
+	       IF_sfdin95446_BIT_33_THEN_2_ELSE_0__q140,
+	       IF_theResult___snd01925_BIT_4_THEN_2_ELSE_0__q94,
+	       IF_theResult___snd04083_BIT_33_THEN_2_ELSE_0__q143,
+	       IF_theResult___snd20237_BIT_4_THEN_2_ELSE_0__q101,
+	       IF_theResult___snd40864_BIT_4_THEN_2_ELSE_0__q61,
+	       IF_theResult___snd59176_BIT_4_THEN_2_ELSE_0__q68,
+	       IF_theResult___snd63287_BIT_4_THEN_2_ELSE_0__q34,
+	       IF_theResult___snd81599_BIT_4_THEN_2_ELSE_0__q41,
+	       IF_theResult___snd86293_BIT_33_THEN_2_ELSE_0__q136,
+	       _theResult___snd_fst__h131051,
+	       _theResult___snd_fst__h141477,
+	       _theResult___snd_fst__h42439,
+	       _theResult___snd_fst__h94856,
+	       _theResult___snd_snd__h131371,
+	       _theResult___snd_snd_snd__h131369,
+	       guardBC__h115666,
+	       guard__h133123,
+	       guard__h155375,
+	       guard__h164624,
+	       guard__h173663,
+	       guard__h194013,
+	       guard__h203262,
+	       guard__h212301,
+	       guard__h232952,
+	       guard__h242201,
+	       guard__h251240,
+	       guard__h269587,
+	       guard__h278294,
+	       guard__h287224,
+	       guard__h296060,
+	       guard__h33946,
+	       guard__h86435,
+	       x__h131406,
+	       x__h141760,
+	       x__h42705,
+	       x__h95138;
+  wire IF_3074_MINUS_0_CONCAT_IF_resWire_wget__410_BI_ETC___d6025,
+       IF_3074_MINUS_0_CONCAT_IF_resWire_wget__410_BI_ETC___d6399,
+       IF_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_ETC___d3317,
+       IF_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_ETC___d4027,
+       IF_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_ETC___d4581,
+       IF_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_ETC___d4802,
+       IF_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_ETC___d5347,
+       IF_IF_fpu_madd_fOperand_S0_first__803_BIT_195__ETC___d1922,
+       IF_NOT_fpu_madd_fState_S3_first__995_BITS_12_T_ETC___d2503,
+       IF_NOT_fpu_madd_fState_S3_first__995_BITS_12_T_ETC___d2506,
+       IF_SEXT_iFifo_first__087_BITS_102_TO_95_625_MI_ETC___d5146,
+       IF_SEXT_iFifo_first__087_BITS_102_TO_95_625_MI_ETC___d5374,
+       IF_SEXT_iFifo_first__087_BITS_167_TO_160_130_M_ETC___d3663,
+       IF_SEXT_iFifo_first__087_BITS_37_TO_30_850_MIN_ETC___d4371,
+       IF_SEXT_iFifo_first__087_BITS_37_TO_30_850_MIN_ETC___d4608,
+       IF_SEXT_resWire_wget__410_BITS_67_TO_57_416_MI_ETC___d6375,
+       IF_SEXT_resWire_wget__410_BITS_67_TO_57_416_MI_ETC___d6420,
+       IF_SEXT_resWire_wget__410_BITS_67_TO_57_416_MI_ETC___d6734,
+       IF_SEXT_resWire_wget__410_BITS_67_TO_57_416_MI_ETC___d6747,
+       IF_SEXT_resWire_wget__410_BITS_67_TO_57_416_MI_ETC___d6760,
+       IF_fpu_div64_fOperands_S0_first__06_BITS_129_T_ETC___d353,
+       IF_fpu_div64_fOperands_S0_first__06_BITS_129_T_ETC___d355,
+       IF_fpu_div64_fOperands_S0_first__06_BITS_129_T_ETC___d499,
+       IF_fpu_div64_fOperands_S0_first__06_BITS_65_TO_ETC___d422,
+       IF_fpu_div64_fState_S3_first__86_BITS_120_TO_1_ETC___d597,
+       IF_fpu_madd_fOperand_S0_first__803_BIT_195_804_ETC___d1861,
+       IF_fpu_madd_fOperand_S0_first__803_BIT_195_804_ETC___d1927,
+       IF_fpu_madd_fOperand_S0_first__803_BIT_195_804_ETC___d1947,
+       IF_fpu_madd_fState_S3_first__995_BITS_12_TO_0__ETC___d2516,
+       IF_fpu_madd_fState_S3_first__995_BITS_12_TO_0__ETC___d2521,
+       IF_fpu_madd_fState_S8_first__960_BIT_67_963_AN_ETC___d3060,
+       IF_iFifo_first__087_BITS_102_TO_95_625_EQ_0_63_ETC___d5148,
+       IF_iFifo_first__087_BITS_102_TO_95_625_EQ_0_63_ETC___d5376,
+       IF_iFifo_first__087_BITS_167_TO_160_130_EQ_0_1_ETC___d3665,
+       IF_iFifo_first__087_BITS_37_TO_30_850_EQ_0_856_ETC___d4373,
+       IF_iFifo_first__087_BITS_37_TO_30_850_EQ_0_856_ETC___d4610,
+       IF_isNegateFifo_first__409_THEN_IF_resWire_wge_ETC___d6424,
+       IF_resWire_wget__410_BITS_67_TO_57_416_EQ_0_42_ETC___d6377,
+       IF_resWire_wget__410_BITS_67_TO_57_416_EQ_0_42_ETC___d6422,
+       IF_resWire_wget__410_BITS_67_TO_57_416_EQ_0_42_ETC___d6709,
+       IF_resWire_wget__410_BITS_67_TO_57_416_EQ_0_42_ETC___d6720,
+       IF_resWire_wget__410_BITS_67_TO_57_416_EQ_0_42_ETC___d6736,
+       IF_resWire_wget__410_BITS_67_TO_57_416_EQ_0_42_ETC___d6749,
+       IF_resWire_wget__410_BITS_67_TO_57_416_EQ_0_42_ETC___d6762,
+       IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d85,
+       IF_rg_index_1_4_ULE_58_8_THEN_NOT_rg_b_9_EQ_0__ETC___d56,
+       IF_rg_index_1_4_ULE_58_8_THEN_rg_b_9_EQ_0_0_OR_ETC___d44,
+       NOT_3074_MINUS_0_CONCAT_IF_resWire_wget__410_B_ETC___d6728,
+       NOT_3074_MINUS_0_CONCAT_IF_resWire_wget__410_B_ETC___d6756,
+       NOT_IF_fpu_madd_fOperand_S0_first__803_BIT_195_ETC___d1946,
+       NOT_fpu_div64_fOperands_S0_first__06_BITS_129__ETC___d400,
+       NOT_fpu_div64_fOperands_S0_first__06_BITS_65_T_ETC___d481,
+       NOT_fpu_div64_fOperands_S0_first__06_BITS_65_T_ETC___d488,
+       NOT_fpu_madd_fOperand_S0_first__803_BITS_129_T_ETC___d1923,
+       NOT_fpu_madd_fOperand_S0_first__803_BIT_130_85_ETC___d1854,
+       NOT_fpu_madd_fState_S3_first__995_BITS_12_TO_0_ETC___d2510,
+       NOT_fpu_madd_fState_S4_first__547_BIT_130_553__ETC___d2584,
+       NOT_iFifo_first__087_BIT_158_142_202_AND_NOT_i_ETC___d3244,
+       NOT_iFifo_first__087_BIT_28_862_913_AND_NOT_iF_ETC___d3955,
+       NOT_iFifo_first__087_BIT_93_637_688_AND_NOT_iF_ETC___d4730,
+       NOT_resWire_wget__410_BIT_56_426_825_AND_NOT_r_ETC___d5927,
+       SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC___d4807,
+       SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC___d4808,
+       SEXT_iFifo_first__087_BITS_167_TO_160_130_MINU_ETC___d3324,
+       SEXT_iFifo_first__087_BITS_167_TO_160_130_MINU_ETC___d3325,
+       SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC___d4032,
+       SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC___d4033,
+       SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC___d6032,
+       SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC___d6033,
+       _0_CONCAT_IF_IF_0b0_CONCAT_NOT_resWire_wget__41_ETC___d5769,
+       _0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__08_ETC___d3574,
+       _0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__08_ETC___d4282,
+       _0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__08_ETC___d5057,
+       _0_CONCAT_IF_IF_3970_MINUS_SEXT_resWire_wget__4_ETC___d6280,
+       _0_CONCAT_IF_IF_7170_MINUS_fpu_madd_fState_S3_f_ETC___d2463,
+       _0_CONCAT_IF_IF_fpu_div64_fState_S3_first__86_B_ETC___d883,
+       _0_CONCAT_IF_IF_fpu_madd_fState_S7_first__651_B_ETC___d2904,
+       _0_CONCAT_IF_fpu_sqr64_fState_S3_first__375_BIT_ETC___d1633,
+       _0_CONCAT_IF_iFifo_first__087_BITS_102_TO_95_62_ETC___d4759,
+       _0_CONCAT_IF_iFifo_first__087_BITS_102_TO_95_62_ETC___d5107,
+       _0_CONCAT_IF_iFifo_first__087_BITS_167_TO_160_1_ETC___d3273,
+       _0_CONCAT_IF_iFifo_first__087_BITS_167_TO_160_1_ETC___d3624,
+       _0_CONCAT_IF_iFifo_first__087_BITS_37_TO_30_850_ETC___d3984,
+       _0_CONCAT_IF_iFifo_first__087_BITS_37_TO_30_850_ETC___d4332,
+       _0_CONCAT_IF_resWire_wget__410_BITS_67_TO_57_41_ETC___d5984,
+       _0_CONCAT_IF_resWire_wget__410_BITS_67_TO_57_41_ETC___d6333,
+       _3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d5532,
+       _3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d5533,
+       _3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d6691,
+       _3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d6716,
+       _3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d6743,
+       _3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_15_ETC___d3189,
+       _3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_15_ETC___d3190,
+       _3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_29_ETC___d3909,
+       _3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_29_ETC___d3910,
+       _3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_94_ETC___d4684,
+       _3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_94_ETC___d4685,
+       _7170_MINUS_fpu_madd_fState_S3_first__995_BITS__ETC___d2008,
+       fpu_div64_fOperands_S0_first__06_BITS_129_TO_1_ETC___d363,
+       fpu_div64_fOperands_S0_first__06_BITS_129_TO_1_ETC___d401,
+       fpu_div64_fOperands_S0_first__06_BITS_129_TO_1_ETC___d436,
+       fpu_div64_fOperands_S0_first__06_BITS_129_TO_1_ETC___d498,
+       fpu_div64_fOperands_S0_first__06_BITS_65_TO_55_ETC___d359,
+       fpu_div64_fOperands_S0_first__06_BIT_130_03_EQ_ETC___d405,
+       fpu_madd_fOperand_S0_first__803_BITS_129_TO_11_ETC___d1857,
+       fpu_madd_fOperand_S0_first__803_BITS_129_TO_11_ETC___d1926,
+       fpu_madd_fOperand_S0_first__803_BIT_195_804_AN_ETC___d1855,
+       fpu_madd_fState_S3_first__995_BITS_12_TO_0_001_ETC___d2002,
+       fpu_madd_fState_S3_first__995_BITS_12_TO_0_001_ETC___d2004,
+       guard__h165222,
+       guard__h203860,
+       guard__h242799,
+       guard__h287822,
+       rg_index_1_4_PLUS_1_6_ULE_58___d37,
+       rg_index_1_4_ULE_58___d38,
+       rg_index_PLUS_1_ULE_57___d6,
+       rg_index_ULE_57___d7,
+       rg_s_1_ULT_rg_r_1_0_PLUS_rg_b_9_2___d63,
+       sfdlsb__h116825,
+       sfdlsb__h32643,
+       value_BIT_52___h53270;
 
   // action method server_core_request_put
   assign RDY_server_core_request_put = iFifo$FULL_N ;
@@ -1074,6 +1514,72 @@ module mkFPU(CLK,
   assign RDY_server_reset_response_get = resetRspsF$EMPTY_N ;
   assign CAN_FIRE_server_reset_response_get = resetRspsF$EMPTY_N ;
   assign WILL_FIRE_server_reset_response_get = EN_server_reset_response_get ;
+
+  // submodule fpu_div64_fOperands_S0
+  FIFOL1 #(.width(32'd131)) fpu_div64_fOperands_S0(.RST(RST_N),
+						   .CLK(CLK),
+						   .D_IN(fpu_div64_fOperands_S0$D_IN),
+						   .ENQ(fpu_div64_fOperands_S0$ENQ),
+						   .DEQ(fpu_div64_fOperands_S0$DEQ),
+						   .CLR(fpu_div64_fOperands_S0$CLR),
+						   .D_OUT(fpu_div64_fOperands_S0$D_OUT),
+						   .FULL_N(fpu_div64_fOperands_S0$FULL_N),
+						   .EMPTY_N(fpu_div64_fOperands_S0$EMPTY_N));
+
+  // submodule fpu_div64_fResult_S5
+  FIFOL1 #(.width(32'd69)) fpu_div64_fResult_S5(.RST(RST_N),
+						.CLK(CLK),
+						.D_IN(fpu_div64_fResult_S5$D_IN),
+						.ENQ(fpu_div64_fResult_S5$ENQ),
+						.DEQ(fpu_div64_fResult_S5$DEQ),
+						.CLR(fpu_div64_fResult_S5$CLR),
+						.D_OUT(fpu_div64_fResult_S5$D_OUT),
+						.FULL_N(fpu_div64_fResult_S5$FULL_N),
+						.EMPTY_N(fpu_div64_fResult_S5$EMPTY_N));
+
+  // submodule fpu_div64_fState_S1
+  FIFOL1 #(.width(32'd319)) fpu_div64_fState_S1(.RST(RST_N),
+						.CLK(CLK),
+						.D_IN(fpu_div64_fState_S1$D_IN),
+						.ENQ(fpu_div64_fState_S1$ENQ),
+						.DEQ(fpu_div64_fState_S1$DEQ),
+						.CLR(fpu_div64_fState_S1$CLR),
+						.D_OUT(fpu_div64_fState_S1$D_OUT),
+						.FULL_N(fpu_div64_fState_S1$FULL_N),
+						.EMPTY_N(fpu_div64_fState_S1$EMPTY_N));
+
+  // submodule fpu_div64_fState_S2
+  FIFOL1 #(.width(32'd148)) fpu_div64_fState_S2(.RST(RST_N),
+						.CLK(CLK),
+						.D_IN(fpu_div64_fState_S2$D_IN),
+						.ENQ(fpu_div64_fState_S2$ENQ),
+						.DEQ(fpu_div64_fState_S2$DEQ),
+						.CLR(fpu_div64_fState_S2$CLR),
+						.D_OUT(fpu_div64_fState_S2$D_OUT),
+						.FULL_N(fpu_div64_fState_S2$FULL_N),
+						.EMPTY_N(fpu_div64_fState_S2$EMPTY_N));
+
+  // submodule fpu_div64_fState_S3
+  FIFOL1 #(.width(32'd195)) fpu_div64_fState_S3(.RST(RST_N),
+						.CLK(CLK),
+						.D_IN(fpu_div64_fState_S3$D_IN),
+						.ENQ(fpu_div64_fState_S3$ENQ),
+						.DEQ(fpu_div64_fState_S3$DEQ),
+						.CLR(fpu_div64_fState_S3$CLR),
+						.D_OUT(fpu_div64_fState_S3$D_OUT),
+						.FULL_N(fpu_div64_fState_S3$FULL_N),
+						.EMPTY_N(fpu_div64_fState_S3$EMPTY_N));
+
+  // submodule fpu_div64_fState_S4
+  FIFOL1 #(.width(32'd139)) fpu_div64_fState_S4(.RST(RST_N),
+						.CLK(CLK),
+						.D_IN(fpu_div64_fState_S4$D_IN),
+						.ENQ(fpu_div64_fState_S4$ENQ),
+						.DEQ(fpu_div64_fState_S4$DEQ),
+						.CLR(fpu_div64_fState_S4$CLR),
+						.D_OUT(fpu_div64_fState_S4$D_OUT),
+						.FULL_N(fpu_div64_fState_S4$FULL_N),
+						.EMPTY_N(fpu_div64_fState_S4$EMPTY_N));
 
   // submodule fpu_madd_fOperand_S0
   FIFOL1 #(.width(32'd196)) fpu_madd_fOperand_S0(.RST(RST_N),
@@ -1207,6 +1713,72 @@ module mkFPU(CLK,
 					       .FULL_N(fpu_madd_fState_S8$FULL_N),
 					       .EMPTY_N(fpu_madd_fState_S8$EMPTY_N));
 
+  // submodule fpu_sqr64_fOperand_S0
+  FIFOL1 #(.width(32'd67)) fpu_sqr64_fOperand_S0(.RST(RST_N),
+						 .CLK(CLK),
+						 .D_IN(fpu_sqr64_fOperand_S0$D_IN),
+						 .ENQ(fpu_sqr64_fOperand_S0$ENQ),
+						 .DEQ(fpu_sqr64_fOperand_S0$DEQ),
+						 .CLR(fpu_sqr64_fOperand_S0$CLR),
+						 .D_OUT(fpu_sqr64_fOperand_S0$D_OUT),
+						 .FULL_N(fpu_sqr64_fOperand_S0$FULL_N),
+						 .EMPTY_N(fpu_sqr64_fOperand_S0$EMPTY_N));
+
+  // submodule fpu_sqr64_fResult_S5
+  FIFOL1 #(.width(32'd69)) fpu_sqr64_fResult_S5(.RST(RST_N),
+						.CLK(CLK),
+						.D_IN(fpu_sqr64_fResult_S5$D_IN),
+						.ENQ(fpu_sqr64_fResult_S5$ENQ),
+						.DEQ(fpu_sqr64_fResult_S5$DEQ),
+						.CLR(fpu_sqr64_fResult_S5$CLR),
+						.D_OUT(fpu_sqr64_fResult_S5$D_OUT),
+						.FULL_N(fpu_sqr64_fResult_S5$FULL_N),
+						.EMPTY_N(fpu_sqr64_fResult_S5$EMPTY_N));
+
+  // submodule fpu_sqr64_fState_S1
+  FIFOL1 #(.width(32'd195)) fpu_sqr64_fState_S1(.RST(RST_N),
+						.CLK(CLK),
+						.D_IN(fpu_sqr64_fState_S1$D_IN),
+						.ENQ(fpu_sqr64_fState_S1$ENQ),
+						.DEQ(fpu_sqr64_fState_S1$DEQ),
+						.CLR(fpu_sqr64_fState_S1$CLR),
+						.D_OUT(fpu_sqr64_fState_S1$D_OUT),
+						.FULL_N(fpu_sqr64_fState_S1$FULL_N),
+						.EMPTY_N(fpu_sqr64_fState_S1$EMPTY_N));
+
+  // submodule fpu_sqr64_fState_S2
+  FIFOL1 #(.width(32'd137)) fpu_sqr64_fState_S2(.RST(RST_N),
+						.CLK(CLK),
+						.D_IN(fpu_sqr64_fState_S2$D_IN),
+						.ENQ(fpu_sqr64_fState_S2$ENQ),
+						.DEQ(fpu_sqr64_fState_S2$DEQ),
+						.CLR(fpu_sqr64_fState_S2$CLR),
+						.D_OUT(fpu_sqr64_fState_S2$D_OUT),
+						.FULL_N(fpu_sqr64_fState_S2$FULL_N),
+						.EMPTY_N(fpu_sqr64_fState_S2$EMPTY_N));
+
+  // submodule fpu_sqr64_fState_S3
+  FIFOL1 #(.width(32'd196)) fpu_sqr64_fState_S3(.RST(RST_N),
+						.CLK(CLK),
+						.D_IN(fpu_sqr64_fState_S3$D_IN),
+						.ENQ(fpu_sqr64_fState_S3$ENQ),
+						.DEQ(fpu_sqr64_fState_S3$DEQ),
+						.CLR(fpu_sqr64_fState_S3$CLR),
+						.D_OUT(fpu_sqr64_fState_S3$D_OUT),
+						.FULL_N(fpu_sqr64_fState_S3$FULL_N),
+						.EMPTY_N(fpu_sqr64_fState_S3$EMPTY_N));
+
+  // submodule fpu_sqr64_fState_S4
+  FIFOL1 #(.width(32'd139)) fpu_sqr64_fState_S4(.RST(RST_N),
+						.CLK(CLK),
+						.D_IN(fpu_sqr64_fState_S4$D_IN),
+						.ENQ(fpu_sqr64_fState_S4$ENQ),
+						.DEQ(fpu_sqr64_fState_S4$DEQ),
+						.CLR(fpu_sqr64_fState_S4$CLR),
+						.D_OUT(fpu_sqr64_fState_S4$D_OUT),
+						.FULL_N(fpu_sqr64_fState_S4$FULL_N),
+						.EMPTY_N(fpu_sqr64_fState_S4$EMPTY_N));
+
   // submodule iFifo
   FIFO2 #(.width(32'd202), .guarded(32'd1)) iFifo(.RST(RST_N),
 						  .CLK(CLK),
@@ -1280,17 +1852,97 @@ module mkFPU(CLK,
 						  .FULL_N(rmdFifo$FULL_N),
 						  .EMPTY_N(rmdFifo$EMPTY_N));
 
+  // rule RL_getResDiv
+  assign CAN_FIRE_RL_getResDiv = fpu_div64_fResult_S5$EMPTY_N ;
+  assign WILL_FIRE_RL_getResDiv = fpu_div64_fResult_S5$EMPTY_N ;
+
+  // rule RL_getResSqr
+  assign CAN_FIRE_RL_getResSqr = fpu_sqr64_fResult_S5$EMPTY_N ;
+  assign WILL_FIRE_RL_getResSqr = fpu_sqr64_fResult_S5$EMPTY_N ;
+
   // rule RL_getResMAdd
   assign CAN_FIRE_RL_getResMAdd = fpu_madd_fResult_S9$EMPTY_N ;
   assign WILL_FIRE_RL_getResMAdd = fpu_madd_fResult_S9$EMPTY_N ;
+
+  // rule __me_check_22
+  assign CAN_FIRE___me_check_22 = 1'b1 ;
+  assign WILL_FIRE___me_check_22 = 1'b1 ;
+
+  // rule __me_check_23
+  assign CAN_FIRE___me_check_23 = 1'b1 ;
+  assign WILL_FIRE___me_check_23 = 1'b1 ;
 
   // rule RL_passResult
   assign CAN_FIRE_RL_passResult =
 	     isDoubleFifo$EMPTY_N && isNegateFifo$EMPTY_N &&
 	     rmdFifo$EMPTY_N &&
 	     oFifo$FULL_N &&
-	     fpu_madd_fResult_S9$EMPTY_N ;
+	     resWire$whas ;
   assign WILL_FIRE_RL_passResult = CAN_FIRE_RL_passResult ;
+
+  // rule RL_fpu_div64_s5_stage
+  assign CAN_FIRE_RL_fpu_div64_s5_stage =
+	     fpu_div64_fState_S4$EMPTY_N && fpu_div64_fResult_S5$FULL_N ;
+  assign WILL_FIRE_RL_fpu_div64_s5_stage = CAN_FIRE_RL_fpu_div64_s5_stage ;
+
+  // rule RL_fpu_div64_s4_stage
+  assign CAN_FIRE_RL_fpu_div64_s4_stage =
+	     fpu_div64_fState_S3$EMPTY_N && fpu_div64_fState_S4$FULL_N ;
+  assign WILL_FIRE_RL_fpu_div64_s4_stage = CAN_FIRE_RL_fpu_div64_s4_stage ;
+
+  // rule RL_fpu_div64_s3_stage
+  assign CAN_FIRE_RL_fpu_div64_s3_stage =
+	     fpu_div64_fState_S2$EMPTY_N && fpu_div64_fState_S3$FULL_N &&
+	     (fpu_div64_fState_S2$D_OUT[147] || crg_done) ;
+  assign WILL_FIRE_RL_fpu_div64_s3_stage = CAN_FIRE_RL_fpu_div64_s3_stage ;
+
+  // rule RL_work
+  assign CAN_FIRE_RL_work = rg_busy ;
+  assign WILL_FIRE_RL_work = rg_busy ;
+
+  // rule RL_fpu_div64_s2_stage
+  assign CAN_FIRE_RL_fpu_div64_s2_stage =
+	     fpu_div64_fState_S1$EMPTY_N && fpu_div64_fState_S2$FULL_N &&
+	     (fpu_div64_fState_S1$D_OUT[318] || !rg_busy) ;
+  assign WILL_FIRE_RL_fpu_div64_s2_stage =
+	     CAN_FIRE_RL_fpu_div64_s2_stage && !rg_busy ;
+
+  // rule RL_fpu_div64_s1_stage
+  assign CAN_FIRE_RL_fpu_div64_s1_stage =
+	     fpu_div64_fOperands_S0$EMPTY_N && fpu_div64_fState_S1$FULL_N ;
+  assign WILL_FIRE_RL_fpu_div64_s1_stage = CAN_FIRE_RL_fpu_div64_s1_stage ;
+
+  // rule RL_fpu_sqr64_s5_stage
+  assign CAN_FIRE_RL_fpu_sqr64_s5_stage =
+	     fpu_sqr64_fState_S4$EMPTY_N && fpu_sqr64_fResult_S5$FULL_N ;
+  assign WILL_FIRE_RL_fpu_sqr64_s5_stage = CAN_FIRE_RL_fpu_sqr64_s5_stage ;
+
+  // rule RL_fpu_sqr64_s4_stage
+  assign CAN_FIRE_RL_fpu_sqr64_s4_stage =
+	     fpu_sqr64_fState_S3$EMPTY_N && fpu_sqr64_fState_S4$FULL_N ;
+  assign WILL_FIRE_RL_fpu_sqr64_s4_stage = CAN_FIRE_RL_fpu_sqr64_s4_stage ;
+
+  // rule RL_fpu_sqr64_s3_stage
+  assign CAN_FIRE_RL_fpu_sqr64_s3_stage =
+	     fpu_sqr64_fState_S2$EMPTY_N && fpu_sqr64_fState_S3$FULL_N &&
+	     (fpu_sqr64_fState_S2$D_OUT[136] || crg_done_1) ;
+  assign WILL_FIRE_RL_fpu_sqr64_s3_stage = CAN_FIRE_RL_fpu_sqr64_s3_stage ;
+
+  // rule RL_work_1
+  assign CAN_FIRE_RL_work_1 = rg_busy_1 ;
+  assign WILL_FIRE_RL_work_1 = rg_busy_1 ;
+
+  // rule RL_fpu_sqr64_s2_stage
+  assign CAN_FIRE_RL_fpu_sqr64_s2_stage =
+	     fpu_sqr64_fState_S1$EMPTY_N && fpu_sqr64_fState_S2$FULL_N &&
+	     (fpu_sqr64_fState_S1$D_OUT[194] || !rg_busy_1) ;
+  assign WILL_FIRE_RL_fpu_sqr64_s2_stage =
+	     CAN_FIRE_RL_fpu_sqr64_s2_stage && !rg_busy_1 ;
+
+  // rule RL_fpu_sqr64_s1_stage
+  assign CAN_FIRE_RL_fpu_sqr64_s1_stage =
+	     fpu_sqr64_fOperand_S0$EMPTY_N && fpu_sqr64_fState_S1$FULL_N ;
+  assign WILL_FIRE_RL_fpu_sqr64_s1_stage = CAN_FIRE_RL_fpu_sqr64_s1_stage ;
 
   // rule RL_fpu_madd_s9_stage
   assign CAN_FIRE_RL_fpu_madd_s9_stage =
@@ -1344,19 +1996,373 @@ module mkFPU(CLK,
   // rule RL_start_op
   assign CAN_FIRE_RL_start_op =
 	     iFifo$EMPTY_N && isDoubleFifo$FULL_N && isNegateFifo$FULL_N &&
-	     rmdFifo_i_notFull__287_AND_IF_iFifo_first__288_ETC___d1306 ;
+	     rmdFifo$FULL_N &&
+	     IF_iFifo_first__087_BITS_3_TO_0_088_EQ_0_089_O_ETC___d3110 ;
   assign WILL_FIRE_RL_start_op = CAN_FIRE_RL_start_op ;
 
   // rule RL_rl_reset
   assign CAN_FIRE_RL_rl_reset = resetReqsF$EMPTY_N && resetRspsF$FULL_N ;
   assign WILL_FIRE_RL_rl_reset = CAN_FIRE_RL_rl_reset ;
 
+  // inputs to muxes for submodule ports
+  assign MUX_crg_done$port1__write_1__SEL_1 = rg_busy && rg_index == 6'd28 ;
+  assign MUX_crg_done_1$port1__write_1__SEL_1 =
+	     rg_busy_1 && rg_index_1 == 6'd29 ;
+  assign MUX_crg_done_1$port1__write_1__SEL_2 =
+	     WILL_FIRE_RL_fpu_sqr64_s2_stage &&
+	     !fpu_sqr64_fState_S1$D_OUT[194] ;
+  assign MUX_rg_index$write_1__SEL_1 =
+	     WILL_FIRE_RL_fpu_div64_s2_stage &&
+	     !fpu_div64_fState_S1$D_OUT[318] ;
+  assign MUX_rg_b$write_1__VAL_1 =
+	     fpu_sqr64_fState_S1$D_OUT[57] ?
+	       116'h40000000000000000000000000000 :
+	       b___1__h77160 ;
+  assign MUX_rg_b$write_1__VAL_2 =
+	     rg_index_1_4_PLUS_1_6_ULE_58___d37 ?
+	       _theResult___fst__h1476 :
+	       IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d49 ;
+  assign MUX_rg_d$write_1__VAL_1 =
+	     { 1'd0, fpu_div64_fState_S1$D_OUT[67:11] } ;
+  assign MUX_rg_index$write_1__VAL_2 = rg_index + 6'd1 ;
+  assign MUX_rg_index_1$write_1__VAL_2 = rg_index_1 + 6'd1 ;
+  assign MUX_rg_q$write_1__VAL_2 =
+	     rg_index_PLUS_1_ULE_57___d6 ?
+	       { IF_rg_index_ULE_57_THEN_rg_q_BITS_56_TO_0_CONC_ETC___d14[56:0],
+		 !IF_rg_index_ULE_57_THEN_IF_rg_r_0_BIT_115_1_TH_ETC___d22[115] } :
+	       IF_rg_index_ULE_57_THEN_rg_q_BITS_56_TO_0_CONC_ETC___d14 ;
+  assign MUX_rg_r$write_1__VAL_1 =
+	     { 2'd0, fpu_div64_fState_S1$D_OUT[181:68] } ;
+  assign MUX_rg_r$write_1__VAL_2 =
+	     rg_index_PLUS_1_ULE_57___d6 ?
+	       (IF_rg_index_ULE_57_THEN_IF_rg_r_0_BIT_115_1_TH_ETC___d22[115] ?
+		  { IF_rg_index_ULE_57_THEN_IF_rg_r_0_BIT_115_1_TH_ETC___d22[114:0],
+		    1'd0 } +
+		  b__h32583 :
+		  { IF_rg_index_ULE_57_THEN_IF_rg_r_0_BIT_115_1_TH_ETC___d22[114:0],
+		    1'd0 } -
+		  b__h32583) :
+	       IF_rg_index_ULE_57_THEN_IF_rg_r_0_BIT_115_1_TH_ETC___d22 ;
+  assign MUX_rg_r_1$write_1__VAL_2 =
+	     rg_index_1_4_PLUS_1_6_ULE_58___d37 ?
+	       _theResult___snd_snd_snd__h1481 :
+	       IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d69 ;
+  assign MUX_rg_res$write_1__VAL_2 =
+	     { rg_index_1_4_PLUS_1_6_ULE_58___d37 ?
+		 IF_rg_index_1_4_ULE_58_8_THEN_rg_b_9_EQ_0_0_OR_ETC___d44 ||
+		 IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d49 ==
+		 116'd0 :
+		 IF_rg_index_1_4_ULE_58_8_THEN_rg_b_9_EQ_0_0_OR_ETC___d44,
+	       rg_index_1_4_PLUS_1_6_ULE_58___d37 ?
+		 IF_IF_rg_index_1_4_ULE_58_8_THEN_NOT_rg_b_9_EQ_ETC___d75 :
+		 IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d73 } ;
+  assign MUX_rg_s$write_1__VAL_1 =
+	     { fpu_sqr64_fState_S1$D_OUT[57:0], 58'd0 } ;
+  assign MUX_rg_s$write_1__VAL_2 =
+	     rg_index_1_4_PLUS_1_6_ULE_58___d37 ?
+	       _theResult___snd_fst__h1478 :
+	       IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d83 ;
+
+  // inlined wires
+  always@(fpu_div64_fResult_S5$EMPTY_N or
+	  fpu_div64_fResult_S5$D_OUT or
+	  fpu_sqr64_fResult_S5$EMPTY_N or
+	  fpu_sqr64_fResult_S5$D_OUT or
+	  fpu_madd_fResult_S9$EMPTY_N or fpu_madd_fResult_S9$D_OUT)
+  begin
+    case (1'b1) // synopsys parallel_case
+      fpu_div64_fResult_S5$EMPTY_N: resWire$wget = fpu_div64_fResult_S5$D_OUT;
+      fpu_sqr64_fResult_S5$EMPTY_N: resWire$wget = fpu_sqr64_fResult_S5$D_OUT;
+      fpu_madd_fResult_S9$EMPTY_N: resWire$wget = fpu_madd_fResult_S9$D_OUT;
+      default: resWire$wget = 69'h0AAAAAAAAAAAAAAAAA /* unspecified value */ ;
+    endcase
+  end
+  assign resWire$whas =
+	     fpu_div64_fResult_S5$EMPTY_N || fpu_sqr64_fResult_S5$EMPTY_N ||
+	     fpu_madd_fResult_S9$EMPTY_N ;
+  assign crg_done$EN_port0__write =
+	     WILL_FIRE_RL_fpu_div64_s3_stage &&
+	     !fpu_div64_fState_S2$D_OUT[147] ;
+  assign crg_done$port1__read = !crg_done$EN_port0__write && crg_done ;
+  assign crg_done$EN_port1__write =
+	     rg_busy && rg_index == 6'd28 ||
+	     WILL_FIRE_RL_fpu_div64_s2_stage &&
+	     !fpu_div64_fState_S1$D_OUT[318] ;
+  assign crg_done$port2__read =
+	     crg_done$EN_port1__write ?
+	       MUX_crg_done$port1__write_1__SEL_1 :
+	       crg_done$port1__read ;
+  assign crg_done_1$EN_port0__write =
+	     WILL_FIRE_RL_fpu_sqr64_s3_stage &&
+	     !fpu_sqr64_fState_S2$D_OUT[136] ;
+  assign crg_done_1$port1__read = !crg_done_1$EN_port0__write && crg_done_1 ;
+  assign crg_done_1$EN_port1__write =
+	     rg_busy_1 && rg_index_1 == 6'd29 ||
+	     WILL_FIRE_RL_fpu_sqr64_s2_stage &&
+	     !fpu_sqr64_fState_S1$D_OUT[194] ;
+  assign crg_done_1$port2__read =
+	     crg_done_1$EN_port1__write ?
+	       MUX_crg_done_1$port1__write_1__SEL_1 :
+	       crg_done_1$port1__read ;
+
+  // register crg_done
+  assign crg_done$D_IN = crg_done$port2__read ;
+  assign crg_done$EN = 1'b1 ;
+
+  // register crg_done_1
+  assign crg_done_1$D_IN = crg_done_1$port2__read ;
+  assign crg_done_1$EN = 1'b1 ;
+
+  // register rg_b
+  assign rg_b$D_IN =
+	     MUX_crg_done_1$port1__write_1__SEL_2 ?
+	       MUX_rg_b$write_1__VAL_1 :
+	       MUX_rg_b$write_1__VAL_2 ;
+  assign rg_b$EN =
+	     WILL_FIRE_RL_fpu_sqr64_s2_stage &&
+	     !fpu_sqr64_fState_S1$D_OUT[194] ||
+	     rg_busy_1 ;
+
+  // register rg_busy
+  assign rg_busy$D_IN = !MUX_crg_done$port1__write_1__SEL_1 ;
+  assign rg_busy$EN =
+	     rg_busy && rg_index == 6'd28 ||
+	     WILL_FIRE_RL_fpu_div64_s2_stage &&
+	     !fpu_div64_fState_S1$D_OUT[318] ;
+
+  // register rg_busy_1
+  assign rg_busy_1$D_IN = !MUX_crg_done_1$port1__write_1__SEL_1 ;
+  assign rg_busy_1$EN =
+	     rg_busy_1 && rg_index_1 == 6'd29 ||
+	     WILL_FIRE_RL_fpu_sqr64_s2_stage &&
+	     !fpu_sqr64_fState_S1$D_OUT[194] ;
+
+  // register rg_d
+  assign rg_d$D_IN =
+	     MUX_rg_index$write_1__SEL_1 ? MUX_rg_d$write_1__VAL_1 : rg_d ;
+  assign rg_d$EN =
+	     WILL_FIRE_RL_fpu_div64_s2_stage &&
+	     !fpu_div64_fState_S1$D_OUT[318] ||
+	     rg_busy ;
+
+  // register rg_index
+  assign rg_index$D_IN =
+	     MUX_rg_index$write_1__SEL_1 ?
+	       6'd0 :
+	       MUX_rg_index$write_1__VAL_2 ;
+  assign rg_index$EN =
+	     WILL_FIRE_RL_fpu_div64_s2_stage &&
+	     !fpu_div64_fState_S1$D_OUT[318] ||
+	     rg_busy ;
+
+  // register rg_index_1
+  assign rg_index_1$D_IN =
+	     MUX_crg_done_1$port1__write_1__SEL_2 ?
+	       6'd0 :
+	       MUX_rg_index_1$write_1__VAL_2 ;
+  assign rg_index_1$EN =
+	     WILL_FIRE_RL_fpu_sqr64_s2_stage &&
+	     !fpu_sqr64_fState_S1$D_OUT[194] ||
+	     rg_busy_1 ;
+
+  // register rg_q
+  assign rg_q$D_IN =
+	     MUX_rg_index$write_1__SEL_1 ? 58'd0 : MUX_rg_q$write_1__VAL_2 ;
+  assign rg_q$EN =
+	     WILL_FIRE_RL_fpu_div64_s2_stage &&
+	     !fpu_div64_fState_S1$D_OUT[318] ||
+	     rg_busy ;
+
+  // register rg_r
+  assign rg_r$D_IN =
+	     MUX_rg_index$write_1__SEL_1 ?
+	       MUX_rg_r$write_1__VAL_1 :
+	       MUX_rg_r$write_1__VAL_2 ;
+  assign rg_r$EN =
+	     WILL_FIRE_RL_fpu_div64_s2_stage &&
+	     !fpu_div64_fState_S1$D_OUT[318] ||
+	     rg_busy ;
+
+  // register rg_r_1
+  assign rg_r_1$D_IN =
+	     MUX_crg_done_1$port1__write_1__SEL_2 ?
+	       116'd0 :
+	       MUX_rg_r_1$write_1__VAL_2 ;
+  assign rg_r_1$EN =
+	     WILL_FIRE_RL_fpu_sqr64_s2_stage &&
+	     !fpu_sqr64_fState_S1$D_OUT[194] ||
+	     rg_busy_1 ;
+
+  // register rg_res
+  assign rg_res$D_IN =
+	     MUX_crg_done_1$port1__write_1__SEL_2 ?
+	       117'h0AAAAAAAAAAAAAAAAAAAAAAAAAAAAA :
+	       MUX_rg_res$write_1__VAL_2 ;
+  assign rg_res$EN =
+	     WILL_FIRE_RL_fpu_sqr64_s2_stage &&
+	     !fpu_sqr64_fState_S1$D_OUT[194] ||
+	     rg_busy_1 ;
+
+  // register rg_s
+  assign rg_s$D_IN =
+	     MUX_crg_done_1$port1__write_1__SEL_2 ?
+	       MUX_rg_s$write_1__VAL_1 :
+	       MUX_rg_s$write_1__VAL_2 ;
+  assign rg_s$EN =
+	     WILL_FIRE_RL_fpu_sqr64_s2_stage &&
+	     !fpu_sqr64_fState_S1$D_OUT[194] ||
+	     rg_busy_1 ;
+
+  // submodule fpu_div64_fOperands_S0
+  assign fpu_div64_fOperands_S0$D_IN =
+	     { IF_iFifo_first__087_BIT_201_115_THEN_IF_iFifo__ETC___d3848,
+	       IF_iFifo_first__087_BIT_136_624_THEN_IF_iFifo__ETC___d5330,
+	       iFifo$D_OUT[6:4] } ;
+  assign fpu_div64_fOperands_S0$ENQ =
+	     WILL_FIRE_RL_start_op && iFifo$D_OUT[3:0] == 4'd3 ;
+  assign fpu_div64_fOperands_S0$DEQ = CAN_FIRE_RL_fpu_div64_s1_stage ;
+  assign fpu_div64_fOperands_S0$CLR = 1'b0 ;
+
+  // submodule fpu_div64_fResult_S5
+  assign fpu_div64_fResult_S5$D_IN =
+	     fpu_div64_fState_S4$D_OUT[138] ?
+	       fpu_div64_fState_S4$D_OUT[137:69] :
+	       { (fpu_div64_fState_S4$D_OUT[64:54] == 11'd2047) ?
+		   fpu_div64_fState_S4$D_OUT[65:2] :
+		   CASE_fpu_div64_fState_S4D_OUT_BITS_68_TO_66_0_ETC__q173,
+		 fpu_div64_fState_S4$D_OUT[73:69] |
+		 { 2'd0,
+		   _theResult___fst_exp__h43556 == 11'd2047 &&
+		   _theResult___fst_sfd__h43557 == 52'd0,
+		   1'd0,
+		   fpu_div64_fState_S4$D_OUT[64:54] != 11'd2047 &&
+		   fpu_div64_fState_S4$D_OUT[1:0] != 2'b0 } } ;
+  assign fpu_div64_fResult_S5$ENQ = CAN_FIRE_RL_fpu_div64_s5_stage ;
+  assign fpu_div64_fResult_S5$DEQ = fpu_div64_fResult_S5$EMPTY_N ;
+  assign fpu_div64_fResult_S5$CLR = 1'b0 ;
+
+  // submodule fpu_div64_fState_S1
+  assign fpu_div64_fState_S1$D_IN =
+	     { fpu_div64_fOperands_S0_first__06_BITS_129_TO_1_ETC___d363,
+	       (fpu_div64_fOperands_S0$D_OUT[129:119] == 11'd2047 &&
+		fpu_div64_fOperands_S0$D_OUT[118:67] != 52'd0 &&
+		!fpu_div64_fOperands_S0$D_OUT[118]) ?
+		 { fpu_div64_fOperands_S0$D_OUT[130:119], sfd__h18934 } :
+		 IF_fpu_div64_fOperands_S0_first__06_BITS_65_TO_ETC___d455,
+	       fpu_div64_fOperands_S0$D_OUT[129:119] == 11'd2047 &&
+	       fpu_div64_fOperands_S0$D_OUT[118:67] != 52'd0 &&
+	       !fpu_div64_fOperands_S0$D_OUT[118] ||
+	       fpu_div64_fOperands_S0$D_OUT[65:55] == 11'd2047 &&
+	       fpu_div64_fOperands_S0$D_OUT[54:3] != 52'd0 &&
+	       !fpu_div64_fOperands_S0$D_OUT[54] ||
+	       (fpu_div64_fOperands_S0$D_OUT[129:119] != 11'd2047 ||
+		!fpu_div64_fOperands_S0$D_OUT[118]) &&
+	       (fpu_div64_fOperands_S0$D_OUT[65:55] != 11'd2047 ||
+		!fpu_div64_fOperands_S0$D_OUT[54]) &&
+	       fpu_div64_fOperands_S0_first__06_BITS_129_TO_1_ETC___d436,
+	       (fpu_div64_fOperands_S0$D_OUT[129:119] != 11'd2047 ||
+		fpu_div64_fOperands_S0$D_OUT[118:67] == 52'd0 ||
+		fpu_div64_fOperands_S0$D_OUT[118]) &&
+	       (fpu_div64_fOperands_S0$D_OUT[129:119] != 11'd2047 ||
+		!fpu_div64_fOperands_S0$D_OUT[118]) &&
+	       NOT_fpu_div64_fOperands_S0_first__06_BITS_129__ETC___d400 &&
+	       fpu_div64_fOperands_S0$D_OUT[65:55] == 11'd0 &&
+	       fpu_div64_fOperands_S0$D_OUT[54:3] == 52'd0 &&
+	       (fpu_div64_fOperands_S0$D_OUT[129:119] != 11'd2047 ||
+		fpu_div64_fOperands_S0$D_OUT[118:67] != 52'd0),
+	       (fpu_div64_fOperands_S0$D_OUT[129:119] != 11'd2047 ||
+		fpu_div64_fOperands_S0$D_OUT[118:67] == 52'd0 ||
+		fpu_div64_fOperands_S0$D_OUT[118]) &&
+	       (fpu_div64_fOperands_S0$D_OUT[65:55] != 11'd2047 ||
+		fpu_div64_fOperands_S0$D_OUT[54:3] == 52'd0 ||
+		fpu_div64_fOperands_S0$D_OUT[54]) &&
+	       (fpu_div64_fOperands_S0$D_OUT[129:119] != 11'd2047 ||
+		!fpu_div64_fOperands_S0$D_OUT[118]) &&
+	       (fpu_div64_fOperands_S0$D_OUT[65:55] != 11'd2047 ||
+		!fpu_div64_fOperands_S0$D_OUT[54]) &&
+	       (fpu_div64_fOperands_S0$D_OUT[65:55] != 11'd0 ||
+		fpu_div64_fOperands_S0$D_OUT[54:3] != 52'd0) &&
+	       (fpu_div64_fOperands_S0$D_OUT[129:119] != 11'd2047 ||
+		fpu_div64_fOperands_S0$D_OUT[118:67] != 52'd0) &&
+	       (fpu_div64_fOperands_S0$D_OUT[129:119] != 11'd0 ||
+		fpu_div64_fOperands_S0$D_OUT[118:67] != 52'd0) &&
+	       (fpu_div64_fOperands_S0$D_OUT[65:55] != 11'd2047 ||
+		fpu_div64_fOperands_S0$D_OUT[54:3] != 52'd0) &&
+	       !IF_fpu_div64_fOperands_S0_first__06_BITS_129_T_ETC___d353,
+	       (fpu_div64_fOperands_S0$D_OUT[129:119] != 11'd2047 ||
+		fpu_div64_fOperands_S0$D_OUT[118:67] == 52'd0 ||
+		fpu_div64_fOperands_S0$D_OUT[118]) &&
+	       (fpu_div64_fOperands_S0$D_OUT[65:55] != 11'd2047 ||
+		fpu_div64_fOperands_S0$D_OUT[54:3] == 52'd0 ||
+		fpu_div64_fOperands_S0$D_OUT[54]) &&
+	       (fpu_div64_fOperands_S0$D_OUT[129:119] != 11'd2047 ||
+		!fpu_div64_fOperands_S0$D_OUT[118]) &&
+	       (fpu_div64_fOperands_S0$D_OUT[65:55] != 11'd2047 ||
+		!fpu_div64_fOperands_S0$D_OUT[54]) &&
+	       NOT_fpu_div64_fOperands_S0_first__06_BITS_65_T_ETC___d481,
+	       (fpu_div64_fOperands_S0$D_OUT[129:119] != 11'd2047 ||
+		fpu_div64_fOperands_S0$D_OUT[118:67] == 52'd0 ||
+		fpu_div64_fOperands_S0$D_OUT[118]) &&
+	       (fpu_div64_fOperands_S0$D_OUT[65:55] != 11'd2047 ||
+		fpu_div64_fOperands_S0$D_OUT[54:3] == 52'd0 ||
+		fpu_div64_fOperands_S0$D_OUT[54]) &&
+	       (fpu_div64_fOperands_S0$D_OUT[129:119] != 11'd2047 ||
+		!fpu_div64_fOperands_S0$D_OUT[118]) &&
+	       (fpu_div64_fOperands_S0$D_OUT[65:55] != 11'd2047 ||
+		!fpu_div64_fOperands_S0$D_OUT[54]) &&
+	       NOT_fpu_div64_fOperands_S0_first__06_BITS_65_T_ETC___d488,
+	       fpu_div64_fOperands_S0$D_OUT[2:0],
+	       !fpu_div64_fOperands_S0_first__06_BIT_130_03_EQ_ETC___d405,
+	       _theResult___snd_fst_exp__h31361,
+	       _theResult___snd_fst_sfd__h31362,
+	       x__h31426,
+	       x__h31487,
+	       x__h31541 } ;
+  assign fpu_div64_fState_S1$ENQ = CAN_FIRE_RL_fpu_div64_s1_stage ;
+  assign fpu_div64_fState_S1$DEQ = WILL_FIRE_RL_fpu_div64_s2_stage ;
+  assign fpu_div64_fState_S1$CLR = 1'b0 ;
+
+  // submodule fpu_div64_fState_S2
+  assign fpu_div64_fState_S2$D_IN =
+	     { fpu_div64_fState_S1$D_OUT[318:182],
+	       fpu_div64_fState_S1$D_OUT[10:0] } ;
+  assign fpu_div64_fState_S2$ENQ = WILL_FIRE_RL_fpu_div64_s2_stage ;
+  assign fpu_div64_fState_S2$DEQ = CAN_FIRE_RL_fpu_div64_s3_stage ;
+  assign fpu_div64_fState_S2$CLR = 1'b0 ;
+
+  // submodule fpu_div64_fState_S3
+  assign fpu_div64_fState_S3$D_IN =
+	     { fpu_div64_fState_S2$D_OUT[147:11], x__h33052 } ;
+  assign fpu_div64_fState_S3$ENQ = CAN_FIRE_RL_fpu_div64_s3_stage ;
+  assign fpu_div64_fState_S3$DEQ = CAN_FIRE_RL_fpu_div64_s4_stage ;
+  assign fpu_div64_fState_S3$CLR = 1'b0 ;
+
+  // submodule fpu_div64_fState_S4
+  assign fpu_div64_fState_S4$D_IN =
+	     { (fpu_div64_fState_S3$D_OUT[120:110] == 11'd2047) ?
+		 fpu_div64_fState_S3$D_OUT[57:56] != 2'b0 ||
+		 fpu_div64_fState_S3$D_OUT[194] :
+		 fpu_div64_fState_S3$D_OUT[194],
+	       (fpu_div64_fState_S3$D_OUT[120:110] == 11'd2047) ?
+		 ((fpu_div64_fState_S3$D_OUT[57:56] == 2'b0) ?
+		    fpu_div64_fState_S3$D_OUT[193:130] :
+		    { CASE_fpu_div64_fState_S3D_OUT_BITS_124_TO_122_ETC__q174,
+		      CASE_fpu_div64_fState_S3D_OUT_BITS_124_TO_122_ETC__q175 }) :
+		 fpu_div64_fState_S3$D_OUT[193:130],
+	       IF_IF_fpu_div64_fState_S3_first__86_BITS_120_T_ETC___d926,
+	       fpu_div64_fState_S3$D_OUT[124:122],
+	       fpu_div64_fState_S3_first__86_BIT_121_07_CONCA_ETC___d936,
+	       x__h42705 } ;
+  assign fpu_div64_fState_S4$ENQ = CAN_FIRE_RL_fpu_div64_s4_stage ;
+  assign fpu_div64_fState_S4$DEQ = CAN_FIRE_RL_fpu_div64_s5_stage ;
+  assign fpu_div64_fState_S4$CLR = 1'b0 ;
+
   // submodule fpu_madd_fOperand_S0
   assign fpu_madd_fOperand_S0$D_IN =
 	     { iFifo$D_OUT[3:0] != 4'd2,
-	       IF_iFifo_first__288_BITS_3_TO_0_289_EQ_0_290_O_ETC___d2814,
-	       CASE_iFifoD_OUT_BITS_3_TO_0_0_IF_iFifo_first__ETC__q149,
-	       CASE_iFifoD_OUT_BITS_3_TO_0_0_460718241880001_ETC__q150,
+	       IF_iFifo_first__087_BITS_3_TO_0_088_EQ_0_089_O_ETC___d4623,
+	       CASE_iFifoD_OUT_BITS_3_TO_0_0_IF_iFifo_first__ETC__q176,
+	       CASE_iFifoD_OUT_BITS_3_TO_0_0_460718241880001_ETC__q177,
 	       iFifo$D_OUT[6:4] } ;
   assign fpu_madd_fOperand_S0$ENQ =
 	     WILL_FIRE_RL_start_op &&
@@ -1387,32 +2393,33 @@ module mkFPU(CLK,
   assign fpu_madd_fResult_S9$D_IN =
 	     fpu_madd_fState_S8$D_OUT[140] ?
 	       fpu_madd_fState_S8$D_OUT[139:71] :
-	       IF_fpu_madd_fState_S8_first__161_BIT_67_164_AN_ETC___d1282 ;
+	       IF_fpu_madd_fState_S8_first__960_BIT_67_963_AN_ETC___d3081 ;
   assign fpu_madd_fResult_S9$ENQ = CAN_FIRE_RL_fpu_madd_s9_stage ;
   assign fpu_madd_fResult_S9$DEQ = fpu_madd_fResult_S9$EMPTY_N ;
   assign fpu_madd_fResult_S9$CLR = 1'b0 ;
 
   // submodule fpu_madd_fState_S1
   assign fpu_madd_fState_S1$D_IN =
-	     { x__h329 == 11'd2047 && _theResult___fst_sfd__h398 != 52'd0 &&
-	       !_theResult___fst_sfd__h398[51] ||
+	     { x__h96539 == 11'd2047 &&
+	       _theResult___fst_sfd__h96608 != 52'd0 &&
+	       !_theResult___fst_sfd__h96608[51] ||
 	       fpu_madd_fOperand_S0$D_OUT[129:119] == 11'd2047 &&
 	       fpu_madd_fOperand_S0$D_OUT[118:67] != 52'd0 &&
 	       !fpu_madd_fOperand_S0$D_OUT[118] ||
 	       fpu_madd_fOperand_S0$D_OUT[65:55] == 11'd2047 &&
 	       fpu_madd_fOperand_S0$D_OUT[54:3] != 52'd0 &&
 	       !fpu_madd_fOperand_S0$D_OUT[54] ||
-	       IF_fpu_madd_fOperand_S0_first_BIT_195_THEN_fpu_ETC___d62,
-	       IF_IF_fpu_madd_fOperand_S0_first_BIT_195_THEN__ETC___d140,
-	       IF_fpu_madd_fOperand_S0_first_BIT_195_THEN_fpu_ETC___d148,
+	       IF_fpu_madd_fOperand_S0_first__803_BIT_195_804_ETC___d1861,
+	       IF_IF_fpu_madd_fOperand_S0_first__803_BIT_195__ETC___d1939,
+	       IF_fpu_madd_fOperand_S0_first__803_BIT_195_804_ETC___d1947,
 	       4'd0,
 	       fpu_madd_fOperand_S0$D_OUT[2:0],
 	       fpu_madd_fOperand_S0$D_OUT[195],
 	       fpu_madd_fOperand_S0$D_OUT[195] &&
 	       fpu_madd_fOperand_S0$D_OUT[194],
-	       IF_fpu_madd_fOperand_S0_first_BIT_195_THEN_fpu_ETC___d112,
-	       NOT_fpu_madd_fOperand_S0_first_BIT_130_2_EQ_fp_ETC___d55,
-	       IF_fpu_madd_fOperand_S0_first_BITS_129_TO_119__ETC___d160 } ;
+	       IF_fpu_madd_fOperand_S0_first__803_BIT_195_804_ETC___d1911,
+	       NOT_fpu_madd_fOperand_S0_first__803_BIT_130_85_ETC___d1854,
+	       IF_fpu_madd_fOperand_S0_first__803_BITS_129_TO_ETC___d1959 } ;
   assign fpu_madd_fState_S1$ENQ = CAN_FIRE_RL_fpu_madd_s1_stage ;
   assign fpu_madd_fState_S1$DEQ = CAN_FIRE_RL_fpu_madd_s2_stage ;
   assign fpu_madd_fState_S1$CLR = 1'b0 ;
@@ -1432,13 +2439,13 @@ module mkFPU(CLK,
   // submodule fpu_madd_fState_S4
   assign fpu_madd_fState_S4$D_IN =
 	     { fpu_madd_fState_S3$D_OUT[151:87],
-	       IF_fpu_madd_fState_S3_first__96_BIT_151_97_THE_ETC___d726,
+	       IF_fpu_madd_fState_S3_first__995_BIT_151_996_T_ETC___d2525,
 	       fpu_madd_fState_S3$D_OUT[81:14],
 	       !fpu_madd_fState_S3$D_OUT[151] && fpu_madd_fState_S3$D_OUT[13],
 	       fpu_madd_fState_S3$D_OUT[151] ?
 		 63'd0 :
-		 IF_fpu_madd_fState_S3_first__96_BITS_12_TO_0_0_ETC___d737,
-	       x__h35223 } ;
+		 IF_fpu_madd_fState_S3_first__995_BITS_12_TO_0__ETC___d2536,
+	       x__h131406 } ;
   assign fpu_madd_fState_S4$ENQ = CAN_FIRE_RL_fpu_madd_s4_stage ;
   assign fpu_madd_fState_S4$DEQ = CAN_FIRE_RL_fpu_madd_s5_stage ;
   assign fpu_madd_fState_S4$CLR = 1'b0 ;
@@ -1447,10 +2454,10 @@ module mkFPU(CLK,
   assign fpu_madd_fState_S5$D_IN =
 	     { fpu_madd_fState_S4$D_OUT[203:130],
 	       fpu_madd_fState_S4$D_OUT[129] != fpu_madd_fState_S4$D_OUT[65],
-	       NOT_fpu_madd_fState_S4_first__48_BIT_130_54_59_ETC___d785 ?
+	       NOT_fpu_madd_fState_S4_first__547_BIT_130_553__ETC___d2584 ?
 		 fpu_madd_fState_S4$D_OUT[65] :
 		 fpu_madd_fState_S4$D_OUT[129],
-	       IF_NOT_fpu_madd_fState_S4_first__48_BIT_130_54_ETC___d796 } ;
+	       IF_NOT_fpu_madd_fState_S4_first__547_BIT_130_5_ETC___d2595 } ;
   assign fpu_madd_fState_S5$ENQ = CAN_FIRE_RL_fpu_madd_s5_stage ;
   assign fpu_madd_fState_S5$DEQ = CAN_FIRE_RL_fpu_madd_s6_stage ;
   assign fpu_madd_fState_S5$CLR = 1'b0 ;
@@ -1459,14 +2466,14 @@ module mkFPU(CLK,
   assign fpu_madd_fState_S6$D_IN =
 	     { fpu_madd_fState_S5$D_OUT[215:127],
 	       fpu_madd_fState_S5$D_OUT[113:57],
-	       x__h36176 } ;
+	       x__h132359 } ;
   assign fpu_madd_fState_S6$ENQ = CAN_FIRE_RL_fpu_madd_s6_stage ;
   assign fpu_madd_fState_S6$DEQ = CAN_FIRE_RL_fpu_madd_s7_stage ;
   assign fpu_madd_fState_S6$CLR = 1'b0 ;
 
   // submodule fpu_madd_fState_S7
   assign fpu_madd_fState_S7$D_IN =
-	     { fpu_madd_fState_S6$D_OUT[202:114], x__h36688, x__h36697 } ;
+	     { fpu_madd_fState_S6$D_OUT[202:114], x__h132871, x__h132880 } ;
   assign fpu_madd_fState_S7$ENQ = CAN_FIRE_RL_fpu_madd_s7_stage ;
   assign fpu_madd_fState_S7$DEQ = CAN_FIRE_RL_fpu_madd_s8_stage ;
   assign fpu_madd_fState_S7$CLR = 1'b0 ;
@@ -1476,18 +2483,88 @@ module mkFPU(CLK,
 	     { fpu_madd_fState_S7$D_OUT[202:138],
 	       fpu_madd_fState_S7$D_OUT[202] ?
 		 fpu_madd_fState_S7$D_OUT[137:133] :
-		 fpu_madd_fState_S7_first__52_BITS_137_TO_133_5_ETC___d1143,
+		 fpu_madd_fState_S7_first__651_BITS_137_TO_133__ETC___d2942,
 	       fpu_madd_fState_S7$D_OUT[132:129],
 	       !fpu_madd_fState_S7$D_OUT[202] &&
 	       fpu_madd_fState_S7$D_OUT[127],
 	       fpu_madd_fState_S7$D_OUT[202] ?
 		 63'd0 :
-		 IF_IF_fpu_madd_fState_S7_first__52_BIT_128_58__ETC___d1153,
-	       x__h45577,
+		 IF_IF_fpu_madd_fState_S7_first__651_BIT_128_65_ETC___d2952,
+	       x__h141760,
 	       fpu_madd_fState_S7$D_OUT[128] } ;
   assign fpu_madd_fState_S8$ENQ = CAN_FIRE_RL_fpu_madd_s8_stage ;
   assign fpu_madd_fState_S8$DEQ = CAN_FIRE_RL_fpu_madd_s9_stage ;
   assign fpu_madd_fState_S8$CLR = 1'b0 ;
+
+  // submodule fpu_sqr64_fOperand_S0
+  assign fpu_sqr64_fOperand_S0$D_IN =
+	     { IF_iFifo_first__087_BIT_201_115_THEN_IF_iFifo__ETC___d3848,
+	       iFifo$D_OUT[6:4] } ;
+  assign fpu_sqr64_fOperand_S0$ENQ =
+	     WILL_FIRE_RL_start_op && iFifo$D_OUT[3:0] == 4'd4 ;
+  assign fpu_sqr64_fOperand_S0$DEQ = CAN_FIRE_RL_fpu_sqr64_s1_stage ;
+  assign fpu_sqr64_fOperand_S0$CLR = 1'b0 ;
+
+  // submodule fpu_sqr64_fResult_S5
+  assign fpu_sqr64_fResult_S5$D_IN =
+	     fpu_sqr64_fState_S4$D_OUT[138] ?
+	       fpu_sqr64_fState_S4$D_OUT[137:69] :
+	       { (fpu_sqr64_fState_S4$D_OUT[64:54] == 11'd2047) ?
+		   fpu_sqr64_fState_S4$D_OUT[65:2] :
+		   CASE_fpu_sqr64_fState_S4D_OUT_BITS_68_TO_66_0_ETC__q183,
+		 fpu_sqr64_fState_S4$D_OUT[73:69] |
+		 { 2'd0,
+		   _theResult___fst_exp__h95990 == 11'd2047 &&
+		   _theResult___fst_sfd__h95991 == 52'd0,
+		   1'd0,
+		   fpu_sqr64_fState_S4$D_OUT[64:54] != 11'd2047 &&
+		   fpu_sqr64_fState_S4$D_OUT[1:0] != 2'b0 } } ;
+  assign fpu_sqr64_fResult_S5$ENQ = CAN_FIRE_RL_fpu_sqr64_s5_stage ;
+  assign fpu_sqr64_fResult_S5$DEQ = fpu_sqr64_fResult_S5$EMPTY_N ;
+  assign fpu_sqr64_fResult_S5$CLR = 1'b0 ;
+
+  // submodule fpu_sqr64_fState_S1
+  assign fpu_sqr64_fState_S1$D_IN =
+	     (fpu_sqr64_fOperand_S0$D_OUT[65:55] == 11'd2047 &&
+	      fpu_sqr64_fOperand_S0$D_OUT[54:3] != 52'd0 &&
+	      !fpu_sqr64_fOperand_S0$D_OUT[54]) ?
+	       { 1'd1,
+		 fpu_sqr64_fOperand_S0$D_OUT[66:55],
+		 sfd__h45004,
+		 130'h20AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA } :
+	       IF_fpu_sqr64_fOperand_S0_first__059_BITS_65_TO_ETC___d1212 ;
+  assign fpu_sqr64_fState_S1$ENQ = CAN_FIRE_RL_fpu_sqr64_s1_stage ;
+  assign fpu_sqr64_fState_S1$DEQ = WILL_FIRE_RL_fpu_sqr64_s2_stage ;
+  assign fpu_sqr64_fState_S1$CLR = 1'b0 ;
+
+  // submodule fpu_sqr64_fState_S2
+  assign fpu_sqr64_fState_S2$D_IN = fpu_sqr64_fState_S1$D_OUT[194:58] ;
+  assign fpu_sqr64_fState_S2$ENQ = WILL_FIRE_RL_fpu_sqr64_s2_stage ;
+  assign fpu_sqr64_fState_S2$DEQ = CAN_FIRE_RL_fpu_sqr64_s3_stage ;
+  assign fpu_sqr64_fState_S2$CLR = 1'b0 ;
+
+  // submodule fpu_sqr64_fState_S3
+  assign fpu_sqr64_fState_S3$D_IN = { fpu_sqr64_fState_S2$D_OUT, x__h86149 } ;
+  assign fpu_sqr64_fState_S3$ENQ = CAN_FIRE_RL_fpu_sqr64_s3_stage ;
+  assign fpu_sqr64_fState_S3$DEQ = CAN_FIRE_RL_fpu_sqr64_s4_stage ;
+  assign fpu_sqr64_fState_S3$CLR = 1'b0 ;
+
+  // submodule fpu_sqr64_fState_S4
+  assign fpu_sqr64_fState_S4$D_IN =
+	     { fpu_sqr64_fState_S3$D_OUT[195:131],
+	       fpu_sqr64_fState_S3$D_OUT[195] &&
+	       fpu_sqr64_fState_S3$D_OUT[130],
+	       fpu_sqr64_fState_S3$D_OUT[195] &&
+	       fpu_sqr64_fState_S3$D_OUT[129],
+	       IF_fpu_sqr64_fState_S3_first__375_BIT_195_376__ETC___d1671,
+	       fpu_sqr64_fState_S3$D_OUT[125:122],
+	       fpu_sqr64_fState_S3$D_OUT[195] ?
+		 fpu_sqr64_fState_S3$D_OUT[121:59] :
+		 IF_fpu_sqr64_fState_S3_first__375_BIT_58_384_A_ETC___d1678,
+	       x__h95138 } ;
+  assign fpu_sqr64_fState_S4$ENQ = CAN_FIRE_RL_fpu_sqr64_s4_stage ;
+  assign fpu_sqr64_fState_S4$DEQ = CAN_FIRE_RL_fpu_sqr64_s5_stage ;
+  assign fpu_sqr64_fState_S4$CLR = 1'b0 ;
 
   // submodule iFifo
   assign iFifo$D_IN = server_core_request_put ;
@@ -1511,10 +2588,10 @@ module mkFPU(CLK,
   // submodule oFifo
   assign oFifo$D_IN =
 	     { !isDoubleFifo$D_OUT,
-	       IF_isDoubleFifo_first__592_THEN_IF_isNegateFif_ETC___d4842,
+	       IF_isDoubleFifo_first__407_THEN_IF_isNegateFif_ETC___d6657,
 	       isDoubleFifo$D_OUT ?
-		 fpu_madd_fResult_S9$D_OUT[4:0] :
-		 resWire_wget__595_BITS_4_TO_0_843_OR_NOT_resWi_ETC___d4953 } ;
+		 resWire$wget[4:0] :
+		 resWire_wget__410_BITS_4_TO_0_658_OR_NOT_resWi_ETC___d6768 } ;
   assign oFifo$ENQ = CAN_FIRE_RL_passResult ;
   assign oFifo$DEQ = EN_server_core_response_get ;
   assign oFifo$CLR = CAN_FIRE_RL_rl_reset ;
@@ -1536,1622 +2613,2295 @@ module mkFPU(CLK,
   assign rmdFifo$CLR = CAN_FIRE_RL_rl_reset ;
 
   // remaining internal signals
-  assign IF_0_CONCAT_IF_IF_0b0_CONCAT_NOT_resWire_wget__ETC__q106 =
-	     _0_CONCAT_IF_IF_0b0_CONCAT_NOT_resWire_wget__59_ETC___d3954 ?
-	       _theResult___snd__h181275 :
-	       _theResult____h173103 ;
-  assign IF_0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__ETC__q17 =
-	     _0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__28_ETC___d1765 ?
-	       _theResult___snd__h76703 :
-	       _theResult____h68402 ;
-  assign IF_0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__ETC__q44 =
-	     _0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__28_ETC___d2473 ?
-	       _theResult___snd__h154248 :
-	       _theResult____h145947 ;
-  assign IF_0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__ETC__q77 =
-	     _0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__28_ETC___d3248 ?
-	       _theResult___snd__h115341 :
-	       _theResult____h107040 ;
-  assign IF_0_CONCAT_IF_IF_3970_MINUS_SEXT_resWire_wget_ETC__q112 =
-	     _0_CONCAT_IF_IF_3970_MINUS_SEXT_resWire_wget__5_ETC___d4465 ?
-	       _theResult___snd__h199041 :
-	       _theResult____h190740 ;
-  assign IF_0_CONCAT_IF_IF_7170_MINUS_fpu_madd_fState_S_ETC__q4 =
-	     _0_CONCAT_IF_IF_7170_MINUS_fpu_madd_fState_S3_f_ETC___d664 ?
-	       _theResult___snd__h34840 :
-	       _theResult___snd__h34835 ;
-  assign IF_0_CONCAT_IF_IF_fpu_madd_fState_S7_first__52_ETC__q9 =
-	     _0_CONCAT_IF_IF_fpu_madd_fState_S7_first__52_BI_ETC___d1105 ?
-	       _theResult___snd__h45266 :
-	       _theResult___snd__h45261 ;
-  assign IF_0_CONCAT_IF_iFifo_first__288_BITS_102_TO_95_ETC__q73 =
-	     _0_CONCAT_IF_iFifo_first__288_BITS_102_TO_95_81_ETC___d2950 ?
-	       _theResult___snd__h105751 :
+  assign IF_0_CONCAT_IF_IF_0b0_CONCAT_NOT_resWire_wget__ETC__q133 =
+	     _0_CONCAT_IF_IF_0b0_CONCAT_NOT_resWire_wget__41_ETC___d5769 ?
+	       _theResult___snd__h277749 :
+	       _theResult____h269577 ;
+  assign IF_0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__ETC__q37 =
+	     _0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__08_ETC___d3574 ?
+	       _theResult___snd__h172915 :
+	       _theResult____h164614 ;
+  assign IF_0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__ETC__q64 =
+	     _0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__08_ETC___d4282 ?
+	       _theResult___snd__h250492 :
+	       _theResult____h242191 ;
+  assign IF_0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__ETC__q97 =
+	     _0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__08_ETC___d5057 ?
+	       _theResult___snd__h211553 :
+	       _theResult____h203252 ;
+  assign IF_0_CONCAT_IF_IF_3970_MINUS_SEXT_resWire_wget_ETC__q139 =
+	     _0_CONCAT_IF_IF_3970_MINUS_SEXT_resWire_wget__4_ETC___d6280 ?
+	       _theResult___snd__h295515 :
+	       _theResult____h287214 ;
+  assign IF_0_CONCAT_IF_IF_7170_MINUS_fpu_madd_fState_S_ETC__q24 =
+	     _0_CONCAT_IF_IF_7170_MINUS_fpu_madd_fState_S3_f_ETC___d2463 ?
+	       _theResult___snd__h131023 :
+	       _theResult___snd__h131018 ;
+  assign IF_0_CONCAT_IF_IF_fpu_div64_fState_S3_first__8_ETC__q12 =
+	     _0_CONCAT_IF_IF_fpu_div64_fState_S3_first__86_B_ETC___d883 ?
+	       _theResult___snd__h42409 :
+	       _theResult___snd__h42404 ;
+  assign IF_0_CONCAT_IF_IF_fpu_madd_fState_S7_first__65_ETC__q29 =
+	     _0_CONCAT_IF_IF_fpu_madd_fState_S7_first__651_B_ETC___d2904 ?
+	       _theResult___snd__h141449 :
+	       _theResult___snd__h141444 ;
+  assign IF_0_CONCAT_IF_fpu_sqr64_fState_S3_first__375__ETC__q19 =
+	     _0_CONCAT_IF_fpu_sqr64_fState_S3_first__375_BIT_ETC___d1633 ?
+	       _theResult___snd__h94826 :
+	       _theResult___snd__h94821 ;
+  assign IF_0_CONCAT_IF_iFifo_first__087_BITS_102_TO_95_ETC__q100 =
+	     _0_CONCAT_IF_iFifo_first__087_BITS_102_TO_95_62_ETC___d5107 ?
+	       _theResult___snd__h201963 :
+	       _theResult___snd__h220275 ;
+  assign IF_0_CONCAT_IF_iFifo_first__087_BITS_102_TO_95_ETC__q93 =
+	     _0_CONCAT_IF_iFifo_first__087_BITS_102_TO_95_62_ETC___d4759 ?
+	       _theResult___snd__h201963 :
 	       57'd0 ;
-  assign IF_0_CONCAT_IF_iFifo_first__288_BITS_102_TO_95_ETC__q80 =
-	     _0_CONCAT_IF_iFifo_first__288_BITS_102_TO_95_81_ETC___d3298 ?
-	       _theResult___snd__h105751 :
-	       _theResult___snd__h124063 ;
-  assign IF_0_CONCAT_IF_iFifo_first__288_BITS_167_TO_16_ETC__q13 =
-	     _0_CONCAT_IF_iFifo_first__288_BITS_167_TO_160_3_ETC___d1464 ?
-	       _theResult___snd__h67113 :
+  assign IF_0_CONCAT_IF_iFifo_first__087_BITS_167_TO_16_ETC__q33 =
+	     _0_CONCAT_IF_iFifo_first__087_BITS_167_TO_160_1_ETC___d3273 ?
+	       _theResult___snd__h163325 :
 	       57'd0 ;
-  assign IF_0_CONCAT_IF_iFifo_first__288_BITS_167_TO_16_ETC__q20 =
-	     _0_CONCAT_IF_iFifo_first__288_BITS_167_TO_160_3_ETC___d1815 ?
-	       _theResult___snd__h67113 :
-	       _theResult___snd__h85425 ;
-  assign IF_0_CONCAT_IF_iFifo_first__288_BITS_37_TO_30__ETC__q40 =
-	     _0_CONCAT_IF_iFifo_first__288_BITS_37_TO_30_041_ETC___d2175 ?
-	       _theResult___snd__h144658 :
+  assign IF_0_CONCAT_IF_iFifo_first__087_BITS_167_TO_16_ETC__q40 =
+	     _0_CONCAT_IF_iFifo_first__087_BITS_167_TO_160_1_ETC___d3624 ?
+	       _theResult___snd__h163325 :
+	       _theResult___snd__h181637 ;
+  assign IF_0_CONCAT_IF_iFifo_first__087_BITS_37_TO_30__ETC__q60 =
+	     _0_CONCAT_IF_iFifo_first__087_BITS_37_TO_30_850_ETC___d3984 ?
+	       _theResult___snd__h240902 :
 	       57'd0 ;
-  assign IF_0_CONCAT_IF_iFifo_first__288_BITS_37_TO_30__ETC__q47 =
-	     _0_CONCAT_IF_iFifo_first__288_BITS_37_TO_30_041_ETC___d2523 ?
-	       _theResult___snd__h144658 :
-	       _theResult___snd__h162970 ;
-  assign IF_0_CONCAT_IF_resWire_wget__595_BITS_67_TO_57_ETC__q108 =
-	     _0_CONCAT_IF_resWire_wget__595_BITS_67_TO_57_60_ETC___d4169 ?
-	       _theResult___snd__h189857 :
+  assign IF_0_CONCAT_IF_iFifo_first__087_BITS_37_TO_30__ETC__q67 =
+	     _0_CONCAT_IF_iFifo_first__087_BITS_37_TO_30_850_ETC___d4332 ?
+	       _theResult___snd__h240902 :
+	       _theResult___snd__h259214 ;
+  assign IF_0_CONCAT_IF_resWire_wget__410_BITS_67_TO_57_ETC__q135 =
+	     _0_CONCAT_IF_resWire_wget__410_BITS_67_TO_57_41_ETC___d5984 ?
+	       _theResult___snd__h286331 :
 	       57'd0 ;
-  assign IF_0_CONCAT_IF_resWire_wget__595_BITS_67_TO_57_ETC__q115 =
-	     _0_CONCAT_IF_resWire_wget__595_BITS_67_TO_57_60_ETC___d4518 ?
-	       _theResult___snd__h189857 :
-	       _theResult___snd__h207647 ;
-  assign IF_0b0_CONCAT_NOT_fpu_madd_fState_S8_first__16_ETC___d1266 =
-	     sfd__h45857[53] ?
+  assign IF_0_CONCAT_IF_resWire_wget__410_BITS_67_TO_57_ETC__q142 =
+	     _0_CONCAT_IF_resWire_wget__410_BITS_67_TO_57_41_ETC___d6333 ?
+	       _theResult___snd__h286331 :
+	       _theResult___snd__h304121 ;
+  assign IF_0b0_CONCAT_NOT_fpu_div64_fState_S4_first__4_ETC___d980 =
+	     sfd__h42982[53] ?
+	       ((fpu_div64_fState_S4$D_OUT[64:54] == 11'd2046) ?
+		  63'h7FF0000000000000 :
+		  { din_inc___2_exp__h43566, sfd__h42982[52:1] }) :
+	       { IF_fpu_div64_fState_S4_first__43_BITS_64_TO_54_ETC___d977,
+		 sfd__h42982[51:0] } ;
+  assign IF_0b0_CONCAT_NOT_fpu_madd_fState_S8_first__96_ETC___d3065 =
+	     sfd__h142040[53] ?
 	       ((fpu_madd_fState_S8$D_OUT[65:55] == 11'd2046) ?
 		  63'h7FF0000000000000 :
-		  { din_inc___2_exp__h46446, sfd__h45857[52:1] }) :
-	       { IF_fpu_madd_fState_S8_first__161_BITS_65_TO_55_ETC___d1187,
-		 sfd__h45857[51:0] } ;
-  assign IF_3074_MINUS_0_CONCAT_IF_resWire_wget__595_BI_ETC___d4210 =
-	     _3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d3718 ?
-	       ((_theResult___fst_exp__h181212 == 8'd255) ?
-		  !fpu_madd_fResult_S9$D_OUT[68] :
-		  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_I_ETC___d4008) :
-	       ((_theResult___fst_exp__h189868 == 8'd255) ?
-		  !fpu_madd_fResult_S9$D_OUT[68] :
-		  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_r_ETC___d4208) ;
-  assign IF_3074_MINUS_0_CONCAT_IF_resWire_wget__595_BI_ETC___d4584 =
-	     _3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d3718 ?
-	       ((_theResult___fst_exp__h181212 == 8'd255) ?
-		  fpu_madd_fResult_S9$D_OUT[68] :
-		  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_I_ETC___d4573) :
-	       ((_theResult___fst_exp__h189868 == 8'd255) ?
-		  fpu_madd_fResult_S9$D_OUT[68] :
-		  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_r_ETC___d4582) ;
-  assign IF_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_ETC___d1508 =
-	     _3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_15_ETC___d1381 ?
+		  { din_inc___2_exp__h142626, sfd__h142040[52:1] }) :
+	       { IF_fpu_madd_fState_S8_first__960_BITS_65_TO_55_ETC___d2986,
+		 sfd__h142040[51:0] } ;
+  assign IF_0b0_CONCAT_NOT_fpu_sqr64_fState_S4_first__6_ETC___d1724 =
+	     sfd__h95416[53] ?
+	       ((fpu_sqr64_fState_S4$D_OUT[64:54] == 11'd2046) ?
+		  63'h7FF0000000000000 :
+		  { din_inc___2_exp__h96000, sfd__h95416[52:1] }) :
+	       { IF_fpu_sqr64_fState_S4_first__687_BITS_64_TO_5_ETC___d1721,
+		 sfd__h95416[51:0] } ;
+  assign IF_3074_MINUS_0_CONCAT_IF_resWire_wget__410_BI_ETC___d6025 =
+	     _3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d5533 ?
+	       ((_theResult___fst_exp__h277686 == 8'd255) ?
+		  !resWire$wget[68] :
+		  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_I_ETC___d5823) :
+	       ((_theResult___fst_exp__h286342 == 8'd255) ?
+		  !resWire$wget[68] :
+		  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_r_ETC___d6023) ;
+  assign IF_3074_MINUS_0_CONCAT_IF_resWire_wget__410_BI_ETC___d6399 =
+	     _3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d5533 ?
+	       ((_theResult___fst_exp__h277686 == 8'd255) ?
+		  resWire$wget[68] :
+		  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_I_ETC___d6388) :
+	       ((_theResult___fst_exp__h286342 == 8'd255) ?
+		  resWire$wget[68] :
+		  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_r_ETC___d6397) ;
+  assign IF_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_ETC___d3317 =
+	     _3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_15_ETC___d3190 ?
 	       (iFifo$D_OUT[6:4] == 3'd0 || iFifo$D_OUT[6:4] == 3'd1 ||
 		iFifo$D_OUT[6:4] == 3'd2 ||
 		iFifo$D_OUT[6:4] == 3'd3 ||
 		iFifo$D_OUT[6:4] == 3'd4) &&
 	       iFifo$D_OUT[168] :
-	       ((_theResult___fst_exp__h67124 == 11'd2047) ?
+	       ((_theResult___fst_exp__h163336 == 11'd2047) ?
 		  iFifo$D_OUT[168] :
-		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard9163__ETC__q35) ;
-  assign IF_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_ETC___d2218 =
-	     _3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_29_ETC___d2101 ?
+		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard55375_ETC__q55) ;
+  assign IF_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_ETC___d4027 =
+	     _3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_29_ETC___d3910 ?
 	       (iFifo$D_OUT[6:4] == 3'd0 || iFifo$D_OUT[6:4] == 3'd1 ||
 		iFifo$D_OUT[6:4] == 3'd2 ||
 		iFifo$D_OUT[6:4] == 3'd3 ||
 		iFifo$D_OUT[6:4] == 3'd4) &&
 	       iFifo$D_OUT[38] :
-	       ((_theResult___fst_exp__h144669 == 11'd2047) ?
+	       ((_theResult___fst_exp__h240913 == 11'd2047) ?
 		  iFifo$D_OUT[38] :
-		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard36708_ETC__q60) ;
-  assign IF_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_ETC___d2772 =
-	     _3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_29_ETC___d2101 ?
+		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard32952_ETC__q82) ;
+  assign IF_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_ETC___d4581 =
+	     _3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_29_ETC___d3910 ?
 	       iFifo$D_OUT[6:4] != 3'd0 && iFifo$D_OUT[6:4] != 3'd1 &&
 	       iFifo$D_OUT[6:4] != 3'd2 &&
 	       iFifo$D_OUT[6:4] != 3'd3 &&
 	       iFifo$D_OUT[6:4] != 3'd4 ||
 	       !iFifo$D_OUT[38] :
-	       ((_theResult___fst_exp__h144669 == 11'd2047) ?
+	       ((_theResult___fst_exp__h240913 == 11'd2047) ?
 		  !iFifo$D_OUT[38] :
-		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard36708_ETC__q68) ;
-  assign IF_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_ETC___d2993 =
-	     _3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_94_ETC___d2876 ?
+		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard32952_ETC__q88) ;
+  assign IF_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_ETC___d4802 =
+	     _3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_94_ETC___d4685 ?
 	       (iFifo$D_OUT[6:4] == 3'd0 || iFifo$D_OUT[6:4] == 3'd1 ||
 		iFifo$D_OUT[6:4] == 3'd2 ||
 		iFifo$D_OUT[6:4] == 3'd3 ||
 		iFifo$D_OUT[6:4] == 3'd4) &&
 	       iFifo$D_OUT[103] :
-	       ((_theResult___fst_exp__h105762 == 11'd2047) ?
+	       ((_theResult___fst_exp__h201974 == 11'd2047) ?
 		  iFifo$D_OUT[103] :
-		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard7801__ETC__q95) ;
-  assign IF_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_ETC___d3538 =
-	     _3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_94_ETC___d2876 ?
+		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard94013_ETC__q113) ;
+  assign IF_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_ETC___d5347 =
+	     _3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_94_ETC___d4685 ?
 	       iFifo$D_OUT[6:4] != 3'd0 && iFifo$D_OUT[6:4] != 3'd1 &&
 	       iFifo$D_OUT[6:4] != 3'd2 &&
 	       iFifo$D_OUT[6:4] != 3'd3 &&
 	       iFifo$D_OUT[6:4] != 3'd4 ||
 	       !iFifo$D_OUT[103] :
-	       ((_theResult___fst_exp__h105762 == 11'd2047) ?
+	       ((_theResult___fst_exp__h201974 == 11'd2047) ?
 		  !iFifo$D_OUT[103] :
-		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard7801__ETC__q101) ;
-  assign IF_IF_0b0_CONCAT_NOT_resWire_wget__595_BITS_67_ETC___d3952 =
-	     (_theResult____h173103[56] ?
+		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard94013_ETC__q121) ;
+  assign IF_IF_0b0_CONCAT_NOT_resWire_wget__410_BITS_67_ETC___d5767 =
+	     (_theResult____h269577[56] ?
 		6'd0 :
-		(_theResult____h173103[55] ?
+		(_theResult____h269577[55] ?
 		   6'd1 :
-		   (_theResult____h173103[54] ?
+		   (_theResult____h269577[54] ?
 		      6'd2 :
-		      (_theResult____h173103[53] ?
+		      (_theResult____h269577[53] ?
 			 6'd3 :
-			 (_theResult____h173103[52] ?
+			 (_theResult____h269577[52] ?
 			    6'd4 :
-			    (_theResult____h173103[51] ?
+			    (_theResult____h269577[51] ?
 			       6'd5 :
-			       (_theResult____h173103[50] ?
+			       (_theResult____h269577[50] ?
 				  6'd6 :
-				  (_theResult____h173103[49] ?
+				  (_theResult____h269577[49] ?
 				     6'd7 :
-				     (_theResult____h173103[48] ?
+				     (_theResult____h269577[48] ?
 					6'd8 :
-					(_theResult____h173103[47] ?
+					(_theResult____h269577[47] ?
 					   6'd9 :
-					   (_theResult____h173103[46] ?
+					   (_theResult____h269577[46] ?
 					      6'd10 :
-					      (_theResult____h173103[45] ?
+					      (_theResult____h269577[45] ?
 						 6'd11 :
-						 (_theResult____h173103[44] ?
+						 (_theResult____h269577[44] ?
 						    6'd12 :
-						    (_theResult____h173103[43] ?
+						    (_theResult____h269577[43] ?
 						       6'd13 :
-						       (_theResult____h173103[42] ?
+						       (_theResult____h269577[42] ?
 							  6'd14 :
-							  (_theResult____h173103[41] ?
+							  (_theResult____h269577[41] ?
 							     6'd15 :
-							     (_theResult____h173103[40] ?
+							     (_theResult____h269577[40] ?
 								6'd16 :
-								(_theResult____h173103[39] ?
+								(_theResult____h269577[39] ?
 								   6'd17 :
-								   (_theResult____h173103[38] ?
+								   (_theResult____h269577[38] ?
 								      6'd18 :
-								      (_theResult____h173103[37] ?
+								      (_theResult____h269577[37] ?
 									 6'd19 :
-									 (_theResult____h173103[36] ?
+									 (_theResult____h269577[36] ?
 									    6'd20 :
-									    (_theResult____h173103[35] ?
+									    (_theResult____h269577[35] ?
 									       6'd21 :
-									       (_theResult____h173103[34] ?
+									       (_theResult____h269577[34] ?
 										  6'd22 :
-										  (_theResult____h173103[33] ?
+										  (_theResult____h269577[33] ?
 										     6'd23 :
-										     (_theResult____h173103[32] ?
+										     (_theResult____h269577[32] ?
 											6'd24 :
-											(_theResult____h173103[31] ?
+											(_theResult____h269577[31] ?
 											   6'd25 :
-											   (_theResult____h173103[30] ?
+											   (_theResult____h269577[30] ?
 											      6'd26 :
-											      (_theResult____h173103[29] ?
+											      (_theResult____h269577[29] ?
 												 6'd27 :
-												 (_theResult____h173103[28] ?
+												 (_theResult____h269577[28] ?
 												    6'd28 :
-												    (_theResult____h173103[27] ?
+												    (_theResult____h269577[27] ?
 												       6'd29 :
-												       (_theResult____h173103[26] ?
+												       (_theResult____h269577[26] ?
 													  6'd30 :
-													  (_theResult____h173103[25] ?
+													  (_theResult____h269577[25] ?
 													     6'd31 :
-													     (_theResult____h173103[24] ?
+													     (_theResult____h269577[24] ?
 														6'd32 :
-														(_theResult____h173103[23] ?
+														(_theResult____h269577[23] ?
 														   6'd33 :
-														   (_theResult____h173103[22] ?
+														   (_theResult____h269577[22] ?
 														      6'd34 :
-														      (_theResult____h173103[21] ?
+														      (_theResult____h269577[21] ?
 															 6'd35 :
-															 (_theResult____h173103[20] ?
+															 (_theResult____h269577[20] ?
 															    6'd36 :
-															    (_theResult____h173103[19] ?
+															    (_theResult____h269577[19] ?
 															       6'd37 :
-															       (_theResult____h173103[18] ?
+															       (_theResult____h269577[18] ?
 																  6'd38 :
-																  (_theResult____h173103[17] ?
+																  (_theResult____h269577[17] ?
 																     6'd39 :
-																     (_theResult____h173103[16] ?
+																     (_theResult____h269577[16] ?
 																	6'd40 :
-																	(_theResult____h173103[15] ?
+																	(_theResult____h269577[15] ?
 																	   6'd41 :
-																	   (_theResult____h173103[14] ?
+																	   (_theResult____h269577[14] ?
 																	      6'd42 :
-																	      (_theResult____h173103[13] ?
+																	      (_theResult____h269577[13] ?
 																		 6'd43 :
-																		 (_theResult____h173103[12] ?
+																		 (_theResult____h269577[12] ?
 																		    6'd44 :
-																		    (_theResult____h173103[11] ?
+																		    (_theResult____h269577[11] ?
 																		       6'd45 :
-																		       (_theResult____h173103[10] ?
+																		       (_theResult____h269577[10] ?
 																			  6'd46 :
-																			  (_theResult____h173103[9] ?
+																			  (_theResult____h269577[9] ?
 																			     6'd47 :
-																			     (_theResult____h173103[8] ?
+																			     (_theResult____h269577[8] ?
 																				6'd48 :
-																				(_theResult____h173103[7] ?
+																				(_theResult____h269577[7] ?
 																				   6'd49 :
-																				   (_theResult____h173103[6] ?
+																				   (_theResult____h269577[6] ?
 																				      6'd50 :
-																				      (_theResult____h173103[5] ?
+																				      (_theResult____h269577[5] ?
 																					 6'd51 :
-																					 (_theResult____h173103[4] ?
+																					 (_theResult____h269577[4] ?
 																					    6'd52 :
-																					    (_theResult____h173103[3] ?
+																					    (_theResult____h269577[3] ?
 																					       6'd53 :
-																					       (_theResult____h173103[2] ?
+																					       (_theResult____h269577[2] ?
 																						  6'd54 :
-																						  (_theResult____h173103[1] ?
+																						  (_theResult____h269577[1] ?
 																						     6'd55 :
-																						     (_theResult____h173103[0] ?
+																						     (_theResult____h269577[0] ?
 																							6'd56 :
 																							6'd57))))))))))))))))))))))))))))))))))))))))))))))))))))))))) -
 	     6'd1 ;
-  assign IF_IF_3074_MINUS_SEXT_iFifo_first__288_BITS_10_ETC___d3246 =
-	     (_theResult____h107040[56] ?
+  assign IF_IF_3074_MINUS_SEXT_iFifo_first__087_BITS_10_ETC___d5055 =
+	     (_theResult____h203252[56] ?
 		6'd0 :
-		(_theResult____h107040[55] ?
+		(_theResult____h203252[55] ?
 		   6'd1 :
-		   (_theResult____h107040[54] ?
+		   (_theResult____h203252[54] ?
 		      6'd2 :
-		      (_theResult____h107040[53] ?
+		      (_theResult____h203252[53] ?
 			 6'd3 :
-			 (_theResult____h107040[52] ?
+			 (_theResult____h203252[52] ?
 			    6'd4 :
-			    (_theResult____h107040[51] ?
+			    (_theResult____h203252[51] ?
 			       6'd5 :
-			       (_theResult____h107040[50] ?
+			       (_theResult____h203252[50] ?
 				  6'd6 :
-				  (_theResult____h107040[49] ?
+				  (_theResult____h203252[49] ?
 				     6'd7 :
-				     (_theResult____h107040[48] ?
+				     (_theResult____h203252[48] ?
 					6'd8 :
-					(_theResult____h107040[47] ?
+					(_theResult____h203252[47] ?
 					   6'd9 :
-					   (_theResult____h107040[46] ?
+					   (_theResult____h203252[46] ?
 					      6'd10 :
-					      (_theResult____h107040[45] ?
+					      (_theResult____h203252[45] ?
 						 6'd11 :
-						 (_theResult____h107040[44] ?
+						 (_theResult____h203252[44] ?
 						    6'd12 :
-						    (_theResult____h107040[43] ?
+						    (_theResult____h203252[43] ?
 						       6'd13 :
-						       (_theResult____h107040[42] ?
+						       (_theResult____h203252[42] ?
 							  6'd14 :
-							  (_theResult____h107040[41] ?
+							  (_theResult____h203252[41] ?
 							     6'd15 :
-							     (_theResult____h107040[40] ?
+							     (_theResult____h203252[40] ?
 								6'd16 :
-								(_theResult____h107040[39] ?
+								(_theResult____h203252[39] ?
 								   6'd17 :
-								   (_theResult____h107040[38] ?
+								   (_theResult____h203252[38] ?
 								      6'd18 :
-								      (_theResult____h107040[37] ?
+								      (_theResult____h203252[37] ?
 									 6'd19 :
-									 (_theResult____h107040[36] ?
+									 (_theResult____h203252[36] ?
 									    6'd20 :
-									    (_theResult____h107040[35] ?
+									    (_theResult____h203252[35] ?
 									       6'd21 :
-									       (_theResult____h107040[34] ?
+									       (_theResult____h203252[34] ?
 										  6'd22 :
-										  (_theResult____h107040[33] ?
+										  (_theResult____h203252[33] ?
 										     6'd23 :
-										     (_theResult____h107040[32] ?
+										     (_theResult____h203252[32] ?
 											6'd24 :
-											(_theResult____h107040[31] ?
+											(_theResult____h203252[31] ?
 											   6'd25 :
-											   (_theResult____h107040[30] ?
+											   (_theResult____h203252[30] ?
 											      6'd26 :
-											      (_theResult____h107040[29] ?
+											      (_theResult____h203252[29] ?
 												 6'd27 :
-												 (_theResult____h107040[28] ?
+												 (_theResult____h203252[28] ?
 												    6'd28 :
-												    (_theResult____h107040[27] ?
+												    (_theResult____h203252[27] ?
 												       6'd29 :
-												       (_theResult____h107040[26] ?
+												       (_theResult____h203252[26] ?
 													  6'd30 :
-													  (_theResult____h107040[25] ?
+													  (_theResult____h203252[25] ?
 													     6'd31 :
-													     (_theResult____h107040[24] ?
+													     (_theResult____h203252[24] ?
 														6'd32 :
-														(_theResult____h107040[23] ?
+														(_theResult____h203252[23] ?
 														   6'd33 :
-														   (_theResult____h107040[22] ?
+														   (_theResult____h203252[22] ?
 														      6'd34 :
-														      (_theResult____h107040[21] ?
+														      (_theResult____h203252[21] ?
 															 6'd35 :
-															 (_theResult____h107040[20] ?
+															 (_theResult____h203252[20] ?
 															    6'd36 :
-															    (_theResult____h107040[19] ?
+															    (_theResult____h203252[19] ?
 															       6'd37 :
-															       (_theResult____h107040[18] ?
+															       (_theResult____h203252[18] ?
 																  6'd38 :
-																  (_theResult____h107040[17] ?
+																  (_theResult____h203252[17] ?
 																     6'd39 :
-																     (_theResult____h107040[16] ?
+																     (_theResult____h203252[16] ?
 																	6'd40 :
-																	(_theResult____h107040[15] ?
+																	(_theResult____h203252[15] ?
 																	   6'd41 :
-																	   (_theResult____h107040[14] ?
+																	   (_theResult____h203252[14] ?
 																	      6'd42 :
-																	      (_theResult____h107040[13] ?
+																	      (_theResult____h203252[13] ?
 																		 6'd43 :
-																		 (_theResult____h107040[12] ?
+																		 (_theResult____h203252[12] ?
 																		    6'd44 :
-																		    (_theResult____h107040[11] ?
+																		    (_theResult____h203252[11] ?
 																		       6'd45 :
-																		       (_theResult____h107040[10] ?
+																		       (_theResult____h203252[10] ?
 																			  6'd46 :
-																			  (_theResult____h107040[9] ?
+																			  (_theResult____h203252[9] ?
 																			     6'd47 :
-																			     (_theResult____h107040[8] ?
+																			     (_theResult____h203252[8] ?
 																				6'd48 :
-																				(_theResult____h107040[7] ?
+																				(_theResult____h203252[7] ?
 																				   6'd49 :
-																				   (_theResult____h107040[6] ?
+																				   (_theResult____h203252[6] ?
 																				      6'd50 :
-																				      (_theResult____h107040[5] ?
+																				      (_theResult____h203252[5] ?
 																					 6'd51 :
-																					 (_theResult____h107040[4] ?
+																					 (_theResult____h203252[4] ?
 																					    6'd52 :
-																					    (_theResult____h107040[3] ?
+																					    (_theResult____h203252[3] ?
 																					       6'd53 :
-																					       (_theResult____h107040[2] ?
+																					       (_theResult____h203252[2] ?
 																						  6'd54 :
-																						  (_theResult____h107040[1] ?
+																						  (_theResult____h203252[1] ?
 																						     6'd55 :
-																						     (_theResult____h107040[0] ?
+																						     (_theResult____h203252[0] ?
 																							6'd56 :
 																							6'd57))))))))))))))))))))))))))))))))))))))))))))))))))))))))) -
 	     6'd1 ;
-  assign IF_IF_3074_MINUS_SEXT_iFifo_first__288_BITS_16_ETC___d1763 =
-	     (_theResult____h68402[56] ?
+  assign IF_IF_3074_MINUS_SEXT_iFifo_first__087_BITS_16_ETC___d3572 =
+	     (_theResult____h164614[56] ?
 		6'd0 :
-		(_theResult____h68402[55] ?
+		(_theResult____h164614[55] ?
 		   6'd1 :
-		   (_theResult____h68402[54] ?
+		   (_theResult____h164614[54] ?
 		      6'd2 :
-		      (_theResult____h68402[53] ?
+		      (_theResult____h164614[53] ?
 			 6'd3 :
-			 (_theResult____h68402[52] ?
+			 (_theResult____h164614[52] ?
 			    6'd4 :
-			    (_theResult____h68402[51] ?
+			    (_theResult____h164614[51] ?
 			       6'd5 :
-			       (_theResult____h68402[50] ?
+			       (_theResult____h164614[50] ?
 				  6'd6 :
-				  (_theResult____h68402[49] ?
+				  (_theResult____h164614[49] ?
 				     6'd7 :
-				     (_theResult____h68402[48] ?
+				     (_theResult____h164614[48] ?
 					6'd8 :
-					(_theResult____h68402[47] ?
+					(_theResult____h164614[47] ?
 					   6'd9 :
-					   (_theResult____h68402[46] ?
+					   (_theResult____h164614[46] ?
 					      6'd10 :
-					      (_theResult____h68402[45] ?
+					      (_theResult____h164614[45] ?
 						 6'd11 :
-						 (_theResult____h68402[44] ?
+						 (_theResult____h164614[44] ?
 						    6'd12 :
-						    (_theResult____h68402[43] ?
+						    (_theResult____h164614[43] ?
 						       6'd13 :
-						       (_theResult____h68402[42] ?
+						       (_theResult____h164614[42] ?
 							  6'd14 :
-							  (_theResult____h68402[41] ?
+							  (_theResult____h164614[41] ?
 							     6'd15 :
-							     (_theResult____h68402[40] ?
+							     (_theResult____h164614[40] ?
 								6'd16 :
-								(_theResult____h68402[39] ?
+								(_theResult____h164614[39] ?
 								   6'd17 :
-								   (_theResult____h68402[38] ?
+								   (_theResult____h164614[38] ?
 								      6'd18 :
-								      (_theResult____h68402[37] ?
+								      (_theResult____h164614[37] ?
 									 6'd19 :
-									 (_theResult____h68402[36] ?
+									 (_theResult____h164614[36] ?
 									    6'd20 :
-									    (_theResult____h68402[35] ?
+									    (_theResult____h164614[35] ?
 									       6'd21 :
-									       (_theResult____h68402[34] ?
+									       (_theResult____h164614[34] ?
 										  6'd22 :
-										  (_theResult____h68402[33] ?
+										  (_theResult____h164614[33] ?
 										     6'd23 :
-										     (_theResult____h68402[32] ?
+										     (_theResult____h164614[32] ?
 											6'd24 :
-											(_theResult____h68402[31] ?
+											(_theResult____h164614[31] ?
 											   6'd25 :
-											   (_theResult____h68402[30] ?
+											   (_theResult____h164614[30] ?
 											      6'd26 :
-											      (_theResult____h68402[29] ?
+											      (_theResult____h164614[29] ?
 												 6'd27 :
-												 (_theResult____h68402[28] ?
+												 (_theResult____h164614[28] ?
 												    6'd28 :
-												    (_theResult____h68402[27] ?
+												    (_theResult____h164614[27] ?
 												       6'd29 :
-												       (_theResult____h68402[26] ?
+												       (_theResult____h164614[26] ?
 													  6'd30 :
-													  (_theResult____h68402[25] ?
+													  (_theResult____h164614[25] ?
 													     6'd31 :
-													     (_theResult____h68402[24] ?
+													     (_theResult____h164614[24] ?
 														6'd32 :
-														(_theResult____h68402[23] ?
+														(_theResult____h164614[23] ?
 														   6'd33 :
-														   (_theResult____h68402[22] ?
+														   (_theResult____h164614[22] ?
 														      6'd34 :
-														      (_theResult____h68402[21] ?
+														      (_theResult____h164614[21] ?
 															 6'd35 :
-															 (_theResult____h68402[20] ?
+															 (_theResult____h164614[20] ?
 															    6'd36 :
-															    (_theResult____h68402[19] ?
+															    (_theResult____h164614[19] ?
 															       6'd37 :
-															       (_theResult____h68402[18] ?
+															       (_theResult____h164614[18] ?
 																  6'd38 :
-																  (_theResult____h68402[17] ?
+																  (_theResult____h164614[17] ?
 																     6'd39 :
-																     (_theResult____h68402[16] ?
+																     (_theResult____h164614[16] ?
 																	6'd40 :
-																	(_theResult____h68402[15] ?
+																	(_theResult____h164614[15] ?
 																	   6'd41 :
-																	   (_theResult____h68402[14] ?
+																	   (_theResult____h164614[14] ?
 																	      6'd42 :
-																	      (_theResult____h68402[13] ?
+																	      (_theResult____h164614[13] ?
 																		 6'd43 :
-																		 (_theResult____h68402[12] ?
+																		 (_theResult____h164614[12] ?
 																		    6'd44 :
-																		    (_theResult____h68402[11] ?
+																		    (_theResult____h164614[11] ?
 																		       6'd45 :
-																		       (_theResult____h68402[10] ?
+																		       (_theResult____h164614[10] ?
 																			  6'd46 :
-																			  (_theResult____h68402[9] ?
+																			  (_theResult____h164614[9] ?
 																			     6'd47 :
-																			     (_theResult____h68402[8] ?
+																			     (_theResult____h164614[8] ?
 																				6'd48 :
-																				(_theResult____h68402[7] ?
+																				(_theResult____h164614[7] ?
 																				   6'd49 :
-																				   (_theResult____h68402[6] ?
+																				   (_theResult____h164614[6] ?
 																				      6'd50 :
-																				      (_theResult____h68402[5] ?
+																				      (_theResult____h164614[5] ?
 																					 6'd51 :
-																					 (_theResult____h68402[4] ?
+																					 (_theResult____h164614[4] ?
 																					    6'd52 :
-																					    (_theResult____h68402[3] ?
+																					    (_theResult____h164614[3] ?
 																					       6'd53 :
-																					       (_theResult____h68402[2] ?
+																					       (_theResult____h164614[2] ?
 																						  6'd54 :
-																						  (_theResult____h68402[1] ?
+																						  (_theResult____h164614[1] ?
 																						     6'd55 :
-																						     (_theResult____h68402[0] ?
+																						     (_theResult____h164614[0] ?
 																							6'd56 :
 																							6'd57))))))))))))))))))))))))))))))))))))))))))))))))))))))))) -
 	     6'd1 ;
-  assign IF_IF_3074_MINUS_SEXT_iFifo_first__288_BITS_37_ETC___d2471 =
-	     (_theResult____h145947[56] ?
+  assign IF_IF_3074_MINUS_SEXT_iFifo_first__087_BITS_37_ETC___d4280 =
+	     (_theResult____h242191[56] ?
 		6'd0 :
-		(_theResult____h145947[55] ?
+		(_theResult____h242191[55] ?
 		   6'd1 :
-		   (_theResult____h145947[54] ?
+		   (_theResult____h242191[54] ?
 		      6'd2 :
-		      (_theResult____h145947[53] ?
+		      (_theResult____h242191[53] ?
 			 6'd3 :
-			 (_theResult____h145947[52] ?
+			 (_theResult____h242191[52] ?
 			    6'd4 :
-			    (_theResult____h145947[51] ?
+			    (_theResult____h242191[51] ?
 			       6'd5 :
-			       (_theResult____h145947[50] ?
+			       (_theResult____h242191[50] ?
 				  6'd6 :
-				  (_theResult____h145947[49] ?
+				  (_theResult____h242191[49] ?
 				     6'd7 :
-				     (_theResult____h145947[48] ?
+				     (_theResult____h242191[48] ?
 					6'd8 :
-					(_theResult____h145947[47] ?
+					(_theResult____h242191[47] ?
 					   6'd9 :
-					   (_theResult____h145947[46] ?
+					   (_theResult____h242191[46] ?
 					      6'd10 :
-					      (_theResult____h145947[45] ?
+					      (_theResult____h242191[45] ?
 						 6'd11 :
-						 (_theResult____h145947[44] ?
+						 (_theResult____h242191[44] ?
 						    6'd12 :
-						    (_theResult____h145947[43] ?
+						    (_theResult____h242191[43] ?
 						       6'd13 :
-						       (_theResult____h145947[42] ?
+						       (_theResult____h242191[42] ?
 							  6'd14 :
-							  (_theResult____h145947[41] ?
+							  (_theResult____h242191[41] ?
 							     6'd15 :
-							     (_theResult____h145947[40] ?
+							     (_theResult____h242191[40] ?
 								6'd16 :
-								(_theResult____h145947[39] ?
+								(_theResult____h242191[39] ?
 								   6'd17 :
-								   (_theResult____h145947[38] ?
+								   (_theResult____h242191[38] ?
 								      6'd18 :
-								      (_theResult____h145947[37] ?
+								      (_theResult____h242191[37] ?
 									 6'd19 :
-									 (_theResult____h145947[36] ?
+									 (_theResult____h242191[36] ?
 									    6'd20 :
-									    (_theResult____h145947[35] ?
+									    (_theResult____h242191[35] ?
 									       6'd21 :
-									       (_theResult____h145947[34] ?
+									       (_theResult____h242191[34] ?
 										  6'd22 :
-										  (_theResult____h145947[33] ?
+										  (_theResult____h242191[33] ?
 										     6'd23 :
-										     (_theResult____h145947[32] ?
+										     (_theResult____h242191[32] ?
 											6'd24 :
-											(_theResult____h145947[31] ?
+											(_theResult____h242191[31] ?
 											   6'd25 :
-											   (_theResult____h145947[30] ?
+											   (_theResult____h242191[30] ?
 											      6'd26 :
-											      (_theResult____h145947[29] ?
+											      (_theResult____h242191[29] ?
 												 6'd27 :
-												 (_theResult____h145947[28] ?
+												 (_theResult____h242191[28] ?
 												    6'd28 :
-												    (_theResult____h145947[27] ?
+												    (_theResult____h242191[27] ?
 												       6'd29 :
-												       (_theResult____h145947[26] ?
+												       (_theResult____h242191[26] ?
 													  6'd30 :
-													  (_theResult____h145947[25] ?
+													  (_theResult____h242191[25] ?
 													     6'd31 :
-													     (_theResult____h145947[24] ?
+													     (_theResult____h242191[24] ?
 														6'd32 :
-														(_theResult____h145947[23] ?
+														(_theResult____h242191[23] ?
 														   6'd33 :
-														   (_theResult____h145947[22] ?
+														   (_theResult____h242191[22] ?
 														      6'd34 :
-														      (_theResult____h145947[21] ?
+														      (_theResult____h242191[21] ?
 															 6'd35 :
-															 (_theResult____h145947[20] ?
+															 (_theResult____h242191[20] ?
 															    6'd36 :
-															    (_theResult____h145947[19] ?
+															    (_theResult____h242191[19] ?
 															       6'd37 :
-															       (_theResult____h145947[18] ?
+															       (_theResult____h242191[18] ?
 																  6'd38 :
-																  (_theResult____h145947[17] ?
+																  (_theResult____h242191[17] ?
 																     6'd39 :
-																     (_theResult____h145947[16] ?
+																     (_theResult____h242191[16] ?
 																	6'd40 :
-																	(_theResult____h145947[15] ?
+																	(_theResult____h242191[15] ?
 																	   6'd41 :
-																	   (_theResult____h145947[14] ?
+																	   (_theResult____h242191[14] ?
 																	      6'd42 :
-																	      (_theResult____h145947[13] ?
+																	      (_theResult____h242191[13] ?
 																		 6'd43 :
-																		 (_theResult____h145947[12] ?
+																		 (_theResult____h242191[12] ?
 																		    6'd44 :
-																		    (_theResult____h145947[11] ?
+																		    (_theResult____h242191[11] ?
 																		       6'd45 :
-																		       (_theResult____h145947[10] ?
+																		       (_theResult____h242191[10] ?
 																			  6'd46 :
-																			  (_theResult____h145947[9] ?
+																			  (_theResult____h242191[9] ?
 																			     6'd47 :
-																			     (_theResult____h145947[8] ?
+																			     (_theResult____h242191[8] ?
 																				6'd48 :
-																				(_theResult____h145947[7] ?
+																				(_theResult____h242191[7] ?
 																				   6'd49 :
-																				   (_theResult____h145947[6] ?
+																				   (_theResult____h242191[6] ?
 																				      6'd50 :
-																				      (_theResult____h145947[5] ?
+																				      (_theResult____h242191[5] ?
 																					 6'd51 :
-																					 (_theResult____h145947[4] ?
+																					 (_theResult____h242191[4] ?
 																					    6'd52 :
-																					    (_theResult____h145947[3] ?
+																					    (_theResult____h242191[3] ?
 																					       6'd53 :
-																					       (_theResult____h145947[2] ?
+																					       (_theResult____h242191[2] ?
 																						  6'd54 :
-																						  (_theResult____h145947[1] ?
+																						  (_theResult____h242191[1] ?
 																						     6'd55 :
-																						     (_theResult____h145947[0] ?
+																						     (_theResult____h242191[0] ?
 																							6'd56 :
 																							6'd57))))))))))))))))))))))))))))))))))))))))))))))))))))))))) -
 	     6'd1 ;
-  assign IF_IF_3970_MINUS_SEXT_resWire_wget__595_BITS_6_ETC___d4463 =
-	     (_theResult____h190740[56] ?
+  assign IF_IF_3970_MINUS_SEXT_resWire_wget__410_BITS_6_ETC___d6278 =
+	     (_theResult____h287214[56] ?
 		6'd0 :
-		(_theResult____h190740[55] ?
+		(_theResult____h287214[55] ?
 		   6'd1 :
-		   (_theResult____h190740[54] ?
+		   (_theResult____h287214[54] ?
 		      6'd2 :
-		      (_theResult____h190740[53] ?
+		      (_theResult____h287214[53] ?
 			 6'd3 :
-			 (_theResult____h190740[52] ?
+			 (_theResult____h287214[52] ?
 			    6'd4 :
-			    (_theResult____h190740[51] ?
+			    (_theResult____h287214[51] ?
 			       6'd5 :
-			       (_theResult____h190740[50] ?
+			       (_theResult____h287214[50] ?
 				  6'd6 :
-				  (_theResult____h190740[49] ?
+				  (_theResult____h287214[49] ?
 				     6'd7 :
-				     (_theResult____h190740[48] ?
+				     (_theResult____h287214[48] ?
 					6'd8 :
-					(_theResult____h190740[47] ?
+					(_theResult____h287214[47] ?
 					   6'd9 :
-					   (_theResult____h190740[46] ?
+					   (_theResult____h287214[46] ?
 					      6'd10 :
-					      (_theResult____h190740[45] ?
+					      (_theResult____h287214[45] ?
 						 6'd11 :
-						 (_theResult____h190740[44] ?
+						 (_theResult____h287214[44] ?
 						    6'd12 :
-						    (_theResult____h190740[43] ?
+						    (_theResult____h287214[43] ?
 						       6'd13 :
-						       (_theResult____h190740[42] ?
+						       (_theResult____h287214[42] ?
 							  6'd14 :
-							  (_theResult____h190740[41] ?
+							  (_theResult____h287214[41] ?
 							     6'd15 :
-							     (_theResult____h190740[40] ?
+							     (_theResult____h287214[40] ?
 								6'd16 :
-								(_theResult____h190740[39] ?
+								(_theResult____h287214[39] ?
 								   6'd17 :
-								   (_theResult____h190740[38] ?
+								   (_theResult____h287214[38] ?
 								      6'd18 :
-								      (_theResult____h190740[37] ?
+								      (_theResult____h287214[37] ?
 									 6'd19 :
-									 (_theResult____h190740[36] ?
+									 (_theResult____h287214[36] ?
 									    6'd20 :
-									    (_theResult____h190740[35] ?
+									    (_theResult____h287214[35] ?
 									       6'd21 :
-									       (_theResult____h190740[34] ?
+									       (_theResult____h287214[34] ?
 										  6'd22 :
-										  (_theResult____h190740[33] ?
+										  (_theResult____h287214[33] ?
 										     6'd23 :
-										     (_theResult____h190740[32] ?
+										     (_theResult____h287214[32] ?
 											6'd24 :
-											(_theResult____h190740[31] ?
+											(_theResult____h287214[31] ?
 											   6'd25 :
-											   (_theResult____h190740[30] ?
+											   (_theResult____h287214[30] ?
 											      6'd26 :
-											      (_theResult____h190740[29] ?
+											      (_theResult____h287214[29] ?
 												 6'd27 :
-												 (_theResult____h190740[28] ?
+												 (_theResult____h287214[28] ?
 												    6'd28 :
-												    (_theResult____h190740[27] ?
+												    (_theResult____h287214[27] ?
 												       6'd29 :
-												       (_theResult____h190740[26] ?
+												       (_theResult____h287214[26] ?
 													  6'd30 :
-													  (_theResult____h190740[25] ?
+													  (_theResult____h287214[25] ?
 													     6'd31 :
-													     (_theResult____h190740[24] ?
+													     (_theResult____h287214[24] ?
 														6'd32 :
-														(_theResult____h190740[23] ?
+														(_theResult____h287214[23] ?
 														   6'd33 :
-														   (_theResult____h190740[22] ?
+														   (_theResult____h287214[22] ?
 														      6'd34 :
-														      (_theResult____h190740[21] ?
+														      (_theResult____h287214[21] ?
 															 6'd35 :
-															 (_theResult____h190740[20] ?
+															 (_theResult____h287214[20] ?
 															    6'd36 :
-															    (_theResult____h190740[19] ?
+															    (_theResult____h287214[19] ?
 															       6'd37 :
-															       (_theResult____h190740[18] ?
+															       (_theResult____h287214[18] ?
 																  6'd38 :
-																  (_theResult____h190740[17] ?
+																  (_theResult____h287214[17] ?
 																     6'd39 :
-																     (_theResult____h190740[16] ?
+																     (_theResult____h287214[16] ?
 																	6'd40 :
-																	(_theResult____h190740[15] ?
+																	(_theResult____h287214[15] ?
 																	   6'd41 :
-																	   (_theResult____h190740[14] ?
+																	   (_theResult____h287214[14] ?
 																	      6'd42 :
-																	      (_theResult____h190740[13] ?
+																	      (_theResult____h287214[13] ?
 																		 6'd43 :
-																		 (_theResult____h190740[12] ?
+																		 (_theResult____h287214[12] ?
 																		    6'd44 :
-																		    (_theResult____h190740[11] ?
+																		    (_theResult____h287214[11] ?
 																		       6'd45 :
-																		       (_theResult____h190740[10] ?
+																		       (_theResult____h287214[10] ?
 																			  6'd46 :
-																			  (_theResult____h190740[9] ?
+																			  (_theResult____h287214[9] ?
 																			     6'd47 :
-																			     (_theResult____h190740[8] ?
+																			     (_theResult____h287214[8] ?
 																				6'd48 :
-																				(_theResult____h190740[7] ?
+																				(_theResult____h287214[7] ?
 																				   6'd49 :
-																				   (_theResult____h190740[6] ?
+																				   (_theResult____h287214[6] ?
 																				      6'd50 :
-																				      (_theResult____h190740[5] ?
+																				      (_theResult____h287214[5] ?
 																					 6'd51 :
-																					 (_theResult____h190740[4] ?
+																					 (_theResult____h287214[4] ?
 																					    6'd52 :
-																					    (_theResult____h190740[3] ?
+																					    (_theResult____h287214[3] ?
 																					       6'd53 :
-																					       (_theResult____h190740[2] ?
+																					       (_theResult____h287214[2] ?
 																						  6'd54 :
-																						  (_theResult____h190740[1] ?
+																						  (_theResult____h287214[1] ?
 																						     6'd55 :
-																						     (_theResult____h190740[0] ?
+																						     (_theResult____h287214[0] ?
 																							6'd56 :
 																							6'd57))))))))))))))))))))))))))))))))))))))))))))))))))))))))) -
 	     6'd1 ;
-  assign IF_IF_7170_MINUS_fpu_madd_fState_S3_first__96__ETC___d232 =
-	     (din_exp__h34683 == 11'd0) ?
+  assign IF_IF_7170_MINUS_fpu_madd_fState_S3_first__995_ETC___d2031 =
+	     (din_exp__h130866 == 11'd0) ?
 	       12'd3074 :
-	       { din_exp4683_MINUS_1023__q3[10],
-		 din_exp4683_MINUS_1023__q3 } ;
-  assign IF_IF_7170_MINUS_fpu_madd_fState_S3_first__96__ETC___d661 =
-	     (sfdBC__h19479[105] ?
+	       { din_exp30866_MINUS_1023__q23[10],
+		 din_exp30866_MINUS_1023__q23 } ;
+  assign IF_IF_7170_MINUS_fpu_madd_fState_S3_first__995_ETC___d2460 =
+	     (sfdBC__h115662[105] ?
 		7'd0 :
-		(sfdBC__h19479[104] ?
+		(sfdBC__h115662[104] ?
 		   7'd1 :
-		   (sfdBC__h19479[103] ?
+		   (sfdBC__h115662[103] ?
 		      7'd2 :
-		      (sfdBC__h19479[102] ?
+		      (sfdBC__h115662[102] ?
 			 7'd3 :
-			 (sfdBC__h19479[101] ?
+			 (sfdBC__h115662[101] ?
 			    7'd4 :
-			    (sfdBC__h19479[100] ?
+			    (sfdBC__h115662[100] ?
 			       7'd5 :
-			       (sfdBC__h19479[99] ?
+			       (sfdBC__h115662[99] ?
 				  7'd6 :
-				  (sfdBC__h19479[98] ?
+				  (sfdBC__h115662[98] ?
 				     7'd7 :
-				     (sfdBC__h19479[97] ?
+				     (sfdBC__h115662[97] ?
 					7'd8 :
-					(sfdBC__h19479[96] ?
+					(sfdBC__h115662[96] ?
 					   7'd9 :
-					   (sfdBC__h19479[95] ?
+					   (sfdBC__h115662[95] ?
 					      7'd10 :
-					      (sfdBC__h19479[94] ?
+					      (sfdBC__h115662[94] ?
 						 7'd11 :
-						 (sfdBC__h19479[93] ?
+						 (sfdBC__h115662[93] ?
 						    7'd12 :
-						    (sfdBC__h19479[92] ?
+						    (sfdBC__h115662[92] ?
 						       7'd13 :
-						       (sfdBC__h19479[91] ?
+						       (sfdBC__h115662[91] ?
 							  7'd14 :
-							  (sfdBC__h19479[90] ?
+							  (sfdBC__h115662[90] ?
 							     7'd15 :
-							     (sfdBC__h19479[89] ?
+							     (sfdBC__h115662[89] ?
 								7'd16 :
-								(sfdBC__h19479[88] ?
+								(sfdBC__h115662[88] ?
 								   7'd17 :
-								   (sfdBC__h19479[87] ?
+								   (sfdBC__h115662[87] ?
 								      7'd18 :
-								      (sfdBC__h19479[86] ?
+								      (sfdBC__h115662[86] ?
 									 7'd19 :
-									 (sfdBC__h19479[85] ?
+									 (sfdBC__h115662[85] ?
 									    7'd20 :
-									    (sfdBC__h19479[84] ?
+									    (sfdBC__h115662[84] ?
 									       7'd21 :
-									       (sfdBC__h19479[83] ?
+									       (sfdBC__h115662[83] ?
 										  7'd22 :
-										  (sfdBC__h19479[82] ?
+										  (sfdBC__h115662[82] ?
 										     7'd23 :
-										     (sfdBC__h19479[81] ?
+										     (sfdBC__h115662[81] ?
 											7'd24 :
-											(sfdBC__h19479[80] ?
+											(sfdBC__h115662[80] ?
 											   7'd25 :
-											   (sfdBC__h19479[79] ?
+											   (sfdBC__h115662[79] ?
 											      7'd26 :
-											      (sfdBC__h19479[78] ?
+											      (sfdBC__h115662[78] ?
 												 7'd27 :
-												 (sfdBC__h19479[77] ?
+												 (sfdBC__h115662[77] ?
 												    7'd28 :
-												    (sfdBC__h19479[76] ?
+												    (sfdBC__h115662[76] ?
 												       7'd29 :
-												       (sfdBC__h19479[75] ?
+												       (sfdBC__h115662[75] ?
 													  7'd30 :
-													  (sfdBC__h19479[74] ?
+													  (sfdBC__h115662[74] ?
 													     7'd31 :
-													     (sfdBC__h19479[73] ?
+													     (sfdBC__h115662[73] ?
 														7'd32 :
-														(sfdBC__h19479[72] ?
+														(sfdBC__h115662[72] ?
 														   7'd33 :
-														   (sfdBC__h19479[71] ?
+														   (sfdBC__h115662[71] ?
 														      7'd34 :
-														      (sfdBC__h19479[70] ?
+														      (sfdBC__h115662[70] ?
 															 7'd35 :
-															 (sfdBC__h19479[69] ?
+															 (sfdBC__h115662[69] ?
 															    7'd36 :
-															    (sfdBC__h19479[68] ?
+															    (sfdBC__h115662[68] ?
 															       7'd37 :
-															       (sfdBC__h19479[67] ?
+															       (sfdBC__h115662[67] ?
 																  7'd38 :
-																  (sfdBC__h19479[66] ?
+																  (sfdBC__h115662[66] ?
 																     7'd39 :
-																     (sfdBC__h19479[65] ?
+																     (sfdBC__h115662[65] ?
 																	7'd40 :
-																	(sfdBC__h19479[64] ?
+																	(sfdBC__h115662[64] ?
 																	   7'd41 :
-																	   (sfdBC__h19479[63] ?
+																	   (sfdBC__h115662[63] ?
 																	      7'd42 :
-																	      (sfdBC__h19479[62] ?
+																	      (sfdBC__h115662[62] ?
 																		 7'd43 :
-																		 (sfdBC__h19479[61] ?
+																		 (sfdBC__h115662[61] ?
 																		    7'd44 :
-																		    (sfdBC__h19479[60] ?
+																		    (sfdBC__h115662[60] ?
 																		       7'd45 :
-																		       (sfdBC__h19479[59] ?
+																		       (sfdBC__h115662[59] ?
 																			  7'd46 :
-																			  (sfdBC__h19479[58] ?
+																			  (sfdBC__h115662[58] ?
 																			     7'd47 :
-																			     (sfdBC__h19479[57] ?
+																			     (sfdBC__h115662[57] ?
 																				7'd48 :
-																				(sfdBC__h19479[56] ?
+																				(sfdBC__h115662[56] ?
 																				   7'd49 :
-																				   (sfdBC__h19479[55] ?
+																				   (sfdBC__h115662[55] ?
 																				      7'd50 :
-																				      (sfdBC__h19479[54] ?
+																				      (sfdBC__h115662[54] ?
 																					 7'd51 :
-																					 (sfdBC__h19479[53] ?
+																					 (sfdBC__h115662[53] ?
 																					    7'd52 :
-																					    (sfdBC__h19479[52] ?
+																					    (sfdBC__h115662[52] ?
 																					       7'd53 :
-																					       (sfdBC__h19479[51] ?
+																					       (sfdBC__h115662[51] ?
 																						  7'd54 :
-																						  (sfdBC__h19479[50] ?
+																						  (sfdBC__h115662[50] ?
 																						     7'd55 :
-																						     (sfdBC__h19479[49] ?
+																						     (sfdBC__h115662[49] ?
 																							7'd56 :
-																							(sfdBC__h19479[48] ?
+																							(sfdBC__h115662[48] ?
 																							   7'd57 :
-																							   (sfdBC__h19479[47] ?
+																							   (sfdBC__h115662[47] ?
 																							      7'd58 :
-																							      (sfdBC__h19479[46] ?
+																							      (sfdBC__h115662[46] ?
 																								 7'd59 :
-																								 (sfdBC__h19479[45] ?
+																								 (sfdBC__h115662[45] ?
 																								    7'd60 :
-																								    (sfdBC__h19479[44] ?
+																								    (sfdBC__h115662[44] ?
 																								       7'd61 :
-																								       (sfdBC__h19479[43] ?
+																								       (sfdBC__h115662[43] ?
 																									  7'd62 :
-																									  (sfdBC__h19479[42] ?
+																									  (sfdBC__h115662[42] ?
 																									     7'd63 :
-																									     (sfdBC__h19479[41] ?
+																									     (sfdBC__h115662[41] ?
 																										7'd64 :
-																										(sfdBC__h19479[40] ?
+																										(sfdBC__h115662[40] ?
 																										   7'd65 :
-																										   (sfdBC__h19479[39] ?
+																										   (sfdBC__h115662[39] ?
 																										      7'd66 :
-																										      (sfdBC__h19479[38] ?
+																										      (sfdBC__h115662[38] ?
 																											 7'd67 :
-																											 (sfdBC__h19479[37] ?
+																											 (sfdBC__h115662[37] ?
 																											    7'd68 :
-																											    (sfdBC__h19479[36] ?
+																											    (sfdBC__h115662[36] ?
 																											       7'd69 :
-																											       (sfdBC__h19479[35] ?
+																											       (sfdBC__h115662[35] ?
 																												  7'd70 :
-																												  (sfdBC__h19479[34] ?
+																												  (sfdBC__h115662[34] ?
 																												     7'd71 :
-																												     (sfdBC__h19479[33] ?
+																												     (sfdBC__h115662[33] ?
 																													7'd72 :
-																													(sfdBC__h19479[32] ?
+																													(sfdBC__h115662[32] ?
 																													   7'd73 :
-																													   (sfdBC__h19479[31] ?
+																													   (sfdBC__h115662[31] ?
 																													      7'd74 :
-																													      (sfdBC__h19479[30] ?
+																													      (sfdBC__h115662[30] ?
 																														 7'd75 :
-																														 (sfdBC__h19479[29] ?
+																														 (sfdBC__h115662[29] ?
 																														    7'd76 :
-																														    (sfdBC__h19479[28] ?
+																														    (sfdBC__h115662[28] ?
 																														       7'd77 :
-																														       (sfdBC__h19479[27] ?
+																														       (sfdBC__h115662[27] ?
 																															  7'd78 :
-																															  (sfdBC__h19479[26] ?
+																															  (sfdBC__h115662[26] ?
 																															     7'd79 :
-																															     (sfdBC__h19479[25] ?
+																															     (sfdBC__h115662[25] ?
 																																7'd80 :
-																																(sfdBC__h19479[24] ?
+																																(sfdBC__h115662[24] ?
 																																   7'd81 :
-																																   (sfdBC__h19479[23] ?
+																																   (sfdBC__h115662[23] ?
 																																      7'd82 :
-																																      (sfdBC__h19479[22] ?
+																																      (sfdBC__h115662[22] ?
 																																	 7'd83 :
-																																	 (sfdBC__h19479[21] ?
+																																	 (sfdBC__h115662[21] ?
 																																	    7'd84 :
-																																	    (sfdBC__h19479[20] ?
+																																	    (sfdBC__h115662[20] ?
 																																	       7'd85 :
-																																	       (sfdBC__h19479[19] ?
+																																	       (sfdBC__h115662[19] ?
 																																		  7'd86 :
-																																		  (sfdBC__h19479[18] ?
+																																		  (sfdBC__h115662[18] ?
 																																		     7'd87 :
-																																		     (sfdBC__h19479[17] ?
+																																		     (sfdBC__h115662[17] ?
 																																			7'd88 :
-																																			(sfdBC__h19479[16] ?
+																																			(sfdBC__h115662[16] ?
 																																			   7'd89 :
-																																			   (sfdBC__h19479[15] ?
+																																			   (sfdBC__h115662[15] ?
 																																			      7'd90 :
-																																			      (sfdBC__h19479[14] ?
+																																			      (sfdBC__h115662[14] ?
 																																				 7'd91 :
-																																				 (sfdBC__h19479[13] ?
+																																				 (sfdBC__h115662[13] ?
 																																				    7'd92 :
-																																				    (sfdBC__h19479[12] ?
+																																				    (sfdBC__h115662[12] ?
 																																				       7'd93 :
-																																				       (sfdBC__h19479[11] ?
+																																				       (sfdBC__h115662[11] ?
 																																					  7'd94 :
-																																					  (sfdBC__h19479[10] ?
+																																					  (sfdBC__h115662[10] ?
 																																					     7'd95 :
-																																					     (sfdBC__h19479[9] ?
+																																					     (sfdBC__h115662[9] ?
 																																						7'd96 :
-																																						(sfdBC__h19479[8] ?
+																																						(sfdBC__h115662[8] ?
 																																						   7'd97 :
-																																						   (sfdBC__h19479[7] ?
+																																						   (sfdBC__h115662[7] ?
 																																						      7'd98 :
-																																						      (sfdBC__h19479[6] ?
+																																						      (sfdBC__h115662[6] ?
 																																							 7'd99 :
-																																							 (sfdBC__h19479[5] ?
+																																							 (sfdBC__h115662[5] ?
 																																							    7'd100 :
-																																							    (sfdBC__h19479[4] ?
+																																							    (sfdBC__h115662[4] ?
 																																							       7'd101 :
-																																							       (sfdBC__h19479[3] ?
+																																							       (sfdBC__h115662[3] ?
 																																								  7'd102 :
-																																								  (sfdBC__h19479[2] ?
+																																								  (sfdBC__h115662[2] ?
 																																								     7'd103 :
-																																								     (sfdBC__h19479[1] ?
+																																								     (sfdBC__h115662[1] ?
 																																									7'd104 :
-																																									(sfdBC__h19479[0] ?
+																																									(sfdBC__h115662[0] ?
 																																									   7'd105 :
 																																									   7'd106)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) -
 	     7'd1 ;
-  assign IF_IF_7170_MINUS_fpu_madd_fState_S3_first__96__ETC___d663 =
-	     IF_IF_7170_MINUS_fpu_madd_fState_S3_first__96__ETC___d232 -
+  assign IF_IF_7170_MINUS_fpu_madd_fState_S3_first__995_ETC___d2462 =
+	     IF_IF_7170_MINUS_fpu_madd_fState_S3_first__995_ETC___d2031 -
 	     12'd3074 ;
-  assign IF_IF_7170_MINUS_fpu_madd_fState_S3_first__96__ETC___d735 =
-	     (sfdBC__h19479[105] &&
-	      IF_IF_7170_MINUS_fpu_madd_fState_S3_first__96__ETC___d232 ==
+  assign IF_IF_7170_MINUS_fpu_madd_fState_S3_first__995_ETC___d2534 =
+	     (sfdBC__h115662[105] &&
+	      IF_IF_7170_MINUS_fpu_madd_fState_S3_first__995_ETC___d2031 ==
 	      12'd1023) ?
 	       63'h7FEFFFFFFFFFFFFF :
-	       { _theResult___fst_exp__h34766, sfdin__h34760[105:54] } ;
-  assign IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__595_B_ETC___d4633 =
-	     (guard__h173113 == 2'b0 || fpu_madd_fResult_S9$D_OUT[68]) ?
-	       _theResult___fst_exp__h181212 :
-	       _theResult___exp__h181728 ;
-  assign IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__595_B_ETC___d4635 =
-	     (guard__h173113 == 2'b0) ?
-	       _theResult___fst_exp__h181212 :
-	       (fpu_madd_fResult_S9$D_OUT[68] ?
-		  _theResult___exp__h181728 :
-		  _theResult___fst_exp__h181212) ;
-  assign IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__595_B_ETC___d4761 =
-	     (guard__h173113 == 2'b0 || fpu_madd_fResult_S9$D_OUT[68]) ?
-	       sfdin__h181206[56:34] :
-	       _theResult___sfd__h181729 ;
-  assign IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__595_B_ETC___d4763 =
-	     (guard__h173113 == 2'b0) ?
-	       sfdin__h181206[56:34] :
-	       (fpu_madd_fResult_S9$D_OUT[68] ?
-		  _theResult___sfd__h181729 :
-		  sfdin__h181206[56:34]) ;
-  assign IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d1920 =
-	     (guard__h68412 == 2'b0 || iFifo$D_OUT[168]) ?
-	       _theResult___fst_exp__h76640 :
-	       _theResult___exp__h77359 ;
-  assign IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d1922 =
-	     (guard__h68412 == 2'b0) ?
-	       _theResult___fst_exp__h76640 :
+	       { _theResult___fst_exp__h130949, sfdin__h130943[105:54] } ;
+  assign IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__410_B_ETC___d6448 =
+	     (guard__h269587 == 2'b0 || resWire$wget[68]) ?
+	       _theResult___fst_exp__h277686 :
+	       _theResult___exp__h278202 ;
+  assign IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__410_B_ETC___d6450 =
+	     (guard__h269587 == 2'b0) ?
+	       _theResult___fst_exp__h277686 :
+	       (resWire$wget[68] ?
+		  _theResult___exp__h278202 :
+		  _theResult___fst_exp__h277686) ;
+  assign IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__410_B_ETC___d6576 =
+	     (guard__h269587 == 2'b0 || resWire$wget[68]) ?
+	       sfdin__h277680[56:34] :
+	       _theResult___sfd__h278203 ;
+  assign IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__410_B_ETC___d6578 =
+	     (guard__h269587 == 2'b0) ?
+	       sfdin__h277680[56:34] :
+	       (resWire$wget[68] ?
+		  _theResult___sfd__h278203 :
+		  sfdin__h277680[56:34]) ;
+  assign IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d3729 =
+	     (guard__h164624 == 2'b0 || iFifo$D_OUT[168]) ?
+	       _theResult___fst_exp__h172852 :
+	       _theResult___exp__h173571 ;
+  assign IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d3731 =
+	     (guard__h164624 == 2'b0) ?
+	       _theResult___fst_exp__h172852 :
 	       (iFifo$D_OUT[168] ?
-		  _theResult___exp__h77359 :
-		  _theResult___fst_exp__h76640) ;
-  assign IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d2004 =
-	     (guard__h68412 == 2'b0 || iFifo$D_OUT[168]) ?
-	       sfdin__h76634[56:5] :
-	       _theResult___sfd__h77360 ;
-  assign IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d2006 =
-	     (guard__h68412 == 2'b0) ?
-	       sfdin__h76634[56:5] :
+		  _theResult___exp__h173571 :
+		  _theResult___fst_exp__h172852) ;
+  assign IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d3813 =
+	     (guard__h164624 == 2'b0 || iFifo$D_OUT[168]) ?
+	       sfdin__h172846[56:5] :
+	       _theResult___sfd__h173572 ;
+  assign IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d3815 =
+	     (guard__h164624 == 2'b0) ?
+	       sfdin__h172846[56:5] :
 	       (iFifo$D_OUT[168] ?
-		  _theResult___sfd__h77360 :
-		  sfdin__h76634[56:5]) ;
-  assign IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d2627 =
-	     (guard__h145957 == 2'b0 || iFifo$D_OUT[38]) ?
-	       _theResult___fst_exp__h154185 :
-	       _theResult___exp__h154904 ;
-  assign IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d2629 =
-	     (guard__h145957 == 2'b0) ?
-	       _theResult___fst_exp__h154185 :
+		  _theResult___sfd__h173572 :
+		  sfdin__h172846[56:5]) ;
+  assign IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d4436 =
+	     (guard__h242201 == 2'b0 || iFifo$D_OUT[38]) ?
+	       _theResult___fst_exp__h250429 :
+	       _theResult___exp__h251148 ;
+  assign IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d4438 =
+	     (guard__h242201 == 2'b0) ?
+	       _theResult___fst_exp__h250429 :
 	       (iFifo$D_OUT[38] ?
-		  _theResult___exp__h154904 :
-		  _theResult___fst_exp__h154185) ;
-  assign IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d2710 =
-	     (guard__h145957 == 2'b0 || iFifo$D_OUT[38]) ?
-	       sfdin__h154179[56:5] :
-	       _theResult___sfd__h154905 ;
-  assign IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d2712 =
-	     (guard__h145957 == 2'b0) ?
-	       sfdin__h154179[56:5] :
+		  _theResult___exp__h251148 :
+		  _theResult___fst_exp__h250429) ;
+  assign IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d4519 =
+	     (guard__h242201 == 2'b0 || iFifo$D_OUT[38]) ?
+	       sfdin__h250423[56:5] :
+	       _theResult___sfd__h251149 ;
+  assign IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d4521 =
+	     (guard__h242201 == 2'b0) ?
+	       sfdin__h250423[56:5] :
 	       (iFifo$D_OUT[38] ?
-		  _theResult___sfd__h154905 :
-		  sfdin__h154179[56:5]) ;
-  assign IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d3402 =
-	     (guard__h107050 == 2'b0 || iFifo$D_OUT[103]) ?
-	       _theResult___fst_exp__h115278 :
-	       _theResult___exp__h115997 ;
-  assign IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d3404 =
-	     (guard__h107050 == 2'b0) ?
-	       _theResult___fst_exp__h115278 :
+		  _theResult___sfd__h251149 :
+		  sfdin__h250423[56:5]) ;
+  assign IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d5211 =
+	     (guard__h203262 == 2'b0 || iFifo$D_OUT[103]) ?
+	       _theResult___fst_exp__h211490 :
+	       _theResult___exp__h212209 ;
+  assign IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d5213 =
+	     (guard__h203262 == 2'b0) ?
+	       _theResult___fst_exp__h211490 :
 	       (iFifo$D_OUT[103] ?
-		  _theResult___exp__h115997 :
-		  _theResult___fst_exp__h115278) ;
-  assign IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d3485 =
-	     (guard__h107050 == 2'b0 || iFifo$D_OUT[103]) ?
-	       sfdin__h115272[56:5] :
-	       _theResult___sfd__h115998 ;
-  assign IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d3487 =
-	     (guard__h107050 == 2'b0) ?
-	       sfdin__h115272[56:5] :
+		  _theResult___exp__h212209 :
+		  _theResult___fst_exp__h211490) ;
+  assign IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d5294 =
+	     (guard__h203262 == 2'b0 || iFifo$D_OUT[103]) ?
+	       sfdin__h211484[56:5] :
+	       _theResult___sfd__h212210 ;
+  assign IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d5296 =
+	     (guard__h203262 == 2'b0) ?
+	       sfdin__h211484[56:5] :
 	       (iFifo$D_OUT[103] ?
-		  _theResult___sfd__h115998 :
-		  sfdin__h115272[56:5]) ;
-  assign IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__595__ETC___d4703 =
-	     (guard__h190750 == 2'b0 || fpu_madd_fResult_S9$D_OUT[68]) ?
-	       _theResult___fst_exp__h198978 :
-	       _theResult___exp__h199494 ;
-  assign IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__595__ETC___d4705 =
-	     (guard__h190750 == 2'b0) ?
-	       _theResult___fst_exp__h198978 :
-	       (fpu_madd_fResult_S9$D_OUT[68] ?
-		  _theResult___exp__h199494 :
-		  _theResult___fst_exp__h198978) ;
-  assign IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__595__ETC___d4807 =
-	     (guard__h190750 == 2'b0 || fpu_madd_fResult_S9$D_OUT[68]) ?
-	       sfdin__h198972[56:34] :
-	       _theResult___sfd__h199495 ;
-  assign IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__595__ETC___d4809 =
-	     (guard__h190750 == 2'b0) ?
-	       sfdin__h198972[56:34] :
-	       (fpu_madd_fResult_S9$D_OUT[68] ?
-		  _theResult___sfd__h199495 :
-		  sfdin__h198972[56:34]) ;
-  assign IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3364 =
-	     (guard__h97801 == 2'b0 || iFifo$D_OUT[103]) ?
-	       _theResult___fst_exp__h105762 :
-	       _theResult___exp__h106407 ;
-  assign IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3366 =
-	     (guard__h97801 == 2'b0) ?
-	       _theResult___fst_exp__h105762 :
+		  _theResult___sfd__h212210 :
+		  sfdin__h211484[56:5]) ;
+  assign IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__410__ETC___d6518 =
+	     (guard__h287224 == 2'b0 || resWire$wget[68]) ?
+	       _theResult___fst_exp__h295452 :
+	       _theResult___exp__h295968 ;
+  assign IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__410__ETC___d6520 =
+	     (guard__h287224 == 2'b0) ?
+	       _theResult___fst_exp__h295452 :
+	       (resWire$wget[68] ?
+		  _theResult___exp__h295968 :
+		  _theResult___fst_exp__h295452) ;
+  assign IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__410__ETC___d6622 =
+	     (guard__h287224 == 2'b0 || resWire$wget[68]) ?
+	       sfdin__h295446[56:34] :
+	       _theResult___sfd__h295969 ;
+  assign IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__410__ETC___d6624 =
+	     (guard__h287224 == 2'b0) ?
+	       sfdin__h295446[56:34] :
+	       (resWire$wget[68] ?
+		  _theResult___sfd__h295969 :
+		  sfdin__h295446[56:34]) ;
+  assign IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5173 =
+	     (guard__h194013 == 2'b0 || iFifo$D_OUT[103]) ?
+	       _theResult___fst_exp__h201974 :
+	       _theResult___exp__h202619 ;
+  assign IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5175 =
+	     (guard__h194013 == 2'b0) ?
+	       _theResult___fst_exp__h201974 :
 	       (iFifo$D_OUT[103] ?
-		  _theResult___exp__h106407 :
-		  _theResult___fst_exp__h105762) ;
-  assign IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3433 =
-	     (guard__h116089 == 2'b0 || iFifo$D_OUT[103]) ?
-	       _theResult___fst_exp__h124079 :
-	       _theResult___exp__h124749 ;
-  assign IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3435 =
-	     (guard__h116089 == 2'b0) ?
-	       _theResult___fst_exp__h124079 :
+		  _theResult___exp__h202619 :
+		  _theResult___fst_exp__h201974) ;
+  assign IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5242 =
+	     (guard__h212301 == 2'b0 || iFifo$D_OUT[103]) ?
+	       _theResult___fst_exp__h220291 :
+	       _theResult___exp__h220961 ;
+  assign IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5244 =
+	     (guard__h212301 == 2'b0) ?
+	       _theResult___fst_exp__h220291 :
 	       (iFifo$D_OUT[103] ?
-		  _theResult___exp__h124749 :
-		  _theResult___fst_exp__h124079) ;
-  assign IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3459 =
-	     (guard__h97801 == 2'b0 || iFifo$D_OUT[103]) ?
-	       _theResult___snd__h105713[56:5] :
-	       _theResult___sfd__h106408 ;
-  assign IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3461 =
-	     (guard__h97801 == 2'b0) ?
-	       _theResult___snd__h105713[56:5] :
+		  _theResult___exp__h220961 :
+		  _theResult___fst_exp__h220291) ;
+  assign IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5268 =
+	     (guard__h194013 == 2'b0 || iFifo$D_OUT[103]) ?
+	       _theResult___snd__h201925[56:5] :
+	       _theResult___sfd__h202620 ;
+  assign IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5270 =
+	     (guard__h194013 == 2'b0) ?
+	       _theResult___snd__h201925[56:5] :
 	       (iFifo$D_OUT[103] ?
-		  _theResult___sfd__h106408 :
-		  _theResult___snd__h105713[56:5]) ;
-  assign IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3504 =
-	     (guard__h116089 == 2'b0 || iFifo$D_OUT[103]) ?
-	       _theResult___snd__h124025[56:5] :
-	       _theResult___sfd__h124750 ;
-  assign IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3506 =
-	     (guard__h116089 == 2'b0) ?
-	       _theResult___snd__h124025[56:5] :
+		  _theResult___sfd__h202620 :
+		  _theResult___snd__h201925[56:5]) ;
+  assign IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5313 =
+	     (guard__h212301 == 2'b0 || iFifo$D_OUT[103]) ?
+	       _theResult___snd__h220237[56:5] :
+	       _theResult___sfd__h220962 ;
+  assign IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5315 =
+	     (guard__h212301 == 2'b0) ?
+	       _theResult___snd__h220237[56:5] :
 	       (iFifo$D_OUT[103] ?
-		  _theResult___sfd__h124750 :
-		  _theResult___snd__h124025[56:5]) ;
-  assign IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d1881 =
-	     (guard__h59163 == 2'b0 || iFifo$D_OUT[168]) ?
-	       _theResult___fst_exp__h67124 :
-	       _theResult___exp__h67769 ;
-  assign IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d1883 =
-	     (guard__h59163 == 2'b0) ?
-	       _theResult___fst_exp__h67124 :
+		  _theResult___sfd__h220962 :
+		  _theResult___snd__h220237[56:5]) ;
+  assign IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3690 =
+	     (guard__h155375 == 2'b0 || iFifo$D_OUT[168]) ?
+	       _theResult___fst_exp__h163336 :
+	       _theResult___exp__h163981 ;
+  assign IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3692 =
+	     (guard__h155375 == 2'b0) ?
+	       _theResult___fst_exp__h163336 :
 	       (iFifo$D_OUT[168] ?
-		  _theResult___exp__h67769 :
-		  _theResult___fst_exp__h67124) ;
-  assign IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d1951 =
-	     (guard__h77451 == 2'b0 || iFifo$D_OUT[168]) ?
-	       _theResult___fst_exp__h85441 :
-	       _theResult___exp__h86111 ;
-  assign IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d1953 =
-	     (guard__h77451 == 2'b0) ?
-	       _theResult___fst_exp__h85441 :
+		  _theResult___exp__h163981 :
+		  _theResult___fst_exp__h163336) ;
+  assign IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3760 =
+	     (guard__h173663 == 2'b0 || iFifo$D_OUT[168]) ?
+	       _theResult___fst_exp__h181653 :
+	       _theResult___exp__h182323 ;
+  assign IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3762 =
+	     (guard__h173663 == 2'b0) ?
+	       _theResult___fst_exp__h181653 :
 	       (iFifo$D_OUT[168] ?
-		  _theResult___exp__h86111 :
-		  _theResult___fst_exp__h85441) ;
-  assign IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d1977 =
-	     (guard__h59163 == 2'b0 || iFifo$D_OUT[168]) ?
-	       _theResult___snd__h67075[56:5] :
-	       _theResult___sfd__h67770 ;
-  assign IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d1979 =
-	     (guard__h59163 == 2'b0) ?
-	       _theResult___snd__h67075[56:5] :
+		  _theResult___exp__h182323 :
+		  _theResult___fst_exp__h181653) ;
+  assign IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3786 =
+	     (guard__h155375 == 2'b0 || iFifo$D_OUT[168]) ?
+	       _theResult___snd__h163287[56:5] :
+	       _theResult___sfd__h163982 ;
+  assign IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3788 =
+	     (guard__h155375 == 2'b0) ?
+	       _theResult___snd__h163287[56:5] :
 	       (iFifo$D_OUT[168] ?
-		  _theResult___sfd__h67770 :
-		  _theResult___snd__h67075[56:5]) ;
-  assign IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d2023 =
-	     (guard__h77451 == 2'b0 || iFifo$D_OUT[168]) ?
-	       _theResult___snd__h85387[56:5] :
-	       _theResult___sfd__h86112 ;
-  assign IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d2025 =
-	     (guard__h77451 == 2'b0) ?
-	       _theResult___snd__h85387[56:5] :
+		  _theResult___sfd__h163982 :
+		  _theResult___snd__h163287[56:5]) ;
+  assign IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3832 =
+	     (guard__h173663 == 2'b0 || iFifo$D_OUT[168]) ?
+	       _theResult___snd__h181599[56:5] :
+	       _theResult___sfd__h182324 ;
+  assign IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3834 =
+	     (guard__h173663 == 2'b0) ?
+	       _theResult___snd__h181599[56:5] :
 	       (iFifo$D_OUT[168] ?
-		  _theResult___sfd__h86112 :
-		  _theResult___snd__h85387[56:5]) ;
-  assign IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2589 =
-	     (guard__h136708 == 2'b0 || iFifo$D_OUT[38]) ?
-	       _theResult___fst_exp__h144669 :
-	       _theResult___exp__h145314 ;
-  assign IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2591 =
-	     (guard__h136708 == 2'b0) ?
-	       _theResult___fst_exp__h144669 :
+		  _theResult___sfd__h182324 :
+		  _theResult___snd__h181599[56:5]) ;
+  assign IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4398 =
+	     (guard__h232952 == 2'b0 || iFifo$D_OUT[38]) ?
+	       _theResult___fst_exp__h240913 :
+	       _theResult___exp__h241558 ;
+  assign IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4400 =
+	     (guard__h232952 == 2'b0) ?
+	       _theResult___fst_exp__h240913 :
 	       (iFifo$D_OUT[38] ?
-		  _theResult___exp__h145314 :
-		  _theResult___fst_exp__h144669) ;
-  assign IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2658 =
-	     (guard__h154996 == 2'b0 || iFifo$D_OUT[38]) ?
-	       _theResult___fst_exp__h162986 :
-	       _theResult___exp__h163656 ;
-  assign IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2660 =
-	     (guard__h154996 == 2'b0) ?
-	       _theResult___fst_exp__h162986 :
+		  _theResult___exp__h241558 :
+		  _theResult___fst_exp__h240913) ;
+  assign IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4467 =
+	     (guard__h251240 == 2'b0 || iFifo$D_OUT[38]) ?
+	       _theResult___fst_exp__h259230 :
+	       _theResult___exp__h259900 ;
+  assign IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4469 =
+	     (guard__h251240 == 2'b0) ?
+	       _theResult___fst_exp__h259230 :
 	       (iFifo$D_OUT[38] ?
-		  _theResult___exp__h163656 :
-		  _theResult___fst_exp__h162986) ;
-  assign IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2684 =
-	     (guard__h136708 == 2'b0 || iFifo$D_OUT[38]) ?
-	       _theResult___snd__h144620[56:5] :
-	       _theResult___sfd__h145315 ;
-  assign IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2686 =
-	     (guard__h136708 == 2'b0) ?
-	       _theResult___snd__h144620[56:5] :
+		  _theResult___exp__h259900 :
+		  _theResult___fst_exp__h259230) ;
+  assign IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4493 =
+	     (guard__h232952 == 2'b0 || iFifo$D_OUT[38]) ?
+	       _theResult___snd__h240864[56:5] :
+	       _theResult___sfd__h241559 ;
+  assign IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4495 =
+	     (guard__h232952 == 2'b0) ?
+	       _theResult___snd__h240864[56:5] :
 	       (iFifo$D_OUT[38] ?
-		  _theResult___sfd__h145315 :
-		  _theResult___snd__h144620[56:5]) ;
-  assign IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2729 =
-	     (guard__h154996 == 2'b0 || iFifo$D_OUT[38]) ?
-	       _theResult___snd__h162932[56:5] :
-	       _theResult___sfd__h163657 ;
-  assign IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2731 =
-	     (guard__h154996 == 2'b0) ?
-	       _theResult___snd__h162932[56:5] :
+		  _theResult___sfd__h241559 :
+		  _theResult___snd__h240864[56:5]) ;
+  assign IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4538 =
+	     (guard__h251240 == 2'b0 || iFifo$D_OUT[38]) ?
+	       _theResult___snd__h259176[56:5] :
+	       _theResult___sfd__h259901 ;
+  assign IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4540 =
+	     (guard__h251240 == 2'b0) ?
+	       _theResult___snd__h259176[56:5] :
 	       (iFifo$D_OUT[38] ?
-		  _theResult___sfd__h163657 :
-		  _theResult___snd__h162932[56:5]) ;
-  assign IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4664 =
-	     (guard__h181820 == 2'b0 || fpu_madd_fResult_S9$D_OUT[68]) ?
-	       _theResult___fst_exp__h189868 :
-	       _theResult___exp__h190310 ;
-  assign IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4666 =
-	     (guard__h181820 == 2'b0) ?
-	       _theResult___fst_exp__h189868 :
-	       (fpu_madd_fResult_S9$D_OUT[68] ?
-		  _theResult___exp__h190310 :
-		  _theResult___fst_exp__h189868) ;
-  assign IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4734 =
-	     (guard__h199586 == 2'b0 || fpu_madd_fResult_S9$D_OUT[68]) ?
-	       _theResult___fst_exp__h207663 :
-	       _theResult___exp__h208130 ;
-  assign IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4736 =
-	     (guard__h199586 == 2'b0) ?
-	       _theResult___fst_exp__h207663 :
-	       (fpu_madd_fResult_S9$D_OUT[68] ?
-		  _theResult___exp__h208130 :
-		  _theResult___fst_exp__h207663) ;
-  assign IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4780 =
-	     (guard__h181820 == 2'b0 || fpu_madd_fResult_S9$D_OUT[68]) ?
-	       _theResult___snd__h189819[56:34] :
-	       _theResult___sfd__h190311 ;
-  assign IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4782 =
-	     (guard__h181820 == 2'b0) ?
-	       _theResult___snd__h189819[56:34] :
-	       (fpu_madd_fResult_S9$D_OUT[68] ?
-		  _theResult___sfd__h190311 :
-		  _theResult___snd__h189819[56:34]) ;
-  assign IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4826 =
-	     (guard__h199586 == 2'b0 || fpu_madd_fResult_S9$D_OUT[68]) ?
-	       _theResult___snd__h207609[56:34] :
-	       _theResult___sfd__h208131 ;
-  assign IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4828 =
-	     (guard__h199586 == 2'b0) ?
-	       _theResult___snd__h207609[56:34] :
-	       (fpu_madd_fResult_S9$D_OUT[68] ?
-		  _theResult___sfd__h208131 :
-		  _theResult___snd__h207609[56:34]) ;
-  assign IF_IF_fpu_madd_fOperand_S0_first_BIT_195_THEN__ETC___d123 =
-	     (x__h329 == 11'd2047 && _theResult___fst_sfd__h398 == 52'd0) ?
+		  _theResult___sfd__h259901 :
+		  _theResult___snd__h259176[56:5]) ;
+  assign IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6479 =
+	     (guard__h278294 == 2'b0 || resWire$wget[68]) ?
+	       _theResult___fst_exp__h286342 :
+	       _theResult___exp__h286784 ;
+  assign IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6481 =
+	     (guard__h278294 == 2'b0) ?
+	       _theResult___fst_exp__h286342 :
+	       (resWire$wget[68] ?
+		  _theResult___exp__h286784 :
+		  _theResult___fst_exp__h286342) ;
+  assign IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6549 =
+	     (guard__h296060 == 2'b0 || resWire$wget[68]) ?
+	       _theResult___fst_exp__h304137 :
+	       _theResult___exp__h304604 ;
+  assign IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6551 =
+	     (guard__h296060 == 2'b0) ?
+	       _theResult___fst_exp__h304137 :
+	       (resWire$wget[68] ?
+		  _theResult___exp__h304604 :
+		  _theResult___fst_exp__h304137) ;
+  assign IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6595 =
+	     (guard__h278294 == 2'b0 || resWire$wget[68]) ?
+	       _theResult___snd__h286293[56:34] :
+	       _theResult___sfd__h286785 ;
+  assign IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6597 =
+	     (guard__h278294 == 2'b0) ?
+	       _theResult___snd__h286293[56:34] :
+	       (resWire$wget[68] ?
+		  _theResult___sfd__h286785 :
+		  _theResult___snd__h286293[56:34]) ;
+  assign IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6641 =
+	     (guard__h296060 == 2'b0 || resWire$wget[68]) ?
+	       _theResult___snd__h304083[56:34] :
+	       _theResult___sfd__h304605 ;
+  assign IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6643 =
+	     (guard__h296060 == 2'b0) ?
+	       _theResult___snd__h304083[56:34] :
+	       (resWire$wget[68] ?
+		  _theResult___sfd__h304605 :
+		  _theResult___snd__h304083[56:34]) ;
+  assign IF_IF_fpu_div64_fState_S3_first__86_BITS_120_T_ETC___d643 =
+	     (_theResult___fst_exp__h42290 == 11'd0) ?
+	       12'd3074 :
+	       { theResult___fst_exp2290_MINUS_1023__q11[10],
+		 theResult___fst_exp2290_MINUS_1023__q11 } ;
+  assign IF_IF_fpu_div64_fState_S3_first__86_BITS_120_T_ETC___d880 =
+	     (sfdin__h34118[57] ?
+		6'd0 :
+		(sfdin__h34118[56] ?
+		   6'd1 :
+		   (sfdin__h34118[55] ?
+		      6'd2 :
+		      (sfdin__h34118[54] ?
+			 6'd3 :
+			 (sfdin__h34118[53] ?
+			    6'd4 :
+			    (sfdin__h34118[52] ?
+			       6'd5 :
+			       (sfdin__h34118[51] ?
+				  6'd6 :
+				  (sfdin__h34118[50] ?
+				     6'd7 :
+				     (sfdin__h34118[49] ?
+					6'd8 :
+					(sfdin__h34118[48] ?
+					   6'd9 :
+					   (sfdin__h34118[47] ?
+					      6'd10 :
+					      (sfdin__h34118[46] ?
+						 6'd11 :
+						 (sfdin__h34118[45] ?
+						    6'd12 :
+						    (sfdin__h34118[44] ?
+						       6'd13 :
+						       (sfdin__h34118[43] ?
+							  6'd14 :
+							  (sfdin__h34118[42] ?
+							     6'd15 :
+							     (sfdin__h34118[41] ?
+								6'd16 :
+								(sfdin__h34118[40] ?
+								   6'd17 :
+								   (sfdin__h34118[39] ?
+								      6'd18 :
+								      (sfdin__h34118[38] ?
+									 6'd19 :
+									 (sfdin__h34118[37] ?
+									    6'd20 :
+									    (sfdin__h34118[36] ?
+									       6'd21 :
+									       (sfdin__h34118[35] ?
+										  6'd22 :
+										  (sfdin__h34118[34] ?
+										     6'd23 :
+										     (sfdin__h34118[33] ?
+											6'd24 :
+											(sfdin__h34118[32] ?
+											   6'd25 :
+											   (sfdin__h34118[31] ?
+											      6'd26 :
+											      (sfdin__h34118[30] ?
+												 6'd27 :
+												 (sfdin__h34118[29] ?
+												    6'd28 :
+												    (sfdin__h34118[28] ?
+												       6'd29 :
+												       (sfdin__h34118[27] ?
+													  6'd30 :
+													  (sfdin__h34118[26] ?
+													     6'd31 :
+													     (sfdin__h34118[25] ?
+														6'd32 :
+														(sfdin__h34118[24] ?
+														   6'd33 :
+														   (sfdin__h34118[23] ?
+														      6'd34 :
+														      (sfdin__h34118[22] ?
+															 6'd35 :
+															 (sfdin__h34118[21] ?
+															    6'd36 :
+															    (sfdin__h34118[20] ?
+															       6'd37 :
+															       (sfdin__h34118[19] ?
+																  6'd38 :
+																  (sfdin__h34118[18] ?
+																     6'd39 :
+																     (sfdin__h34118[17] ?
+																	6'd40 :
+																	(sfdin__h34118[16] ?
+																	   6'd41 :
+																	   (sfdin__h34118[15] ?
+																	      6'd42 :
+																	      (sfdin__h34118[14] ?
+																		 6'd43 :
+																		 (sfdin__h34118[13] ?
+																		    6'd44 :
+																		    (sfdin__h34118[12] ?
+																		       6'd45 :
+																		       (sfdin__h34118[11] ?
+																			  6'd46 :
+																			  (sfdin__h34118[10] ?
+																			     6'd47 :
+																			     (sfdin__h34118[9] ?
+																				6'd48 :
+																				(sfdin__h34118[8] ?
+																				   6'd49 :
+																				   (sfdin__h34118[7] ?
+																				      6'd50 :
+																				      (sfdin__h34118[6] ?
+																					 6'd51 :
+																					 (sfdin__h34118[5] ?
+																					    6'd52 :
+																					    (sfdin__h34118[4] ?
+																					       6'd53 :
+																					       (sfdin__h34118[3] ?
+																						  6'd54 :
+																						  (sfdin__h34118[2] ?
+																						     6'd55 :
+																						     (sfdin__h34118[1] ?
+																							6'd56 :
+																							(sfdin__h34118[0] ?
+																							   6'd57 :
+																							   6'd58)))))))))))))))))))))))))))))))))))))))))))))))))))))))))) -
+	     6'd1 ;
+  assign IF_IF_fpu_div64_fState_S3_first__86_BITS_120_T_ETC___d882 =
+	     IF_IF_fpu_div64_fState_S3_first__86_BITS_120_T_ETC___d643 -
+	     12'd3074 ;
+  assign IF_IF_fpu_div64_fState_S3_first__86_BITS_120_T_ETC___d926 =
+	     IF_fpu_div64_fState_S3_first__86_BITS_120_TO_1_ETC___d597 ?
+	       IF_fpu_div64_fState_S3_first__86_BITS_120_TO_1_ETC___d921 :
+	       { fpu_div64_fState_S3$D_OUT[129:128],
+		 (fpu_div64_fState_S3$D_OUT[120:110] == 11'd2047) ?
+		   fpu_div64_fState_S3$D_OUT[57:56] != 2'b0 ||
+		   fpu_div64_fState_S3$D_OUT[127] :
+		   fpu_div64_fState_S3$D_OUT[127],
+		 fpu_div64_fState_S3$D_OUT[126],
+		 (fpu_div64_fState_S3$D_OUT[120:110] == 11'd2047) ?
+		   fpu_div64_fState_S3$D_OUT[57:56] != 2'b0 ||
+		   fpu_div64_fState_S3$D_OUT[125] :
+		   fpu_div64_fState_S3$D_OUT[125] } ;
+  assign IF_IF_fpu_div64_fState_S3_first__86_BITS_120_T_ETC___d929 =
+	     (sfdin__h34118[57] &&
+	      IF_IF_fpu_div64_fState_S3_first__86_BITS_120_T_ETC___d643 ==
+	      12'd1023) ?
+	       63'h7FEFFFFFFFFFFFFF :
+	       { _theResult___fst_exp__h42333, sfdin__h42327[57:6] } ;
+  assign IF_IF_fpu_madd_fOperand_S0_first__803_BIT_195__ETC___d1922 =
+	     (x__h96539 == 11'd2047 &&
+	      _theResult___fst_sfd__h96608 == 52'd0) ?
 	       fpu_madd_fOperand_S0$D_OUT[195] &&
 	       fpu_madd_fOperand_S0$D_OUT[194] :
 	       ((fpu_madd_fOperand_S0$D_OUT[129:119] == 11'd2047 &&
 		 fpu_madd_fOperand_S0$D_OUT[118:67] == 52'd0 ||
 		 fpu_madd_fOperand_S0$D_OUT[65:55] == 11'd2047 &&
 		 fpu_madd_fOperand_S0$D_OUT[54:3] == 52'd0) ?
-		  NOT_fpu_madd_fOperand_S0_first_BIT_130_2_EQ_fp_ETC___d55 :
+		  NOT_fpu_madd_fOperand_S0_first__803_BIT_130_85_ETC___d1854 :
 		  fpu_madd_fOperand_S0$D_OUT[195] &&
 		  fpu_madd_fOperand_S0$D_OUT[194]) ;
-  assign IF_IF_fpu_madd_fOperand_S0_first_BIT_195_THEN__ETC___d132 =
-	     (x__h329 == 11'd2047 && _theResult___fst_sfd__h398 == 52'd0) ?
-	       IF_fpu_madd_fOperand_S0_first_BIT_195_THEN_fpu_ETC___d112 :
+  assign IF_IF_fpu_madd_fOperand_S0_first__803_BIT_195__ETC___d1931 =
+	     (x__h96539 == 11'd2047 &&
+	      _theResult___fst_sfd__h96608 == 52'd0) ?
+	       IF_fpu_madd_fOperand_S0_first__803_BIT_195_804_ETC___d1911 :
 	       ((fpu_madd_fOperand_S0$D_OUT[129:119] == 11'd2047 &&
 		 fpu_madd_fOperand_S0$D_OUT[118:67] == 52'd0 ||
 		 fpu_madd_fOperand_S0$D_OUT[65:55] == 11'd2047 &&
 		 fpu_madd_fOperand_S0$D_OUT[54:3] == 52'd0) ?
 		  63'h7FF0000000000000 :
-		  IF_fpu_madd_fOperand_S0_first_BIT_195_THEN_fpu_ETC___d112) ;
-  assign IF_IF_fpu_madd_fOperand_S0_first_BIT_195_THEN__ETC___d137 =
-	     (x__h329 == 11'd2047 && _theResult___fst_sfd__h398[51]) ?
+		  IF_fpu_madd_fOperand_S0_first__803_BIT_195_804_ETC___d1911) ;
+  assign IF_IF_fpu_madd_fOperand_S0_first__803_BIT_195__ETC___d1936 =
+	     (x__h96539 == 11'd2047 && _theResult___fst_sfd__h96608[51]) ?
 	       { fpu_madd_fOperand_S0$D_OUT[195] &&
 		 fpu_madd_fOperand_S0$D_OUT[194],
-		 IF_fpu_madd_fOperand_S0_first_BIT_195_THEN_fpu_ETC___d112 } :
+		 IF_fpu_madd_fOperand_S0_first__803_BIT_195_804_ETC___d1911 } :
 	       ((fpu_madd_fOperand_S0$D_OUT[129:119] == 11'd2047 &&
 		 fpu_madd_fOperand_S0$D_OUT[118]) ?
 		  fpu_madd_fOperand_S0$D_OUT[130:67] :
 		  ((fpu_madd_fOperand_S0$D_OUT[65:55] == 11'd2047 &&
 		    fpu_madd_fOperand_S0$D_OUT[54]) ?
 		     fpu_madd_fOperand_S0$D_OUT[66:3] :
-		     { NOT_fpu_madd_fOperand_S0_first_BITS_129_TO_119_ETC___d124,
-		       IF_fpu_madd_fOperand_S0_first_BITS_129_TO_119__ETC___d133 })) ;
-  assign IF_IF_fpu_madd_fOperand_S0_first_BIT_195_THEN__ETC___d140 =
-	     (x__h329 == 11'd2047 && _theResult___fst_sfd__h398 != 52'd0 &&
-	      !_theResult___fst_sfd__h398[51]) ?
+		     { NOT_fpu_madd_fOperand_S0_first__803_BITS_129_T_ETC___d1923,
+		       IF_fpu_madd_fOperand_S0_first__803_BITS_129_TO_ETC___d1932 })) ;
+  assign IF_IF_fpu_madd_fOperand_S0_first__803_BIT_195__ETC___d1939 =
+	     (x__h96539 == 11'd2047 &&
+	      _theResult___fst_sfd__h96608 != 52'd0 &&
+	      !_theResult___fst_sfd__h96608[51]) ?
 	       { fpu_madd_fOperand_S0$D_OUT[195] &&
 		 fpu_madd_fOperand_S0$D_OUT[194],
-		 x__h329,
-		 sfd__h3210 } :
-	       IF_fpu_madd_fOperand_S0_first_BITS_129_TO_119__ETC___d139 ;
-  assign IF_IF_fpu_madd_fState_S7_first__52_BIT_128_58__ETC___d1102 =
-	     (sfd__h36936[56] ?
+		 x__h96539,
+		 sfd__h99402 } :
+	       IF_fpu_madd_fOperand_S0_first__803_BITS_129_TO_ETC___d1938 ;
+  assign IF_IF_fpu_madd_fState_S7_first__651_BIT_128_65_ETC___d2901 =
+	     (sfd__h133119[56] ?
 		6'd0 :
-		(sfd__h36936[55] ?
+		(sfd__h133119[55] ?
 		   6'd1 :
-		   (sfd__h36936[54] ?
+		   (sfd__h133119[54] ?
 		      6'd2 :
-		      (sfd__h36936[53] ?
+		      (sfd__h133119[53] ?
 			 6'd3 :
-			 (sfd__h36936[52] ?
+			 (sfd__h133119[52] ?
 			    6'd4 :
-			    (sfd__h36936[51] ?
+			    (sfd__h133119[51] ?
 			       6'd5 :
-			       (sfd__h36936[50] ?
+			       (sfd__h133119[50] ?
 				  6'd6 :
-				  (sfd__h36936[49] ?
+				  (sfd__h133119[49] ?
 				     6'd7 :
-				     (sfd__h36936[48] ?
+				     (sfd__h133119[48] ?
 					6'd8 :
-					(sfd__h36936[47] ?
+					(sfd__h133119[47] ?
 					   6'd9 :
-					   (sfd__h36936[46] ?
+					   (sfd__h133119[46] ?
 					      6'd10 :
-					      (sfd__h36936[45] ?
+					      (sfd__h133119[45] ?
 						 6'd11 :
-						 (sfd__h36936[44] ?
+						 (sfd__h133119[44] ?
 						    6'd12 :
-						    (sfd__h36936[43] ?
+						    (sfd__h133119[43] ?
 						       6'd13 :
-						       (sfd__h36936[42] ?
+						       (sfd__h133119[42] ?
 							  6'd14 :
-							  (sfd__h36936[41] ?
+							  (sfd__h133119[41] ?
 							     6'd15 :
-							     (sfd__h36936[40] ?
+							     (sfd__h133119[40] ?
 								6'd16 :
-								(sfd__h36936[39] ?
+								(sfd__h133119[39] ?
 								   6'd17 :
-								   (sfd__h36936[38] ?
+								   (sfd__h133119[38] ?
 								      6'd18 :
-								      (sfd__h36936[37] ?
+								      (sfd__h133119[37] ?
 									 6'd19 :
-									 (sfd__h36936[36] ?
+									 (sfd__h133119[36] ?
 									    6'd20 :
-									    (sfd__h36936[35] ?
+									    (sfd__h133119[35] ?
 									       6'd21 :
-									       (sfd__h36936[34] ?
+									       (sfd__h133119[34] ?
 										  6'd22 :
-										  (sfd__h36936[33] ?
+										  (sfd__h133119[33] ?
 										     6'd23 :
-										     (sfd__h36936[32] ?
+										     (sfd__h133119[32] ?
 											6'd24 :
-											(sfd__h36936[31] ?
+											(sfd__h133119[31] ?
 											   6'd25 :
-											   (sfd__h36936[30] ?
+											   (sfd__h133119[30] ?
 											      6'd26 :
-											      (sfd__h36936[29] ?
+											      (sfd__h133119[29] ?
 												 6'd27 :
-												 (sfd__h36936[28] ?
+												 (sfd__h133119[28] ?
 												    6'd28 :
-												    (sfd__h36936[27] ?
+												    (sfd__h133119[27] ?
 												       6'd29 :
-												       (sfd__h36936[26] ?
+												       (sfd__h133119[26] ?
 													  6'd30 :
-													  (sfd__h36936[25] ?
+													  (sfd__h133119[25] ?
 													     6'd31 :
-													     (sfd__h36936[24] ?
+													     (sfd__h133119[24] ?
 														6'd32 :
-														(sfd__h36936[23] ?
+														(sfd__h133119[23] ?
 														   6'd33 :
-														   (sfd__h36936[22] ?
+														   (sfd__h133119[22] ?
 														      6'd34 :
-														      (sfd__h36936[21] ?
+														      (sfd__h133119[21] ?
 															 6'd35 :
-															 (sfd__h36936[20] ?
+															 (sfd__h133119[20] ?
 															    6'd36 :
-															    (sfd__h36936[19] ?
+															    (sfd__h133119[19] ?
 															       6'd37 :
-															       (sfd__h36936[18] ?
+															       (sfd__h133119[18] ?
 																  6'd38 :
-																  (sfd__h36936[17] ?
+																  (sfd__h133119[17] ?
 																     6'd39 :
-																     (sfd__h36936[16] ?
+																     (sfd__h133119[16] ?
 																	6'd40 :
-																	(sfd__h36936[15] ?
+																	(sfd__h133119[15] ?
 																	   6'd41 :
-																	   (sfd__h36936[14] ?
+																	   (sfd__h133119[14] ?
 																	      6'd42 :
-																	      (sfd__h36936[13] ?
+																	      (sfd__h133119[13] ?
 																		 6'd43 :
-																		 (sfd__h36936[12] ?
+																		 (sfd__h133119[12] ?
 																		    6'd44 :
-																		    (sfd__h36936[11] ?
+																		    (sfd__h133119[11] ?
 																		       6'd45 :
-																		       (sfd__h36936[10] ?
+																		       (sfd__h133119[10] ?
 																			  6'd46 :
-																			  (sfd__h36936[9] ?
+																			  (sfd__h133119[9] ?
 																			     6'd47 :
-																			     (sfd__h36936[8] ?
+																			     (sfd__h133119[8] ?
 																				6'd48 :
-																				(sfd__h36936[7] ?
+																				(sfd__h133119[7] ?
 																				   6'd49 :
-																				   (sfd__h36936[6] ?
+																				   (sfd__h133119[6] ?
 																				      6'd50 :
-																				      (sfd__h36936[5] ?
+																				      (sfd__h133119[5] ?
 																					 6'd51 :
-																					 (sfd__h36936[4] ?
+																					 (sfd__h133119[4] ?
 																					    6'd52 :
-																					    (sfd__h36936[3] ?
+																					    (sfd__h133119[3] ?
 																					       6'd53 :
-																					       (sfd__h36936[2] ?
+																					       (sfd__h133119[2] ?
 																						  6'd54 :
-																						  (sfd__h36936[1] ?
+																						  (sfd__h133119[1] ?
 																						     6'd55 :
-																						     (sfd__h36936[0] ?
+																						     (sfd__h133119[0] ?
 																							6'd56 :
 																							6'd57))))))))))))))))))))))))))))))))))))))))))))))))))))))))) -
 	     6'd1 ;
-  assign IF_IF_fpu_madd_fState_S7_first__52_BIT_128_58__ETC___d1153 =
-	     (sfd__h36936[56] &&
-	      IF_fpu_madd_fState_S7_first__52_BITS_126_TO_11_ETC___d869 ==
+  assign IF_IF_fpu_madd_fState_S7_first__651_BIT_128_65_ETC___d2952 =
+	     (sfd__h133119[56] &&
+	      IF_fpu_madd_fState_S7_first__651_BITS_126_TO_1_ETC___d2668 ==
 	      12'd1023) ?
 	       63'h7FEFFFFFFFFFFFFF :
-	       { _theResult___fst_exp__h45192, sfdin__h45186[56:5] } ;
-  assign IF_NOT_fpu_madd_fState_S3_first__96_BITS_12_TO_ETC___d704 =
-	     (!fpu_madd_fState_S3_first__96_BITS_12_TO_0_02_S_ETC___d203 ||
-	      fpu_madd_fState_S3_first__96_BITS_12_TO_0_02_S_ETC___d205) ?
+	       { _theResult___fst_exp__h141375, sfdin__h141369[56:5] } ;
+  assign IF_IF_rg_index_1_4_ULE_58_8_THEN_NOT_rg_b_9_EQ_ETC___d75 =
+	     IF_rg_index_1_4_ULE_58_8_THEN_NOT_rg_b_9_EQ_0__ETC___d56 ?
+	       ((IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d49 ==
+		 116'd0) ?
+		  IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d69 :
+		  IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d73) :
+	       IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d73 ;
+  assign IF_NOT_fpu_madd_fState_S3_first__995_BITS_12_T_ETC___d2503 =
+	     (!fpu_madd_fState_S3_first__995_BITS_12_TO_0_001_ETC___d2002 ||
+	      fpu_madd_fState_S3_first__995_BITS_12_TO_0_001_ETC___d2004) ?
 	       fpu_madd_fState_S3$D_OUT[86] :
-	       fpu_madd_fState_S3_first__96_BITS_86_TO_82_01__ETC___d702[4] ;
-  assign IF_NOT_fpu_madd_fState_S3_first__96_BITS_12_TO_ETC___d707 =
-	     (!fpu_madd_fState_S3_first__96_BITS_12_TO_0_02_S_ETC___d203 ||
-	      fpu_madd_fState_S3_first__96_BITS_12_TO_0_02_S_ETC___d205) ?
+	       fpu_madd_fState_S3_first__995_BITS_86_TO_82_00_ETC___d2501[4] ;
+  assign IF_NOT_fpu_madd_fState_S3_first__995_BITS_12_T_ETC___d2506 =
+	     (!fpu_madd_fState_S3_first__995_BITS_12_TO_0_001_ETC___d2002 ||
+	      fpu_madd_fState_S3_first__995_BITS_12_TO_0_001_ETC___d2004) ?
 	       fpu_madd_fState_S3$D_OUT[85] :
-	       fpu_madd_fState_S3_first__96_BITS_86_TO_82_01__ETC___d702[3] ;
-  assign IF_NOT_fpu_madd_fState_S4_first__48_BIT_130_54_ETC___d796 =
-	     { NOT_fpu_madd_fState_S4_first__48_BIT_130_54_59_ETC___d785 ?
-		 IF_fpu_madd_fState_S4_first__48_BITS_64_TO_54__ETC___d764 :
-		 IF_fpu_madd_fState_S4_first__48_BITS_128_TO_11_ETC___d769,
-	       NOT_fpu_madd_fState_S4_first__48_BIT_130_54_59_ETC___d785 ?
-		 IF_fpu_madd_fState_S4_first__48_BITS_64_TO_54__ETC___d764 -
-		 IF_fpu_madd_fState_S4_first__48_BITS_128_TO_11_ETC___d769 :
-		 IF_fpu_madd_fState_S4_first__48_BITS_128_TO_11_ETC___d769 -
-		 IF_fpu_madd_fState_S4_first__48_BITS_64_TO_54__ETC___d764,
-	       x__h35757,
-	       x__h35761 } ;
-  assign IF_SEXT_iFifo_first__288_BITS_102_TO_95_816_MI_ETC___d3297 =
-	     ((SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC__q76[10:0] ==
+	       fpu_madd_fState_S3_first__995_BITS_86_TO_82_00_ETC___d2501[3] ;
+  assign IF_NOT_fpu_madd_fState_S4_first__547_BIT_130_5_ETC___d2595 =
+	     { NOT_fpu_madd_fState_S4_first__547_BIT_130_553__ETC___d2584 ?
+		 IF_fpu_madd_fState_S4_first__547_BITS_64_TO_54_ETC___d2563 :
+		 IF_fpu_madd_fState_S4_first__547_BITS_128_TO_1_ETC___d2568,
+	       NOT_fpu_madd_fState_S4_first__547_BIT_130_553__ETC___d2584 ?
+		 IF_fpu_madd_fState_S4_first__547_BITS_64_TO_54_ETC___d2563 -
+		 IF_fpu_madd_fState_S4_first__547_BITS_128_TO_1_ETC___d2568 :
+		 IF_fpu_madd_fState_S4_first__547_BITS_128_TO_1_ETC___d2568 -
+		 IF_fpu_madd_fState_S4_first__547_BITS_64_TO_54_ETC___d2563,
+	       x__h131940,
+	       x__h131944 } ;
+  assign IF_SEXT_iFifo_first__087_BITS_102_TO_95_625_MI_ETC___d5106 =
+	     ((SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC__q96[10:0] ==
 	       11'd0) ?
 		12'd3074 :
-		{ SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC__q79[10],
-		  SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC__q79 }) -
+		{ SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC__q99[10],
+		  SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC__q99 }) -
 	     12'd3074 ;
-  assign IF_SEXT_iFifo_first__288_BITS_102_TO_95_816_MI_ETC___d3337 =
-	     SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC___d2999 ?
-	       ((_theResult___fst_exp__h115278 == 11'd2047) ?
+  assign IF_SEXT_iFifo_first__087_BITS_102_TO_95_625_MI_ETC___d5146 =
+	     SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC___d4808 ?
+	       ((_theResult___fst_exp__h211490 == 11'd2047) ?
 		  iFifo$D_OUT[103] :
-		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard07050_ETC__q97) :
-	       ((_theResult___fst_exp__h124079 == 11'd2047) ?
+		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard03262_ETC__q117) :
+	       ((_theResult___fst_exp__h220291 == 11'd2047) ?
 		  iFifo$D_OUT[103] :
-		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard16089_ETC__q99) ;
-  assign IF_SEXT_iFifo_first__288_BITS_102_TO_95_816_MI_ETC___d3565 =
-	     SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC___d2999 ?
-	       ((_theResult___fst_exp__h115278 == 11'd2047) ?
+		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard12301_ETC__q119) ;
+  assign IF_SEXT_iFifo_first__087_BITS_102_TO_95_625_MI_ETC___d5374 =
+	     SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC___d4808 ?
+	       ((_theResult___fst_exp__h211490 == 11'd2047) ?
 		  !iFifo$D_OUT[103] :
-		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard07050_ETC__q103) :
-	       ((_theResult___fst_exp__h124079 == 11'd2047) ?
+		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard03262_ETC__q123) :
+	       ((_theResult___fst_exp__h220291 == 11'd2047) ?
 		  !iFifo$D_OUT[103] :
-		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard16089_ETC__q105) ;
-  assign IF_SEXT_iFifo_first__288_BITS_167_TO_160_321_M_ETC___d1814 =
-	     ((SEXT_iFifo_first__288_BITS_167_TO_160_321_MINU_ETC__q16[10:0] ==
+		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard12301_ETC__q125) ;
+  assign IF_SEXT_iFifo_first__087_BITS_167_TO_160_130_M_ETC___d3623 =
+	     ((SEXT_iFifo_first__087_BITS_167_TO_160_130_MINU_ETC__q36[10:0] ==
 	       11'd0) ?
 		12'd3074 :
-		{ SEXT_iFifo_first__288_BITS_167_TO_160_321_MINU_ETC__q19[10],
-		  SEXT_iFifo_first__288_BITS_167_TO_160_321_MINU_ETC__q19 }) -
+		{ SEXT_iFifo_first__087_BITS_167_TO_160_130_MINU_ETC__q39[10],
+		  SEXT_iFifo_first__087_BITS_167_TO_160_130_MINU_ETC__q39 }) -
 	     12'd3074 ;
-  assign IF_SEXT_iFifo_first__288_BITS_167_TO_160_321_M_ETC___d1854 =
-	     SEXT_iFifo_first__288_BITS_167_TO_160_321_MINU_ETC___d1516 ?
-	       ((_theResult___fst_exp__h76640 == 11'd2047) ?
+  assign IF_SEXT_iFifo_first__087_BITS_167_TO_160_130_M_ETC___d3663 =
+	     SEXT_iFifo_first__087_BITS_167_TO_160_130_MINU_ETC___d3325 ?
+	       ((_theResult___fst_exp__h172852 == 11'd2047) ?
 		  iFifo$D_OUT[168] :
-		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard8412__ETC__q37) :
-	       ((_theResult___fst_exp__h85441 == 11'd2047) ?
+		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard64624_ETC__q57) :
+	       ((_theResult___fst_exp__h181653 == 11'd2047) ?
 		  iFifo$D_OUT[168] :
-		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard7451__ETC__q39) ;
-  assign IF_SEXT_iFifo_first__288_BITS_37_TO_30_041_MIN_ETC___d2522 =
-	     ((SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC__q43[10:0] ==
+		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard73663_ETC__q59) ;
+  assign IF_SEXT_iFifo_first__087_BITS_37_TO_30_850_MIN_ETC___d4331 =
+	     ((SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC__q63[10:0] ==
 	       11'd0) ?
 		12'd3074 :
-		{ SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC__q46[10],
-		  SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC__q46 }) -
+		{ SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC__q66[10],
+		  SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC__q66 }) -
 	     12'd3074 ;
-  assign IF_SEXT_iFifo_first__288_BITS_37_TO_30_041_MIN_ETC___d2562 =
-	     SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC___d2224 ?
-	       ((_theResult___fst_exp__h154185 == 11'd2047) ?
+  assign IF_SEXT_iFifo_first__087_BITS_37_TO_30_850_MIN_ETC___d4371 =
+	     SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC___d4033 ?
+	       ((_theResult___fst_exp__h250429 == 11'd2047) ?
 		  iFifo$D_OUT[38] :
-		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard45957_ETC__q64) :
-	       ((_theResult___fst_exp__h162986 == 11'd2047) ?
+		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard42201_ETC__q84) :
+	       ((_theResult___fst_exp__h259230 == 11'd2047) ?
 		  iFifo$D_OUT[38] :
-		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard54996_ETC__q66) ;
-  assign IF_SEXT_iFifo_first__288_BITS_37_TO_30_041_MIN_ETC___d2799 =
-	     SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC___d2224 ?
-	       ((_theResult___fst_exp__h154185 == 11'd2047) ?
+		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard51240_ETC__q86) ;
+  assign IF_SEXT_iFifo_first__087_BITS_37_TO_30_850_MIN_ETC___d4608 =
+	     SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC___d4033 ?
+	       ((_theResult___fst_exp__h250429 == 11'd2047) ?
 		  !iFifo$D_OUT[38] :
-		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard45957_ETC__q70) :
-	       ((_theResult___fst_exp__h162986 == 11'd2047) ?
+		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard42201_ETC__q90) :
+	       ((_theResult___fst_exp__h259230 == 11'd2047) ?
 		  !iFifo$D_OUT[38] :
-		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard54996_ETC__q72) ;
-  assign IF_SEXT_resWire_wget__595_BITS_67_TO_57_601_MI_ETC___d4517 =
-	     ((SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC__q111[7:0] ==
+		  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard51240_ETC__q92) ;
+  assign IF_SEXT_resWire_wget__410_BITS_67_TO_57_416_MI_ETC___d6332 =
+	     ((SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC__q138[7:0] ==
 	       8'd0) ?
 		9'd386 :
-		{ SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC__q114[7],
-		  SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC__q114 }) -
+		{ SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC__q141[7],
+		  SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC__q141 }) -
 	     9'd386 ;
-  assign IF_SEXT_resWire_wget__595_BITS_67_TO_57_601_MI_ETC___d4560 =
-	     SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC___d4218 ?
-	       ((_theResult___fst_exp__h198978 == 8'd255) ?
-		  !fpu_madd_fResult_S9$D_OUT[68] :
-		  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_I_ETC___d4509) :
-	       ((_theResult___fst_exp__h207663 == 8'd255) ?
-		  !fpu_madd_fResult_S9$D_OUT[68] :
-		  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_r_ETC___d4558) ;
-  assign IF_SEXT_resWire_wget__595_BITS_67_TO_57_601_MI_ETC___d4605 =
-	     SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC___d4218 ?
-	       ((_theResult___fst_exp__h198978 == 8'd255) ?
-		  fpu_madd_fResult_S9$D_OUT[68] :
-		  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_I_ETC___d4594) :
-	       ((_theResult___fst_exp__h207663 == 8'd255) ?
-		  fpu_madd_fResult_S9$D_OUT[68] :
-		  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_r_ETC___d4603) ;
-  assign IF_SEXT_resWire_wget__595_BITS_67_TO_57_601_MI_ETC___d4919 =
-	     SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC___d4218 ?
-	       _0_CONCAT_IF_IF_3970_MINUS_SEXT_resWire_wget__5_ETC___d4890[2] :
-	       _theResult___fst_exp__h208211 == 8'd255 &&
-	       _theResult___fst_sfd__h208212 == 23'd0 ;
-  assign IF_SEXT_resWire_wget__595_BITS_67_TO_57_601_MI_ETC___d4932 =
-	     SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC___d4218 ?
-	       _0_CONCAT_IF_IF_3970_MINUS_SEXT_resWire_wget__5_ETC___d4890[1] :
-	       _theResult___fst_exp__h207663 == 8'd0 &&
-	       guard__h199586 != 2'b0 ;
-  assign IF_SEXT_resWire_wget__595_BITS_67_TO_57_601_MI_ETC___d4945 =
-	     SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC___d4218 ?
-	       _0_CONCAT_IF_IF_3970_MINUS_SEXT_resWire_wget__5_ETC___d4890[0] :
-	       _theResult___fst_exp__h207663 != 8'd255 &&
-	       guard__h199586 != 2'b0 ;
-  assign IF_fpu_madd_fOperand_S0_first_BITS_129_TO_119__ETC___d133 =
-	     (fpu_madd_fOperand_S0_first_BITS_129_TO_119_7_E_ETC___d127 ||
-	      IF_fpu_madd_fOperand_S0_first_BIT_195_THEN_fpu_ETC___d128 &&
-	      !fpu_madd_fOperand_S0_first_BIT_195_AND_fpu_mad_ETC___d56) ?
+  assign IF_SEXT_resWire_wget__410_BITS_67_TO_57_416_MI_ETC___d6375 =
+	     SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC___d6033 ?
+	       ((_theResult___fst_exp__h295452 == 8'd255) ?
+		  !resWire$wget[68] :
+		  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_I_ETC___d6324) :
+	       ((_theResult___fst_exp__h304137 == 8'd255) ?
+		  !resWire$wget[68] :
+		  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_r_ETC___d6373) ;
+  assign IF_SEXT_resWire_wget__410_BITS_67_TO_57_416_MI_ETC___d6420 =
+	     SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC___d6033 ?
+	       ((_theResult___fst_exp__h295452 == 8'd255) ?
+		  resWire$wget[68] :
+		  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_I_ETC___d6409) :
+	       ((_theResult___fst_exp__h304137 == 8'd255) ?
+		  resWire$wget[68] :
+		  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_r_ETC___d6418) ;
+  assign IF_SEXT_resWire_wget__410_BITS_67_TO_57_416_MI_ETC___d6734 =
+	     SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC___d6033 ?
+	       _0_CONCAT_IF_IF_3970_MINUS_SEXT_resWire_wget__4_ETC___d6705[2] :
+	       _theResult___fst_exp__h304685 == 8'd255 &&
+	       _theResult___fst_sfd__h304686 == 23'd0 ;
+  assign IF_SEXT_resWire_wget__410_BITS_67_TO_57_416_MI_ETC___d6747 =
+	     SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC___d6033 ?
+	       _0_CONCAT_IF_IF_3970_MINUS_SEXT_resWire_wget__4_ETC___d6705[1] :
+	       _theResult___fst_exp__h304137 == 8'd0 &&
+	       guard__h296060 != 2'b0 ;
+  assign IF_SEXT_resWire_wget__410_BITS_67_TO_57_416_MI_ETC___d6760 =
+	     SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC___d6033 ?
+	       _0_CONCAT_IF_IF_3970_MINUS_SEXT_resWire_wget__4_ETC___d6705[0] :
+	       _theResult___fst_exp__h304137 != 8'd255 &&
+	       guard__h296060 != 2'b0 ;
+  assign IF_fpu_div64_fOperands_S0_first__06_BITS_129_T_ETC___d352 =
+	     (((fpu_div64_fOperands_S0$D_OUT[129:119] == 11'd0) ?
+		 13'd7170 :
+		 { {2{fpu_div64_fOperands_S0D_OUT_BITS_129_TO_119_M_ETC__q7[10]}},
+		   fpu_div64_fOperands_S0D_OUT_BITS_129_TO_119_M_ETC__q7 }) -
+	      { 7'd0, b__h4039 }) -
+	     (((fpu_div64_fOperands_S0$D_OUT[65:55] == 11'd0) ?
+		 13'd7170 :
+		 { {2{fpu_div64_fOperands_S0D_OUT_BITS_65_TO_55_MIN_ETC__q8[10]}},
+		   fpu_div64_fOperands_S0D_OUT_BITS_65_TO_55_MIN_ETC__q8 }) -
+	      { 7'd0, b__h11457 }) ;
+  assign IF_fpu_div64_fOperands_S0_first__06_BITS_129_T_ETC___d353 =
+	     (IF_fpu_div64_fOperands_S0_first__06_BITS_129_T_ETC___d352 ^
+	      13'h1000) <=
+	     13'd5120 ;
+  assign IF_fpu_div64_fOperands_S0_first__06_BITS_129_T_ETC___d355 =
+	     (IF_fpu_div64_fOperands_S0_first__06_BITS_129_T_ETC___d352 ^
+	      13'h1000) <
+	     13'd3020 ;
+  assign IF_fpu_div64_fOperands_S0_first__06_BITS_129_T_ETC___d499 =
+	     (IF_fpu_div64_fOperands_S0_first__06_BITS_129_T_ETC___d352 ^
+	      13'h1000) <
+	     13'd3074 ;
+  assign IF_fpu_div64_fOperands_S0_first__06_BITS_65_TO_ETC___d422 =
+	     (fpu_div64_fOperands_S0$D_OUT[65:55] == 11'd0 &&
+	      fpu_div64_fOperands_S0$D_OUT[54:3] == 52'd0 ||
+	      fpu_div64_fOperands_S0_first__06_BITS_129_TO_1_ETC___d401) ?
+	       !fpu_div64_fOperands_S0_first__06_BIT_130_03_EQ_ETC___d405 :
+	       CASE_fpu_div64_fOperands_S0D_OUT_BITS_2_TO_0__ETC__q9 ;
+  assign IF_fpu_div64_fOperands_S0_first__06_BITS_65_TO_ETC___d433 =
+	     (fpu_div64_fOperands_S0$D_OUT[65:55] == 11'd0 &&
+	      fpu_div64_fOperands_S0$D_OUT[54:3] == 52'd0 ||
+	      fpu_div64_fOperands_S0$D_OUT[129:119] == 11'd2047 &&
+	      fpu_div64_fOperands_S0$D_OUT[118:67] == 52'd0) ?
+	       11'd2047 :
+	       ((fpu_div64_fOperands_S0$D_OUT[129:119] == 11'd0 &&
+		 fpu_div64_fOperands_S0$D_OUT[118:67] == 52'd0 ||
+		 fpu_div64_fOperands_S0$D_OUT[65:55] == 11'd2047 &&
+		 fpu_div64_fOperands_S0$D_OUT[54:3] == 52'd0 ||
+		 IF_fpu_div64_fOperands_S0_first__06_BITS_129_T_ETC___d353) ?
+		  11'd0 :
+		  _theResult___fst_exp__h19467) ;
+  assign IF_fpu_div64_fOperands_S0_first__06_BITS_65_TO_ETC___d450 =
+	     (fpu_div64_fOperands_S0$D_OUT[65:55] == 11'd0 &&
+	      fpu_div64_fOperands_S0$D_OUT[54:3] == 52'd0 ||
+	      fpu_div64_fOperands_S0_first__06_BITS_129_TO_1_ETC___d401) ?
+	       52'd0 :
+	       (IF_fpu_div64_fOperands_S0_first__06_BITS_129_T_ETC___d353 ?
+		  _theResult___fst_sfd__h19957 :
+		  _theResult___fst_sfd__h19468) ;
+  assign IF_fpu_div64_fOperands_S0_first__06_BITS_65_TO_ETC___d455 =
+	     (fpu_div64_fOperands_S0$D_OUT[65:55] == 11'd2047 &&
+	      fpu_div64_fOperands_S0$D_OUT[54:3] != 52'd0 &&
+	      !fpu_div64_fOperands_S0$D_OUT[54]) ?
+	       { fpu_div64_fOperands_S0$D_OUT[66:55], sfd__h18937 } :
+	       ((fpu_div64_fOperands_S0$D_OUT[129:119] == 11'd2047 &&
+		 fpu_div64_fOperands_S0$D_OUT[118]) ?
+		  fpu_div64_fOperands_S0$D_OUT[130:67] :
+		  ((fpu_div64_fOperands_S0$D_OUT[65:55] == 11'd2047 &&
+		    fpu_div64_fOperands_S0$D_OUT[54]) ?
+		     fpu_div64_fOperands_S0$D_OUT[66:3] :
+		     NOT_fpu_div64_fOperands_S0_first__06_BITS_129__ETC___d452)) ;
+  assign IF_fpu_div64_fState_S3_first__86_BITS_120_TO_1_ETC___d597 =
+	     (fpu_div64_fState_S3$D_OUT[120:110] == 11'd2047) ?
+	       fpu_div64_fState_S3$D_OUT[57:56] == 2'b0 &&
+	       !fpu_div64_fState_S3$D_OUT[194] :
+	       !fpu_div64_fState_S3$D_OUT[194] ;
+  assign IF_fpu_div64_fState_S3_first__86_BITS_120_TO_1_ETC___d921 =
+	     ((fpu_div64_fState_S3$D_OUT[120:110] == 11'd2047) ?
+		{ fpu_div64_fState_S3$D_OUT[129:128],
+		  fpu_div64_fState_S3$D_OUT[57:56] != 2'b0 ||
+		  fpu_div64_fState_S3$D_OUT[127],
+		  fpu_div64_fState_S3$D_OUT[126],
+		  fpu_div64_fState_S3$D_OUT[57:56] != 2'b0 ||
+		  fpu_div64_fState_S3$D_OUT[125] } :
+		fpu_div64_fState_S3$D_OUT[129:125]) |
+	     { 2'd0,
+	       sfdin__h34118[57] &&
+	       IF_IF_fpu_div64_fState_S3_first__86_BITS_120_T_ETC___d643 ==
+	       12'd1023,
+	       _theResult___fst_exp__h42336 == 11'd0 && guard__h33946 != 2'd0,
+	       sfdin__h34118[57] &&
+	       IF_IF_fpu_div64_fState_S3_first__86_BITS_120_T_ETC___d643 ==
+	       12'd1023 } ;
+  assign IF_fpu_div64_fState_S4_first__43_BITS_64_TO_54_ETC___d977 =
+	     (fpu_div64_fState_S4$D_OUT[64:54] == 11'd0 &&
+	      sfd__h42982[53:52] == 2'b01) ?
+	       11'd1 :
+	       fpu_div64_fState_S4$D_OUT[64:54] ;
+  assign IF_fpu_madd_fOperand_S0_first__803_BITS_129_TO_ETC___d1932 =
+	     (fpu_madd_fOperand_S0_first__803_BITS_129_TO_11_ETC___d1926 ||
+	      IF_fpu_madd_fOperand_S0_first__803_BIT_195_804_ETC___d1927 &&
+	      !fpu_madd_fOperand_S0_first__803_BIT_195_804_AN_ETC___d1855) ?
 	       63'h7FF8000000000000 :
-	       IF_IF_fpu_madd_fOperand_S0_first_BIT_195_THEN__ETC___d132 ;
-  assign IF_fpu_madd_fOperand_S0_first_BITS_129_TO_119__ETC___d139 =
+	       IF_IF_fpu_madd_fOperand_S0_first__803_BIT_195__ETC___d1931 ;
+  assign IF_fpu_madd_fOperand_S0_first__803_BITS_129_TO_ETC___d1938 =
 	     (fpu_madd_fOperand_S0$D_OUT[129:119] == 11'd2047 &&
 	      fpu_madd_fOperand_S0$D_OUT[118:67] != 52'd0 &&
 	      !fpu_madd_fOperand_S0$D_OUT[118]) ?
-	       { fpu_madd_fOperand_S0$D_OUT[130:119], sfd__h3213 } :
+	       { fpu_madd_fOperand_S0$D_OUT[130:119], sfd__h99405 } :
 	       ((fpu_madd_fOperand_S0$D_OUT[65:55] == 11'd2047 &&
 		 fpu_madd_fOperand_S0$D_OUT[54:3] != 52'd0 &&
 		 !fpu_madd_fOperand_S0$D_OUT[54]) ?
-		  { fpu_madd_fOperand_S0$D_OUT[66:55], sfd__h3216 } :
-		  IF_IF_fpu_madd_fOperand_S0_first_BIT_195_THEN__ETC___d137) ;
-  assign IF_fpu_madd_fOperand_S0_first_BITS_129_TO_119__ETC___d160 =
+		  { fpu_madd_fOperand_S0$D_OUT[66:55], sfd__h99408 } :
+		  IF_IF_fpu_madd_fOperand_S0_first__803_BIT_195__ETC___d1936) ;
+  assign IF_fpu_madd_fOperand_S0_first__803_BITS_129_TO_ETC___d1959 =
 	     { ((fpu_madd_fOperand_S0$D_OUT[129:119] == 11'd0) ?
 		  13'd7170 :
-		  { {2{fpu_madd_fOperand_S0D_OUT_BITS_129_TO_119_MIN_ETC__q143[10]}},
-		    fpu_madd_fOperand_S0D_OUT_BITS_129_TO_119_MIN_ETC__q143 }) +
+		  { {2{fpu_madd_fOperand_S0D_OUT_BITS_129_TO_119_MIN_ETC__q128[10]}},
+		    fpu_madd_fOperand_S0D_OUT_BITS_129_TO_119_MIN_ETC__q128 }) +
 	       ((fpu_madd_fOperand_S0$D_OUT[65:55] == 11'd0) ?
 		  13'd7170 :
-		  { {2{fpu_madd_fOperand_S0D_OUT_BITS_65_TO_55_MINUS_ETC__q144[10]}},
-		    fpu_madd_fOperand_S0D_OUT_BITS_65_TO_55_MINUS_ETC__q144 }),
-	       x__h18060,
-	       x__h18072 } ;
-  assign IF_fpu_madd_fOperand_S0_first_BIT_195_THEN_fpu_ETC___d112 =
+		  { {2{fpu_madd_fOperand_S0D_OUT_BITS_65_TO_55_MINUS_ETC__q129[10]}},
+		    fpu_madd_fOperand_S0D_OUT_BITS_65_TO_55_MINUS_ETC__q129 }),
+	       x__h114243,
+	       x__h114255 } ;
+  assign IF_fpu_madd_fOperand_S0_first__803_BIT_195_804_ETC___d1861 =
+	     x__h96539 == 11'd2047 && _theResult___fst_sfd__h96608[51] ||
+	     fpu_madd_fOperand_S0$D_OUT[129:119] == 11'd2047 &&
+	     fpu_madd_fOperand_S0$D_OUT[118] ||
+	     fpu_madd_fOperand_S0$D_OUT[65:55] == 11'd2047 &&
+	     fpu_madd_fOperand_S0$D_OUT[54] ||
+	     x__h96539 == 11'd2047 && _theResult___fst_sfd__h96608 == 52'd0 ||
+	     fpu_madd_fOperand_S0_first__803_BITS_129_TO_11_ETC___d1857 ;
+  assign IF_fpu_madd_fOperand_S0_first__803_BIT_195_804_ETC___d1911 =
 	     fpu_madd_fOperand_S0$D_OUT[195] ?
 	       fpu_madd_fOperand_S0$D_OUT[193:131] :
 	       63'd0 ;
-  assign IF_fpu_madd_fOperand_S0_first_BIT_195_THEN_fpu_ETC___d128 =
-	     x__h329 == 11'd2047 && _theResult___fst_sfd__h398 == 52'd0 &&
+  assign IF_fpu_madd_fOperand_S0_first__803_BIT_195_804_ETC___d1927 =
+	     x__h96539 == 11'd2047 && _theResult___fst_sfd__h96608 == 52'd0 &&
 	     (fpu_madd_fOperand_S0$D_OUT[129:119] == 11'd2047 &&
 	      fpu_madd_fOperand_S0$D_OUT[118:67] == 52'd0 ||
 	      fpu_madd_fOperand_S0$D_OUT[65:55] == 11'd2047 &&
 	      fpu_madd_fOperand_S0$D_OUT[54:3] == 52'd0) ;
-  assign IF_fpu_madd_fOperand_S0_first_BIT_195_THEN_fpu_ETC___d148 =
-	     x__h329 == 11'd2047 && _theResult___fst_sfd__h398 != 52'd0 &&
-	     !_theResult___fst_sfd__h398[51] ||
+  assign IF_fpu_madd_fOperand_S0_first__803_BIT_195_804_ETC___d1947 =
+	     x__h96539 == 11'd2047 && _theResult___fst_sfd__h96608 != 52'd0 &&
+	     !_theResult___fst_sfd__h96608[51] ||
 	     fpu_madd_fOperand_S0$D_OUT[129:119] == 11'd2047 &&
 	     fpu_madd_fOperand_S0$D_OUT[118:67] != 52'd0 &&
 	     !fpu_madd_fOperand_S0$D_OUT[118] ||
 	     fpu_madd_fOperand_S0$D_OUT[65:55] == 11'd2047 &&
 	     fpu_madd_fOperand_S0$D_OUT[54:3] != 52'd0 &&
 	     !fpu_madd_fOperand_S0$D_OUT[54] ||
-	     NOT_IF_fpu_madd_fOperand_S0_first_BIT_195_THEN_ETC___d147 ;
-  assign IF_fpu_madd_fOperand_S0_first_BIT_195_THEN_fpu_ETC___d62 =
-	     x__h329 == 11'd2047 && _theResult___fst_sfd__h398[51] ||
-	     fpu_madd_fOperand_S0$D_OUT[129:119] == 11'd2047 &&
-	     fpu_madd_fOperand_S0$D_OUT[118] ||
-	     fpu_madd_fOperand_S0$D_OUT[65:55] == 11'd2047 &&
-	     fpu_madd_fOperand_S0$D_OUT[54] ||
-	     x__h329 == 11'd2047 && _theResult___fst_sfd__h398 == 52'd0 ||
-	     fpu_madd_fOperand_S0_first_BITS_129_TO_119_7_E_ETC___d58 ;
-  assign IF_fpu_madd_fState_S3_first__96_BITS_12_TO_0_0_ETC___d717 =
-	     fpu_madd_fState_S3_first__96_BITS_12_TO_0_02_S_ETC___d205 ?
+	     NOT_IF_fpu_madd_fOperand_S0_first__803_BIT_195_ETC___d1946 ;
+  assign IF_fpu_madd_fState_S3_first__995_BITS_12_TO_0__ETC___d2516 =
+	     fpu_madd_fState_S3_first__995_BITS_12_TO_0_001_ETC___d2004 ?
 	       fpu_madd_fProd_S3$D_OUT != 106'd0 ||
 	       fpu_madd_fState_S3$D_OUT[83] :
-	       fpu_madd_fState_S3_first__96_BITS_86_TO_82_01__ETC___d702[1] ;
-  assign IF_fpu_madd_fState_S3_first__96_BITS_12_TO_0_0_ETC___d722 =
-	     fpu_madd_fState_S3_first__96_BITS_12_TO_0_02_S_ETC___d205 ?
+	       fpu_madd_fState_S3_first__995_BITS_86_TO_82_00_ETC___d2501[1] ;
+  assign IF_fpu_madd_fState_S3_first__995_BITS_12_TO_0__ETC___d2521 =
+	     fpu_madd_fState_S3_first__995_BITS_12_TO_0_001_ETC___d2004 ?
 	       fpu_madd_fProd_S3$D_OUT != 106'd0 ||
 	       fpu_madd_fState_S3$D_OUT[82] :
-	       fpu_madd_fState_S3_first__96_BITS_86_TO_82_01__ETC___d702[0] ;
-  assign IF_fpu_madd_fState_S3_first__96_BITS_12_TO_0_0_ETC___d737 =
-	     fpu_madd_fState_S3_first__96_BITS_12_TO_0_02_S_ETC___d203 ?
-	       (fpu_madd_fState_S3_first__96_BITS_12_TO_0_02_S_ETC___d205 ?
+	       fpu_madd_fState_S3_first__995_BITS_86_TO_82_00_ETC___d2501[0] ;
+  assign IF_fpu_madd_fState_S3_first__995_BITS_12_TO_0__ETC___d2536 =
+	     fpu_madd_fState_S3_first__995_BITS_12_TO_0_001_ETC___d2002 ?
+	       (fpu_madd_fState_S3_first__995_BITS_12_TO_0_001_ETC___d2004 ?
 		  63'd0 :
-		  IF_IF_7170_MINUS_fpu_madd_fState_S3_first__96__ETC___d735) :
+		  IF_IF_7170_MINUS_fpu_madd_fState_S3_first__995_ETC___d2534) :
 	       63'h7FEFFFFFFFFFFFFF ;
-  assign IF_fpu_madd_fState_S3_first__96_BIT_151_97_THE_ETC___d726 =
+  assign IF_fpu_madd_fState_S3_first__995_BIT_151_996_T_ETC___d2525 =
 	     fpu_madd_fState_S3$D_OUT[151] ?
 	       fpu_madd_fState_S3$D_OUT[86:82] :
-	       { IF_NOT_fpu_madd_fState_S3_first__96_BITS_12_TO_ETC___d704,
-		 IF_NOT_fpu_madd_fState_S3_first__96_BITS_12_TO_ETC___d707,
-		 NOT_fpu_madd_fState_S3_first__96_BITS_12_TO_0__ETC___d724 } ;
-  assign IF_fpu_madd_fState_S4_first__48_BITS_128_TO_11_ETC___d769 =
+	       { IF_NOT_fpu_madd_fState_S3_first__995_BITS_12_T_ETC___d2503,
+		 IF_NOT_fpu_madd_fState_S3_first__995_BITS_12_T_ETC___d2506,
+		 NOT_fpu_madd_fState_S3_first__995_BITS_12_TO_0_ETC___d2523 } ;
+  assign IF_fpu_madd_fState_S4_first__547_BITS_128_TO_1_ETC___d2568 =
 	     (fpu_madd_fState_S4$D_OUT[128:118] == 11'd0) ?
 	       13'd7170 :
-	       { {2{fpu_madd_fState_S4D_OUT_BITS_128_TO_118_MINUS_ETC__q7[10]}},
-		 fpu_madd_fState_S4D_OUT_BITS_128_TO_118_MINUS_ETC__q7 } ;
-  assign IF_fpu_madd_fState_S4_first__48_BITS_64_TO_54__ETC___d764 =
+	       { {2{fpu_madd_fState_S4D_OUT_BITS_128_TO_118_MINUS_ETC__q27[10]}},
+		 fpu_madd_fState_S4D_OUT_BITS_128_TO_118_MINUS_ETC__q27 } ;
+  assign IF_fpu_madd_fState_S4_first__547_BITS_64_TO_54_ETC___d2563 =
 	     (fpu_madd_fState_S4$D_OUT[64:54] == 11'd0) ?
 	       13'd7170 :
-	       { {2{fpu_madd_fState_S4D_OUT_BITS_64_TO_54_MINUS_1023__q6[10]}},
-		 fpu_madd_fState_S4D_OUT_BITS_64_TO_54_MINUS_1023__q6 } ;
-  assign IF_fpu_madd_fState_S7_first__52_BITS_126_TO_11_ETC___d1104 =
-	     IF_fpu_madd_fState_S7_first__52_BITS_126_TO_11_ETC___d869 -
-	     12'd3074 ;
-  assign IF_fpu_madd_fState_S7_first__52_BITS_126_TO_11_ETC___d869 =
-	     (value__h45124[10:0] == 11'd0) ?
+	       { {2{fpu_madd_fState_S4D_OUT_BITS_64_TO_54_MINUS_1023__q26[10]}},
+		 fpu_madd_fState_S4D_OUT_BITS_64_TO_54_MINUS_1023__q26 } ;
+  assign IF_fpu_madd_fState_S7_first__651_BITS_126_TO_1_ETC___d2668 =
+	     (value__h141307[10:0] == 11'd0) ?
 	       12'd3074 :
-	       { value5124_BITS_10_TO_0_MINUS_1023__q8[10],
-		 value5124_BITS_10_TO_0_MINUS_1023__q8 } ;
-  assign IF_fpu_madd_fState_S8_first__161_BITS_65_TO_55_ETC___d1187 =
+	       { value41307_BITS_10_TO_0_MINUS_1023__q28[10],
+		 value41307_BITS_10_TO_0_MINUS_1023__q28 } ;
+  assign IF_fpu_madd_fState_S7_first__651_BITS_126_TO_1_ETC___d2903 =
+	     IF_fpu_madd_fState_S7_first__651_BITS_126_TO_1_ETC___d2668 -
+	     12'd3074 ;
+  assign IF_fpu_madd_fState_S8_first__960_BITS_65_TO_55_ETC___d2986 =
 	     (fpu_madd_fState_S8$D_OUT[65:55] == 11'd0 &&
-	      sfd__h45857[53:52] == 2'b01) ?
+	      sfd__h142040[53:52] == 2'b01) ?
 	       11'd1 :
 	       fpu_madd_fState_S8$D_OUT[65:55] ;
-  assign IF_fpu_madd_fState_S8_first__161_BITS_65_TO_55_ETC___d1212 =
+  assign IF_fpu_madd_fState_S8_first__960_BITS_65_TO_55_ETC___d3011 =
 	     (fpu_madd_fState_S8$D_OUT[65:55] == 11'd2047) ?
 	       fpu_madd_fState_S8$D_OUT[65:55] :
-	       _theResult___fst_exp__h46439 ;
-  assign IF_fpu_madd_fState_S8_first__161_BIT_67_164_AN_ETC___d1261 =
+	       _theResult___fst_exp__h142619 ;
+  assign IF_fpu_madd_fState_S8_first__960_BIT_67_963_AN_ETC___d3060 =
 	     (fpu_madd_fState_S8$D_OUT[67] &&
-	      IF_fpu_madd_fState_S8_first__161_BITS_65_TO_55_ETC___d1212 ==
+	      IF_fpu_madd_fState_S8_first__960_BITS_65_TO_55_ETC___d3011 ==
 	      11'd0 &&
 	      ((fpu_madd_fState_S8$D_OUT[65:55] == 11'd2047) ?
 		 fpu_madd_fState_S8$D_OUT[54:3] :
-		 _theResult___fst_sfd__h46440) ==
+		 _theResult___fst_sfd__h142620) ==
 	      52'd0 &&
-	      !fpu_madd_fState_S8_first__161_BITS_75_TO_71_23_ETC___d1244[0] &&
+	      !fpu_madd_fState_S8_first__960_BITS_75_TO_71_03_ETC___d3043[0] &&
 	      fpu_madd_fState_S8$D_OUT[0]) ?
 	       fpu_madd_fState_S8$D_OUT[70:68] == 3'd3 :
 	       ((fpu_madd_fState_S8$D_OUT[65:55] == 11'd2047) ?
 		  fpu_madd_fState_S8$D_OUT[66] :
-		  CASE_fpu_madd_fState_S8D_OUT_BITS_70_TO_68_0__ETC__q142) ;
-  assign IF_fpu_madd_fState_S8_first__161_BIT_67_164_AN_ETC___d1282 =
-	     { IF_fpu_madd_fState_S8_first__161_BIT_67_164_AN_ETC___d1261,
+		  CASE_fpu_madd_fState_S8D_OUT_BITS_70_TO_68_0__ETC__q127) ;
+  assign IF_fpu_madd_fState_S8_first__960_BIT_67_963_AN_ETC___d3081 =
+	     { IF_fpu_madd_fState_S8_first__960_BIT_67_963_AN_ETC___d3060,
 	       (fpu_madd_fState_S8$D_OUT[65:55] == 11'd2047) ?
 		 fpu_madd_fState_S8$D_OUT[65:3] :
-		 CASE_fpu_madd_fState_S8D_OUT_BITS_70_TO_68_0__ETC__q148,
-	       fpu_madd_fState_S8_first__161_BITS_75_TO_71_23_ETC___d1244 } ;
-  assign IF_iFifo_first__288_BITS_102_TO_95_816_EQ_0_82_ETC___d2948 =
+		 CASE_fpu_madd_fState_S8D_OUT_BITS_70_TO_68_0__ETC__q132,
+	       fpu_madd_fState_S8_first__960_BITS_75_TO_71_03_ETC___d3043 } ;
+  assign IF_fpu_sqr64_fOperand_S0_first__059_BITS_65_TO_ETC___d1193 =
+	     (fpu_sqr64_fOperand_S0$D_OUT[65:55] == 11'd0) ?
+	       (fpu_sqr64_fOperand_S0$D_OUT[54] ?
+		  6'd2 :
+		  (fpu_sqr64_fOperand_S0$D_OUT[53] ?
+		     6'd3 :
+		     (fpu_sqr64_fOperand_S0$D_OUT[52] ?
+			6'd4 :
+			(fpu_sqr64_fOperand_S0$D_OUT[51] ?
+			   6'd5 :
+			   (fpu_sqr64_fOperand_S0$D_OUT[50] ?
+			      6'd6 :
+			      (fpu_sqr64_fOperand_S0$D_OUT[49] ?
+				 6'd7 :
+				 (fpu_sqr64_fOperand_S0$D_OUT[48] ?
+				    6'd8 :
+				    (fpu_sqr64_fOperand_S0$D_OUT[47] ?
+				       6'd9 :
+				       (fpu_sqr64_fOperand_S0$D_OUT[46] ?
+					  6'd10 :
+					  (fpu_sqr64_fOperand_S0$D_OUT[45] ?
+					     6'd11 :
+					     (fpu_sqr64_fOperand_S0$D_OUT[44] ?
+						6'd12 :
+						(fpu_sqr64_fOperand_S0$D_OUT[43] ?
+						   6'd13 :
+						   (fpu_sqr64_fOperand_S0$D_OUT[42] ?
+						      6'd14 :
+						      (fpu_sqr64_fOperand_S0$D_OUT[41] ?
+							 6'd15 :
+							 (fpu_sqr64_fOperand_S0$D_OUT[40] ?
+							    6'd16 :
+							    (fpu_sqr64_fOperand_S0$D_OUT[39] ?
+							       6'd17 :
+							       (fpu_sqr64_fOperand_S0$D_OUT[38] ?
+								  6'd18 :
+								  (fpu_sqr64_fOperand_S0$D_OUT[37] ?
+								     6'd19 :
+								     (fpu_sqr64_fOperand_S0$D_OUT[36] ?
+									6'd20 :
+									(fpu_sqr64_fOperand_S0$D_OUT[35] ?
+									   6'd21 :
+									   (fpu_sqr64_fOperand_S0$D_OUT[34] ?
+									      6'd22 :
+									      (fpu_sqr64_fOperand_S0$D_OUT[33] ?
+										 6'd23 :
+										 (fpu_sqr64_fOperand_S0$D_OUT[32] ?
+										    6'd24 :
+										    (fpu_sqr64_fOperand_S0$D_OUT[31] ?
+										       6'd25 :
+										       (fpu_sqr64_fOperand_S0$D_OUT[30] ?
+											  6'd26 :
+											  (fpu_sqr64_fOperand_S0$D_OUT[29] ?
+											     6'd27 :
+											     (fpu_sqr64_fOperand_S0$D_OUT[28] ?
+												6'd28 :
+												(fpu_sqr64_fOperand_S0$D_OUT[27] ?
+												   6'd29 :
+												   (fpu_sqr64_fOperand_S0$D_OUT[26] ?
+												      6'd30 :
+												      (fpu_sqr64_fOperand_S0$D_OUT[25] ?
+													 6'd31 :
+													 (fpu_sqr64_fOperand_S0$D_OUT[24] ?
+													    6'd32 :
+													    (fpu_sqr64_fOperand_S0$D_OUT[23] ?
+													       6'd33 :
+													       (fpu_sqr64_fOperand_S0$D_OUT[22] ?
+														  6'd34 :
+														  (fpu_sqr64_fOperand_S0$D_OUT[21] ?
+														     6'd35 :
+														     (fpu_sqr64_fOperand_S0$D_OUT[20] ?
+															6'd36 :
+															(fpu_sqr64_fOperand_S0$D_OUT[19] ?
+															   6'd37 :
+															   (fpu_sqr64_fOperand_S0$D_OUT[18] ?
+															      6'd38 :
+															      (fpu_sqr64_fOperand_S0$D_OUT[17] ?
+																 6'd39 :
+																 (fpu_sqr64_fOperand_S0$D_OUT[16] ?
+																    6'd40 :
+																    (fpu_sqr64_fOperand_S0$D_OUT[15] ?
+																       6'd41 :
+																       (fpu_sqr64_fOperand_S0$D_OUT[14] ?
+																	  6'd42 :
+																	  (fpu_sqr64_fOperand_S0$D_OUT[13] ?
+																	     6'd43 :
+																	     (fpu_sqr64_fOperand_S0$D_OUT[12] ?
+																		6'd44 :
+																		(fpu_sqr64_fOperand_S0$D_OUT[11] ?
+																		   6'd45 :
+																		   (fpu_sqr64_fOperand_S0$D_OUT[10] ?
+																		      6'd46 :
+																		      (fpu_sqr64_fOperand_S0$D_OUT[9] ?
+																			 6'd47 :
+																			 (fpu_sqr64_fOperand_S0$D_OUT[8] ?
+																			    6'd48 :
+																			    (fpu_sqr64_fOperand_S0$D_OUT[7] ?
+																			       6'd49 :
+																			       (fpu_sqr64_fOperand_S0$D_OUT[6] ?
+																				  6'd50 :
+																				  (fpu_sqr64_fOperand_S0$D_OUT[5] ?
+																				     6'd51 :
+																				     (fpu_sqr64_fOperand_S0$D_OUT[4] ?
+																					6'd52 :
+																					(fpu_sqr64_fOperand_S0$D_OUT[3] ?
+																					   6'd53 :
+																					   6'd58)))))))))))))))))))))))))))))))))))))))))))))))))))) :
+	       6'd1 ;
+  assign IF_fpu_sqr64_fOperand_S0_first__059_BITS_65_TO_ETC___d1195 =
+	     ((fpu_sqr64_fOperand_S0$D_OUT[65:55] == 11'd0) ?
+		13'd7170 :
+		{ {2{fpu_sqr64_fOperand_S0D_OUT_BITS_65_TO_55_MINU_ETC__q16[10]}},
+		  fpu_sqr64_fOperand_S0D_OUT_BITS_65_TO_55_MINU_ETC__q16 }) -
+	     { 7'd0,
+	       IF_fpu_sqr64_fOperand_S0_first__059_BITS_65_TO_ETC___d1193 } ;
+  assign IF_fpu_sqr64_fOperand_S0_first__059_BITS_65_TO_ETC___d1212 =
+	     (fpu_sqr64_fOperand_S0$D_OUT[65:55] == 11'd2047 &&
+	      fpu_sqr64_fOperand_S0$D_OUT[54] ||
+	      fpu_sqr64_fOperand_S0$D_OUT[65:55] == 11'd0 &&
+	      fpu_sqr64_fOperand_S0$D_OUT[54:3] == 52'd0 ||
+	      fpu_sqr64_fOperand_S0$D_OUT[65:55] == 11'd2047 &&
+	      fpu_sqr64_fOperand_S0$D_OUT[54:3] == 52'd0 &&
+	      !fpu_sqr64_fOperand_S0$D_OUT[66]) ?
+	       { 1'd1,
+		 fpu_sqr64_fOperand_S0$D_OUT[66:3],
+		 130'h00AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA } :
+	       (fpu_sqr64_fOperand_S0$D_OUT[66] ?
+		  195'h5FFE00000000000020AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA :
+		  { 70'h155555555555555540,
+		    fpu_sqr64_fOperand_S0$D_OUT[2:0],
+		    fpu_sqr64_fOperand_S0$D_OUT[66],
+		    x__h52551[10:0],
+		    fpu_sqr64_fOperand_S0$D_OUT[54:3],
+		    x__h60693 }) ;
+  assign IF_fpu_sqr64_fOperand_S0_first__059_BITS_65_TO_ETC__q17 =
+	     IF_fpu_sqr64_fOperand_S0_first__059_BITS_65_TO_ETC___d1195[12:1] ;
+  assign IF_fpu_sqr64_fState_S1_first__216_BIT_57_226_T_ETC___d1342 =
+	     (fpu_sqr64_fState_S1$D_OUT[57] ?
+		7'd0 :
+		(fpu_sqr64_fState_S1$D_OUT[56] ?
+		   7'd1 :
+		   (fpu_sqr64_fState_S1$D_OUT[55] ?
+		      7'd2 :
+		      (fpu_sqr64_fState_S1$D_OUT[54] ?
+			 7'd3 :
+			 (fpu_sqr64_fState_S1$D_OUT[53] ?
+			    7'd4 :
+			    (fpu_sqr64_fState_S1$D_OUT[52] ?
+			       7'd5 :
+			       (fpu_sqr64_fState_S1$D_OUT[51] ?
+				  7'd6 :
+				  (fpu_sqr64_fState_S1$D_OUT[50] ?
+				     7'd7 :
+				     (fpu_sqr64_fState_S1$D_OUT[49] ?
+					7'd8 :
+					(fpu_sqr64_fState_S1$D_OUT[48] ?
+					   7'd9 :
+					   (fpu_sqr64_fState_S1$D_OUT[47] ?
+					      7'd10 :
+					      (fpu_sqr64_fState_S1$D_OUT[46] ?
+						 7'd11 :
+						 (fpu_sqr64_fState_S1$D_OUT[45] ?
+						    7'd12 :
+						    (fpu_sqr64_fState_S1$D_OUT[44] ?
+						       7'd13 :
+						       (fpu_sqr64_fState_S1$D_OUT[43] ?
+							  7'd14 :
+							  (fpu_sqr64_fState_S1$D_OUT[42] ?
+							     7'd15 :
+							     (fpu_sqr64_fState_S1$D_OUT[41] ?
+								7'd16 :
+								(fpu_sqr64_fState_S1$D_OUT[40] ?
+								   7'd17 :
+								   (fpu_sqr64_fState_S1$D_OUT[39] ?
+								      7'd18 :
+								      (fpu_sqr64_fState_S1$D_OUT[38] ?
+									 7'd19 :
+									 (fpu_sqr64_fState_S1$D_OUT[37] ?
+									    7'd20 :
+									    (fpu_sqr64_fState_S1$D_OUT[36] ?
+									       7'd21 :
+									       (fpu_sqr64_fState_S1$D_OUT[35] ?
+										  7'd22 :
+										  (fpu_sqr64_fState_S1$D_OUT[34] ?
+										     7'd23 :
+										     (fpu_sqr64_fState_S1$D_OUT[33] ?
+											7'd24 :
+											(fpu_sqr64_fState_S1$D_OUT[32] ?
+											   7'd25 :
+											   (fpu_sqr64_fState_S1$D_OUT[31] ?
+											      7'd26 :
+											      (fpu_sqr64_fState_S1$D_OUT[30] ?
+												 7'd27 :
+												 (fpu_sqr64_fState_S1$D_OUT[29] ?
+												    7'd28 :
+												    (fpu_sqr64_fState_S1$D_OUT[28] ?
+												       7'd29 :
+												       (fpu_sqr64_fState_S1$D_OUT[27] ?
+													  7'd30 :
+													  (fpu_sqr64_fState_S1$D_OUT[26] ?
+													     7'd31 :
+													     (fpu_sqr64_fState_S1$D_OUT[25] ?
+														7'd32 :
+														(fpu_sqr64_fState_S1$D_OUT[24] ?
+														   7'd33 :
+														   (fpu_sqr64_fState_S1$D_OUT[23] ?
+														      7'd34 :
+														      (fpu_sqr64_fState_S1$D_OUT[22] ?
+															 7'd35 :
+															 (fpu_sqr64_fState_S1$D_OUT[21] ?
+															    7'd36 :
+															    (fpu_sqr64_fState_S1$D_OUT[20] ?
+															       7'd37 :
+															       (fpu_sqr64_fState_S1$D_OUT[19] ?
+																  7'd38 :
+																  (fpu_sqr64_fState_S1$D_OUT[18] ?
+																     7'd39 :
+																     (fpu_sqr64_fState_S1$D_OUT[17] ?
+																	7'd40 :
+																	(fpu_sqr64_fState_S1$D_OUT[16] ?
+																	   7'd41 :
+																	   (fpu_sqr64_fState_S1$D_OUT[15] ?
+																	      7'd42 :
+																	      (fpu_sqr64_fState_S1$D_OUT[14] ?
+																		 7'd43 :
+																		 (fpu_sqr64_fState_S1$D_OUT[13] ?
+																		    7'd44 :
+																		    (fpu_sqr64_fState_S1$D_OUT[12] ?
+																		       7'd45 :
+																		       (fpu_sqr64_fState_S1$D_OUT[11] ?
+																			  7'd46 :
+																			  (fpu_sqr64_fState_S1$D_OUT[10] ?
+																			     7'd47 :
+																			     (fpu_sqr64_fState_S1$D_OUT[9] ?
+																				7'd48 :
+																				(fpu_sqr64_fState_S1$D_OUT[8] ?
+																				   7'd49 :
+																				   (fpu_sqr64_fState_S1$D_OUT[7] ?
+																				      7'd50 :
+																				      (fpu_sqr64_fState_S1$D_OUT[6] ?
+																					 7'd51 :
+																					 (fpu_sqr64_fState_S1$D_OUT[5] ?
+																					    7'd52 :
+																					    (fpu_sqr64_fState_S1$D_OUT[4] ?
+																					       7'd53 :
+																					       (fpu_sqr64_fState_S1$D_OUT[3] ?
+																						  7'd54 :
+																						  (fpu_sqr64_fState_S1$D_OUT[2] ?
+																						     7'd55 :
+																						     (fpu_sqr64_fState_S1$D_OUT[1] ?
+																							7'd56 :
+																							(fpu_sqr64_fState_S1$D_OUT[0] ?
+																							   7'd57 :
+																							   7'd116)))))))))))))))))))))))))))))))))))))))))))))))))))))))))) -
+	     7'd1 ;
+  assign IF_fpu_sqr64_fState_S3_first__375_BITS_121_TO__ETC___d1389 =
+	     (fpu_sqr64_fState_S3$D_OUT[121:111] == 11'd0) ?
+	       12'd3074 :
+	       { fpu_sqr64_fState_S3D_OUT_BITS_121_TO_111_MINU_ETC__q18[10],
+		 fpu_sqr64_fState_S3D_OUT_BITS_121_TO_111_MINU_ETC__q18 } ;
+  assign IF_fpu_sqr64_fState_S3_first__375_BITS_121_TO__ETC___d1632 =
+	     IF_fpu_sqr64_fState_S3_first__375_BITS_121_TO__ETC___d1389 -
+	     12'd3074 ;
+  assign IF_fpu_sqr64_fState_S3_first__375_BIT_195_376__ETC___d1671 =
+	     fpu_sqr64_fState_S3$D_OUT[195] ?
+	       fpu_sqr64_fState_S3$D_OUT[128:126] :
+	       { fpu_sqr64_fState_S3$D_OUT[58] &&
+		 IF_fpu_sqr64_fState_S3_first__375_BITS_121_TO__ETC___d1389 ==
+		 12'd1023,
+		 _theResult___fst_exp__h94753 == 11'd0 &&
+		 guard__h86435 != 2'd0,
+		 fpu_sqr64_fState_S3$D_OUT[58] &&
+		 IF_fpu_sqr64_fState_S3_first__375_BITS_121_TO__ETC___d1389 ==
+		 12'd1023 } ;
+  assign IF_fpu_sqr64_fState_S3_first__375_BIT_58_384_A_ETC___d1678 =
+	     (fpu_sqr64_fState_S3$D_OUT[58] &&
+	      IF_fpu_sqr64_fState_S3_first__375_BITS_121_TO__ETC___d1389 ==
+	      12'd1023) ?
+	       63'h7FEFFFFFFFFFFFFF :
+	       { _theResult___fst_exp__h94750, sfdin__h94744[58:7] } ;
+  assign IF_fpu_sqr64_fState_S3_first__375_BIT_58_384_T_ETC___d1630 =
+	     (fpu_sqr64_fState_S3$D_OUT[58] ?
+		6'd0 :
+		(fpu_sqr64_fState_S3$D_OUT[57] ?
+		   6'd1 :
+		   (fpu_sqr64_fState_S3$D_OUT[56] ?
+		      6'd2 :
+		      (fpu_sqr64_fState_S3$D_OUT[55] ?
+			 6'd3 :
+			 (fpu_sqr64_fState_S3$D_OUT[54] ?
+			    6'd4 :
+			    (fpu_sqr64_fState_S3$D_OUT[53] ?
+			       6'd5 :
+			       (fpu_sqr64_fState_S3$D_OUT[52] ?
+				  6'd6 :
+				  (fpu_sqr64_fState_S3$D_OUT[51] ?
+				     6'd7 :
+				     (fpu_sqr64_fState_S3$D_OUT[50] ?
+					6'd8 :
+					(fpu_sqr64_fState_S3$D_OUT[49] ?
+					   6'd9 :
+					   (fpu_sqr64_fState_S3$D_OUT[48] ?
+					      6'd10 :
+					      (fpu_sqr64_fState_S3$D_OUT[47] ?
+						 6'd11 :
+						 (fpu_sqr64_fState_S3$D_OUT[46] ?
+						    6'd12 :
+						    (fpu_sqr64_fState_S3$D_OUT[45] ?
+						       6'd13 :
+						       (fpu_sqr64_fState_S3$D_OUT[44] ?
+							  6'd14 :
+							  (fpu_sqr64_fState_S3$D_OUT[43] ?
+							     6'd15 :
+							     (fpu_sqr64_fState_S3$D_OUT[42] ?
+								6'd16 :
+								(fpu_sqr64_fState_S3$D_OUT[41] ?
+								   6'd17 :
+								   (fpu_sqr64_fState_S3$D_OUT[40] ?
+								      6'd18 :
+								      (fpu_sqr64_fState_S3$D_OUT[39] ?
+									 6'd19 :
+									 (fpu_sqr64_fState_S3$D_OUT[38] ?
+									    6'd20 :
+									    (fpu_sqr64_fState_S3$D_OUT[37] ?
+									       6'd21 :
+									       (fpu_sqr64_fState_S3$D_OUT[36] ?
+										  6'd22 :
+										  (fpu_sqr64_fState_S3$D_OUT[35] ?
+										     6'd23 :
+										     (fpu_sqr64_fState_S3$D_OUT[34] ?
+											6'd24 :
+											(fpu_sqr64_fState_S3$D_OUT[33] ?
+											   6'd25 :
+											   (fpu_sqr64_fState_S3$D_OUT[32] ?
+											      6'd26 :
+											      (fpu_sqr64_fState_S3$D_OUT[31] ?
+												 6'd27 :
+												 (fpu_sqr64_fState_S3$D_OUT[30] ?
+												    6'd28 :
+												    (fpu_sqr64_fState_S3$D_OUT[29] ?
+												       6'd29 :
+												       (fpu_sqr64_fState_S3$D_OUT[28] ?
+													  6'd30 :
+													  (fpu_sqr64_fState_S3$D_OUT[27] ?
+													     6'd31 :
+													     (fpu_sqr64_fState_S3$D_OUT[26] ?
+														6'd32 :
+														(fpu_sqr64_fState_S3$D_OUT[25] ?
+														   6'd33 :
+														   (fpu_sqr64_fState_S3$D_OUT[24] ?
+														      6'd34 :
+														      (fpu_sqr64_fState_S3$D_OUT[23] ?
+															 6'd35 :
+															 (fpu_sqr64_fState_S3$D_OUT[22] ?
+															    6'd36 :
+															    (fpu_sqr64_fState_S3$D_OUT[21] ?
+															       6'd37 :
+															       (fpu_sqr64_fState_S3$D_OUT[20] ?
+																  6'd38 :
+																  (fpu_sqr64_fState_S3$D_OUT[19] ?
+																     6'd39 :
+																     (fpu_sqr64_fState_S3$D_OUT[18] ?
+																	6'd40 :
+																	(fpu_sqr64_fState_S3$D_OUT[17] ?
+																	   6'd41 :
+																	   (fpu_sqr64_fState_S3$D_OUT[16] ?
+																	      6'd42 :
+																	      (fpu_sqr64_fState_S3$D_OUT[15] ?
+																		 6'd43 :
+																		 (fpu_sqr64_fState_S3$D_OUT[14] ?
+																		    6'd44 :
+																		    (fpu_sqr64_fState_S3$D_OUT[13] ?
+																		       6'd45 :
+																		       (fpu_sqr64_fState_S3$D_OUT[12] ?
+																			  6'd46 :
+																			  (fpu_sqr64_fState_S3$D_OUT[11] ?
+																			     6'd47 :
+																			     (fpu_sqr64_fState_S3$D_OUT[10] ?
+																				6'd48 :
+																				(fpu_sqr64_fState_S3$D_OUT[9] ?
+																				   6'd49 :
+																				   (fpu_sqr64_fState_S3$D_OUT[8] ?
+																				      6'd50 :
+																				      (fpu_sqr64_fState_S3$D_OUT[7] ?
+																					 6'd51 :
+																					 (fpu_sqr64_fState_S3$D_OUT[6] ?
+																					    6'd52 :
+																					    (fpu_sqr64_fState_S3$D_OUT[5] ?
+																					       6'd53 :
+																					       (fpu_sqr64_fState_S3$D_OUT[4] ?
+																						  6'd54 :
+																						  (fpu_sqr64_fState_S3$D_OUT[3] ?
+																						     6'd55 :
+																						     (fpu_sqr64_fState_S3$D_OUT[2] ?
+																							6'd56 :
+																							(fpu_sqr64_fState_S3$D_OUT[1] ?
+																							   6'd57 :
+																							   (fpu_sqr64_fState_S3$D_OUT[0] ?
+																							      6'd58 :
+																							      6'd59))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) -
+	     6'd1 ;
+  assign IF_fpu_sqr64_fState_S4_first__687_BITS_64_TO_5_ETC___d1721 =
+	     (fpu_sqr64_fState_S4$D_OUT[64:54] == 11'd0 &&
+	      sfd__h95416[53:52] == 2'b01) ?
+	       11'd1 :
+	       fpu_sqr64_fState_S4$D_OUT[64:54] ;
+  assign IF_iFifo_first__087_BITS_102_TO_95_625_EQ_0_63_ETC___d4757 =
 	     ((iFifo$D_OUT[102:95] == 8'd0) ?
 		(iFifo$D_OUT[94] ?
 		   6'd2 :
@@ -3202,49 +4952,49 @@ module mkFPU(CLK,
 										     6'd57))))))))))))))))))))))) :
 		6'd1) -
 	     6'd1 ;
-  assign IF_iFifo_first__288_BITS_102_TO_95_816_EQ_0_82_ETC___d3339 =
+  assign IF_iFifo_first__087_BITS_102_TO_95_625_EQ_0_63_ETC___d5148 =
 	     (iFifo$D_OUT[102:95] == 8'd0) ?
-	       (_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_94_ETC___d2875 ?
-		  IF_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_ETC___d2993 :
-		  IF_iFifo_first__288_BITS_6_TO_4_313_EQ_0_382_O_ETC___d2994) :
-	       (SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC___d2998 ?
-		  IF_SEXT_iFifo_first__288_BITS_102_TO_95_816_MI_ETC___d3337 :
-		  IF_iFifo_first__288_BITS_6_TO_4_313_EQ_0_382_O_ETC___d2994) ;
-  assign IF_iFifo_first__288_BITS_102_TO_95_816_EQ_0_82_ETC___d3567 =
+	       (_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_94_ETC___d4684 ?
+		  IF_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_ETC___d4802 :
+		  IF_iFifo_first__087_BITS_6_TO_4_118_EQ_0_191_O_ETC___d4803) :
+	       (SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC___d4807 ?
+		  IF_SEXT_iFifo_first__087_BITS_102_TO_95_625_MI_ETC___d5146 :
+		  IF_iFifo_first__087_BITS_6_TO_4_118_EQ_0_191_O_ETC___d4803) ;
+  assign IF_iFifo_first__087_BITS_102_TO_95_625_EQ_0_63_ETC___d5376 =
 	     (iFifo$D_OUT[102:95] == 8'd0) ?
-	       (_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_94_ETC___d2875 ?
-		  IF_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_ETC___d3538 :
-		  IF_iFifo_first__288_BITS_6_TO_4_313_EQ_0_382_O_ETC___d3539) :
-	       (SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC___d2998 ?
-		  IF_SEXT_iFifo_first__288_BITS_102_TO_95_816_MI_ETC___d3565 :
-		  IF_iFifo_first__288_BITS_6_TO_4_313_EQ_0_382_O_ETC___d3539) ;
-  assign IF_iFifo_first__288_BITS_102_TO_95_816_EQ_255__ETC___d3518 =
+	       (_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_94_ETC___d4684 ?
+		  IF_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_ETC___d5347 :
+		  IF_iFifo_first__087_BITS_6_TO_4_118_EQ_0_191_O_ETC___d5348) :
+	       (SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC___d4807 ?
+		  IF_SEXT_iFifo_first__087_BITS_102_TO_95_625_MI_ETC___d5374 :
+		  IF_iFifo_first__087_BITS_6_TO_4_118_EQ_0_191_O_ETC___d5348) ;
+  assign IF_iFifo_first__087_BITS_102_TO_95_625_EQ_255__ETC___d5327 =
 	     { (iFifo$D_OUT[102:95] == 8'd255) ?
 		 11'd2047 :
-		 _theResult___fst_exp__h124842,
+		 _theResult___fst_exp__h221054,
 	       (iFifo$D_OUT[102:95] == 8'd255 &&
 		iFifo$D_OUT[94:72] != 23'd0) ?
-		 _theResult___snd_fst_sfd__h86914 :
-		 _theResult___fst_sfd__h124846 } ;
-  assign IF_iFifo_first__288_BITS_102_TO_95_816_EQ_255__ETC___d3519 =
+		 _theResult___snd_fst_sfd__h183126 :
+		 _theResult___fst_sfd__h221058 } ;
+  assign IF_iFifo_first__087_BITS_102_TO_95_625_EQ_255__ETC___d5328 =
 	     { (iFifo$D_OUT[102:95] == 8'd255 &&
 		iFifo$D_OUT[94:72] != 23'd0 ||
 		(iFifo$D_OUT[102:95] == 8'd255 ||
 		 iFifo$D_OUT[102:95] == 8'd0) &&
 		iFifo$D_OUT[94:72] == 23'd0) ?
 		 iFifo$D_OUT[103] :
-		 IF_iFifo_first__288_BITS_102_TO_95_816_EQ_0_82_ETC___d3339,
-	       IF_iFifo_first__288_BITS_102_TO_95_816_EQ_255__ETC___d3518 } ;
-  assign IF_iFifo_first__288_BITS_102_TO_95_816_EQ_255__ETC___d3569 =
+		 IF_iFifo_first__087_BITS_102_TO_95_625_EQ_0_63_ETC___d5148,
+	       IF_iFifo_first__087_BITS_102_TO_95_625_EQ_255__ETC___d5327 } ;
+  assign IF_iFifo_first__087_BITS_102_TO_95_625_EQ_255__ETC___d5378 =
 	     { (iFifo$D_OUT[102:95] == 8'd255 &&
 		iFifo$D_OUT[94:72] != 23'd0 ||
 		(iFifo$D_OUT[102:95] == 8'd255 ||
 		 iFifo$D_OUT[102:95] == 8'd0) &&
 		iFifo$D_OUT[94:72] == 23'd0) ?
 		 !iFifo$D_OUT[103] :
-		 IF_iFifo_first__288_BITS_102_TO_95_816_EQ_0_82_ETC___d3567,
-	       IF_iFifo_first__288_BITS_102_TO_95_816_EQ_255__ETC___d3518 } ;
-  assign IF_iFifo_first__288_BITS_167_TO_160_321_EQ_0_3_ETC___d1462 =
+		 IF_iFifo_first__087_BITS_102_TO_95_625_EQ_0_63_ETC___d5376,
+	       IF_iFifo_first__087_BITS_102_TO_95_625_EQ_255__ETC___d5327 } ;
+  assign IF_iFifo_first__087_BITS_167_TO_160_130_EQ_0_1_ETC___d3271 =
 	     ((iFifo$D_OUT[167:160] == 8'd0) ?
 		(iFifo$D_OUT[159] ?
 		   6'd2 :
@@ -3295,30 +5045,30 @@ module mkFPU(CLK,
 										     6'd57))))))))))))))))))))))) :
 		6'd1) -
 	     6'd1 ;
-  assign IF_iFifo_first__288_BITS_167_TO_160_321_EQ_0_3_ETC___d1856 =
+  assign IF_iFifo_first__087_BITS_167_TO_160_130_EQ_0_1_ETC___d3665 =
 	     (iFifo$D_OUT[167:160] == 8'd0) ?
-	       (_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_15_ETC___d1380 ?
-		  IF_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_ETC___d1508 :
-		  IF_iFifo_first__288_BITS_6_TO_4_313_EQ_0_382_O_ETC___d1511) :
-	       (SEXT_iFifo_first__288_BITS_167_TO_160_321_MINU_ETC___d1515 ?
-		  IF_SEXT_iFifo_first__288_BITS_167_TO_160_321_M_ETC___d1854 :
-		  IF_iFifo_first__288_BITS_6_TO_4_313_EQ_0_382_O_ETC___d1511) ;
-  assign IF_iFifo_first__288_BITS_167_TO_160_321_EQ_255_ETC___d2037 =
+	       (_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_15_ETC___d3189 ?
+		  IF_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_ETC___d3317 :
+		  IF_iFifo_first__087_BITS_6_TO_4_118_EQ_0_191_O_ETC___d3320) :
+	       (SEXT_iFifo_first__087_BITS_167_TO_160_130_MINU_ETC___d3324 ?
+		  IF_SEXT_iFifo_first__087_BITS_167_TO_160_130_M_ETC___d3663 :
+		  IF_iFifo_first__087_BITS_6_TO_4_118_EQ_0_191_O_ETC___d3320) ;
+  assign IF_iFifo_first__087_BITS_167_TO_160_130_EQ_255_ETC___d3846 =
 	     { (iFifo$D_OUT[167:160] == 8'd255 &&
 		iFifo$D_OUT[159:137] != 23'd0 ||
 		(iFifo$D_OUT[167:160] == 8'd255 ||
 		 iFifo$D_OUT[167:160] == 8'd0) &&
 		iFifo$D_OUT[159:137] == 23'd0) ?
 		 iFifo$D_OUT[168] :
-		 IF_iFifo_first__288_BITS_167_TO_160_321_EQ_0_3_ETC___d1856,
+		 IF_iFifo_first__087_BITS_167_TO_160_130_EQ_0_1_ETC___d3665,
 	       (iFifo$D_OUT[167:160] == 8'd255) ?
 		 11'd2047 :
-		 _theResult___fst_exp__h86204,
+		 _theResult___fst_exp__h182416,
 	       (iFifo$D_OUT[167:160] == 8'd255 &&
 		iFifo$D_OUT[159:137] != 23'd0) ?
-		 _theResult___snd_fst_sfd__h48274 :
-		 _theResult___fst_sfd__h86208 } ;
-  assign IF_iFifo_first__288_BITS_37_TO_30_041_EQ_0_047_ETC___d2173 =
+		 _theResult___snd_fst_sfd__h144486 :
+		 _theResult___fst_sfd__h182420 } ;
+  assign IF_iFifo_first__087_BITS_37_TO_30_850_EQ_0_856_ETC___d3982 =
 	     ((iFifo$D_OUT[37:30] == 8'd0) ?
 		(iFifo$D_OUT[29] ?
 		   6'd2 :
@@ -3369,287 +5119,367 @@ module mkFPU(CLK,
 										     6'd57))))))))))))))))))))))) :
 		6'd1) -
 	     6'd1 ;
-  assign IF_iFifo_first__288_BITS_37_TO_30_041_EQ_0_047_ETC___d2564 =
+  assign IF_iFifo_first__087_BITS_37_TO_30_850_EQ_0_856_ETC___d4373 =
 	     (iFifo$D_OUT[37:30] == 8'd0) ?
-	       (_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_29_ETC___d2100 ?
-		  IF_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_ETC___d2218 :
-		  IF_iFifo_first__288_BITS_6_TO_4_313_EQ_0_382_O_ETC___d2219) :
-	       (SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC___d2223 ?
-		  IF_SEXT_iFifo_first__288_BITS_37_TO_30_041_MIN_ETC___d2562 :
-		  IF_iFifo_first__288_BITS_6_TO_4_313_EQ_0_382_O_ETC___d2219) ;
-  assign IF_iFifo_first__288_BITS_37_TO_30_041_EQ_0_047_ETC___d2801 =
+	       (_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_29_ETC___d3909 ?
+		  IF_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_ETC___d4027 :
+		  IF_iFifo_first__087_BITS_6_TO_4_118_EQ_0_191_O_ETC___d4028) :
+	       (SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC___d4032 ?
+		  IF_SEXT_iFifo_first__087_BITS_37_TO_30_850_MIN_ETC___d4371 :
+		  IF_iFifo_first__087_BITS_6_TO_4_118_EQ_0_191_O_ETC___d4028) ;
+  assign IF_iFifo_first__087_BITS_37_TO_30_850_EQ_0_856_ETC___d4610 =
 	     (iFifo$D_OUT[37:30] == 8'd0) ?
-	       (_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_29_ETC___d2100 ?
-		  IF_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_ETC___d2772 :
-		  IF_iFifo_first__288_BITS_6_TO_4_313_EQ_0_382_O_ETC___d2773) :
-	       (SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC___d2223 ?
-		  IF_SEXT_iFifo_first__288_BITS_37_TO_30_041_MIN_ETC___d2799 :
-		  IF_iFifo_first__288_BITS_6_TO_4_313_EQ_0_382_O_ETC___d2773) ;
-  assign IF_iFifo_first__288_BITS_37_TO_30_041_EQ_255_0_ETC___d2743 =
+	       (_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_29_ETC___d3909 ?
+		  IF_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_ETC___d4581 :
+		  IF_iFifo_first__087_BITS_6_TO_4_118_EQ_0_191_O_ETC___d4582) :
+	       (SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC___d4032 ?
+		  IF_SEXT_iFifo_first__087_BITS_37_TO_30_850_MIN_ETC___d4608 :
+		  IF_iFifo_first__087_BITS_6_TO_4_118_EQ_0_191_O_ETC___d4582) ;
+  assign IF_iFifo_first__087_BITS_37_TO_30_850_EQ_255_8_ETC___d4552 =
 	     { (iFifo$D_OUT[37:30] == 8'd255) ?
 		 11'd2047 :
-		 _theResult___fst_exp__h163749,
+		 _theResult___fst_exp__h259993,
 	       (iFifo$D_OUT[37:30] == 8'd255 && iFifo$D_OUT[29:7] != 23'd0) ?
-		 _theResult___snd_fst_sfd__h125821 :
-		 _theResult___fst_sfd__h163753 } ;
-  assign IF_iFifo_first__288_BITS_37_TO_30_041_EQ_255_0_ETC___d2744 =
+		 _theResult___snd_fst_sfd__h222065 :
+		 _theResult___fst_sfd__h259997 } ;
+  assign IF_iFifo_first__087_BITS_37_TO_30_850_EQ_255_8_ETC___d4553 =
 	     { (iFifo$D_OUT[37:30] == 8'd255 && iFifo$D_OUT[29:7] != 23'd0 ||
 		(iFifo$D_OUT[37:30] == 8'd255 ||
 		 iFifo$D_OUT[37:30] == 8'd0) &&
 		iFifo$D_OUT[29:7] == 23'd0) ?
 		 iFifo$D_OUT[38] :
-		 IF_iFifo_first__288_BITS_37_TO_30_041_EQ_0_047_ETC___d2564,
-	       IF_iFifo_first__288_BITS_37_TO_30_041_EQ_255_0_ETC___d2743 } ;
-  assign IF_iFifo_first__288_BITS_37_TO_30_041_EQ_255_0_ETC___d2803 =
+		 IF_iFifo_first__087_BITS_37_TO_30_850_EQ_0_856_ETC___d4373,
+	       IF_iFifo_first__087_BITS_37_TO_30_850_EQ_255_8_ETC___d4552 } ;
+  assign IF_iFifo_first__087_BITS_37_TO_30_850_EQ_255_8_ETC___d4612 =
 	     { (iFifo$D_OUT[37:30] == 8'd255 && iFifo$D_OUT[29:7] != 23'd0 ||
 		(iFifo$D_OUT[37:30] == 8'd255 ||
 		 iFifo$D_OUT[37:30] == 8'd0) &&
 		iFifo$D_OUT[29:7] == 23'd0) ?
 		 !iFifo$D_OUT[38] :
-		 IF_iFifo_first__288_BITS_37_TO_30_041_EQ_0_047_ETC___d2801,
-	       IF_iFifo_first__288_BITS_37_TO_30_041_EQ_255_0_ETC___d2743 } ;
-  assign IF_iFifo_first__288_BIT_136_815_THEN_IF_iFifo__ETC___d3521 =
+		 IF_iFifo_first__087_BITS_37_TO_30_850_EQ_0_856_ETC___d4610,
+	       IF_iFifo_first__087_BITS_37_TO_30_850_EQ_255_8_ETC___d4552 } ;
+  assign IF_iFifo_first__087_BIT_136_624_THEN_IF_iFifo__ETC___d5330 =
 	     iFifo$D_OUT[136] ?
-	       IF_iFifo_first__288_BITS_102_TO_95_816_EQ_255__ETC___d3519 :
+	       IF_iFifo_first__087_BITS_102_TO_95_625_EQ_255__ETC___d5328 :
 	       iFifo$D_OUT[135:72] ;
-  assign IF_iFifo_first__288_BIT_201_310_THEN_IF_iFifo__ETC___d2039 =
+  assign IF_iFifo_first__087_BIT_201_115_THEN_IF_iFifo__ETC___d3848 =
 	     iFifo$D_OUT[201] ?
-	       IF_iFifo_first__288_BITS_167_TO_160_321_EQ_255_ETC___d2037 :
+	       IF_iFifo_first__087_BITS_167_TO_160_130_EQ_255_ETC___d3846 :
 	       iFifo$D_OUT[200:137] ;
-  assign IF_iFifo_first__288_BIT_71_040_THEN_IF_iFifo_f_ETC___d2746 =
+  assign IF_iFifo_first__087_BIT_71_849_THEN_IF_iFifo_f_ETC___d4555 =
 	     iFifo$D_OUT[71] ?
-	       IF_iFifo_first__288_BITS_37_TO_30_041_EQ_255_0_ETC___d2744 :
+	       IF_iFifo_first__087_BITS_37_TO_30_850_EQ_255_8_ETC___d4553 :
 	       iFifo$D_OUT[70:7] ;
-  assign IF_iFifo_first__288_BIT_71_040_THEN_IF_iFifo_f_ETC___d2809 =
+  assign IF_iFifo_first__087_BIT_71_849_THEN_IF_iFifo_f_ETC___d4618 =
 	     iFifo$D_OUT[71] ?
-	       IF_iFifo_first__288_BITS_37_TO_30_041_EQ_255_0_ETC___d2803 :
+	       IF_iFifo_first__087_BITS_37_TO_30_850_EQ_255_8_ETC___d4612 :
 	       { iFifo$D_OUT[71] || !iFifo$D_OUT[70], iFifo$D_OUT[69:7] } ;
-  assign IF_isDoubleFifo_first__592_THEN_IF_isNegateFif_ETC___d4842 =
+  assign IF_isDoubleFifo_first__407_THEN_IF_isNegateFif_ETC___d6657 =
 	     isDoubleFifo$D_OUT ?
-	       { isNegateFifo$D_OUT ^ fpu_madd_fResult_S9$D_OUT[68],
-		 fpu_madd_fResult_S9$D_OUT[67:5] } :
+	       { isNegateFifo$D_OUT ^ resWire$wget[68], resWire$wget[67:5] } :
 	       { 32'hAAAAAAAA,
-		 IF_isNegateFifo_first__594_THEN_IF_resWire_wge_ETC___d4609,
-		 exp__h208232,
-		 sfd__h208233 } ;
-  assign IF_isNegateFifo_first__594_THEN_IF_resWire_wge_ETC___d4609 =
+		 IF_isNegateFifo_first__409_THEN_IF_resWire_wge_ETC___d6424,
+		 exp__h304706,
+		 sfd__h304707 } ;
+  assign IF_isNegateFifo_first__409_THEN_IF_resWire_wge_ETC___d6424 =
 	     isNegateFifo$D_OUT ?
-	       ((fpu_madd_fResult_S9$D_OUT[67:57] == 11'd2047 &&
-		 fpu_madd_fResult_S9$D_OUT[56:5] != 52'd0 ||
-		 (fpu_madd_fResult_S9$D_OUT[67:57] == 11'd2047 ||
-		  fpu_madd_fResult_S9$D_OUT[67:57] == 11'd0) &&
-		 fpu_madd_fResult_S9$D_OUT[56:5] == 52'd0) ?
-		  !fpu_madd_fResult_S9$D_OUT[68] :
-		  IF_resWire_wget__595_BITS_67_TO_57_601_EQ_0_60_ETC___d4562) :
-	       ((fpu_madd_fResult_S9$D_OUT[67:57] == 11'd2047 &&
-		 fpu_madd_fResult_S9$D_OUT[56:5] != 52'd0 ||
-		 (fpu_madd_fResult_S9$D_OUT[67:57] == 11'd2047 ||
-		  fpu_madd_fResult_S9$D_OUT[67:57] == 11'd0) &&
-		 fpu_madd_fResult_S9$D_OUT[56:5] == 52'd0) ?
-		  fpu_madd_fResult_S9$D_OUT[68] :
-		  IF_resWire_wget__595_BITS_67_TO_57_601_EQ_0_60_ETC___d4607) ;
-  assign IF_resWire_wget__595_BITS_67_TO_57_601_EQ_0_60_ETC___d4167 =
-	     ((fpu_madd_fResult_S9$D_OUT[67:57] == 11'd0) ?
-		(fpu_madd_fResult_S9$D_OUT[56] ?
+	       ((resWire$wget[67:57] == 11'd2047 &&
+		 resWire$wget[56:5] != 52'd0 ||
+		 (resWire$wget[67:57] == 11'd2047 ||
+		  resWire$wget[67:57] == 11'd0) &&
+		 resWire$wget[56:5] == 52'd0) ?
+		  !resWire$wget[68] :
+		  IF_resWire_wget__410_BITS_67_TO_57_416_EQ_0_42_ETC___d6377) :
+	       ((resWire$wget[67:57] == 11'd2047 &&
+		 resWire$wget[56:5] != 52'd0 ||
+		 (resWire$wget[67:57] == 11'd2047 ||
+		  resWire$wget[67:57] == 11'd0) &&
+		 resWire$wget[56:5] == 52'd0) ?
+		  resWire$wget[68] :
+		  IF_resWire_wget__410_BITS_67_TO_57_416_EQ_0_42_ETC___d6422) ;
+  assign IF_resWire_wget__410_BITS_67_TO_57_416_EQ_0_42_ETC___d5982 =
+	     ((resWire$wget[67:57] == 11'd0) ?
+		(resWire$wget[56] ?
 		   6'd2 :
-		   (fpu_madd_fResult_S9$D_OUT[55] ?
+		   (resWire$wget[55] ?
 		      6'd3 :
-		      (fpu_madd_fResult_S9$D_OUT[54] ?
+		      (resWire$wget[54] ?
 			 6'd4 :
-			 (fpu_madd_fResult_S9$D_OUT[53] ?
+			 (resWire$wget[53] ?
 			    6'd5 :
-			    (fpu_madd_fResult_S9$D_OUT[52] ?
+			    (resWire$wget[52] ?
 			       6'd6 :
-			       (fpu_madd_fResult_S9$D_OUT[51] ?
+			       (resWire$wget[51] ?
 				  6'd7 :
-				  (fpu_madd_fResult_S9$D_OUT[50] ?
+				  (resWire$wget[50] ?
 				     6'd8 :
-				     (fpu_madd_fResult_S9$D_OUT[49] ?
+				     (resWire$wget[49] ?
 					6'd9 :
-					(fpu_madd_fResult_S9$D_OUT[48] ?
+					(resWire$wget[48] ?
 					   6'd10 :
-					   (fpu_madd_fResult_S9$D_OUT[47] ?
+					   (resWire$wget[47] ?
 					      6'd11 :
-					      (fpu_madd_fResult_S9$D_OUT[46] ?
+					      (resWire$wget[46] ?
 						 6'd12 :
-						 (fpu_madd_fResult_S9$D_OUT[45] ?
+						 (resWire$wget[45] ?
 						    6'd13 :
-						    (fpu_madd_fResult_S9$D_OUT[44] ?
+						    (resWire$wget[44] ?
 						       6'd14 :
-						       (fpu_madd_fResult_S9$D_OUT[43] ?
+						       (resWire$wget[43] ?
 							  6'd15 :
-							  (fpu_madd_fResult_S9$D_OUT[42] ?
+							  (resWire$wget[42] ?
 							     6'd16 :
-							     (fpu_madd_fResult_S9$D_OUT[41] ?
+							     (resWire$wget[41] ?
 								6'd17 :
-								(fpu_madd_fResult_S9$D_OUT[40] ?
+								(resWire$wget[40] ?
 								   6'd18 :
-								   (fpu_madd_fResult_S9$D_OUT[39] ?
+								   (resWire$wget[39] ?
 								      6'd19 :
-								      (fpu_madd_fResult_S9$D_OUT[38] ?
+								      (resWire$wget[38] ?
 									 6'd20 :
-									 (fpu_madd_fResult_S9$D_OUT[37] ?
+									 (resWire$wget[37] ?
 									    6'd21 :
-									    (fpu_madd_fResult_S9$D_OUT[36] ?
+									    (resWire$wget[36] ?
 									       6'd22 :
-									       (fpu_madd_fResult_S9$D_OUT[35] ?
+									       (resWire$wget[35] ?
 										  6'd23 :
-										  (fpu_madd_fResult_S9$D_OUT[34] ?
+										  (resWire$wget[34] ?
 										     6'd24 :
-										     (fpu_madd_fResult_S9$D_OUT[33] ?
+										     (resWire$wget[33] ?
 											6'd25 :
-											(fpu_madd_fResult_S9$D_OUT[32] ?
+											(resWire$wget[32] ?
 											   6'd26 :
-											   (fpu_madd_fResult_S9$D_OUT[31] ?
+											   (resWire$wget[31] ?
 											      6'd27 :
-											      (fpu_madd_fResult_S9$D_OUT[30] ?
+											      (resWire$wget[30] ?
 												 6'd28 :
-												 (fpu_madd_fResult_S9$D_OUT[29] ?
+												 (resWire$wget[29] ?
 												    6'd29 :
-												    (fpu_madd_fResult_S9$D_OUT[28] ?
+												    (resWire$wget[28] ?
 												       6'd30 :
-												       (fpu_madd_fResult_S9$D_OUT[27] ?
+												       (resWire$wget[27] ?
 													  6'd31 :
-													  (fpu_madd_fResult_S9$D_OUT[26] ?
+													  (resWire$wget[26] ?
 													     6'd32 :
-													     (fpu_madd_fResult_S9$D_OUT[25] ?
+													     (resWire$wget[25] ?
 														6'd33 :
-														(fpu_madd_fResult_S9$D_OUT[24] ?
+														(resWire$wget[24] ?
 														   6'd34 :
-														   (fpu_madd_fResult_S9$D_OUT[23] ?
+														   (resWire$wget[23] ?
 														      6'd35 :
-														      (fpu_madd_fResult_S9$D_OUT[22] ?
+														      (resWire$wget[22] ?
 															 6'd36 :
-															 (fpu_madd_fResult_S9$D_OUT[21] ?
+															 (resWire$wget[21] ?
 															    6'd37 :
-															    (fpu_madd_fResult_S9$D_OUT[20] ?
+															    (resWire$wget[20] ?
 															       6'd38 :
-															       (fpu_madd_fResult_S9$D_OUT[19] ?
+															       (resWire$wget[19] ?
 																  6'd39 :
-																  (fpu_madd_fResult_S9$D_OUT[18] ?
+																  (resWire$wget[18] ?
 																     6'd40 :
-																     (fpu_madd_fResult_S9$D_OUT[17] ?
+																     (resWire$wget[17] ?
 																	6'd41 :
-																	(fpu_madd_fResult_S9$D_OUT[16] ?
+																	(resWire$wget[16] ?
 																	   6'd42 :
-																	   (fpu_madd_fResult_S9$D_OUT[15] ?
+																	   (resWire$wget[15] ?
 																	      6'd43 :
-																	      (fpu_madd_fResult_S9$D_OUT[14] ?
+																	      (resWire$wget[14] ?
 																		 6'd44 :
-																		 (fpu_madd_fResult_S9$D_OUT[13] ?
+																		 (resWire$wget[13] ?
 																		    6'd45 :
-																		    (fpu_madd_fResult_S9$D_OUT[12] ?
+																		    (resWire$wget[12] ?
 																		       6'd46 :
-																		       (fpu_madd_fResult_S9$D_OUT[11] ?
+																		       (resWire$wget[11] ?
 																			  6'd47 :
-																			  (fpu_madd_fResult_S9$D_OUT[10] ?
+																			  (resWire$wget[10] ?
 																			     6'd48 :
-																			     (fpu_madd_fResult_S9$D_OUT[9] ?
+																			     (resWire$wget[9] ?
 																				6'd49 :
-																				(fpu_madd_fResult_S9$D_OUT[8] ?
+																				(resWire$wget[8] ?
 																				   6'd50 :
-																				   (fpu_madd_fResult_S9$D_OUT[7] ?
+																				   (resWire$wget[7] ?
 																				      6'd51 :
-																				      (fpu_madd_fResult_S9$D_OUT[6] ?
+																				      (resWire$wget[6] ?
 																					 6'd52 :
-																					 (fpu_madd_fResult_S9$D_OUT[5] ?
+																					 (resWire$wget[5] ?
 																					    6'd53 :
 																					    6'd57)))))))))))))))))))))))))))))))))))))))))))))))))))) :
 		6'd1) -
 	     6'd1 ;
-  assign IF_resWire_wget__595_BITS_67_TO_57_601_EQ_0_60_ETC___d4562 =
-	     (fpu_madd_fResult_S9$D_OUT[67:57] == 11'd0) ?
-	       (_3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d3717 ?
-		  IF_3074_MINUS_0_CONCAT_IF_resWire_wget__595_BI_ETC___d4210 :
-		  IF_rmdFifo_first__963_EQ_0_964_OR_rmdFifo_firs_ETC___d4213) :
-	       (SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC___d4217 ?
-		  IF_SEXT_resWire_wget__595_BITS_67_TO_57_601_MI_ETC___d4560 :
-		  IF_rmdFifo_first__963_EQ_0_964_OR_rmdFifo_firs_ETC___d4213) ;
-  assign IF_resWire_wget__595_BITS_67_TO_57_601_EQ_0_60_ETC___d4607 =
-	     (fpu_madd_fResult_S9$D_OUT[67:57] == 11'd0) ?
-	       (_3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d3717 ?
-		  IF_3074_MINUS_0_CONCAT_IF_resWire_wget__595_BI_ETC___d4584 :
-		  IF_rmdFifo_first__963_EQ_0_964_OR_rmdFifo_firs_ETC___d4585) :
-	       (SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC___d4217 ?
-		  IF_SEXT_resWire_wget__595_BITS_67_TO_57_601_MI_ETC___d4605 :
-		  IF_rmdFifo_first__963_EQ_0_964_OR_rmdFifo_firs_ETC___d4585) ;
-  assign IF_resWire_wget__595_BITS_67_TO_57_601_EQ_0_60_ETC___d4894 =
-	     (fpu_madd_fResult_S9$D_OUT[67:57] == 11'd0) ?
-	       _3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d4876 :
-	       SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC___d4217 &&
-	       SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC___d4218 &&
-	       _0_CONCAT_IF_IF_3970_MINUS_SEXT_resWire_wget__5_ETC___d4890[4] ;
-  assign IF_resWire_wget__595_BITS_67_TO_57_601_EQ_0_60_ETC___d4905 =
-	     (fpu_madd_fResult_S9$D_OUT[67:57] == 11'd0) ?
-	       _3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d4901 :
-	       SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC___d4217 &&
-	       SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC___d4218 &&
-	       _0_CONCAT_IF_IF_3970_MINUS_SEXT_resWire_wget__5_ETC___d4890[3] ;
-  assign IF_resWire_wget__595_BITS_67_TO_57_601_EQ_0_60_ETC___d4921 =
-	     (fpu_madd_fResult_S9$D_OUT[67:57] == 11'd0) ?
-	       NOT_3074_MINUS_0_CONCAT_IF_resWire_wget__595_B_ETC___d4913 :
-	       !SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC___d4217 ||
-	       IF_SEXT_resWire_wget__595_BITS_67_TO_57_601_MI_ETC___d4919 ;
-  assign IF_resWire_wget__595_BITS_67_TO_57_601_EQ_0_60_ETC___d4934 =
-	     (fpu_madd_fResult_S9$D_OUT[67:57] == 11'd0) ?
-	       _3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d4928 :
-	       SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC___d4217 &&
-	       IF_SEXT_resWire_wget__595_BITS_67_TO_57_601_MI_ETC___d4932 ;
-  assign IF_resWire_wget__595_BITS_67_TO_57_601_EQ_0_60_ETC___d4947 =
-	     (fpu_madd_fResult_S9$D_OUT[67:57] == 11'd0) ?
-	       NOT_3074_MINUS_0_CONCAT_IF_resWire_wget__595_B_ETC___d4941 :
-	       !SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC___d4217 ||
-	       IF_SEXT_resWire_wget__595_BITS_67_TO_57_601_MI_ETC___d4945 ;
-  assign IF_sfdin15272_BIT_4_THEN_2_ELSE_0__q78 =
-	     sfdin__h115272[4] ? 2'd2 : 2'd0 ;
-  assign IF_sfdin4760_BIT_53_THEN_2_ELSE_0__q5 =
-	     sfdin__h34760[53] ? 2'd2 : 2'd0 ;
-  assign IF_sfdin5186_BIT_4_THEN_2_ELSE_0__q10 =
-	     sfdin__h45186[4] ? 2'd2 : 2'd0 ;
-  assign IF_sfdin54179_BIT_4_THEN_2_ELSE_0__q45 =
-	     sfdin__h154179[4] ? 2'd2 : 2'd0 ;
-  assign IF_sfdin6634_BIT_4_THEN_2_ELSE_0__q18 =
-	     sfdin__h76634[4] ? 2'd2 : 2'd0 ;
-  assign IF_sfdin81206_BIT_33_THEN_2_ELSE_0__q107 =
-	     sfdin__h181206[33] ? 2'd2 : 2'd0 ;
-  assign IF_sfdin98972_BIT_33_THEN_2_ELSE_0__q113 =
-	     sfdin__h198972[33] ? 2'd2 : 2'd0 ;
-  assign IF_theResult___snd05713_BIT_4_THEN_2_ELSE_0__q74 =
-	     _theResult___snd__h105713[4] ? 2'd2 : 2'd0 ;
-  assign IF_theResult___snd07609_BIT_33_THEN_2_ELSE_0__q116 =
-	     _theResult___snd__h207609[33] ? 2'd2 : 2'd0 ;
-  assign IF_theResult___snd24025_BIT_4_THEN_2_ELSE_0__q81 =
-	     _theResult___snd__h124025[4] ? 2'd2 : 2'd0 ;
-  assign IF_theResult___snd44620_BIT_4_THEN_2_ELSE_0__q41 =
-	     _theResult___snd__h144620[4] ? 2'd2 : 2'd0 ;
-  assign IF_theResult___snd5387_BIT_4_THEN_2_ELSE_0__q21 =
-	     _theResult___snd__h85387[4] ? 2'd2 : 2'd0 ;
-  assign IF_theResult___snd62932_BIT_4_THEN_2_ELSE_0__q48 =
-	     _theResult___snd__h162932[4] ? 2'd2 : 2'd0 ;
-  assign IF_theResult___snd7075_BIT_4_THEN_2_ELSE_0__q14 =
-	     _theResult___snd__h67075[4] ? 2'd2 : 2'd0 ;
-  assign IF_theResult___snd89819_BIT_33_THEN_2_ELSE_0__q109 =
-	     _theResult___snd__h189819[33] ? 2'd2 : 2'd0 ;
-  assign NOT_3074_MINUS_0_CONCAT_IF_resWire_wget__595_B_ETC___d4913 =
-	     !_3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d3717 ||
-	     (_3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d3718 ?
-		_0_CONCAT_IF_IF_0b0_CONCAT_NOT_resWire_wget__59_ETC___d4861[2] :
-		_0_CONCAT_IF_resWire_wget__595_BITS_67_TO_57_60_ETC___d4873[2]) ;
-  assign NOT_3074_MINUS_0_CONCAT_IF_resWire_wget__595_B_ETC___d4941 =
-	     !_3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d3717 ||
-	     (_3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d3718 ?
-		_0_CONCAT_IF_IF_0b0_CONCAT_NOT_resWire_wget__59_ETC___d4861[0] :
-		_0_CONCAT_IF_resWire_wget__595_BITS_67_TO_57_60_ETC___d4873[0]) ;
-  assign NOT_IF_fpu_madd_fOperand_S0_first_BIT_195_THEN_ETC___d147 =
-	     (x__h329 != 11'd2047 || !_theResult___fst_sfd__h398[51]) &&
+  assign IF_resWire_wget__410_BITS_67_TO_57_416_EQ_0_42_ETC___d6377 =
+	     (resWire$wget[67:57] == 11'd0) ?
+	       (_3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d5532 ?
+		  IF_3074_MINUS_0_CONCAT_IF_resWire_wget__410_BI_ETC___d6025 :
+		  IF_rmdFifo_first__778_EQ_0_779_OR_rmdFifo_firs_ETC___d6028) :
+	       (SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC___d6032 ?
+		  IF_SEXT_resWire_wget__410_BITS_67_TO_57_416_MI_ETC___d6375 :
+		  IF_rmdFifo_first__778_EQ_0_779_OR_rmdFifo_firs_ETC___d6028) ;
+  assign IF_resWire_wget__410_BITS_67_TO_57_416_EQ_0_42_ETC___d6422 =
+	     (resWire$wget[67:57] == 11'd0) ?
+	       (_3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d5532 ?
+		  IF_3074_MINUS_0_CONCAT_IF_resWire_wget__410_BI_ETC___d6399 :
+		  IF_rmdFifo_first__778_EQ_0_779_OR_rmdFifo_firs_ETC___d6400) :
+	       (SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC___d6032 ?
+		  IF_SEXT_resWire_wget__410_BITS_67_TO_57_416_MI_ETC___d6420 :
+		  IF_rmdFifo_first__778_EQ_0_779_OR_rmdFifo_firs_ETC___d6400) ;
+  assign IF_resWire_wget__410_BITS_67_TO_57_416_EQ_0_42_ETC___d6709 =
+	     (resWire$wget[67:57] == 11'd0) ?
+	       _3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d6691 :
+	       SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC___d6032 &&
+	       SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC___d6033 &&
+	       _0_CONCAT_IF_IF_3970_MINUS_SEXT_resWire_wget__4_ETC___d6705[4] ;
+  assign IF_resWire_wget__410_BITS_67_TO_57_416_EQ_0_42_ETC___d6720 =
+	     (resWire$wget[67:57] == 11'd0) ?
+	       _3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d6716 :
+	       SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC___d6032 &&
+	       SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC___d6033 &&
+	       _0_CONCAT_IF_IF_3970_MINUS_SEXT_resWire_wget__4_ETC___d6705[3] ;
+  assign IF_resWire_wget__410_BITS_67_TO_57_416_EQ_0_42_ETC___d6736 =
+	     (resWire$wget[67:57] == 11'd0) ?
+	       NOT_3074_MINUS_0_CONCAT_IF_resWire_wget__410_B_ETC___d6728 :
+	       !SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC___d6032 ||
+	       IF_SEXT_resWire_wget__410_BITS_67_TO_57_416_MI_ETC___d6734 ;
+  assign IF_resWire_wget__410_BITS_67_TO_57_416_EQ_0_42_ETC___d6749 =
+	     (resWire$wget[67:57] == 11'd0) ?
+	       _3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d6743 :
+	       SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC___d6032 &&
+	       IF_SEXT_resWire_wget__410_BITS_67_TO_57_416_MI_ETC___d6747 ;
+  assign IF_resWire_wget__410_BITS_67_TO_57_416_EQ_0_42_ETC___d6762 =
+	     (resWire$wget[67:57] == 11'd0) ?
+	       NOT_3074_MINUS_0_CONCAT_IF_resWire_wget__410_B_ETC___d6756 :
+	       !SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC___d6032 ||
+	       IF_SEXT_resWire_wget__410_BITS_67_TO_57_416_MI_ETC___d6760 ;
+  assign IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d49 =
+	     rg_index_1_4_ULE_58___d38 ? _theResult___fst__h1515 : rg_b ;
+  assign IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d69 =
+	     rg_index_1_4_ULE_58___d38 ?
+	       _theResult___snd_snd_snd__h1520 :
+	       rg_r_1 ;
+  assign IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d73 =
+	     rg_index_1_4_ULE_58___d38 ?
+	       IF_rg_res_1_BIT_116_2_THEN_rg_res_1_BITS_115_T_ETC___d72 :
+	       rg_res[115:0] ;
+  assign IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d83 =
+	     rg_index_1_4_ULE_58___d38 ? _theResult___snd_fst__h1517 : rg_s ;
+  assign IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d85 =
+	     IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d83 <
+	     sum__h1710 ;
+  assign IF_rg_index_1_4_ULE_58_8_THEN_NOT_rg_b_9_EQ_0__ETC___d56 =
+	     rg_index_1_4_ULE_58___d38 ?
+	       rg_b != 116'd0 && !rg_res[116] :
+	       !rg_res[116] ;
+  assign IF_rg_index_1_4_ULE_58_8_THEN_rg_b_9_EQ_0_0_OR_ETC___d44 =
+	     rg_index_1_4_ULE_58___d38 ?
+	       rg_b == 116'd0 || rg_res[116] :
+	       rg_res[116] ;
+  assign IF_rg_index_ULE_57_THEN_IF_rg_r_0_BIT_115_1_TH_ETC___d22 =
+	     rg_index_ULE_57___d7 ?
+	       (rg_r[115] ?
+		  { rg_r[114:0], 1'd0 } + b__h32583 :
+		  { rg_r[114:0], 1'd0 } - b__h32583) :
+	       rg_r ;
+  assign IF_rg_index_ULE_57_THEN_rg_q_BITS_56_TO_0_CONC_ETC___d14 =
+	     rg_index_ULE_57___d7 ? { rg_q[56:0], !rg_r[115] } : rg_q ;
+  assign IF_rg_r_BIT_115_THEN_rg_q_PLUS_NEG_INV_rg_q_59_ETC__q10 =
+	     rg_r[115] ?
+	       rg_q_PLUS_NEG_INV_rg_q_59_60___d561 - 58'd1 :
+	       rg_q_PLUS_NEG_INV_rg_q_59_60___d561 ;
+  assign IF_rg_res_1_BIT_116_2_THEN_rg_res_1_BITS_115_T_ETC___d72 =
+	     rg_res[116] ?
+	       rg_res[115:0] :
+	       ((rg_b == 116'd0) ? rg_r_1 : rg_res[115:0]) ;
+  assign IF_sfdin11484_BIT_4_THEN_2_ELSE_0__q98 =
+	     sfdin__h211484[4] ? 2'd2 : 2'd0 ;
+  assign IF_sfdin2327_BIT_5_THEN_2_ELSE_0__q13 =
+	     sfdin__h42327[5] ? 2'd2 : 2'd0 ;
+  assign IF_sfdin30943_BIT_53_THEN_2_ELSE_0__q25 =
+	     sfdin__h130943[53] ? 2'd2 : 2'd0 ;
+  assign IF_sfdin41369_BIT_4_THEN_2_ELSE_0__q30 =
+	     sfdin__h141369[4] ? 2'd2 : 2'd0 ;
+  assign IF_sfdin4744_BIT_6_THEN_2_ELSE_0__q20 =
+	     sfdin__h94744[6] ? 2'd2 : 2'd0 ;
+  assign IF_sfdin50423_BIT_4_THEN_2_ELSE_0__q65 =
+	     sfdin__h250423[4] ? 2'd2 : 2'd0 ;
+  assign IF_sfdin72846_BIT_4_THEN_2_ELSE_0__q38 =
+	     sfdin__h172846[4] ? 2'd2 : 2'd0 ;
+  assign IF_sfdin77680_BIT_33_THEN_2_ELSE_0__q134 =
+	     sfdin__h277680[33] ? 2'd2 : 2'd0 ;
+  assign IF_sfdin95446_BIT_33_THEN_2_ELSE_0__q140 =
+	     sfdin__h295446[33] ? 2'd2 : 2'd0 ;
+  assign IF_theResult___snd01925_BIT_4_THEN_2_ELSE_0__q94 =
+	     _theResult___snd__h201925[4] ? 2'd2 : 2'd0 ;
+  assign IF_theResult___snd04083_BIT_33_THEN_2_ELSE_0__q143 =
+	     _theResult___snd__h304083[33] ? 2'd2 : 2'd0 ;
+  assign IF_theResult___snd20237_BIT_4_THEN_2_ELSE_0__q101 =
+	     _theResult___snd__h220237[4] ? 2'd2 : 2'd0 ;
+  assign IF_theResult___snd40864_BIT_4_THEN_2_ELSE_0__q61 =
+	     _theResult___snd__h240864[4] ? 2'd2 : 2'd0 ;
+  assign IF_theResult___snd59176_BIT_4_THEN_2_ELSE_0__q68 =
+	     _theResult___snd__h259176[4] ? 2'd2 : 2'd0 ;
+  assign IF_theResult___snd63287_BIT_4_THEN_2_ELSE_0__q34 =
+	     _theResult___snd__h163287[4] ? 2'd2 : 2'd0 ;
+  assign IF_theResult___snd81599_BIT_4_THEN_2_ELSE_0__q41 =
+	     _theResult___snd__h181599[4] ? 2'd2 : 2'd0 ;
+  assign IF_theResult___snd86293_BIT_33_THEN_2_ELSE_0__q136 =
+	     _theResult___snd__h286293[33] ? 2'd2 : 2'd0 ;
+  assign NOT_3074_MINUS_0_CONCAT_IF_resWire_wget__410_B_ETC___d6728 =
+	     !_3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d5532 ||
+	     (_3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d5533 ?
+		_0_CONCAT_IF_IF_0b0_CONCAT_NOT_resWire_wget__41_ETC___d6676[2] :
+		_0_CONCAT_IF_resWire_wget__410_BITS_67_TO_57_41_ETC___d6688[2]) ;
+  assign NOT_3074_MINUS_0_CONCAT_IF_resWire_wget__410_B_ETC___d6756 =
+	     !_3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d5532 ||
+	     (_3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d5533 ?
+		_0_CONCAT_IF_IF_0b0_CONCAT_NOT_resWire_wget__41_ETC___d6676[0] :
+		_0_CONCAT_IF_resWire_wget__410_BITS_67_TO_57_41_ETC___d6688[0]) ;
+  assign NOT_IF_fpu_madd_fOperand_S0_first__803_BIT_195_ETC___d1946 =
+	     (x__h96539 != 11'd2047 || !_theResult___fst_sfd__h96608[51]) &&
 	     (fpu_madd_fOperand_S0$D_OUT[129:119] != 11'd2047 ||
 	      !fpu_madd_fOperand_S0$D_OUT[118]) &&
 	     (fpu_madd_fOperand_S0$D_OUT[65:55] != 11'd2047 ||
 	      !fpu_madd_fOperand_S0$D_OUT[54]) &&
-	     (fpu_madd_fOperand_S0_first_BITS_129_TO_119_7_E_ETC___d127 ||
-	      IF_fpu_madd_fOperand_S0_first_BIT_195_THEN_fpu_ETC___d128 &&
-	      !fpu_madd_fOperand_S0_first_BIT_195_AND_fpu_mad_ETC___d56) ;
-  assign NOT_fpu_madd_fOperand_S0_first_BITS_129_TO_119_ETC___d124 =
+	     (fpu_madd_fOperand_S0_first__803_BITS_129_TO_11_ETC___d1926 ||
+	      IF_fpu_madd_fOperand_S0_first__803_BIT_195_804_ETC___d1927 &&
+	      !fpu_madd_fOperand_S0_first__803_BIT_195_804_AN_ETC___d1855) ;
+  assign NOT_fpu_div64_fOperands_S0_first__06_BITS_129__ETC___d400 =
+	     (fpu_div64_fOperands_S0$D_OUT[129:119] != 11'd2047 ||
+	      fpu_div64_fOperands_S0$D_OUT[118:67] != 52'd0 ||
+	      fpu_div64_fOperands_S0$D_OUT[65:55] != 11'd2047 ||
+	      fpu_div64_fOperands_S0$D_OUT[54:3] != 52'd0) &&
+	     (fpu_div64_fOperands_S0$D_OUT[129:119] != 11'd0 ||
+	      fpu_div64_fOperands_S0$D_OUT[118:67] != 52'd0 ||
+	      fpu_div64_fOperands_S0$D_OUT[65:55] != 11'd0 ||
+	      fpu_div64_fOperands_S0$D_OUT[54:3] != 52'd0) ;
+  assign NOT_fpu_div64_fOperands_S0_first__06_BITS_129__ETC___d452 =
+	     { NOT_fpu_div64_fOperands_S0_first__06_BITS_129__ETC___d400 &&
+	       IF_fpu_div64_fOperands_S0_first__06_BITS_65_TO_ETC___d422,
+	       IF_fpu_div64_fOperands_S0_first__06_BITS_65_TO_ETC___d433,
+	       fpu_div64_fOperands_S0_first__06_BITS_129_TO_1_ETC___d436 ?
+		 52'h8000000000000 :
+		 IF_fpu_div64_fOperands_S0_first__06_BITS_65_TO_ETC___d450 } ;
+  assign NOT_fpu_div64_fOperands_S0_first__06_BITS_65_T_ETC___d481 =
+	     (fpu_div64_fOperands_S0$D_OUT[65:55] != 11'd0 ||
+	      fpu_div64_fOperands_S0$D_OUT[54:3] != 52'd0) &&
+	     (fpu_div64_fOperands_S0$D_OUT[129:119] != 11'd2047 ||
+	      fpu_div64_fOperands_S0$D_OUT[118:67] != 52'd0) &&
+	     (fpu_div64_fOperands_S0$D_OUT[129:119] != 11'd0 ||
+	      fpu_div64_fOperands_S0$D_OUT[118:67] != 52'd0) &&
+	     (fpu_div64_fOperands_S0$D_OUT[65:55] != 11'd2047 ||
+	      fpu_div64_fOperands_S0$D_OUT[54:3] != 52'd0) &&
+	     IF_fpu_div64_fOperands_S0_first__06_BITS_129_T_ETC___d353 &&
+	     IF_fpu_div64_fOperands_S0_first__06_BITS_129_T_ETC___d355 ;
+  assign NOT_fpu_div64_fOperands_S0_first__06_BITS_65_T_ETC___d488 =
+	     (fpu_div64_fOperands_S0$D_OUT[65:55] != 11'd0 ||
+	      fpu_div64_fOperands_S0$D_OUT[54:3] != 52'd0) &&
+	     (fpu_div64_fOperands_S0$D_OUT[129:119] != 11'd2047 ||
+	      fpu_div64_fOperands_S0$D_OUT[118:67] != 52'd0) &&
+	     (fpu_div64_fOperands_S0$D_OUT[129:119] != 11'd0 ||
+	      fpu_div64_fOperands_S0$D_OUT[118:67] != 52'd0) &&
+	     (fpu_div64_fOperands_S0$D_OUT[65:55] != 11'd2047 ||
+	      fpu_div64_fOperands_S0$D_OUT[54:3] != 52'd0) &&
+	     (!IF_fpu_div64_fOperands_S0_first__06_BITS_129_T_ETC___d353 ||
+	      IF_fpu_div64_fOperands_S0_first__06_BITS_129_T_ETC___d355) ;
+  assign NOT_fpu_madd_fOperand_S0_first__803_BITS_129_T_ETC___d1923 =
 	     (fpu_madd_fOperand_S0$D_OUT[129:119] != 11'd2047 ||
 	      fpu_madd_fOperand_S0$D_OUT[118:67] != 52'd0 ||
 	      fpu_madd_fOperand_S0$D_OUT[65:55] != 11'd0 ||
@@ -3658,38 +5488,39 @@ module mkFPU(CLK,
 	      fpu_madd_fOperand_S0$D_OUT[118:67] != 52'd0 ||
 	      fpu_madd_fOperand_S0$D_OUT[65:55] != 11'd2047 ||
 	      fpu_madd_fOperand_S0$D_OUT[54:3] != 52'd0) &&
-	     (x__h329 != 11'd2047 || _theResult___fst_sfd__h398 != 52'd0 ||
+	     (x__h96539 != 11'd2047 ||
+	      _theResult___fst_sfd__h96608 != 52'd0 ||
 	      (fpu_madd_fOperand_S0$D_OUT[129:119] != 11'd2047 ||
 	       fpu_madd_fOperand_S0$D_OUT[118:67] != 52'd0) &&
 	      (fpu_madd_fOperand_S0$D_OUT[65:55] != 11'd2047 ||
 	       fpu_madd_fOperand_S0$D_OUT[54:3] != 52'd0) ||
-	      fpu_madd_fOperand_S0_first_BIT_195_AND_fpu_mad_ETC___d56) &&
-	     IF_IF_fpu_madd_fOperand_S0_first_BIT_195_THEN__ETC___d123 ;
-  assign NOT_fpu_madd_fOperand_S0_first_BIT_130_2_EQ_fp_ETC___d55 =
+	      fpu_madd_fOperand_S0_first__803_BIT_195_804_AN_ETC___d1855) &&
+	     IF_IF_fpu_madd_fOperand_S0_first__803_BIT_195__ETC___d1922 ;
+  assign NOT_fpu_madd_fOperand_S0_first__803_BIT_130_85_ETC___d1854 =
 	     fpu_madd_fOperand_S0$D_OUT[130] !=
 	     fpu_madd_fOperand_S0$D_OUT[66] ;
-  assign NOT_fpu_madd_fState_S3_first__96_BITS_12_TO_0__ETC___d711 =
-	     !fpu_madd_fState_S3_first__96_BITS_12_TO_0_02_S_ETC___d203 ||
-	     (fpu_madd_fState_S3_first__96_BITS_12_TO_0_02_S_ETC___d205 ?
+  assign NOT_fpu_madd_fState_S3_first__995_BITS_12_TO_0_ETC___d2510 =
+	     !fpu_madd_fState_S3_first__995_BITS_12_TO_0_001_ETC___d2002 ||
+	     (fpu_madd_fState_S3_first__995_BITS_12_TO_0_001_ETC___d2004 ?
 		fpu_madd_fState_S3$D_OUT[84] :
-		fpu_madd_fState_S3_first__96_BITS_86_TO_82_01__ETC___d702[2]) ;
-  assign NOT_fpu_madd_fState_S3_first__96_BITS_12_TO_0__ETC___d724 =
-	     { NOT_fpu_madd_fState_S3_first__96_BITS_12_TO_0__ETC___d711,
-	       fpu_madd_fState_S3_first__96_BITS_12_TO_0_02_S_ETC___d203 ?
-		 IF_fpu_madd_fState_S3_first__96_BITS_12_TO_0_0_ETC___d717 :
+		fpu_madd_fState_S3_first__995_BITS_86_TO_82_00_ETC___d2501[2]) ;
+  assign NOT_fpu_madd_fState_S3_first__995_BITS_12_TO_0_ETC___d2523 =
+	     { NOT_fpu_madd_fState_S3_first__995_BITS_12_TO_0_ETC___d2510,
+	       fpu_madd_fState_S3_first__995_BITS_12_TO_0_001_ETC___d2002 ?
+		 IF_fpu_madd_fState_S3_first__995_BITS_12_TO_0__ETC___d2516 :
 		 fpu_madd_fState_S3$D_OUT[83],
-	       !fpu_madd_fState_S3_first__96_BITS_12_TO_0_02_S_ETC___d203 ||
-	       IF_fpu_madd_fState_S3_first__96_BITS_12_TO_0_0_ETC___d722 } ;
-  assign NOT_fpu_madd_fState_S4_first__48_BIT_130_54_59_ETC___d785 =
+	       !fpu_madd_fState_S3_first__995_BITS_12_TO_0_001_ETC___d2002 ||
+	       IF_fpu_madd_fState_S3_first__995_BITS_12_TO_0__ETC___d2521 } ;
+  assign NOT_fpu_madd_fState_S4_first__547_BIT_130_553__ETC___d2584 =
 	     !fpu_madd_fState_S4$D_OUT[130] ||
-	     (IF_fpu_madd_fState_S4_first__48_BITS_64_TO_54__ETC___d764 ^
+	     (IF_fpu_madd_fState_S4_first__547_BITS_64_TO_54_ETC___d2563 ^
 	      13'h1000) >
-	     (IF_fpu_madd_fState_S4_first__48_BITS_128_TO_11_ETC___d769 ^
+	     (IF_fpu_madd_fState_S4_first__547_BITS_128_TO_1_ETC___d2568 ^
 	      13'h1000) ||
-	     IF_fpu_madd_fState_S4_first__48_BITS_64_TO_54__ETC___d764 ==
-	     IF_fpu_madd_fState_S4_first__48_BITS_128_TO_11_ETC___d769 &&
-	     sfdBC__h35395 > sfdA__h35394 ;
-  assign NOT_iFifo_first__288_BIT_158_333_393_AND_NOT_i_ETC___d1435 =
+	     IF_fpu_madd_fState_S4_first__547_BITS_64_TO_54_ETC___d2563 ==
+	     IF_fpu_madd_fState_S4_first__547_BITS_128_TO_1_ETC___d2568 &&
+	     sfdBC__h131578 > sfdA__h131577 ;
+  assign NOT_iFifo_first__087_BIT_158_142_202_AND_NOT_i_ETC___d3244 =
 	     !iFifo$D_OUT[158] && !iFifo$D_OUT[157] && !iFifo$D_OUT[156] &&
 	     !iFifo$D_OUT[155] &&
 	     !iFifo$D_OUT[154] &&
@@ -3710,7 +5541,7 @@ module mkFPU(CLK,
 	     !iFifo$D_OUT[139] &&
 	     !iFifo$D_OUT[138] &&
 	     !iFifo$D_OUT[137] ;
-  assign NOT_iFifo_first__288_BIT_28_053_104_AND_NOT_iF_ETC___d2146 =
+  assign NOT_iFifo_first__087_BIT_28_862_913_AND_NOT_iF_ETC___d3955 =
 	     !iFifo$D_OUT[28] && !iFifo$D_OUT[27] && !iFifo$D_OUT[26] &&
 	     !iFifo$D_OUT[25] &&
 	     !iFifo$D_OUT[24] &&
@@ -3731,7 +5562,7 @@ module mkFPU(CLK,
 	     !iFifo$D_OUT[9] &&
 	     !iFifo$D_OUT[8] &&
 	     !iFifo$D_OUT[7] ;
-  assign NOT_iFifo_first__288_BIT_93_828_879_AND_NOT_iF_ETC___d2921 =
+  assign NOT_iFifo_first__087_BIT_93_637_688_AND_NOT_iF_ETC___d4730 =
 	     !iFifo$D_OUT[93] && !iFifo$D_OUT[92] && !iFifo$D_OUT[91] &&
 	     !iFifo$D_OUT[90] &&
 	     !iFifo$D_OUT[89] &&
@@ -3752,394 +5583,404 @@ module mkFPU(CLK,
 	     !iFifo$D_OUT[74] &&
 	     !iFifo$D_OUT[73] &&
 	     !iFifo$D_OUT[72] ;
-  assign NOT_resWire_wget__595_BIT_56_611_010_AND_NOT_r_ETC___d4112 =
-	     !fpu_madd_fResult_S9$D_OUT[56] &&
-	     !fpu_madd_fResult_S9$D_OUT[55] &&
-	     !fpu_madd_fResult_S9$D_OUT[54] &&
-	     !fpu_madd_fResult_S9$D_OUT[53] &&
-	     !fpu_madd_fResult_S9$D_OUT[52] &&
-	     !fpu_madd_fResult_S9$D_OUT[51] &&
-	     !fpu_madd_fResult_S9$D_OUT[50] &&
-	     !fpu_madd_fResult_S9$D_OUT[49] &&
-	     !fpu_madd_fResult_S9$D_OUT[48] &&
-	     !fpu_madd_fResult_S9$D_OUT[47] &&
-	     !fpu_madd_fResult_S9$D_OUT[46] &&
-	     !fpu_madd_fResult_S9$D_OUT[45] &&
-	     !fpu_madd_fResult_S9$D_OUT[44] &&
-	     !fpu_madd_fResult_S9$D_OUT[43] &&
-	     !fpu_madd_fResult_S9$D_OUT[42] &&
-	     !fpu_madd_fResult_S9$D_OUT[41] &&
-	     !fpu_madd_fResult_S9$D_OUT[40] &&
-	     !fpu_madd_fResult_S9$D_OUT[39] &&
-	     !fpu_madd_fResult_S9$D_OUT[38] &&
-	     !fpu_madd_fResult_S9$D_OUT[37] &&
-	     !fpu_madd_fResult_S9$D_OUT[36] &&
-	     !fpu_madd_fResult_S9$D_OUT[35] &&
-	     !fpu_madd_fResult_S9$D_OUT[34] &&
-	     !fpu_madd_fResult_S9$D_OUT[33] &&
-	     !fpu_madd_fResult_S9$D_OUT[32] &&
-	     !fpu_madd_fResult_S9$D_OUT[31] &&
-	     !fpu_madd_fResult_S9$D_OUT[30] &&
-	     !fpu_madd_fResult_S9$D_OUT[29] &&
-	     !fpu_madd_fResult_S9$D_OUT[28] &&
-	     !fpu_madd_fResult_S9$D_OUT[27] &&
-	     !fpu_madd_fResult_S9$D_OUT[26] &&
-	     !fpu_madd_fResult_S9$D_OUT[25] &&
-	     !fpu_madd_fResult_S9$D_OUT[24] &&
-	     !fpu_madd_fResult_S9$D_OUT[23] &&
-	     !fpu_madd_fResult_S9$D_OUT[22] &&
-	     !fpu_madd_fResult_S9$D_OUT[21] &&
-	     !fpu_madd_fResult_S9$D_OUT[20] &&
-	     !fpu_madd_fResult_S9$D_OUT[19] &&
-	     !fpu_madd_fResult_S9$D_OUT[18] &&
-	     !fpu_madd_fResult_S9$D_OUT[17] &&
-	     !fpu_madd_fResult_S9$D_OUT[16] &&
-	     !fpu_madd_fResult_S9$D_OUT[15] &&
-	     !fpu_madd_fResult_S9$D_OUT[14] &&
-	     !fpu_madd_fResult_S9$D_OUT[13] &&
-	     !fpu_madd_fResult_S9$D_OUT[12] &&
-	     !fpu_madd_fResult_S9$D_OUT[11] &&
-	     !fpu_madd_fResult_S9$D_OUT[10] &&
-	     !fpu_madd_fResult_S9$D_OUT[9] &&
-	     !fpu_madd_fResult_S9$D_OUT[8] &&
-	     !fpu_madd_fResult_S9$D_OUT[7] &&
-	     !fpu_madd_fResult_S9$D_OUT[6] &&
-	     !fpu_madd_fResult_S9$D_OUT[5] ;
-  assign SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC___d2997 =
-	     { {4{iFifoD_OUT_BITS_102_TO_95_MINUS_127__q75[7]}},
-	       iFifoD_OUT_BITS_102_TO_95_MINUS_127__q75 } ;
-  assign SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC___d2998 =
-	     (SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC___d2997 ^
+  assign NOT_resWire_wget__410_BIT_56_426_825_AND_NOT_r_ETC___d5927 =
+	     !resWire$wget[56] && !resWire$wget[55] && !resWire$wget[54] &&
+	     !resWire$wget[53] &&
+	     !resWire$wget[52] &&
+	     !resWire$wget[51] &&
+	     !resWire$wget[50] &&
+	     !resWire$wget[49] &&
+	     !resWire$wget[48] &&
+	     !resWire$wget[47] &&
+	     !resWire$wget[46] &&
+	     !resWire$wget[45] &&
+	     !resWire$wget[44] &&
+	     !resWire$wget[43] &&
+	     !resWire$wget[42] &&
+	     !resWire$wget[41] &&
+	     !resWire$wget[40] &&
+	     !resWire$wget[39] &&
+	     !resWire$wget[38] &&
+	     !resWire$wget[37] &&
+	     !resWire$wget[36] &&
+	     !resWire$wget[35] &&
+	     !resWire$wget[34] &&
+	     !resWire$wget[33] &&
+	     !resWire$wget[32] &&
+	     !resWire$wget[31] &&
+	     !resWire$wget[30] &&
+	     !resWire$wget[29] &&
+	     !resWire$wget[28] &&
+	     !resWire$wget[27] &&
+	     !resWire$wget[26] &&
+	     !resWire$wget[25] &&
+	     !resWire$wget[24] &&
+	     !resWire$wget[23] &&
+	     !resWire$wget[22] &&
+	     !resWire$wget[21] &&
+	     !resWire$wget[20] &&
+	     !resWire$wget[19] &&
+	     !resWire$wget[18] &&
+	     !resWire$wget[17] &&
+	     !resWire$wget[16] &&
+	     !resWire$wget[15] &&
+	     !resWire$wget[14] &&
+	     !resWire$wget[13] &&
+	     !resWire$wget[12] &&
+	     !resWire$wget[11] &&
+	     !resWire$wget[10] &&
+	     !resWire$wget[9] &&
+	     !resWire$wget[8] &&
+	     !resWire$wget[7] &&
+	     !resWire$wget[6] &&
+	     !resWire$wget[5] ;
+  assign SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC___d4806 =
+	     { {4{iFifoD_OUT_BITS_102_TO_95_MINUS_127__q95[7]}},
+	       iFifoD_OUT_BITS_102_TO_95_MINUS_127__q95 } ;
+  assign SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC___d4807 =
+	     (SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC___d4806 ^
 	      12'h800) <=
 	     12'd3071 ;
-  assign SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC___d2999 =
-	     (SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC___d2997 ^
+  assign SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC___d4808 =
+	     (SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC___d4806 ^
 	      12'h800) <
 	     12'd1026 ;
-  assign SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC__q76 =
-	     SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC___d2997 +
+  assign SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC__q96 =
+	     SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC___d4806 +
 	     12'd1023 ;
-  assign SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC__q79 =
-	     SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC__q76[10:0] -
+  assign SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC__q99 =
+	     SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC__q96[10:0] -
 	     11'd1023 ;
-  assign SEXT_iFifo_first__288_BITS_167_TO_160_321_MINU_ETC___d1514 =
-	     { {4{iFifoD_OUT_BITS_167_TO_160_MINUS_127__q15[7]}},
-	       iFifoD_OUT_BITS_167_TO_160_MINUS_127__q15 } ;
-  assign SEXT_iFifo_first__288_BITS_167_TO_160_321_MINU_ETC___d1515 =
-	     (SEXT_iFifo_first__288_BITS_167_TO_160_321_MINU_ETC___d1514 ^
+  assign SEXT_iFifo_first__087_BITS_167_TO_160_130_MINU_ETC___d3323 =
+	     { {4{iFifoD_OUT_BITS_167_TO_160_MINUS_127__q35[7]}},
+	       iFifoD_OUT_BITS_167_TO_160_MINUS_127__q35 } ;
+  assign SEXT_iFifo_first__087_BITS_167_TO_160_130_MINU_ETC___d3324 =
+	     (SEXT_iFifo_first__087_BITS_167_TO_160_130_MINU_ETC___d3323 ^
 	      12'h800) <=
 	     12'd3071 ;
-  assign SEXT_iFifo_first__288_BITS_167_TO_160_321_MINU_ETC___d1516 =
-	     (SEXT_iFifo_first__288_BITS_167_TO_160_321_MINU_ETC___d1514 ^
+  assign SEXT_iFifo_first__087_BITS_167_TO_160_130_MINU_ETC___d3325 =
+	     (SEXT_iFifo_first__087_BITS_167_TO_160_130_MINU_ETC___d3323 ^
 	      12'h800) <
 	     12'd1026 ;
-  assign SEXT_iFifo_first__288_BITS_167_TO_160_321_MINU_ETC__q16 =
-	     SEXT_iFifo_first__288_BITS_167_TO_160_321_MINU_ETC___d1514 +
+  assign SEXT_iFifo_first__087_BITS_167_TO_160_130_MINU_ETC__q36 =
+	     SEXT_iFifo_first__087_BITS_167_TO_160_130_MINU_ETC___d3323 +
 	     12'd1023 ;
-  assign SEXT_iFifo_first__288_BITS_167_TO_160_321_MINU_ETC__q19 =
-	     SEXT_iFifo_first__288_BITS_167_TO_160_321_MINU_ETC__q16[10:0] -
+  assign SEXT_iFifo_first__087_BITS_167_TO_160_130_MINU_ETC__q39 =
+	     SEXT_iFifo_first__087_BITS_167_TO_160_130_MINU_ETC__q36[10:0] -
 	     11'd1023 ;
-  assign SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC___d2222 =
-	     { {4{iFifoD_OUT_BITS_37_TO_30_MINUS_127__q42[7]}},
-	       iFifoD_OUT_BITS_37_TO_30_MINUS_127__q42 } ;
-  assign SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC___d2223 =
-	     (SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC___d2222 ^
+  assign SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC___d4031 =
+	     { {4{iFifoD_OUT_BITS_37_TO_30_MINUS_127__q62[7]}},
+	       iFifoD_OUT_BITS_37_TO_30_MINUS_127__q62 } ;
+  assign SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC___d4032 =
+	     (SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC___d4031 ^
 	      12'h800) <=
 	     12'd3071 ;
-  assign SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC___d2224 =
-	     (SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC___d2222 ^
+  assign SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC___d4033 =
+	     (SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC___d4031 ^
 	      12'h800) <
 	     12'd1026 ;
-  assign SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC__q43 =
-	     SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC___d2222 +
+  assign SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC__q63 =
+	     SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC___d4031 +
 	     12'd1023 ;
-  assign SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC__q46 =
-	     SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC__q43[10:0] -
+  assign SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC__q66 =
+	     SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC__q63[10:0] -
 	     11'd1023 ;
-  assign SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC___d4216 =
-	     { fpu_madd_fResult_S9D_OUT_BITS_67_TO_57_MINUS__ETC__q110[10],
-	       fpu_madd_fResult_S9D_OUT_BITS_67_TO_57_MINUS__ETC__q110 } ;
-  assign SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC___d4217 =
-	     (SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC___d4216 ^
+  assign SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC___d6031 =
+	     { resWirewget_BITS_67_TO_57_MINUS_1023__q137[10],
+	       resWirewget_BITS_67_TO_57_MINUS_1023__q137 } ;
+  assign SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC___d6032 =
+	     (SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC___d6031 ^
 	      12'h800) <=
 	     12'd2175 ;
-  assign SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC___d4218 =
-	     (SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC___d4216 ^
+  assign SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC___d6033 =
+	     (SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC___d6031 ^
 	      12'h800) <
 	     12'd1922 ;
-  assign SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC__q111 =
-	     SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC___d4216 +
+  assign SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC__q138 =
+	     SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC___d6031 +
 	     12'd127 ;
-  assign SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC__q114 =
-	     SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC__q111[7:0] -
+  assign SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC__q141 =
+	     SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC__q138[7:0] -
 	     8'd127 ;
-  assign _0_CONCAT_IF_IF_0b0_CONCAT_NOT_resWire_wget__59_ETC___d3954 =
+  assign _0_CONCAT_IF_IF_0b0_CONCAT_NOT_resWire_wget__41_ETC___d5769 =
 	     ({ 3'd0,
-		IF_IF_0b0_CONCAT_NOT_resWire_wget__595_BITS_67_ETC___d3952 } ^
+		IF_IF_0b0_CONCAT_NOT_resWire_wget__410_BITS_67_ETC___d5767 } ^
 	      9'h100) <=
 	     9'd256 ;
-  assign _0_CONCAT_IF_IF_0b0_CONCAT_NOT_resWire_wget__59_ETC___d4861 =
+  assign _0_CONCAT_IF_IF_0b0_CONCAT_NOT_resWire_wget__41_ETC___d6676 =
 	     { 3'd0,
-	       _theResult___fst_exp__h181212 == 8'd0 &&
-	       (sfdin__h181206[56:34] == 23'd0 || guard__h173113 != 2'b0),
+	       _theResult___fst_exp__h277686 == 8'd0 &&
+	       (sfdin__h277680[56:34] == 23'd0 || guard__h269587 != 2'b0),
 	       1'd0 } |
 	     { 2'd0,
-	       _theResult___fst_exp__h181809 == 8'd255 &&
-	       _theResult___fst_sfd__h181810 == 23'd0,
+	       _theResult___fst_exp__h278283 == 8'd255 &&
+	       _theResult___fst_sfd__h278284 == 23'd0,
 	       1'd0,
-	       _theResult___fst_exp__h181212 != 8'd255 &&
-	       guard__h173113 != 2'b0 } ;
-  assign _0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__28_ETC___d1765 =
+	       _theResult___fst_exp__h277686 != 8'd255 &&
+	       guard__h269587 != 2'b0 } ;
+  assign _0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__08_ETC___d3574 =
 	     ({ 6'd0,
-		IF_IF_3074_MINUS_SEXT_iFifo_first__288_BITS_16_ETC___d1763 } ^
+		IF_IF_3074_MINUS_SEXT_iFifo_first__087_BITS_16_ETC___d3572 } ^
 	      12'h800) <=
 	     12'd2048 ;
-  assign _0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__28_ETC___d2473 =
+  assign _0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__08_ETC___d4282 =
 	     ({ 6'd0,
-		IF_IF_3074_MINUS_SEXT_iFifo_first__288_BITS_37_ETC___d2471 } ^
+		IF_IF_3074_MINUS_SEXT_iFifo_first__087_BITS_37_ETC___d4280 } ^
 	      12'h800) <=
 	     12'd2048 ;
-  assign _0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__28_ETC___d3248 =
+  assign _0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__08_ETC___d5057 =
 	     ({ 6'd0,
-		IF_IF_3074_MINUS_SEXT_iFifo_first__288_BITS_10_ETC___d3246 } ^
+		IF_IF_3074_MINUS_SEXT_iFifo_first__087_BITS_10_ETC___d5055 } ^
 	      12'h800) <=
 	     12'd2048 ;
-  assign _0_CONCAT_IF_IF_3970_MINUS_SEXT_resWire_wget__5_ETC___d4465 =
+  assign _0_CONCAT_IF_IF_3970_MINUS_SEXT_resWire_wget__4_ETC___d6280 =
 	     ({ 3'd0,
-		IF_IF_3970_MINUS_SEXT_resWire_wget__595_BITS_6_ETC___d4463 } ^
+		IF_IF_3970_MINUS_SEXT_resWire_wget__410_BITS_6_ETC___d6278 } ^
 	      9'h100) <=
 	     9'd256 ;
-  assign _0_CONCAT_IF_IF_3970_MINUS_SEXT_resWire_wget__5_ETC___d4890 =
+  assign _0_CONCAT_IF_IF_3970_MINUS_SEXT_resWire_wget__4_ETC___d6705 =
 	     { 3'd0,
-	       _theResult___fst_exp__h198978 == 8'd0 &&
-	       (sfdin__h198972[56:34] == 23'd0 || guard__h190750 != 2'b0),
+	       _theResult___fst_exp__h295452 == 8'd0 &&
+	       (sfdin__h295446[56:34] == 23'd0 || guard__h287224 != 2'b0),
 	       1'd0 } |
 	     { 2'd0,
-	       _theResult___fst_exp__h199575 == 8'd255 &&
-	       _theResult___fst_sfd__h199576 == 23'd0,
+	       _theResult___fst_exp__h296049 == 8'd255 &&
+	       _theResult___fst_sfd__h296050 == 23'd0,
 	       1'd0,
-	       _theResult___fst_exp__h198978 != 8'd255 &&
-	       guard__h190750 != 2'b0 } ;
-  assign _0_CONCAT_IF_IF_7170_MINUS_fpu_madd_fState_S3_f_ETC___d664 =
+	       _theResult___fst_exp__h295452 != 8'd255 &&
+	       guard__h287224 != 2'b0 } ;
+  assign _0_CONCAT_IF_IF_7170_MINUS_fpu_madd_fState_S3_f_ETC___d2463 =
 	     ({ 5'd0,
-		IF_IF_7170_MINUS_fpu_madd_fState_S3_first__96__ETC___d661 } ^
+		IF_IF_7170_MINUS_fpu_madd_fState_S3_first__995_ETC___d2460 } ^
 	      12'h800) <=
-	     (IF_IF_7170_MINUS_fpu_madd_fState_S3_first__96__ETC___d663 ^
+	     (IF_IF_7170_MINUS_fpu_madd_fState_S3_first__995_ETC___d2462 ^
 	      12'h800) ;
-  assign _0_CONCAT_IF_IF_fpu_madd_fState_S7_first__52_BI_ETC___d1105 =
+  assign _0_CONCAT_IF_IF_fpu_div64_fState_S3_first__86_B_ETC___d883 =
 	     ({ 6'd0,
-		IF_IF_fpu_madd_fState_S7_first__52_BIT_128_58__ETC___d1102 } ^
+		IF_IF_fpu_div64_fState_S3_first__86_BITS_120_T_ETC___d880 } ^
 	      12'h800) <=
-	     (IF_fpu_madd_fState_S7_first__52_BITS_126_TO_11_ETC___d1104 ^
+	     (IF_IF_fpu_div64_fState_S3_first__86_BITS_120_T_ETC___d882 ^
 	      12'h800) ;
-  assign _0_CONCAT_IF_iFifo_first__288_BITS_102_TO_95_81_ETC___d2950 =
+  assign _0_CONCAT_IF_IF_fpu_madd_fState_S7_first__651_B_ETC___d2904 =
 	     ({ 6'd0,
-		IF_iFifo_first__288_BITS_102_TO_95_816_EQ_0_82_ETC___d2948 } ^
+		IF_IF_fpu_madd_fState_S7_first__651_BIT_128_65_ETC___d2901 } ^
+	      12'h800) <=
+	     (IF_fpu_madd_fState_S7_first__651_BITS_126_TO_1_ETC___d2903 ^
+	      12'h800) ;
+  assign _0_CONCAT_IF_fpu_sqr64_fState_S3_first__375_BIT_ETC___d1633 =
+	     ({ 6'd0,
+		IF_fpu_sqr64_fState_S3_first__375_BIT_58_384_T_ETC___d1630 } ^
+	      12'h800) <=
+	     (IF_fpu_sqr64_fState_S3_first__375_BITS_121_TO__ETC___d1632 ^
+	      12'h800) ;
+  assign _0_CONCAT_IF_iFifo_first__087_BITS_102_TO_95_62_ETC___d4759 =
+	     ({ 6'd0,
+		IF_iFifo_first__087_BITS_102_TO_95_625_EQ_0_63_ETC___d4757 } ^
 	      12'h800) <=
 	     12'd2944 ;
-  assign _0_CONCAT_IF_iFifo_first__288_BITS_102_TO_95_81_ETC___d3298 =
+  assign _0_CONCAT_IF_iFifo_first__087_BITS_102_TO_95_62_ETC___d5107 =
 	     ({ 6'd0,
-		IF_iFifo_first__288_BITS_102_TO_95_816_EQ_0_82_ETC___d2948 } ^
+		IF_iFifo_first__087_BITS_102_TO_95_625_EQ_0_63_ETC___d4757 } ^
 	      12'h800) <=
-	     (IF_SEXT_iFifo_first__288_BITS_102_TO_95_816_MI_ETC___d3297 ^
+	     (IF_SEXT_iFifo_first__087_BITS_102_TO_95_625_MI_ETC___d5106 ^
 	      12'h800) ;
-  assign _0_CONCAT_IF_iFifo_first__288_BITS_167_TO_160_3_ETC___d1464 =
+  assign _0_CONCAT_IF_iFifo_first__087_BITS_167_TO_160_1_ETC___d3273 =
 	     ({ 6'd0,
-		IF_iFifo_first__288_BITS_167_TO_160_321_EQ_0_3_ETC___d1462 } ^
+		IF_iFifo_first__087_BITS_167_TO_160_130_EQ_0_1_ETC___d3271 } ^
 	      12'h800) <=
 	     12'd2944 ;
-  assign _0_CONCAT_IF_iFifo_first__288_BITS_167_TO_160_3_ETC___d1815 =
+  assign _0_CONCAT_IF_iFifo_first__087_BITS_167_TO_160_1_ETC___d3624 =
 	     ({ 6'd0,
-		IF_iFifo_first__288_BITS_167_TO_160_321_EQ_0_3_ETC___d1462 } ^
+		IF_iFifo_first__087_BITS_167_TO_160_130_EQ_0_1_ETC___d3271 } ^
 	      12'h800) <=
-	     (IF_SEXT_iFifo_first__288_BITS_167_TO_160_321_M_ETC___d1814 ^
+	     (IF_SEXT_iFifo_first__087_BITS_167_TO_160_130_M_ETC___d3623 ^
 	      12'h800) ;
-  assign _0_CONCAT_IF_iFifo_first__288_BITS_37_TO_30_041_ETC___d2175 =
+  assign _0_CONCAT_IF_iFifo_first__087_BITS_37_TO_30_850_ETC___d3984 =
 	     ({ 6'd0,
-		IF_iFifo_first__288_BITS_37_TO_30_041_EQ_0_047_ETC___d2173 } ^
+		IF_iFifo_first__087_BITS_37_TO_30_850_EQ_0_856_ETC___d3982 } ^
 	      12'h800) <=
 	     12'd2944 ;
-  assign _0_CONCAT_IF_iFifo_first__288_BITS_37_TO_30_041_ETC___d2523 =
+  assign _0_CONCAT_IF_iFifo_first__087_BITS_37_TO_30_850_ETC___d4332 =
 	     ({ 6'd0,
-		IF_iFifo_first__288_BITS_37_TO_30_041_EQ_0_047_ETC___d2173 } ^
+		IF_iFifo_first__087_BITS_37_TO_30_850_EQ_0_856_ETC___d3982 } ^
 	      12'h800) <=
-	     (IF_SEXT_iFifo_first__288_BITS_37_TO_30_041_MIN_ETC___d2522 ^
+	     (IF_SEXT_iFifo_first__087_BITS_37_TO_30_850_MIN_ETC___d4331 ^
 	      12'h800) ;
-  assign _0_CONCAT_IF_resWire_wget__595_BITS_67_TO_57_60_ETC___d4169 =
+  assign _0_CONCAT_IF_resWire_wget__410_BITS_67_TO_57_41_ETC___d5984 =
 	     ({ 3'd0,
-		IF_resWire_wget__595_BITS_67_TO_57_601_EQ_0_60_ETC___d4167 } ^
+		IF_resWire_wget__410_BITS_67_TO_57_416_EQ_0_42_ETC___d5982 } ^
 	      9'h100) <=
 	     9'd384 ;
-  assign _0_CONCAT_IF_resWire_wget__595_BITS_67_TO_57_60_ETC___d4518 =
+  assign _0_CONCAT_IF_resWire_wget__410_BITS_67_TO_57_41_ETC___d6333 =
 	     ({ 3'd0,
-		IF_resWire_wget__595_BITS_67_TO_57_601_EQ_0_60_ETC___d4167 } ^
+		IF_resWire_wget__410_BITS_67_TO_57_416_EQ_0_42_ETC___d5982 } ^
 	      9'h100) <=
-	     (IF_SEXT_resWire_wget__595_BITS_67_TO_57_601_MI_ETC___d4517 ^
+	     (IF_SEXT_resWire_wget__410_BITS_67_TO_57_416_MI_ETC___d6332 ^
 	      9'h100) ;
-  assign _0_CONCAT_IF_resWire_wget__595_BITS_67_TO_57_60_ETC___d4873 =
+  assign _0_CONCAT_IF_resWire_wget__410_BITS_67_TO_57_41_ETC___d6688 =
 	     { 3'd0,
-	       _theResult___fst_exp__h189868 == 8'd0 &&
-	       guard__h181820 != 2'b0,
+	       _theResult___fst_exp__h286342 == 8'd0 &&
+	       guard__h278294 != 2'b0,
 	       1'd0 } |
 	     { 2'd0,
-	       _theResult___fst_exp__h190391 == 8'd255 &&
-	       _theResult___fst_sfd__h190392 == 23'd0,
+	       _theResult___fst_exp__h286865 == 8'd255 &&
+	       _theResult___fst_sfd__h286866 == 23'd0,
 	       1'd0,
-	       _theResult___fst_exp__h189868 != 8'd255 &&
-	       guard__h181820 != 2'b0 } ;
-  assign _0b0_CONCAT_NOT_iFifo_first__288_BITS_102_TO_95_ETC___d3004 =
-	     sfd__h86964 >>
-	     _3074_MINUS_SEXT_iFifo_first__288_BITS_102_TO_9_ETC___d3000 ;
-  assign _0b0_CONCAT_NOT_iFifo_first__288_BITS_167_TO_16_ETC___d1521 =
-	     sfd__h48324 >>
-	     _3074_MINUS_SEXT_iFifo_first__288_BITS_167_TO_1_ETC___d1517 ;
-  assign _0b0_CONCAT_NOT_iFifo_first__288_BITS_37_TO_30__ETC___d2229 =
-	     sfd__h125871 >>
-	     _3074_MINUS_SEXT_iFifo_first__288_BITS_37_TO_30_ETC___d2225 ;
-  assign _0b0_CONCAT_NOT_resWire_wget__595_BITS_67_TO_57_ETC___d4223 =
-	     sfd__h165501 >>
-	     _3970_MINUS_SEXT_resWire_wget__595_BITS_67_TO_5_ETC___d4219 ;
-  assign _3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d3716 =
+	       _theResult___fst_exp__h286342 != 8'd255 &&
+	       guard__h278294 != 2'b0 } ;
+  assign _0b0_CONCAT_NOT_iFifo_first__087_BITS_102_TO_95_ETC___d4813 =
+	     sfd__h183176 >>
+	     _3074_MINUS_SEXT_iFifo_first__087_BITS_102_TO_9_ETC___d4809 ;
+  assign _0b0_CONCAT_NOT_iFifo_first__087_BITS_167_TO_16_ETC___d3330 =
+	     sfd__h144536 >>
+	     _3074_MINUS_SEXT_iFifo_first__087_BITS_167_TO_1_ETC___d3326 ;
+  assign _0b0_CONCAT_NOT_iFifo_first__087_BITS_37_TO_30__ETC___d4038 =
+	     sfd__h222115 >>
+	     _3074_MINUS_SEXT_iFifo_first__087_BITS_37_TO_30_ETC___d4034 ;
+  assign _0b0_CONCAT_NOT_resWire_wget__410_BITS_67_TO_57_ETC___d6038 =
+	     sfd__h261975 >>
+	     _3970_MINUS_SEXT_resWire_wget__410_BITS_67_TO_5_ETC___d6034 ;
+  assign _3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d5531 =
 	     12'd3074 -
 	     { 6'd0,
-	       fpu_madd_fResult_S9$D_OUT[56] ?
+	       resWire$wget[56] ?
 		 6'd0 :
-		 (fpu_madd_fResult_S9$D_OUT[55] ?
+		 (resWire$wget[55] ?
 		    6'd1 :
-		    (fpu_madd_fResult_S9$D_OUT[54] ?
+		    (resWire$wget[54] ?
 		       6'd2 :
-		       (fpu_madd_fResult_S9$D_OUT[53] ?
+		       (resWire$wget[53] ?
 			  6'd3 :
-			  (fpu_madd_fResult_S9$D_OUT[52] ?
+			  (resWire$wget[52] ?
 			     6'd4 :
-			     (fpu_madd_fResult_S9$D_OUT[51] ?
+			     (resWire$wget[51] ?
 				6'd5 :
-				(fpu_madd_fResult_S9$D_OUT[50] ?
+				(resWire$wget[50] ?
 				   6'd6 :
-				   (fpu_madd_fResult_S9$D_OUT[49] ?
+				   (resWire$wget[49] ?
 				      6'd7 :
-				      (fpu_madd_fResult_S9$D_OUT[48] ?
+				      (resWire$wget[48] ?
 					 6'd8 :
-					 (fpu_madd_fResult_S9$D_OUT[47] ?
+					 (resWire$wget[47] ?
 					    6'd9 :
-					    (fpu_madd_fResult_S9$D_OUT[46] ?
+					    (resWire$wget[46] ?
 					       6'd10 :
-					       (fpu_madd_fResult_S9$D_OUT[45] ?
+					       (resWire$wget[45] ?
 						  6'd11 :
-						  (fpu_madd_fResult_S9$D_OUT[44] ?
+						  (resWire$wget[44] ?
 						     6'd12 :
-						     (fpu_madd_fResult_S9$D_OUT[43] ?
+						     (resWire$wget[43] ?
 							6'd13 :
-							(fpu_madd_fResult_S9$D_OUT[42] ?
+							(resWire$wget[42] ?
 							   6'd14 :
-							   (fpu_madd_fResult_S9$D_OUT[41] ?
+							   (resWire$wget[41] ?
 							      6'd15 :
-							      (fpu_madd_fResult_S9$D_OUT[40] ?
+							      (resWire$wget[40] ?
 								 6'd16 :
-								 (fpu_madd_fResult_S9$D_OUT[39] ?
+								 (resWire$wget[39] ?
 								    6'd17 :
-								    (fpu_madd_fResult_S9$D_OUT[38] ?
+								    (resWire$wget[38] ?
 								       6'd18 :
-								       (fpu_madd_fResult_S9$D_OUT[37] ?
+								       (resWire$wget[37] ?
 									  6'd19 :
-									  (fpu_madd_fResult_S9$D_OUT[36] ?
+									  (resWire$wget[36] ?
 									     6'd20 :
-									     (fpu_madd_fResult_S9$D_OUT[35] ?
+									     (resWire$wget[35] ?
 										6'd21 :
-										(fpu_madd_fResult_S9$D_OUT[34] ?
+										(resWire$wget[34] ?
 										   6'd22 :
-										   (fpu_madd_fResult_S9$D_OUT[33] ?
+										   (resWire$wget[33] ?
 										      6'd23 :
-										      (fpu_madd_fResult_S9$D_OUT[32] ?
+										      (resWire$wget[32] ?
 											 6'd24 :
-											 (fpu_madd_fResult_S9$D_OUT[31] ?
+											 (resWire$wget[31] ?
 											    6'd25 :
-											    (fpu_madd_fResult_S9$D_OUT[30] ?
+											    (resWire$wget[30] ?
 											       6'd26 :
-											       (fpu_madd_fResult_S9$D_OUT[29] ?
+											       (resWire$wget[29] ?
 												  6'd27 :
-												  (fpu_madd_fResult_S9$D_OUT[28] ?
+												  (resWire$wget[28] ?
 												     6'd28 :
-												     (fpu_madd_fResult_S9$D_OUT[27] ?
+												     (resWire$wget[27] ?
 													6'd29 :
-													(fpu_madd_fResult_S9$D_OUT[26] ?
+													(resWire$wget[26] ?
 													   6'd30 :
-													   (fpu_madd_fResult_S9$D_OUT[25] ?
+													   (resWire$wget[25] ?
 													      6'd31 :
-													      (fpu_madd_fResult_S9$D_OUT[24] ?
+													      (resWire$wget[24] ?
 														 6'd32 :
-														 (fpu_madd_fResult_S9$D_OUT[23] ?
+														 (resWire$wget[23] ?
 														    6'd33 :
-														    (fpu_madd_fResult_S9$D_OUT[22] ?
+														    (resWire$wget[22] ?
 														       6'd34 :
-														       (fpu_madd_fResult_S9$D_OUT[21] ?
+														       (resWire$wget[21] ?
 															  6'd35 :
-															  (fpu_madd_fResult_S9$D_OUT[20] ?
+															  (resWire$wget[20] ?
 															     6'd36 :
-															     (fpu_madd_fResult_S9$D_OUT[19] ?
+															     (resWire$wget[19] ?
 																6'd37 :
-																(fpu_madd_fResult_S9$D_OUT[18] ?
+																(resWire$wget[18] ?
 																   6'd38 :
-																   (fpu_madd_fResult_S9$D_OUT[17] ?
+																   (resWire$wget[17] ?
 																      6'd39 :
-																      (fpu_madd_fResult_S9$D_OUT[16] ?
+																      (resWire$wget[16] ?
 																	 6'd40 :
-																	 (fpu_madd_fResult_S9$D_OUT[15] ?
+																	 (resWire$wget[15] ?
 																	    6'd41 :
-																	    (fpu_madd_fResult_S9$D_OUT[14] ?
+																	    (resWire$wget[14] ?
 																	       6'd42 :
-																	       (fpu_madd_fResult_S9$D_OUT[13] ?
+																	       (resWire$wget[13] ?
 																		  6'd43 :
-																		  (fpu_madd_fResult_S9$D_OUT[12] ?
+																		  (resWire$wget[12] ?
 																		     6'd44 :
-																		     (fpu_madd_fResult_S9$D_OUT[11] ?
+																		     (resWire$wget[11] ?
 																			6'd45 :
-																			(fpu_madd_fResult_S9$D_OUT[10] ?
+																			(resWire$wget[10] ?
 																			   6'd46 :
-																			   (fpu_madd_fResult_S9$D_OUT[9] ?
+																			   (resWire$wget[9] ?
 																			      6'd47 :
-																			      (fpu_madd_fResult_S9$D_OUT[8] ?
+																			      (resWire$wget[8] ?
 																				 6'd48 :
-																				 (fpu_madd_fResult_S9$D_OUT[7] ?
+																				 (resWire$wget[7] ?
 																				    6'd49 :
-																				    (fpu_madd_fResult_S9$D_OUT[6] ?
+																				    (resWire$wget[6] ?
 																				       6'd50 :
-																				       (fpu_madd_fResult_S9$D_OUT[5] ?
+																				       (resWire$wget[5] ?
 																					  6'd51 :
 																					  6'd52))))))))))))))))))))))))))))))))))))))))))))))))))) } ;
-  assign _3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d3717 =
-	     (_3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d3716 ^
+  assign _3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d5532 =
+	     (_3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d5531 ^
 	      12'h800) <=
 	     12'd2175 ;
-  assign _3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d3718 =
-	     (_3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d3716 ^
+  assign _3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d5533 =
+	     (_3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d5531 ^
 	      12'h800) <
 	     12'd1922 ;
-  assign _3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d4876 =
-	     _3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d3717 &&
-	     (_3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d3718 ?
-		_0_CONCAT_IF_IF_0b0_CONCAT_NOT_resWire_wget__59_ETC___d4861[4] :
-		_0_CONCAT_IF_resWire_wget__595_BITS_67_TO_57_60_ETC___d4873[4]) ;
-  assign _3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d4901 =
-	     _3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d3717 &&
-	     (_3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d3718 ?
-		_0_CONCAT_IF_IF_0b0_CONCAT_NOT_resWire_wget__59_ETC___d4861[3] :
-		_0_CONCAT_IF_resWire_wget__595_BITS_67_TO_57_60_ETC___d4873[3]) ;
-  assign _3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d4928 =
-	     _3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d3717 &&
-	     (_3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d3718 ?
-		_0_CONCAT_IF_IF_0b0_CONCAT_NOT_resWire_wget__59_ETC___d4861[1] :
-		_0_CONCAT_IF_resWire_wget__595_BITS_67_TO_57_60_ETC___d4873[1]) ;
-  assign _3074_MINUS_SEXT_iFifo_first__288_BITS_102_TO_9_ETC___d3000 =
+  assign _3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d6691 =
+	     _3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d5532 &&
+	     (_3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d5533 ?
+		_0_CONCAT_IF_IF_0b0_CONCAT_NOT_resWire_wget__41_ETC___d6676[4] :
+		_0_CONCAT_IF_resWire_wget__410_BITS_67_TO_57_41_ETC___d6688[4]) ;
+  assign _3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d6716 =
+	     _3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d5532 &&
+	     (_3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d5533 ?
+		_0_CONCAT_IF_IF_0b0_CONCAT_NOT_resWire_wget__41_ETC___d6676[3] :
+		_0_CONCAT_IF_resWire_wget__410_BITS_67_TO_57_41_ETC___d6688[3]) ;
+  assign _3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d6743 =
+	     _3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d5532 &&
+	     (_3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d5533 ?
+		_0_CONCAT_IF_IF_0b0_CONCAT_NOT_resWire_wget__41_ETC___d6676[1] :
+		_0_CONCAT_IF_resWire_wget__410_BITS_67_TO_57_41_ETC___d6688[1]) ;
+  assign _3074_MINUS_SEXT_iFifo_first__087_BITS_102_TO_9_ETC___d4809 =
 	     12'd3074 -
-	     SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC___d2997 ;
-  assign _3074_MINUS_SEXT_iFifo_first__288_BITS_167_TO_1_ETC___d1517 =
+	     SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC___d4806 ;
+  assign _3074_MINUS_SEXT_iFifo_first__087_BITS_167_TO_1_ETC___d3326 =
 	     12'd3074 -
-	     SEXT_iFifo_first__288_BITS_167_TO_160_321_MINU_ETC___d1514 ;
-  assign _3074_MINUS_SEXT_iFifo_first__288_BITS_37_TO_30_ETC___d2225 =
+	     SEXT_iFifo_first__087_BITS_167_TO_160_130_MINU_ETC___d3323 ;
+  assign _3074_MINUS_SEXT_iFifo_first__087_BITS_37_TO_30_ETC___d4034 =
 	     12'd3074 -
-	     SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC___d2222 ;
-  assign _3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_15_ETC___d1379 =
+	     SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC___d4031 ;
+  assign _3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_15_ETC___d3188 =
 	     12'd3970 -
 	     { 7'd0,
 	       iFifo$D_OUT[159] ?
@@ -4189,15 +6030,15 @@ module mkFPU(CLK,
 										(iFifo$D_OUT[137] ?
 										   5'd22 :
 										   5'd23)))))))))))))))))))))) } ;
-  assign _3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_15_ETC___d1380 =
-	     (_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_15_ETC___d1379 ^
+  assign _3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_15_ETC___d3189 =
+	     (_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_15_ETC___d3188 ^
 	      12'h800) <=
 	     12'd3071 ;
-  assign _3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_15_ETC___d1381 =
-	     (_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_15_ETC___d1379 ^
+  assign _3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_15_ETC___d3190 =
+	     (_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_15_ETC___d3188 ^
 	      12'h800) <
 	     12'd1026 ;
-  assign _3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_29_ETC___d2099 =
+  assign _3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_29_ETC___d3908 =
 	     12'd3970 -
 	     { 7'd0,
 	       iFifo$D_OUT[29] ?
@@ -4247,15 +6088,15 @@ module mkFPU(CLK,
 										(iFifo$D_OUT[7] ?
 										   5'd22 :
 										   5'd23)))))))))))))))))))))) } ;
-  assign _3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_29_ETC___d2100 =
-	     (_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_29_ETC___d2099 ^
+  assign _3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_29_ETC___d3909 =
+	     (_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_29_ETC___d3908 ^
 	      12'h800) <=
 	     12'd3071 ;
-  assign _3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_29_ETC___d2101 =
-	     (_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_29_ETC___d2099 ^
+  assign _3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_29_ETC___d3910 =
+	     (_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_29_ETC___d3908 ^
 	      12'h800) <
 	     12'd1026 ;
-  assign _3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_94_ETC___d2874 =
+  assign _3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_94_ETC___d4683 =
 	     12'd3970 -
 	     { 7'd0,
 	       iFifo$D_OUT[94] ?
@@ -4305,1972 +6146,2742 @@ module mkFPU(CLK,
 										(iFifo$D_OUT[72] ?
 										   5'd22 :
 										   5'd23)))))))))))))))))))))) } ;
-  assign _3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_94_ETC___d2875 =
-	     (_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_94_ETC___d2874 ^
+  assign _3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_94_ETC___d4684 =
+	     (_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_94_ETC___d4683 ^
 	      12'h800) <=
 	     12'd3071 ;
-  assign _3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_94_ETC___d2876 =
-	     (_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_94_ETC___d2874 ^
+  assign _3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_94_ETC___d4685 =
+	     (_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_94_ETC___d4683 ^
 	      12'h800) <
 	     12'd1026 ;
-  assign _3970_MINUS_SEXT_resWire_wget__595_BITS_67_TO_5_ETC___d4219 =
+  assign _3970_MINUS_SEXT_resWire_wget__410_BITS_67_TO_5_ETC___d6034 =
 	     12'd3970 -
-	     SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC___d4216 ;
-  assign _7170_MINUS_fpu_madd_fState_S3_first__96_BITS_1_ETC___d208 =
+	     SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC___d6031 ;
+  assign _7170_MINUS_fpu_madd_fState_S3_first__995_BITS__ETC___d2007 =
 	     13'd7170 - fpu_madd_fState_S3$D_OUT[12:0] ;
-  assign _7170_MINUS_fpu_madd_fState_S3_first__96_BITS_1_ETC___d209 =
-	     (_7170_MINUS_fpu_madd_fState_S3_first__96_BITS_1_ETC___d208 ^
+  assign _7170_MINUS_fpu_madd_fState_S3_first__995_BITS__ETC___d2008 =
+	     (_7170_MINUS_fpu_madd_fState_S3_first__995_BITS__ETC___d2007 ^
 	      13'h1000) <=
 	     13'd4096 ;
-  assign _theResult____h107040 =
-	     ((_3074_MINUS_SEXT_iFifo_first__288_BITS_102_TO_9_ETC___d3000 ^
+  assign _theResult____h164614 =
+	     ((_3074_MINUS_SEXT_iFifo_first__087_BITS_167_TO_1_ETC___d3326 ^
 	       12'h800) <
 	      12'd2105) ?
-	       result__h107653 :
-	       ((value__h91349 == 25'd0) ? sfd__h86964 : 57'd1) ;
-  assign _theResult____h145947 =
-	     ((_3074_MINUS_SEXT_iFifo_first__288_BITS_37_TO_30_ETC___d2225 ^
+	       result__h165227 :
+	       ((value__h148923 == 25'd0) ? sfd__h144536 : 57'd1) ;
+  assign _theResult____h203252 =
+	     ((_3074_MINUS_SEXT_iFifo_first__087_BITS_102_TO_9_ETC___d4809 ^
 	       12'h800) <
 	      12'd2105) ?
-	       result__h146560 :
-	       ((value__h130256 == 25'd0) ? sfd__h125871 : 57'd1) ;
-  assign _theResult____h173103 =
-	     (value__h173723 == 54'd0) ? sfd__h165501 : 57'd1 ;
-  assign _theResult____h190740 =
-	     ((_3970_MINUS_SEXT_resWire_wget__595_BITS_67_TO_5_ETC___d4219 ^
+	       result__h203865 :
+	       ((value__h187561 == 25'd0) ? sfd__h183176 : 57'd1) ;
+  assign _theResult____h242191 =
+	     ((_3074_MINUS_SEXT_iFifo_first__087_BITS_37_TO_30_ETC___d4034 ^
 	       12'h800) <
 	      12'd2105) ?
-	       result__h191353 :
-	       _theResult____h173103 ;
-  assign _theResult____h68402 =
-	     ((_3074_MINUS_SEXT_iFifo_first__288_BITS_167_TO_1_ETC___d1517 ^
+	       result__h242804 :
+	       ((value__h226500 == 25'd0) ? sfd__h222115 : 57'd1) ;
+  assign _theResult____h269577 =
+	     (value__h270197 == 54'd0) ? sfd__h261975 : 57'd1 ;
+  assign _theResult____h287214 =
+	     ((_3970_MINUS_SEXT_resWire_wget__410_BITS_67_TO_5_ETC___d6034 ^
 	       12'h800) <
 	      12'd2105) ?
-	       result__h69015 :
-	       ((value__h52711 == 25'd0) ? sfd__h48324 : 57'd1) ;
-  assign _theResult___exp__h106407 =
-	     sfd__h105780[53] ?
-	       ((_theResult___fst_exp__h105762 == 11'd2046) ?
-		  11'd2047 :
-		  din_inc___2_exp__h124895) :
-	       ((_theResult___fst_exp__h105762 == 11'd0 &&
-		 sfd__h105780[53:52] == 2'b01) ?
-		  11'd1 :
-		  _theResult___fst_exp__h105762) ;
-  assign _theResult___exp__h115997 =
-	     sfd__h115370[53] ?
-	       ((_theResult___fst_exp__h115278 == 11'd2046) ?
-		  11'd2047 :
-		  din_inc___2_exp__h124930) :
-	       ((_theResult___fst_exp__h115278 == 11'd0 &&
-		 sfd__h115370[53:52] == 2'b01) ?
-		  11'd1 :
-		  _theResult___fst_exp__h115278) ;
-  assign _theResult___exp__h124749 =
-	     sfd__h124098[53] ?
-	       ((_theResult___fst_exp__h124079 == 11'd2046) ?
-		  11'd2047 :
-		  din_inc___2_exp__h124956) :
-	       ((_theResult___fst_exp__h124079 == 11'd0 &&
-		 sfd__h124098[53:52] == 2'b01) ?
-		  11'd1 :
-		  _theResult___fst_exp__h124079) ;
-  assign _theResult___exp__h145314 =
-	     sfd__h144687[53] ?
-	       ((_theResult___fst_exp__h144669 == 11'd2046) ?
-		  11'd2047 :
-		  din_inc___2_exp__h163802) :
-	       ((_theResult___fst_exp__h144669 == 11'd0 &&
-		 sfd__h144687[53:52] == 2'b01) ?
-		  11'd1 :
-		  _theResult___fst_exp__h144669) ;
-  assign _theResult___exp__h154904 =
-	     sfd__h154277[53] ?
-	       ((_theResult___fst_exp__h154185 == 11'd2046) ?
-		  11'd2047 :
-		  din_inc___2_exp__h163837) :
-	       ((_theResult___fst_exp__h154185 == 11'd0 &&
-		 sfd__h154277[53:52] == 2'b01) ?
-		  11'd1 :
-		  _theResult___fst_exp__h154185) ;
-  assign _theResult___exp__h163656 =
-	     sfd__h163005[53] ?
-	       ((_theResult___fst_exp__h162986 == 11'd2046) ?
-		  11'd2047 :
-		  din_inc___2_exp__h163863) :
-	       ((_theResult___fst_exp__h162986 == 11'd0 &&
-		 sfd__h163005[53:52] == 2'b01) ?
-		  11'd1 :
-		  _theResult___fst_exp__h162986) ;
-  assign _theResult___exp__h181728 =
-	     sfd__h181304[24] ?
-	       ((_theResult___fst_exp__h181212 == 8'd254) ?
-		  8'd255 :
-		  din_inc___2_exp__h208249) :
-	       ((_theResult___fst_exp__h181212 == 8'd0 &&
-		 sfd__h181304[24:23] == 2'b01) ?
-		  8'd1 :
-		  _theResult___fst_exp__h181212) ;
-  assign _theResult___exp__h190310 =
-	     sfd__h189886[24] ?
-	       ((_theResult___fst_exp__h189868 == 8'd254) ?
-		  8'd255 :
-		  din_inc___2_exp__h208275) :
-	       ((_theResult___fst_exp__h189868 == 8'd0 &&
-		 sfd__h189886[24:23] == 2'b01) ?
-		  8'd1 :
-		  _theResult___fst_exp__h189868) ;
-  assign _theResult___exp__h199494 =
-	     sfd__h199070[24] ?
-	       ((_theResult___fst_exp__h198978 == 8'd254) ?
-		  8'd255 :
-		  din_inc___2_exp__h208310) :
-	       ((_theResult___fst_exp__h198978 == 8'd0 &&
-		 sfd__h199070[24:23] == 2'b01) ?
-		  8'd1 :
-		  _theResult___fst_exp__h198978) ;
-  assign _theResult___exp__h208130 =
-	     sfd__h207682[24] ?
-	       ((_theResult___fst_exp__h207663 == 8'd254) ?
-		  8'd255 :
-		  din_inc___2_exp__h208336) :
-	       ((_theResult___fst_exp__h207663 == 8'd0 &&
-		 sfd__h207682[24:23] == 2'b01) ?
-		  8'd1 :
-		  _theResult___fst_exp__h207663) ;
-  assign _theResult___exp__h46361 =
-	     sfd__h45857[53] ?
+	       result__h287827 :
+	       _theResult____h269577 ;
+  assign _theResult____h32523 =
+	     (fpu_div64_fState_S2$D_OUT[10:0] < 11'd58) ?
+	       result__h32648 :
+	       result__h32823 ;
+  assign _theResult___exp__h142541 =
+	     sfd__h142040[53] ?
 	       ((fpu_madd_fState_S8$D_OUT[65:55] == 11'd2046) ?
 		  11'd2047 :
-		  din_inc___2_exp__h46446) :
-	       IF_fpu_madd_fState_S8_first__161_BITS_65_TO_55_ETC___d1187 ;
-  assign _theResult___exp__h67769 =
-	     sfd__h67142[53] ?
-	       ((_theResult___fst_exp__h67124 == 11'd2046) ?
+		  din_inc___2_exp__h142626) :
+	       IF_fpu_madd_fState_S8_first__960_BITS_65_TO_55_ETC___d2986 ;
+  assign _theResult___exp__h163981 =
+	     sfd__h163354[53] ?
+	       ((_theResult___fst_exp__h163336 == 11'd2046) ?
 		  11'd2047 :
-		  din_inc___2_exp__h86257) :
-	       ((_theResult___fst_exp__h67124 == 11'd0 &&
-		 sfd__h67142[53:52] == 2'b01) ?
+		  din_inc___2_exp__h182469) :
+	       ((_theResult___fst_exp__h163336 == 11'd0 &&
+		 sfd__h163354[53:52] == 2'b01) ?
 		  11'd1 :
-		  _theResult___fst_exp__h67124) ;
-  assign _theResult___exp__h77359 =
-	     sfd__h76732[53] ?
-	       ((_theResult___fst_exp__h76640 == 11'd2046) ?
+		  _theResult___fst_exp__h163336) ;
+  assign _theResult___exp__h173571 =
+	     sfd__h172944[53] ?
+	       ((_theResult___fst_exp__h172852 == 11'd2046) ?
 		  11'd2047 :
-		  din_inc___2_exp__h86292) :
-	       ((_theResult___fst_exp__h76640 == 11'd0 &&
-		 sfd__h76732[53:52] == 2'b01) ?
+		  din_inc___2_exp__h182504) :
+	       ((_theResult___fst_exp__h172852 == 11'd0 &&
+		 sfd__h172944[53:52] == 2'b01) ?
 		  11'd1 :
-		  _theResult___fst_exp__h76640) ;
-  assign _theResult___exp__h86111 =
-	     sfd__h85460[53] ?
-	       ((_theResult___fst_exp__h85441 == 11'd2046) ?
+		  _theResult___fst_exp__h172852) ;
+  assign _theResult___exp__h182323 =
+	     sfd__h181672[53] ?
+	       ((_theResult___fst_exp__h181653 == 11'd2046) ?
 		  11'd2047 :
-		  din_inc___2_exp__h86318) :
-	       ((_theResult___fst_exp__h85441 == 11'd0 &&
-		 sfd__h85460[53:52] == 2'b01) ?
+		  din_inc___2_exp__h182530) :
+	       ((_theResult___fst_exp__h181653 == 11'd0 &&
+		 sfd__h181672[53:52] == 2'b01) ?
 		  11'd1 :
-		  _theResult___fst_exp__h85441) ;
-  assign _theResult___fst__h20644 =
-	     { fpu_madd_fProd_S3_first__10_SRL_IF_7170_MINUS__ETC___d213[105:1],
-	       fpu_madd_fProd_S3_first__10_SRL_IF_7170_MINUS__ETC___d213[0] |
-	       sfdlsb__h20642 } ;
-  assign _theResult___fst_exp__h105753 =
-	     11'd897 -
-	     { 5'd0,
-	       IF_iFifo_first__288_BITS_102_TO_95_816_EQ_0_82_ETC___d2948 } ;
-  assign _theResult___fst_exp__h105759 =
-	     (iFifo$D_OUT[102:95] == 8'd0 && !iFifo$D_OUT[94] &&
-	      NOT_iFifo_first__288_BIT_93_828_879_AND_NOT_iF_ETC___d2921 ||
-	      !_0_CONCAT_IF_iFifo_first__288_BITS_102_TO_95_81_ETC___d2950) ?
-	       11'd0 :
-	       _theResult___fst_exp__h105753 ;
-  assign _theResult___fst_exp__h105762 =
-	     (iFifo$D_OUT[102:95] == 8'd0) ?
-	       _theResult___fst_exp__h105759 :
-	       11'd897 ;
-  assign _theResult___fst_exp__h106488 =
-	     (_theResult___fst_exp__h105762 == 11'd2047) ?
-	       _theResult___fst_exp__h105762 :
-	       _theResult___fst_exp__h106485 ;
-  assign _theResult___fst_exp__h115278 =
-	     _theResult____h107040[56] ?
-	       11'd2 :
-	       _theResult___fst_exp__h115352 ;
-  assign _theResult___fst_exp__h115343 =
-	     11'd0 -
-	     { 5'd0,
-	       IF_IF_3074_MINUS_SEXT_iFifo_first__288_BITS_10_ETC___d3246 } ;
-  assign _theResult___fst_exp__h115349 =
-	     (!_theResult____h107040[56] && !_theResult____h107040[55] &&
-	      !_theResult____h107040[54] &&
-	      !_theResult____h107040[53] &&
-	      !_theResult____h107040[52] &&
-	      !_theResult____h107040[51] &&
-	      !_theResult____h107040[50] &&
-	      !_theResult____h107040[49] &&
-	      !_theResult____h107040[48] &&
-	      !_theResult____h107040[47] &&
-	      !_theResult____h107040[46] &&
-	      !_theResult____h107040[45] &&
-	      !_theResult____h107040[44] &&
-	      !_theResult____h107040[43] &&
-	      !_theResult____h107040[42] &&
-	      !_theResult____h107040[41] &&
-	      !_theResult____h107040[40] &&
-	      !_theResult____h107040[39] &&
-	      !_theResult____h107040[38] &&
-	      !_theResult____h107040[37] &&
-	      !_theResult____h107040[36] &&
-	      !_theResult____h107040[35] &&
-	      !_theResult____h107040[34] &&
-	      !_theResult____h107040[33] &&
-	      !_theResult____h107040[32] &&
-	      !_theResult____h107040[31] &&
-	      !_theResult____h107040[30] &&
-	      !_theResult____h107040[29] &&
-	      !_theResult____h107040[28] &&
-	      !_theResult____h107040[27] &&
-	      !_theResult____h107040[26] &&
-	      !_theResult____h107040[25] &&
-	      !_theResult____h107040[24] &&
-	      !_theResult____h107040[23] &&
-	      !_theResult____h107040[22] &&
-	      !_theResult____h107040[21] &&
-	      !_theResult____h107040[20] &&
-	      !_theResult____h107040[19] &&
-	      !_theResult____h107040[18] &&
-	      !_theResult____h107040[17] &&
-	      !_theResult____h107040[16] &&
-	      !_theResult____h107040[15] &&
-	      !_theResult____h107040[14] &&
-	      !_theResult____h107040[13] &&
-	      !_theResult____h107040[12] &&
-	      !_theResult____h107040[11] &&
-	      !_theResult____h107040[10] &&
-	      !_theResult____h107040[9] &&
-	      !_theResult____h107040[8] &&
-	      !_theResult____h107040[7] &&
-	      !_theResult____h107040[6] &&
-	      !_theResult____h107040[5] &&
-	      !_theResult____h107040[4] &&
-	      !_theResult____h107040[3] &&
-	      !_theResult____h107040[2] &&
-	      !_theResult____h107040[1] &&
-	      !_theResult____h107040[0] ||
-	      !_0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__28_ETC___d3248) ?
-	       11'd0 :
-	       _theResult___fst_exp__h115343 ;
-  assign _theResult___fst_exp__h115352 =
-	     (!_theResult____h107040[56] && _theResult____h107040[55]) ?
-	       11'd1 :
-	       _theResult___fst_exp__h115349 ;
-  assign _theResult___fst_exp__h116078 =
-	     (_theResult___fst_exp__h115278 == 11'd2047) ?
-	       _theResult___fst_exp__h115278 :
-	       _theResult___fst_exp__h116075 ;
-  assign _theResult___fst_exp__h124031 =
-	     (SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC__q76[10:0] ==
-	      11'd0) ?
-	       11'd1 :
-	       SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC__q76[10:0] ;
-  assign _theResult___fst_exp__h124070 =
-	     SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC__q76[10:0] -
-	     { 5'd0,
-	       IF_iFifo_first__288_BITS_102_TO_95_816_EQ_0_82_ETC___d2948 } ;
-  assign _theResult___fst_exp__h124076 =
-	     (iFifo$D_OUT[102:95] == 8'd0 && !iFifo$D_OUT[94] &&
-	      NOT_iFifo_first__288_BIT_93_828_879_AND_NOT_iF_ETC___d2921 ||
-	      !_0_CONCAT_IF_iFifo_first__288_BITS_102_TO_95_81_ETC___d3298) ?
-	       11'd0 :
-	       _theResult___fst_exp__h124070 ;
-  assign _theResult___fst_exp__h124079 =
-	     (iFifo$D_OUT[102:95] == 8'd0) ?
-	       _theResult___fst_exp__h124076 :
-	       _theResult___fst_exp__h124031 ;
-  assign _theResult___fst_exp__h124830 =
-	     (_theResult___fst_exp__h124079 == 11'd2047) ?
-	       _theResult___fst_exp__h124079 :
-	       _theResult___fst_exp__h124827 ;
-  assign _theResult___fst_exp__h124839 =
-	     (iFifo$D_OUT[102:95] == 8'd0) ?
-	       (_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_94_ETC___d2875 ?
-		  _theResult___snd_fst_exp__h106491 :
-		  _theResult___fst_exp__h90719) :
-	       (SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC___d2998 ?
-		  _theResult___snd_fst_exp__h124833 :
-		  _theResult___fst_exp__h90719) ;
-  assign _theResult___fst_exp__h124842 =
-	     (iFifo$D_OUT[102:95] == 8'd0 && iFifo$D_OUT[94:72] == 23'd0) ?
-	       11'd0 :
-	       _theResult___fst_exp__h124839 ;
-  assign _theResult___fst_exp__h144660 =
-	     11'd897 -
-	     { 5'd0,
-	       IF_iFifo_first__288_BITS_37_TO_30_041_EQ_0_047_ETC___d2173 } ;
-  assign _theResult___fst_exp__h144666 =
-	     (iFifo$D_OUT[37:30] == 8'd0 && !iFifo$D_OUT[29] &&
-	      NOT_iFifo_first__288_BIT_28_053_104_AND_NOT_iF_ETC___d2146 ||
-	      !_0_CONCAT_IF_iFifo_first__288_BITS_37_TO_30_041_ETC___d2175) ?
-	       11'd0 :
-	       _theResult___fst_exp__h144660 ;
-  assign _theResult___fst_exp__h144669 =
-	     (iFifo$D_OUT[37:30] == 8'd0) ?
-	       _theResult___fst_exp__h144666 :
-	       11'd897 ;
-  assign _theResult___fst_exp__h145395 =
-	     (_theResult___fst_exp__h144669 == 11'd2047) ?
-	       _theResult___fst_exp__h144669 :
-	       _theResult___fst_exp__h145392 ;
-  assign _theResult___fst_exp__h154185 =
-	     _theResult____h145947[56] ?
-	       11'd2 :
-	       _theResult___fst_exp__h154259 ;
-  assign _theResult___fst_exp__h154250 =
-	     11'd0 -
-	     { 5'd0,
-	       IF_IF_3074_MINUS_SEXT_iFifo_first__288_BITS_37_ETC___d2471 } ;
-  assign _theResult___fst_exp__h154256 =
-	     (!_theResult____h145947[56] && !_theResult____h145947[55] &&
-	      !_theResult____h145947[54] &&
-	      !_theResult____h145947[53] &&
-	      !_theResult____h145947[52] &&
-	      !_theResult____h145947[51] &&
-	      !_theResult____h145947[50] &&
-	      !_theResult____h145947[49] &&
-	      !_theResult____h145947[48] &&
-	      !_theResult____h145947[47] &&
-	      !_theResult____h145947[46] &&
-	      !_theResult____h145947[45] &&
-	      !_theResult____h145947[44] &&
-	      !_theResult____h145947[43] &&
-	      !_theResult____h145947[42] &&
-	      !_theResult____h145947[41] &&
-	      !_theResult____h145947[40] &&
-	      !_theResult____h145947[39] &&
-	      !_theResult____h145947[38] &&
-	      !_theResult____h145947[37] &&
-	      !_theResult____h145947[36] &&
-	      !_theResult____h145947[35] &&
-	      !_theResult____h145947[34] &&
-	      !_theResult____h145947[33] &&
-	      !_theResult____h145947[32] &&
-	      !_theResult____h145947[31] &&
-	      !_theResult____h145947[30] &&
-	      !_theResult____h145947[29] &&
-	      !_theResult____h145947[28] &&
-	      !_theResult____h145947[27] &&
-	      !_theResult____h145947[26] &&
-	      !_theResult____h145947[25] &&
-	      !_theResult____h145947[24] &&
-	      !_theResult____h145947[23] &&
-	      !_theResult____h145947[22] &&
-	      !_theResult____h145947[21] &&
-	      !_theResult____h145947[20] &&
-	      !_theResult____h145947[19] &&
-	      !_theResult____h145947[18] &&
-	      !_theResult____h145947[17] &&
-	      !_theResult____h145947[16] &&
-	      !_theResult____h145947[15] &&
-	      !_theResult____h145947[14] &&
-	      !_theResult____h145947[13] &&
-	      !_theResult____h145947[12] &&
-	      !_theResult____h145947[11] &&
-	      !_theResult____h145947[10] &&
-	      !_theResult____h145947[9] &&
-	      !_theResult____h145947[8] &&
-	      !_theResult____h145947[7] &&
-	      !_theResult____h145947[6] &&
-	      !_theResult____h145947[5] &&
-	      !_theResult____h145947[4] &&
-	      !_theResult____h145947[3] &&
-	      !_theResult____h145947[2] &&
-	      !_theResult____h145947[1] &&
-	      !_theResult____h145947[0] ||
-	      !_0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__28_ETC___d2473) ?
-	       11'd0 :
-	       _theResult___fst_exp__h154250 ;
-  assign _theResult___fst_exp__h154259 =
-	     (!_theResult____h145947[56] && _theResult____h145947[55]) ?
-	       11'd1 :
-	       _theResult___fst_exp__h154256 ;
-  assign _theResult___fst_exp__h154985 =
-	     (_theResult___fst_exp__h154185 == 11'd2047) ?
-	       _theResult___fst_exp__h154185 :
-	       _theResult___fst_exp__h154982 ;
-  assign _theResult___fst_exp__h162938 =
-	     (SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC__q43[10:0] ==
-	      11'd0) ?
-	       11'd1 :
-	       SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC__q43[10:0] ;
-  assign _theResult___fst_exp__h162977 =
-	     SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC__q43[10:0] -
-	     { 5'd0,
-	       IF_iFifo_first__288_BITS_37_TO_30_041_EQ_0_047_ETC___d2173 } ;
-  assign _theResult___fst_exp__h162983 =
-	     (iFifo$D_OUT[37:30] == 8'd0 && !iFifo$D_OUT[29] &&
-	      NOT_iFifo_first__288_BIT_28_053_104_AND_NOT_iF_ETC___d2146 ||
-	      !_0_CONCAT_IF_iFifo_first__288_BITS_37_TO_30_041_ETC___d2523) ?
-	       11'd0 :
-	       _theResult___fst_exp__h162977 ;
-  assign _theResult___fst_exp__h162986 =
-	     (iFifo$D_OUT[37:30] == 8'd0) ?
-	       _theResult___fst_exp__h162983 :
-	       _theResult___fst_exp__h162938 ;
-  assign _theResult___fst_exp__h163737 =
-	     (_theResult___fst_exp__h162986 == 11'd2047) ?
-	       _theResult___fst_exp__h162986 :
-	       _theResult___fst_exp__h163734 ;
-  assign _theResult___fst_exp__h163746 =
-	     (iFifo$D_OUT[37:30] == 8'd0) ?
-	       (_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_29_ETC___d2100 ?
-		  _theResult___snd_fst_exp__h145398 :
-		  _theResult___fst_exp__h129626) :
-	       (SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC___d2223 ?
-		  _theResult___snd_fst_exp__h163740 :
-		  _theResult___fst_exp__h129626) ;
-  assign _theResult___fst_exp__h163749 =
-	     (iFifo$D_OUT[37:30] == 8'd0 && iFifo$D_OUT[29:7] == 23'd0) ?
-	       11'd0 :
-	       _theResult___fst_exp__h163746 ;
-  assign _theResult___fst_exp__h181212 =
-	     _theResult____h173103[56] ?
-	       8'd2 :
-	       _theResult___fst_exp__h181286 ;
-  assign _theResult___fst_exp__h181277 =
-	     8'd0 -
-	     { 2'd0,
-	       IF_IF_0b0_CONCAT_NOT_resWire_wget__595_BITS_67_ETC___d3952 } ;
-  assign _theResult___fst_exp__h181283 =
-	     (!_theResult____h173103[56] && !_theResult____h173103[55] &&
-	      !_theResult____h173103[54] &&
-	      !_theResult____h173103[53] &&
-	      !_theResult____h173103[52] &&
-	      !_theResult____h173103[51] &&
-	      !_theResult____h173103[50] &&
-	      !_theResult____h173103[49] &&
-	      !_theResult____h173103[48] &&
-	      !_theResult____h173103[47] &&
-	      !_theResult____h173103[46] &&
-	      !_theResult____h173103[45] &&
-	      !_theResult____h173103[44] &&
-	      !_theResult____h173103[43] &&
-	      !_theResult____h173103[42] &&
-	      !_theResult____h173103[41] &&
-	      !_theResult____h173103[40] &&
-	      !_theResult____h173103[39] &&
-	      !_theResult____h173103[38] &&
-	      !_theResult____h173103[37] &&
-	      !_theResult____h173103[36] &&
-	      !_theResult____h173103[35] &&
-	      !_theResult____h173103[34] &&
-	      !_theResult____h173103[33] &&
-	      !_theResult____h173103[32] &&
-	      !_theResult____h173103[31] &&
-	      !_theResult____h173103[30] &&
-	      !_theResult____h173103[29] &&
-	      !_theResult____h173103[28] &&
-	      !_theResult____h173103[27] &&
-	      !_theResult____h173103[26] &&
-	      !_theResult____h173103[25] &&
-	      !_theResult____h173103[24] &&
-	      !_theResult____h173103[23] &&
-	      !_theResult____h173103[22] &&
-	      !_theResult____h173103[21] &&
-	      !_theResult____h173103[20] &&
-	      !_theResult____h173103[19] &&
-	      !_theResult____h173103[18] &&
-	      !_theResult____h173103[17] &&
-	      !_theResult____h173103[16] &&
-	      !_theResult____h173103[15] &&
-	      !_theResult____h173103[14] &&
-	      !_theResult____h173103[13] &&
-	      !_theResult____h173103[12] &&
-	      !_theResult____h173103[11] &&
-	      !_theResult____h173103[10] &&
-	      !_theResult____h173103[9] &&
-	      !_theResult____h173103[8] &&
-	      !_theResult____h173103[7] &&
-	      !_theResult____h173103[6] &&
-	      !_theResult____h173103[5] &&
-	      !_theResult____h173103[4] &&
-	      !_theResult____h173103[3] &&
-	      !_theResult____h173103[2] &&
-	      !_theResult____h173103[1] &&
-	      !_theResult____h173103[0] ||
-	      !_0_CONCAT_IF_IF_0b0_CONCAT_NOT_resWire_wget__59_ETC___d3954) ?
-	       8'd0 :
-	       _theResult___fst_exp__h181277 ;
-  assign _theResult___fst_exp__h181286 =
-	     (!_theResult____h173103[56] && _theResult____h173103[55]) ?
-	       8'd1 :
-	       _theResult___fst_exp__h181283 ;
-  assign _theResult___fst_exp__h181809 =
-	     (_theResult___fst_exp__h181212 == 8'd255) ?
-	       _theResult___fst_exp__h181212 :
-	       _theResult___fst_exp__h181806 ;
-  assign _theResult___fst_exp__h189859 =
-	     8'd129 -
-	     { 2'd0,
-	       IF_resWire_wget__595_BITS_67_TO_57_601_EQ_0_60_ETC___d4167 } ;
-  assign _theResult___fst_exp__h189865 =
-	     (fpu_madd_fResult_S9$D_OUT[67:57] == 11'd0 &&
-	      NOT_resWire_wget__595_BIT_56_611_010_AND_NOT_r_ETC___d4112 ||
-	      !_0_CONCAT_IF_resWire_wget__595_BITS_67_TO_57_60_ETC___d4169) ?
-	       8'd0 :
-	       _theResult___fst_exp__h189859 ;
-  assign _theResult___fst_exp__h189868 =
-	     (fpu_madd_fResult_S9$D_OUT[67:57] == 11'd0) ?
-	       _theResult___fst_exp__h189865 :
-	       8'd129 ;
-  assign _theResult___fst_exp__h190391 =
-	     (_theResult___fst_exp__h189868 == 8'd255) ?
-	       _theResult___fst_exp__h189868 :
-	       _theResult___fst_exp__h190388 ;
-  assign _theResult___fst_exp__h198978 =
-	     _theResult____h190740[56] ?
-	       8'd2 :
-	       _theResult___fst_exp__h199052 ;
-  assign _theResult___fst_exp__h199043 =
-	     8'd0 -
-	     { 2'd0,
-	       IF_IF_3970_MINUS_SEXT_resWire_wget__595_BITS_6_ETC___d4463 } ;
-  assign _theResult___fst_exp__h199049 =
-	     (!_theResult____h190740[56] && !_theResult____h190740[55] &&
-	      !_theResult____h190740[54] &&
-	      !_theResult____h190740[53] &&
-	      !_theResult____h190740[52] &&
-	      !_theResult____h190740[51] &&
-	      !_theResult____h190740[50] &&
-	      !_theResult____h190740[49] &&
-	      !_theResult____h190740[48] &&
-	      !_theResult____h190740[47] &&
-	      !_theResult____h190740[46] &&
-	      !_theResult____h190740[45] &&
-	      !_theResult____h190740[44] &&
-	      !_theResult____h190740[43] &&
-	      !_theResult____h190740[42] &&
-	      !_theResult____h190740[41] &&
-	      !_theResult____h190740[40] &&
-	      !_theResult____h190740[39] &&
-	      !_theResult____h190740[38] &&
-	      !_theResult____h190740[37] &&
-	      !_theResult____h190740[36] &&
-	      !_theResult____h190740[35] &&
-	      !_theResult____h190740[34] &&
-	      !_theResult____h190740[33] &&
-	      !_theResult____h190740[32] &&
-	      !_theResult____h190740[31] &&
-	      !_theResult____h190740[30] &&
-	      !_theResult____h190740[29] &&
-	      !_theResult____h190740[28] &&
-	      !_theResult____h190740[27] &&
-	      !_theResult____h190740[26] &&
-	      !_theResult____h190740[25] &&
-	      !_theResult____h190740[24] &&
-	      !_theResult____h190740[23] &&
-	      !_theResult____h190740[22] &&
-	      !_theResult____h190740[21] &&
-	      !_theResult____h190740[20] &&
-	      !_theResult____h190740[19] &&
-	      !_theResult____h190740[18] &&
-	      !_theResult____h190740[17] &&
-	      !_theResult____h190740[16] &&
-	      !_theResult____h190740[15] &&
-	      !_theResult____h190740[14] &&
-	      !_theResult____h190740[13] &&
-	      !_theResult____h190740[12] &&
-	      !_theResult____h190740[11] &&
-	      !_theResult____h190740[10] &&
-	      !_theResult____h190740[9] &&
-	      !_theResult____h190740[8] &&
-	      !_theResult____h190740[7] &&
-	      !_theResult____h190740[6] &&
-	      !_theResult____h190740[5] &&
-	      !_theResult____h190740[4] &&
-	      !_theResult____h190740[3] &&
-	      !_theResult____h190740[2] &&
-	      !_theResult____h190740[1] &&
-	      !_theResult____h190740[0] ||
-	      !_0_CONCAT_IF_IF_3970_MINUS_SEXT_resWire_wget__5_ETC___d4465) ?
-	       8'd0 :
-	       _theResult___fst_exp__h199043 ;
-  assign _theResult___fst_exp__h199052 =
-	     (!_theResult____h190740[56] && _theResult____h190740[55]) ?
-	       8'd1 :
-	       _theResult___fst_exp__h199049 ;
-  assign _theResult___fst_exp__h199575 =
-	     (_theResult___fst_exp__h198978 == 8'd255) ?
-	       _theResult___fst_exp__h198978 :
-	       _theResult___fst_exp__h199572 ;
-  assign _theResult___fst_exp__h207615 =
-	     (SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC__q111[7:0] ==
-	      8'd0) ?
-	       8'd1 :
-	       SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC__q111[7:0] ;
-  assign _theResult___fst_exp__h207654 =
-	     SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC__q111[7:0] -
-	     { 2'd0,
-	       IF_resWire_wget__595_BITS_67_TO_57_601_EQ_0_60_ETC___d4167 } ;
-  assign _theResult___fst_exp__h207660 =
-	     (fpu_madd_fResult_S9$D_OUT[67:57] == 11'd0 &&
-	      NOT_resWire_wget__595_BIT_56_611_010_AND_NOT_r_ETC___d4112 ||
-	      !_0_CONCAT_IF_resWire_wget__595_BITS_67_TO_57_60_ETC___d4518) ?
-	       8'd0 :
-	       _theResult___fst_exp__h207654 ;
-  assign _theResult___fst_exp__h207663 =
-	     (fpu_madd_fResult_S9$D_OUT[67:57] == 11'd0) ?
-	       _theResult___fst_exp__h207660 :
-	       _theResult___fst_exp__h207615 ;
-  assign _theResult___fst_exp__h208211 =
-	     (_theResult___fst_exp__h207663 == 8'd255) ?
-	       _theResult___fst_exp__h207663 :
-	       _theResult___fst_exp__h208208 ;
-  assign _theResult___fst_exp__h208220 =
-	     (fpu_madd_fResult_S9$D_OUT[67:57] == 11'd0) ?
-	       (_3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d3717 ?
-		  _theResult___snd_fst_exp__h190394 :
-		  _theResult___fst_exp__h173085) :
-	       (SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC___d4217 ?
-		  _theResult___snd_fst_exp__h208214 :
-		  _theResult___fst_exp__h173085) ;
-  assign _theResult___fst_exp__h208223 =
-	     (fpu_madd_fResult_S9$D_OUT[67:57] == 11'd0 &&
-	      fpu_madd_fResult_S9$D_OUT[56:5] == 52'd0) ?
-	       8'd0 :
-	       _theResult___fst_exp__h208220 ;
-  assign _theResult___fst_exp__h34766 =
-	     sfdBC__h19479[105] ?
-	       _theResult___fst_exp__h34788 :
-	       _theResult___fst_exp__h34851 ;
-  assign _theResult___fst_exp__h34769 =
-	     (sfdBC__h19479[105] &&
-	      IF_IF_7170_MINUS_fpu_madd_fState_S3_first__96__ETC___d232 ==
+		  _theResult___fst_exp__h181653) ;
+  assign _theResult___exp__h202619 =
+	     sfd__h201992[53] ?
+	       ((_theResult___fst_exp__h201974 == 11'd2046) ?
+		  11'd2047 :
+		  din_inc___2_exp__h221107) :
+	       ((_theResult___fst_exp__h201974 == 11'd0 &&
+		 sfd__h201992[53:52] == 2'b01) ?
+		  11'd1 :
+		  _theResult___fst_exp__h201974) ;
+  assign _theResult___exp__h212209 =
+	     sfd__h211582[53] ?
+	       ((_theResult___fst_exp__h211490 == 11'd2046) ?
+		  11'd2047 :
+		  din_inc___2_exp__h221142) :
+	       ((_theResult___fst_exp__h211490 == 11'd0 &&
+		 sfd__h211582[53:52] == 2'b01) ?
+		  11'd1 :
+		  _theResult___fst_exp__h211490) ;
+  assign _theResult___exp__h220961 =
+	     sfd__h220310[53] ?
+	       ((_theResult___fst_exp__h220291 == 11'd2046) ?
+		  11'd2047 :
+		  din_inc___2_exp__h221168) :
+	       ((_theResult___fst_exp__h220291 == 11'd0 &&
+		 sfd__h220310[53:52] == 2'b01) ?
+		  11'd1 :
+		  _theResult___fst_exp__h220291) ;
+  assign _theResult___exp__h241558 =
+	     sfd__h240931[53] ?
+	       ((_theResult___fst_exp__h240913 == 11'd2046) ?
+		  11'd2047 :
+		  din_inc___2_exp__h260046) :
+	       ((_theResult___fst_exp__h240913 == 11'd0 &&
+		 sfd__h240931[53:52] == 2'b01) ?
+		  11'd1 :
+		  _theResult___fst_exp__h240913) ;
+  assign _theResult___exp__h251148 =
+	     sfd__h250521[53] ?
+	       ((_theResult___fst_exp__h250429 == 11'd2046) ?
+		  11'd2047 :
+		  din_inc___2_exp__h260081) :
+	       ((_theResult___fst_exp__h250429 == 11'd0 &&
+		 sfd__h250521[53:52] == 2'b01) ?
+		  11'd1 :
+		  _theResult___fst_exp__h250429) ;
+  assign _theResult___exp__h259900 =
+	     sfd__h259249[53] ?
+	       ((_theResult___fst_exp__h259230 == 11'd2046) ?
+		  11'd2047 :
+		  din_inc___2_exp__h260107) :
+	       ((_theResult___fst_exp__h259230 == 11'd0 &&
+		 sfd__h259249[53:52] == 2'b01) ?
+		  11'd1 :
+		  _theResult___fst_exp__h259230) ;
+  assign _theResult___exp__h278202 =
+	     sfd__h277778[24] ?
+	       ((_theResult___fst_exp__h277686 == 8'd254) ?
+		  8'd255 :
+		  din_inc___2_exp__h304723) :
+	       ((_theResult___fst_exp__h277686 == 8'd0 &&
+		 sfd__h277778[24:23] == 2'b01) ?
+		  8'd1 :
+		  _theResult___fst_exp__h277686) ;
+  assign _theResult___exp__h286784 =
+	     sfd__h286360[24] ?
+	       ((_theResult___fst_exp__h286342 == 8'd254) ?
+		  8'd255 :
+		  din_inc___2_exp__h304749) :
+	       ((_theResult___fst_exp__h286342 == 8'd0 &&
+		 sfd__h286360[24:23] == 2'b01) ?
+		  8'd1 :
+		  _theResult___fst_exp__h286342) ;
+  assign _theResult___exp__h295968 =
+	     sfd__h295544[24] ?
+	       ((_theResult___fst_exp__h295452 == 8'd254) ?
+		  8'd255 :
+		  din_inc___2_exp__h304784) :
+	       ((_theResult___fst_exp__h295452 == 8'd0 &&
+		 sfd__h295544[24:23] == 2'b01) ?
+		  8'd1 :
+		  _theResult___fst_exp__h295452) ;
+  assign _theResult___exp__h304604 =
+	     sfd__h304156[24] ?
+	       ((_theResult___fst_exp__h304137 == 8'd254) ?
+		  8'd255 :
+		  din_inc___2_exp__h304810) :
+	       ((_theResult___fst_exp__h304137 == 8'd0 &&
+		 sfd__h304156[24:23] == 2'b01) ?
+		  8'd1 :
+		  _theResult___fst_exp__h304137) ;
+  assign _theResult___exp__h43475 =
+	     sfd__h42982[53] ?
+	       ((fpu_div64_fState_S4$D_OUT[64:54] == 11'd2046) ?
+		  11'd2047 :
+		  din_inc___2_exp__h43566) :
+	       IF_fpu_div64_fState_S4_first__43_BITS_64_TO_54_ETC___d977 ;
+  assign _theResult___exp__h95909 =
+	     sfd__h95416[53] ?
+	       ((fpu_sqr64_fState_S4$D_OUT[64:54] == 11'd2046) ?
+		  11'd2047 :
+		  din_inc___2_exp__h96000) :
+	       IF_fpu_sqr64_fState_S4_first__687_BITS_64_TO_5_ETC___d1721 ;
+  assign _theResult___fst__h116827 =
+	     { fpu_madd_fProd_S3_first__009_SRL_IF_7170_MINUS_ETC___d2012[105:1],
+	       fpu_madd_fProd_S3_first__009_SRL_IF_7170_MINUS_ETC___d2012[0] |
+	       sfdlsb__h116825 } ;
+  assign _theResult___fst__h1476 =
+	     IF_rg_index_1_4_ULE_58_8_THEN_NOT_rg_b_9_EQ_0__ETC___d56 ?
+	       _theResult___fst__h1600 :
+	       IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d49 ;
+  assign _theResult___fst__h1515 =
+	     (rg_res[116] || rg_b == 116'd0) ? rg_b : b__h1608 ;
+  assign _theResult___fst__h1600 =
+	     (IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d49 ==
+	      116'd0) ?
+	       IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d49 :
+	       b__h1712 ;
+  assign _theResult___fst__h31322 =
+	     IF_fpu_div64_fOperands_S0_first__06_BITS_129_T_ETC___d499 ?
+	       value__h31550[10:0] :
+	       11'd0 ;
+  assign _theResult___fst_exp__h130949 =
+	     sfdBC__h115662[105] ?
+	       _theResult___fst_exp__h130971 :
+	       _theResult___fst_exp__h131034 ;
+  assign _theResult___fst_exp__h130952 =
+	     (sfdBC__h115662[105] &&
+	      IF_IF_7170_MINUS_fpu_madd_fState_S3_first__995_ETC___d2031 ==
 	      12'd1023) ?
 	       11'd2046 :
-	       _theResult___fst_exp__h34766 ;
-  assign _theResult___fst_exp__h34788 =
-	     (din_exp__h34683 == 11'd0) ? 11'd2 : din_exp__h34683 + 11'd1 ;
-  assign _theResult___fst_exp__h34803 =
-	     (din_exp__h34683 == 11'd0) ? 11'd1 : din_exp__h34683 ;
-  assign _theResult___fst_exp__h34842 =
-	     din_exp__h34683 -
+	       _theResult___fst_exp__h130949 ;
+  assign _theResult___fst_exp__h130971 =
+	     (din_exp__h130866 == 11'd0) ? 11'd2 : din_exp__h130866 + 11'd1 ;
+  assign _theResult___fst_exp__h130986 =
+	     (din_exp__h130866 == 11'd0) ? 11'd1 : din_exp__h130866 ;
+  assign _theResult___fst_exp__h131025 =
+	     din_exp__h130866 -
 	     { 4'd0,
-	       IF_IF_7170_MINUS_fpu_madd_fState_S3_first__96__ETC___d661 } ;
-  assign _theResult___fst_exp__h34848 =
-	     (!sfdBC__h19479[105] && !sfdBC__h19479[104] &&
-	      !sfdBC__h19479[103] &&
-	      !sfdBC__h19479[102] &&
-	      !sfdBC__h19479[101] &&
-	      !sfdBC__h19479[100] &&
-	      !sfdBC__h19479[99] &&
-	      !sfdBC__h19479[98] &&
-	      !sfdBC__h19479[97] &&
-	      !sfdBC__h19479[96] &&
-	      !sfdBC__h19479[95] &&
-	      !sfdBC__h19479[94] &&
-	      !sfdBC__h19479[93] &&
-	      !sfdBC__h19479[92] &&
-	      !sfdBC__h19479[91] &&
-	      !sfdBC__h19479[90] &&
-	      !sfdBC__h19479[89] &&
-	      !sfdBC__h19479[88] &&
-	      !sfdBC__h19479[87] &&
-	      !sfdBC__h19479[86] &&
-	      !sfdBC__h19479[85] &&
-	      !sfdBC__h19479[84] &&
-	      !sfdBC__h19479[83] &&
-	      !sfdBC__h19479[82] &&
-	      !sfdBC__h19479[81] &&
-	      !sfdBC__h19479[80] &&
-	      !sfdBC__h19479[79] &&
-	      !sfdBC__h19479[78] &&
-	      !sfdBC__h19479[77] &&
-	      !sfdBC__h19479[76] &&
-	      !sfdBC__h19479[75] &&
-	      !sfdBC__h19479[74] &&
-	      !sfdBC__h19479[73] &&
-	      !sfdBC__h19479[72] &&
-	      !sfdBC__h19479[71] &&
-	      !sfdBC__h19479[70] &&
-	      !sfdBC__h19479[69] &&
-	      !sfdBC__h19479[68] &&
-	      !sfdBC__h19479[67] &&
-	      !sfdBC__h19479[66] &&
-	      !sfdBC__h19479[65] &&
-	      !sfdBC__h19479[64] &&
-	      !sfdBC__h19479[63] &&
-	      !sfdBC__h19479[62] &&
-	      !sfdBC__h19479[61] &&
-	      !sfdBC__h19479[60] &&
-	      !sfdBC__h19479[59] &&
-	      !sfdBC__h19479[58] &&
-	      !sfdBC__h19479[57] &&
-	      !sfdBC__h19479[56] &&
-	      !sfdBC__h19479[55] &&
-	      !sfdBC__h19479[54] &&
-	      !sfdBC__h19479[53] &&
-	      !sfdBC__h19479[52] &&
-	      !sfdBC__h19479[51] &&
-	      !sfdBC__h19479[50] &&
-	      !sfdBC__h19479[49] &&
-	      !sfdBC__h19479[48] &&
-	      !sfdBC__h19479[47] &&
-	      !sfdBC__h19479[46] &&
-	      !sfdBC__h19479[45] &&
-	      !sfdBC__h19479[44] &&
-	      !sfdBC__h19479[43] &&
-	      !sfdBC__h19479[42] &&
-	      !sfdBC__h19479[41] &&
-	      !sfdBC__h19479[40] &&
-	      !sfdBC__h19479[39] &&
-	      !sfdBC__h19479[38] &&
-	      !sfdBC__h19479[37] &&
-	      !sfdBC__h19479[36] &&
-	      !sfdBC__h19479[35] &&
-	      !sfdBC__h19479[34] &&
-	      !sfdBC__h19479[33] &&
-	      !sfdBC__h19479[32] &&
-	      !sfdBC__h19479[31] &&
-	      !sfdBC__h19479[30] &&
-	      !sfdBC__h19479[29] &&
-	      !sfdBC__h19479[28] &&
-	      !sfdBC__h19479[27] &&
-	      !sfdBC__h19479[26] &&
-	      !sfdBC__h19479[25] &&
-	      !sfdBC__h19479[24] &&
-	      !sfdBC__h19479[23] &&
-	      !sfdBC__h19479[22] &&
-	      !sfdBC__h19479[21] &&
-	      !sfdBC__h19479[20] &&
-	      !sfdBC__h19479[19] &&
-	      !sfdBC__h19479[18] &&
-	      !sfdBC__h19479[17] &&
-	      !sfdBC__h19479[16] &&
-	      !sfdBC__h19479[15] &&
-	      !sfdBC__h19479[14] &&
-	      !sfdBC__h19479[13] &&
-	      !sfdBC__h19479[12] &&
-	      !sfdBC__h19479[11] &&
-	      !sfdBC__h19479[10] &&
-	      !sfdBC__h19479[9] &&
-	      !sfdBC__h19479[8] &&
-	      !sfdBC__h19479[7] &&
-	      !sfdBC__h19479[6] &&
-	      !sfdBC__h19479[5] &&
-	      !sfdBC__h19479[4] &&
-	      !sfdBC__h19479[3] &&
-	      !sfdBC__h19479[2] &&
-	      !sfdBC__h19479[1] &&
-	      !sfdBC__h19479[0] ||
-	      !_0_CONCAT_IF_IF_7170_MINUS_fpu_madd_fState_S3_f_ETC___d664) ?
+	       IF_IF_7170_MINUS_fpu_madd_fState_S3_first__995_ETC___d2460 } ;
+  assign _theResult___fst_exp__h131031 =
+	     (!sfdBC__h115662[105] && !sfdBC__h115662[104] &&
+	      !sfdBC__h115662[103] &&
+	      !sfdBC__h115662[102] &&
+	      !sfdBC__h115662[101] &&
+	      !sfdBC__h115662[100] &&
+	      !sfdBC__h115662[99] &&
+	      !sfdBC__h115662[98] &&
+	      !sfdBC__h115662[97] &&
+	      !sfdBC__h115662[96] &&
+	      !sfdBC__h115662[95] &&
+	      !sfdBC__h115662[94] &&
+	      !sfdBC__h115662[93] &&
+	      !sfdBC__h115662[92] &&
+	      !sfdBC__h115662[91] &&
+	      !sfdBC__h115662[90] &&
+	      !sfdBC__h115662[89] &&
+	      !sfdBC__h115662[88] &&
+	      !sfdBC__h115662[87] &&
+	      !sfdBC__h115662[86] &&
+	      !sfdBC__h115662[85] &&
+	      !sfdBC__h115662[84] &&
+	      !sfdBC__h115662[83] &&
+	      !sfdBC__h115662[82] &&
+	      !sfdBC__h115662[81] &&
+	      !sfdBC__h115662[80] &&
+	      !sfdBC__h115662[79] &&
+	      !sfdBC__h115662[78] &&
+	      !sfdBC__h115662[77] &&
+	      !sfdBC__h115662[76] &&
+	      !sfdBC__h115662[75] &&
+	      !sfdBC__h115662[74] &&
+	      !sfdBC__h115662[73] &&
+	      !sfdBC__h115662[72] &&
+	      !sfdBC__h115662[71] &&
+	      !sfdBC__h115662[70] &&
+	      !sfdBC__h115662[69] &&
+	      !sfdBC__h115662[68] &&
+	      !sfdBC__h115662[67] &&
+	      !sfdBC__h115662[66] &&
+	      !sfdBC__h115662[65] &&
+	      !sfdBC__h115662[64] &&
+	      !sfdBC__h115662[63] &&
+	      !sfdBC__h115662[62] &&
+	      !sfdBC__h115662[61] &&
+	      !sfdBC__h115662[60] &&
+	      !sfdBC__h115662[59] &&
+	      !sfdBC__h115662[58] &&
+	      !sfdBC__h115662[57] &&
+	      !sfdBC__h115662[56] &&
+	      !sfdBC__h115662[55] &&
+	      !sfdBC__h115662[54] &&
+	      !sfdBC__h115662[53] &&
+	      !sfdBC__h115662[52] &&
+	      !sfdBC__h115662[51] &&
+	      !sfdBC__h115662[50] &&
+	      !sfdBC__h115662[49] &&
+	      !sfdBC__h115662[48] &&
+	      !sfdBC__h115662[47] &&
+	      !sfdBC__h115662[46] &&
+	      !sfdBC__h115662[45] &&
+	      !sfdBC__h115662[44] &&
+	      !sfdBC__h115662[43] &&
+	      !sfdBC__h115662[42] &&
+	      !sfdBC__h115662[41] &&
+	      !sfdBC__h115662[40] &&
+	      !sfdBC__h115662[39] &&
+	      !sfdBC__h115662[38] &&
+	      !sfdBC__h115662[37] &&
+	      !sfdBC__h115662[36] &&
+	      !sfdBC__h115662[35] &&
+	      !sfdBC__h115662[34] &&
+	      !sfdBC__h115662[33] &&
+	      !sfdBC__h115662[32] &&
+	      !sfdBC__h115662[31] &&
+	      !sfdBC__h115662[30] &&
+	      !sfdBC__h115662[29] &&
+	      !sfdBC__h115662[28] &&
+	      !sfdBC__h115662[27] &&
+	      !sfdBC__h115662[26] &&
+	      !sfdBC__h115662[25] &&
+	      !sfdBC__h115662[24] &&
+	      !sfdBC__h115662[23] &&
+	      !sfdBC__h115662[22] &&
+	      !sfdBC__h115662[21] &&
+	      !sfdBC__h115662[20] &&
+	      !sfdBC__h115662[19] &&
+	      !sfdBC__h115662[18] &&
+	      !sfdBC__h115662[17] &&
+	      !sfdBC__h115662[16] &&
+	      !sfdBC__h115662[15] &&
+	      !sfdBC__h115662[14] &&
+	      !sfdBC__h115662[13] &&
+	      !sfdBC__h115662[12] &&
+	      !sfdBC__h115662[11] &&
+	      !sfdBC__h115662[10] &&
+	      !sfdBC__h115662[9] &&
+	      !sfdBC__h115662[8] &&
+	      !sfdBC__h115662[7] &&
+	      !sfdBC__h115662[6] &&
+	      !sfdBC__h115662[5] &&
+	      !sfdBC__h115662[4] &&
+	      !sfdBC__h115662[3] &&
+	      !sfdBC__h115662[2] &&
+	      !sfdBC__h115662[1] &&
+	      !sfdBC__h115662[0] ||
+	      !_0_CONCAT_IF_IF_7170_MINUS_fpu_madd_fState_S3_f_ETC___d2463) ?
 	       11'd0 :
-	       _theResult___fst_exp__h34842 ;
-  assign _theResult___fst_exp__h34851 =
-	     (!sfdBC__h19479[105] && sfdBC__h19479[104]) ?
-	       _theResult___fst_exp__h34803 :
-	       _theResult___fst_exp__h34848 ;
-  assign _theResult___fst_exp__h45192 =
-	     sfd__h36936[56] ?
-	       _theResult___fst_exp__h45214 :
-	       _theResult___fst_exp__h45277 ;
-  assign _theResult___fst_exp__h45195 =
-	     (sfd__h36936[56] &&
-	      IF_fpu_madd_fState_S7_first__52_BITS_126_TO_11_ETC___d869 ==
+	       _theResult___fst_exp__h131025 ;
+  assign _theResult___fst_exp__h131034 =
+	     (!sfdBC__h115662[105] && sfdBC__h115662[104]) ?
+	       _theResult___fst_exp__h130986 :
+	       _theResult___fst_exp__h131031 ;
+  assign _theResult___fst_exp__h141375 =
+	     sfd__h133119[56] ?
+	       _theResult___fst_exp__h141397 :
+	       _theResult___fst_exp__h141460 ;
+  assign _theResult___fst_exp__h141378 =
+	     (sfd__h133119[56] &&
+	      IF_fpu_madd_fState_S7_first__651_BITS_126_TO_1_ETC___d2668 ==
 	      12'd1023) ?
 	       11'd2046 :
-	       _theResult___fst_exp__h45192 ;
-  assign _theResult___fst_exp__h45214 =
-	     (value__h45124[10:0] == 11'd0) ?
+	       _theResult___fst_exp__h141375 ;
+  assign _theResult___fst_exp__h141397 =
+	     (value__h141307[10:0] == 11'd0) ?
 	       11'd2 :
-	       value__h45124[10:0] + 11'd1 ;
-  assign _theResult___fst_exp__h45229 =
-	     (value__h45124[10:0] == 11'd0) ? 11'd1 : value__h45124[10:0] ;
-  assign _theResult___fst_exp__h45268 =
-	     value__h45124[10:0] -
+	       value__h141307[10:0] + 11'd1 ;
+  assign _theResult___fst_exp__h141412 =
+	     (value__h141307[10:0] == 11'd0) ? 11'd1 : value__h141307[10:0] ;
+  assign _theResult___fst_exp__h141451 =
+	     value__h141307[10:0] -
 	     { 5'd0,
-	       IF_IF_fpu_madd_fState_S7_first__52_BIT_128_58__ETC___d1102 } ;
-  assign _theResult___fst_exp__h45274 =
-	     (!sfd__h36936[56] && !sfd__h36936[55] && !sfd__h36936[54] &&
-	      !sfd__h36936[53] &&
-	      !sfd__h36936[52] &&
-	      !sfd__h36936[51] &&
-	      !sfd__h36936[50] &&
-	      !sfd__h36936[49] &&
-	      !sfd__h36936[48] &&
-	      !sfd__h36936[47] &&
-	      !sfd__h36936[46] &&
-	      !sfd__h36936[45] &&
-	      !sfd__h36936[44] &&
-	      !sfd__h36936[43] &&
-	      !sfd__h36936[42] &&
-	      !sfd__h36936[41] &&
-	      !sfd__h36936[40] &&
-	      !sfd__h36936[39] &&
-	      !sfd__h36936[38] &&
-	      !sfd__h36936[37] &&
-	      !sfd__h36936[36] &&
-	      !sfd__h36936[35] &&
-	      !sfd__h36936[34] &&
-	      !sfd__h36936[33] &&
-	      !sfd__h36936[32] &&
-	      !sfd__h36936[31] &&
-	      !sfd__h36936[30] &&
-	      !sfd__h36936[29] &&
-	      !sfd__h36936[28] &&
-	      !sfd__h36936[27] &&
-	      !sfd__h36936[26] &&
-	      !sfd__h36936[25] &&
-	      !sfd__h36936[24] &&
-	      !sfd__h36936[23] &&
-	      !sfd__h36936[22] &&
-	      !sfd__h36936[21] &&
-	      !sfd__h36936[20] &&
-	      !sfd__h36936[19] &&
-	      !sfd__h36936[18] &&
-	      !sfd__h36936[17] &&
-	      !sfd__h36936[16] &&
-	      !sfd__h36936[15] &&
-	      !sfd__h36936[14] &&
-	      !sfd__h36936[13] &&
-	      !sfd__h36936[12] &&
-	      !sfd__h36936[11] &&
-	      !sfd__h36936[10] &&
-	      !sfd__h36936[9] &&
-	      !sfd__h36936[8] &&
-	      !sfd__h36936[7] &&
-	      !sfd__h36936[6] &&
-	      !sfd__h36936[5] &&
-	      !sfd__h36936[4] &&
-	      !sfd__h36936[3] &&
-	      !sfd__h36936[2] &&
-	      !sfd__h36936[1] &&
-	      !sfd__h36936[0] ||
-	      !_0_CONCAT_IF_IF_fpu_madd_fState_S7_first__52_BI_ETC___d1105) ?
+	       IF_IF_fpu_madd_fState_S7_first__651_BIT_128_65_ETC___d2901 } ;
+  assign _theResult___fst_exp__h141457 =
+	     (!sfd__h133119[56] && !sfd__h133119[55] && !sfd__h133119[54] &&
+	      !sfd__h133119[53] &&
+	      !sfd__h133119[52] &&
+	      !sfd__h133119[51] &&
+	      !sfd__h133119[50] &&
+	      !sfd__h133119[49] &&
+	      !sfd__h133119[48] &&
+	      !sfd__h133119[47] &&
+	      !sfd__h133119[46] &&
+	      !sfd__h133119[45] &&
+	      !sfd__h133119[44] &&
+	      !sfd__h133119[43] &&
+	      !sfd__h133119[42] &&
+	      !sfd__h133119[41] &&
+	      !sfd__h133119[40] &&
+	      !sfd__h133119[39] &&
+	      !sfd__h133119[38] &&
+	      !sfd__h133119[37] &&
+	      !sfd__h133119[36] &&
+	      !sfd__h133119[35] &&
+	      !sfd__h133119[34] &&
+	      !sfd__h133119[33] &&
+	      !sfd__h133119[32] &&
+	      !sfd__h133119[31] &&
+	      !sfd__h133119[30] &&
+	      !sfd__h133119[29] &&
+	      !sfd__h133119[28] &&
+	      !sfd__h133119[27] &&
+	      !sfd__h133119[26] &&
+	      !sfd__h133119[25] &&
+	      !sfd__h133119[24] &&
+	      !sfd__h133119[23] &&
+	      !sfd__h133119[22] &&
+	      !sfd__h133119[21] &&
+	      !sfd__h133119[20] &&
+	      !sfd__h133119[19] &&
+	      !sfd__h133119[18] &&
+	      !sfd__h133119[17] &&
+	      !sfd__h133119[16] &&
+	      !sfd__h133119[15] &&
+	      !sfd__h133119[14] &&
+	      !sfd__h133119[13] &&
+	      !sfd__h133119[12] &&
+	      !sfd__h133119[11] &&
+	      !sfd__h133119[10] &&
+	      !sfd__h133119[9] &&
+	      !sfd__h133119[8] &&
+	      !sfd__h133119[7] &&
+	      !sfd__h133119[6] &&
+	      !sfd__h133119[5] &&
+	      !sfd__h133119[4] &&
+	      !sfd__h133119[3] &&
+	      !sfd__h133119[2] &&
+	      !sfd__h133119[1] &&
+	      !sfd__h133119[0] ||
+	      !_0_CONCAT_IF_IF_fpu_madd_fState_S7_first__651_B_ETC___d2904) ?
 	       11'd0 :
-	       _theResult___fst_exp__h45268 ;
-  assign _theResult___fst_exp__h45277 =
-	     (!sfd__h36936[56] && sfd__h36936[55]) ?
-	       _theResult___fst_exp__h45229 :
-	       _theResult___fst_exp__h45274 ;
-  assign _theResult___fst_exp__h67115 =
+	       _theResult___fst_exp__h141451 ;
+  assign _theResult___fst_exp__h141460 =
+	     (!sfd__h133119[56] && sfd__h133119[55]) ?
+	       _theResult___fst_exp__h141412 :
+	       _theResult___fst_exp__h141457 ;
+  assign _theResult___fst_exp__h163327 =
 	     11'd897 -
 	     { 5'd0,
-	       IF_iFifo_first__288_BITS_167_TO_160_321_EQ_0_3_ETC___d1462 } ;
-  assign _theResult___fst_exp__h67121 =
+	       IF_iFifo_first__087_BITS_167_TO_160_130_EQ_0_1_ETC___d3271 } ;
+  assign _theResult___fst_exp__h163333 =
 	     (iFifo$D_OUT[167:160] == 8'd0 && !iFifo$D_OUT[159] &&
-	      NOT_iFifo_first__288_BIT_158_333_393_AND_NOT_i_ETC___d1435 ||
-	      !_0_CONCAT_IF_iFifo_first__288_BITS_167_TO_160_3_ETC___d1464) ?
+	      NOT_iFifo_first__087_BIT_158_142_202_AND_NOT_i_ETC___d3244 ||
+	      !_0_CONCAT_IF_iFifo_first__087_BITS_167_TO_160_1_ETC___d3273) ?
 	       11'd0 :
-	       _theResult___fst_exp__h67115 ;
-  assign _theResult___fst_exp__h67124 =
+	       _theResult___fst_exp__h163327 ;
+  assign _theResult___fst_exp__h163336 =
 	     (iFifo$D_OUT[167:160] == 8'd0) ?
-	       _theResult___fst_exp__h67121 :
+	       _theResult___fst_exp__h163333 :
 	       11'd897 ;
-  assign _theResult___fst_exp__h67850 =
-	     (_theResult___fst_exp__h67124 == 11'd2047) ?
-	       _theResult___fst_exp__h67124 :
-	       _theResult___fst_exp__h67847 ;
-  assign _theResult___fst_exp__h76640 =
-	     _theResult____h68402[56] ? 11'd2 : _theResult___fst_exp__h76714 ;
-  assign _theResult___fst_exp__h76705 =
+  assign _theResult___fst_exp__h164062 =
+	     (_theResult___fst_exp__h163336 == 11'd2047) ?
+	       _theResult___fst_exp__h163336 :
+	       _theResult___fst_exp__h164059 ;
+  assign _theResult___fst_exp__h172852 =
+	     _theResult____h164614[56] ?
+	       11'd2 :
+	       _theResult___fst_exp__h172926 ;
+  assign _theResult___fst_exp__h172917 =
 	     11'd0 -
 	     { 5'd0,
-	       IF_IF_3074_MINUS_SEXT_iFifo_first__288_BITS_16_ETC___d1763 } ;
-  assign _theResult___fst_exp__h76711 =
-	     (!_theResult____h68402[56] && !_theResult____h68402[55] &&
-	      !_theResult____h68402[54] &&
-	      !_theResult____h68402[53] &&
-	      !_theResult____h68402[52] &&
-	      !_theResult____h68402[51] &&
-	      !_theResult____h68402[50] &&
-	      !_theResult____h68402[49] &&
-	      !_theResult____h68402[48] &&
-	      !_theResult____h68402[47] &&
-	      !_theResult____h68402[46] &&
-	      !_theResult____h68402[45] &&
-	      !_theResult____h68402[44] &&
-	      !_theResult____h68402[43] &&
-	      !_theResult____h68402[42] &&
-	      !_theResult____h68402[41] &&
-	      !_theResult____h68402[40] &&
-	      !_theResult____h68402[39] &&
-	      !_theResult____h68402[38] &&
-	      !_theResult____h68402[37] &&
-	      !_theResult____h68402[36] &&
-	      !_theResult____h68402[35] &&
-	      !_theResult____h68402[34] &&
-	      !_theResult____h68402[33] &&
-	      !_theResult____h68402[32] &&
-	      !_theResult____h68402[31] &&
-	      !_theResult____h68402[30] &&
-	      !_theResult____h68402[29] &&
-	      !_theResult____h68402[28] &&
-	      !_theResult____h68402[27] &&
-	      !_theResult____h68402[26] &&
-	      !_theResult____h68402[25] &&
-	      !_theResult____h68402[24] &&
-	      !_theResult____h68402[23] &&
-	      !_theResult____h68402[22] &&
-	      !_theResult____h68402[21] &&
-	      !_theResult____h68402[20] &&
-	      !_theResult____h68402[19] &&
-	      !_theResult____h68402[18] &&
-	      !_theResult____h68402[17] &&
-	      !_theResult____h68402[16] &&
-	      !_theResult____h68402[15] &&
-	      !_theResult____h68402[14] &&
-	      !_theResult____h68402[13] &&
-	      !_theResult____h68402[12] &&
-	      !_theResult____h68402[11] &&
-	      !_theResult____h68402[10] &&
-	      !_theResult____h68402[9] &&
-	      !_theResult____h68402[8] &&
-	      !_theResult____h68402[7] &&
-	      !_theResult____h68402[6] &&
-	      !_theResult____h68402[5] &&
-	      !_theResult____h68402[4] &&
-	      !_theResult____h68402[3] &&
-	      !_theResult____h68402[2] &&
-	      !_theResult____h68402[1] &&
-	      !_theResult____h68402[0] ||
-	      !_0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__28_ETC___d1765) ?
+	       IF_IF_3074_MINUS_SEXT_iFifo_first__087_BITS_16_ETC___d3572 } ;
+  assign _theResult___fst_exp__h172923 =
+	     (!_theResult____h164614[56] && !_theResult____h164614[55] &&
+	      !_theResult____h164614[54] &&
+	      !_theResult____h164614[53] &&
+	      !_theResult____h164614[52] &&
+	      !_theResult____h164614[51] &&
+	      !_theResult____h164614[50] &&
+	      !_theResult____h164614[49] &&
+	      !_theResult____h164614[48] &&
+	      !_theResult____h164614[47] &&
+	      !_theResult____h164614[46] &&
+	      !_theResult____h164614[45] &&
+	      !_theResult____h164614[44] &&
+	      !_theResult____h164614[43] &&
+	      !_theResult____h164614[42] &&
+	      !_theResult____h164614[41] &&
+	      !_theResult____h164614[40] &&
+	      !_theResult____h164614[39] &&
+	      !_theResult____h164614[38] &&
+	      !_theResult____h164614[37] &&
+	      !_theResult____h164614[36] &&
+	      !_theResult____h164614[35] &&
+	      !_theResult____h164614[34] &&
+	      !_theResult____h164614[33] &&
+	      !_theResult____h164614[32] &&
+	      !_theResult____h164614[31] &&
+	      !_theResult____h164614[30] &&
+	      !_theResult____h164614[29] &&
+	      !_theResult____h164614[28] &&
+	      !_theResult____h164614[27] &&
+	      !_theResult____h164614[26] &&
+	      !_theResult____h164614[25] &&
+	      !_theResult____h164614[24] &&
+	      !_theResult____h164614[23] &&
+	      !_theResult____h164614[22] &&
+	      !_theResult____h164614[21] &&
+	      !_theResult____h164614[20] &&
+	      !_theResult____h164614[19] &&
+	      !_theResult____h164614[18] &&
+	      !_theResult____h164614[17] &&
+	      !_theResult____h164614[16] &&
+	      !_theResult____h164614[15] &&
+	      !_theResult____h164614[14] &&
+	      !_theResult____h164614[13] &&
+	      !_theResult____h164614[12] &&
+	      !_theResult____h164614[11] &&
+	      !_theResult____h164614[10] &&
+	      !_theResult____h164614[9] &&
+	      !_theResult____h164614[8] &&
+	      !_theResult____h164614[7] &&
+	      !_theResult____h164614[6] &&
+	      !_theResult____h164614[5] &&
+	      !_theResult____h164614[4] &&
+	      !_theResult____h164614[3] &&
+	      !_theResult____h164614[2] &&
+	      !_theResult____h164614[1] &&
+	      !_theResult____h164614[0] ||
+	      !_0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__08_ETC___d3574) ?
 	       11'd0 :
-	       _theResult___fst_exp__h76705 ;
-  assign _theResult___fst_exp__h76714 =
-	     (!_theResult____h68402[56] && _theResult____h68402[55]) ?
+	       _theResult___fst_exp__h172917 ;
+  assign _theResult___fst_exp__h172926 =
+	     (!_theResult____h164614[56] && _theResult____h164614[55]) ?
 	       11'd1 :
-	       _theResult___fst_exp__h76711 ;
-  assign _theResult___fst_exp__h77440 =
-	     (_theResult___fst_exp__h76640 == 11'd2047) ?
-	       _theResult___fst_exp__h76640 :
-	       _theResult___fst_exp__h77437 ;
-  assign _theResult___fst_exp__h85393 =
-	     (SEXT_iFifo_first__288_BITS_167_TO_160_321_MINU_ETC__q16[10:0] ==
+	       _theResult___fst_exp__h172923 ;
+  assign _theResult___fst_exp__h173652 =
+	     (_theResult___fst_exp__h172852 == 11'd2047) ?
+	       _theResult___fst_exp__h172852 :
+	       _theResult___fst_exp__h173649 ;
+  assign _theResult___fst_exp__h181605 =
+	     (SEXT_iFifo_first__087_BITS_167_TO_160_130_MINU_ETC__q36[10:0] ==
 	      11'd0) ?
 	       11'd1 :
-	       SEXT_iFifo_first__288_BITS_167_TO_160_321_MINU_ETC__q16[10:0] ;
-  assign _theResult___fst_exp__h85432 =
-	     SEXT_iFifo_first__288_BITS_167_TO_160_321_MINU_ETC__q16[10:0] -
+	       SEXT_iFifo_first__087_BITS_167_TO_160_130_MINU_ETC__q36[10:0] ;
+  assign _theResult___fst_exp__h181644 =
+	     SEXT_iFifo_first__087_BITS_167_TO_160_130_MINU_ETC__q36[10:0] -
 	     { 5'd0,
-	       IF_iFifo_first__288_BITS_167_TO_160_321_EQ_0_3_ETC___d1462 } ;
-  assign _theResult___fst_exp__h85438 =
+	       IF_iFifo_first__087_BITS_167_TO_160_130_EQ_0_1_ETC___d3271 } ;
+  assign _theResult___fst_exp__h181650 =
 	     (iFifo$D_OUT[167:160] == 8'd0 && !iFifo$D_OUT[159] &&
-	      NOT_iFifo_first__288_BIT_158_333_393_AND_NOT_i_ETC___d1435 ||
-	      !_0_CONCAT_IF_iFifo_first__288_BITS_167_TO_160_3_ETC___d1815) ?
+	      NOT_iFifo_first__087_BIT_158_142_202_AND_NOT_i_ETC___d3244 ||
+	      !_0_CONCAT_IF_iFifo_first__087_BITS_167_TO_160_1_ETC___d3624) ?
 	       11'd0 :
-	       _theResult___fst_exp__h85432 ;
-  assign _theResult___fst_exp__h85441 =
+	       _theResult___fst_exp__h181644 ;
+  assign _theResult___fst_exp__h181653 =
 	     (iFifo$D_OUT[167:160] == 8'd0) ?
-	       _theResult___fst_exp__h85438 :
-	       _theResult___fst_exp__h85393 ;
-  assign _theResult___fst_exp__h86192 =
-	     (_theResult___fst_exp__h85441 == 11'd2047) ?
-	       _theResult___fst_exp__h85441 :
-	       _theResult___fst_exp__h86189 ;
-  assign _theResult___fst_exp__h86201 =
+	       _theResult___fst_exp__h181650 :
+	       _theResult___fst_exp__h181605 ;
+  assign _theResult___fst_exp__h182404 =
+	     (_theResult___fst_exp__h181653 == 11'd2047) ?
+	       _theResult___fst_exp__h181653 :
+	       _theResult___fst_exp__h182401 ;
+  assign _theResult___fst_exp__h182413 =
 	     (iFifo$D_OUT[167:160] == 8'd0) ?
-	       (_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_15_ETC___d1380 ?
-		  _theResult___snd_fst_exp__h67853 :
-		  _theResult___fst_exp__h52079) :
-	       (SEXT_iFifo_first__288_BITS_167_TO_160_321_MINU_ETC___d1515 ?
-		  _theResult___snd_fst_exp__h86195 :
-		  _theResult___fst_exp__h52079) ;
-  assign _theResult___fst_exp__h86204 =
+	       (_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_15_ETC___d3189 ?
+		  _theResult___snd_fst_exp__h164065 :
+		  _theResult___fst_exp__h148291) :
+	       (SEXT_iFifo_first__087_BITS_167_TO_160_130_MINU_ETC___d3324 ?
+		  _theResult___snd_fst_exp__h182407 :
+		  _theResult___fst_exp__h148291) ;
+  assign _theResult___fst_exp__h182416 =
 	     (iFifo$D_OUT[167:160] == 8'd0 && iFifo$D_OUT[159:137] == 23'd0) ?
 	       11'd0 :
-	       _theResult___fst_exp__h86201 ;
-  assign _theResult___fst_sfd__h106489 =
-	     (_theResult___fst_exp__h105762 == 11'd2047) ?
-	       _theResult___snd__h105713[56:5] :
-	       _theResult___fst_sfd__h106486 ;
-  assign _theResult___fst_sfd__h116079 =
-	     (_theResult___fst_exp__h115278 == 11'd2047) ?
-	       sfdin__h115272[56:5] :
-	       _theResult___fst_sfd__h116076 ;
-  assign _theResult___fst_sfd__h124831 =
-	     (_theResult___fst_exp__h124079 == 11'd2047) ?
-	       _theResult___snd__h124025[56:5] :
-	       _theResult___fst_sfd__h124828 ;
-  assign _theResult___fst_sfd__h124840 =
+	       _theResult___fst_exp__h182413 ;
+  assign _theResult___fst_exp__h201965 =
+	     11'd897 -
+	     { 5'd0,
+	       IF_iFifo_first__087_BITS_102_TO_95_625_EQ_0_63_ETC___d4757 } ;
+  assign _theResult___fst_exp__h201971 =
+	     (iFifo$D_OUT[102:95] == 8'd0 && !iFifo$D_OUT[94] &&
+	      NOT_iFifo_first__087_BIT_93_637_688_AND_NOT_iF_ETC___d4730 ||
+	      !_0_CONCAT_IF_iFifo_first__087_BITS_102_TO_95_62_ETC___d4759) ?
+	       11'd0 :
+	       _theResult___fst_exp__h201965 ;
+  assign _theResult___fst_exp__h201974 =
 	     (iFifo$D_OUT[102:95] == 8'd0) ?
-	       (_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_94_ETC___d2875 ?
-		  _theResult___snd_fst_sfd__h106492 :
-		  _theResult___fst_sfd__h90720) :
-	       (SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC___d2998 ?
-		  _theResult___snd_fst_sfd__h124834 :
-		  _theResult___fst_sfd__h90720) ;
-  assign _theResult___fst_sfd__h124846 =
-	     ((iFifo$D_OUT[102:95] == 8'd255 ||
-	       iFifo$D_OUT[102:95] == 8'd0) &&
-	      iFifo$D_OUT[94:72] == 23'd0) ?
-	       52'd0 :
-	       _theResult___fst_sfd__h124840 ;
-  assign _theResult___fst_sfd__h145396 =
-	     (_theResult___fst_exp__h144669 == 11'd2047) ?
-	       _theResult___snd__h144620[56:5] :
-	       _theResult___fst_sfd__h145393 ;
-  assign _theResult___fst_sfd__h154986 =
-	     (_theResult___fst_exp__h154185 == 11'd2047) ?
-	       sfdin__h154179[56:5] :
-	       _theResult___fst_sfd__h154983 ;
-  assign _theResult___fst_sfd__h163738 =
-	     (_theResult___fst_exp__h162986 == 11'd2047) ?
-	       _theResult___snd__h162932[56:5] :
-	       _theResult___fst_sfd__h163735 ;
-  assign _theResult___fst_sfd__h163747 =
+	       _theResult___fst_exp__h201971 :
+	       11'd897 ;
+  assign _theResult___fst_exp__h202700 =
+	     (_theResult___fst_exp__h201974 == 11'd2047) ?
+	       _theResult___fst_exp__h201974 :
+	       _theResult___fst_exp__h202697 ;
+  assign _theResult___fst_exp__h211490 =
+	     _theResult____h203252[56] ?
+	       11'd2 :
+	       _theResult___fst_exp__h211564 ;
+  assign _theResult___fst_exp__h211555 =
+	     11'd0 -
+	     { 5'd0,
+	       IF_IF_3074_MINUS_SEXT_iFifo_first__087_BITS_10_ETC___d5055 } ;
+  assign _theResult___fst_exp__h211561 =
+	     (!_theResult____h203252[56] && !_theResult____h203252[55] &&
+	      !_theResult____h203252[54] &&
+	      !_theResult____h203252[53] &&
+	      !_theResult____h203252[52] &&
+	      !_theResult____h203252[51] &&
+	      !_theResult____h203252[50] &&
+	      !_theResult____h203252[49] &&
+	      !_theResult____h203252[48] &&
+	      !_theResult____h203252[47] &&
+	      !_theResult____h203252[46] &&
+	      !_theResult____h203252[45] &&
+	      !_theResult____h203252[44] &&
+	      !_theResult____h203252[43] &&
+	      !_theResult____h203252[42] &&
+	      !_theResult____h203252[41] &&
+	      !_theResult____h203252[40] &&
+	      !_theResult____h203252[39] &&
+	      !_theResult____h203252[38] &&
+	      !_theResult____h203252[37] &&
+	      !_theResult____h203252[36] &&
+	      !_theResult____h203252[35] &&
+	      !_theResult____h203252[34] &&
+	      !_theResult____h203252[33] &&
+	      !_theResult____h203252[32] &&
+	      !_theResult____h203252[31] &&
+	      !_theResult____h203252[30] &&
+	      !_theResult____h203252[29] &&
+	      !_theResult____h203252[28] &&
+	      !_theResult____h203252[27] &&
+	      !_theResult____h203252[26] &&
+	      !_theResult____h203252[25] &&
+	      !_theResult____h203252[24] &&
+	      !_theResult____h203252[23] &&
+	      !_theResult____h203252[22] &&
+	      !_theResult____h203252[21] &&
+	      !_theResult____h203252[20] &&
+	      !_theResult____h203252[19] &&
+	      !_theResult____h203252[18] &&
+	      !_theResult____h203252[17] &&
+	      !_theResult____h203252[16] &&
+	      !_theResult____h203252[15] &&
+	      !_theResult____h203252[14] &&
+	      !_theResult____h203252[13] &&
+	      !_theResult____h203252[12] &&
+	      !_theResult____h203252[11] &&
+	      !_theResult____h203252[10] &&
+	      !_theResult____h203252[9] &&
+	      !_theResult____h203252[8] &&
+	      !_theResult____h203252[7] &&
+	      !_theResult____h203252[6] &&
+	      !_theResult____h203252[5] &&
+	      !_theResult____h203252[4] &&
+	      !_theResult____h203252[3] &&
+	      !_theResult____h203252[2] &&
+	      !_theResult____h203252[1] &&
+	      !_theResult____h203252[0] ||
+	      !_0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__08_ETC___d5057) ?
+	       11'd0 :
+	       _theResult___fst_exp__h211555 ;
+  assign _theResult___fst_exp__h211564 =
+	     (!_theResult____h203252[56] && _theResult____h203252[55]) ?
+	       11'd1 :
+	       _theResult___fst_exp__h211561 ;
+  assign _theResult___fst_exp__h212290 =
+	     (_theResult___fst_exp__h211490 == 11'd2047) ?
+	       _theResult___fst_exp__h211490 :
+	       _theResult___fst_exp__h212287 ;
+  assign _theResult___fst_exp__h220243 =
+	     (SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC__q96[10:0] ==
+	      11'd0) ?
+	       11'd1 :
+	       SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC__q96[10:0] ;
+  assign _theResult___fst_exp__h220282 =
+	     SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC__q96[10:0] -
+	     { 5'd0,
+	       IF_iFifo_first__087_BITS_102_TO_95_625_EQ_0_63_ETC___d4757 } ;
+  assign _theResult___fst_exp__h220288 =
+	     (iFifo$D_OUT[102:95] == 8'd0 && !iFifo$D_OUT[94] &&
+	      NOT_iFifo_first__087_BIT_93_637_688_AND_NOT_iF_ETC___d4730 ||
+	      !_0_CONCAT_IF_iFifo_first__087_BITS_102_TO_95_62_ETC___d5107) ?
+	       11'd0 :
+	       _theResult___fst_exp__h220282 ;
+  assign _theResult___fst_exp__h220291 =
+	     (iFifo$D_OUT[102:95] == 8'd0) ?
+	       _theResult___fst_exp__h220288 :
+	       _theResult___fst_exp__h220243 ;
+  assign _theResult___fst_exp__h221042 =
+	     (_theResult___fst_exp__h220291 == 11'd2047) ?
+	       _theResult___fst_exp__h220291 :
+	       _theResult___fst_exp__h221039 ;
+  assign _theResult___fst_exp__h221051 =
+	     (iFifo$D_OUT[102:95] == 8'd0) ?
+	       (_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_94_ETC___d4684 ?
+		  _theResult___snd_fst_exp__h202703 :
+		  _theResult___fst_exp__h186931) :
+	       (SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC___d4807 ?
+		  _theResult___snd_fst_exp__h221045 :
+		  _theResult___fst_exp__h186931) ;
+  assign _theResult___fst_exp__h221054 =
+	     (iFifo$D_OUT[102:95] == 8'd0 && iFifo$D_OUT[94:72] == 23'd0) ?
+	       11'd0 :
+	       _theResult___fst_exp__h221051 ;
+  assign _theResult___fst_exp__h240904 =
+	     11'd897 -
+	     { 5'd0,
+	       IF_iFifo_first__087_BITS_37_TO_30_850_EQ_0_856_ETC___d3982 } ;
+  assign _theResult___fst_exp__h240910 =
+	     (iFifo$D_OUT[37:30] == 8'd0 && !iFifo$D_OUT[29] &&
+	      NOT_iFifo_first__087_BIT_28_862_913_AND_NOT_iF_ETC___d3955 ||
+	      !_0_CONCAT_IF_iFifo_first__087_BITS_37_TO_30_850_ETC___d3984) ?
+	       11'd0 :
+	       _theResult___fst_exp__h240904 ;
+  assign _theResult___fst_exp__h240913 =
 	     (iFifo$D_OUT[37:30] == 8'd0) ?
-	       (_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_29_ETC___d2100 ?
-		  _theResult___snd_fst_sfd__h145399 :
-		  _theResult___fst_sfd__h129627) :
-	       (SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC___d2223 ?
-		  _theResult___snd_fst_sfd__h163741 :
-		  _theResult___fst_sfd__h129627) ;
-  assign _theResult___fst_sfd__h163753 =
-	     ((iFifo$D_OUT[37:30] == 8'd255 || iFifo$D_OUT[37:30] == 8'd0) &&
-	      iFifo$D_OUT[29:7] == 23'd0) ?
-	       52'd0 :
-	       _theResult___fst_sfd__h163747 ;
-  assign _theResult___fst_sfd__h181810 =
-	     (_theResult___fst_exp__h181212 == 8'd255) ?
-	       sfdin__h181206[56:34] :
-	       _theResult___fst_sfd__h181807 ;
-  assign _theResult___fst_sfd__h190392 =
-	     (_theResult___fst_exp__h189868 == 8'd255) ?
-	       _theResult___snd__h189819[56:34] :
-	       _theResult___fst_sfd__h190389 ;
-  assign _theResult___fst_sfd__h199576 =
-	     (_theResult___fst_exp__h198978 == 8'd255) ?
-	       sfdin__h198972[56:34] :
-	       _theResult___fst_sfd__h199573 ;
-  assign _theResult___fst_sfd__h208212 =
-	     (_theResult___fst_exp__h207663 == 8'd255) ?
-	       _theResult___snd__h207609[56:34] :
-	       _theResult___fst_sfd__h208209 ;
-  assign _theResult___fst_sfd__h208221 =
-	     (fpu_madd_fResult_S9$D_OUT[67:57] == 11'd0) ?
-	       (_3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d3717 ?
-		  _theResult___snd_fst_sfd__h190395 :
-		  _theResult___fst_sfd__h173086) :
-	       (SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC___d4217 ?
-		  _theResult___snd_fst_sfd__h208215 :
-		  _theResult___fst_sfd__h173086) ;
-  assign _theResult___fst_sfd__h208227 =
-	     ((fpu_madd_fResult_S9$D_OUT[67:57] == 11'd2047 ||
-	       fpu_madd_fResult_S9$D_OUT[67:57] == 11'd0) &&
-	      fpu_madd_fResult_S9$D_OUT[56:5] == 52'd0) ?
-	       23'd0 :
-	       _theResult___fst_sfd__h208221 ;
-  assign _theResult___fst_sfd__h398 =
-	     fpu_madd_fOperand_S0$D_OUT[195] ?
-	       fpu_madd_fOperand_S0$D_OUT[182:131] :
-	       52'd0 ;
-  assign _theResult___fst_sfd__h67851 =
-	     (_theResult___fst_exp__h67124 == 11'd2047) ?
-	       _theResult___snd__h67075[56:5] :
-	       _theResult___fst_sfd__h67848 ;
-  assign _theResult___fst_sfd__h77441 =
-	     (_theResult___fst_exp__h76640 == 11'd2047) ?
-	       sfdin__h76634[56:5] :
-	       _theResult___fst_sfd__h77438 ;
-  assign _theResult___fst_sfd__h86193 =
-	     (_theResult___fst_exp__h85441 == 11'd2047) ?
-	       _theResult___snd__h85387[56:5] :
-	       _theResult___fst_sfd__h86190 ;
-  assign _theResult___fst_sfd__h86202 =
+	       _theResult___fst_exp__h240910 :
+	       11'd897 ;
+  assign _theResult___fst_exp__h241639 =
+	     (_theResult___fst_exp__h240913 == 11'd2047) ?
+	       _theResult___fst_exp__h240913 :
+	       _theResult___fst_exp__h241636 ;
+  assign _theResult___fst_exp__h250429 =
+	     _theResult____h242191[56] ?
+	       11'd2 :
+	       _theResult___fst_exp__h250503 ;
+  assign _theResult___fst_exp__h250494 =
+	     11'd0 -
+	     { 5'd0,
+	       IF_IF_3074_MINUS_SEXT_iFifo_first__087_BITS_37_ETC___d4280 } ;
+  assign _theResult___fst_exp__h250500 =
+	     (!_theResult____h242191[56] && !_theResult____h242191[55] &&
+	      !_theResult____h242191[54] &&
+	      !_theResult____h242191[53] &&
+	      !_theResult____h242191[52] &&
+	      !_theResult____h242191[51] &&
+	      !_theResult____h242191[50] &&
+	      !_theResult____h242191[49] &&
+	      !_theResult____h242191[48] &&
+	      !_theResult____h242191[47] &&
+	      !_theResult____h242191[46] &&
+	      !_theResult____h242191[45] &&
+	      !_theResult____h242191[44] &&
+	      !_theResult____h242191[43] &&
+	      !_theResult____h242191[42] &&
+	      !_theResult____h242191[41] &&
+	      !_theResult____h242191[40] &&
+	      !_theResult____h242191[39] &&
+	      !_theResult____h242191[38] &&
+	      !_theResult____h242191[37] &&
+	      !_theResult____h242191[36] &&
+	      !_theResult____h242191[35] &&
+	      !_theResult____h242191[34] &&
+	      !_theResult____h242191[33] &&
+	      !_theResult____h242191[32] &&
+	      !_theResult____h242191[31] &&
+	      !_theResult____h242191[30] &&
+	      !_theResult____h242191[29] &&
+	      !_theResult____h242191[28] &&
+	      !_theResult____h242191[27] &&
+	      !_theResult____h242191[26] &&
+	      !_theResult____h242191[25] &&
+	      !_theResult____h242191[24] &&
+	      !_theResult____h242191[23] &&
+	      !_theResult____h242191[22] &&
+	      !_theResult____h242191[21] &&
+	      !_theResult____h242191[20] &&
+	      !_theResult____h242191[19] &&
+	      !_theResult____h242191[18] &&
+	      !_theResult____h242191[17] &&
+	      !_theResult____h242191[16] &&
+	      !_theResult____h242191[15] &&
+	      !_theResult____h242191[14] &&
+	      !_theResult____h242191[13] &&
+	      !_theResult____h242191[12] &&
+	      !_theResult____h242191[11] &&
+	      !_theResult____h242191[10] &&
+	      !_theResult____h242191[9] &&
+	      !_theResult____h242191[8] &&
+	      !_theResult____h242191[7] &&
+	      !_theResult____h242191[6] &&
+	      !_theResult____h242191[5] &&
+	      !_theResult____h242191[4] &&
+	      !_theResult____h242191[3] &&
+	      !_theResult____h242191[2] &&
+	      !_theResult____h242191[1] &&
+	      !_theResult____h242191[0] ||
+	      !_0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__08_ETC___d4282) ?
+	       11'd0 :
+	       _theResult___fst_exp__h250494 ;
+  assign _theResult___fst_exp__h250503 =
+	     (!_theResult____h242191[56] && _theResult____h242191[55]) ?
+	       11'd1 :
+	       _theResult___fst_exp__h250500 ;
+  assign _theResult___fst_exp__h251229 =
+	     (_theResult___fst_exp__h250429 == 11'd2047) ?
+	       _theResult___fst_exp__h250429 :
+	       _theResult___fst_exp__h251226 ;
+  assign _theResult___fst_exp__h259182 =
+	     (SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC__q63[10:0] ==
+	      11'd0) ?
+	       11'd1 :
+	       SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC__q63[10:0] ;
+  assign _theResult___fst_exp__h259221 =
+	     SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC__q63[10:0] -
+	     { 5'd0,
+	       IF_iFifo_first__087_BITS_37_TO_30_850_EQ_0_856_ETC___d3982 } ;
+  assign _theResult___fst_exp__h259227 =
+	     (iFifo$D_OUT[37:30] == 8'd0 && !iFifo$D_OUT[29] &&
+	      NOT_iFifo_first__087_BIT_28_862_913_AND_NOT_iF_ETC___d3955 ||
+	      !_0_CONCAT_IF_iFifo_first__087_BITS_37_TO_30_850_ETC___d4332) ?
+	       11'd0 :
+	       _theResult___fst_exp__h259221 ;
+  assign _theResult___fst_exp__h259230 =
+	     (iFifo$D_OUT[37:30] == 8'd0) ?
+	       _theResult___fst_exp__h259227 :
+	       _theResult___fst_exp__h259182 ;
+  assign _theResult___fst_exp__h259981 =
+	     (_theResult___fst_exp__h259230 == 11'd2047) ?
+	       _theResult___fst_exp__h259230 :
+	       _theResult___fst_exp__h259978 ;
+  assign _theResult___fst_exp__h259990 =
+	     (iFifo$D_OUT[37:30] == 8'd0) ?
+	       (_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_29_ETC___d3909 ?
+		  _theResult___snd_fst_exp__h241642 :
+		  _theResult___fst_exp__h225870) :
+	       (SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC___d4032 ?
+		  _theResult___snd_fst_exp__h259984 :
+		  _theResult___fst_exp__h225870) ;
+  assign _theResult___fst_exp__h259993 =
+	     (iFifo$D_OUT[37:30] == 8'd0 && iFifo$D_OUT[29:7] == 23'd0) ?
+	       11'd0 :
+	       _theResult___fst_exp__h259990 ;
+  assign _theResult___fst_exp__h277686 =
+	     _theResult____h269577[56] ?
+	       8'd2 :
+	       _theResult___fst_exp__h277760 ;
+  assign _theResult___fst_exp__h277751 =
+	     8'd0 -
+	     { 2'd0,
+	       IF_IF_0b0_CONCAT_NOT_resWire_wget__410_BITS_67_ETC___d5767 } ;
+  assign _theResult___fst_exp__h277757 =
+	     (!_theResult____h269577[56] && !_theResult____h269577[55] &&
+	      !_theResult____h269577[54] &&
+	      !_theResult____h269577[53] &&
+	      !_theResult____h269577[52] &&
+	      !_theResult____h269577[51] &&
+	      !_theResult____h269577[50] &&
+	      !_theResult____h269577[49] &&
+	      !_theResult____h269577[48] &&
+	      !_theResult____h269577[47] &&
+	      !_theResult____h269577[46] &&
+	      !_theResult____h269577[45] &&
+	      !_theResult____h269577[44] &&
+	      !_theResult____h269577[43] &&
+	      !_theResult____h269577[42] &&
+	      !_theResult____h269577[41] &&
+	      !_theResult____h269577[40] &&
+	      !_theResult____h269577[39] &&
+	      !_theResult____h269577[38] &&
+	      !_theResult____h269577[37] &&
+	      !_theResult____h269577[36] &&
+	      !_theResult____h269577[35] &&
+	      !_theResult____h269577[34] &&
+	      !_theResult____h269577[33] &&
+	      !_theResult____h269577[32] &&
+	      !_theResult____h269577[31] &&
+	      !_theResult____h269577[30] &&
+	      !_theResult____h269577[29] &&
+	      !_theResult____h269577[28] &&
+	      !_theResult____h269577[27] &&
+	      !_theResult____h269577[26] &&
+	      !_theResult____h269577[25] &&
+	      !_theResult____h269577[24] &&
+	      !_theResult____h269577[23] &&
+	      !_theResult____h269577[22] &&
+	      !_theResult____h269577[21] &&
+	      !_theResult____h269577[20] &&
+	      !_theResult____h269577[19] &&
+	      !_theResult____h269577[18] &&
+	      !_theResult____h269577[17] &&
+	      !_theResult____h269577[16] &&
+	      !_theResult____h269577[15] &&
+	      !_theResult____h269577[14] &&
+	      !_theResult____h269577[13] &&
+	      !_theResult____h269577[12] &&
+	      !_theResult____h269577[11] &&
+	      !_theResult____h269577[10] &&
+	      !_theResult____h269577[9] &&
+	      !_theResult____h269577[8] &&
+	      !_theResult____h269577[7] &&
+	      !_theResult____h269577[6] &&
+	      !_theResult____h269577[5] &&
+	      !_theResult____h269577[4] &&
+	      !_theResult____h269577[3] &&
+	      !_theResult____h269577[2] &&
+	      !_theResult____h269577[1] &&
+	      !_theResult____h269577[0] ||
+	      !_0_CONCAT_IF_IF_0b0_CONCAT_NOT_resWire_wget__41_ETC___d5769) ?
+	       8'd0 :
+	       _theResult___fst_exp__h277751 ;
+  assign _theResult___fst_exp__h277760 =
+	     (!_theResult____h269577[56] && _theResult____h269577[55]) ?
+	       8'd1 :
+	       _theResult___fst_exp__h277757 ;
+  assign _theResult___fst_exp__h278283 =
+	     (_theResult___fst_exp__h277686 == 8'd255) ?
+	       _theResult___fst_exp__h277686 :
+	       _theResult___fst_exp__h278280 ;
+  assign _theResult___fst_exp__h286333 =
+	     8'd129 -
+	     { 2'd0,
+	       IF_resWire_wget__410_BITS_67_TO_57_416_EQ_0_42_ETC___d5982 } ;
+  assign _theResult___fst_exp__h286339 =
+	     (resWire$wget[67:57] == 11'd0 &&
+	      NOT_resWire_wget__410_BIT_56_426_825_AND_NOT_r_ETC___d5927 ||
+	      !_0_CONCAT_IF_resWire_wget__410_BITS_67_TO_57_41_ETC___d5984) ?
+	       8'd0 :
+	       _theResult___fst_exp__h286333 ;
+  assign _theResult___fst_exp__h286342 =
+	     (resWire$wget[67:57] == 11'd0) ?
+	       _theResult___fst_exp__h286339 :
+	       8'd129 ;
+  assign _theResult___fst_exp__h286865 =
+	     (_theResult___fst_exp__h286342 == 8'd255) ?
+	       _theResult___fst_exp__h286342 :
+	       _theResult___fst_exp__h286862 ;
+  assign _theResult___fst_exp__h295452 =
+	     _theResult____h287214[56] ?
+	       8'd2 :
+	       _theResult___fst_exp__h295526 ;
+  assign _theResult___fst_exp__h295517 =
+	     8'd0 -
+	     { 2'd0,
+	       IF_IF_3970_MINUS_SEXT_resWire_wget__410_BITS_6_ETC___d6278 } ;
+  assign _theResult___fst_exp__h295523 =
+	     (!_theResult____h287214[56] && !_theResult____h287214[55] &&
+	      !_theResult____h287214[54] &&
+	      !_theResult____h287214[53] &&
+	      !_theResult____h287214[52] &&
+	      !_theResult____h287214[51] &&
+	      !_theResult____h287214[50] &&
+	      !_theResult____h287214[49] &&
+	      !_theResult____h287214[48] &&
+	      !_theResult____h287214[47] &&
+	      !_theResult____h287214[46] &&
+	      !_theResult____h287214[45] &&
+	      !_theResult____h287214[44] &&
+	      !_theResult____h287214[43] &&
+	      !_theResult____h287214[42] &&
+	      !_theResult____h287214[41] &&
+	      !_theResult____h287214[40] &&
+	      !_theResult____h287214[39] &&
+	      !_theResult____h287214[38] &&
+	      !_theResult____h287214[37] &&
+	      !_theResult____h287214[36] &&
+	      !_theResult____h287214[35] &&
+	      !_theResult____h287214[34] &&
+	      !_theResult____h287214[33] &&
+	      !_theResult____h287214[32] &&
+	      !_theResult____h287214[31] &&
+	      !_theResult____h287214[30] &&
+	      !_theResult____h287214[29] &&
+	      !_theResult____h287214[28] &&
+	      !_theResult____h287214[27] &&
+	      !_theResult____h287214[26] &&
+	      !_theResult____h287214[25] &&
+	      !_theResult____h287214[24] &&
+	      !_theResult____h287214[23] &&
+	      !_theResult____h287214[22] &&
+	      !_theResult____h287214[21] &&
+	      !_theResult____h287214[20] &&
+	      !_theResult____h287214[19] &&
+	      !_theResult____h287214[18] &&
+	      !_theResult____h287214[17] &&
+	      !_theResult____h287214[16] &&
+	      !_theResult____h287214[15] &&
+	      !_theResult____h287214[14] &&
+	      !_theResult____h287214[13] &&
+	      !_theResult____h287214[12] &&
+	      !_theResult____h287214[11] &&
+	      !_theResult____h287214[10] &&
+	      !_theResult____h287214[9] &&
+	      !_theResult____h287214[8] &&
+	      !_theResult____h287214[7] &&
+	      !_theResult____h287214[6] &&
+	      !_theResult____h287214[5] &&
+	      !_theResult____h287214[4] &&
+	      !_theResult____h287214[3] &&
+	      !_theResult____h287214[2] &&
+	      !_theResult____h287214[1] &&
+	      !_theResult____h287214[0] ||
+	      !_0_CONCAT_IF_IF_3970_MINUS_SEXT_resWire_wget__4_ETC___d6280) ?
+	       8'd0 :
+	       _theResult___fst_exp__h295517 ;
+  assign _theResult___fst_exp__h295526 =
+	     (!_theResult____h287214[56] && _theResult____h287214[55]) ?
+	       8'd1 :
+	       _theResult___fst_exp__h295523 ;
+  assign _theResult___fst_exp__h296049 =
+	     (_theResult___fst_exp__h295452 == 8'd255) ?
+	       _theResult___fst_exp__h295452 :
+	       _theResult___fst_exp__h296046 ;
+  assign _theResult___fst_exp__h304089 =
+	     (SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC__q138[7:0] ==
+	      8'd0) ?
+	       8'd1 :
+	       SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC__q138[7:0] ;
+  assign _theResult___fst_exp__h304128 =
+	     SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC__q138[7:0] -
+	     { 2'd0,
+	       IF_resWire_wget__410_BITS_67_TO_57_416_EQ_0_42_ETC___d5982 } ;
+  assign _theResult___fst_exp__h304134 =
+	     (resWire$wget[67:57] == 11'd0 &&
+	      NOT_resWire_wget__410_BIT_56_426_825_AND_NOT_r_ETC___d5927 ||
+	      !_0_CONCAT_IF_resWire_wget__410_BITS_67_TO_57_41_ETC___d6333) ?
+	       8'd0 :
+	       _theResult___fst_exp__h304128 ;
+  assign _theResult___fst_exp__h304137 =
+	     (resWire$wget[67:57] == 11'd0) ?
+	       _theResult___fst_exp__h304134 :
+	       _theResult___fst_exp__h304089 ;
+  assign _theResult___fst_exp__h304685 =
+	     (_theResult___fst_exp__h304137 == 8'd255) ?
+	       _theResult___fst_exp__h304137 :
+	       _theResult___fst_exp__h304682 ;
+  assign _theResult___fst_exp__h304694 =
+	     (resWire$wget[67:57] == 11'd0) ?
+	       (_3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d5532 ?
+		  _theResult___snd_fst_exp__h286868 :
+		  _theResult___fst_exp__h269559) :
+	       (SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC___d6032 ?
+		  _theResult___snd_fst_exp__h304688 :
+		  _theResult___fst_exp__h269559) ;
+  assign _theResult___fst_exp__h304697 =
+	     (resWire$wget[67:57] == 11'd0 && resWire$wget[56:5] == 52'd0) ?
+	       8'd0 :
+	       _theResult___fst_exp__h304694 ;
+  assign _theResult___fst_exp__h42284 =
+	     fpu_div64_fState_S3$D_OUT[120:110] - 11'd1 ;
+  assign _theResult___fst_exp__h42287 =
+	     (fpu_div64_fState_S3$D_OUT[57:56] == 2'b0) ?
+	       _theResult___fst_exp__h42284 :
+	       11'd2046 ;
+  assign _theResult___fst_exp__h42290 =
+	     (fpu_div64_fState_S3$D_OUT[120:110] == 11'd2047) ?
+	       _theResult___fst_exp__h42287 :
+	       fpu_div64_fState_S3$D_OUT[120:110] ;
+  assign _theResult___fst_exp__h42333 =
+	     sfdin__h34118[57] ?
+	       _theResult___fst_exp__h42356 :
+	       _theResult___fst_exp__h42420 ;
+  assign _theResult___fst_exp__h42336 =
+	     (sfdin__h34118[57] &&
+	      IF_IF_fpu_div64_fState_S3_first__86_BITS_120_T_ETC___d643 ==
+	      12'd1023) ?
+	       11'd2046 :
+	       _theResult___fst_exp__h42333 ;
+  assign _theResult___fst_exp__h42356 =
+	     (_theResult___fst_exp__h42290 == 11'd0) ?
+	       11'd2 :
+	       _theResult___fst_exp__h42290 + 11'd1 ;
+  assign _theResult___fst_exp__h42372 =
+	     (_theResult___fst_exp__h42290 == 11'd0) ?
+	       11'd1 :
+	       _theResult___fst_exp__h42290 ;
+  assign _theResult___fst_exp__h42411 =
+	     _theResult___fst_exp__h42290 -
+	     { 5'd0,
+	       IF_IF_fpu_div64_fState_S3_first__86_BITS_120_T_ETC___d880 } ;
+  assign _theResult___fst_exp__h42417 =
+	     (!sfdin__h34118[57] && !sfdin__h34118[56] &&
+	      !sfdin__h34118[55] &&
+	      !sfdin__h34118[54] &&
+	      !sfdin__h34118[53] &&
+	      !sfdin__h34118[52] &&
+	      !sfdin__h34118[51] &&
+	      !sfdin__h34118[50] &&
+	      !sfdin__h34118[49] &&
+	      !sfdin__h34118[48] &&
+	      !sfdin__h34118[47] &&
+	      !sfdin__h34118[46] &&
+	      !sfdin__h34118[45] &&
+	      !sfdin__h34118[44] &&
+	      !sfdin__h34118[43] &&
+	      !sfdin__h34118[42] &&
+	      !sfdin__h34118[41] &&
+	      !sfdin__h34118[40] &&
+	      !sfdin__h34118[39] &&
+	      !sfdin__h34118[38] &&
+	      !sfdin__h34118[37] &&
+	      !sfdin__h34118[36] &&
+	      !sfdin__h34118[35] &&
+	      !sfdin__h34118[34] &&
+	      !sfdin__h34118[33] &&
+	      !sfdin__h34118[32] &&
+	      !sfdin__h34118[31] &&
+	      !sfdin__h34118[30] &&
+	      !sfdin__h34118[29] &&
+	      !sfdin__h34118[28] &&
+	      !sfdin__h34118[27] &&
+	      !sfdin__h34118[26] &&
+	      !sfdin__h34118[25] &&
+	      !sfdin__h34118[24] &&
+	      !sfdin__h34118[23] &&
+	      !sfdin__h34118[22] &&
+	      !sfdin__h34118[21] &&
+	      !sfdin__h34118[20] &&
+	      !sfdin__h34118[19] &&
+	      !sfdin__h34118[18] &&
+	      !sfdin__h34118[17] &&
+	      !sfdin__h34118[16] &&
+	      !sfdin__h34118[15] &&
+	      !sfdin__h34118[14] &&
+	      !sfdin__h34118[13] &&
+	      !sfdin__h34118[12] &&
+	      !sfdin__h34118[11] &&
+	      !sfdin__h34118[10] &&
+	      !sfdin__h34118[9] &&
+	      !sfdin__h34118[8] &&
+	      !sfdin__h34118[7] &&
+	      !sfdin__h34118[6] &&
+	      !sfdin__h34118[5] &&
+	      !sfdin__h34118[4] &&
+	      !sfdin__h34118[3] &&
+	      !sfdin__h34118[2] &&
+	      !sfdin__h34118[1] &&
+	      !sfdin__h34118[0] ||
+	      !_0_CONCAT_IF_IF_fpu_div64_fState_S3_first__86_B_ETC___d883) ?
+	       11'd0 :
+	       _theResult___fst_exp__h42411 ;
+  assign _theResult___fst_exp__h42420 =
+	     (!sfdin__h34118[57] && sfdin__h34118[56]) ?
+	       _theResult___fst_exp__h42372 :
+	       _theResult___fst_exp__h42417 ;
+  assign _theResult___fst_exp__h43556 =
+	     (fpu_div64_fState_S4$D_OUT[64:54] == 11'd2047) ?
+	       fpu_div64_fState_S4$D_OUT[64:54] :
+	       _theResult___fst_exp__h43553 ;
+  assign _theResult___fst_exp__h94750 =
+	     fpu_sqr64_fState_S3$D_OUT[58] ?
+	       _theResult___fst_exp__h94773 :
+	       _theResult___fst_exp__h94837 ;
+  assign _theResult___fst_exp__h94753 =
+	     (fpu_sqr64_fState_S3$D_OUT[58] &&
+	      IF_fpu_sqr64_fState_S3_first__375_BITS_121_TO__ETC___d1389 ==
+	      12'd1023) ?
+	       11'd2046 :
+	       _theResult___fst_exp__h94750 ;
+  assign _theResult___fst_exp__h94773 =
+	     (fpu_sqr64_fState_S3$D_OUT[121:111] == 11'd0) ?
+	       11'd2 :
+	       fpu_sqr64_fState_S3$D_OUT[121:111] + 11'd1 ;
+  assign _theResult___fst_exp__h94789 =
+	     (fpu_sqr64_fState_S3$D_OUT[121:111] == 11'd0) ?
+	       11'd1 :
+	       fpu_sqr64_fState_S3$D_OUT[121:111] ;
+  assign _theResult___fst_exp__h94828 =
+	     fpu_sqr64_fState_S3$D_OUT[121:111] -
+	     { 5'd0,
+	       IF_fpu_sqr64_fState_S3_first__375_BIT_58_384_T_ETC___d1630 } ;
+  assign _theResult___fst_exp__h94834 =
+	     (!fpu_sqr64_fState_S3$D_OUT[58] &&
+	      !fpu_sqr64_fState_S3$D_OUT[57] &&
+	      !fpu_sqr64_fState_S3$D_OUT[56] &&
+	      !fpu_sqr64_fState_S3$D_OUT[55] &&
+	      !fpu_sqr64_fState_S3$D_OUT[54] &&
+	      !fpu_sqr64_fState_S3$D_OUT[53] &&
+	      !fpu_sqr64_fState_S3$D_OUT[52] &&
+	      !fpu_sqr64_fState_S3$D_OUT[51] &&
+	      !fpu_sqr64_fState_S3$D_OUT[50] &&
+	      !fpu_sqr64_fState_S3$D_OUT[49] &&
+	      !fpu_sqr64_fState_S3$D_OUT[48] &&
+	      !fpu_sqr64_fState_S3$D_OUT[47] &&
+	      !fpu_sqr64_fState_S3$D_OUT[46] &&
+	      !fpu_sqr64_fState_S3$D_OUT[45] &&
+	      !fpu_sqr64_fState_S3$D_OUT[44] &&
+	      !fpu_sqr64_fState_S3$D_OUT[43] &&
+	      !fpu_sqr64_fState_S3$D_OUT[42] &&
+	      !fpu_sqr64_fState_S3$D_OUT[41] &&
+	      !fpu_sqr64_fState_S3$D_OUT[40] &&
+	      !fpu_sqr64_fState_S3$D_OUT[39] &&
+	      !fpu_sqr64_fState_S3$D_OUT[38] &&
+	      !fpu_sqr64_fState_S3$D_OUT[37] &&
+	      !fpu_sqr64_fState_S3$D_OUT[36] &&
+	      !fpu_sqr64_fState_S3$D_OUT[35] &&
+	      !fpu_sqr64_fState_S3$D_OUT[34] &&
+	      !fpu_sqr64_fState_S3$D_OUT[33] &&
+	      !fpu_sqr64_fState_S3$D_OUT[32] &&
+	      !fpu_sqr64_fState_S3$D_OUT[31] &&
+	      !fpu_sqr64_fState_S3$D_OUT[30] &&
+	      !fpu_sqr64_fState_S3$D_OUT[29] &&
+	      !fpu_sqr64_fState_S3$D_OUT[28] &&
+	      !fpu_sqr64_fState_S3$D_OUT[27] &&
+	      !fpu_sqr64_fState_S3$D_OUT[26] &&
+	      !fpu_sqr64_fState_S3$D_OUT[25] &&
+	      !fpu_sqr64_fState_S3$D_OUT[24] &&
+	      !fpu_sqr64_fState_S3$D_OUT[23] &&
+	      !fpu_sqr64_fState_S3$D_OUT[22] &&
+	      !fpu_sqr64_fState_S3$D_OUT[21] &&
+	      !fpu_sqr64_fState_S3$D_OUT[20] &&
+	      !fpu_sqr64_fState_S3$D_OUT[19] &&
+	      !fpu_sqr64_fState_S3$D_OUT[18] &&
+	      !fpu_sqr64_fState_S3$D_OUT[17] &&
+	      !fpu_sqr64_fState_S3$D_OUT[16] &&
+	      !fpu_sqr64_fState_S3$D_OUT[15] &&
+	      !fpu_sqr64_fState_S3$D_OUT[14] &&
+	      !fpu_sqr64_fState_S3$D_OUT[13] &&
+	      !fpu_sqr64_fState_S3$D_OUT[12] &&
+	      !fpu_sqr64_fState_S3$D_OUT[11] &&
+	      !fpu_sqr64_fState_S3$D_OUT[10] &&
+	      !fpu_sqr64_fState_S3$D_OUT[9] &&
+	      !fpu_sqr64_fState_S3$D_OUT[8] &&
+	      !fpu_sqr64_fState_S3$D_OUT[7] &&
+	      !fpu_sqr64_fState_S3$D_OUT[6] &&
+	      !fpu_sqr64_fState_S3$D_OUT[5] &&
+	      !fpu_sqr64_fState_S3$D_OUT[4] &&
+	      !fpu_sqr64_fState_S3$D_OUT[3] &&
+	      !fpu_sqr64_fState_S3$D_OUT[2] &&
+	      !fpu_sqr64_fState_S3$D_OUT[1] &&
+	      !fpu_sqr64_fState_S3$D_OUT[0] ||
+	      !_0_CONCAT_IF_fpu_sqr64_fState_S3_first__375_BIT_ETC___d1633) ?
+	       11'd0 :
+	       _theResult___fst_exp__h94828 ;
+  assign _theResult___fst_exp__h94837 =
+	     (!fpu_sqr64_fState_S3$D_OUT[58] &&
+	      fpu_sqr64_fState_S3$D_OUT[57]) ?
+	       _theResult___fst_exp__h94789 :
+	       _theResult___fst_exp__h94834 ;
+  assign _theResult___fst_exp__h95990 =
+	     (fpu_sqr64_fState_S4$D_OUT[64:54] == 11'd2047) ?
+	       fpu_sqr64_fState_S4$D_OUT[64:54] :
+	       _theResult___fst_exp__h95987 ;
+  assign _theResult___fst_sfd__h164063 =
+	     (_theResult___fst_exp__h163336 == 11'd2047) ?
+	       _theResult___snd__h163287[56:5] :
+	       _theResult___fst_sfd__h164060 ;
+  assign _theResult___fst_sfd__h173653 =
+	     (_theResult___fst_exp__h172852 == 11'd2047) ?
+	       sfdin__h172846[56:5] :
+	       _theResult___fst_sfd__h173650 ;
+  assign _theResult___fst_sfd__h182405 =
+	     (_theResult___fst_exp__h181653 == 11'd2047) ?
+	       _theResult___snd__h181599[56:5] :
+	       _theResult___fst_sfd__h182402 ;
+  assign _theResult___fst_sfd__h182414 =
 	     (iFifo$D_OUT[167:160] == 8'd0) ?
-	       (_3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_15_ETC___d1380 ?
-		  _theResult___snd_fst_sfd__h67854 :
-		  _theResult___fst_sfd__h52080) :
-	       (SEXT_iFifo_first__288_BITS_167_TO_160_321_MINU_ETC___d1515 ?
-		  _theResult___snd_fst_sfd__h86196 :
-		  _theResult___fst_sfd__h52080) ;
-  assign _theResult___fst_sfd__h86208 =
+	       (_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_15_ETC___d3189 ?
+		  _theResult___snd_fst_sfd__h164066 :
+		  _theResult___fst_sfd__h148292) :
+	       (SEXT_iFifo_first__087_BITS_167_TO_160_130_MINU_ETC___d3324 ?
+		  _theResult___snd_fst_sfd__h182408 :
+		  _theResult___fst_sfd__h148292) ;
+  assign _theResult___fst_sfd__h182420 =
 	     ((iFifo$D_OUT[167:160] == 8'd255 ||
 	       iFifo$D_OUT[167:160] == 8'd0) &&
 	      iFifo$D_OUT[159:137] == 23'd0) ?
 	       52'd0 :
-	       _theResult___fst_sfd__h86202 ;
-  assign _theResult___sfd__h106408 =
-	     sfd__h105780[53] ?
-	       ((_theResult___fst_exp__h105762 == 11'd2046) ?
-		  52'd0 :
-		  sfd__h105780[52:1]) :
-	       sfd__h105780[51:0] ;
-  assign _theResult___sfd__h115998 =
-	     sfd__h115370[53] ?
-	       ((_theResult___fst_exp__h115278 == 11'd2046) ?
-		  52'd0 :
-		  sfd__h115370[52:1]) :
-	       sfd__h115370[51:0] ;
-  assign _theResult___sfd__h124750 =
-	     sfd__h124098[53] ?
-	       ((_theResult___fst_exp__h124079 == 11'd2046) ?
-		  52'd0 :
-		  sfd__h124098[52:1]) :
-	       sfd__h124098[51:0] ;
-  assign _theResult___sfd__h145315 =
-	     sfd__h144687[53] ?
-	       ((_theResult___fst_exp__h144669 == 11'd2046) ?
-		  52'd0 :
-		  sfd__h144687[52:1]) :
-	       sfd__h144687[51:0] ;
-  assign _theResult___sfd__h154905 =
-	     sfd__h154277[53] ?
-	       ((_theResult___fst_exp__h154185 == 11'd2046) ?
-		  52'd0 :
-		  sfd__h154277[52:1]) :
-	       sfd__h154277[51:0] ;
-  assign _theResult___sfd__h163657 =
-	     sfd__h163005[53] ?
-	       ((_theResult___fst_exp__h162986 == 11'd2046) ?
-		  52'd0 :
-		  sfd__h163005[52:1]) :
-	       sfd__h163005[51:0] ;
-  assign _theResult___sfd__h181729 =
-	     sfd__h181304[24] ?
-	       ((_theResult___fst_exp__h181212 == 8'd254) ?
-		  23'd0 :
-		  sfd__h181304[23:1]) :
-	       sfd__h181304[22:0] ;
-  assign _theResult___sfd__h190311 =
-	     sfd__h189886[24] ?
-	       ((_theResult___fst_exp__h189868 == 8'd254) ?
-		  23'd0 :
-		  sfd__h189886[23:1]) :
-	       sfd__h189886[22:0] ;
-  assign _theResult___sfd__h199495 =
-	     sfd__h199070[24] ?
-	       ((_theResult___fst_exp__h198978 == 8'd254) ?
-		  23'd0 :
-		  sfd__h199070[23:1]) :
-	       sfd__h199070[22:0] ;
-  assign _theResult___sfd__h208131 =
-	     sfd__h207682[24] ?
-	       ((_theResult___fst_exp__h207663 == 8'd254) ?
-		  23'd0 :
-		  sfd__h207682[23:1]) :
-	       sfd__h207682[22:0] ;
-  assign _theResult___sfd__h46362 =
-	     sfd__h45857[53] ?
+	       _theResult___fst_sfd__h182414 ;
+  assign _theResult___fst_sfd__h202701 =
+	     (_theResult___fst_exp__h201974 == 11'd2047) ?
+	       _theResult___snd__h201925[56:5] :
+	       _theResult___fst_sfd__h202698 ;
+  assign _theResult___fst_sfd__h212291 =
+	     (_theResult___fst_exp__h211490 == 11'd2047) ?
+	       sfdin__h211484[56:5] :
+	       _theResult___fst_sfd__h212288 ;
+  assign _theResult___fst_sfd__h221043 =
+	     (_theResult___fst_exp__h220291 == 11'd2047) ?
+	       _theResult___snd__h220237[56:5] :
+	       _theResult___fst_sfd__h221040 ;
+  assign _theResult___fst_sfd__h221052 =
+	     (iFifo$D_OUT[102:95] == 8'd0) ?
+	       (_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_94_ETC___d4684 ?
+		  _theResult___snd_fst_sfd__h202704 :
+		  _theResult___fst_sfd__h186932) :
+	       (SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC___d4807 ?
+		  _theResult___snd_fst_sfd__h221046 :
+		  _theResult___fst_sfd__h186932) ;
+  assign _theResult___fst_sfd__h221058 =
+	     ((iFifo$D_OUT[102:95] == 8'd255 ||
+	       iFifo$D_OUT[102:95] == 8'd0) &&
+	      iFifo$D_OUT[94:72] == 23'd0) ?
+	       52'd0 :
+	       _theResult___fst_sfd__h221052 ;
+  assign _theResult___fst_sfd__h241640 =
+	     (_theResult___fst_exp__h240913 == 11'd2047) ?
+	       _theResult___snd__h240864[56:5] :
+	       _theResult___fst_sfd__h241637 ;
+  assign _theResult___fst_sfd__h251230 =
+	     (_theResult___fst_exp__h250429 == 11'd2047) ?
+	       sfdin__h250423[56:5] :
+	       _theResult___fst_sfd__h251227 ;
+  assign _theResult___fst_sfd__h259982 =
+	     (_theResult___fst_exp__h259230 == 11'd2047) ?
+	       _theResult___snd__h259176[56:5] :
+	       _theResult___fst_sfd__h259979 ;
+  assign _theResult___fst_sfd__h259991 =
+	     (iFifo$D_OUT[37:30] == 8'd0) ?
+	       (_3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_29_ETC___d3909 ?
+		  _theResult___snd_fst_sfd__h241643 :
+		  _theResult___fst_sfd__h225871) :
+	       (SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC___d4032 ?
+		  _theResult___snd_fst_sfd__h259985 :
+		  _theResult___fst_sfd__h225871) ;
+  assign _theResult___fst_sfd__h259997 =
+	     ((iFifo$D_OUT[37:30] == 8'd255 || iFifo$D_OUT[37:30] == 8'd0) &&
+	      iFifo$D_OUT[29:7] == 23'd0) ?
+	       52'd0 :
+	       _theResult___fst_sfd__h259991 ;
+  assign _theResult___fst_sfd__h278284 =
+	     (_theResult___fst_exp__h277686 == 8'd255) ?
+	       sfdin__h277680[56:34] :
+	       _theResult___fst_sfd__h278281 ;
+  assign _theResult___fst_sfd__h286866 =
+	     (_theResult___fst_exp__h286342 == 8'd255) ?
+	       _theResult___snd__h286293[56:34] :
+	       _theResult___fst_sfd__h286863 ;
+  assign _theResult___fst_sfd__h296050 =
+	     (_theResult___fst_exp__h295452 == 8'd255) ?
+	       sfdin__h295446[56:34] :
+	       _theResult___fst_sfd__h296047 ;
+  assign _theResult___fst_sfd__h304686 =
+	     (_theResult___fst_exp__h304137 == 8'd255) ?
+	       _theResult___snd__h304083[56:34] :
+	       _theResult___fst_sfd__h304683 ;
+  assign _theResult___fst_sfd__h304695 =
+	     (resWire$wget[67:57] == 11'd0) ?
+	       (_3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d5532 ?
+		  _theResult___snd_fst_sfd__h286869 :
+		  _theResult___fst_sfd__h269560) :
+	       (SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC___d6032 ?
+		  _theResult___snd_fst_sfd__h304689 :
+		  _theResult___fst_sfd__h269560) ;
+  assign _theResult___fst_sfd__h304701 =
+	     ((resWire$wget[67:57] == 11'd2047 ||
+	       resWire$wget[67:57] == 11'd0) &&
+	      resWire$wget[56:5] == 52'd0) ?
+	       23'd0 :
+	       _theResult___fst_sfd__h304695 ;
+  assign _theResult___fst_sfd__h43557 =
+	     (fpu_div64_fState_S4$D_OUT[64:54] == 11'd2047) ?
+	       fpu_div64_fState_S4$D_OUT[53:2] :
+	       _theResult___fst_sfd__h43554 ;
+  assign _theResult___fst_sfd__h95991 =
+	     (fpu_sqr64_fState_S4$D_OUT[64:54] == 11'd2047) ?
+	       fpu_sqr64_fState_S4$D_OUT[53:2] :
+	       _theResult___fst_sfd__h95988 ;
+  assign _theResult___fst_sfd__h96608 =
+	     fpu_madd_fOperand_S0$D_OUT[195] ?
+	       fpu_madd_fOperand_S0$D_OUT[182:131] :
+	       52'd0 ;
+  assign _theResult___sfd__h142542 =
+	     sfd__h142040[53] ?
 	       ((fpu_madd_fState_S8$D_OUT[65:55] == 11'd2046) ?
 		  52'd0 :
-		  sfd__h45857[52:1]) :
-	       sfd__h45857[51:0] ;
-  assign _theResult___sfd__h67770 =
-	     sfd__h67142[53] ?
-	       ((_theResult___fst_exp__h67124 == 11'd2046) ?
+		  sfd__h142040[52:1]) :
+	       sfd__h142040[51:0] ;
+  assign _theResult___sfd__h163982 =
+	     sfd__h163354[53] ?
+	       ((_theResult___fst_exp__h163336 == 11'd2046) ?
 		  52'd0 :
-		  sfd__h67142[52:1]) :
-	       sfd__h67142[51:0] ;
-  assign _theResult___sfd__h77360 =
-	     sfd__h76732[53] ?
-	       ((_theResult___fst_exp__h76640 == 11'd2046) ?
+		  sfd__h163354[52:1]) :
+	       sfd__h163354[51:0] ;
+  assign _theResult___sfd__h173572 =
+	     sfd__h172944[53] ?
+	       ((_theResult___fst_exp__h172852 == 11'd2046) ?
 		  52'd0 :
-		  sfd__h76732[52:1]) :
-	       sfd__h76732[51:0] ;
-  assign _theResult___sfd__h86112 =
-	     sfd__h85460[53] ?
-	       ((_theResult___fst_exp__h85441 == 11'd2046) ?
+		  sfd__h172944[52:1]) :
+	       sfd__h172944[51:0] ;
+  assign _theResult___sfd__h182324 =
+	     sfd__h181672[53] ?
+	       ((_theResult___fst_exp__h181653 == 11'd2046) ?
 		  52'd0 :
-		  sfd__h85460[52:1]) :
-	       sfd__h85460[51:0] ;
-  assign _theResult___snd__h105713 =
-	     (iFifo$D_OUT[102:95] == 8'd0) ?
-	       _theResult___snd__h105722 :
-	       _theResult___snd__h105715 ;
-  assign _theResult___snd__h105715 = { iFifo$D_OUT[94:72], 34'd0 } ;
-  assign _theResult___snd__h105722 =
-	     (iFifo$D_OUT[102:95] == 8'd0 && !iFifo$D_OUT[94] &&
-	      NOT_iFifo_first__288_BIT_93_828_879_AND_NOT_iF_ETC___d2921) ?
-	       sfd__h86964 :
-	       _theResult___snd__h105728 ;
-  assign _theResult___snd__h105728 =
-	     { IF_0_CONCAT_IF_iFifo_first__288_BITS_102_TO_95_ETC__q73[54:0],
+		  sfd__h181672[52:1]) :
+	       sfd__h181672[51:0] ;
+  assign _theResult___sfd__h202620 =
+	     sfd__h201992[53] ?
+	       ((_theResult___fst_exp__h201974 == 11'd2046) ?
+		  52'd0 :
+		  sfd__h201992[52:1]) :
+	       sfd__h201992[51:0] ;
+  assign _theResult___sfd__h212210 =
+	     sfd__h211582[53] ?
+	       ((_theResult___fst_exp__h211490 == 11'd2046) ?
+		  52'd0 :
+		  sfd__h211582[52:1]) :
+	       sfd__h211582[51:0] ;
+  assign _theResult___sfd__h220962 =
+	     sfd__h220310[53] ?
+	       ((_theResult___fst_exp__h220291 == 11'd2046) ?
+		  52'd0 :
+		  sfd__h220310[52:1]) :
+	       sfd__h220310[51:0] ;
+  assign _theResult___sfd__h241559 =
+	     sfd__h240931[53] ?
+	       ((_theResult___fst_exp__h240913 == 11'd2046) ?
+		  52'd0 :
+		  sfd__h240931[52:1]) :
+	       sfd__h240931[51:0] ;
+  assign _theResult___sfd__h251149 =
+	     sfd__h250521[53] ?
+	       ((_theResult___fst_exp__h250429 == 11'd2046) ?
+		  52'd0 :
+		  sfd__h250521[52:1]) :
+	       sfd__h250521[51:0] ;
+  assign _theResult___sfd__h259901 =
+	     sfd__h259249[53] ?
+	       ((_theResult___fst_exp__h259230 == 11'd2046) ?
+		  52'd0 :
+		  sfd__h259249[52:1]) :
+	       sfd__h259249[51:0] ;
+  assign _theResult___sfd__h278203 =
+	     sfd__h277778[24] ?
+	       ((_theResult___fst_exp__h277686 == 8'd254) ?
+		  23'd0 :
+		  sfd__h277778[23:1]) :
+	       sfd__h277778[22:0] ;
+  assign _theResult___sfd__h286785 =
+	     sfd__h286360[24] ?
+	       ((_theResult___fst_exp__h286342 == 8'd254) ?
+		  23'd0 :
+		  sfd__h286360[23:1]) :
+	       sfd__h286360[22:0] ;
+  assign _theResult___sfd__h295969 =
+	     sfd__h295544[24] ?
+	       ((_theResult___fst_exp__h295452 == 8'd254) ?
+		  23'd0 :
+		  sfd__h295544[23:1]) :
+	       sfd__h295544[22:0] ;
+  assign _theResult___sfd__h304605 =
+	     sfd__h304156[24] ?
+	       ((_theResult___fst_exp__h304137 == 8'd254) ?
+		  23'd0 :
+		  sfd__h304156[23:1]) :
+	       sfd__h304156[22:0] ;
+  assign _theResult___sfd__h43476 =
+	     sfd__h42982[53] ?
+	       ((fpu_div64_fState_S4$D_OUT[64:54] == 11'd2046) ?
+		  52'd0 :
+		  sfd__h42982[52:1]) :
+	       sfd__h42982[51:0] ;
+  assign _theResult___sfd__h95910 =
+	     sfd__h95416[53] ?
+	       ((fpu_sqr64_fState_S4$D_OUT[64:54] == 11'd2046) ?
+		  52'd0 :
+		  sfd__h95416[52:1]) :
+	       sfd__h95416[51:0] ;
+  assign _theResult___snd__h130966 = { sfdBC__h115662[104:0], 1'd0 } ;
+  assign _theResult___snd__h130980 =
+	     (!sfdBC__h115662[105] && sfdBC__h115662[104]) ?
+	       _theResult___snd__h130982 :
+	       _theResult___snd__h130994 ;
+  assign _theResult___snd__h130982 = { sfdBC__h115662[103:0], 2'd0 } ;
+  assign _theResult___snd__h130994 =
+	     (!sfdBC__h115662[105] && !sfdBC__h115662[104] &&
+	      !sfdBC__h115662[103] &&
+	      !sfdBC__h115662[102] &&
+	      !sfdBC__h115662[101] &&
+	      !sfdBC__h115662[100] &&
+	      !sfdBC__h115662[99] &&
+	      !sfdBC__h115662[98] &&
+	      !sfdBC__h115662[97] &&
+	      !sfdBC__h115662[96] &&
+	      !sfdBC__h115662[95] &&
+	      !sfdBC__h115662[94] &&
+	      !sfdBC__h115662[93] &&
+	      !sfdBC__h115662[92] &&
+	      !sfdBC__h115662[91] &&
+	      !sfdBC__h115662[90] &&
+	      !sfdBC__h115662[89] &&
+	      !sfdBC__h115662[88] &&
+	      !sfdBC__h115662[87] &&
+	      !sfdBC__h115662[86] &&
+	      !sfdBC__h115662[85] &&
+	      !sfdBC__h115662[84] &&
+	      !sfdBC__h115662[83] &&
+	      !sfdBC__h115662[82] &&
+	      !sfdBC__h115662[81] &&
+	      !sfdBC__h115662[80] &&
+	      !sfdBC__h115662[79] &&
+	      !sfdBC__h115662[78] &&
+	      !sfdBC__h115662[77] &&
+	      !sfdBC__h115662[76] &&
+	      !sfdBC__h115662[75] &&
+	      !sfdBC__h115662[74] &&
+	      !sfdBC__h115662[73] &&
+	      !sfdBC__h115662[72] &&
+	      !sfdBC__h115662[71] &&
+	      !sfdBC__h115662[70] &&
+	      !sfdBC__h115662[69] &&
+	      !sfdBC__h115662[68] &&
+	      !sfdBC__h115662[67] &&
+	      !sfdBC__h115662[66] &&
+	      !sfdBC__h115662[65] &&
+	      !sfdBC__h115662[64] &&
+	      !sfdBC__h115662[63] &&
+	      !sfdBC__h115662[62] &&
+	      !sfdBC__h115662[61] &&
+	      !sfdBC__h115662[60] &&
+	      !sfdBC__h115662[59] &&
+	      !sfdBC__h115662[58] &&
+	      !sfdBC__h115662[57] &&
+	      !sfdBC__h115662[56] &&
+	      !sfdBC__h115662[55] &&
+	      !sfdBC__h115662[54] &&
+	      !sfdBC__h115662[53] &&
+	      !sfdBC__h115662[52] &&
+	      !sfdBC__h115662[51] &&
+	      !sfdBC__h115662[50] &&
+	      !sfdBC__h115662[49] &&
+	      !sfdBC__h115662[48] &&
+	      !sfdBC__h115662[47] &&
+	      !sfdBC__h115662[46] &&
+	      !sfdBC__h115662[45] &&
+	      !sfdBC__h115662[44] &&
+	      !sfdBC__h115662[43] &&
+	      !sfdBC__h115662[42] &&
+	      !sfdBC__h115662[41] &&
+	      !sfdBC__h115662[40] &&
+	      !sfdBC__h115662[39] &&
+	      !sfdBC__h115662[38] &&
+	      !sfdBC__h115662[37] &&
+	      !sfdBC__h115662[36] &&
+	      !sfdBC__h115662[35] &&
+	      !sfdBC__h115662[34] &&
+	      !sfdBC__h115662[33] &&
+	      !sfdBC__h115662[32] &&
+	      !sfdBC__h115662[31] &&
+	      !sfdBC__h115662[30] &&
+	      !sfdBC__h115662[29] &&
+	      !sfdBC__h115662[28] &&
+	      !sfdBC__h115662[27] &&
+	      !sfdBC__h115662[26] &&
+	      !sfdBC__h115662[25] &&
+	      !sfdBC__h115662[24] &&
+	      !sfdBC__h115662[23] &&
+	      !sfdBC__h115662[22] &&
+	      !sfdBC__h115662[21] &&
+	      !sfdBC__h115662[20] &&
+	      !sfdBC__h115662[19] &&
+	      !sfdBC__h115662[18] &&
+	      !sfdBC__h115662[17] &&
+	      !sfdBC__h115662[16] &&
+	      !sfdBC__h115662[15] &&
+	      !sfdBC__h115662[14] &&
+	      !sfdBC__h115662[13] &&
+	      !sfdBC__h115662[12] &&
+	      !sfdBC__h115662[11] &&
+	      !sfdBC__h115662[10] &&
+	      !sfdBC__h115662[9] &&
+	      !sfdBC__h115662[8] &&
+	      !sfdBC__h115662[7] &&
+	      !sfdBC__h115662[6] &&
+	      !sfdBC__h115662[5] &&
+	      !sfdBC__h115662[4] &&
+	      !sfdBC__h115662[3] &&
+	      !sfdBC__h115662[2] &&
+	      !sfdBC__h115662[1] &&
+	      !sfdBC__h115662[0]) ?
+	       sfdBC__h115662 :
+	       _theResult___snd__h131000 ;
+  assign _theResult___snd__h131000 =
+	     { IF_0_CONCAT_IF_IF_7170_MINUS_fpu_madd_fState_S_ETC__q24[103:0],
 	       2'd0 } ;
-  assign _theResult___snd__h105751 =
-	     sfd__h86964 <<
-	     IF_iFifo_first__288_BITS_102_TO_95_816_EQ_0_82_ETC___d2948 ;
-  assign _theResult___snd__h115289 = { _theResult____h107040[55:0], 1'd0 } ;
-  assign _theResult___snd__h115300 =
-	     (!_theResult____h107040[56] && _theResult____h107040[55]) ?
-	       _theResult___snd__h115302 :
-	       _theResult___snd__h115312 ;
-  assign _theResult___snd__h115302 = { _theResult____h107040[54:0], 2'd0 } ;
-  assign _theResult___snd__h115312 =
-	     (!_theResult____h107040[56] && !_theResult____h107040[55] &&
-	      !_theResult____h107040[54] &&
-	      !_theResult____h107040[53] &&
-	      !_theResult____h107040[52] &&
-	      !_theResult____h107040[51] &&
-	      !_theResult____h107040[50] &&
-	      !_theResult____h107040[49] &&
-	      !_theResult____h107040[48] &&
-	      !_theResult____h107040[47] &&
-	      !_theResult____h107040[46] &&
-	      !_theResult____h107040[45] &&
-	      !_theResult____h107040[44] &&
-	      !_theResult____h107040[43] &&
-	      !_theResult____h107040[42] &&
-	      !_theResult____h107040[41] &&
-	      !_theResult____h107040[40] &&
-	      !_theResult____h107040[39] &&
-	      !_theResult____h107040[38] &&
-	      !_theResult____h107040[37] &&
-	      !_theResult____h107040[36] &&
-	      !_theResult____h107040[35] &&
-	      !_theResult____h107040[34] &&
-	      !_theResult____h107040[33] &&
-	      !_theResult____h107040[32] &&
-	      !_theResult____h107040[31] &&
-	      !_theResult____h107040[30] &&
-	      !_theResult____h107040[29] &&
-	      !_theResult____h107040[28] &&
-	      !_theResult____h107040[27] &&
-	      !_theResult____h107040[26] &&
-	      !_theResult____h107040[25] &&
-	      !_theResult____h107040[24] &&
-	      !_theResult____h107040[23] &&
-	      !_theResult____h107040[22] &&
-	      !_theResult____h107040[21] &&
-	      !_theResult____h107040[20] &&
-	      !_theResult____h107040[19] &&
-	      !_theResult____h107040[18] &&
-	      !_theResult____h107040[17] &&
-	      !_theResult____h107040[16] &&
-	      !_theResult____h107040[15] &&
-	      !_theResult____h107040[14] &&
-	      !_theResult____h107040[13] &&
-	      !_theResult____h107040[12] &&
-	      !_theResult____h107040[11] &&
-	      !_theResult____h107040[10] &&
-	      !_theResult____h107040[9] &&
-	      !_theResult____h107040[8] &&
-	      !_theResult____h107040[7] &&
-	      !_theResult____h107040[6] &&
-	      !_theResult____h107040[5] &&
-	      !_theResult____h107040[4] &&
-	      !_theResult____h107040[3] &&
-	      !_theResult____h107040[2] &&
-	      !_theResult____h107040[1] &&
-	      !_theResult____h107040[0]) ?
-	       _theResult____h107040 :
-	       _theResult___snd__h115318 ;
-  assign _theResult___snd__h115318 =
-	     { IF_0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__ETC__q77[54:0],
+  assign _theResult___snd__h131018 =
+	     sfdBC__h115662 <<
+	     IF_IF_7170_MINUS_fpu_madd_fState_S3_first__995_ETC___d2462 ;
+  assign _theResult___snd__h131023 =
+	     sfdBC__h115662 <<
+	     IF_IF_7170_MINUS_fpu_madd_fState_S3_first__995_ETC___d2460 ;
+  assign _theResult___snd__h141392 = { sfd__h133119[55:0], 1'd0 } ;
+  assign _theResult___snd__h141406 =
+	     (!sfd__h133119[56] && sfd__h133119[55]) ?
+	       _theResult___snd__h141408 :
+	       _theResult___snd__h141420 ;
+  assign _theResult___snd__h141408 = { sfd__h133119[54:0], 2'd0 } ;
+  assign _theResult___snd__h141420 =
+	     (!sfd__h133119[56] && !sfd__h133119[55] && !sfd__h133119[54] &&
+	      !sfd__h133119[53] &&
+	      !sfd__h133119[52] &&
+	      !sfd__h133119[51] &&
+	      !sfd__h133119[50] &&
+	      !sfd__h133119[49] &&
+	      !sfd__h133119[48] &&
+	      !sfd__h133119[47] &&
+	      !sfd__h133119[46] &&
+	      !sfd__h133119[45] &&
+	      !sfd__h133119[44] &&
+	      !sfd__h133119[43] &&
+	      !sfd__h133119[42] &&
+	      !sfd__h133119[41] &&
+	      !sfd__h133119[40] &&
+	      !sfd__h133119[39] &&
+	      !sfd__h133119[38] &&
+	      !sfd__h133119[37] &&
+	      !sfd__h133119[36] &&
+	      !sfd__h133119[35] &&
+	      !sfd__h133119[34] &&
+	      !sfd__h133119[33] &&
+	      !sfd__h133119[32] &&
+	      !sfd__h133119[31] &&
+	      !sfd__h133119[30] &&
+	      !sfd__h133119[29] &&
+	      !sfd__h133119[28] &&
+	      !sfd__h133119[27] &&
+	      !sfd__h133119[26] &&
+	      !sfd__h133119[25] &&
+	      !sfd__h133119[24] &&
+	      !sfd__h133119[23] &&
+	      !sfd__h133119[22] &&
+	      !sfd__h133119[21] &&
+	      !sfd__h133119[20] &&
+	      !sfd__h133119[19] &&
+	      !sfd__h133119[18] &&
+	      !sfd__h133119[17] &&
+	      !sfd__h133119[16] &&
+	      !sfd__h133119[15] &&
+	      !sfd__h133119[14] &&
+	      !sfd__h133119[13] &&
+	      !sfd__h133119[12] &&
+	      !sfd__h133119[11] &&
+	      !sfd__h133119[10] &&
+	      !sfd__h133119[9] &&
+	      !sfd__h133119[8] &&
+	      !sfd__h133119[7] &&
+	      !sfd__h133119[6] &&
+	      !sfd__h133119[5] &&
+	      !sfd__h133119[4] &&
+	      !sfd__h133119[3] &&
+	      !sfd__h133119[2] &&
+	      !sfd__h133119[1] &&
+	      !sfd__h133119[0]) ?
+	       sfd__h133119 :
+	       _theResult___snd__h141426 ;
+  assign _theResult___snd__h141426 =
+	     { IF_0_CONCAT_IF_IF_fpu_madd_fState_S7_first__65_ETC__q29[54:0],
 	       2'd0 } ;
-  assign _theResult___snd__h115341 =
-	     _theResult____h107040 <<
-	     IF_IF_3074_MINUS_SEXT_iFifo_first__288_BITS_10_ETC___d3246 ;
-  assign _theResult___snd__h124025 =
-	     (iFifo$D_OUT[102:95] == 8'd0) ?
-	       _theResult___snd__h124039 :
-	       _theResult___snd__h105715 ;
-  assign _theResult___snd__h124039 =
-	     (iFifo$D_OUT[102:95] == 8'd0 && !iFifo$D_OUT[94] &&
-	      NOT_iFifo_first__288_BIT_93_828_879_AND_NOT_iF_ETC___d2921) ?
-	       sfd__h86964 :
-	       _theResult___snd__h124045 ;
-  assign _theResult___snd__h124045 =
-	     { IF_0_CONCAT_IF_iFifo_first__288_BITS_102_TO_95_ETC__q80[54:0],
-	       2'd0 } ;
-  assign _theResult___snd__h124063 =
-	     sfd__h86964 <<
-	     IF_SEXT_iFifo_first__288_BITS_102_TO_95_816_MI_ETC___d3297 ;
-  assign _theResult___snd__h144620 =
-	     (iFifo$D_OUT[37:30] == 8'd0) ?
-	       _theResult___snd__h144629 :
-	       _theResult___snd__h144622 ;
-  assign _theResult___snd__h144622 = { iFifo$D_OUT[29:7], 34'd0 } ;
-  assign _theResult___snd__h144629 =
-	     (iFifo$D_OUT[37:30] == 8'd0 && !iFifo$D_OUT[29] &&
-	      NOT_iFifo_first__288_BIT_28_053_104_AND_NOT_iF_ETC___d2146) ?
-	       sfd__h125871 :
-	       _theResult___snd__h144635 ;
-  assign _theResult___snd__h144635 =
-	     { IF_0_CONCAT_IF_iFifo_first__288_BITS_37_TO_30__ETC__q40[54:0],
-	       2'd0 } ;
-  assign _theResult___snd__h144658 =
-	     sfd__h125871 <<
-	     IF_iFifo_first__288_BITS_37_TO_30_041_EQ_0_047_ETC___d2173 ;
-  assign _theResult___snd__h154196 = { _theResult____h145947[55:0], 1'd0 } ;
-  assign _theResult___snd__h154207 =
-	     (!_theResult____h145947[56] && _theResult____h145947[55]) ?
-	       _theResult___snd__h154209 :
-	       _theResult___snd__h154219 ;
-  assign _theResult___snd__h154209 = { _theResult____h145947[54:0], 2'd0 } ;
-  assign _theResult___snd__h154219 =
-	     (!_theResult____h145947[56] && !_theResult____h145947[55] &&
-	      !_theResult____h145947[54] &&
-	      !_theResult____h145947[53] &&
-	      !_theResult____h145947[52] &&
-	      !_theResult____h145947[51] &&
-	      !_theResult____h145947[50] &&
-	      !_theResult____h145947[49] &&
-	      !_theResult____h145947[48] &&
-	      !_theResult____h145947[47] &&
-	      !_theResult____h145947[46] &&
-	      !_theResult____h145947[45] &&
-	      !_theResult____h145947[44] &&
-	      !_theResult____h145947[43] &&
-	      !_theResult____h145947[42] &&
-	      !_theResult____h145947[41] &&
-	      !_theResult____h145947[40] &&
-	      !_theResult____h145947[39] &&
-	      !_theResult____h145947[38] &&
-	      !_theResult____h145947[37] &&
-	      !_theResult____h145947[36] &&
-	      !_theResult____h145947[35] &&
-	      !_theResult____h145947[34] &&
-	      !_theResult____h145947[33] &&
-	      !_theResult____h145947[32] &&
-	      !_theResult____h145947[31] &&
-	      !_theResult____h145947[30] &&
-	      !_theResult____h145947[29] &&
-	      !_theResult____h145947[28] &&
-	      !_theResult____h145947[27] &&
-	      !_theResult____h145947[26] &&
-	      !_theResult____h145947[25] &&
-	      !_theResult____h145947[24] &&
-	      !_theResult____h145947[23] &&
-	      !_theResult____h145947[22] &&
-	      !_theResult____h145947[21] &&
-	      !_theResult____h145947[20] &&
-	      !_theResult____h145947[19] &&
-	      !_theResult____h145947[18] &&
-	      !_theResult____h145947[17] &&
-	      !_theResult____h145947[16] &&
-	      !_theResult____h145947[15] &&
-	      !_theResult____h145947[14] &&
-	      !_theResult____h145947[13] &&
-	      !_theResult____h145947[12] &&
-	      !_theResult____h145947[11] &&
-	      !_theResult____h145947[10] &&
-	      !_theResult____h145947[9] &&
-	      !_theResult____h145947[8] &&
-	      !_theResult____h145947[7] &&
-	      !_theResult____h145947[6] &&
-	      !_theResult____h145947[5] &&
-	      !_theResult____h145947[4] &&
-	      !_theResult____h145947[3] &&
-	      !_theResult____h145947[2] &&
-	      !_theResult____h145947[1] &&
-	      !_theResult____h145947[0]) ?
-	       _theResult____h145947 :
-	       _theResult___snd__h154225 ;
-  assign _theResult___snd__h154225 =
-	     { IF_0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__ETC__q44[54:0],
-	       2'd0 } ;
-  assign _theResult___snd__h154248 =
-	     _theResult____h145947 <<
-	     IF_IF_3074_MINUS_SEXT_iFifo_first__288_BITS_37_ETC___d2471 ;
-  assign _theResult___snd__h162932 =
-	     (iFifo$D_OUT[37:30] == 8'd0) ?
-	       _theResult___snd__h162946 :
-	       _theResult___snd__h144622 ;
-  assign _theResult___snd__h162946 =
-	     (iFifo$D_OUT[37:30] == 8'd0 && !iFifo$D_OUT[29] &&
-	      NOT_iFifo_first__288_BIT_28_053_104_AND_NOT_iF_ETC___d2146) ?
-	       sfd__h125871 :
-	       _theResult___snd__h162952 ;
-  assign _theResult___snd__h162952 =
-	     { IF_0_CONCAT_IF_iFifo_first__288_BITS_37_TO_30__ETC__q47[54:0],
-	       2'd0 } ;
-  assign _theResult___snd__h162970 =
-	     sfd__h125871 <<
-	     IF_SEXT_iFifo_first__288_BITS_37_TO_30_041_MIN_ETC___d2522 ;
-  assign _theResult___snd__h181223 = { _theResult____h173103[55:0], 1'd0 } ;
-  assign _theResult___snd__h181234 =
-	     (!_theResult____h173103[56] && _theResult____h173103[55]) ?
-	       _theResult___snd__h181236 :
-	       _theResult___snd__h181246 ;
-  assign _theResult___snd__h181236 = { _theResult____h173103[54:0], 2'd0 } ;
-  assign _theResult___snd__h181246 =
-	     (!_theResult____h173103[56] && !_theResult____h173103[55] &&
-	      !_theResult____h173103[54] &&
-	      !_theResult____h173103[53] &&
-	      !_theResult____h173103[52] &&
-	      !_theResult____h173103[51] &&
-	      !_theResult____h173103[50] &&
-	      !_theResult____h173103[49] &&
-	      !_theResult____h173103[48] &&
-	      !_theResult____h173103[47] &&
-	      !_theResult____h173103[46] &&
-	      !_theResult____h173103[45] &&
-	      !_theResult____h173103[44] &&
-	      !_theResult____h173103[43] &&
-	      !_theResult____h173103[42] &&
-	      !_theResult____h173103[41] &&
-	      !_theResult____h173103[40] &&
-	      !_theResult____h173103[39] &&
-	      !_theResult____h173103[38] &&
-	      !_theResult____h173103[37] &&
-	      !_theResult____h173103[36] &&
-	      !_theResult____h173103[35] &&
-	      !_theResult____h173103[34] &&
-	      !_theResult____h173103[33] &&
-	      !_theResult____h173103[32] &&
-	      !_theResult____h173103[31] &&
-	      !_theResult____h173103[30] &&
-	      !_theResult____h173103[29] &&
-	      !_theResult____h173103[28] &&
-	      !_theResult____h173103[27] &&
-	      !_theResult____h173103[26] &&
-	      !_theResult____h173103[25] &&
-	      !_theResult____h173103[24] &&
-	      !_theResult____h173103[23] &&
-	      !_theResult____h173103[22] &&
-	      !_theResult____h173103[21] &&
-	      !_theResult____h173103[20] &&
-	      !_theResult____h173103[19] &&
-	      !_theResult____h173103[18] &&
-	      !_theResult____h173103[17] &&
-	      !_theResult____h173103[16] &&
-	      !_theResult____h173103[15] &&
-	      !_theResult____h173103[14] &&
-	      !_theResult____h173103[13] &&
-	      !_theResult____h173103[12] &&
-	      !_theResult____h173103[11] &&
-	      !_theResult____h173103[10] &&
-	      !_theResult____h173103[9] &&
-	      !_theResult____h173103[8] &&
-	      !_theResult____h173103[7] &&
-	      !_theResult____h173103[6] &&
-	      !_theResult____h173103[5] &&
-	      !_theResult____h173103[4] &&
-	      !_theResult____h173103[3] &&
-	      !_theResult____h173103[2] &&
-	      !_theResult____h173103[1] &&
-	      !_theResult____h173103[0]) ?
-	       _theResult____h173103 :
-	       _theResult___snd__h181252 ;
-  assign _theResult___snd__h181252 =
-	     { IF_0_CONCAT_IF_IF_0b0_CONCAT_NOT_resWire_wget__ETC__q106[54:0],
-	       2'd0 } ;
-  assign _theResult___snd__h181275 =
-	     _theResult____h173103 <<
-	     IF_IF_0b0_CONCAT_NOT_resWire_wget__595_BITS_67_ETC___d3952 ;
-  assign _theResult___snd__h189819 =
-	     (fpu_madd_fResult_S9$D_OUT[67:57] == 11'd0) ?
-	       _theResult___snd__h189828 :
-	       _theResult___snd__h189821 ;
-  assign _theResult___snd__h189821 =
-	     { fpu_madd_fResult_S9$D_OUT[56:5], 5'd0 } ;
-  assign _theResult___snd__h189828 =
-	     (fpu_madd_fResult_S9$D_OUT[67:57] == 11'd0 &&
-	      NOT_resWire_wget__595_BIT_56_611_010_AND_NOT_r_ETC___d4112) ?
-	       sfd__h165501 :
-	       _theResult___snd__h189834 ;
-  assign _theResult___snd__h189834 =
-	     { IF_0_CONCAT_IF_resWire_wget__595_BITS_67_TO_57_ETC__q108[54:0],
-	       2'd0 } ;
-  assign _theResult___snd__h189857 =
-	     sfd__h165501 <<
-	     IF_resWire_wget__595_BITS_67_TO_57_601_EQ_0_60_ETC___d4167 ;
-  assign _theResult___snd__h198989 = { _theResult____h190740[55:0], 1'd0 } ;
-  assign _theResult___snd__h199000 =
-	     (!_theResult____h190740[56] && _theResult____h190740[55]) ?
-	       _theResult___snd__h199002 :
-	       _theResult___snd__h199012 ;
-  assign _theResult___snd__h199002 = { _theResult____h190740[54:0], 2'd0 } ;
-  assign _theResult___snd__h199012 =
-	     (!_theResult____h190740[56] && !_theResult____h190740[55] &&
-	      !_theResult____h190740[54] &&
-	      !_theResult____h190740[53] &&
-	      !_theResult____h190740[52] &&
-	      !_theResult____h190740[51] &&
-	      !_theResult____h190740[50] &&
-	      !_theResult____h190740[49] &&
-	      !_theResult____h190740[48] &&
-	      !_theResult____h190740[47] &&
-	      !_theResult____h190740[46] &&
-	      !_theResult____h190740[45] &&
-	      !_theResult____h190740[44] &&
-	      !_theResult____h190740[43] &&
-	      !_theResult____h190740[42] &&
-	      !_theResult____h190740[41] &&
-	      !_theResult____h190740[40] &&
-	      !_theResult____h190740[39] &&
-	      !_theResult____h190740[38] &&
-	      !_theResult____h190740[37] &&
-	      !_theResult____h190740[36] &&
-	      !_theResult____h190740[35] &&
-	      !_theResult____h190740[34] &&
-	      !_theResult____h190740[33] &&
-	      !_theResult____h190740[32] &&
-	      !_theResult____h190740[31] &&
-	      !_theResult____h190740[30] &&
-	      !_theResult____h190740[29] &&
-	      !_theResult____h190740[28] &&
-	      !_theResult____h190740[27] &&
-	      !_theResult____h190740[26] &&
-	      !_theResult____h190740[25] &&
-	      !_theResult____h190740[24] &&
-	      !_theResult____h190740[23] &&
-	      !_theResult____h190740[22] &&
-	      !_theResult____h190740[21] &&
-	      !_theResult____h190740[20] &&
-	      !_theResult____h190740[19] &&
-	      !_theResult____h190740[18] &&
-	      !_theResult____h190740[17] &&
-	      !_theResult____h190740[16] &&
-	      !_theResult____h190740[15] &&
-	      !_theResult____h190740[14] &&
-	      !_theResult____h190740[13] &&
-	      !_theResult____h190740[12] &&
-	      !_theResult____h190740[11] &&
-	      !_theResult____h190740[10] &&
-	      !_theResult____h190740[9] &&
-	      !_theResult____h190740[8] &&
-	      !_theResult____h190740[7] &&
-	      !_theResult____h190740[6] &&
-	      !_theResult____h190740[5] &&
-	      !_theResult____h190740[4] &&
-	      !_theResult____h190740[3] &&
-	      !_theResult____h190740[2] &&
-	      !_theResult____h190740[1] &&
-	      !_theResult____h190740[0]) ?
-	       _theResult____h190740 :
-	       _theResult___snd__h199018 ;
-  assign _theResult___snd__h199018 =
-	     { IF_0_CONCAT_IF_IF_3970_MINUS_SEXT_resWire_wget_ETC__q112[54:0],
-	       2'd0 } ;
-  assign _theResult___snd__h199041 =
-	     _theResult____h190740 <<
-	     IF_IF_3970_MINUS_SEXT_resWire_wget__595_BITS_6_ETC___d4463 ;
-  assign _theResult___snd__h207609 =
-	     (fpu_madd_fResult_S9$D_OUT[67:57] == 11'd0) ?
-	       _theResult___snd__h207623 :
-	       _theResult___snd__h189821 ;
-  assign _theResult___snd__h207623 =
-	     (fpu_madd_fResult_S9$D_OUT[67:57] == 11'd0 &&
-	      NOT_resWire_wget__595_BIT_56_611_010_AND_NOT_r_ETC___d4112) ?
-	       sfd__h165501 :
-	       _theResult___snd__h207629 ;
-  assign _theResult___snd__h207629 =
-	     { IF_0_CONCAT_IF_resWire_wget__595_BITS_67_TO_57_ETC__q115[54:0],
-	       2'd0 } ;
-  assign _theResult___snd__h207647 =
-	     sfd__h165501 <<
-	     IF_SEXT_resWire_wget__595_BITS_67_TO_57_601_MI_ETC___d4517 ;
-  assign _theResult___snd__h34783 = { sfdBC__h19479[104:0], 1'd0 } ;
-  assign _theResult___snd__h34797 =
-	     (!sfdBC__h19479[105] && sfdBC__h19479[104]) ?
-	       _theResult___snd__h34799 :
-	       _theResult___snd__h34811 ;
-  assign _theResult___snd__h34799 = { sfdBC__h19479[103:0], 2'd0 } ;
-  assign _theResult___snd__h34811 =
-	     (!sfdBC__h19479[105] && !sfdBC__h19479[104] &&
-	      !sfdBC__h19479[103] &&
-	      !sfdBC__h19479[102] &&
-	      !sfdBC__h19479[101] &&
-	      !sfdBC__h19479[100] &&
-	      !sfdBC__h19479[99] &&
-	      !sfdBC__h19479[98] &&
-	      !sfdBC__h19479[97] &&
-	      !sfdBC__h19479[96] &&
-	      !sfdBC__h19479[95] &&
-	      !sfdBC__h19479[94] &&
-	      !sfdBC__h19479[93] &&
-	      !sfdBC__h19479[92] &&
-	      !sfdBC__h19479[91] &&
-	      !sfdBC__h19479[90] &&
-	      !sfdBC__h19479[89] &&
-	      !sfdBC__h19479[88] &&
-	      !sfdBC__h19479[87] &&
-	      !sfdBC__h19479[86] &&
-	      !sfdBC__h19479[85] &&
-	      !sfdBC__h19479[84] &&
-	      !sfdBC__h19479[83] &&
-	      !sfdBC__h19479[82] &&
-	      !sfdBC__h19479[81] &&
-	      !sfdBC__h19479[80] &&
-	      !sfdBC__h19479[79] &&
-	      !sfdBC__h19479[78] &&
-	      !sfdBC__h19479[77] &&
-	      !sfdBC__h19479[76] &&
-	      !sfdBC__h19479[75] &&
-	      !sfdBC__h19479[74] &&
-	      !sfdBC__h19479[73] &&
-	      !sfdBC__h19479[72] &&
-	      !sfdBC__h19479[71] &&
-	      !sfdBC__h19479[70] &&
-	      !sfdBC__h19479[69] &&
-	      !sfdBC__h19479[68] &&
-	      !sfdBC__h19479[67] &&
-	      !sfdBC__h19479[66] &&
-	      !sfdBC__h19479[65] &&
-	      !sfdBC__h19479[64] &&
-	      !sfdBC__h19479[63] &&
-	      !sfdBC__h19479[62] &&
-	      !sfdBC__h19479[61] &&
-	      !sfdBC__h19479[60] &&
-	      !sfdBC__h19479[59] &&
-	      !sfdBC__h19479[58] &&
-	      !sfdBC__h19479[57] &&
-	      !sfdBC__h19479[56] &&
-	      !sfdBC__h19479[55] &&
-	      !sfdBC__h19479[54] &&
-	      !sfdBC__h19479[53] &&
-	      !sfdBC__h19479[52] &&
-	      !sfdBC__h19479[51] &&
-	      !sfdBC__h19479[50] &&
-	      !sfdBC__h19479[49] &&
-	      !sfdBC__h19479[48] &&
-	      !sfdBC__h19479[47] &&
-	      !sfdBC__h19479[46] &&
-	      !sfdBC__h19479[45] &&
-	      !sfdBC__h19479[44] &&
-	      !sfdBC__h19479[43] &&
-	      !sfdBC__h19479[42] &&
-	      !sfdBC__h19479[41] &&
-	      !sfdBC__h19479[40] &&
-	      !sfdBC__h19479[39] &&
-	      !sfdBC__h19479[38] &&
-	      !sfdBC__h19479[37] &&
-	      !sfdBC__h19479[36] &&
-	      !sfdBC__h19479[35] &&
-	      !sfdBC__h19479[34] &&
-	      !sfdBC__h19479[33] &&
-	      !sfdBC__h19479[32] &&
-	      !sfdBC__h19479[31] &&
-	      !sfdBC__h19479[30] &&
-	      !sfdBC__h19479[29] &&
-	      !sfdBC__h19479[28] &&
-	      !sfdBC__h19479[27] &&
-	      !sfdBC__h19479[26] &&
-	      !sfdBC__h19479[25] &&
-	      !sfdBC__h19479[24] &&
-	      !sfdBC__h19479[23] &&
-	      !sfdBC__h19479[22] &&
-	      !sfdBC__h19479[21] &&
-	      !sfdBC__h19479[20] &&
-	      !sfdBC__h19479[19] &&
-	      !sfdBC__h19479[18] &&
-	      !sfdBC__h19479[17] &&
-	      !sfdBC__h19479[16] &&
-	      !sfdBC__h19479[15] &&
-	      !sfdBC__h19479[14] &&
-	      !sfdBC__h19479[13] &&
-	      !sfdBC__h19479[12] &&
-	      !sfdBC__h19479[11] &&
-	      !sfdBC__h19479[10] &&
-	      !sfdBC__h19479[9] &&
-	      !sfdBC__h19479[8] &&
-	      !sfdBC__h19479[7] &&
-	      !sfdBC__h19479[6] &&
-	      !sfdBC__h19479[5] &&
-	      !sfdBC__h19479[4] &&
-	      !sfdBC__h19479[3] &&
-	      !sfdBC__h19479[2] &&
-	      !sfdBC__h19479[1] &&
-	      !sfdBC__h19479[0]) ?
-	       sfdBC__h19479 :
-	       _theResult___snd__h34817 ;
-  assign _theResult___snd__h34817 =
-	     { IF_0_CONCAT_IF_IF_7170_MINUS_fpu_madd_fState_S_ETC__q4[103:0],
-	       2'd0 } ;
-  assign _theResult___snd__h34835 =
-	     sfdBC__h19479 <<
-	     IF_IF_7170_MINUS_fpu_madd_fState_S3_first__96__ETC___d663 ;
-  assign _theResult___snd__h34840 =
-	     sfdBC__h19479 <<
-	     IF_IF_7170_MINUS_fpu_madd_fState_S3_first__96__ETC___d661 ;
-  assign _theResult___snd__h45209 = { sfd__h36936[55:0], 1'd0 } ;
-  assign _theResult___snd__h45223 =
-	     (!sfd__h36936[56] && sfd__h36936[55]) ?
-	       _theResult___snd__h45225 :
-	       _theResult___snd__h45237 ;
-  assign _theResult___snd__h45225 = { sfd__h36936[54:0], 2'd0 } ;
-  assign _theResult___snd__h45237 =
-	     (!sfd__h36936[56] && !sfd__h36936[55] && !sfd__h36936[54] &&
-	      !sfd__h36936[53] &&
-	      !sfd__h36936[52] &&
-	      !sfd__h36936[51] &&
-	      !sfd__h36936[50] &&
-	      !sfd__h36936[49] &&
-	      !sfd__h36936[48] &&
-	      !sfd__h36936[47] &&
-	      !sfd__h36936[46] &&
-	      !sfd__h36936[45] &&
-	      !sfd__h36936[44] &&
-	      !sfd__h36936[43] &&
-	      !sfd__h36936[42] &&
-	      !sfd__h36936[41] &&
-	      !sfd__h36936[40] &&
-	      !sfd__h36936[39] &&
-	      !sfd__h36936[38] &&
-	      !sfd__h36936[37] &&
-	      !sfd__h36936[36] &&
-	      !sfd__h36936[35] &&
-	      !sfd__h36936[34] &&
-	      !sfd__h36936[33] &&
-	      !sfd__h36936[32] &&
-	      !sfd__h36936[31] &&
-	      !sfd__h36936[30] &&
-	      !sfd__h36936[29] &&
-	      !sfd__h36936[28] &&
-	      !sfd__h36936[27] &&
-	      !sfd__h36936[26] &&
-	      !sfd__h36936[25] &&
-	      !sfd__h36936[24] &&
-	      !sfd__h36936[23] &&
-	      !sfd__h36936[22] &&
-	      !sfd__h36936[21] &&
-	      !sfd__h36936[20] &&
-	      !sfd__h36936[19] &&
-	      !sfd__h36936[18] &&
-	      !sfd__h36936[17] &&
-	      !sfd__h36936[16] &&
-	      !sfd__h36936[15] &&
-	      !sfd__h36936[14] &&
-	      !sfd__h36936[13] &&
-	      !sfd__h36936[12] &&
-	      !sfd__h36936[11] &&
-	      !sfd__h36936[10] &&
-	      !sfd__h36936[9] &&
-	      !sfd__h36936[8] &&
-	      !sfd__h36936[7] &&
-	      !sfd__h36936[6] &&
-	      !sfd__h36936[5] &&
-	      !sfd__h36936[4] &&
-	      !sfd__h36936[3] &&
-	      !sfd__h36936[2] &&
-	      !sfd__h36936[1] &&
-	      !sfd__h36936[0]) ?
-	       sfd__h36936 :
-	       _theResult___snd__h45243 ;
-  assign _theResult___snd__h45243 =
-	     { IF_0_CONCAT_IF_IF_fpu_madd_fState_S7_first__52_ETC__q9[54:0],
-	       2'd0 } ;
-  assign _theResult___snd__h45261 =
-	     sfd__h36936 <<
-	     IF_fpu_madd_fState_S7_first__52_BITS_126_TO_11_ETC___d1104 ;
-  assign _theResult___snd__h45266 =
-	     sfd__h36936 <<
-	     IF_IF_fpu_madd_fState_S7_first__52_BIT_128_58__ETC___d1102 ;
-  assign _theResult___snd__h67075 =
+  assign _theResult___snd__h141444 =
+	     sfd__h133119 <<
+	     IF_fpu_madd_fState_S7_first__651_BITS_126_TO_1_ETC___d2903 ;
+  assign _theResult___snd__h141449 =
+	     sfd__h133119 <<
+	     IF_IF_fpu_madd_fState_S7_first__651_BIT_128_65_ETC___d2901 ;
+  assign _theResult___snd__h163287 =
 	     (iFifo$D_OUT[167:160] == 8'd0) ?
-	       _theResult___snd__h67084 :
-	       _theResult___snd__h67077 ;
-  assign _theResult___snd__h67077 = { iFifo$D_OUT[159:137], 34'd0 } ;
-  assign _theResult___snd__h67084 =
+	       _theResult___snd__h163296 :
+	       _theResult___snd__h163289 ;
+  assign _theResult___snd__h163289 = { iFifo$D_OUT[159:137], 34'd0 } ;
+  assign _theResult___snd__h163296 =
 	     (iFifo$D_OUT[167:160] == 8'd0 && !iFifo$D_OUT[159] &&
-	      NOT_iFifo_first__288_BIT_158_333_393_AND_NOT_i_ETC___d1435) ?
-	       sfd__h48324 :
-	       _theResult___snd__h67090 ;
-  assign _theResult___snd__h67090 =
-	     { IF_0_CONCAT_IF_iFifo_first__288_BITS_167_TO_16_ETC__q13[54:0],
+	      NOT_iFifo_first__087_BIT_158_142_202_AND_NOT_i_ETC___d3244) ?
+	       sfd__h144536 :
+	       _theResult___snd__h163302 ;
+  assign _theResult___snd__h163302 =
+	     { IF_0_CONCAT_IF_iFifo_first__087_BITS_167_TO_16_ETC__q33[54:0],
 	       2'd0 } ;
-  assign _theResult___snd__h67113 =
-	     sfd__h48324 <<
-	     IF_iFifo_first__288_BITS_167_TO_160_321_EQ_0_3_ETC___d1462 ;
-  assign _theResult___snd__h76651 = { _theResult____h68402[55:0], 1'd0 } ;
-  assign _theResult___snd__h76662 =
-	     (!_theResult____h68402[56] && _theResult____h68402[55]) ?
-	       _theResult___snd__h76664 :
-	       _theResult___snd__h76674 ;
-  assign _theResult___snd__h76664 = { _theResult____h68402[54:0], 2'd0 } ;
-  assign _theResult___snd__h76674 =
-	     (!_theResult____h68402[56] && !_theResult____h68402[55] &&
-	      !_theResult____h68402[54] &&
-	      !_theResult____h68402[53] &&
-	      !_theResult____h68402[52] &&
-	      !_theResult____h68402[51] &&
-	      !_theResult____h68402[50] &&
-	      !_theResult____h68402[49] &&
-	      !_theResult____h68402[48] &&
-	      !_theResult____h68402[47] &&
-	      !_theResult____h68402[46] &&
-	      !_theResult____h68402[45] &&
-	      !_theResult____h68402[44] &&
-	      !_theResult____h68402[43] &&
-	      !_theResult____h68402[42] &&
-	      !_theResult____h68402[41] &&
-	      !_theResult____h68402[40] &&
-	      !_theResult____h68402[39] &&
-	      !_theResult____h68402[38] &&
-	      !_theResult____h68402[37] &&
-	      !_theResult____h68402[36] &&
-	      !_theResult____h68402[35] &&
-	      !_theResult____h68402[34] &&
-	      !_theResult____h68402[33] &&
-	      !_theResult____h68402[32] &&
-	      !_theResult____h68402[31] &&
-	      !_theResult____h68402[30] &&
-	      !_theResult____h68402[29] &&
-	      !_theResult____h68402[28] &&
-	      !_theResult____h68402[27] &&
-	      !_theResult____h68402[26] &&
-	      !_theResult____h68402[25] &&
-	      !_theResult____h68402[24] &&
-	      !_theResult____h68402[23] &&
-	      !_theResult____h68402[22] &&
-	      !_theResult____h68402[21] &&
-	      !_theResult____h68402[20] &&
-	      !_theResult____h68402[19] &&
-	      !_theResult____h68402[18] &&
-	      !_theResult____h68402[17] &&
-	      !_theResult____h68402[16] &&
-	      !_theResult____h68402[15] &&
-	      !_theResult____h68402[14] &&
-	      !_theResult____h68402[13] &&
-	      !_theResult____h68402[12] &&
-	      !_theResult____h68402[11] &&
-	      !_theResult____h68402[10] &&
-	      !_theResult____h68402[9] &&
-	      !_theResult____h68402[8] &&
-	      !_theResult____h68402[7] &&
-	      !_theResult____h68402[6] &&
-	      !_theResult____h68402[5] &&
-	      !_theResult____h68402[4] &&
-	      !_theResult____h68402[3] &&
-	      !_theResult____h68402[2] &&
-	      !_theResult____h68402[1] &&
-	      !_theResult____h68402[0]) ?
-	       _theResult____h68402 :
-	       _theResult___snd__h76680 ;
-  assign _theResult___snd__h76680 =
-	     { IF_0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__ETC__q17[54:0],
+  assign _theResult___snd__h163325 =
+	     sfd__h144536 <<
+	     IF_iFifo_first__087_BITS_167_TO_160_130_EQ_0_1_ETC___d3271 ;
+  assign _theResult___snd__h172863 = { _theResult____h164614[55:0], 1'd0 } ;
+  assign _theResult___snd__h172874 =
+	     (!_theResult____h164614[56] && _theResult____h164614[55]) ?
+	       _theResult___snd__h172876 :
+	       _theResult___snd__h172886 ;
+  assign _theResult___snd__h172876 = { _theResult____h164614[54:0], 2'd0 } ;
+  assign _theResult___snd__h172886 =
+	     (!_theResult____h164614[56] && !_theResult____h164614[55] &&
+	      !_theResult____h164614[54] &&
+	      !_theResult____h164614[53] &&
+	      !_theResult____h164614[52] &&
+	      !_theResult____h164614[51] &&
+	      !_theResult____h164614[50] &&
+	      !_theResult____h164614[49] &&
+	      !_theResult____h164614[48] &&
+	      !_theResult____h164614[47] &&
+	      !_theResult____h164614[46] &&
+	      !_theResult____h164614[45] &&
+	      !_theResult____h164614[44] &&
+	      !_theResult____h164614[43] &&
+	      !_theResult____h164614[42] &&
+	      !_theResult____h164614[41] &&
+	      !_theResult____h164614[40] &&
+	      !_theResult____h164614[39] &&
+	      !_theResult____h164614[38] &&
+	      !_theResult____h164614[37] &&
+	      !_theResult____h164614[36] &&
+	      !_theResult____h164614[35] &&
+	      !_theResult____h164614[34] &&
+	      !_theResult____h164614[33] &&
+	      !_theResult____h164614[32] &&
+	      !_theResult____h164614[31] &&
+	      !_theResult____h164614[30] &&
+	      !_theResult____h164614[29] &&
+	      !_theResult____h164614[28] &&
+	      !_theResult____h164614[27] &&
+	      !_theResult____h164614[26] &&
+	      !_theResult____h164614[25] &&
+	      !_theResult____h164614[24] &&
+	      !_theResult____h164614[23] &&
+	      !_theResult____h164614[22] &&
+	      !_theResult____h164614[21] &&
+	      !_theResult____h164614[20] &&
+	      !_theResult____h164614[19] &&
+	      !_theResult____h164614[18] &&
+	      !_theResult____h164614[17] &&
+	      !_theResult____h164614[16] &&
+	      !_theResult____h164614[15] &&
+	      !_theResult____h164614[14] &&
+	      !_theResult____h164614[13] &&
+	      !_theResult____h164614[12] &&
+	      !_theResult____h164614[11] &&
+	      !_theResult____h164614[10] &&
+	      !_theResult____h164614[9] &&
+	      !_theResult____h164614[8] &&
+	      !_theResult____h164614[7] &&
+	      !_theResult____h164614[6] &&
+	      !_theResult____h164614[5] &&
+	      !_theResult____h164614[4] &&
+	      !_theResult____h164614[3] &&
+	      !_theResult____h164614[2] &&
+	      !_theResult____h164614[1] &&
+	      !_theResult____h164614[0]) ?
+	       _theResult____h164614 :
+	       _theResult___snd__h172892 ;
+  assign _theResult___snd__h172892 =
+	     { IF_0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__ETC__q37[54:0],
 	       2'd0 } ;
-  assign _theResult___snd__h76703 =
-	     _theResult____h68402 <<
-	     IF_IF_3074_MINUS_SEXT_iFifo_first__288_BITS_16_ETC___d1763 ;
-  assign _theResult___snd__h85387 =
+  assign _theResult___snd__h172915 =
+	     _theResult____h164614 <<
+	     IF_IF_3074_MINUS_SEXT_iFifo_first__087_BITS_16_ETC___d3572 ;
+  assign _theResult___snd__h181599 =
 	     (iFifo$D_OUT[167:160] == 8'd0) ?
-	       _theResult___snd__h85401 :
-	       _theResult___snd__h67077 ;
-  assign _theResult___snd__h85401 =
+	       _theResult___snd__h181613 :
+	       _theResult___snd__h163289 ;
+  assign _theResult___snd__h181613 =
 	     (iFifo$D_OUT[167:160] == 8'd0 && !iFifo$D_OUT[159] &&
-	      NOT_iFifo_first__288_BIT_158_333_393_AND_NOT_i_ETC___d1435) ?
-	       sfd__h48324 :
-	       _theResult___snd__h85407 ;
-  assign _theResult___snd__h85407 =
-	     { IF_0_CONCAT_IF_iFifo_first__288_BITS_167_TO_16_ETC__q20[54:0],
+	      NOT_iFifo_first__087_BIT_158_142_202_AND_NOT_i_ETC___d3244) ?
+	       sfd__h144536 :
+	       _theResult___snd__h181619 ;
+  assign _theResult___snd__h181619 =
+	     { IF_0_CONCAT_IF_iFifo_first__087_BITS_167_TO_16_ETC__q40[54:0],
 	       2'd0 } ;
-  assign _theResult___snd__h85425 =
-	     sfd__h48324 <<
-	     IF_SEXT_iFifo_first__288_BITS_167_TO_160_321_M_ETC___d1814 ;
-  assign _theResult___snd_fst__h34868 =
-	     { IF_sfdin4760_BIT_53_THEN_2_ELSE_0__q5[1],
-	       { sfdin__h34760[52:0], 52'd0 } != 105'd0 } ;
-  assign _theResult___snd_fst__h45294 =
-	     { IF_sfdin5186_BIT_4_THEN_2_ELSE_0__q10[1],
-	       { sfdin__h45186[3:0], 52'd0 } != 56'd0 } ;
-  assign _theResult___snd_fst_exp__h106491 =
-	     _3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_94_ETC___d2876 ?
+  assign _theResult___snd__h181637 =
+	     sfd__h144536 <<
+	     IF_SEXT_iFifo_first__087_BITS_167_TO_160_130_M_ETC___d3623 ;
+  assign _theResult___snd__h201925 =
+	     (iFifo$D_OUT[102:95] == 8'd0) ?
+	       _theResult___snd__h201934 :
+	       _theResult___snd__h201927 ;
+  assign _theResult___snd__h201927 = { iFifo$D_OUT[94:72], 34'd0 } ;
+  assign _theResult___snd__h201934 =
+	     (iFifo$D_OUT[102:95] == 8'd0 && !iFifo$D_OUT[94] &&
+	      NOT_iFifo_first__087_BIT_93_637_688_AND_NOT_iF_ETC___d4730) ?
+	       sfd__h183176 :
+	       _theResult___snd__h201940 ;
+  assign _theResult___snd__h201940 =
+	     { IF_0_CONCAT_IF_iFifo_first__087_BITS_102_TO_95_ETC__q93[54:0],
+	       2'd0 } ;
+  assign _theResult___snd__h201963 =
+	     sfd__h183176 <<
+	     IF_iFifo_first__087_BITS_102_TO_95_625_EQ_0_63_ETC___d4757 ;
+  assign _theResult___snd__h211501 = { _theResult____h203252[55:0], 1'd0 } ;
+  assign _theResult___snd__h211512 =
+	     (!_theResult____h203252[56] && _theResult____h203252[55]) ?
+	       _theResult___snd__h211514 :
+	       _theResult___snd__h211524 ;
+  assign _theResult___snd__h211514 = { _theResult____h203252[54:0], 2'd0 } ;
+  assign _theResult___snd__h211524 =
+	     (!_theResult____h203252[56] && !_theResult____h203252[55] &&
+	      !_theResult____h203252[54] &&
+	      !_theResult____h203252[53] &&
+	      !_theResult____h203252[52] &&
+	      !_theResult____h203252[51] &&
+	      !_theResult____h203252[50] &&
+	      !_theResult____h203252[49] &&
+	      !_theResult____h203252[48] &&
+	      !_theResult____h203252[47] &&
+	      !_theResult____h203252[46] &&
+	      !_theResult____h203252[45] &&
+	      !_theResult____h203252[44] &&
+	      !_theResult____h203252[43] &&
+	      !_theResult____h203252[42] &&
+	      !_theResult____h203252[41] &&
+	      !_theResult____h203252[40] &&
+	      !_theResult____h203252[39] &&
+	      !_theResult____h203252[38] &&
+	      !_theResult____h203252[37] &&
+	      !_theResult____h203252[36] &&
+	      !_theResult____h203252[35] &&
+	      !_theResult____h203252[34] &&
+	      !_theResult____h203252[33] &&
+	      !_theResult____h203252[32] &&
+	      !_theResult____h203252[31] &&
+	      !_theResult____h203252[30] &&
+	      !_theResult____h203252[29] &&
+	      !_theResult____h203252[28] &&
+	      !_theResult____h203252[27] &&
+	      !_theResult____h203252[26] &&
+	      !_theResult____h203252[25] &&
+	      !_theResult____h203252[24] &&
+	      !_theResult____h203252[23] &&
+	      !_theResult____h203252[22] &&
+	      !_theResult____h203252[21] &&
+	      !_theResult____h203252[20] &&
+	      !_theResult____h203252[19] &&
+	      !_theResult____h203252[18] &&
+	      !_theResult____h203252[17] &&
+	      !_theResult____h203252[16] &&
+	      !_theResult____h203252[15] &&
+	      !_theResult____h203252[14] &&
+	      !_theResult____h203252[13] &&
+	      !_theResult____h203252[12] &&
+	      !_theResult____h203252[11] &&
+	      !_theResult____h203252[10] &&
+	      !_theResult____h203252[9] &&
+	      !_theResult____h203252[8] &&
+	      !_theResult____h203252[7] &&
+	      !_theResult____h203252[6] &&
+	      !_theResult____h203252[5] &&
+	      !_theResult____h203252[4] &&
+	      !_theResult____h203252[3] &&
+	      !_theResult____h203252[2] &&
+	      !_theResult____h203252[1] &&
+	      !_theResult____h203252[0]) ?
+	       _theResult____h203252 :
+	       _theResult___snd__h211530 ;
+  assign _theResult___snd__h211530 =
+	     { IF_0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__ETC__q97[54:0],
+	       2'd0 } ;
+  assign _theResult___snd__h211553 =
+	     _theResult____h203252 <<
+	     IF_IF_3074_MINUS_SEXT_iFifo_first__087_BITS_10_ETC___d5055 ;
+  assign _theResult___snd__h220237 =
+	     (iFifo$D_OUT[102:95] == 8'd0) ?
+	       _theResult___snd__h220251 :
+	       _theResult___snd__h201927 ;
+  assign _theResult___snd__h220251 =
+	     (iFifo$D_OUT[102:95] == 8'd0 && !iFifo$D_OUT[94] &&
+	      NOT_iFifo_first__087_BIT_93_637_688_AND_NOT_iF_ETC___d4730) ?
+	       sfd__h183176 :
+	       _theResult___snd__h220257 ;
+  assign _theResult___snd__h220257 =
+	     { IF_0_CONCAT_IF_iFifo_first__087_BITS_102_TO_95_ETC__q100[54:0],
+	       2'd0 } ;
+  assign _theResult___snd__h220275 =
+	     sfd__h183176 <<
+	     IF_SEXT_iFifo_first__087_BITS_102_TO_95_625_MI_ETC___d5106 ;
+  assign _theResult___snd__h240864 =
+	     (iFifo$D_OUT[37:30] == 8'd0) ?
+	       _theResult___snd__h240873 :
+	       _theResult___snd__h240866 ;
+  assign _theResult___snd__h240866 = { iFifo$D_OUT[29:7], 34'd0 } ;
+  assign _theResult___snd__h240873 =
+	     (iFifo$D_OUT[37:30] == 8'd0 && !iFifo$D_OUT[29] &&
+	      NOT_iFifo_first__087_BIT_28_862_913_AND_NOT_iF_ETC___d3955) ?
+	       sfd__h222115 :
+	       _theResult___snd__h240879 ;
+  assign _theResult___snd__h240879 =
+	     { IF_0_CONCAT_IF_iFifo_first__087_BITS_37_TO_30__ETC__q60[54:0],
+	       2'd0 } ;
+  assign _theResult___snd__h240902 =
+	     sfd__h222115 <<
+	     IF_iFifo_first__087_BITS_37_TO_30_850_EQ_0_856_ETC___d3982 ;
+  assign _theResult___snd__h250440 = { _theResult____h242191[55:0], 1'd0 } ;
+  assign _theResult___snd__h250451 =
+	     (!_theResult____h242191[56] && _theResult____h242191[55]) ?
+	       _theResult___snd__h250453 :
+	       _theResult___snd__h250463 ;
+  assign _theResult___snd__h250453 = { _theResult____h242191[54:0], 2'd0 } ;
+  assign _theResult___snd__h250463 =
+	     (!_theResult____h242191[56] && !_theResult____h242191[55] &&
+	      !_theResult____h242191[54] &&
+	      !_theResult____h242191[53] &&
+	      !_theResult____h242191[52] &&
+	      !_theResult____h242191[51] &&
+	      !_theResult____h242191[50] &&
+	      !_theResult____h242191[49] &&
+	      !_theResult____h242191[48] &&
+	      !_theResult____h242191[47] &&
+	      !_theResult____h242191[46] &&
+	      !_theResult____h242191[45] &&
+	      !_theResult____h242191[44] &&
+	      !_theResult____h242191[43] &&
+	      !_theResult____h242191[42] &&
+	      !_theResult____h242191[41] &&
+	      !_theResult____h242191[40] &&
+	      !_theResult____h242191[39] &&
+	      !_theResult____h242191[38] &&
+	      !_theResult____h242191[37] &&
+	      !_theResult____h242191[36] &&
+	      !_theResult____h242191[35] &&
+	      !_theResult____h242191[34] &&
+	      !_theResult____h242191[33] &&
+	      !_theResult____h242191[32] &&
+	      !_theResult____h242191[31] &&
+	      !_theResult____h242191[30] &&
+	      !_theResult____h242191[29] &&
+	      !_theResult____h242191[28] &&
+	      !_theResult____h242191[27] &&
+	      !_theResult____h242191[26] &&
+	      !_theResult____h242191[25] &&
+	      !_theResult____h242191[24] &&
+	      !_theResult____h242191[23] &&
+	      !_theResult____h242191[22] &&
+	      !_theResult____h242191[21] &&
+	      !_theResult____h242191[20] &&
+	      !_theResult____h242191[19] &&
+	      !_theResult____h242191[18] &&
+	      !_theResult____h242191[17] &&
+	      !_theResult____h242191[16] &&
+	      !_theResult____h242191[15] &&
+	      !_theResult____h242191[14] &&
+	      !_theResult____h242191[13] &&
+	      !_theResult____h242191[12] &&
+	      !_theResult____h242191[11] &&
+	      !_theResult____h242191[10] &&
+	      !_theResult____h242191[9] &&
+	      !_theResult____h242191[8] &&
+	      !_theResult____h242191[7] &&
+	      !_theResult____h242191[6] &&
+	      !_theResult____h242191[5] &&
+	      !_theResult____h242191[4] &&
+	      !_theResult____h242191[3] &&
+	      !_theResult____h242191[2] &&
+	      !_theResult____h242191[1] &&
+	      !_theResult____h242191[0]) ?
+	       _theResult____h242191 :
+	       _theResult___snd__h250469 ;
+  assign _theResult___snd__h250469 =
+	     { IF_0_CONCAT_IF_IF_3074_MINUS_SEXT_iFifo_first__ETC__q64[54:0],
+	       2'd0 } ;
+  assign _theResult___snd__h250492 =
+	     _theResult____h242191 <<
+	     IF_IF_3074_MINUS_SEXT_iFifo_first__087_BITS_37_ETC___d4280 ;
+  assign _theResult___snd__h259176 =
+	     (iFifo$D_OUT[37:30] == 8'd0) ?
+	       _theResult___snd__h259190 :
+	       _theResult___snd__h240866 ;
+  assign _theResult___snd__h259190 =
+	     (iFifo$D_OUT[37:30] == 8'd0 && !iFifo$D_OUT[29] &&
+	      NOT_iFifo_first__087_BIT_28_862_913_AND_NOT_iF_ETC___d3955) ?
+	       sfd__h222115 :
+	       _theResult___snd__h259196 ;
+  assign _theResult___snd__h259196 =
+	     { IF_0_CONCAT_IF_iFifo_first__087_BITS_37_TO_30__ETC__q67[54:0],
+	       2'd0 } ;
+  assign _theResult___snd__h259214 =
+	     sfd__h222115 <<
+	     IF_SEXT_iFifo_first__087_BITS_37_TO_30_850_MIN_ETC___d4331 ;
+  assign _theResult___snd__h277697 = { _theResult____h269577[55:0], 1'd0 } ;
+  assign _theResult___snd__h277708 =
+	     (!_theResult____h269577[56] && _theResult____h269577[55]) ?
+	       _theResult___snd__h277710 :
+	       _theResult___snd__h277720 ;
+  assign _theResult___snd__h277710 = { _theResult____h269577[54:0], 2'd0 } ;
+  assign _theResult___snd__h277720 =
+	     (!_theResult____h269577[56] && !_theResult____h269577[55] &&
+	      !_theResult____h269577[54] &&
+	      !_theResult____h269577[53] &&
+	      !_theResult____h269577[52] &&
+	      !_theResult____h269577[51] &&
+	      !_theResult____h269577[50] &&
+	      !_theResult____h269577[49] &&
+	      !_theResult____h269577[48] &&
+	      !_theResult____h269577[47] &&
+	      !_theResult____h269577[46] &&
+	      !_theResult____h269577[45] &&
+	      !_theResult____h269577[44] &&
+	      !_theResult____h269577[43] &&
+	      !_theResult____h269577[42] &&
+	      !_theResult____h269577[41] &&
+	      !_theResult____h269577[40] &&
+	      !_theResult____h269577[39] &&
+	      !_theResult____h269577[38] &&
+	      !_theResult____h269577[37] &&
+	      !_theResult____h269577[36] &&
+	      !_theResult____h269577[35] &&
+	      !_theResult____h269577[34] &&
+	      !_theResult____h269577[33] &&
+	      !_theResult____h269577[32] &&
+	      !_theResult____h269577[31] &&
+	      !_theResult____h269577[30] &&
+	      !_theResult____h269577[29] &&
+	      !_theResult____h269577[28] &&
+	      !_theResult____h269577[27] &&
+	      !_theResult____h269577[26] &&
+	      !_theResult____h269577[25] &&
+	      !_theResult____h269577[24] &&
+	      !_theResult____h269577[23] &&
+	      !_theResult____h269577[22] &&
+	      !_theResult____h269577[21] &&
+	      !_theResult____h269577[20] &&
+	      !_theResult____h269577[19] &&
+	      !_theResult____h269577[18] &&
+	      !_theResult____h269577[17] &&
+	      !_theResult____h269577[16] &&
+	      !_theResult____h269577[15] &&
+	      !_theResult____h269577[14] &&
+	      !_theResult____h269577[13] &&
+	      !_theResult____h269577[12] &&
+	      !_theResult____h269577[11] &&
+	      !_theResult____h269577[10] &&
+	      !_theResult____h269577[9] &&
+	      !_theResult____h269577[8] &&
+	      !_theResult____h269577[7] &&
+	      !_theResult____h269577[6] &&
+	      !_theResult____h269577[5] &&
+	      !_theResult____h269577[4] &&
+	      !_theResult____h269577[3] &&
+	      !_theResult____h269577[2] &&
+	      !_theResult____h269577[1] &&
+	      !_theResult____h269577[0]) ?
+	       _theResult____h269577 :
+	       _theResult___snd__h277726 ;
+  assign _theResult___snd__h277726 =
+	     { IF_0_CONCAT_IF_IF_0b0_CONCAT_NOT_resWire_wget__ETC__q133[54:0],
+	       2'd0 } ;
+  assign _theResult___snd__h277749 =
+	     _theResult____h269577 <<
+	     IF_IF_0b0_CONCAT_NOT_resWire_wget__410_BITS_67_ETC___d5767 ;
+  assign _theResult___snd__h286293 =
+	     (resWire$wget[67:57] == 11'd0) ?
+	       _theResult___snd__h286302 :
+	       _theResult___snd__h286295 ;
+  assign _theResult___snd__h286295 = { resWire$wget[56:5], 5'd0 } ;
+  assign _theResult___snd__h286302 =
+	     (resWire$wget[67:57] == 11'd0 &&
+	      NOT_resWire_wget__410_BIT_56_426_825_AND_NOT_r_ETC___d5927) ?
+	       sfd__h261975 :
+	       _theResult___snd__h286308 ;
+  assign _theResult___snd__h286308 =
+	     { IF_0_CONCAT_IF_resWire_wget__410_BITS_67_TO_57_ETC__q135[54:0],
+	       2'd0 } ;
+  assign _theResult___snd__h286331 =
+	     sfd__h261975 <<
+	     IF_resWire_wget__410_BITS_67_TO_57_416_EQ_0_42_ETC___d5982 ;
+  assign _theResult___snd__h295463 = { _theResult____h287214[55:0], 1'd0 } ;
+  assign _theResult___snd__h295474 =
+	     (!_theResult____h287214[56] && _theResult____h287214[55]) ?
+	       _theResult___snd__h295476 :
+	       _theResult___snd__h295486 ;
+  assign _theResult___snd__h295476 = { _theResult____h287214[54:0], 2'd0 } ;
+  assign _theResult___snd__h295486 =
+	     (!_theResult____h287214[56] && !_theResult____h287214[55] &&
+	      !_theResult____h287214[54] &&
+	      !_theResult____h287214[53] &&
+	      !_theResult____h287214[52] &&
+	      !_theResult____h287214[51] &&
+	      !_theResult____h287214[50] &&
+	      !_theResult____h287214[49] &&
+	      !_theResult____h287214[48] &&
+	      !_theResult____h287214[47] &&
+	      !_theResult____h287214[46] &&
+	      !_theResult____h287214[45] &&
+	      !_theResult____h287214[44] &&
+	      !_theResult____h287214[43] &&
+	      !_theResult____h287214[42] &&
+	      !_theResult____h287214[41] &&
+	      !_theResult____h287214[40] &&
+	      !_theResult____h287214[39] &&
+	      !_theResult____h287214[38] &&
+	      !_theResult____h287214[37] &&
+	      !_theResult____h287214[36] &&
+	      !_theResult____h287214[35] &&
+	      !_theResult____h287214[34] &&
+	      !_theResult____h287214[33] &&
+	      !_theResult____h287214[32] &&
+	      !_theResult____h287214[31] &&
+	      !_theResult____h287214[30] &&
+	      !_theResult____h287214[29] &&
+	      !_theResult____h287214[28] &&
+	      !_theResult____h287214[27] &&
+	      !_theResult____h287214[26] &&
+	      !_theResult____h287214[25] &&
+	      !_theResult____h287214[24] &&
+	      !_theResult____h287214[23] &&
+	      !_theResult____h287214[22] &&
+	      !_theResult____h287214[21] &&
+	      !_theResult____h287214[20] &&
+	      !_theResult____h287214[19] &&
+	      !_theResult____h287214[18] &&
+	      !_theResult____h287214[17] &&
+	      !_theResult____h287214[16] &&
+	      !_theResult____h287214[15] &&
+	      !_theResult____h287214[14] &&
+	      !_theResult____h287214[13] &&
+	      !_theResult____h287214[12] &&
+	      !_theResult____h287214[11] &&
+	      !_theResult____h287214[10] &&
+	      !_theResult____h287214[9] &&
+	      !_theResult____h287214[8] &&
+	      !_theResult____h287214[7] &&
+	      !_theResult____h287214[6] &&
+	      !_theResult____h287214[5] &&
+	      !_theResult____h287214[4] &&
+	      !_theResult____h287214[3] &&
+	      !_theResult____h287214[2] &&
+	      !_theResult____h287214[1] &&
+	      !_theResult____h287214[0]) ?
+	       _theResult____h287214 :
+	       _theResult___snd__h295492 ;
+  assign _theResult___snd__h295492 =
+	     { IF_0_CONCAT_IF_IF_3970_MINUS_SEXT_resWire_wget_ETC__q139[54:0],
+	       2'd0 } ;
+  assign _theResult___snd__h295515 =
+	     _theResult____h287214 <<
+	     IF_IF_3970_MINUS_SEXT_resWire_wget__410_BITS_6_ETC___d6278 ;
+  assign _theResult___snd__h304083 =
+	     (resWire$wget[67:57] == 11'd0) ?
+	       _theResult___snd__h304097 :
+	       _theResult___snd__h286295 ;
+  assign _theResult___snd__h304097 =
+	     (resWire$wget[67:57] == 11'd0 &&
+	      NOT_resWire_wget__410_BIT_56_426_825_AND_NOT_r_ETC___d5927) ?
+	       sfd__h261975 :
+	       _theResult___snd__h304103 ;
+  assign _theResult___snd__h304103 =
+	     { IF_0_CONCAT_IF_resWire_wget__410_BITS_67_TO_57_ETC__q142[54:0],
+	       2'd0 } ;
+  assign _theResult___snd__h304121 =
+	     sfd__h261975 <<
+	     IF_SEXT_resWire_wget__410_BITS_67_TO_57_416_MI_ETC___d6332 ;
+  assign _theResult___snd__h34715 =
+	     { fpu_div64_fState_S3$D_OUT[56:0], 1'd0 } ;
+  assign _theResult___snd__h42350 = { sfdin__h34118[56:0], 1'd0 } ;
+  assign _theResult___snd__h42365 =
+	     (!sfdin__h34118[57] && sfdin__h34118[56]) ?
+	       _theResult___snd__h42367 :
+	       _theResult___snd__h42380 ;
+  assign _theResult___snd__h42367 = { sfdin__h34118[55:0], 2'd0 } ;
+  assign _theResult___snd__h42380 =
+	     (!sfdin__h34118[57] && !sfdin__h34118[56] &&
+	      !sfdin__h34118[55] &&
+	      !sfdin__h34118[54] &&
+	      !sfdin__h34118[53] &&
+	      !sfdin__h34118[52] &&
+	      !sfdin__h34118[51] &&
+	      !sfdin__h34118[50] &&
+	      !sfdin__h34118[49] &&
+	      !sfdin__h34118[48] &&
+	      !sfdin__h34118[47] &&
+	      !sfdin__h34118[46] &&
+	      !sfdin__h34118[45] &&
+	      !sfdin__h34118[44] &&
+	      !sfdin__h34118[43] &&
+	      !sfdin__h34118[42] &&
+	      !sfdin__h34118[41] &&
+	      !sfdin__h34118[40] &&
+	      !sfdin__h34118[39] &&
+	      !sfdin__h34118[38] &&
+	      !sfdin__h34118[37] &&
+	      !sfdin__h34118[36] &&
+	      !sfdin__h34118[35] &&
+	      !sfdin__h34118[34] &&
+	      !sfdin__h34118[33] &&
+	      !sfdin__h34118[32] &&
+	      !sfdin__h34118[31] &&
+	      !sfdin__h34118[30] &&
+	      !sfdin__h34118[29] &&
+	      !sfdin__h34118[28] &&
+	      !sfdin__h34118[27] &&
+	      !sfdin__h34118[26] &&
+	      !sfdin__h34118[25] &&
+	      !sfdin__h34118[24] &&
+	      !sfdin__h34118[23] &&
+	      !sfdin__h34118[22] &&
+	      !sfdin__h34118[21] &&
+	      !sfdin__h34118[20] &&
+	      !sfdin__h34118[19] &&
+	      !sfdin__h34118[18] &&
+	      !sfdin__h34118[17] &&
+	      !sfdin__h34118[16] &&
+	      !sfdin__h34118[15] &&
+	      !sfdin__h34118[14] &&
+	      !sfdin__h34118[13] &&
+	      !sfdin__h34118[12] &&
+	      !sfdin__h34118[11] &&
+	      !sfdin__h34118[10] &&
+	      !sfdin__h34118[9] &&
+	      !sfdin__h34118[8] &&
+	      !sfdin__h34118[7] &&
+	      !sfdin__h34118[6] &&
+	      !sfdin__h34118[5] &&
+	      !sfdin__h34118[4] &&
+	      !sfdin__h34118[3] &&
+	      !sfdin__h34118[2] &&
+	      !sfdin__h34118[1] &&
+	      !sfdin__h34118[0]) ?
+	       sfdin__h34118 :
+	       _theResult___snd__h42386 ;
+  assign _theResult___snd__h42386 =
+	     { IF_0_CONCAT_IF_IF_fpu_div64_fState_S3_first__8_ETC__q12[55:0],
+	       2'd0 } ;
+  assign _theResult___snd__h42404 =
+	     sfdin__h34118 <<
+	     IF_IF_fpu_div64_fState_S3_first__86_BITS_120_T_ETC___d882 ;
+  assign _theResult___snd__h42409 =
+	     sfdin__h34118 <<
+	     IF_IF_fpu_div64_fState_S3_first__86_BITS_120_T_ETC___d880 ;
+  assign _theResult___snd__h94767 =
+	     { fpu_sqr64_fState_S3$D_OUT[57:0], 1'd0 } ;
+  assign _theResult___snd__h94782 =
+	     (!fpu_sqr64_fState_S3$D_OUT[58] &&
+	      fpu_sqr64_fState_S3$D_OUT[57]) ?
+	       _theResult___snd__h94784 :
+	       _theResult___snd__h94797 ;
+  assign _theResult___snd__h94784 =
+	     { fpu_sqr64_fState_S3$D_OUT[56:0], 2'd0 } ;
+  assign _theResult___snd__h94797 =
+	     (!fpu_sqr64_fState_S3$D_OUT[58] &&
+	      !fpu_sqr64_fState_S3$D_OUT[57] &&
+	      !fpu_sqr64_fState_S3$D_OUT[56] &&
+	      !fpu_sqr64_fState_S3$D_OUT[55] &&
+	      !fpu_sqr64_fState_S3$D_OUT[54] &&
+	      !fpu_sqr64_fState_S3$D_OUT[53] &&
+	      !fpu_sqr64_fState_S3$D_OUT[52] &&
+	      !fpu_sqr64_fState_S3$D_OUT[51] &&
+	      !fpu_sqr64_fState_S3$D_OUT[50] &&
+	      !fpu_sqr64_fState_S3$D_OUT[49] &&
+	      !fpu_sqr64_fState_S3$D_OUT[48] &&
+	      !fpu_sqr64_fState_S3$D_OUT[47] &&
+	      !fpu_sqr64_fState_S3$D_OUT[46] &&
+	      !fpu_sqr64_fState_S3$D_OUT[45] &&
+	      !fpu_sqr64_fState_S3$D_OUT[44] &&
+	      !fpu_sqr64_fState_S3$D_OUT[43] &&
+	      !fpu_sqr64_fState_S3$D_OUT[42] &&
+	      !fpu_sqr64_fState_S3$D_OUT[41] &&
+	      !fpu_sqr64_fState_S3$D_OUT[40] &&
+	      !fpu_sqr64_fState_S3$D_OUT[39] &&
+	      !fpu_sqr64_fState_S3$D_OUT[38] &&
+	      !fpu_sqr64_fState_S3$D_OUT[37] &&
+	      !fpu_sqr64_fState_S3$D_OUT[36] &&
+	      !fpu_sqr64_fState_S3$D_OUT[35] &&
+	      !fpu_sqr64_fState_S3$D_OUT[34] &&
+	      !fpu_sqr64_fState_S3$D_OUT[33] &&
+	      !fpu_sqr64_fState_S3$D_OUT[32] &&
+	      !fpu_sqr64_fState_S3$D_OUT[31] &&
+	      !fpu_sqr64_fState_S3$D_OUT[30] &&
+	      !fpu_sqr64_fState_S3$D_OUT[29] &&
+	      !fpu_sqr64_fState_S3$D_OUT[28] &&
+	      !fpu_sqr64_fState_S3$D_OUT[27] &&
+	      !fpu_sqr64_fState_S3$D_OUT[26] &&
+	      !fpu_sqr64_fState_S3$D_OUT[25] &&
+	      !fpu_sqr64_fState_S3$D_OUT[24] &&
+	      !fpu_sqr64_fState_S3$D_OUT[23] &&
+	      !fpu_sqr64_fState_S3$D_OUT[22] &&
+	      !fpu_sqr64_fState_S3$D_OUT[21] &&
+	      !fpu_sqr64_fState_S3$D_OUT[20] &&
+	      !fpu_sqr64_fState_S3$D_OUT[19] &&
+	      !fpu_sqr64_fState_S3$D_OUT[18] &&
+	      !fpu_sqr64_fState_S3$D_OUT[17] &&
+	      !fpu_sqr64_fState_S3$D_OUT[16] &&
+	      !fpu_sqr64_fState_S3$D_OUT[15] &&
+	      !fpu_sqr64_fState_S3$D_OUT[14] &&
+	      !fpu_sqr64_fState_S3$D_OUT[13] &&
+	      !fpu_sqr64_fState_S3$D_OUT[12] &&
+	      !fpu_sqr64_fState_S3$D_OUT[11] &&
+	      !fpu_sqr64_fState_S3$D_OUT[10] &&
+	      !fpu_sqr64_fState_S3$D_OUT[9] &&
+	      !fpu_sqr64_fState_S3$D_OUT[8] &&
+	      !fpu_sqr64_fState_S3$D_OUT[7] &&
+	      !fpu_sqr64_fState_S3$D_OUT[6] &&
+	      !fpu_sqr64_fState_S3$D_OUT[5] &&
+	      !fpu_sqr64_fState_S3$D_OUT[4] &&
+	      !fpu_sqr64_fState_S3$D_OUT[3] &&
+	      !fpu_sqr64_fState_S3$D_OUT[2] &&
+	      !fpu_sqr64_fState_S3$D_OUT[1] &&
+	      !fpu_sqr64_fState_S3$D_OUT[0]) ?
+	       fpu_sqr64_fState_S3$D_OUT[58:0] :
+	       _theResult___snd__h94803 ;
+  assign _theResult___snd__h94803 =
+	     { IF_0_CONCAT_IF_fpu_sqr64_fState_S3_first__375__ETC__q19[56:0],
+	       2'd0 } ;
+  assign _theResult___snd__h94821 =
+	     fpu_sqr64_fState_S3$D_OUT[58:0] <<
+	     IF_fpu_sqr64_fState_S3_first__375_BITS_121_TO__ETC___d1632 ;
+  assign _theResult___snd__h94826 =
+	     fpu_sqr64_fState_S3$D_OUT[58:0] <<
+	     IF_fpu_sqr64_fState_S3_first__375_BIT_58_384_T_ETC___d1630 ;
+  assign _theResult___snd_fst__h131051 =
+	     { IF_sfdin30943_BIT_53_THEN_2_ELSE_0__q25[1],
+	       { sfdin__h130943[52:0], 52'd0 } != 105'd0 } ;
+  assign _theResult___snd_fst__h141477 =
+	     { IF_sfdin41369_BIT_4_THEN_2_ELSE_0__q30[1],
+	       { sfdin__h141369[3:0], 52'd0 } != 56'd0 } ;
+  assign _theResult___snd_fst__h1478 =
+	     IF_rg_index_1_4_ULE_58_8_THEN_NOT_rg_b_9_EQ_0__ETC___d56 ?
+	       _theResult___snd_fst__h1602 :
+	       IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d83 ;
+  assign _theResult___snd_fst__h1517 =
+	     (rg_res[116] || rg_b == 116'd0 ||
+	      rg_s_1_ULT_rg_r_1_0_PLUS_rg_b_9_2___d63) ?
+	       rg_s :
+	       s__h1658 ;
+  assign _theResult___snd_fst__h1602 =
+	     (IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d49 ==
+	      116'd0 ||
+	      IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d85) ?
+	       IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d83 :
+	       s__h1723 ;
+  assign _theResult___snd_fst__h42439 =
+	     { IF_sfdin2327_BIT_5_THEN_2_ELSE_0__q13[1],
+	       { sfdin__h42327[4:0], 52'd0 } != 57'd0 } ;
+  assign _theResult___snd_fst__h94856 =
+	     { IF_sfdin4744_BIT_6_THEN_2_ELSE_0__q20[1],
+	       { sfdin__h94744[5:0], 52'd0 } != 58'd0 } ;
+  assign _theResult___snd_fst_exp__h164065 =
+	     _3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_15_ETC___d3190 ?
 	       11'd0 :
-	       _theResult___fst_exp__h106488 ;
-  assign _theResult___snd_fst_exp__h124833 =
-	     SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC___d2999 ?
-	       _theResult___fst_exp__h116078 :
-	       _theResult___fst_exp__h124830 ;
-  assign _theResult___snd_fst_exp__h145398 =
-	     _3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_29_ETC___d2101 ?
+	       _theResult___fst_exp__h164062 ;
+  assign _theResult___snd_fst_exp__h182407 =
+	     SEXT_iFifo_first__087_BITS_167_TO_160_130_MINU_ETC___d3325 ?
+	       _theResult___fst_exp__h173652 :
+	       _theResult___fst_exp__h182404 ;
+  assign _theResult___snd_fst_exp__h202703 =
+	     _3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_94_ETC___d4685 ?
 	       11'd0 :
-	       _theResult___fst_exp__h145395 ;
-  assign _theResult___snd_fst_exp__h163740 =
-	     SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC___d2224 ?
-	       _theResult___fst_exp__h154985 :
-	       _theResult___fst_exp__h163737 ;
-  assign _theResult___snd_fst_exp__h190394 =
-	     _3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d3718 ?
-	       _theResult___fst_exp__h181809 :
-	       _theResult___fst_exp__h190391 ;
-  assign _theResult___snd_fst_exp__h208214 =
-	     SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC___d4218 ?
-	       _theResult___fst_exp__h199575 :
-	       _theResult___fst_exp__h208211 ;
-  assign _theResult___snd_fst_exp__h67853 =
-	     _3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_15_ETC___d1381 ?
+	       _theResult___fst_exp__h202700 ;
+  assign _theResult___snd_fst_exp__h221045 =
+	     SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC___d4808 ?
+	       _theResult___fst_exp__h212290 :
+	       _theResult___fst_exp__h221042 ;
+  assign _theResult___snd_fst_exp__h241642 =
+	     _3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_29_ETC___d3910 ?
 	       11'd0 :
-	       _theResult___fst_exp__h67850 ;
-  assign _theResult___snd_fst_exp__h86195 =
-	     SEXT_iFifo_first__288_BITS_167_TO_160_321_MINU_ETC___d1516 ?
-	       _theResult___fst_exp__h77440 :
-	       _theResult___fst_exp__h86192 ;
-  assign _theResult___snd_fst_sfd__h106492 =
-	     _3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_94_ETC___d2876 ?
-	       52'd0 :
-	       _theResult___fst_sfd__h106489 ;
-  assign _theResult___snd_fst_sfd__h124834 =
-	     SEXT_iFifo_first__288_BITS_102_TO_95_816_MINUS_ETC___d2999 ?
-	       _theResult___fst_sfd__h116079 :
-	       _theResult___fst_sfd__h124831 ;
-  assign _theResult___snd_fst_sfd__h125821 =
-	     (iFifo$D_OUT[29:7] == 23'd0) ?
-	       52'h4000000000000 :
-	       out___1_sfd__h125570 ;
-  assign _theResult___snd_fst_sfd__h145399 =
-	     _3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_29_ETC___d2101 ?
-	       52'd0 :
-	       _theResult___fst_sfd__h145396 ;
-  assign _theResult___snd_fst_sfd__h163741 =
-	     SEXT_iFifo_first__288_BITS_37_TO_30_041_MINUS__ETC___d2224 ?
-	       _theResult___fst_sfd__h154986 :
-	       _theResult___fst_sfd__h163738 ;
-  assign _theResult___snd_fst_sfd__h165451 =
-	     (fpu_madd_fResult_S9$D_OUT[56:34] == 23'd0) ?
-	       23'd2097152 :
-	       fpu_madd_fResult_S9$D_OUT[56:34] ;
-  assign _theResult___snd_fst_sfd__h190395 =
-	     _3074_MINUS_0_CONCAT_IF_resWire_wget__595_BIT_5_ETC___d3718 ?
-	       _theResult___fst_sfd__h181810 :
-	       _theResult___fst_sfd__h190392 ;
-  assign _theResult___snd_fst_sfd__h208215 =
-	     SEXT_resWire_wget__595_BITS_67_TO_57_601_MINUS_ETC___d4218 ?
-	       _theResult___fst_sfd__h199576 :
-	       _theResult___fst_sfd__h208212 ;
-  assign _theResult___snd_fst_sfd__h48274 =
+	       _theResult___fst_exp__h241639 ;
+  assign _theResult___snd_fst_exp__h259984 =
+	     SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC___d4033 ?
+	       _theResult___fst_exp__h251229 :
+	       _theResult___fst_exp__h259981 ;
+  assign _theResult___snd_fst_exp__h286868 =
+	     _3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d5533 ?
+	       _theResult___fst_exp__h278283 :
+	       _theResult___fst_exp__h286865 ;
+  assign _theResult___snd_fst_exp__h304688 =
+	     SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC___d6033 ?
+	       _theResult___fst_exp__h296049 :
+	       _theResult___fst_exp__h304685 ;
+  assign _theResult___snd_fst_exp__h31334 =
+	     (IF_fpu_div64_fOperands_S0_first__06_BITS_129_T_ETC___d355 ||
+	      IF_fpu_div64_fOperands_S0_first__06_BITS_129_T_ETC___d499) ?
+	       11'd0 :
+	       value__h31374[10:0] ;
+  assign _theResult___snd_fst_exp__h31337 =
+	     IF_fpu_div64_fOperands_S0_first__06_BITS_129_T_ETC___d353 ?
+	       _theResult___snd_fst_exp__h31334 :
+	       11'd2046 ;
+  assign _theResult___snd_fst_exp__h31361 =
+	     fpu_div64_fOperands_S0_first__06_BITS_129_TO_1_ETC___d498 ?
+	       11'd0 :
+	       _theResult___snd_fst_exp__h31337 ;
+  assign _theResult___snd_fst_sfd__h144486 =
 	     (iFifo$D_OUT[159:137] == 23'd0) ?
 	       52'h4000000000000 :
-	       out___1_sfd__h48023 ;
-  assign _theResult___snd_fst_sfd__h67854 =
-	     _3970_MINUS_0_CONCAT_IF_iFifo_first__288_BIT_15_ETC___d1381 ?
+	       out___1_sfd__h144235 ;
+  assign _theResult___snd_fst_sfd__h164066 =
+	     _3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_15_ETC___d3190 ?
 	       52'd0 :
-	       _theResult___fst_sfd__h67851 ;
-  assign _theResult___snd_fst_sfd__h86196 =
-	     SEXT_iFifo_first__288_BITS_167_TO_160_321_MINU_ETC___d1516 ?
-	       _theResult___fst_sfd__h77441 :
-	       _theResult___fst_sfd__h86193 ;
-  assign _theResult___snd_fst_sfd__h86914 =
+	       _theResult___fst_sfd__h164063 ;
+  assign _theResult___snd_fst_sfd__h182408 =
+	     SEXT_iFifo_first__087_BITS_167_TO_160_130_MINU_ETC___d3325 ?
+	       _theResult___fst_sfd__h173653 :
+	       _theResult___fst_sfd__h182405 ;
+  assign _theResult___snd_fst_sfd__h183126 =
 	     (iFifo$D_OUT[94:72] == 23'd0) ?
 	       52'h4000000000000 :
-	       out___1_sfd__h86663 ;
-  assign _theResult___snd_snd__h35188 =
+	       out___1_sfd__h182875 ;
+  assign _theResult___snd_fst_sfd__h202704 =
+	     _3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_94_ETC___d4685 ?
+	       52'd0 :
+	       _theResult___fst_sfd__h202701 ;
+  assign _theResult___snd_fst_sfd__h221046 =
+	     SEXT_iFifo_first__087_BITS_102_TO_95_625_MINUS_ETC___d4808 ?
+	       _theResult___fst_sfd__h212291 :
+	       _theResult___fst_sfd__h221043 ;
+  assign _theResult___snd_fst_sfd__h222065 =
+	     (iFifo$D_OUT[29:7] == 23'd0) ?
+	       52'h4000000000000 :
+	       out___1_sfd__h221814 ;
+  assign _theResult___snd_fst_sfd__h241643 =
+	     _3970_MINUS_0_CONCAT_IF_iFifo_first__087_BIT_29_ETC___d3910 ?
+	       52'd0 :
+	       _theResult___fst_sfd__h241640 ;
+  assign _theResult___snd_fst_sfd__h259985 =
+	     SEXT_iFifo_first__087_BITS_37_TO_30_850_MINUS__ETC___d4033 ?
+	       _theResult___fst_sfd__h251230 :
+	       _theResult___fst_sfd__h259982 ;
+  assign _theResult___snd_fst_sfd__h261925 =
+	     (resWire$wget[56:34] == 23'd0) ?
+	       23'd2097152 :
+	       resWire$wget[56:34] ;
+  assign _theResult___snd_fst_sfd__h286869 =
+	     _3074_MINUS_0_CONCAT_IF_resWire_wget__410_BIT_5_ETC___d5533 ?
+	       _theResult___fst_sfd__h278284 :
+	       _theResult___fst_sfd__h286866 ;
+  assign _theResult___snd_fst_sfd__h304689 =
+	     SEXT_resWire_wget__410_BITS_67_TO_57_416_MINUS_ETC___d6033 ?
+	       _theResult___fst_sfd__h296050 :
+	       _theResult___fst_sfd__h304686 ;
+  assign _theResult___snd_fst_sfd__h31362 =
+	     (fpu_div64_fOperands_S0_first__06_BITS_129_TO_1_ETC___d498 ||
+	      IF_fpu_div64_fOperands_S0_first__06_BITS_129_T_ETC___d353) ?
+	       52'd0 :
+	       52'hFFFFFFFFFFFFF ;
+  assign _theResult___snd_snd__h131371 =
 	     (fpu_madd_fProd_S3$D_OUT == 106'd0) ? 2'd0 : 2'd1 ;
-  assign _theResult___snd_snd_snd__h35186 =
-	     fpu_madd_fState_S3_first__96_BITS_12_TO_0_02_S_ETC___d205 ?
-	       _theResult___snd_snd__h35188 :
-	       guardBC__h19483 ;
-  assign din_exp4683_MINUS_1023__q3 = din_exp__h34683 - 11'd1023 ;
-  assign din_exp__h34683 =
-	     _7170_MINUS_fpu_madd_fState_S3_first__96_BITS_1_ETC___d209 ?
-	       value__h34700[10:0] :
+  assign _theResult___snd_snd__h1649 =
+	     rg_s_1_ULT_rg_r_1_0_PLUS_rg_b_9_2___d63 ? r__h1663 : r__h1659 ;
+  assign _theResult___snd_snd__h1715 =
+	     IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d85 ?
+	       r__h1753 :
+	       r__h1724 ;
+  assign _theResult___snd_snd_snd__h131369 =
+	     fpu_madd_fState_S3_first__995_BITS_12_TO_0_001_ETC___d2004 ?
+	       _theResult___snd_snd__h131371 :
+	       guardBC__h115666 ;
+  assign _theResult___snd_snd_snd__h1481 =
+	     IF_rg_index_1_4_ULE_58_8_THEN_NOT_rg_b_9_EQ_0__ETC___d56 ?
+	       _theResult___snd_snd_snd__h1605 :
+	       IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d69 ;
+  assign _theResult___snd_snd_snd__h1520 =
+	     (rg_res[116] || rg_b == 116'd0) ?
+	       rg_r_1 :
+	       _theResult___snd_snd__h1649 ;
+  assign _theResult___snd_snd_snd__h1605 =
+	     (IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d49 ==
+	      116'd0) ?
+	       IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d69 :
+	       _theResult___snd_snd__h1715 ;
+  assign _theResult___snd_snd_snd__h33963 =
+	     (fpu_div64_fState_S3$D_OUT[57:56] == 2'b0) ?
+	       _theResult___snd__h34715 :
+	       fpu_div64_fState_S3$D_OUT[57:0] ;
+  assign b___1__h77160 = 116'h40000000000000000000000000000 >> x__h85465 ;
+  assign b__h11457 =
+	     (fpu_div64_fOperands_S0$D_OUT[65:55] == 11'd0) ?
+	       (fpu_div64_fOperands_S0$D_OUT[54] ?
+		  6'd1 :
+		  (fpu_div64_fOperands_S0$D_OUT[53] ?
+		     6'd2 :
+		     (fpu_div64_fOperands_S0$D_OUT[52] ?
+			6'd3 :
+			(fpu_div64_fOperands_S0$D_OUT[51] ?
+			   6'd4 :
+			   (fpu_div64_fOperands_S0$D_OUT[50] ?
+			      6'd5 :
+			      (fpu_div64_fOperands_S0$D_OUT[49] ?
+				 6'd6 :
+				 (fpu_div64_fOperands_S0$D_OUT[48] ?
+				    6'd7 :
+				    (fpu_div64_fOperands_S0$D_OUT[47] ?
+				       6'd8 :
+				       (fpu_div64_fOperands_S0$D_OUT[46] ?
+					  6'd9 :
+					  (fpu_div64_fOperands_S0$D_OUT[45] ?
+					     6'd10 :
+					     (fpu_div64_fOperands_S0$D_OUT[44] ?
+						6'd11 :
+						(fpu_div64_fOperands_S0$D_OUT[43] ?
+						   6'd12 :
+						   (fpu_div64_fOperands_S0$D_OUT[42] ?
+						      6'd13 :
+						      (fpu_div64_fOperands_S0$D_OUT[41] ?
+							 6'd14 :
+							 (fpu_div64_fOperands_S0$D_OUT[40] ?
+							    6'd15 :
+							    (fpu_div64_fOperands_S0$D_OUT[39] ?
+							       6'd16 :
+							       (fpu_div64_fOperands_S0$D_OUT[38] ?
+								  6'd17 :
+								  (fpu_div64_fOperands_S0$D_OUT[37] ?
+								     6'd18 :
+								     (fpu_div64_fOperands_S0$D_OUT[36] ?
+									6'd19 :
+									(fpu_div64_fOperands_S0$D_OUT[35] ?
+									   6'd20 :
+									   (fpu_div64_fOperands_S0$D_OUT[34] ?
+									      6'd21 :
+									      (fpu_div64_fOperands_S0$D_OUT[33] ?
+										 6'd22 :
+										 (fpu_div64_fOperands_S0$D_OUT[32] ?
+										    6'd23 :
+										    (fpu_div64_fOperands_S0$D_OUT[31] ?
+										       6'd24 :
+										       (fpu_div64_fOperands_S0$D_OUT[30] ?
+											  6'd25 :
+											  (fpu_div64_fOperands_S0$D_OUT[29] ?
+											     6'd26 :
+											     (fpu_div64_fOperands_S0$D_OUT[28] ?
+												6'd27 :
+												(fpu_div64_fOperands_S0$D_OUT[27] ?
+												   6'd28 :
+												   (fpu_div64_fOperands_S0$D_OUT[26] ?
+												      6'd29 :
+												      (fpu_div64_fOperands_S0$D_OUT[25] ?
+													 6'd30 :
+													 (fpu_div64_fOperands_S0$D_OUT[24] ?
+													    6'd31 :
+													    (fpu_div64_fOperands_S0$D_OUT[23] ?
+													       6'd32 :
+													       (fpu_div64_fOperands_S0$D_OUT[22] ?
+														  6'd33 :
+														  (fpu_div64_fOperands_S0$D_OUT[21] ?
+														     6'd34 :
+														     (fpu_div64_fOperands_S0$D_OUT[20] ?
+															6'd35 :
+															(fpu_div64_fOperands_S0$D_OUT[19] ?
+															   6'd36 :
+															   (fpu_div64_fOperands_S0$D_OUT[18] ?
+															      6'd37 :
+															      (fpu_div64_fOperands_S0$D_OUT[17] ?
+																 6'd38 :
+																 (fpu_div64_fOperands_S0$D_OUT[16] ?
+																    6'd39 :
+																    (fpu_div64_fOperands_S0$D_OUT[15] ?
+																       6'd40 :
+																       (fpu_div64_fOperands_S0$D_OUT[14] ?
+																	  6'd41 :
+																	  (fpu_div64_fOperands_S0$D_OUT[13] ?
+																	     6'd42 :
+																	     (fpu_div64_fOperands_S0$D_OUT[12] ?
+																		6'd43 :
+																		(fpu_div64_fOperands_S0$D_OUT[11] ?
+																		   6'd44 :
+																		   (fpu_div64_fOperands_S0$D_OUT[10] ?
+																		      6'd45 :
+																		      (fpu_div64_fOperands_S0$D_OUT[9] ?
+																			 6'd46 :
+																			 (fpu_div64_fOperands_S0$D_OUT[8] ?
+																			    6'd47 :
+																			    (fpu_div64_fOperands_S0$D_OUT[7] ?
+																			       6'd48 :
+																			       (fpu_div64_fOperands_S0$D_OUT[6] ?
+																				  6'd49 :
+																				  (fpu_div64_fOperands_S0$D_OUT[5] ?
+																				     6'd50 :
+																				     (fpu_div64_fOperands_S0$D_OUT[4] ?
+																					6'd51 :
+																					(fpu_div64_fOperands_S0$D_OUT[3] ?
+																					   6'd52 :
+																					   6'd53)))))))))))))))))))))))))))))))))))))))))))))))))))) :
+	       6'd0 ;
+  assign b__h1608 = { 2'd0, rg_b[115:2] } ;
+  assign b__h1712 =
+	     { 2'd0,
+	       IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d49[115:2] } ;
+  assign b__h32583 = { rg_d, 58'd0 } ;
+  assign b__h4039 =
+	     (fpu_div64_fOperands_S0$D_OUT[129:119] == 11'd0) ?
+	       (fpu_div64_fOperands_S0$D_OUT[118] ?
+		  6'd1 :
+		  (fpu_div64_fOperands_S0$D_OUT[117] ?
+		     6'd2 :
+		     (fpu_div64_fOperands_S0$D_OUT[116] ?
+			6'd3 :
+			(fpu_div64_fOperands_S0$D_OUT[115] ?
+			   6'd4 :
+			   (fpu_div64_fOperands_S0$D_OUT[114] ?
+			      6'd5 :
+			      (fpu_div64_fOperands_S0$D_OUT[113] ?
+				 6'd6 :
+				 (fpu_div64_fOperands_S0$D_OUT[112] ?
+				    6'd7 :
+				    (fpu_div64_fOperands_S0$D_OUT[111] ?
+				       6'd8 :
+				       (fpu_div64_fOperands_S0$D_OUT[110] ?
+					  6'd9 :
+					  (fpu_div64_fOperands_S0$D_OUT[109] ?
+					     6'd10 :
+					     (fpu_div64_fOperands_S0$D_OUT[108] ?
+						6'd11 :
+						(fpu_div64_fOperands_S0$D_OUT[107] ?
+						   6'd12 :
+						   (fpu_div64_fOperands_S0$D_OUT[106] ?
+						      6'd13 :
+						      (fpu_div64_fOperands_S0$D_OUT[105] ?
+							 6'd14 :
+							 (fpu_div64_fOperands_S0$D_OUT[104] ?
+							    6'd15 :
+							    (fpu_div64_fOperands_S0$D_OUT[103] ?
+							       6'd16 :
+							       (fpu_div64_fOperands_S0$D_OUT[102] ?
+								  6'd17 :
+								  (fpu_div64_fOperands_S0$D_OUT[101] ?
+								     6'd18 :
+								     (fpu_div64_fOperands_S0$D_OUT[100] ?
+									6'd19 :
+									(fpu_div64_fOperands_S0$D_OUT[99] ?
+									   6'd20 :
+									   (fpu_div64_fOperands_S0$D_OUT[98] ?
+									      6'd21 :
+									      (fpu_div64_fOperands_S0$D_OUT[97] ?
+										 6'd22 :
+										 (fpu_div64_fOperands_S0$D_OUT[96] ?
+										    6'd23 :
+										    (fpu_div64_fOperands_S0$D_OUT[95] ?
+										       6'd24 :
+										       (fpu_div64_fOperands_S0$D_OUT[94] ?
+											  6'd25 :
+											  (fpu_div64_fOperands_S0$D_OUT[93] ?
+											     6'd26 :
+											     (fpu_div64_fOperands_S0$D_OUT[92] ?
+												6'd27 :
+												(fpu_div64_fOperands_S0$D_OUT[91] ?
+												   6'd28 :
+												   (fpu_div64_fOperands_S0$D_OUT[90] ?
+												      6'd29 :
+												      (fpu_div64_fOperands_S0$D_OUT[89] ?
+													 6'd30 :
+													 (fpu_div64_fOperands_S0$D_OUT[88] ?
+													    6'd31 :
+													    (fpu_div64_fOperands_S0$D_OUT[87] ?
+													       6'd32 :
+													       (fpu_div64_fOperands_S0$D_OUT[86] ?
+														  6'd33 :
+														  (fpu_div64_fOperands_S0$D_OUT[85] ?
+														     6'd34 :
+														     (fpu_div64_fOperands_S0$D_OUT[84] ?
+															6'd35 :
+															(fpu_div64_fOperands_S0$D_OUT[83] ?
+															   6'd36 :
+															   (fpu_div64_fOperands_S0$D_OUT[82] ?
+															      6'd37 :
+															      (fpu_div64_fOperands_S0$D_OUT[81] ?
+																 6'd38 :
+																 (fpu_div64_fOperands_S0$D_OUT[80] ?
+																    6'd39 :
+																    (fpu_div64_fOperands_S0$D_OUT[79] ?
+																       6'd40 :
+																       (fpu_div64_fOperands_S0$D_OUT[78] ?
+																	  6'd41 :
+																	  (fpu_div64_fOperands_S0$D_OUT[77] ?
+																	     6'd42 :
+																	     (fpu_div64_fOperands_S0$D_OUT[76] ?
+																		6'd43 :
+																		(fpu_div64_fOperands_S0$D_OUT[75] ?
+																		   6'd44 :
+																		   (fpu_div64_fOperands_S0$D_OUT[74] ?
+																		      6'd45 :
+																		      (fpu_div64_fOperands_S0$D_OUT[73] ?
+																			 6'd46 :
+																			 (fpu_div64_fOperands_S0$D_OUT[72] ?
+																			    6'd47 :
+																			    (fpu_div64_fOperands_S0$D_OUT[71] ?
+																			       6'd48 :
+																			       (fpu_div64_fOperands_S0$D_OUT[70] ?
+																				  6'd49 :
+																				  (fpu_div64_fOperands_S0$D_OUT[69] ?
+																				     6'd50 :
+																				     (fpu_div64_fOperands_S0$D_OUT[68] ?
+																					6'd51 :
+																					(fpu_div64_fOperands_S0$D_OUT[67] ?
+																					   6'd52 :
+																					   6'd53)))))))))))))))))))))))))))))))))))))))))))))))))))) :
+	       6'd0 ;
+  assign din_exp30866_MINUS_1023__q23 = din_exp__h130866 - 11'd1023 ;
+  assign din_exp__h130866 =
+	     _7170_MINUS_fpu_madd_fState_S3_first__995_BITS__ETC___d2008 ?
+	       value__h130883[10:0] :
 	       11'd0 ;
-  assign din_inc___2_exp__h124895 = _theResult___fst_exp__h105762 + 11'd1 ;
-  assign din_inc___2_exp__h124930 = _theResult___fst_exp__h115278 + 11'd1 ;
-  assign din_inc___2_exp__h124956 = _theResult___fst_exp__h124079 + 11'd1 ;
-  assign din_inc___2_exp__h163802 = _theResult___fst_exp__h144669 + 11'd1 ;
-  assign din_inc___2_exp__h163837 = _theResult___fst_exp__h154185 + 11'd1 ;
-  assign din_inc___2_exp__h163863 = _theResult___fst_exp__h162986 + 11'd1 ;
-  assign din_inc___2_exp__h208249 = _theResult___fst_exp__h181212 + 8'd1 ;
-  assign din_inc___2_exp__h208275 = _theResult___fst_exp__h189868 + 8'd1 ;
-  assign din_inc___2_exp__h208310 = _theResult___fst_exp__h198978 + 8'd1 ;
-  assign din_inc___2_exp__h208336 = _theResult___fst_exp__h207663 + 8'd1 ;
-  assign din_inc___2_exp__h46446 = fpu_madd_fState_S8$D_OUT[65:55] + 11'd1 ;
-  assign din_inc___2_exp__h86257 = _theResult___fst_exp__h67124 + 11'd1 ;
-  assign din_inc___2_exp__h86292 = _theResult___fst_exp__h76640 + 11'd1 ;
-  assign din_inc___2_exp__h86318 = _theResult___fst_exp__h85441 + 11'd1 ;
-  assign exp__h208232 =
-	     (fpu_madd_fResult_S9$D_OUT[67:57] == 11'd2047) ?
+  assign din_inc___2_exp__h142626 = fpu_madd_fState_S8$D_OUT[65:55] + 11'd1 ;
+  assign din_inc___2_exp__h182469 = _theResult___fst_exp__h163336 + 11'd1 ;
+  assign din_inc___2_exp__h182504 = _theResult___fst_exp__h172852 + 11'd1 ;
+  assign din_inc___2_exp__h182530 = _theResult___fst_exp__h181653 + 11'd1 ;
+  assign din_inc___2_exp__h221107 = _theResult___fst_exp__h201974 + 11'd1 ;
+  assign din_inc___2_exp__h221142 = _theResult___fst_exp__h211490 + 11'd1 ;
+  assign din_inc___2_exp__h221168 = _theResult___fst_exp__h220291 + 11'd1 ;
+  assign din_inc___2_exp__h260046 = _theResult___fst_exp__h240913 + 11'd1 ;
+  assign din_inc___2_exp__h260081 = _theResult___fst_exp__h250429 + 11'd1 ;
+  assign din_inc___2_exp__h260107 = _theResult___fst_exp__h259230 + 11'd1 ;
+  assign din_inc___2_exp__h304723 = _theResult___fst_exp__h277686 + 8'd1 ;
+  assign din_inc___2_exp__h304749 = _theResult___fst_exp__h286342 + 8'd1 ;
+  assign din_inc___2_exp__h304784 = _theResult___fst_exp__h295452 + 8'd1 ;
+  assign din_inc___2_exp__h304810 = _theResult___fst_exp__h304137 + 8'd1 ;
+  assign din_inc___2_exp__h43566 = fpu_div64_fState_S4$D_OUT[64:54] + 11'd1 ;
+  assign din_inc___2_exp__h96000 = fpu_sqr64_fState_S4$D_OUT[64:54] + 11'd1 ;
+  assign exp__h304706 =
+	     (resWire$wget[67:57] == 11'd2047) ?
 	       8'd255 :
-	       _theResult___fst_exp__h208223 ;
-  assign fpu_madd_fOperand_S0D_OUT_BITS_129_TO_119_MIN_ETC__q143 =
+	       _theResult___fst_exp__h304697 ;
+  assign fpu_div64_fOperands_S0D_OUT_BITS_129_TO_119_M_ETC__q7 =
+	     fpu_div64_fOperands_S0$D_OUT[129:119] - 11'd1023 ;
+  assign fpu_div64_fOperands_S0D_OUT_BITS_65_TO_55_MIN_ETC__q8 =
+	     fpu_div64_fOperands_S0$D_OUT[65:55] - 11'd1023 ;
+  assign fpu_div64_fOperands_S0_first__06_BITS_129_TO_1_ETC___d363 =
+	     fpu_div64_fOperands_S0$D_OUT[129:119] == 11'd2047 &&
+	     fpu_div64_fOperands_S0$D_OUT[118:67] != 52'd0 &&
+	     !fpu_div64_fOperands_S0$D_OUT[118] ||
+	     fpu_div64_fOperands_S0$D_OUT[65:55] == 11'd2047 &&
+	     fpu_div64_fOperands_S0$D_OUT[54:3] != 52'd0 &&
+	     !fpu_div64_fOperands_S0$D_OUT[54] ||
+	     fpu_div64_fOperands_S0$D_OUT[129:119] == 11'd2047 &&
+	     fpu_div64_fOperands_S0$D_OUT[118] ||
+	     fpu_div64_fOperands_S0$D_OUT[65:55] == 11'd2047 &&
+	     fpu_div64_fOperands_S0$D_OUT[54] ||
+	     fpu_div64_fOperands_S0_first__06_BITS_65_TO_55_ETC___d359 ;
+  assign fpu_div64_fOperands_S0_first__06_BITS_129_TO_1_ETC___d401 =
+	     fpu_div64_fOperands_S0$D_OUT[129:119] == 11'd2047 &&
+	     fpu_div64_fOperands_S0$D_OUT[118:67] == 52'd0 ||
+	     fpu_div64_fOperands_S0$D_OUT[129:119] == 11'd0 &&
+	     fpu_div64_fOperands_S0$D_OUT[118:67] == 52'd0 ||
+	     fpu_div64_fOperands_S0$D_OUT[65:55] == 11'd2047 &&
+	     fpu_div64_fOperands_S0$D_OUT[54:3] == 52'd0 ;
+  assign fpu_div64_fOperands_S0_first__06_BITS_129_TO_1_ETC___d436 =
+	     fpu_div64_fOperands_S0$D_OUT[129:119] == 11'd2047 &&
+	     fpu_div64_fOperands_S0$D_OUT[118:67] == 52'd0 &&
+	     fpu_div64_fOperands_S0$D_OUT[65:55] == 11'd2047 &&
+	     fpu_div64_fOperands_S0$D_OUT[54:3] == 52'd0 ||
+	     fpu_div64_fOperands_S0$D_OUT[129:119] == 11'd0 &&
+	     fpu_div64_fOperands_S0$D_OUT[118:67] == 52'd0 &&
+	     fpu_div64_fOperands_S0$D_OUT[65:55] == 11'd0 &&
+	     fpu_div64_fOperands_S0$D_OUT[54:3] == 52'd0 ;
+  assign fpu_div64_fOperands_S0_first__06_BITS_129_TO_1_ETC___d498 =
+	     fpu_div64_fOperands_S0$D_OUT[129:119] == 11'd2047 &&
+	     fpu_div64_fOperands_S0$D_OUT[118:67] != 52'd0 &&
+	     !fpu_div64_fOperands_S0$D_OUT[118] ||
+	     fpu_div64_fOperands_S0$D_OUT[65:55] == 11'd2047 &&
+	     fpu_div64_fOperands_S0$D_OUT[54:3] != 52'd0 &&
+	     !fpu_div64_fOperands_S0$D_OUT[54] ||
+	     fpu_div64_fOperands_S0$D_OUT[129:119] == 11'd2047 &&
+	     fpu_div64_fOperands_S0$D_OUT[118] ||
+	     fpu_div64_fOperands_S0$D_OUT[65:55] == 11'd2047 &&
+	     fpu_div64_fOperands_S0$D_OUT[54] ||
+	     fpu_div64_fOperands_S0$D_OUT[65:55] == 11'd0 &&
+	     fpu_div64_fOperands_S0$D_OUT[54:3] == 52'd0 ||
+	     fpu_div64_fOperands_S0_first__06_BITS_129_TO_1_ETC___d401 ;
+  assign fpu_div64_fOperands_S0_first__06_BITS_65_TO_55_ETC___d359 =
+	     fpu_div64_fOperands_S0$D_OUT[65:55] == 11'd0 &&
+	     fpu_div64_fOperands_S0$D_OUT[54:3] == 52'd0 ||
+	     fpu_div64_fOperands_S0$D_OUT[129:119] == 11'd2047 &&
+	     fpu_div64_fOperands_S0$D_OUT[118:67] == 52'd0 ||
+	     fpu_div64_fOperands_S0$D_OUT[129:119] == 11'd0 &&
+	     fpu_div64_fOperands_S0$D_OUT[118:67] == 52'd0 ||
+	     fpu_div64_fOperands_S0$D_OUT[65:55] == 11'd2047 &&
+	     fpu_div64_fOperands_S0$D_OUT[54:3] == 52'd0 ||
+	     !IF_fpu_div64_fOperands_S0_first__06_BITS_129_T_ETC___d353 ||
+	     IF_fpu_div64_fOperands_S0_first__06_BITS_129_T_ETC___d355 ;
+  assign fpu_div64_fOperands_S0_first__06_BIT_130_03_EQ_ETC___d405 =
+	     fpu_div64_fOperands_S0$D_OUT[130] ==
+	     fpu_div64_fOperands_S0$D_OUT[66] ;
+  assign fpu_div64_fState_S3_first__86_BIT_121_07_CONCA_ETC___d936 =
+	     { fpu_div64_fState_S3$D_OUT[121],
+	       IF_fpu_div64_fState_S3_first__86_BITS_120_TO_1_ETC___d597 ?
+		 IF_IF_fpu_div64_fState_S3_first__86_BITS_120_T_ETC___d929 :
+		 ((fpu_div64_fState_S3$D_OUT[120:110] == 11'd2047) ?
+		    ((fpu_div64_fState_S3$D_OUT[57:56] == 2'b0) ?
+		       { _theResult___fst_exp__h42284,
+			 fpu_div64_fState_S3$D_OUT[109:58] } :
+		       63'h7FEFFFFFFFFFFFFF) :
+		    fpu_div64_fState_S3$D_OUT[120:58]) } ;
+  assign fpu_madd_fOperand_S0D_OUT_BITS_129_TO_119_MIN_ETC__q128 =
 	     fpu_madd_fOperand_S0$D_OUT[129:119] - 11'd1023 ;
-  assign fpu_madd_fOperand_S0D_OUT_BITS_65_TO_55_MINUS_ETC__q144 =
+  assign fpu_madd_fOperand_S0D_OUT_BITS_65_TO_55_MINUS_ETC__q129 =
 	     fpu_madd_fOperand_S0$D_OUT[65:55] - 11'd1023 ;
-  assign fpu_madd_fOperand_S0_first_BITS_129_TO_119_7_E_ETC___d127 =
+  assign fpu_madd_fOperand_S0_first__803_BITS_129_TO_11_ETC___d1857 =
+	     fpu_madd_fOperand_S0$D_OUT[129:119] == 11'd2047 &&
+	     fpu_madd_fOperand_S0$D_OUT[118:67] == 52'd0 ||
+	     fpu_madd_fOperand_S0$D_OUT[65:55] == 11'd2047 &&
+	     fpu_madd_fOperand_S0$D_OUT[54:3] == 52'd0 ||
+	     x__h96539 == 11'd0 && _theResult___fst_sfd__h96608 == 52'd0 &&
+	     (fpu_madd_fOperand_S0$D_OUT[129:119] == 11'd0 &&
+	      fpu_madd_fOperand_S0$D_OUT[118:67] == 52'd0 ||
+	      fpu_madd_fOperand_S0$D_OUT[65:55] == 11'd0 &&
+	      fpu_madd_fOperand_S0$D_OUT[54:3] == 52'd0) &&
+	     fpu_madd_fOperand_S0_first__803_BIT_195_804_AN_ETC___d1855 ;
+  assign fpu_madd_fOperand_S0_first__803_BITS_129_TO_11_ETC___d1926 =
 	     fpu_madd_fOperand_S0$D_OUT[129:119] == 11'd2047 &&
 	     fpu_madd_fOperand_S0$D_OUT[118:67] == 52'd0 &&
 	     fpu_madd_fOperand_S0$D_OUT[65:55] == 11'd0 &&
@@ -6279,1608 +8890,2075 @@ module mkFPU(CLK,
 	     fpu_madd_fOperand_S0$D_OUT[118:67] == 52'd0 &&
 	     fpu_madd_fOperand_S0$D_OUT[65:55] == 11'd2047 &&
 	     fpu_madd_fOperand_S0$D_OUT[54:3] == 52'd0 ;
-  assign fpu_madd_fOperand_S0_first_BITS_129_TO_119_7_E_ETC___d58 =
-	     fpu_madd_fOperand_S0$D_OUT[129:119] == 11'd2047 &&
-	     fpu_madd_fOperand_S0$D_OUT[118:67] == 52'd0 ||
-	     fpu_madd_fOperand_S0$D_OUT[65:55] == 11'd2047 &&
-	     fpu_madd_fOperand_S0$D_OUT[54:3] == 52'd0 ||
-	     x__h329 == 11'd0 && _theResult___fst_sfd__h398 == 52'd0 &&
-	     (fpu_madd_fOperand_S0$D_OUT[129:119] == 11'd0 &&
-	      fpu_madd_fOperand_S0$D_OUT[118:67] == 52'd0 ||
-	      fpu_madd_fOperand_S0$D_OUT[65:55] == 11'd0 &&
-	      fpu_madd_fOperand_S0$D_OUT[54:3] == 52'd0) &&
-	     fpu_madd_fOperand_S0_first_BIT_195_AND_fpu_mad_ETC___d56 ;
-  assign fpu_madd_fOperand_S0_first_BIT_195_AND_fpu_mad_ETC___d56 =
+  assign fpu_madd_fOperand_S0_first__803_BIT_195_804_AN_ETC___d1855 =
 	     (fpu_madd_fOperand_S0$D_OUT[195] &&
 	      fpu_madd_fOperand_S0$D_OUT[194]) ==
-	     NOT_fpu_madd_fOperand_S0_first_BIT_130_2_EQ_fp_ETC___d55 ;
-  assign fpu_madd_fProd_S3_first__10_SRL_IF_7170_MINUS__ETC___d213 =
+	     NOT_fpu_madd_fOperand_S0_first__803_BIT_130_85_ETC___d1854 ;
+  assign fpu_madd_fProd_S3_first__009_SRL_IF_7170_MINUS_ETC___d2012 =
 	     fpu_madd_fProd_S3$D_OUT >>
-	     _7170_MINUS_fpu_madd_fState_S3_first__96_BITS_1_ETC___d208 ;
-  assign fpu_madd_fResult_S9D_OUT_BITS_67_TO_57_MINUS__ETC__q110 =
-	     fpu_madd_fResult_S9$D_OUT[67:57] - 11'd1023 ;
-  assign fpu_madd_fState_S3_first__96_BITS_12_TO_0_02_S_ETC___d203 =
+	     _7170_MINUS_fpu_madd_fState_S3_first__995_BITS__ETC___d2007 ;
+  assign fpu_madd_fState_S3_first__995_BITS_12_TO_0_001_ETC___d2002 =
 	     (fpu_madd_fState_S3$D_OUT[12:0] ^ 13'h1000) <= 13'd5119 ;
-  assign fpu_madd_fState_S3_first__96_BITS_12_TO_0_02_S_ETC___d205 =
+  assign fpu_madd_fState_S3_first__995_BITS_12_TO_0_001_ETC___d2004 =
 	     (fpu_madd_fState_S3$D_OUT[12:0] ^ 13'h1000) < 13'd3020 ;
-  assign fpu_madd_fState_S3_first__96_BITS_86_TO_82_01__ETC___d702 =
+  assign fpu_madd_fState_S3_first__995_BITS_86_TO_82_00_ETC___d2501 =
 	     fpu_madd_fState_S3$D_OUT[86:82] |
 	     { 2'd0,
-	       sfdBC__h19479[105] &&
-	       IF_IF_7170_MINUS_fpu_madd_fState_S3_first__96__ETC___d232 ==
+	       sfdBC__h115662[105] &&
+	       IF_IF_7170_MINUS_fpu_madd_fState_S3_first__995_ETC___d2031 ==
 	       12'd1023,
-	       _theResult___fst_exp__h34769 == 11'd0 &&
-	       guardBC__h19483 != 2'd0,
-	       sfdBC__h19479[105] &&
-	       IF_IF_7170_MINUS_fpu_madd_fState_S3_first__96__ETC___d232 ==
+	       _theResult___fst_exp__h130952 == 11'd0 &&
+	       guardBC__h115666 != 2'd0,
+	       sfdBC__h115662[105] &&
+	       IF_IF_7170_MINUS_fpu_madd_fState_S3_first__995_ETC___d2031 ==
 	       12'd1023 } ;
-  assign fpu_madd_fState_S4D_OUT_BITS_128_TO_118_MINUS_ETC__q7 =
+  assign fpu_madd_fState_S4D_OUT_BITS_128_TO_118_MINUS_ETC__q27 =
 	     fpu_madd_fState_S4$D_OUT[128:118] - 11'd1023 ;
-  assign fpu_madd_fState_S4D_OUT_BITS_64_TO_54_MINUS_1023__q6 =
+  assign fpu_madd_fState_S4D_OUT_BITS_64_TO_54_MINUS_1023__q26 =
 	     fpu_madd_fState_S4$D_OUT[64:54] - 11'd1023 ;
-  assign fpu_madd_fState_S5_first__02_BITS_56_TO_0_11_S_ETC___d816 =
+  assign fpu_madd_fState_S5_first__601_BITS_56_TO_0_610_ETC___d2615 =
 	     fpu_madd_fState_S5$D_OUT[56:0] >>
 	     fpu_madd_fState_S5$D_OUT[126:114] ;
-  assign fpu_madd_fState_S7_first__52_BITS_137_TO_133_5_ETC___d1143 =
+  assign fpu_madd_fState_S7_first__651_BITS_137_TO_133__ETC___d2942 =
 	     fpu_madd_fState_S7$D_OUT[137:133] |
 	     { 2'd0,
-	       sfd__h36936[56] &&
-	       IF_fpu_madd_fState_S7_first__52_BITS_126_TO_11_ETC___d869 ==
+	       sfd__h133119[56] &&
+	       IF_fpu_madd_fState_S7_first__651_BITS_126_TO_1_ETC___d2668 ==
 	       12'd1023,
-	       _theResult___fst_exp__h45195 == 11'd0 && guard__h36940 != 2'd0,
-	       sfd__h36936[56] &&
-	       IF_fpu_madd_fState_S7_first__52_BITS_126_TO_11_ETC___d869 ==
+	       _theResult___fst_exp__h141378 == 11'd0 &&
+	       guard__h133123 != 2'd0,
+	       sfd__h133119[56] &&
+	       IF_fpu_madd_fState_S7_first__651_BITS_126_TO_1_ETC___d2668 ==
 	       12'd1023 } ;
-  assign fpu_madd_fState_S8_first__161_BITS_75_TO_71_23_ETC___d1244 =
+  assign fpu_madd_fState_S8_first__960_BITS_75_TO_71_03_ETC___d3043 =
 	     fpu_madd_fState_S8$D_OUT[75:71] |
 	     { 2'd0,
-	       IF_fpu_madd_fState_S8_first__161_BITS_65_TO_55_ETC___d1212 ==
+	       IF_fpu_madd_fState_S8_first__960_BITS_65_TO_55_ETC___d3011 ==
 	       11'd2047 &&
 	       ((fpu_madd_fState_S8$D_OUT[65:55] == 11'd2047) ?
 		  fpu_madd_fState_S8$D_OUT[54:3] :
-		  _theResult___fst_sfd__h46440) ==
+		  _theResult___fst_sfd__h142620) ==
 	       52'd0,
 	       1'd0,
 	       fpu_madd_fState_S8$D_OUT[65:55] != 11'd2047 &&
 	       fpu_madd_fState_S8$D_OUT[2:1] != 2'b0 } ;
-  assign guardBC__h19483 =
-	     (sfdBC__h19479[105] &&
-	      IF_IF_7170_MINUS_fpu_madd_fState_S3_first__96__ETC___d232 ==
+  assign fpu_sqr64_fOperand_S0D_OUT_BITS_65_TO_55_MINU_ETC__q16 =
+	     fpu_sqr64_fOperand_S0$D_OUT[65:55] - 11'd1023 ;
+  assign fpu_sqr64_fState_S3D_OUT_BITS_121_TO_111_MINU_ETC__q18 =
+	     fpu_sqr64_fState_S3$D_OUT[121:111] - 11'd1023 ;
+  assign guardBC__h115666 =
+	     (sfdBC__h115662[105] &&
+	      IF_IF_7170_MINUS_fpu_madd_fState_S3_first__995_ETC___d2031 ==
 	      12'd1023) ?
 	       2'd3 :
-	       _theResult___snd_fst__h34868 ;
-  assign guard__h107050 =
-	     { IF_sfdin15272_BIT_4_THEN_2_ELSE_0__q78[1],
-	       { sfdin__h115272[3:0], 52'd0 } != 56'd0 } ;
-  assign guard__h107648 = x__h107750 != 57'd0 ;
-  assign guard__h116089 =
-	     { IF_theResult___snd24025_BIT_4_THEN_2_ELSE_0__q81[1],
-	       { _theResult___snd__h124025[3:0], 52'd0 } != 56'd0 } ;
-  assign guard__h136708 =
-	     { IF_theResult___snd44620_BIT_4_THEN_2_ELSE_0__q41[1],
-	       { _theResult___snd__h144620[3:0], 52'd0 } != 56'd0 } ;
-  assign guard__h145957 =
-	     { IF_sfdin54179_BIT_4_THEN_2_ELSE_0__q45[1],
-	       { sfdin__h154179[3:0], 52'd0 } != 56'd0 } ;
-  assign guard__h146555 = x__h146657 != 57'd0 ;
-  assign guard__h154996 =
-	     { IF_theResult___snd62932_BIT_4_THEN_2_ELSE_0__q48[1],
-	       { _theResult___snd__h162932[3:0], 52'd0 } != 56'd0 } ;
-  assign guard__h173113 =
-	     { IF_sfdin81206_BIT_33_THEN_2_ELSE_0__q107[1],
-	       { sfdin__h181206[32:0], 23'd0 } != 56'd0 } ;
-  assign guard__h181820 =
-	     { IF_theResult___snd89819_BIT_33_THEN_2_ELSE_0__q109[1],
-	       { _theResult___snd__h189819[32:0], 23'd0 } != 56'd0 } ;
-  assign guard__h190750 =
-	     { IF_sfdin98972_BIT_33_THEN_2_ELSE_0__q113[1],
-	       { sfdin__h198972[32:0], 23'd0 } != 56'd0 } ;
-  assign guard__h191348 = x__h191450 != 57'd0 ;
-  assign guard__h199586 =
-	     { IF_theResult___snd07609_BIT_33_THEN_2_ELSE_0__q116[1],
-	       { _theResult___snd__h207609[32:0], 23'd0 } != 56'd0 } ;
-  assign guard__h36184 = fpu_madd_fState_S5$D_OUT[56:0] << x__h36288 ;
-  assign guard__h36940 =
-	     (sfd__h36936[56] &&
-	      IF_fpu_madd_fState_S7_first__52_BITS_126_TO_11_ETC___d869 ==
+	       _theResult___snd_fst__h131051 ;
+  assign guard__h132367 = fpu_madd_fState_S5$D_OUT[56:0] << x__h132471 ;
+  assign guard__h133123 =
+	     (sfd__h133119[56] &&
+	      IF_fpu_madd_fState_S7_first__651_BITS_126_TO_1_ETC___d2668 ==
 	      12'd1023) ?
 	       2'd3 :
-	       _theResult___snd_fst__h45294 ;
-  assign guard__h59163 =
-	     { IF_theResult___snd7075_BIT_4_THEN_2_ELSE_0__q14[1],
-	       { _theResult___snd__h67075[3:0], 52'd0 } != 56'd0 } ;
-  assign guard__h68412 =
-	     { IF_sfdin6634_BIT_4_THEN_2_ELSE_0__q18[1],
-	       { sfdin__h76634[3:0], 52'd0 } != 56'd0 } ;
-  assign guard__h69010 = x__h69112 != 57'd0 ;
-  assign guard__h77451 =
-	     { IF_theResult___snd5387_BIT_4_THEN_2_ELSE_0__q21[1],
-	       { _theResult___snd__h85387[3:0], 52'd0 } != 56'd0 } ;
-  assign guard__h97801 =
-	     { IF_theResult___snd05713_BIT_4_THEN_2_ELSE_0__q74[1],
-	       { _theResult___snd__h105713[3:0], 52'd0 } != 56'd0 } ;
-  assign iFifoD_OUT_BITS_102_TO_95_MINUS_127__q75 =
+	       _theResult___snd_fst__h141477 ;
+  assign guard__h155375 =
+	     { IF_theResult___snd63287_BIT_4_THEN_2_ELSE_0__q34[1],
+	       { _theResult___snd__h163287[3:0], 52'd0 } != 56'd0 } ;
+  assign guard__h164624 =
+	     { IF_sfdin72846_BIT_4_THEN_2_ELSE_0__q38[1],
+	       { sfdin__h172846[3:0], 52'd0 } != 56'd0 } ;
+  assign guard__h165222 = x__h165324 != 57'd0 ;
+  assign guard__h173663 =
+	     { IF_theResult___snd81599_BIT_4_THEN_2_ELSE_0__q41[1],
+	       { _theResult___snd__h181599[3:0], 52'd0 } != 56'd0 } ;
+  assign guard__h194013 =
+	     { IF_theResult___snd01925_BIT_4_THEN_2_ELSE_0__q94[1],
+	       { _theResult___snd__h201925[3:0], 52'd0 } != 56'd0 } ;
+  assign guard__h203262 =
+	     { IF_sfdin11484_BIT_4_THEN_2_ELSE_0__q98[1],
+	       { sfdin__h211484[3:0], 52'd0 } != 56'd0 } ;
+  assign guard__h203860 = x__h203962 != 57'd0 ;
+  assign guard__h212301 =
+	     { IF_theResult___snd20237_BIT_4_THEN_2_ELSE_0__q101[1],
+	       { _theResult___snd__h220237[3:0], 52'd0 } != 56'd0 } ;
+  assign guard__h232952 =
+	     { IF_theResult___snd40864_BIT_4_THEN_2_ELSE_0__q61[1],
+	       { _theResult___snd__h240864[3:0], 52'd0 } != 56'd0 } ;
+  assign guard__h242201 =
+	     { IF_sfdin50423_BIT_4_THEN_2_ELSE_0__q65[1],
+	       { sfdin__h250423[3:0], 52'd0 } != 56'd0 } ;
+  assign guard__h242799 = x__h242901 != 57'd0 ;
+  assign guard__h251240 =
+	     { IF_theResult___snd59176_BIT_4_THEN_2_ELSE_0__q68[1],
+	       { _theResult___snd__h259176[3:0], 52'd0 } != 56'd0 } ;
+  assign guard__h269587 =
+	     { IF_sfdin77680_BIT_33_THEN_2_ELSE_0__q134[1],
+	       { sfdin__h277680[32:0], 23'd0 } != 56'd0 } ;
+  assign guard__h278294 =
+	     { IF_theResult___snd86293_BIT_33_THEN_2_ELSE_0__q136[1],
+	       { _theResult___snd__h286293[32:0], 23'd0 } != 56'd0 } ;
+  assign guard__h287224 =
+	     { IF_sfdin95446_BIT_33_THEN_2_ELSE_0__q140[1],
+	       { sfdin__h295446[32:0], 23'd0 } != 56'd0 } ;
+  assign guard__h287822 = x__h287924 != 57'd0 ;
+  assign guard__h296060 =
+	     { IF_theResult___snd04083_BIT_33_THEN_2_ELSE_0__q143[1],
+	       { _theResult___snd__h304083[32:0], 23'd0 } != 56'd0 } ;
+  assign guard__h33946 = x__h42705 ;
+  assign guard__h86435 = x__h95138 ;
+  assign iFifoD_OUT_BITS_102_TO_95_MINUS_127__q95 =
 	     iFifo$D_OUT[102:95] - 8'd127 ;
-  assign iFifoD_OUT_BITS_167_TO_160_MINUS_127__q15 =
+  assign iFifoD_OUT_BITS_167_TO_160_MINUS_127__q35 =
 	     iFifo$D_OUT[167:160] - 8'd127 ;
-  assign iFifoD_OUT_BITS_37_TO_30_MINUS_127__q42 =
+  assign iFifoD_OUT_BITS_37_TO_30_MINUS_127__q62 =
 	     iFifo$D_OUT[37:30] - 8'd127 ;
-  assign out___1_sfd__h125570 = { iFifo$D_OUT[29:7], 29'd0 } ;
-  assign out___1_sfd__h48023 = { iFifo$D_OUT[159:137], 29'd0 } ;
-  assign out___1_sfd__h86663 = { iFifo$D_OUT[94:72], 29'd0 } ;
-  assign out_exp__h106410 =
-	     _theResult___snd__h105713[5] ?
-	       _theResult___exp__h106407 :
-	       _theResult___fst_exp__h105762 ;
-  assign out_exp__h116000 =
-	     sfdin__h115272[5] ?
-	       _theResult___exp__h115997 :
-	       _theResult___fst_exp__h115278 ;
-  assign out_exp__h124752 =
-	     _theResult___snd__h124025[5] ?
-	       _theResult___exp__h124749 :
-	       _theResult___fst_exp__h124079 ;
-  assign out_exp__h145317 =
-	     _theResult___snd__h144620[5] ?
-	       _theResult___exp__h145314 :
-	       _theResult___fst_exp__h144669 ;
-  assign out_exp__h154907 =
-	     sfdin__h154179[5] ?
-	       _theResult___exp__h154904 :
-	       _theResult___fst_exp__h154185 ;
-  assign out_exp__h163659 =
-	     _theResult___snd__h162932[5] ?
-	       _theResult___exp__h163656 :
-	       _theResult___fst_exp__h162986 ;
-  assign out_exp__h181731 =
-	     sfdin__h181206[34] ?
-	       _theResult___exp__h181728 :
-	       _theResult___fst_exp__h181212 ;
-  assign out_exp__h190313 =
-	     _theResult___snd__h189819[34] ?
-	       _theResult___exp__h190310 :
-	       _theResult___fst_exp__h189868 ;
-  assign out_exp__h199497 =
-	     sfdin__h198972[34] ?
-	       _theResult___exp__h199494 :
-	       _theResult___fst_exp__h198978 ;
-  assign out_exp__h208133 =
-	     _theResult___snd__h207609[34] ?
-	       _theResult___exp__h208130 :
-	       _theResult___fst_exp__h207663 ;
-  assign out_exp__h46364 =
+  assign out___1_sfd__h144235 = { iFifo$D_OUT[159:137], 29'd0 } ;
+  assign out___1_sfd__h182875 = { iFifo$D_OUT[94:72], 29'd0 } ;
+  assign out___1_sfd__h221814 = { iFifo$D_OUT[29:7], 29'd0 } ;
+  assign out_exp__h142544 =
 	     fpu_madd_fState_S8$D_OUT[3] ?
-	       _theResult___exp__h46361 :
+	       _theResult___exp__h142541 :
 	       fpu_madd_fState_S8$D_OUT[65:55] ;
-  assign out_exp__h67772 =
-	     _theResult___snd__h67075[5] ?
-	       _theResult___exp__h67769 :
-	       _theResult___fst_exp__h67124 ;
-  assign out_exp__h77362 =
-	     sfdin__h76634[5] ?
-	       _theResult___exp__h77359 :
-	       _theResult___fst_exp__h76640 ;
-  assign out_exp__h86114 =
-	     _theResult___snd__h85387[5] ?
-	       _theResult___exp__h86111 :
-	       _theResult___fst_exp__h85441 ;
-  assign out_sfd__h106411 =
-	     _theResult___snd__h105713[5] ?
-	       _theResult___sfd__h106408 :
-	       _theResult___snd__h105713[56:5] ;
-  assign out_sfd__h116001 =
-	     sfdin__h115272[5] ?
-	       _theResult___sfd__h115998 :
-	       sfdin__h115272[56:5] ;
-  assign out_sfd__h124753 =
-	     _theResult___snd__h124025[5] ?
-	       _theResult___sfd__h124750 :
-	       _theResult___snd__h124025[56:5] ;
-  assign out_sfd__h145318 =
-	     _theResult___snd__h144620[5] ?
-	       _theResult___sfd__h145315 :
-	       _theResult___snd__h144620[56:5] ;
-  assign out_sfd__h154908 =
-	     sfdin__h154179[5] ?
-	       _theResult___sfd__h154905 :
-	       sfdin__h154179[56:5] ;
-  assign out_sfd__h163660 =
-	     _theResult___snd__h162932[5] ?
-	       _theResult___sfd__h163657 :
-	       _theResult___snd__h162932[56:5] ;
-  assign out_sfd__h181732 =
-	     sfdin__h181206[34] ?
-	       _theResult___sfd__h181729 :
-	       sfdin__h181206[56:34] ;
-  assign out_sfd__h190314 =
-	     _theResult___snd__h189819[34] ?
-	       _theResult___sfd__h190311 :
-	       _theResult___snd__h189819[56:34] ;
-  assign out_sfd__h199498 =
-	     sfdin__h198972[34] ?
-	       _theResult___sfd__h199495 :
-	       sfdin__h198972[56:34] ;
-  assign out_sfd__h208134 =
-	     _theResult___snd__h207609[34] ?
-	       _theResult___sfd__h208131 :
-	       _theResult___snd__h207609[56:34] ;
-  assign out_sfd__h46365 =
+  assign out_exp__h163984 =
+	     _theResult___snd__h163287[5] ?
+	       _theResult___exp__h163981 :
+	       _theResult___fst_exp__h163336 ;
+  assign out_exp__h173574 =
+	     sfdin__h172846[5] ?
+	       _theResult___exp__h173571 :
+	       _theResult___fst_exp__h172852 ;
+  assign out_exp__h182326 =
+	     _theResult___snd__h181599[5] ?
+	       _theResult___exp__h182323 :
+	       _theResult___fst_exp__h181653 ;
+  assign out_exp__h202622 =
+	     _theResult___snd__h201925[5] ?
+	       _theResult___exp__h202619 :
+	       _theResult___fst_exp__h201974 ;
+  assign out_exp__h212212 =
+	     sfdin__h211484[5] ?
+	       _theResult___exp__h212209 :
+	       _theResult___fst_exp__h211490 ;
+  assign out_exp__h220964 =
+	     _theResult___snd__h220237[5] ?
+	       _theResult___exp__h220961 :
+	       _theResult___fst_exp__h220291 ;
+  assign out_exp__h241561 =
+	     _theResult___snd__h240864[5] ?
+	       _theResult___exp__h241558 :
+	       _theResult___fst_exp__h240913 ;
+  assign out_exp__h251151 =
+	     sfdin__h250423[5] ?
+	       _theResult___exp__h251148 :
+	       _theResult___fst_exp__h250429 ;
+  assign out_exp__h259903 =
+	     _theResult___snd__h259176[5] ?
+	       _theResult___exp__h259900 :
+	       _theResult___fst_exp__h259230 ;
+  assign out_exp__h278205 =
+	     sfdin__h277680[34] ?
+	       _theResult___exp__h278202 :
+	       _theResult___fst_exp__h277686 ;
+  assign out_exp__h286787 =
+	     _theResult___snd__h286293[34] ?
+	       _theResult___exp__h286784 :
+	       _theResult___fst_exp__h286342 ;
+  assign out_exp__h295971 =
+	     sfdin__h295446[34] ?
+	       _theResult___exp__h295968 :
+	       _theResult___fst_exp__h295452 ;
+  assign out_exp__h304607 =
+	     _theResult___snd__h304083[34] ?
+	       _theResult___exp__h304604 :
+	       _theResult___fst_exp__h304137 ;
+  assign out_exp__h43478 =
+	     fpu_div64_fState_S4$D_OUT[2] ?
+	       _theResult___exp__h43475 :
+	       fpu_div64_fState_S4$D_OUT[64:54] ;
+  assign out_exp__h95912 =
+	     fpu_sqr64_fState_S4$D_OUT[2] ?
+	       _theResult___exp__h95909 :
+	       fpu_sqr64_fState_S4$D_OUT[64:54] ;
+  assign out_sfd__h142545 =
 	     fpu_madd_fState_S8$D_OUT[3] ?
-	       _theResult___sfd__h46362 :
+	       _theResult___sfd__h142542 :
 	       fpu_madd_fState_S8$D_OUT[54:3] ;
-  assign out_sfd__h67773 =
-	     _theResult___snd__h67075[5] ?
-	       _theResult___sfd__h67770 :
-	       _theResult___snd__h67075[56:5] ;
-  assign out_sfd__h77363 =
-	     sfdin__h76634[5] ?
-	       _theResult___sfd__h77360 :
-	       sfdin__h76634[56:5] ;
-  assign out_sfd__h86115 =
-	     _theResult___snd__h85387[5] ?
-	       _theResult___sfd__h86112 :
-	       _theResult___snd__h85387[56:5] ;
-  assign resWire_wget__595_BITS_4_TO_0_843_OR_NOT_resWi_ETC___d4953 =
-	     fpu_madd_fResult_S9$D_OUT[4:0] |
-	     { (fpu_madd_fResult_S9$D_OUT[67:57] != 11'd2047 ||
-		fpu_madd_fResult_S9$D_OUT[56:5] == 52'd0) &&
-	       (fpu_madd_fResult_S9$D_OUT[67:57] != 11'd2047 ||
-		fpu_madd_fResult_S9$D_OUT[56:5] != 52'd0) &&
-	       (fpu_madd_fResult_S9$D_OUT[67:57] != 11'd0 ||
-		fpu_madd_fResult_S9$D_OUT[56:5] != 52'd0) &&
-	       IF_resWire_wget__595_BITS_67_TO_57_601_EQ_0_60_ETC___d4894,
-	       (fpu_madd_fResult_S9$D_OUT[67:57] != 11'd2047 ||
-		fpu_madd_fResult_S9$D_OUT[56:5] == 52'd0) &&
-	       (fpu_madd_fResult_S9$D_OUT[67:57] != 11'd2047 ||
-		fpu_madd_fResult_S9$D_OUT[56:5] != 52'd0) &&
-	       (fpu_madd_fResult_S9$D_OUT[67:57] != 11'd0 ||
-		fpu_madd_fResult_S9$D_OUT[56:5] != 52'd0) &&
-	       IF_resWire_wget__595_BITS_67_TO_57_601_EQ_0_60_ETC___d4905,
-	       (fpu_madd_fResult_S9$D_OUT[67:57] != 11'd2047 ||
-		fpu_madd_fResult_S9$D_OUT[56:5] == 52'd0) &&
-	       (fpu_madd_fResult_S9$D_OUT[67:57] != 11'd2047 ||
-		fpu_madd_fResult_S9$D_OUT[56:5] != 52'd0) &&
-	       (fpu_madd_fResult_S9$D_OUT[67:57] != 11'd0 ||
-		fpu_madd_fResult_S9$D_OUT[56:5] != 52'd0) &&
-	       IF_resWire_wget__595_BITS_67_TO_57_601_EQ_0_60_ETC___d4921,
-	       (fpu_madd_fResult_S9$D_OUT[67:57] != 11'd2047 ||
-		fpu_madd_fResult_S9$D_OUT[56:5] == 52'd0) &&
-	       (fpu_madd_fResult_S9$D_OUT[67:57] != 11'd2047 ||
-		fpu_madd_fResult_S9$D_OUT[56:5] != 52'd0) &&
-	       (fpu_madd_fResult_S9$D_OUT[67:57] != 11'd0 ||
-		fpu_madd_fResult_S9$D_OUT[56:5] != 52'd0) &&
-	       IF_resWire_wget__595_BITS_67_TO_57_601_EQ_0_60_ETC___d4934,
-	       (fpu_madd_fResult_S9$D_OUT[67:57] != 11'd2047 ||
-		fpu_madd_fResult_S9$D_OUT[56:5] == 52'd0) &&
-	       (fpu_madd_fResult_S9$D_OUT[67:57] != 11'd2047 ||
-		fpu_madd_fResult_S9$D_OUT[56:5] != 52'd0) &&
-	       (fpu_madd_fResult_S9$D_OUT[67:57] != 11'd0 ||
-		fpu_madd_fResult_S9$D_OUT[56:5] != 52'd0) &&
-	       IF_resWire_wget__595_BITS_67_TO_57_601_EQ_0_60_ETC___d4947 } ;
-  assign result__h107653 =
-	     { _0b0_CONCAT_NOT_iFifo_first__288_BITS_102_TO_95_ETC___d3004[56:1],
-	       _0b0_CONCAT_NOT_iFifo_first__288_BITS_102_TO_95_ETC___d3004[0] |
-	       guard__h107648 } ;
-  assign result__h146560 =
-	     { _0b0_CONCAT_NOT_iFifo_first__288_BITS_37_TO_30__ETC___d2229[56:1],
-	       _0b0_CONCAT_NOT_iFifo_first__288_BITS_37_TO_30__ETC___d2229[0] |
-	       guard__h146555 } ;
-  assign result__h191353 =
-	     { _0b0_CONCAT_NOT_resWire_wget__595_BITS_67_TO_57_ETC___d4223[56:1],
-	       _0b0_CONCAT_NOT_resWire_wget__595_BITS_67_TO_57_ETC___d4223[0] |
-	       guard__h191348 } ;
-  assign result__h36189 =
-	     { fpu_madd_fState_S5_first__02_BITS_56_TO_0_11_S_ETC___d816[56:1],
-	       fpu_madd_fState_S5_first__02_BITS_56_TO_0_11_S_ETC___d816[0] |
-	       guard__h36184 != 57'd0 } ;
-  assign result__h69015 =
-	     { _0b0_CONCAT_NOT_iFifo_first__288_BITS_167_TO_16_ETC___d1521[56:1],
-	       _0b0_CONCAT_NOT_iFifo_first__288_BITS_167_TO_16_ETC___d1521[0] |
-	       guard__h69010 } ;
-  assign rmdFifo_i_notFull__287_AND_IF_iFifo_first__288_ETC___d1306 =
-	     rmdFifo$FULL_N &&
-	     CASE_iFifoD_OUT_BITS_3_TO_0_0_fpu_madd_fOpera_ETC__q145 ;
-  assign sfdA__h35394 =
+  assign out_sfd__h163985 =
+	     _theResult___snd__h163287[5] ?
+	       _theResult___sfd__h163982 :
+	       _theResult___snd__h163287[56:5] ;
+  assign out_sfd__h173575 =
+	     sfdin__h172846[5] ?
+	       _theResult___sfd__h173572 :
+	       sfdin__h172846[56:5] ;
+  assign out_sfd__h182327 =
+	     _theResult___snd__h181599[5] ?
+	       _theResult___sfd__h182324 :
+	       _theResult___snd__h181599[56:5] ;
+  assign out_sfd__h202623 =
+	     _theResult___snd__h201925[5] ?
+	       _theResult___sfd__h202620 :
+	       _theResult___snd__h201925[56:5] ;
+  assign out_sfd__h212213 =
+	     sfdin__h211484[5] ?
+	       _theResult___sfd__h212210 :
+	       sfdin__h211484[56:5] ;
+  assign out_sfd__h220965 =
+	     _theResult___snd__h220237[5] ?
+	       _theResult___sfd__h220962 :
+	       _theResult___snd__h220237[56:5] ;
+  assign out_sfd__h241562 =
+	     _theResult___snd__h240864[5] ?
+	       _theResult___sfd__h241559 :
+	       _theResult___snd__h240864[56:5] ;
+  assign out_sfd__h251152 =
+	     sfdin__h250423[5] ?
+	       _theResult___sfd__h251149 :
+	       sfdin__h250423[56:5] ;
+  assign out_sfd__h259904 =
+	     _theResult___snd__h259176[5] ?
+	       _theResult___sfd__h259901 :
+	       _theResult___snd__h259176[56:5] ;
+  assign out_sfd__h278206 =
+	     sfdin__h277680[34] ?
+	       _theResult___sfd__h278203 :
+	       sfdin__h277680[56:34] ;
+  assign out_sfd__h286788 =
+	     _theResult___snd__h286293[34] ?
+	       _theResult___sfd__h286785 :
+	       _theResult___snd__h286293[56:34] ;
+  assign out_sfd__h295972 =
+	     sfdin__h295446[34] ?
+	       _theResult___sfd__h295969 :
+	       sfdin__h295446[56:34] ;
+  assign out_sfd__h304608 =
+	     _theResult___snd__h304083[34] ?
+	       _theResult___sfd__h304605 :
+	       _theResult___snd__h304083[56:34] ;
+  assign out_sfd__h43479 =
+	     fpu_div64_fState_S4$D_OUT[2] ?
+	       _theResult___sfd__h43476 :
+	       fpu_div64_fState_S4$D_OUT[53:2] ;
+  assign out_sfd__h95913 =
+	     fpu_sqr64_fState_S4$D_OUT[2] ?
+	       _theResult___sfd__h95910 :
+	       fpu_sqr64_fState_S4$D_OUT[53:2] ;
+  assign r__h1659 = r__h1663 + rg_b ;
+  assign r__h1663 = { 1'd0, rg_r_1[115:1] } ;
+  assign r__h1724 =
+	     r__h1753 +
+	     IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d49 ;
+  assign r__h1753 =
+	     { 1'd0,
+	       IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d69[115:1] } ;
+  assign resWire_wget__410_BITS_4_TO_0_658_OR_NOT_resWi_ETC___d6768 =
+	     resWire$wget[4:0] |
+	     { (resWire$wget[67:57] != 11'd2047 ||
+		resWire$wget[56:5] == 52'd0) &&
+	       (resWire$wget[67:57] != 11'd2047 ||
+		resWire$wget[56:5] != 52'd0) &&
+	       (resWire$wget[67:57] != 11'd0 ||
+		resWire$wget[56:5] != 52'd0) &&
+	       IF_resWire_wget__410_BITS_67_TO_57_416_EQ_0_42_ETC___d6709,
+	       (resWire$wget[67:57] != 11'd2047 ||
+		resWire$wget[56:5] == 52'd0) &&
+	       (resWire$wget[67:57] != 11'd2047 ||
+		resWire$wget[56:5] != 52'd0) &&
+	       (resWire$wget[67:57] != 11'd0 ||
+		resWire$wget[56:5] != 52'd0) &&
+	       IF_resWire_wget__410_BITS_67_TO_57_416_EQ_0_42_ETC___d6720,
+	       (resWire$wget[67:57] != 11'd2047 ||
+		resWire$wget[56:5] == 52'd0) &&
+	       (resWire$wget[67:57] != 11'd2047 ||
+		resWire$wget[56:5] != 52'd0) &&
+	       (resWire$wget[67:57] != 11'd0 ||
+		resWire$wget[56:5] != 52'd0) &&
+	       IF_resWire_wget__410_BITS_67_TO_57_416_EQ_0_42_ETC___d6736,
+	       (resWire$wget[67:57] != 11'd2047 ||
+		resWire$wget[56:5] == 52'd0) &&
+	       (resWire$wget[67:57] != 11'd2047 ||
+		resWire$wget[56:5] != 52'd0) &&
+	       (resWire$wget[67:57] != 11'd0 ||
+		resWire$wget[56:5] != 52'd0) &&
+	       IF_resWire_wget__410_BITS_67_TO_57_416_EQ_0_42_ETC___d6749,
+	       (resWire$wget[67:57] != 11'd2047 ||
+		resWire$wget[56:5] == 52'd0) &&
+	       (resWire$wget[67:57] != 11'd2047 ||
+		resWire$wget[56:5] != 52'd0) &&
+	       (resWire$wget[67:57] != 11'd0 ||
+		resWire$wget[56:5] != 52'd0) &&
+	       IF_resWire_wget__410_BITS_67_TO_57_416_EQ_0_42_ETC___d6762 } ;
+  assign resWirewget_BITS_67_TO_57_MINUS_1023__q137 =
+	     resWire$wget[67:57] - 11'd1023 ;
+  assign result__h132372 =
+	     { fpu_madd_fState_S5_first__601_BITS_56_TO_0_610_ETC___d2615[56:1],
+	       fpu_madd_fState_S5_first__601_BITS_56_TO_0_610_ETC___d2615[0] |
+	       guard__h132367 != 57'd0 } ;
+  assign result__h165227 =
+	     { _0b0_CONCAT_NOT_iFifo_first__087_BITS_167_TO_16_ETC___d3330[56:1],
+	       _0b0_CONCAT_NOT_iFifo_first__087_BITS_167_TO_16_ETC___d3330[0] |
+	       guard__h165222 } ;
+  assign result__h203865 =
+	     { _0b0_CONCAT_NOT_iFifo_first__087_BITS_102_TO_95_ETC___d4813[56:1],
+	       _0b0_CONCAT_NOT_iFifo_first__087_BITS_102_TO_95_ETC___d4813[0] |
+	       guard__h203860 } ;
+  assign result__h242804 =
+	     { _0b0_CONCAT_NOT_iFifo_first__087_BITS_37_TO_30__ETC___d4038[56:1],
+	       _0b0_CONCAT_NOT_iFifo_first__087_BITS_37_TO_30__ETC___d4038[0] |
+	       guard__h242799 } ;
+  assign result__h287827 =
+	     { _0b0_CONCAT_NOT_resWire_wget__410_BITS_67_TO_57_ETC___d6038[56:1],
+	       _0b0_CONCAT_NOT_resWire_wget__410_BITS_67_TO_57_ETC___d6038[0] |
+	       guard__h287822 } ;
+  assign result__h32617 = { _theResult____h32523[57:1], 1'd1 } ;
+  assign result__h32648 =
+	     { 1'd0,
+	       value__h32661[56:1],
+	       value__h32661[0] | sfdlsb__h32643 } ;
+  assign result__h32823 =
+	     (IF_rg_r_BIT_115_THEN_rg_q_PLUS_NEG_INV_rg_q_59_ETC__q10[56:0] ==
+	      57'd0) ?
+	       58'd0 :
+	       58'd1 ;
+  assign result__h85925 = { x__h85931[58:1], 1'd1 } ;
+  assign rg_index_1_4_PLUS_1_6_ULE_58___d37 = rg_index_1 + 6'd1 <= 6'd58 ;
+  assign rg_index_1_4_ULE_58___d38 = rg_index_1 <= 6'd58 ;
+  assign rg_index_PLUS_1_ULE_57___d6 = rg_index + 6'd1 <= 6'd57 ;
+  assign rg_index_ULE_57___d7 = rg_index <= 6'd57 ;
+  assign rg_q_PLUS_NEG_INV_rg_q_59_60___d561 = rg_q + -(~rg_q) ;
+  assign rg_s_1_ULT_rg_r_1_0_PLUS_rg_b_9_2___d63 = rg_s < sum__h1606 ;
+  assign s__h1658 = rg_s - sum__h1606 ;
+  assign s__h1723 =
+	     IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d83 -
+	     sum__h1710 ;
+  assign sfdA__h131577 =
 	     { 1'b0,
 	       fpu_madd_fState_S4$D_OUT[128:118] != 11'd0,
 	       fpu_madd_fState_S4$D_OUT[117:66],
 	       3'b0 } ;
-  assign sfdBC__h19479 =
-	     _7170_MINUS_fpu_madd_fState_S3_first__96_BITS_1_ETC___d209 ?
+  assign sfdA__h2035 =
+	     { fpu_div64_fOperands_S0$D_OUT[129:119] != 11'd0,
+	       fpu_div64_fOperands_S0$D_OUT[118:67] } ;
+  assign sfdA__h2039 = sfdA__h2035 << b__h4039 ;
+  assign sfdBC__h115662 =
+	     _7170_MINUS_fpu_madd_fState_S3_first__995_BITS__ETC___d2008 ?
 	       fpu_madd_fProd_S3$D_OUT :
-	       _theResult___fst__h20644 ;
-  assign sfdBC__h35395 =
+	       _theResult___fst__h116827 ;
+  assign sfdBC__h131578 =
 	     { 1'b0,
 	       fpu_madd_fState_S4$D_OUT[64:54] != 11'd0,
 	       fpu_madd_fState_S4$D_OUT[53:0],
 	       1'b0 } ;
-  assign sfd__h105780 =
-	     { 1'b0,
-	       _theResult___fst_exp__h105762 != 11'd0,
-	       _theResult___snd__h105713[56:5] } +
-	     54'd1 ;
-  assign sfd__h115370 =
-	     { 1'b0,
-	       _theResult___fst_exp__h115278 != 11'd0,
-	       sfdin__h115272[56:5] } +
-	     54'd1 ;
-  assign sfd__h124098 =
-	     { 1'b0,
-	       _theResult___fst_exp__h124079 != 11'd0,
-	       _theResult___snd__h124025[56:5] } +
-	     54'd1 ;
-  assign sfd__h125871 = { value__h130256, 32'd0 } ;
-  assign sfd__h144687 =
-	     { 1'b0,
-	       _theResult___fst_exp__h144669 != 11'd0,
-	       _theResult___snd__h144620[56:5] } +
-	     54'd1 ;
-  assign sfd__h154277 =
-	     { 1'b0,
-	       _theResult___fst_exp__h154185 != 11'd0,
-	       sfdin__h154179[56:5] } +
-	     54'd1 ;
-  assign sfd__h163005 =
-	     { 1'b0,
-	       _theResult___fst_exp__h162986 != 11'd0,
-	       _theResult___snd__h162932[56:5] } +
-	     54'd1 ;
-  assign sfd__h165501 = { value__h173723, 3'd0 } ;
-  assign sfd__h181304 =
-	     { 1'b0,
-	       _theResult___fst_exp__h181212 != 8'd0,
-	       sfdin__h181206[56:34] } +
-	     25'd1 ;
-  assign sfd__h189886 =
-	     { 1'b0,
-	       _theResult___fst_exp__h189868 != 8'd0,
-	       _theResult___snd__h189819[56:34] } +
-	     25'd1 ;
-  assign sfd__h199070 =
-	     { 1'b0,
-	       _theResult___fst_exp__h198978 != 8'd0,
-	       sfdin__h198972[56:34] } +
-	     25'd1 ;
-  assign sfd__h207682 =
-	     { 1'b0,
-	       _theResult___fst_exp__h207663 != 8'd0,
-	       _theResult___snd__h207609[56:34] } +
-	     25'd1 ;
-  assign sfd__h208233 =
-	     (fpu_madd_fResult_S9$D_OUT[67:57] == 11'd2047 &&
-	      fpu_madd_fResult_S9$D_OUT[56:5] != 52'd0) ?
-	       _theResult___snd_fst_sfd__h165451 :
-	       _theResult___fst_sfd__h208227 ;
-  assign sfd__h3210 = { 1'd1, _theResult___fst_sfd__h398[50:0] } ;
-  assign sfd__h3213 = { 1'd1, fpu_madd_fOperand_S0$D_OUT[117:67] } ;
-  assign sfd__h3216 = { 1'd1, fpu_madd_fOperand_S0$D_OUT[53:3] } ;
-  assign sfd__h36936 =
+  assign sfdB__h2036 =
+	     { fpu_div64_fOperands_S0$D_OUT[65:55] != 11'd0,
+	       fpu_div64_fOperands_S0$D_OUT[54:3] } ;
+  assign sfdB__h2041 = sfdB__h2036 << b__h11457 ;
+  assign sfd___1__h60702 = { 1'd0, sfd__h44953[57:1] } ;
+  assign sfd__h133119 =
 	     fpu_madd_fState_S7$D_OUT[128] ?
 	       fpu_madd_fState_S7$D_OUT[56:0] :
 	       fpu_madd_fState_S7$D_OUT[113:57] ;
-  assign sfd__h45857 =
+  assign sfd__h142040 =
 	     { 1'b0,
 	       fpu_madd_fState_S8$D_OUT[65:55] != 11'd0,
 	       fpu_madd_fState_S8$D_OUT[54:3] } +
 	     54'd1 ;
-  assign sfd__h48324 = { value__h52711, 32'd0 } ;
-  assign sfd__h67142 =
+  assign sfd__h144536 = { value__h148923, 32'd0 } ;
+  assign sfd__h163354 =
 	     { 1'b0,
-	       _theResult___fst_exp__h67124 != 11'd0,
-	       _theResult___snd__h67075[56:5] } +
+	       _theResult___fst_exp__h163336 != 11'd0,
+	       _theResult___snd__h163287[56:5] } +
 	     54'd1 ;
-  assign sfd__h76732 =
+  assign sfd__h172944 =
 	     { 1'b0,
-	       _theResult___fst_exp__h76640 != 11'd0,
-	       sfdin__h76634[56:5] } +
+	       _theResult___fst_exp__h172852 != 11'd0,
+	       sfdin__h172846[56:5] } +
 	     54'd1 ;
-  assign sfd__h85460 =
+  assign sfd__h181672 =
 	     { 1'b0,
-	       _theResult___fst_exp__h85441 != 11'd0,
-	       _theResult___snd__h85387[56:5] } +
+	       _theResult___fst_exp__h181653 != 11'd0,
+	       _theResult___snd__h181599[56:5] } +
 	     54'd1 ;
-  assign sfd__h86964 = { value__h91349, 32'd0 } ;
-  assign sfdin__h115272 =
-	     _theResult____h107040[56] ?
-	       _theResult___snd__h115289 :
-	       _theResult___snd__h115300 ;
-  assign sfdin__h154179 =
-	     _theResult____h145947[56] ?
-	       _theResult___snd__h154196 :
-	       _theResult___snd__h154207 ;
-  assign sfdin__h181206 =
-	     _theResult____h173103[56] ?
-	       _theResult___snd__h181223 :
-	       _theResult___snd__h181234 ;
-  assign sfdin__h198972 =
-	     _theResult____h190740[56] ?
-	       _theResult___snd__h198989 :
-	       _theResult___snd__h199000 ;
-  assign sfdin__h34760 =
-	     sfdBC__h19479[105] ?
-	       _theResult___snd__h34783 :
-	       _theResult___snd__h34797 ;
-  assign sfdin__h45186 =
-	     sfd__h36936[56] ?
-	       _theResult___snd__h45209 :
-	       _theResult___snd__h45223 ;
-  assign sfdin__h76634 =
-	     _theResult____h68402[56] ?
-	       _theResult___snd__h76651 :
-	       _theResult___snd__h76662 ;
-  assign sfdlsb__h20642 = x__h20713 != 106'd0 ;
-  assign value5124_BITS_10_TO_0_MINUS_1023__q8 =
-	     value__h45124[10:0] - 11'd1023 ;
-  assign value__h130256 =
-	     { 1'b0, iFifo$D_OUT[37:30] != 8'd0, iFifo$D_OUT[29:7] } ;
-  assign value__h173723 =
+  assign sfd__h183176 = { value__h187561, 32'd0 } ;
+  assign sfd__h18934 = { 1'd1, fpu_div64_fOperands_S0$D_OUT[117:67] } ;
+  assign sfd__h18937 = { 1'd1, fpu_div64_fOperands_S0$D_OUT[53:3] } ;
+  assign sfd__h201992 =
 	     { 1'b0,
-	       fpu_madd_fResult_S9$D_OUT[67:57] != 11'd0,
-	       fpu_madd_fResult_S9$D_OUT[56:5] } ;
-  assign value__h34700 = fpu_madd_fState_S3$D_OUT[12:0] + 13'd1023 ;
-  assign value__h45124 = fpu_madd_fState_S7$D_OUT[126:114] + 13'd1023 ;
-  assign value__h52711 =
+	       _theResult___fst_exp__h201974 != 11'd0,
+	       _theResult___snd__h201925[56:5] } +
+	     54'd1 ;
+  assign sfd__h211582 =
+	     { 1'b0,
+	       _theResult___fst_exp__h211490 != 11'd0,
+	       sfdin__h211484[56:5] } +
+	     54'd1 ;
+  assign sfd__h220310 =
+	     { 1'b0,
+	       _theResult___fst_exp__h220291 != 11'd0,
+	       _theResult___snd__h220237[56:5] } +
+	     54'd1 ;
+  assign sfd__h222115 = { value__h226500, 32'd0 } ;
+  assign sfd__h240931 =
+	     { 1'b0,
+	       _theResult___fst_exp__h240913 != 11'd0,
+	       _theResult___snd__h240864[56:5] } +
+	     54'd1 ;
+  assign sfd__h250521 =
+	     { 1'b0,
+	       _theResult___fst_exp__h250429 != 11'd0,
+	       sfdin__h250423[56:5] } +
+	     54'd1 ;
+  assign sfd__h259249 =
+	     { 1'b0,
+	       _theResult___fst_exp__h259230 != 11'd0,
+	       _theResult___snd__h259176[56:5] } +
+	     54'd1 ;
+  assign sfd__h261975 = { value__h270197, 3'd0 } ;
+  assign sfd__h277778 =
+	     { 1'b0,
+	       _theResult___fst_exp__h277686 != 8'd0,
+	       sfdin__h277680[56:34] } +
+	     25'd1 ;
+  assign sfd__h286360 =
+	     { 1'b0,
+	       _theResult___fst_exp__h286342 != 8'd0,
+	       _theResult___snd__h286293[56:34] } +
+	     25'd1 ;
+  assign sfd__h295544 =
+	     { 1'b0,
+	       _theResult___fst_exp__h295452 != 8'd0,
+	       sfdin__h295446[56:34] } +
+	     25'd1 ;
+  assign sfd__h304156 =
+	     { 1'b0,
+	       _theResult___fst_exp__h304137 != 8'd0,
+	       _theResult___snd__h304083[56:34] } +
+	     25'd1 ;
+  assign sfd__h304707 =
+	     (resWire$wget[67:57] == 11'd2047 &&
+	      resWire$wget[56:5] != 52'd0) ?
+	       _theResult___snd_fst_sfd__h261925 :
+	       _theResult___fst_sfd__h304701 ;
+  assign sfd__h42982 =
+	     { 1'b0,
+	       fpu_div64_fState_S4$D_OUT[64:54] != 11'd0,
+	       fpu_div64_fState_S4$D_OUT[53:2] } +
+	     54'd1 ;
+  assign sfd__h44951 = { value__h53174, 4'd0 } ;
+  assign sfd__h44953 = sfd__h44951 << x__h60732 ;
+  assign sfd__h45004 = { 1'd1, fpu_sqr64_fOperand_S0$D_OUT[53:3] } ;
+  assign sfd__h95416 =
+	     { 1'b0,
+	       fpu_sqr64_fState_S4$D_OUT[64:54] != 11'd0,
+	       fpu_sqr64_fState_S4$D_OUT[53:2] } +
+	     54'd1 ;
+  assign sfd__h99402 = { 1'd1, _theResult___fst_sfd__h96608[50:0] } ;
+  assign sfd__h99405 = { 1'd1, fpu_madd_fOperand_S0$D_OUT[117:67] } ;
+  assign sfd__h99408 = { 1'd1, fpu_madd_fOperand_S0$D_OUT[53:3] } ;
+  assign sfdin__h130943 =
+	     sfdBC__h115662[105] ?
+	       _theResult___snd__h130966 :
+	       _theResult___snd__h130980 ;
+  assign sfdin__h141369 =
+	     sfd__h133119[56] ?
+	       _theResult___snd__h141392 :
+	       _theResult___snd__h141406 ;
+  assign sfdin__h172846 =
+	     _theResult____h164614[56] ?
+	       _theResult___snd__h172863 :
+	       _theResult___snd__h172874 ;
+  assign sfdin__h211484 =
+	     _theResult____h203252[56] ?
+	       _theResult___snd__h211501 :
+	       _theResult___snd__h211512 ;
+  assign sfdin__h250423 =
+	     _theResult____h242191[56] ?
+	       _theResult___snd__h250440 :
+	       _theResult___snd__h250451 ;
+  assign sfdin__h277680 =
+	     _theResult____h269577[56] ?
+	       _theResult___snd__h277697 :
+	       _theResult___snd__h277708 ;
+  assign sfdin__h295446 =
+	     _theResult____h287214[56] ?
+	       _theResult___snd__h295463 :
+	       _theResult___snd__h295474 ;
+  assign sfdin__h34118 =
+	     (fpu_div64_fState_S3$D_OUT[120:110] == 11'd2047) ?
+	       _theResult___snd_snd_snd__h33963 :
+	       fpu_div64_fState_S3$D_OUT[57:0] ;
+  assign sfdin__h42327 =
+	     sfdin__h34118[57] ?
+	       _theResult___snd__h42350 :
+	       _theResult___snd__h42365 ;
+  assign sfdin__h94744 =
+	     fpu_sqr64_fState_S3$D_OUT[58] ?
+	       _theResult___snd__h94767 :
+	       _theResult___snd__h94782 ;
+  assign sfdlsb__h116825 = x__h116896 != 106'd0 ;
+  assign sfdlsb__h32643 = x__h32762 != 58'd0 ;
+  assign sum__h1606 = rg_r_1 + rg_b ;
+  assign sum__h1710 =
+	     IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d69 +
+	     IF_rg_index_1_4_ULE_58_8_THEN_IF_rg_res_1_BIT__ETC___d49 ;
+  assign theResult___fst_exp2290_MINUS_1023__q11 =
+	     _theResult___fst_exp__h42290 - 11'd1023 ;
+  assign value41307_BITS_10_TO_0_MINUS_1023__q28 =
+	     value__h141307[10:0] - 11'd1023 ;
+  assign value_BIT_52___h53270 = fpu_sqr64_fOperand_S0$D_OUT[65:55] != 11'd0 ;
+  assign value__h130883 = fpu_madd_fState_S3$D_OUT[12:0] + 13'd1023 ;
+  assign value__h141307 = fpu_madd_fState_S7$D_OUT[126:114] + 13'd1023 ;
+  assign value__h148923 =
 	     { 1'b0, iFifo$D_OUT[167:160] != 8'd0, iFifo$D_OUT[159:137] } ;
-  assign value__h91349 =
+  assign value__h187561 =
 	     { 1'b0, iFifo$D_OUT[102:95] != 8'd0, iFifo$D_OUT[94:72] } ;
-  assign x__h107750 = sfd__h86964 << x__h107783 ;
-  assign x__h107783 =
-	     12'd57 -
-	     _3074_MINUS_SEXT_iFifo_first__288_BITS_102_TO_9_ETC___d3000 ;
-  assign x__h146657 = sfd__h125871 << x__h146690 ;
-  assign x__h146690 =
-	     12'd57 -
-	     _3074_MINUS_SEXT_iFifo_first__288_BITS_37_TO_30_ETC___d2225 ;
-  assign x__h18060 =
+  assign value__h226500 =
+	     { 1'b0, iFifo$D_OUT[37:30] != 8'd0, iFifo$D_OUT[29:7] } ;
+  assign value__h270197 =
+	     { 1'b0, resWire$wget[67:57] != 11'd0, resWire$wget[56:5] } ;
+  assign value__h31374 =
+	     IF_fpu_div64_fOperands_S0_first__06_BITS_129_T_ETC___d352 +
+	     13'd1023 ;
+  assign value__h31429 = { 1'b0, sfdA__h2039 } ;
+  assign value__h31550 =
+	     13'd7170 -
+	     IF_fpu_div64_fOperands_S0_first__06_BITS_129_T_ETC___d352 ;
+  assign value__h32541 = rg_r[115] ? rg_r + b__h32583 : rg_r ;
+  assign value__h32661 =
+	     IF_rg_r_BIT_115_THEN_rg_q_PLUS_NEG_INV_rg_q_59_ETC__q10[56:0] >>
+	     fpu_div64_fState_S2$D_OUT[10:0] ;
+  assign value__h53174 =
+	     { 1'b0,
+	       value_BIT_52___h53270,
+	       fpu_sqr64_fOperand_S0$D_OUT[54:3] } ;
+  assign x__h114243 =
 	     { fpu_madd_fOperand_S0$D_OUT[129:119] != 11'd0,
 	       fpu_madd_fOperand_S0$D_OUT[118:67] } ;
-  assign x__h18072 =
+  assign x__h114255 =
 	     { fpu_madd_fOperand_S0$D_OUT[65:55] != 11'd0,
 	       fpu_madd_fOperand_S0$D_OUT[54:3] } ;
-  assign x__h191450 = sfd__h165501 << x__h191483 ;
-  assign x__h191483 =
-	     12'd57 -
-	     _3970_MINUS_SEXT_resWire_wget__595_BITS_67_TO_5_ETC___d4219 ;
-  assign x__h20713 = fpu_madd_fProd_S3$D_OUT << x__h20746 ;
-  assign x__h20746 =
+  assign x__h116896 = fpu_madd_fProd_S3$D_OUT << x__h116929 ;
+  assign x__h116929 =
 	     13'd106 -
-	     _7170_MINUS_fpu_madd_fState_S3_first__96_BITS_1_ETC___d208 ;
-  assign x__h329 =
-	     fpu_madd_fOperand_S0$D_OUT[195] ?
-	       fpu_madd_fOperand_S0$D_OUT[193:183] :
-	       11'd0 ;
-  assign x__h35223 =
-	     fpu_madd_fState_S3_first__96_BITS_12_TO_0_02_S_ETC___d203 ?
-	       _theResult___snd_snd_snd__h35186 :
+	     _7170_MINUS_fpu_madd_fState_S3_first__995_BITS__ETC___d2007 ;
+  assign x__h131406 =
+	     fpu_madd_fState_S3_first__995_BITS_12_TO_0_001_ETC___d2002 ?
+	       _theResult___snd_snd_snd__h131369 :
 	       2'd3 ;
-  assign x__h35757 =
+  assign x__h131940 =
 	     { 1'b0,
-	       NOT_fpu_madd_fState_S4_first__48_BIT_130_54_59_ETC___d785 ?
+	       NOT_fpu_madd_fState_S4_first__547_BIT_130_553__ETC___d2584 ?
 		 { fpu_madd_fState_S4$D_OUT[64:54] != 11'd0,
 		   fpu_madd_fState_S4$D_OUT[53:0],
 		   1'b0 } :
 		 { fpu_madd_fState_S4$D_OUT[128:118] != 11'd0,
 		   fpu_madd_fState_S4$D_OUT[117:66],
 		   3'b0 } } ;
-  assign x__h35761 =
+  assign x__h131944 =
 	     { 1'b0,
-	       NOT_fpu_madd_fState_S4_first__48_BIT_130_54_59_ETC___d785 ?
+	       NOT_fpu_madd_fState_S4_first__547_BIT_130_553__ETC___d2584 ?
 		 { fpu_madd_fState_S4$D_OUT[128:118] != 11'd0,
 		   fpu_madd_fState_S4$D_OUT[117:66],
 		   3'b0 } :
 		 { fpu_madd_fState_S4$D_OUT[64:54] != 11'd0,
 		   fpu_madd_fState_S4$D_OUT[53:0],
 		   1'b0 } } ;
-  assign x__h36176 =
+  assign x__h132359 =
 	     fpu_madd_fState_S5$D_OUT[215] ?
 	       fpu_madd_fState_S5$D_OUT[56:0] :
 	       (((fpu_madd_fState_S5$D_OUT[126:114] ^ 13'h1000) < 13'd4153) ?
-		  result__h36189 :
+		  result__h132372 :
 		  ((fpu_madd_fState_S5$D_OUT[56:0] == 57'd0) ?
 		     fpu_madd_fState_S5$D_OUT[56:0] :
 		     57'd1)) ;
-  assign x__h36288 = 13'd57 - fpu_madd_fState_S5$D_OUT[126:114] ;
-  assign x__h36688 =
+  assign x__h132471 = 13'd57 - fpu_madd_fState_S5$D_OUT[126:114] ;
+  assign x__h132871 =
 	     fpu_madd_fState_S6$D_OUT[113:57] +
 	     fpu_madd_fState_S6$D_OUT[56:0] ;
-  assign x__h36697 =
+  assign x__h132880 =
 	     fpu_madd_fState_S6$D_OUT[113:57] -
 	     fpu_madd_fState_S6$D_OUT[56:0] ;
-  assign x__h45577 = fpu_madd_fState_S7$D_OUT[202] ? 2'd0 : guard__h36940 ;
-  assign x__h69112 = sfd__h48324 << x__h69145 ;
-  assign x__h69145 =
+  assign x__h141760 = fpu_madd_fState_S7$D_OUT[202] ? 2'd0 : guard__h133123 ;
+  assign x__h165324 = sfd__h144536 << x__h165357 ;
+  assign x__h165357 =
 	     12'd57 -
-	     _3074_MINUS_SEXT_iFifo_first__288_BITS_167_TO_1_ETC___d1517 ;
-  always@(rmdFifo$D_OUT or fpu_madd_fResult_S9$D_OUT)
+	     _3074_MINUS_SEXT_iFifo_first__087_BITS_167_TO_1_ETC___d3326 ;
+  assign x__h203962 = sfd__h183176 << x__h203995 ;
+  assign x__h203995 =
+	     12'd57 -
+	     _3074_MINUS_SEXT_iFifo_first__087_BITS_102_TO_9_ETC___d4809 ;
+  assign x__h242901 = sfd__h222115 << x__h242934 ;
+  assign x__h242934 =
+	     12'd57 -
+	     _3074_MINUS_SEXT_iFifo_first__087_BITS_37_TO_30_ETC___d4034 ;
+  assign x__h287924 = sfd__h261975 << x__h287957 ;
+  assign x__h287957 =
+	     12'd57 -
+	     _3970_MINUS_SEXT_resWire_wget__410_BITS_67_TO_5_ETC___d6034 ;
+  assign x__h31426 = { value__h31429, 60'd0 } ;
+  assign x__h31487 = { sfdB__h2041, 4'b0 } ;
+  assign x__h31541 =
+	     fpu_div64_fOperands_S0_first__06_BITS_129_TO_1_ETC___d363 ?
+	       11'd0 :
+	       _theResult___fst__h31322 ;
+  assign x__h32762 =
+	     { 1'd0,
+	       IF_rg_r_BIT_115_THEN_rg_q_PLUS_NEG_INV_rg_q_59_ETC__q10[56:0] } <<
+	     x__h32769 ;
+  assign x__h32769 = 11'd58 - fpu_div64_fState_S2$D_OUT[10:0] ;
+  assign x__h33052 =
+	     (value__h32541[114:58] == 57'd0) ?
+	       _theResult____h32523 :
+	       result__h32617 ;
+  assign x__h42705 =
+	     (sfdin__h34118[57] &&
+	      IF_IF_fpu_div64_fState_S3_first__86_BITS_120_T_ETC___d643 ==
+	      12'd1023) ?
+	       2'd3 :
+	       _theResult___snd_fst__h42439 ;
+  assign x__h52551 = x__h52569 + 13'd1024 ;
+  assign x__h52569 =
+	     { IF_fpu_sqr64_fOperand_S0_first__059_BITS_65_TO_ETC__q17[11],
+	       IF_fpu_sqr64_fOperand_S0_first__059_BITS_65_TO_ETC__q17 } ;
+  assign x__h60693 =
+	     IF_fpu_sqr64_fOperand_S0_first__059_BITS_65_TO_ETC___d1195[0] ?
+	       sfd__h44953 :
+	       sfd___1__h60702 ;
+  assign x__h60732 =
+	     IF_fpu_sqr64_fOperand_S0_first__059_BITS_65_TO_ETC___d1193 -
+	     6'd1 ;
+  assign x__h85465 =
+	     IF_fpu_sqr64_fState_S1_first__216_BIT_57_226_T_ETC___d1342[0] ?
+	       IF_fpu_sqr64_fState_S1_first__216_BIT_57_226_T_ETC___d1342 +
+	       7'd1 :
+	       IF_fpu_sqr64_fState_S1_first__216_BIT_57_226_T_ETC___d1342 ;
+  assign x__h85931 = rg_res[116] ? rg_res[115:0] : 116'd0 ;
+  assign x__h86149 = (rg_s == 116'd0) ? x__h85931[58:0] : result__h85925 ;
+  assign x__h95138 =
+	     (fpu_sqr64_fState_S3$D_OUT[58] &&
+	      IF_fpu_sqr64_fState_S3_first__375_BITS_121_TO__ETC___d1389 ==
+	      12'd1023) ?
+	       2'd3 :
+	       _theResult___snd_fst__h94856 ;
+  assign x__h96539 =
+	     fpu_madd_fOperand_S0$D_OUT[195] ?
+	       fpu_madd_fOperand_S0$D_OUT[193:183] :
+	       11'd0 ;
+  always@(fpu_div64_fState_S4$D_OUT or
+	  out_sfd__h43479 or _theResult___sfd__h43476)
   begin
-    case (rmdFifo$D_OUT)
-      3'd0, 3'd1: _theResult___fst_exp__h173085 = 8'd255;
-      3'd2:
-	  _theResult___fst_exp__h173085 =
-	      fpu_madd_fResult_S9$D_OUT[68] ? 8'd254 : 8'd255;
-      3'd3:
-	  _theResult___fst_exp__h173085 =
-	      fpu_madd_fResult_S9$D_OUT[68] ? 8'd255 : 8'd254;
-      3'd4: _theResult___fst_exp__h173085 = 8'd254;
-      default: _theResult___fst_exp__h173085 = 8'd0;
+    case (fpu_div64_fState_S4$D_OUT[1:0])
+      2'b0, 2'b01:
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q1 =
+	      fpu_div64_fState_S4$D_OUT[53:2];
+      2'b10:
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q1 =
+	      out_sfd__h43479;
+      2'b11:
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q1 =
+	      _theResult___sfd__h43476;
     endcase
   end
-  always@(rmdFifo$D_OUT or fpu_madd_fResult_S9$D_OUT)
+  always@(fpu_div64_fState_S4$D_OUT or _theResult___sfd__h43476)
   begin
-    case (rmdFifo$D_OUT)
-      3'd0, 3'd1: _theResult___fst_sfd__h173086 = 23'd0;
+    case (fpu_div64_fState_S4$D_OUT[1:0])
+      2'b0:
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q2 =
+	      fpu_div64_fState_S4$D_OUT[53:2];
+      2'b01, 2'b10, 2'b11:
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q2 =
+	      _theResult___sfd__h43476;
+    endcase
+  end
+  always@(fpu_div64_fState_S4$D_OUT or
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q1 or
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q2 or
+	  _theResult___sfd__h43476)
+  begin
+    case (fpu_div64_fState_S4$D_OUT[68:66])
+      3'd0:
+	  _theResult___fst_sfd__h43554 =
+	      CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q1;
+      3'd1:
+	  _theResult___fst_sfd__h43554 =
+	      CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q2;
       3'd2:
-	  _theResult___fst_sfd__h173086 =
-	      fpu_madd_fResult_S9$D_OUT[68] ? 23'd8388607 : 23'd0;
+	  _theResult___fst_sfd__h43554 =
+	      (fpu_div64_fState_S4$D_OUT[1:0] == 2'b0 ||
+	       fpu_div64_fState_S4$D_OUT[65]) ?
+		fpu_div64_fState_S4$D_OUT[53:2] :
+		_theResult___sfd__h43476;
       3'd3:
-	  _theResult___fst_sfd__h173086 =
-	      fpu_madd_fResult_S9$D_OUT[68] ? 23'd0 : 23'd8388607;
-      3'd4: _theResult___fst_sfd__h173086 = 23'd8388607;
-      default: _theResult___fst_sfd__h173086 = 23'd0;
+	  _theResult___fst_sfd__h43554 =
+	      (fpu_div64_fState_S4$D_OUT[1:0] == 2'b0) ?
+		fpu_div64_fState_S4$D_OUT[53:2] :
+		(fpu_div64_fState_S4$D_OUT[65] ?
+		   _theResult___sfd__h43476 :
+		   fpu_div64_fState_S4$D_OUT[53:2]);
+      3'd4: _theResult___fst_sfd__h43554 = fpu_div64_fState_S4$D_OUT[53:2];
+      default: _theResult___fst_sfd__h43554 = 52'd0;
+    endcase
+  end
+  always@(fpu_sqr64_fState_S4$D_OUT or
+	  out_sfd__h95913 or _theResult___sfd__h95910)
+  begin
+    case (fpu_sqr64_fState_S4$D_OUT[1:0])
+      2'b0, 2'b01:
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q3 =
+	      fpu_sqr64_fState_S4$D_OUT[53:2];
+      2'b10:
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q3 =
+	      out_sfd__h95913;
+      2'b11:
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q3 =
+	      _theResult___sfd__h95910;
+    endcase
+  end
+  always@(fpu_sqr64_fState_S4$D_OUT or _theResult___sfd__h95910)
+  begin
+    case (fpu_sqr64_fState_S4$D_OUT[1:0])
+      2'b0:
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q4 =
+	      fpu_sqr64_fState_S4$D_OUT[53:2];
+      2'b01, 2'b10, 2'b11:
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q4 =
+	      _theResult___sfd__h95910;
+    endcase
+  end
+  always@(fpu_sqr64_fState_S4$D_OUT or
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q3 or
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q4 or
+	  _theResult___sfd__h95910)
+  begin
+    case (fpu_sqr64_fState_S4$D_OUT[68:66])
+      3'd0:
+	  _theResult___fst_sfd__h95988 =
+	      CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q3;
+      3'd1:
+	  _theResult___fst_sfd__h95988 =
+	      CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q4;
+      3'd2:
+	  _theResult___fst_sfd__h95988 =
+	      (fpu_sqr64_fState_S4$D_OUT[1:0] == 2'b0 ||
+	       fpu_sqr64_fState_S4$D_OUT[65]) ?
+		fpu_sqr64_fState_S4$D_OUT[53:2] :
+		_theResult___sfd__h95910;
+      3'd3:
+	  _theResult___fst_sfd__h95988 =
+	      (fpu_sqr64_fState_S4$D_OUT[1:0] == 2'b0) ?
+		fpu_sqr64_fState_S4$D_OUT[53:2] :
+		(fpu_sqr64_fState_S4$D_OUT[65] ?
+		   _theResult___sfd__h95910 :
+		   fpu_sqr64_fState_S4$D_OUT[53:2]);
+      3'd4: _theResult___fst_sfd__h95988 = fpu_sqr64_fState_S4$D_OUT[53:2];
+      default: _theResult___fst_sfd__h95988 = 52'd0;
     endcase
   end
   always@(fpu_madd_fState_S8$D_OUT or
-	  out_sfd__h46365 or _theResult___sfd__h46362)
+	  out_sfd__h142545 or _theResult___sfd__h142542)
   begin
     case (fpu_madd_fState_S8$D_OUT[2:1])
       2'b0, 2'b01:
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q1 =
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q5 =
 	      fpu_madd_fState_S8$D_OUT[54:3];
       2'b10:
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q1 =
-	      out_sfd__h46365;
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q5 =
+	      out_sfd__h142545;
       2'b11:
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q1 =
-	      _theResult___sfd__h46362;
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q5 =
+	      _theResult___sfd__h142542;
     endcase
   end
-  always@(fpu_madd_fState_S8$D_OUT or _theResult___sfd__h46362)
+  always@(fpu_madd_fState_S8$D_OUT or _theResult___sfd__h142542)
   begin
     case (fpu_madd_fState_S8$D_OUT[2:1])
       2'b0:
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q2 =
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q6 =
 	      fpu_madd_fState_S8$D_OUT[54:3];
       2'b01, 2'b10, 2'b11:
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q2 =
-	      _theResult___sfd__h46362;
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q6 =
+	      _theResult___sfd__h142542;
     endcase
   end
   always@(fpu_madd_fState_S8$D_OUT or
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q1 or
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q2 or
-	  _theResult___sfd__h46362)
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q5 or
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q6 or
+	  _theResult___sfd__h142542)
   begin
     case (fpu_madd_fState_S8$D_OUT[70:68])
       3'd0:
-	  _theResult___fst_sfd__h46440 =
-	      CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q1;
+	  _theResult___fst_sfd__h142620 =
+	      CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q5;
       3'd1:
-	  _theResult___fst_sfd__h46440 =
-	      CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q2;
+	  _theResult___fst_sfd__h142620 =
+	      CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q6;
       3'd2:
-	  _theResult___fst_sfd__h46440 =
+	  _theResult___fst_sfd__h142620 =
 	      (fpu_madd_fState_S8$D_OUT[2:1] == 2'b0 ||
 	       fpu_madd_fState_S8$D_OUT[66]) ?
 		fpu_madd_fState_S8$D_OUT[54:3] :
-		_theResult___sfd__h46362;
+		_theResult___sfd__h142542;
       3'd3:
-	  _theResult___fst_sfd__h46440 =
+	  _theResult___fst_sfd__h142620 =
 	      (fpu_madd_fState_S8$D_OUT[2:1] == 2'b0) ?
 		fpu_madd_fState_S8$D_OUT[54:3] :
 		(fpu_madd_fState_S8$D_OUT[66] ?
-		   _theResult___sfd__h46362 :
+		   _theResult___sfd__h142542 :
 		   fpu_madd_fState_S8$D_OUT[54:3]);
-      3'd4: _theResult___fst_sfd__h46440 = fpu_madd_fState_S8$D_OUT[54:3];
-      default: _theResult___fst_sfd__h46440 = 52'd0;
+      3'd4: _theResult___fst_sfd__h142620 = fpu_madd_fState_S8$D_OUT[54:3];
+      default: _theResult___fst_sfd__h142620 = 52'd0;
     endcase
   end
   always@(iFifo$D_OUT)
   begin
     case (iFifo$D_OUT[6:4])
-      3'd0, 3'd1: _theResult___fst_exp__h52079 = 11'd2047;
+      3'd0, 3'd1: _theResult___fst_exp__h148291 = 11'd2047;
       3'd2:
-	  _theResult___fst_exp__h52079 =
+	  _theResult___fst_exp__h148291 =
 	      iFifo$D_OUT[168] ? 11'd2046 : 11'd2047;
       3'd3:
-	  _theResult___fst_exp__h52079 =
+	  _theResult___fst_exp__h148291 =
 	      iFifo$D_OUT[168] ? 11'd2047 : 11'd2046;
-      3'd4: _theResult___fst_exp__h52079 = 11'd2046;
-      default: _theResult___fst_exp__h52079 = 11'd0;
+      3'd4: _theResult___fst_exp__h148291 = 11'd2046;
+      default: _theResult___fst_exp__h148291 = 11'd0;
     endcase
   end
   always@(iFifo$D_OUT)
   begin
     case (iFifo$D_OUT[6:4])
-      3'd0, 3'd1: _theResult___fst_sfd__h52080 = 52'd0;
+      3'd0, 3'd1: _theResult___fst_sfd__h148292 = 52'd0;
       3'd2:
-	  _theResult___fst_sfd__h52080 =
+	  _theResult___fst_sfd__h148292 =
 	      iFifo$D_OUT[168] ? 52'hFFFFFFFFFFFFF : 52'd0;
       3'd3:
-	  _theResult___fst_sfd__h52080 =
+	  _theResult___fst_sfd__h148292 =
 	      iFifo$D_OUT[168] ? 52'd0 : 52'hFFFFFFFFFFFFF;
-      3'd4: _theResult___fst_sfd__h52080 = 52'hFFFFFFFFFFFFF;
-      default: _theResult___fst_sfd__h52080 = 52'd0;
+      3'd4: _theResult___fst_sfd__h148292 = 52'hFFFFFFFFFFFFF;
+      default: _theResult___fst_sfd__h148292 = 52'd0;
     endcase
   end
   always@(iFifo$D_OUT)
   begin
     case (iFifo$D_OUT[6:4])
-      3'd0, 3'd1: _theResult___fst_exp__h90719 = 11'd2047;
+      3'd0, 3'd1: _theResult___fst_exp__h186931 = 11'd2047;
       3'd2:
-	  _theResult___fst_exp__h90719 =
+	  _theResult___fst_exp__h186931 =
 	      iFifo$D_OUT[103] ? 11'd2046 : 11'd2047;
       3'd3:
-	  _theResult___fst_exp__h90719 =
+	  _theResult___fst_exp__h186931 =
 	      iFifo$D_OUT[103] ? 11'd2047 : 11'd2046;
-      3'd4: _theResult___fst_exp__h90719 = 11'd2046;
-      default: _theResult___fst_exp__h90719 = 11'd0;
+      3'd4: _theResult___fst_exp__h186931 = 11'd2046;
+      default: _theResult___fst_exp__h186931 = 11'd0;
     endcase
   end
   always@(iFifo$D_OUT)
   begin
     case (iFifo$D_OUT[6:4])
-      3'd0, 3'd1: _theResult___fst_exp__h129626 = 11'd2047;
+      3'd0, 3'd1: _theResult___fst_exp__h225870 = 11'd2047;
       3'd2:
-	  _theResult___fst_exp__h129626 =
+	  _theResult___fst_exp__h225870 =
 	      iFifo$D_OUT[38] ? 11'd2046 : 11'd2047;
       3'd3:
-	  _theResult___fst_exp__h129626 =
+	  _theResult___fst_exp__h225870 =
 	      iFifo$D_OUT[38] ? 11'd2047 : 11'd2046;
-      3'd4: _theResult___fst_exp__h129626 = 11'd2046;
-      default: _theResult___fst_exp__h129626 = 11'd0;
+      3'd4: _theResult___fst_exp__h225870 = 11'd2046;
+      default: _theResult___fst_exp__h225870 = 11'd0;
     endcase
   end
   always@(iFifo$D_OUT)
   begin
     case (iFifo$D_OUT[6:4])
-      3'd0, 3'd1: _theResult___fst_sfd__h90720 = 52'd0;
+      3'd0, 3'd1: _theResult___fst_sfd__h186932 = 52'd0;
       3'd2:
-	  _theResult___fst_sfd__h90720 =
+	  _theResult___fst_sfd__h186932 =
 	      iFifo$D_OUT[103] ? 52'hFFFFFFFFFFFFF : 52'd0;
       3'd3:
-	  _theResult___fst_sfd__h90720 =
+	  _theResult___fst_sfd__h186932 =
 	      iFifo$D_OUT[103] ? 52'd0 : 52'hFFFFFFFFFFFFF;
-      3'd4: _theResult___fst_sfd__h90720 = 52'hFFFFFFFFFFFFF;
-      default: _theResult___fst_sfd__h90720 = 52'd0;
+      3'd4: _theResult___fst_sfd__h186932 = 52'hFFFFFFFFFFFFF;
+      default: _theResult___fst_sfd__h186932 = 52'd0;
     endcase
   end
   always@(iFifo$D_OUT)
   begin
     case (iFifo$D_OUT[6:4])
-      3'd0, 3'd1: _theResult___fst_sfd__h129627 = 52'd0;
+      3'd0, 3'd1: _theResult___fst_sfd__h225871 = 52'd0;
       3'd2:
-	  _theResult___fst_sfd__h129627 =
+	  _theResult___fst_sfd__h225871 =
 	      iFifo$D_OUT[38] ? 52'hFFFFFFFFFFFFF : 52'd0;
       3'd3:
-	  _theResult___fst_sfd__h129627 =
+	  _theResult___fst_sfd__h225871 =
 	      iFifo$D_OUT[38] ? 52'd0 : 52'hFFFFFFFFFFFFF;
-      3'd4: _theResult___fst_sfd__h129627 = 52'hFFFFFFFFFFFFF;
-      default: _theResult___fst_sfd__h129627 = 52'd0;
+      3'd4: _theResult___fst_sfd__h225871 = 52'hFFFFFFFFFFFFF;
+      default: _theResult___fst_sfd__h225871 = 52'd0;
+    endcase
+  end
+  always@(fpu_div64_fOperands_S0$D_OUT or
+	  fpu_div64_fOperands_S0_first__06_BIT_130_03_EQ_ETC___d405)
+  begin
+    case (fpu_div64_fOperands_S0$D_OUT[2:0])
+      3'd0, 3'd1: _theResult___fst_exp__h19467 = 11'd2047;
+      3'd2:
+	  _theResult___fst_exp__h19467 =
+	      fpu_div64_fOperands_S0_first__06_BIT_130_03_EQ_ETC___d405 ?
+		11'd2047 :
+		11'd2046;
+      3'd3:
+	  _theResult___fst_exp__h19467 =
+	      fpu_div64_fOperands_S0_first__06_BIT_130_03_EQ_ETC___d405 ?
+		11'd2046 :
+		11'd2047;
+      3'd4: _theResult___fst_exp__h19467 = 11'd2046;
+      default: _theResult___fst_exp__h19467 = 11'd0;
+    endcase
+  end
+  always@(fpu_div64_fOperands_S0$D_OUT or
+	  fpu_div64_fOperands_S0_first__06_BIT_130_03_EQ_ETC___d405)
+  begin
+    case (fpu_div64_fOperands_S0$D_OUT[2:0])
+      3'd0, 3'd1: _theResult___fst_sfd__h19468 = 52'd0;
+      3'd2:
+	  _theResult___fst_sfd__h19468 =
+	      fpu_div64_fOperands_S0_first__06_BIT_130_03_EQ_ETC___d405 ?
+		52'd0 :
+		52'hFFFFFFFFFFFFF;
+      3'd3:
+	  _theResult___fst_sfd__h19468 =
+	      fpu_div64_fOperands_S0_first__06_BIT_130_03_EQ_ETC___d405 ?
+		52'hFFFFFFFFFFFFF :
+		52'd0;
+      3'd4: _theResult___fst_sfd__h19468 = 52'hFFFFFFFFFFFFF;
+      default: _theResult___fst_sfd__h19468 = 52'd0;
+    endcase
+  end
+  always@(fpu_div64_fOperands_S0$D_OUT or
+	  fpu_div64_fOperands_S0_first__06_BIT_130_03_EQ_ETC___d405)
+  begin
+    case (fpu_div64_fOperands_S0$D_OUT[2:0])
+      3'd0: _theResult___fst_sfd__h19957 = 52'd0;
+      3'd1: _theResult___fst_sfd__h19957 = 52'd1;
+      3'd2:
+	  _theResult___fst_sfd__h19957 =
+	      fpu_div64_fOperands_S0_first__06_BIT_130_03_EQ_ETC___d405 ?
+		52'd1 :
+		52'd0;
+      3'd3:
+	  _theResult___fst_sfd__h19957 =
+	      fpu_div64_fOperands_S0_first__06_BIT_130_03_EQ_ETC___d405 ?
+		52'd0 :
+		52'd1;
+      default: _theResult___fst_sfd__h19957 = 52'd0;
+    endcase
+  end
+  always@(fpu_div64_fOperands_S0$D_OUT or
+	  fpu_div64_fOperands_S0_first__06_BIT_130_03_EQ_ETC___d405)
+  begin
+    case (fpu_div64_fOperands_S0$D_OUT[2:0])
+      3'd0, 3'd1, 3'd2, 3'd3:
+	  CASE_fpu_div64_fOperands_S0D_OUT_BITS_2_TO_0__ETC__q9 =
+	      !fpu_div64_fOperands_S0_first__06_BIT_130_03_EQ_ETC___d405;
+      default: CASE_fpu_div64_fOperands_S0D_OUT_BITS_2_TO_0__ETC__q9 =
+		   fpu_div64_fOperands_S0$D_OUT[2:0] == 3'd4 &&
+		   !fpu_div64_fOperands_S0_first__06_BIT_130_03_EQ_ETC___d405;
+    endcase
+  end
+  always@(fpu_div64_fState_S4$D_OUT or
+	  out_exp__h43478 or _theResult___exp__h43475)
+  begin
+    case (fpu_div64_fState_S4$D_OUT[1:0])
+      2'b0, 2'b01:
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q14 =
+	      fpu_div64_fState_S4$D_OUT[64:54];
+      2'b10:
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q14 =
+	      out_exp__h43478;
+      2'b11:
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q14 =
+	      _theResult___exp__h43475;
+    endcase
+  end
+  always@(fpu_div64_fState_S4$D_OUT or _theResult___exp__h43475)
+  begin
+    case (fpu_div64_fState_S4$D_OUT[1:0])
+      2'b0:
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q15 =
+	      fpu_div64_fState_S4$D_OUT[64:54];
+      2'b01, 2'b10, 2'b11:
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q15 =
+	      _theResult___exp__h43475;
+    endcase
+  end
+  always@(fpu_div64_fState_S4$D_OUT or
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q14 or
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q15 or
+	  _theResult___exp__h43475)
+  begin
+    case (fpu_div64_fState_S4$D_OUT[68:66])
+      3'd0:
+	  _theResult___fst_exp__h43553 =
+	      CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q14;
+      3'd1:
+	  _theResult___fst_exp__h43553 =
+	      CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q15;
+      3'd2:
+	  _theResult___fst_exp__h43553 =
+	      (fpu_div64_fState_S4$D_OUT[1:0] == 2'b0 ||
+	       fpu_div64_fState_S4$D_OUT[65]) ?
+		fpu_div64_fState_S4$D_OUT[64:54] :
+		_theResult___exp__h43475;
+      3'd3:
+	  _theResult___fst_exp__h43553 =
+	      (fpu_div64_fState_S4$D_OUT[1:0] == 2'b0) ?
+		fpu_div64_fState_S4$D_OUT[64:54] :
+		(fpu_div64_fState_S4$D_OUT[65] ?
+		   _theResult___exp__h43475 :
+		   fpu_div64_fState_S4$D_OUT[64:54]);
+      3'd4: _theResult___fst_exp__h43553 = fpu_div64_fState_S4$D_OUT[64:54];
+      default: _theResult___fst_exp__h43553 = 11'd0;
+    endcase
+  end
+  always@(fpu_sqr64_fState_S4$D_OUT or
+	  out_exp__h95912 or _theResult___exp__h95909)
+  begin
+    case (fpu_sqr64_fState_S4$D_OUT[1:0])
+      2'b0, 2'b01:
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q21 =
+	      fpu_sqr64_fState_S4$D_OUT[64:54];
+      2'b10:
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q21 =
+	      out_exp__h95912;
+      2'b11:
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q21 =
+	      _theResult___exp__h95909;
+    endcase
+  end
+  always@(fpu_sqr64_fState_S4$D_OUT or _theResult___exp__h95909)
+  begin
+    case (fpu_sqr64_fState_S4$D_OUT[1:0])
+      2'b0:
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q22 =
+	      fpu_sqr64_fState_S4$D_OUT[64:54];
+      2'b01, 2'b10, 2'b11:
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q22 =
+	      _theResult___exp__h95909;
+    endcase
+  end
+  always@(fpu_sqr64_fState_S4$D_OUT or
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q21 or
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q22 or
+	  _theResult___exp__h95909)
+  begin
+    case (fpu_sqr64_fState_S4$D_OUT[68:66])
+      3'd0:
+	  _theResult___fst_exp__h95987 =
+	      CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q21;
+      3'd1:
+	  _theResult___fst_exp__h95987 =
+	      CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q22;
+      3'd2:
+	  _theResult___fst_exp__h95987 =
+	      (fpu_sqr64_fState_S4$D_OUT[1:0] == 2'b0 ||
+	       fpu_sqr64_fState_S4$D_OUT[65]) ?
+		fpu_sqr64_fState_S4$D_OUT[64:54] :
+		_theResult___exp__h95909;
+      3'd3:
+	  _theResult___fst_exp__h95987 =
+	      (fpu_sqr64_fState_S4$D_OUT[1:0] == 2'b0) ?
+		fpu_sqr64_fState_S4$D_OUT[64:54] :
+		(fpu_sqr64_fState_S4$D_OUT[65] ?
+		   _theResult___exp__h95909 :
+		   fpu_sqr64_fState_S4$D_OUT[64:54]);
+      3'd4: _theResult___fst_exp__h95987 = fpu_sqr64_fState_S4$D_OUT[64:54];
+      default: _theResult___fst_exp__h95987 = 11'd0;
     endcase
   end
   always@(fpu_madd_fState_S8$D_OUT or
-	  out_exp__h46364 or _theResult___exp__h46361)
+	  out_exp__h142544 or _theResult___exp__h142541)
   begin
     case (fpu_madd_fState_S8$D_OUT[2:1])
       2'b0, 2'b01:
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q11 =
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q31 =
 	      fpu_madd_fState_S8$D_OUT[65:55];
       2'b10:
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q11 =
-	      out_exp__h46364;
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q31 =
+	      out_exp__h142544;
       2'b11:
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q11 =
-	      _theResult___exp__h46361;
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q31 =
+	      _theResult___exp__h142541;
     endcase
   end
-  always@(fpu_madd_fState_S8$D_OUT or _theResult___exp__h46361)
+  always@(fpu_madd_fState_S8$D_OUT or _theResult___exp__h142541)
   begin
     case (fpu_madd_fState_S8$D_OUT[2:1])
       2'b0:
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q12 =
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q32 =
 	      fpu_madd_fState_S8$D_OUT[65:55];
       2'b01, 2'b10, 2'b11:
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q12 =
-	      _theResult___exp__h46361;
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q32 =
+	      _theResult___exp__h142541;
     endcase
   end
   always@(fpu_madd_fState_S8$D_OUT or
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q11 or
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q12 or
-	  _theResult___exp__h46361)
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q31 or
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q32 or
+	  _theResult___exp__h142541)
   begin
     case (fpu_madd_fState_S8$D_OUT[70:68])
       3'd0:
-	  _theResult___fst_exp__h46439 =
-	      CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q11;
+	  _theResult___fst_exp__h142619 =
+	      CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q31;
       3'd1:
-	  _theResult___fst_exp__h46439 =
-	      CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q12;
+	  _theResult___fst_exp__h142619 =
+	      CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q32;
       3'd2:
-	  _theResult___fst_exp__h46439 =
+	  _theResult___fst_exp__h142619 =
 	      (fpu_madd_fState_S8$D_OUT[2:1] == 2'b0 ||
 	       fpu_madd_fState_S8$D_OUT[66]) ?
 		fpu_madd_fState_S8$D_OUT[65:55] :
-		_theResult___exp__h46361;
+		_theResult___exp__h142541;
       3'd3:
-	  _theResult___fst_exp__h46439 =
+	  _theResult___fst_exp__h142619 =
 	      (fpu_madd_fState_S8$D_OUT[2:1] == 2'b0) ?
 		fpu_madd_fState_S8$D_OUT[65:55] :
 		(fpu_madd_fState_S8$D_OUT[66] ?
-		   _theResult___exp__h46361 :
+		   _theResult___exp__h142541 :
 		   fpu_madd_fState_S8$D_OUT[65:55]);
-      3'd4: _theResult___fst_exp__h46439 = fpu_madd_fState_S8$D_OUT[65:55];
-      default: _theResult___fst_exp__h46439 = 11'd0;
+      3'd4: _theResult___fst_exp__h142619 = fpu_madd_fState_S8$D_OUT[65:55];
+      default: _theResult___fst_exp__h142619 = 11'd0;
     endcase
   end
-  always@(guard__h59163 or
-	  _theResult___fst_exp__h67124 or
-	  out_exp__h67772 or _theResult___exp__h67769)
+  always@(guard__h155375 or
+	  _theResult___fst_exp__h163336 or
+	  out_exp__h163984 or _theResult___exp__h163981)
   begin
-    case (guard__h59163)
+    case (guard__h155375)
       2'b0, 2'b01:
-	  CASE_guard9163_0b0_theResult___fst_exp7124_0b1_ETC__q22 =
-	      _theResult___fst_exp__h67124;
+	  CASE_guard55375_0b0_theResult___fst_exp63336_0_ETC__q42 =
+	      _theResult___fst_exp__h163336;
       2'b10:
-	  CASE_guard9163_0b0_theResult___fst_exp7124_0b1_ETC__q22 =
-	      out_exp__h67772;
+	  CASE_guard55375_0b0_theResult___fst_exp63336_0_ETC__q42 =
+	      out_exp__h163984;
       2'b11:
-	  CASE_guard9163_0b0_theResult___fst_exp7124_0b1_ETC__q22 =
-	      _theResult___exp__h67769;
+	  CASE_guard55375_0b0_theResult___fst_exp63336_0_ETC__q42 =
+	      _theResult___exp__h163981;
     endcase
   end
-  always@(guard__h59163 or
-	  _theResult___fst_exp__h67124 or _theResult___exp__h67769)
+  always@(guard__h155375 or
+	  _theResult___fst_exp__h163336 or _theResult___exp__h163981)
   begin
-    case (guard__h59163)
+    case (guard__h155375)
       2'b0:
-	  CASE_guard9163_0b0_theResult___fst_exp7124_0b1_ETC__q23 =
-	      _theResult___fst_exp__h67124;
+	  CASE_guard55375_0b0_theResult___fst_exp63336_0_ETC__q43 =
+	      _theResult___fst_exp__h163336;
       2'b01, 2'b10, 2'b11:
-	  CASE_guard9163_0b0_theResult___fst_exp7124_0b1_ETC__q23 =
-	      _theResult___exp__h67769;
+	  CASE_guard55375_0b0_theResult___fst_exp63336_0_ETC__q43 =
+	      _theResult___exp__h163981;
     endcase
   end
   always@(iFifo$D_OUT or
-	  CASE_guard9163_0b0_theResult___fst_exp7124_0b1_ETC__q22 or
-	  CASE_guard9163_0b0_theResult___fst_exp7124_0b1_ETC__q23 or
-	  IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d1881 or
-	  IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d1883 or
-	  _theResult___fst_exp__h67124)
+	  CASE_guard55375_0b0_theResult___fst_exp63336_0_ETC__q42 or
+	  CASE_guard55375_0b0_theResult___fst_exp63336_0_ETC__q43 or
+	  IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3690 or
+	  IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3692 or
+	  _theResult___fst_exp__h163336)
   begin
     case (iFifo$D_OUT[6:4])
       3'd0:
-	  _theResult___fst_exp__h67847 =
-	      CASE_guard9163_0b0_theResult___fst_exp7124_0b1_ETC__q22;
+	  _theResult___fst_exp__h164059 =
+	      CASE_guard55375_0b0_theResult___fst_exp63336_0_ETC__q42;
       3'd1:
-	  _theResult___fst_exp__h67847 =
-	      CASE_guard9163_0b0_theResult___fst_exp7124_0b1_ETC__q23;
+	  _theResult___fst_exp__h164059 =
+	      CASE_guard55375_0b0_theResult___fst_exp63336_0_ETC__q43;
       3'd2:
-	  _theResult___fst_exp__h67847 =
-	      IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d1881;
+	  _theResult___fst_exp__h164059 =
+	      IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3690;
       3'd3:
-	  _theResult___fst_exp__h67847 =
-	      IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d1883;
-      3'd4: _theResult___fst_exp__h67847 = _theResult___fst_exp__h67124;
-      default: _theResult___fst_exp__h67847 = 11'd0;
+	  _theResult___fst_exp__h164059 =
+	      IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3692;
+      3'd4: _theResult___fst_exp__h164059 = _theResult___fst_exp__h163336;
+      default: _theResult___fst_exp__h164059 = 11'd0;
     endcase
   end
-  always@(guard__h68412 or
-	  _theResult___fst_exp__h76640 or
-	  out_exp__h77362 or _theResult___exp__h77359)
+  always@(guard__h164624 or
+	  _theResult___fst_exp__h172852 or
+	  out_exp__h173574 or _theResult___exp__h173571)
   begin
-    case (guard__h68412)
+    case (guard__h164624)
       2'b0, 2'b01:
-	  CASE_guard8412_0b0_theResult___fst_exp6640_0b1_ETC__q24 =
-	      _theResult___fst_exp__h76640;
+	  CASE_guard64624_0b0_theResult___fst_exp72852_0_ETC__q44 =
+	      _theResult___fst_exp__h172852;
       2'b10:
-	  CASE_guard8412_0b0_theResult___fst_exp6640_0b1_ETC__q24 =
-	      out_exp__h77362;
+	  CASE_guard64624_0b0_theResult___fst_exp72852_0_ETC__q44 =
+	      out_exp__h173574;
       2'b11:
-	  CASE_guard8412_0b0_theResult___fst_exp6640_0b1_ETC__q24 =
-	      _theResult___exp__h77359;
+	  CASE_guard64624_0b0_theResult___fst_exp72852_0_ETC__q44 =
+	      _theResult___exp__h173571;
     endcase
   end
-  always@(guard__h68412 or
-	  _theResult___fst_exp__h76640 or _theResult___exp__h77359)
+  always@(guard__h164624 or
+	  _theResult___fst_exp__h172852 or _theResult___exp__h173571)
   begin
-    case (guard__h68412)
+    case (guard__h164624)
       2'b0:
-	  CASE_guard8412_0b0_theResult___fst_exp6640_0b1_ETC__q25 =
-	      _theResult___fst_exp__h76640;
+	  CASE_guard64624_0b0_theResult___fst_exp72852_0_ETC__q45 =
+	      _theResult___fst_exp__h172852;
       2'b01, 2'b10, 2'b11:
-	  CASE_guard8412_0b0_theResult___fst_exp6640_0b1_ETC__q25 =
-	      _theResult___exp__h77359;
+	  CASE_guard64624_0b0_theResult___fst_exp72852_0_ETC__q45 =
+	      _theResult___exp__h173571;
     endcase
   end
   always@(iFifo$D_OUT or
-	  CASE_guard8412_0b0_theResult___fst_exp6640_0b1_ETC__q24 or
-	  CASE_guard8412_0b0_theResult___fst_exp6640_0b1_ETC__q25 or
-	  IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d1920 or
-	  IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d1922 or
-	  _theResult___fst_exp__h76640)
+	  CASE_guard64624_0b0_theResult___fst_exp72852_0_ETC__q44 or
+	  CASE_guard64624_0b0_theResult___fst_exp72852_0_ETC__q45 or
+	  IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d3729 or
+	  IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d3731 or
+	  _theResult___fst_exp__h172852)
   begin
     case (iFifo$D_OUT[6:4])
       3'd0:
-	  _theResult___fst_exp__h77437 =
-	      CASE_guard8412_0b0_theResult___fst_exp6640_0b1_ETC__q24;
+	  _theResult___fst_exp__h173649 =
+	      CASE_guard64624_0b0_theResult___fst_exp72852_0_ETC__q44;
       3'd1:
-	  _theResult___fst_exp__h77437 =
-	      CASE_guard8412_0b0_theResult___fst_exp6640_0b1_ETC__q25;
+	  _theResult___fst_exp__h173649 =
+	      CASE_guard64624_0b0_theResult___fst_exp72852_0_ETC__q45;
       3'd2:
-	  _theResult___fst_exp__h77437 =
-	      IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d1920;
+	  _theResult___fst_exp__h173649 =
+	      IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d3729;
       3'd3:
-	  _theResult___fst_exp__h77437 =
-	      IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d1922;
-      3'd4: _theResult___fst_exp__h77437 = _theResult___fst_exp__h76640;
-      default: _theResult___fst_exp__h77437 = 11'd0;
+	  _theResult___fst_exp__h173649 =
+	      IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d3731;
+      3'd4: _theResult___fst_exp__h173649 = _theResult___fst_exp__h172852;
+      default: _theResult___fst_exp__h173649 = 11'd0;
     endcase
   end
-  always@(guard__h77451 or
-	  _theResult___fst_exp__h85441 or
-	  out_exp__h86114 or _theResult___exp__h86111)
+  always@(guard__h173663 or
+	  _theResult___fst_exp__h181653 or
+	  out_exp__h182326 or _theResult___exp__h182323)
   begin
-    case (guard__h77451)
+    case (guard__h173663)
       2'b0, 2'b01:
-	  CASE_guard7451_0b0_theResult___fst_exp5441_0b1_ETC__q26 =
-	      _theResult___fst_exp__h85441;
+	  CASE_guard73663_0b0_theResult___fst_exp81653_0_ETC__q46 =
+	      _theResult___fst_exp__h181653;
       2'b10:
-	  CASE_guard7451_0b0_theResult___fst_exp5441_0b1_ETC__q26 =
-	      out_exp__h86114;
+	  CASE_guard73663_0b0_theResult___fst_exp81653_0_ETC__q46 =
+	      out_exp__h182326;
       2'b11:
-	  CASE_guard7451_0b0_theResult___fst_exp5441_0b1_ETC__q26 =
-	      _theResult___exp__h86111;
+	  CASE_guard73663_0b0_theResult___fst_exp81653_0_ETC__q46 =
+	      _theResult___exp__h182323;
     endcase
   end
-  always@(guard__h77451 or
-	  _theResult___fst_exp__h85441 or _theResult___exp__h86111)
+  always@(guard__h173663 or
+	  _theResult___fst_exp__h181653 or _theResult___exp__h182323)
   begin
-    case (guard__h77451)
+    case (guard__h173663)
       2'b0:
-	  CASE_guard7451_0b0_theResult___fst_exp5441_0b1_ETC__q27 =
-	      _theResult___fst_exp__h85441;
+	  CASE_guard73663_0b0_theResult___fst_exp81653_0_ETC__q47 =
+	      _theResult___fst_exp__h181653;
       2'b01, 2'b10, 2'b11:
-	  CASE_guard7451_0b0_theResult___fst_exp5441_0b1_ETC__q27 =
-	      _theResult___exp__h86111;
+	  CASE_guard73663_0b0_theResult___fst_exp81653_0_ETC__q47 =
+	      _theResult___exp__h182323;
     endcase
   end
   always@(iFifo$D_OUT or
-	  CASE_guard7451_0b0_theResult___fst_exp5441_0b1_ETC__q26 or
-	  CASE_guard7451_0b0_theResult___fst_exp5441_0b1_ETC__q27 or
-	  IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d1951 or
-	  IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d1953 or
-	  _theResult___fst_exp__h85441)
+	  CASE_guard73663_0b0_theResult___fst_exp81653_0_ETC__q46 or
+	  CASE_guard73663_0b0_theResult___fst_exp81653_0_ETC__q47 or
+	  IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3760 or
+	  IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3762 or
+	  _theResult___fst_exp__h181653)
   begin
     case (iFifo$D_OUT[6:4])
       3'd0:
-	  _theResult___fst_exp__h86189 =
-	      CASE_guard7451_0b0_theResult___fst_exp5441_0b1_ETC__q26;
+	  _theResult___fst_exp__h182401 =
+	      CASE_guard73663_0b0_theResult___fst_exp81653_0_ETC__q46;
       3'd1:
-	  _theResult___fst_exp__h86189 =
-	      CASE_guard7451_0b0_theResult___fst_exp5441_0b1_ETC__q27;
+	  _theResult___fst_exp__h182401 =
+	      CASE_guard73663_0b0_theResult___fst_exp81653_0_ETC__q47;
       3'd2:
-	  _theResult___fst_exp__h86189 =
-	      IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d1951;
+	  _theResult___fst_exp__h182401 =
+	      IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3760;
       3'd3:
-	  _theResult___fst_exp__h86189 =
-	      IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d1953;
-      3'd4: _theResult___fst_exp__h86189 = _theResult___fst_exp__h85441;
-      default: _theResult___fst_exp__h86189 = 11'd0;
+	  _theResult___fst_exp__h182401 =
+	      IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3762;
+      3'd4: _theResult___fst_exp__h182401 = _theResult___fst_exp__h181653;
+      default: _theResult___fst_exp__h182401 = 11'd0;
     endcase
   end
-  always@(guard__h59163 or
-	  _theResult___snd__h67075 or
-	  out_sfd__h67773 or _theResult___sfd__h67770)
+  always@(guard__h155375 or
+	  _theResult___snd__h163287 or
+	  out_sfd__h163985 or _theResult___sfd__h163982)
   begin
-    case (guard__h59163)
+    case (guard__h155375)
       2'b0, 2'b01:
-	  CASE_guard9163_0b0_theResult___snd7075_BITS_56_ETC__q28 =
-	      _theResult___snd__h67075[56:5];
+	  CASE_guard55375_0b0_theResult___snd63287_BITS__ETC__q48 =
+	      _theResult___snd__h163287[56:5];
       2'b10:
-	  CASE_guard9163_0b0_theResult___snd7075_BITS_56_ETC__q28 =
-	      out_sfd__h67773;
+	  CASE_guard55375_0b0_theResult___snd63287_BITS__ETC__q48 =
+	      out_sfd__h163985;
       2'b11:
-	  CASE_guard9163_0b0_theResult___snd7075_BITS_56_ETC__q28 =
-	      _theResult___sfd__h67770;
+	  CASE_guard55375_0b0_theResult___snd63287_BITS__ETC__q48 =
+	      _theResult___sfd__h163982;
     endcase
   end
-  always@(guard__h59163 or
-	  _theResult___snd__h67075 or _theResult___sfd__h67770)
+  always@(guard__h155375 or
+	  _theResult___snd__h163287 or _theResult___sfd__h163982)
   begin
-    case (guard__h59163)
+    case (guard__h155375)
       2'b0:
-	  CASE_guard9163_0b0_theResult___snd7075_BITS_56_ETC__q29 =
-	      _theResult___snd__h67075[56:5];
+	  CASE_guard55375_0b0_theResult___snd63287_BITS__ETC__q49 =
+	      _theResult___snd__h163287[56:5];
       2'b01, 2'b10, 2'b11:
-	  CASE_guard9163_0b0_theResult___snd7075_BITS_56_ETC__q29 =
-	      _theResult___sfd__h67770;
+	  CASE_guard55375_0b0_theResult___snd63287_BITS__ETC__q49 =
+	      _theResult___sfd__h163982;
     endcase
   end
   always@(iFifo$D_OUT or
-	  CASE_guard9163_0b0_theResult___snd7075_BITS_56_ETC__q28 or
-	  CASE_guard9163_0b0_theResult___snd7075_BITS_56_ETC__q29 or
-	  IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d1977 or
-	  IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d1979 or
-	  _theResult___snd__h67075)
+	  CASE_guard55375_0b0_theResult___snd63287_BITS__ETC__q48 or
+	  CASE_guard55375_0b0_theResult___snd63287_BITS__ETC__q49 or
+	  IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3786 or
+	  IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3788 or
+	  _theResult___snd__h163287)
   begin
     case (iFifo$D_OUT[6:4])
       3'd0:
-	  _theResult___fst_sfd__h67848 =
-	      CASE_guard9163_0b0_theResult___snd7075_BITS_56_ETC__q28;
+	  _theResult___fst_sfd__h164060 =
+	      CASE_guard55375_0b0_theResult___snd63287_BITS__ETC__q48;
       3'd1:
-	  _theResult___fst_sfd__h67848 =
-	      CASE_guard9163_0b0_theResult___snd7075_BITS_56_ETC__q29;
+	  _theResult___fst_sfd__h164060 =
+	      CASE_guard55375_0b0_theResult___snd63287_BITS__ETC__q49;
       3'd2:
-	  _theResult___fst_sfd__h67848 =
-	      IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d1977;
+	  _theResult___fst_sfd__h164060 =
+	      IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3786;
       3'd3:
-	  _theResult___fst_sfd__h67848 =
-	      IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d1979;
-      3'd4: _theResult___fst_sfd__h67848 = _theResult___snd__h67075[56:5];
-      default: _theResult___fst_sfd__h67848 = 52'd0;
+	  _theResult___fst_sfd__h164060 =
+	      IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3788;
+      3'd4: _theResult___fst_sfd__h164060 = _theResult___snd__h163287[56:5];
+      default: _theResult___fst_sfd__h164060 = 52'd0;
     endcase
   end
-  always@(guard__h68412 or
-	  sfdin__h76634 or out_sfd__h77363 or _theResult___sfd__h77360)
+  always@(guard__h164624 or
+	  sfdin__h172846 or out_sfd__h173575 or _theResult___sfd__h173572)
   begin
-    case (guard__h68412)
+    case (guard__h164624)
       2'b0, 2'b01:
-	  CASE_guard8412_0b0_sfdin6634_BITS_56_TO_5_0b1__ETC__q30 =
-	      sfdin__h76634[56:5];
+	  CASE_guard64624_0b0_sfdin72846_BITS_56_TO_5_0b_ETC__q50 =
+	      sfdin__h172846[56:5];
       2'b10:
-	  CASE_guard8412_0b0_sfdin6634_BITS_56_TO_5_0b1__ETC__q30 =
-	      out_sfd__h77363;
+	  CASE_guard64624_0b0_sfdin72846_BITS_56_TO_5_0b_ETC__q50 =
+	      out_sfd__h173575;
       2'b11:
-	  CASE_guard8412_0b0_sfdin6634_BITS_56_TO_5_0b1__ETC__q30 =
-	      _theResult___sfd__h77360;
+	  CASE_guard64624_0b0_sfdin72846_BITS_56_TO_5_0b_ETC__q50 =
+	      _theResult___sfd__h173572;
     endcase
   end
-  always@(guard__h68412 or sfdin__h76634 or _theResult___sfd__h77360)
+  always@(guard__h164624 or sfdin__h172846 or _theResult___sfd__h173572)
   begin
-    case (guard__h68412)
+    case (guard__h164624)
       2'b0:
-	  CASE_guard8412_0b0_sfdin6634_BITS_56_TO_5_0b1__ETC__q31 =
-	      sfdin__h76634[56:5];
+	  CASE_guard64624_0b0_sfdin72846_BITS_56_TO_5_0b_ETC__q51 =
+	      sfdin__h172846[56:5];
       2'b01, 2'b10, 2'b11:
-	  CASE_guard8412_0b0_sfdin6634_BITS_56_TO_5_0b1__ETC__q31 =
-	      _theResult___sfd__h77360;
+	  CASE_guard64624_0b0_sfdin72846_BITS_56_TO_5_0b_ETC__q51 =
+	      _theResult___sfd__h173572;
     endcase
   end
   always@(iFifo$D_OUT or
-	  CASE_guard8412_0b0_sfdin6634_BITS_56_TO_5_0b1__ETC__q30 or
-	  CASE_guard8412_0b0_sfdin6634_BITS_56_TO_5_0b1__ETC__q31 or
-	  IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d2004 or
-	  IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d2006 or
-	  sfdin__h76634)
+	  CASE_guard64624_0b0_sfdin72846_BITS_56_TO_5_0b_ETC__q50 or
+	  CASE_guard64624_0b0_sfdin72846_BITS_56_TO_5_0b_ETC__q51 or
+	  IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d3813 or
+	  IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d3815 or
+	  sfdin__h172846)
   begin
     case (iFifo$D_OUT[6:4])
       3'd0:
-	  _theResult___fst_sfd__h77438 =
-	      CASE_guard8412_0b0_sfdin6634_BITS_56_TO_5_0b1__ETC__q30;
+	  _theResult___fst_sfd__h173650 =
+	      CASE_guard64624_0b0_sfdin72846_BITS_56_TO_5_0b_ETC__q50;
       3'd1:
-	  _theResult___fst_sfd__h77438 =
-	      CASE_guard8412_0b0_sfdin6634_BITS_56_TO_5_0b1__ETC__q31;
+	  _theResult___fst_sfd__h173650 =
+	      CASE_guard64624_0b0_sfdin72846_BITS_56_TO_5_0b_ETC__q51;
       3'd2:
-	  _theResult___fst_sfd__h77438 =
-	      IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d2004;
+	  _theResult___fst_sfd__h173650 =
+	      IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d3813;
       3'd3:
-	  _theResult___fst_sfd__h77438 =
-	      IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d2006;
-      3'd4: _theResult___fst_sfd__h77438 = sfdin__h76634[56:5];
-      default: _theResult___fst_sfd__h77438 = 52'd0;
+	  _theResult___fst_sfd__h173650 =
+	      IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d3815;
+      3'd4: _theResult___fst_sfd__h173650 = sfdin__h172846[56:5];
+      default: _theResult___fst_sfd__h173650 = 52'd0;
     endcase
   end
-  always@(guard__h77451 or
-	  _theResult___snd__h85387 or
-	  out_sfd__h86115 or _theResult___sfd__h86112)
+  always@(guard__h173663 or
+	  _theResult___snd__h181599 or
+	  out_sfd__h182327 or _theResult___sfd__h182324)
   begin
-    case (guard__h77451)
+    case (guard__h173663)
       2'b0, 2'b01:
-	  CASE_guard7451_0b0_theResult___snd5387_BITS_56_ETC__q32 =
-	      _theResult___snd__h85387[56:5];
+	  CASE_guard73663_0b0_theResult___snd81599_BITS__ETC__q52 =
+	      _theResult___snd__h181599[56:5];
       2'b10:
-	  CASE_guard7451_0b0_theResult___snd5387_BITS_56_ETC__q32 =
-	      out_sfd__h86115;
+	  CASE_guard73663_0b0_theResult___snd81599_BITS__ETC__q52 =
+	      out_sfd__h182327;
       2'b11:
-	  CASE_guard7451_0b0_theResult___snd5387_BITS_56_ETC__q32 =
-	      _theResult___sfd__h86112;
+	  CASE_guard73663_0b0_theResult___snd81599_BITS__ETC__q52 =
+	      _theResult___sfd__h182324;
     endcase
   end
-  always@(guard__h77451 or
-	  _theResult___snd__h85387 or _theResult___sfd__h86112)
+  always@(guard__h173663 or
+	  _theResult___snd__h181599 or _theResult___sfd__h182324)
   begin
-    case (guard__h77451)
+    case (guard__h173663)
       2'b0:
-	  CASE_guard7451_0b0_theResult___snd5387_BITS_56_ETC__q33 =
-	      _theResult___snd__h85387[56:5];
+	  CASE_guard73663_0b0_theResult___snd81599_BITS__ETC__q53 =
+	      _theResult___snd__h181599[56:5];
       2'b01, 2'b10, 2'b11:
-	  CASE_guard7451_0b0_theResult___snd5387_BITS_56_ETC__q33 =
-	      _theResult___sfd__h86112;
+	  CASE_guard73663_0b0_theResult___snd81599_BITS__ETC__q53 =
+	      _theResult___sfd__h182324;
     endcase
   end
   always@(iFifo$D_OUT or
-	  CASE_guard7451_0b0_theResult___snd5387_BITS_56_ETC__q32 or
-	  CASE_guard7451_0b0_theResult___snd5387_BITS_56_ETC__q33 or
-	  IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d2023 or
-	  IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d2025 or
-	  _theResult___snd__h85387)
+	  CASE_guard73663_0b0_theResult___snd81599_BITS__ETC__q52 or
+	  CASE_guard73663_0b0_theResult___snd81599_BITS__ETC__q53 or
+	  IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3832 or
+	  IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3834 or
+	  _theResult___snd__h181599)
   begin
     case (iFifo$D_OUT[6:4])
       3'd0:
-	  _theResult___fst_sfd__h86190 =
-	      CASE_guard7451_0b0_theResult___snd5387_BITS_56_ETC__q32;
+	  _theResult___fst_sfd__h182402 =
+	      CASE_guard73663_0b0_theResult___snd81599_BITS__ETC__q52;
       3'd1:
-	  _theResult___fst_sfd__h86190 =
-	      CASE_guard7451_0b0_theResult___snd5387_BITS_56_ETC__q33;
+	  _theResult___fst_sfd__h182402 =
+	      CASE_guard73663_0b0_theResult___snd81599_BITS__ETC__q53;
       3'd2:
-	  _theResult___fst_sfd__h86190 =
-	      IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d2023;
+	  _theResult___fst_sfd__h182402 =
+	      IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3832;
       3'd3:
-	  _theResult___fst_sfd__h86190 =
-	      IF_IF_IF_iFifo_first__288_BITS_167_TO_160_321__ETC___d2025;
-      3'd4: _theResult___fst_sfd__h86190 = _theResult___snd__h85387[56:5];
-      default: _theResult___fst_sfd__h86190 = 52'd0;
+	  _theResult___fst_sfd__h182402 =
+	      IF_IF_IF_iFifo_first__087_BITS_167_TO_160_130__ETC___d3834;
+      3'd4: _theResult___fst_sfd__h182402 = _theResult___snd__h181599[56:5];
+      default: _theResult___fst_sfd__h182402 = 52'd0;
     endcase
   end
-  always@(iFifo$D_OUT)
+  always@(guard__h155375 or iFifo$D_OUT)
   begin
-    case (iFifo$D_OUT[6:4])
-      3'd0, 3'd1, 3'd2, 3'd3:
-	  IF_iFifo_first__288_BITS_6_TO_4_313_EQ_0_382_O_ETC___d1511 =
-	      iFifo$D_OUT[168];
-      default: IF_iFifo_first__288_BITS_6_TO_4_313_EQ_0_382_O_ETC___d1511 =
-		   iFifo$D_OUT[6:4] == 3'd4 && iFifo$D_OUT[168];
-    endcase
-  end
-  always@(guard__h59163 or iFifo$D_OUT)
-  begin
-    case (guard__h59163)
+    case (guard__h155375)
       2'b0, 2'b01, 2'b10:
-	  CASE_guard9163_0b0_iFifoD_OUT_BIT_168_0b1_iFi_ETC__q34 =
+	  CASE_guard55375_0b0_iFifoD_OUT_BIT_168_0b1_iF_ETC__q54 =
 	      iFifo$D_OUT[168];
       2'd3:
-	  CASE_guard9163_0b0_iFifoD_OUT_BIT_168_0b1_iFi_ETC__q34 =
-	      guard__h59163 == 2'b11 && iFifo$D_OUT[168];
+	  CASE_guard55375_0b0_iFifoD_OUT_BIT_168_0b1_iF_ETC__q54 =
+	      guard__h155375 == 2'b11 && iFifo$D_OUT[168];
     endcase
   end
   always@(iFifo$D_OUT or
-	  CASE_guard9163_0b0_iFifoD_OUT_BIT_168_0b1_iFi_ETC__q34 or
-	  guard__h59163)
+	  CASE_guard55375_0b0_iFifoD_OUT_BIT_168_0b1_iF_ETC__q54 or
+	  guard__h155375)
   begin
     case (iFifo$D_OUT[6:4])
       3'd0:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard9163__ETC__q35 =
-	      CASE_guard9163_0b0_iFifoD_OUT_BIT_168_0b1_iFi_ETC__q34;
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard55375_ETC__q55 =
+	      CASE_guard55375_0b0_iFifoD_OUT_BIT_168_0b1_iF_ETC__q54;
       3'd1:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard9163__ETC__q35 =
-	      (guard__h59163 == 2'b0) ?
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard55375_ETC__q55 =
+	      (guard__h155375 == 2'b0) ?
 		iFifo$D_OUT[168] :
-		(guard__h59163 == 2'b01 || guard__h59163 == 2'b10 ||
-		 guard__h59163 == 2'b11) &&
+		(guard__h155375 == 2'b01 || guard__h155375 == 2'b10 ||
+		 guard__h155375 == 2'b11) &&
 		iFifo$D_OUT[168];
       3'd2, 3'd3:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard9163__ETC__q35 =
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard55375_ETC__q55 =
 	      iFifo$D_OUT[168];
-      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard9163__ETC__q35 =
+      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard55375_ETC__q55 =
 		   iFifo$D_OUT[6:4] == 3'd4 && iFifo$D_OUT[168];
     endcase
   end
-  always@(guard__h68412 or iFifo$D_OUT)
+  always@(iFifo$D_OUT)
   begin
-    case (guard__h68412)
+    case (iFifo$D_OUT[6:4])
+      3'd0, 3'd1, 3'd2, 3'd3:
+	  IF_iFifo_first__087_BITS_6_TO_4_118_EQ_0_191_O_ETC___d3320 =
+	      iFifo$D_OUT[168];
+      default: IF_iFifo_first__087_BITS_6_TO_4_118_EQ_0_191_O_ETC___d3320 =
+		   iFifo$D_OUT[6:4] == 3'd4 && iFifo$D_OUT[168];
+    endcase
+  end
+  always@(guard__h164624 or iFifo$D_OUT)
+  begin
+    case (guard__h164624)
       2'b0, 2'b01, 2'b10:
-	  CASE_guard8412_0b0_iFifoD_OUT_BIT_168_0b1_iFi_ETC__q36 =
+	  CASE_guard64624_0b0_iFifoD_OUT_BIT_168_0b1_iF_ETC__q56 =
 	      iFifo$D_OUT[168];
       2'd3:
-	  CASE_guard8412_0b0_iFifoD_OUT_BIT_168_0b1_iFi_ETC__q36 =
-	      guard__h68412 == 2'b11 && iFifo$D_OUT[168];
+	  CASE_guard64624_0b0_iFifoD_OUT_BIT_168_0b1_iF_ETC__q56 =
+	      guard__h164624 == 2'b11 && iFifo$D_OUT[168];
     endcase
   end
   always@(iFifo$D_OUT or
-	  CASE_guard8412_0b0_iFifoD_OUT_BIT_168_0b1_iFi_ETC__q36 or
-	  guard__h68412)
+	  CASE_guard64624_0b0_iFifoD_OUT_BIT_168_0b1_iF_ETC__q56 or
+	  guard__h164624)
   begin
     case (iFifo$D_OUT[6:4])
       3'd0:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard8412__ETC__q37 =
-	      CASE_guard8412_0b0_iFifoD_OUT_BIT_168_0b1_iFi_ETC__q36;
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard64624_ETC__q57 =
+	      CASE_guard64624_0b0_iFifoD_OUT_BIT_168_0b1_iF_ETC__q56;
       3'd1:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard8412__ETC__q37 =
-	      (guard__h68412 == 2'b0) ?
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard64624_ETC__q57 =
+	      (guard__h164624 == 2'b0) ?
 		iFifo$D_OUT[168] :
-		(guard__h68412 == 2'b01 || guard__h68412 == 2'b10 ||
-		 guard__h68412 == 2'b11) &&
+		(guard__h164624 == 2'b01 || guard__h164624 == 2'b10 ||
+		 guard__h164624 == 2'b11) &&
 		iFifo$D_OUT[168];
       3'd2, 3'd3:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard8412__ETC__q37 =
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard64624_ETC__q57 =
 	      iFifo$D_OUT[168];
-      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard8412__ETC__q37 =
+      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard64624_ETC__q57 =
 		   iFifo$D_OUT[6:4] == 3'd4 && iFifo$D_OUT[168];
     endcase
   end
-  always@(guard__h77451 or iFifo$D_OUT)
+  always@(guard__h173663 or iFifo$D_OUT)
   begin
-    case (guard__h77451)
+    case (guard__h173663)
       2'b0, 2'b01, 2'b10:
-	  CASE_guard7451_0b0_iFifoD_OUT_BIT_168_0b1_iFi_ETC__q38 =
+	  CASE_guard73663_0b0_iFifoD_OUT_BIT_168_0b1_iF_ETC__q58 =
 	      iFifo$D_OUT[168];
       2'd3:
-	  CASE_guard7451_0b0_iFifoD_OUT_BIT_168_0b1_iFi_ETC__q38 =
-	      guard__h77451 == 2'b11 && iFifo$D_OUT[168];
+	  CASE_guard73663_0b0_iFifoD_OUT_BIT_168_0b1_iF_ETC__q58 =
+	      guard__h173663 == 2'b11 && iFifo$D_OUT[168];
     endcase
   end
   always@(iFifo$D_OUT or
-	  CASE_guard7451_0b0_iFifoD_OUT_BIT_168_0b1_iFi_ETC__q38 or
-	  guard__h77451)
+	  CASE_guard73663_0b0_iFifoD_OUT_BIT_168_0b1_iF_ETC__q58 or
+	  guard__h173663)
   begin
     case (iFifo$D_OUT[6:4])
       3'd0:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard7451__ETC__q39 =
-	      CASE_guard7451_0b0_iFifoD_OUT_BIT_168_0b1_iFi_ETC__q38;
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard73663_ETC__q59 =
+	      CASE_guard73663_0b0_iFifoD_OUT_BIT_168_0b1_iF_ETC__q58;
       3'd1:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard7451__ETC__q39 =
-	      (guard__h77451 == 2'b0) ?
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard73663_ETC__q59 =
+	      (guard__h173663 == 2'b0) ?
 		iFifo$D_OUT[168] :
-		(guard__h77451 == 2'b01 || guard__h77451 == 2'b10 ||
-		 guard__h77451 == 2'b11) &&
+		(guard__h173663 == 2'b01 || guard__h173663 == 2'b10 ||
+		 guard__h173663 == 2'b11) &&
 		iFifo$D_OUT[168];
       3'd2, 3'd3:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard7451__ETC__q39 =
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard73663_ETC__q59 =
 	      iFifo$D_OUT[168];
-      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard7451__ETC__q39 =
+      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard73663_ETC__q59 =
 		   iFifo$D_OUT[6:4] == 3'd4 && iFifo$D_OUT[168];
     endcase
   end
-  always@(guard__h136708 or
-	  _theResult___fst_exp__h144669 or
-	  out_exp__h145317 or _theResult___exp__h145314)
+  always@(guard__h232952 or
+	  _theResult___fst_exp__h240913 or
+	  out_exp__h241561 or _theResult___exp__h241558)
   begin
-    case (guard__h136708)
+    case (guard__h232952)
       2'b0, 2'b01:
-	  CASE_guard36708_0b0_theResult___fst_exp44669_0_ETC__q49 =
-	      _theResult___fst_exp__h144669;
+	  CASE_guard32952_0b0_theResult___fst_exp40913_0_ETC__q69 =
+	      _theResult___fst_exp__h240913;
       2'b10:
-	  CASE_guard36708_0b0_theResult___fst_exp44669_0_ETC__q49 =
-	      out_exp__h145317;
+	  CASE_guard32952_0b0_theResult___fst_exp40913_0_ETC__q69 =
+	      out_exp__h241561;
       2'b11:
-	  CASE_guard36708_0b0_theResult___fst_exp44669_0_ETC__q49 =
-	      _theResult___exp__h145314;
+	  CASE_guard32952_0b0_theResult___fst_exp40913_0_ETC__q69 =
+	      _theResult___exp__h241558;
     endcase
   end
-  always@(guard__h136708 or
-	  _theResult___fst_exp__h144669 or _theResult___exp__h145314)
+  always@(guard__h232952 or
+	  _theResult___fst_exp__h240913 or _theResult___exp__h241558)
   begin
-    case (guard__h136708)
+    case (guard__h232952)
       2'b0:
-	  CASE_guard36708_0b0_theResult___fst_exp44669_0_ETC__q50 =
-	      _theResult___fst_exp__h144669;
+	  CASE_guard32952_0b0_theResult___fst_exp40913_0_ETC__q70 =
+	      _theResult___fst_exp__h240913;
       2'b01, 2'b10, 2'b11:
-	  CASE_guard36708_0b0_theResult___fst_exp44669_0_ETC__q50 =
-	      _theResult___exp__h145314;
+	  CASE_guard32952_0b0_theResult___fst_exp40913_0_ETC__q70 =
+	      _theResult___exp__h241558;
     endcase
   end
   always@(iFifo$D_OUT or
-	  CASE_guard36708_0b0_theResult___fst_exp44669_0_ETC__q49 or
-	  CASE_guard36708_0b0_theResult___fst_exp44669_0_ETC__q50 or
-	  IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2589 or
-	  IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2591 or
-	  _theResult___fst_exp__h144669)
+	  CASE_guard32952_0b0_theResult___fst_exp40913_0_ETC__q69 or
+	  CASE_guard32952_0b0_theResult___fst_exp40913_0_ETC__q70 or
+	  IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4398 or
+	  IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4400 or
+	  _theResult___fst_exp__h240913)
   begin
     case (iFifo$D_OUT[6:4])
       3'd0:
-	  _theResult___fst_exp__h145392 =
-	      CASE_guard36708_0b0_theResult___fst_exp44669_0_ETC__q49;
+	  _theResult___fst_exp__h241636 =
+	      CASE_guard32952_0b0_theResult___fst_exp40913_0_ETC__q69;
       3'd1:
-	  _theResult___fst_exp__h145392 =
-	      CASE_guard36708_0b0_theResult___fst_exp44669_0_ETC__q50;
+	  _theResult___fst_exp__h241636 =
+	      CASE_guard32952_0b0_theResult___fst_exp40913_0_ETC__q70;
       3'd2:
-	  _theResult___fst_exp__h145392 =
-	      IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2589;
+	  _theResult___fst_exp__h241636 =
+	      IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4398;
       3'd3:
-	  _theResult___fst_exp__h145392 =
-	      IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2591;
-      3'd4: _theResult___fst_exp__h145392 = _theResult___fst_exp__h144669;
-      default: _theResult___fst_exp__h145392 = 11'd0;
+	  _theResult___fst_exp__h241636 =
+	      IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4400;
+      3'd4: _theResult___fst_exp__h241636 = _theResult___fst_exp__h240913;
+      default: _theResult___fst_exp__h241636 = 11'd0;
     endcase
   end
-  always@(guard__h145957 or
-	  _theResult___fst_exp__h154185 or
-	  out_exp__h154907 or _theResult___exp__h154904)
+  always@(guard__h242201 or
+	  _theResult___fst_exp__h250429 or
+	  out_exp__h251151 or _theResult___exp__h251148)
   begin
-    case (guard__h145957)
+    case (guard__h242201)
       2'b0, 2'b01:
-	  CASE_guard45957_0b0_theResult___fst_exp54185_0_ETC__q51 =
-	      _theResult___fst_exp__h154185;
+	  CASE_guard42201_0b0_theResult___fst_exp50429_0_ETC__q71 =
+	      _theResult___fst_exp__h250429;
       2'b10:
-	  CASE_guard45957_0b0_theResult___fst_exp54185_0_ETC__q51 =
-	      out_exp__h154907;
+	  CASE_guard42201_0b0_theResult___fst_exp50429_0_ETC__q71 =
+	      out_exp__h251151;
       2'b11:
-	  CASE_guard45957_0b0_theResult___fst_exp54185_0_ETC__q51 =
-	      _theResult___exp__h154904;
+	  CASE_guard42201_0b0_theResult___fst_exp50429_0_ETC__q71 =
+	      _theResult___exp__h251148;
     endcase
   end
-  always@(guard__h145957 or
-	  _theResult___fst_exp__h154185 or _theResult___exp__h154904)
+  always@(guard__h242201 or
+	  _theResult___fst_exp__h250429 or _theResult___exp__h251148)
   begin
-    case (guard__h145957)
+    case (guard__h242201)
       2'b0:
-	  CASE_guard45957_0b0_theResult___fst_exp54185_0_ETC__q52 =
-	      _theResult___fst_exp__h154185;
+	  CASE_guard42201_0b0_theResult___fst_exp50429_0_ETC__q72 =
+	      _theResult___fst_exp__h250429;
       2'b01, 2'b10, 2'b11:
-	  CASE_guard45957_0b0_theResult___fst_exp54185_0_ETC__q52 =
-	      _theResult___exp__h154904;
+	  CASE_guard42201_0b0_theResult___fst_exp50429_0_ETC__q72 =
+	      _theResult___exp__h251148;
     endcase
   end
   always@(iFifo$D_OUT or
-	  CASE_guard45957_0b0_theResult___fst_exp54185_0_ETC__q51 or
-	  CASE_guard45957_0b0_theResult___fst_exp54185_0_ETC__q52 or
-	  IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d2627 or
-	  IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d2629 or
-	  _theResult___fst_exp__h154185)
+	  CASE_guard42201_0b0_theResult___fst_exp50429_0_ETC__q71 or
+	  CASE_guard42201_0b0_theResult___fst_exp50429_0_ETC__q72 or
+	  IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d4436 or
+	  IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d4438 or
+	  _theResult___fst_exp__h250429)
   begin
     case (iFifo$D_OUT[6:4])
       3'd0:
-	  _theResult___fst_exp__h154982 =
-	      CASE_guard45957_0b0_theResult___fst_exp54185_0_ETC__q51;
+	  _theResult___fst_exp__h251226 =
+	      CASE_guard42201_0b0_theResult___fst_exp50429_0_ETC__q71;
       3'd1:
-	  _theResult___fst_exp__h154982 =
-	      CASE_guard45957_0b0_theResult___fst_exp54185_0_ETC__q52;
+	  _theResult___fst_exp__h251226 =
+	      CASE_guard42201_0b0_theResult___fst_exp50429_0_ETC__q72;
       3'd2:
-	  _theResult___fst_exp__h154982 =
-	      IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d2627;
+	  _theResult___fst_exp__h251226 =
+	      IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d4436;
       3'd3:
-	  _theResult___fst_exp__h154982 =
-	      IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d2629;
-      3'd4: _theResult___fst_exp__h154982 = _theResult___fst_exp__h154185;
-      default: _theResult___fst_exp__h154982 = 11'd0;
+	  _theResult___fst_exp__h251226 =
+	      IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d4438;
+      3'd4: _theResult___fst_exp__h251226 = _theResult___fst_exp__h250429;
+      default: _theResult___fst_exp__h251226 = 11'd0;
     endcase
   end
-  always@(guard__h154996 or
-	  _theResult___fst_exp__h162986 or
-	  out_exp__h163659 or _theResult___exp__h163656)
+  always@(guard__h251240 or
+	  _theResult___fst_exp__h259230 or
+	  out_exp__h259903 or _theResult___exp__h259900)
   begin
-    case (guard__h154996)
+    case (guard__h251240)
       2'b0, 2'b01:
-	  CASE_guard54996_0b0_theResult___fst_exp62986_0_ETC__q53 =
-	      _theResult___fst_exp__h162986;
+	  CASE_guard51240_0b0_theResult___fst_exp59230_0_ETC__q73 =
+	      _theResult___fst_exp__h259230;
       2'b10:
-	  CASE_guard54996_0b0_theResult___fst_exp62986_0_ETC__q53 =
-	      out_exp__h163659;
+	  CASE_guard51240_0b0_theResult___fst_exp59230_0_ETC__q73 =
+	      out_exp__h259903;
       2'b11:
-	  CASE_guard54996_0b0_theResult___fst_exp62986_0_ETC__q53 =
-	      _theResult___exp__h163656;
+	  CASE_guard51240_0b0_theResult___fst_exp59230_0_ETC__q73 =
+	      _theResult___exp__h259900;
     endcase
   end
-  always@(guard__h154996 or
-	  _theResult___fst_exp__h162986 or _theResult___exp__h163656)
+  always@(guard__h251240 or
+	  _theResult___fst_exp__h259230 or _theResult___exp__h259900)
   begin
-    case (guard__h154996)
+    case (guard__h251240)
       2'b0:
-	  CASE_guard54996_0b0_theResult___fst_exp62986_0_ETC__q54 =
-	      _theResult___fst_exp__h162986;
+	  CASE_guard51240_0b0_theResult___fst_exp59230_0_ETC__q74 =
+	      _theResult___fst_exp__h259230;
       2'b01, 2'b10, 2'b11:
-	  CASE_guard54996_0b0_theResult___fst_exp62986_0_ETC__q54 =
-	      _theResult___exp__h163656;
+	  CASE_guard51240_0b0_theResult___fst_exp59230_0_ETC__q74 =
+	      _theResult___exp__h259900;
     endcase
   end
   always@(iFifo$D_OUT or
-	  CASE_guard54996_0b0_theResult___fst_exp62986_0_ETC__q53 or
-	  CASE_guard54996_0b0_theResult___fst_exp62986_0_ETC__q54 or
-	  IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2658 or
-	  IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2660 or
-	  _theResult___fst_exp__h162986)
+	  CASE_guard51240_0b0_theResult___fst_exp59230_0_ETC__q73 or
+	  CASE_guard51240_0b0_theResult___fst_exp59230_0_ETC__q74 or
+	  IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4467 or
+	  IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4469 or
+	  _theResult___fst_exp__h259230)
   begin
     case (iFifo$D_OUT[6:4])
       3'd0:
-	  _theResult___fst_exp__h163734 =
-	      CASE_guard54996_0b0_theResult___fst_exp62986_0_ETC__q53;
+	  _theResult___fst_exp__h259978 =
+	      CASE_guard51240_0b0_theResult___fst_exp59230_0_ETC__q73;
       3'd1:
-	  _theResult___fst_exp__h163734 =
-	      CASE_guard54996_0b0_theResult___fst_exp62986_0_ETC__q54;
+	  _theResult___fst_exp__h259978 =
+	      CASE_guard51240_0b0_theResult___fst_exp59230_0_ETC__q74;
       3'd2:
-	  _theResult___fst_exp__h163734 =
-	      IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2658;
+	  _theResult___fst_exp__h259978 =
+	      IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4467;
       3'd3:
-	  _theResult___fst_exp__h163734 =
-	      IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2660;
-      3'd4: _theResult___fst_exp__h163734 = _theResult___fst_exp__h162986;
-      default: _theResult___fst_exp__h163734 = 11'd0;
+	  _theResult___fst_exp__h259978 =
+	      IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4469;
+      3'd4: _theResult___fst_exp__h259978 = _theResult___fst_exp__h259230;
+      default: _theResult___fst_exp__h259978 = 11'd0;
     endcase
   end
-  always@(guard__h136708 or
-	  _theResult___snd__h144620 or
-	  out_sfd__h145318 or _theResult___sfd__h145315)
+  always@(guard__h232952 or
+	  _theResult___snd__h240864 or
+	  out_sfd__h241562 or _theResult___sfd__h241559)
   begin
-    case (guard__h136708)
+    case (guard__h232952)
       2'b0, 2'b01:
-	  CASE_guard36708_0b0_theResult___snd44620_BITS__ETC__q55 =
-	      _theResult___snd__h144620[56:5];
+	  CASE_guard32952_0b0_theResult___snd40864_BITS__ETC__q75 =
+	      _theResult___snd__h240864[56:5];
       2'b10:
-	  CASE_guard36708_0b0_theResult___snd44620_BITS__ETC__q55 =
-	      out_sfd__h145318;
+	  CASE_guard32952_0b0_theResult___snd40864_BITS__ETC__q75 =
+	      out_sfd__h241562;
       2'b11:
-	  CASE_guard36708_0b0_theResult___snd44620_BITS__ETC__q55 =
-	      _theResult___sfd__h145315;
+	  CASE_guard32952_0b0_theResult___snd40864_BITS__ETC__q75 =
+	      _theResult___sfd__h241559;
     endcase
   end
-  always@(guard__h136708 or
-	  _theResult___snd__h144620 or _theResult___sfd__h145315)
+  always@(guard__h232952 or
+	  _theResult___snd__h240864 or _theResult___sfd__h241559)
   begin
-    case (guard__h136708)
+    case (guard__h232952)
       2'b0:
-	  CASE_guard36708_0b0_theResult___snd44620_BITS__ETC__q56 =
-	      _theResult___snd__h144620[56:5];
+	  CASE_guard32952_0b0_theResult___snd40864_BITS__ETC__q76 =
+	      _theResult___snd__h240864[56:5];
       2'b01, 2'b10, 2'b11:
-	  CASE_guard36708_0b0_theResult___snd44620_BITS__ETC__q56 =
-	      _theResult___sfd__h145315;
+	  CASE_guard32952_0b0_theResult___snd40864_BITS__ETC__q76 =
+	      _theResult___sfd__h241559;
     endcase
   end
   always@(iFifo$D_OUT or
-	  CASE_guard36708_0b0_theResult___snd44620_BITS__ETC__q55 or
-	  CASE_guard36708_0b0_theResult___snd44620_BITS__ETC__q56 or
-	  IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2684 or
-	  IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2686 or
-	  _theResult___snd__h144620)
+	  CASE_guard32952_0b0_theResult___snd40864_BITS__ETC__q75 or
+	  CASE_guard32952_0b0_theResult___snd40864_BITS__ETC__q76 or
+	  IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4493 or
+	  IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4495 or
+	  _theResult___snd__h240864)
   begin
     case (iFifo$D_OUT[6:4])
       3'd0:
-	  _theResult___fst_sfd__h145393 =
-	      CASE_guard36708_0b0_theResult___snd44620_BITS__ETC__q55;
+	  _theResult___fst_sfd__h241637 =
+	      CASE_guard32952_0b0_theResult___snd40864_BITS__ETC__q75;
       3'd1:
-	  _theResult___fst_sfd__h145393 =
-	      CASE_guard36708_0b0_theResult___snd44620_BITS__ETC__q56;
+	  _theResult___fst_sfd__h241637 =
+	      CASE_guard32952_0b0_theResult___snd40864_BITS__ETC__q76;
       3'd2:
-	  _theResult___fst_sfd__h145393 =
-	      IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2684;
+	  _theResult___fst_sfd__h241637 =
+	      IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4493;
       3'd3:
-	  _theResult___fst_sfd__h145393 =
-	      IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2686;
-      3'd4: _theResult___fst_sfd__h145393 = _theResult___snd__h144620[56:5];
-      default: _theResult___fst_sfd__h145393 = 52'd0;
+	  _theResult___fst_sfd__h241637 =
+	      IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4495;
+      3'd4: _theResult___fst_sfd__h241637 = _theResult___snd__h240864[56:5];
+      default: _theResult___fst_sfd__h241637 = 52'd0;
     endcase
   end
-  always@(guard__h145957 or
-	  sfdin__h154179 or out_sfd__h154908 or _theResult___sfd__h154905)
+  always@(guard__h242201 or
+	  sfdin__h250423 or out_sfd__h251152 or _theResult___sfd__h251149)
   begin
-    case (guard__h145957)
+    case (guard__h242201)
       2'b0, 2'b01:
-	  CASE_guard45957_0b0_sfdin54179_BITS_56_TO_5_0b_ETC__q57 =
-	      sfdin__h154179[56:5];
+	  CASE_guard42201_0b0_sfdin50423_BITS_56_TO_5_0b_ETC__q77 =
+	      sfdin__h250423[56:5];
       2'b10:
-	  CASE_guard45957_0b0_sfdin54179_BITS_56_TO_5_0b_ETC__q57 =
-	      out_sfd__h154908;
+	  CASE_guard42201_0b0_sfdin50423_BITS_56_TO_5_0b_ETC__q77 =
+	      out_sfd__h251152;
       2'b11:
-	  CASE_guard45957_0b0_sfdin54179_BITS_56_TO_5_0b_ETC__q57 =
-	      _theResult___sfd__h154905;
+	  CASE_guard42201_0b0_sfdin50423_BITS_56_TO_5_0b_ETC__q77 =
+	      _theResult___sfd__h251149;
     endcase
   end
-  always@(guard__h145957 or sfdin__h154179 or _theResult___sfd__h154905)
+  always@(guard__h242201 or sfdin__h250423 or _theResult___sfd__h251149)
   begin
-    case (guard__h145957)
+    case (guard__h242201)
       2'b0:
-	  CASE_guard45957_0b0_sfdin54179_BITS_56_TO_5_0b_ETC__q58 =
-	      sfdin__h154179[56:5];
+	  CASE_guard42201_0b0_sfdin50423_BITS_56_TO_5_0b_ETC__q78 =
+	      sfdin__h250423[56:5];
       2'b01, 2'b10, 2'b11:
-	  CASE_guard45957_0b0_sfdin54179_BITS_56_TO_5_0b_ETC__q58 =
-	      _theResult___sfd__h154905;
+	  CASE_guard42201_0b0_sfdin50423_BITS_56_TO_5_0b_ETC__q78 =
+	      _theResult___sfd__h251149;
     endcase
   end
   always@(iFifo$D_OUT or
-	  CASE_guard45957_0b0_sfdin54179_BITS_56_TO_5_0b_ETC__q57 or
-	  CASE_guard45957_0b0_sfdin54179_BITS_56_TO_5_0b_ETC__q58 or
-	  IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d2710 or
-	  IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d2712 or
-	  sfdin__h154179)
+	  CASE_guard42201_0b0_sfdin50423_BITS_56_TO_5_0b_ETC__q77 or
+	  CASE_guard42201_0b0_sfdin50423_BITS_56_TO_5_0b_ETC__q78 or
+	  IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d4519 or
+	  IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d4521 or
+	  sfdin__h250423)
   begin
     case (iFifo$D_OUT[6:4])
       3'd0:
-	  _theResult___fst_sfd__h154983 =
-	      CASE_guard45957_0b0_sfdin54179_BITS_56_TO_5_0b_ETC__q57;
+	  _theResult___fst_sfd__h251227 =
+	      CASE_guard42201_0b0_sfdin50423_BITS_56_TO_5_0b_ETC__q77;
       3'd1:
-	  _theResult___fst_sfd__h154983 =
-	      CASE_guard45957_0b0_sfdin54179_BITS_56_TO_5_0b_ETC__q58;
+	  _theResult___fst_sfd__h251227 =
+	      CASE_guard42201_0b0_sfdin50423_BITS_56_TO_5_0b_ETC__q78;
       3'd2:
-	  _theResult___fst_sfd__h154983 =
-	      IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d2710;
+	  _theResult___fst_sfd__h251227 =
+	      IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d4519;
       3'd3:
-	  _theResult___fst_sfd__h154983 =
-	      IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d2712;
-      3'd4: _theResult___fst_sfd__h154983 = sfdin__h154179[56:5];
-      default: _theResult___fst_sfd__h154983 = 52'd0;
+	  _theResult___fst_sfd__h251227 =
+	      IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d4521;
+      3'd4: _theResult___fst_sfd__h251227 = sfdin__h250423[56:5];
+      default: _theResult___fst_sfd__h251227 = 52'd0;
     endcase
   end
-  always@(guard__h136708 or iFifo$D_OUT)
+  always@(guard__h251240 or
+	  _theResult___snd__h259176 or
+	  out_sfd__h259904 or _theResult___sfd__h259901)
   begin
-    case (guard__h136708)
+    case (guard__h251240)
+      2'b0, 2'b01:
+	  CASE_guard51240_0b0_theResult___snd59176_BITS__ETC__q79 =
+	      _theResult___snd__h259176[56:5];
+      2'b10:
+	  CASE_guard51240_0b0_theResult___snd59176_BITS__ETC__q79 =
+	      out_sfd__h259904;
+      2'b11:
+	  CASE_guard51240_0b0_theResult___snd59176_BITS__ETC__q79 =
+	      _theResult___sfd__h259901;
+    endcase
+  end
+  always@(guard__h251240 or
+	  _theResult___snd__h259176 or _theResult___sfd__h259901)
+  begin
+    case (guard__h251240)
+      2'b0:
+	  CASE_guard51240_0b0_theResult___snd59176_BITS__ETC__q80 =
+	      _theResult___snd__h259176[56:5];
+      2'b01, 2'b10, 2'b11:
+	  CASE_guard51240_0b0_theResult___snd59176_BITS__ETC__q80 =
+	      _theResult___sfd__h259901;
+    endcase
+  end
+  always@(iFifo$D_OUT or
+	  CASE_guard51240_0b0_theResult___snd59176_BITS__ETC__q79 or
+	  CASE_guard51240_0b0_theResult___snd59176_BITS__ETC__q80 or
+	  IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4538 or
+	  IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4540 or
+	  _theResult___snd__h259176)
+  begin
+    case (iFifo$D_OUT[6:4])
+      3'd0:
+	  _theResult___fst_sfd__h259979 =
+	      CASE_guard51240_0b0_theResult___snd59176_BITS__ETC__q79;
+      3'd1:
+	  _theResult___fst_sfd__h259979 =
+	      CASE_guard51240_0b0_theResult___snd59176_BITS__ETC__q80;
+      3'd2:
+	  _theResult___fst_sfd__h259979 =
+	      IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4538;
+      3'd3:
+	  _theResult___fst_sfd__h259979 =
+	      IF_IF_IF_iFifo_first__087_BITS_37_TO_30_850_EQ_ETC___d4540;
+      3'd4: _theResult___fst_sfd__h259979 = _theResult___snd__h259176[56:5];
+      default: _theResult___fst_sfd__h259979 = 52'd0;
+    endcase
+  end
+  always@(iFifo$D_OUT)
+  begin
+    case (iFifo$D_OUT[6:4])
+      3'd0, 3'd1, 3'd2, 3'd3:
+	  IF_iFifo_first__087_BITS_6_TO_4_118_EQ_0_191_O_ETC___d4028 =
+	      iFifo$D_OUT[38];
+      default: IF_iFifo_first__087_BITS_6_TO_4_118_EQ_0_191_O_ETC___d4028 =
+		   iFifo$D_OUT[6:4] == 3'd4 && iFifo$D_OUT[38];
+    endcase
+  end
+  always@(guard__h232952 or iFifo$D_OUT)
+  begin
+    case (guard__h232952)
       2'b0, 2'b01, 2'b10:
-	  CASE_guard36708_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q59 =
+	  CASE_guard32952_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q81 =
 	      iFifo$D_OUT[38];
       2'd3:
-	  CASE_guard36708_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q59 =
-	      guard__h136708 == 2'b11 && iFifo$D_OUT[38];
+	  CASE_guard32952_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q81 =
+	      guard__h232952 == 2'b11 && iFifo$D_OUT[38];
     endcase
   end
   always@(iFifo$D_OUT or
-	  CASE_guard36708_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q59 or
-	  guard__h136708)
+	  CASE_guard32952_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q81 or
+	  guard__h232952)
   begin
     case (iFifo$D_OUT[6:4])
       3'd0:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard36708_ETC__q60 =
-	      CASE_guard36708_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q59;
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard32952_ETC__q82 =
+	      CASE_guard32952_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q81;
       3'd1:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard36708_ETC__q60 =
-	      (guard__h136708 == 2'b0) ?
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard32952_ETC__q82 =
+	      (guard__h232952 == 2'b0) ?
 		iFifo$D_OUT[38] :
-		(guard__h136708 == 2'b01 || guard__h136708 == 2'b10 ||
-		 guard__h136708 == 2'b11) &&
+		(guard__h232952 == 2'b01 || guard__h232952 == 2'b10 ||
+		 guard__h232952 == 2'b11) &&
 		iFifo$D_OUT[38];
       3'd2, 3'd3:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard36708_ETC__q60 =
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard32952_ETC__q82 =
 	      iFifo$D_OUT[38];
-      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard36708_ETC__q60 =
+      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard32952_ETC__q82 =
 		   iFifo$D_OUT[6:4] == 3'd4 && iFifo$D_OUT[38];
     endcase
   end
-  always@(guard__h154996 or
-	  _theResult___snd__h162932 or
-	  out_sfd__h163660 or _theResult___sfd__h163657)
+  always@(guard__h242201 or iFifo$D_OUT)
   begin
-    case (guard__h154996)
-      2'b0, 2'b01:
-	  CASE_guard54996_0b0_theResult___snd62932_BITS__ETC__q61 =
-	      _theResult___snd__h162932[56:5];
-      2'b10:
-	  CASE_guard54996_0b0_theResult___snd62932_BITS__ETC__q61 =
-	      out_sfd__h163660;
-      2'b11:
-	  CASE_guard54996_0b0_theResult___snd62932_BITS__ETC__q61 =
-	      _theResult___sfd__h163657;
-    endcase
-  end
-  always@(guard__h154996 or
-	  _theResult___snd__h162932 or _theResult___sfd__h163657)
-  begin
-    case (guard__h154996)
-      2'b0:
-	  CASE_guard54996_0b0_theResult___snd62932_BITS__ETC__q62 =
-	      _theResult___snd__h162932[56:5];
-      2'b01, 2'b10, 2'b11:
-	  CASE_guard54996_0b0_theResult___snd62932_BITS__ETC__q62 =
-	      _theResult___sfd__h163657;
-    endcase
-  end
-  always@(iFifo$D_OUT or
-	  CASE_guard54996_0b0_theResult___snd62932_BITS__ETC__q61 or
-	  CASE_guard54996_0b0_theResult___snd62932_BITS__ETC__q62 or
-	  IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2729 or
-	  IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2731 or
-	  _theResult___snd__h162932)
-  begin
-    case (iFifo$D_OUT[6:4])
-      3'd0:
-	  _theResult___fst_sfd__h163735 =
-	      CASE_guard54996_0b0_theResult___snd62932_BITS__ETC__q61;
-      3'd1:
-	  _theResult___fst_sfd__h163735 =
-	      CASE_guard54996_0b0_theResult___snd62932_BITS__ETC__q62;
-      3'd2:
-	  _theResult___fst_sfd__h163735 =
-	      IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2729;
-      3'd3:
-	  _theResult___fst_sfd__h163735 =
-	      IF_IF_IF_iFifo_first__288_BITS_37_TO_30_041_EQ_ETC___d2731;
-      3'd4: _theResult___fst_sfd__h163735 = _theResult___snd__h162932[56:5];
-      default: _theResult___fst_sfd__h163735 = 52'd0;
-    endcase
-  end
-  always@(iFifo$D_OUT)
-  begin
-    case (iFifo$D_OUT[6:4])
-      3'd0, 3'd1, 3'd2, 3'd3:
-	  IF_iFifo_first__288_BITS_6_TO_4_313_EQ_0_382_O_ETC___d2219 =
-	      iFifo$D_OUT[38];
-      default: IF_iFifo_first__288_BITS_6_TO_4_313_EQ_0_382_O_ETC___d2219 =
-		   iFifo$D_OUT[6:4] == 3'd4 && iFifo$D_OUT[38];
-    endcase
-  end
-  always@(guard__h145957 or iFifo$D_OUT)
-  begin
-    case (guard__h145957)
+    case (guard__h242201)
       2'b0, 2'b01, 2'b10:
-	  CASE_guard45957_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q63 =
+	  CASE_guard42201_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q83 =
 	      iFifo$D_OUT[38];
       2'd3:
-	  CASE_guard45957_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q63 =
-	      guard__h145957 == 2'b11 && iFifo$D_OUT[38];
+	  CASE_guard42201_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q83 =
+	      guard__h242201 == 2'b11 && iFifo$D_OUT[38];
     endcase
   end
   always@(iFifo$D_OUT or
-	  CASE_guard45957_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q63 or
-	  guard__h145957)
+	  CASE_guard42201_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q83 or
+	  guard__h242201)
   begin
     case (iFifo$D_OUT[6:4])
       3'd0:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard45957_ETC__q64 =
-	      CASE_guard45957_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q63;
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard42201_ETC__q84 =
+	      CASE_guard42201_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q83;
       3'd1:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard45957_ETC__q64 =
-	      (guard__h145957 == 2'b0) ?
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard42201_ETC__q84 =
+	      (guard__h242201 == 2'b0) ?
 		iFifo$D_OUT[38] :
-		(guard__h145957 == 2'b01 || guard__h145957 == 2'b10 ||
-		 guard__h145957 == 2'b11) &&
+		(guard__h242201 == 2'b01 || guard__h242201 == 2'b10 ||
+		 guard__h242201 == 2'b11) &&
 		iFifo$D_OUT[38];
       3'd2, 3'd3:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard45957_ETC__q64 =
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard42201_ETC__q84 =
 	      iFifo$D_OUT[38];
-      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard45957_ETC__q64 =
+      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard42201_ETC__q84 =
 		   iFifo$D_OUT[6:4] == 3'd4 && iFifo$D_OUT[38];
     endcase
   end
-  always@(guard__h154996 or iFifo$D_OUT)
+  always@(guard__h251240 or iFifo$D_OUT)
   begin
-    case (guard__h154996)
+    case (guard__h251240)
       2'b0, 2'b01, 2'b10:
-	  CASE_guard54996_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q65 =
+	  CASE_guard51240_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q85 =
 	      iFifo$D_OUT[38];
       2'd3:
-	  CASE_guard54996_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q65 =
-	      guard__h154996 == 2'b11 && iFifo$D_OUT[38];
+	  CASE_guard51240_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q85 =
+	      guard__h251240 == 2'b11 && iFifo$D_OUT[38];
     endcase
   end
   always@(iFifo$D_OUT or
-	  CASE_guard54996_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q65 or
-	  guard__h154996)
+	  CASE_guard51240_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q85 or
+	  guard__h251240)
   begin
     case (iFifo$D_OUT[6:4])
       3'd0:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard54996_ETC__q66 =
-	      CASE_guard54996_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q65;
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard51240_ETC__q86 =
+	      CASE_guard51240_0b0_iFifoD_OUT_BIT_38_0b1_iFi_ETC__q85;
       3'd1:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard54996_ETC__q66 =
-	      (guard__h154996 == 2'b0) ?
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard51240_ETC__q86 =
+	      (guard__h251240 == 2'b0) ?
 		iFifo$D_OUT[38] :
-		(guard__h154996 == 2'b01 || guard__h154996 == 2'b10 ||
-		 guard__h154996 == 2'b11) &&
+		(guard__h251240 == 2'b01 || guard__h251240 == 2'b10 ||
+		 guard__h251240 == 2'b11) &&
 		iFifo$D_OUT[38];
       3'd2, 3'd3:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard54996_ETC__q66 =
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard51240_ETC__q86 =
 	      iFifo$D_OUT[38];
-      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard54996_ETC__q66 =
+      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard51240_ETC__q86 =
 		   iFifo$D_OUT[6:4] == 3'd4 && iFifo$D_OUT[38];
     endcase
   end
-  always@(guard__h136708 or iFifo$D_OUT)
+  always@(guard__h232952 or iFifo$D_OUT)
   begin
-    case (guard__h136708)
+    case (guard__h232952)
       2'b0, 2'b01, 2'b10:
-	  CASE_guard36708_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q67 =
+	  CASE_guard32952_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q87 =
 	      !iFifo$D_OUT[38];
       2'd3:
-	  CASE_guard36708_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q67 =
-	      guard__h136708 != 2'b11 || !iFifo$D_OUT[38];
+	  CASE_guard32952_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q87 =
+	      guard__h232952 != 2'b11 || !iFifo$D_OUT[38];
     endcase
   end
   always@(iFifo$D_OUT or
-	  CASE_guard36708_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q67 or
-	  guard__h136708)
+	  CASE_guard32952_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q87 or
+	  guard__h232952)
   begin
     case (iFifo$D_OUT[6:4])
       3'd0:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard36708_ETC__q68 =
-	      CASE_guard36708_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q67;
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard32952_ETC__q88 =
+	      CASE_guard32952_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q87;
       3'd1:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard36708_ETC__q68 =
-	      (guard__h136708 == 2'b0) ?
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard32952_ETC__q88 =
+	      (guard__h232952 == 2'b0) ?
 		!iFifo$D_OUT[38] :
-		guard__h136708 != 2'b01 && guard__h136708 != 2'b10 &&
-		guard__h136708 != 2'b11 ||
+		guard__h232952 != 2'b01 && guard__h232952 != 2'b10 &&
+		guard__h232952 != 2'b11 ||
 		!iFifo$D_OUT[38];
       3'd2, 3'd3:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard36708_ETC__q68 =
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard32952_ETC__q88 =
 	      !iFifo$D_OUT[38];
-      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard36708_ETC__q68 =
+      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard32952_ETC__q88 =
+		   iFifo$D_OUT[6:4] != 3'd4 || !iFifo$D_OUT[38];
+    endcase
+  end
+  always@(guard__h242201 or iFifo$D_OUT)
+  begin
+    case (guard__h242201)
+      2'b0, 2'b01, 2'b10:
+	  CASE_guard42201_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q89 =
+	      !iFifo$D_OUT[38];
+      2'd3:
+	  CASE_guard42201_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q89 =
+	      guard__h242201 != 2'b11 || !iFifo$D_OUT[38];
+    endcase
+  end
+  always@(iFifo$D_OUT or
+	  CASE_guard42201_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q89 or
+	  guard__h242201)
+  begin
+    case (iFifo$D_OUT[6:4])
+      3'd0:
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard42201_ETC__q90 =
+	      CASE_guard42201_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q89;
+      3'd1:
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard42201_ETC__q90 =
+	      (guard__h242201 == 2'b0) ?
+		!iFifo$D_OUT[38] :
+		guard__h242201 != 2'b01 && guard__h242201 != 2'b10 &&
+		guard__h242201 != 2'b11 ||
+		!iFifo$D_OUT[38];
+      3'd2, 3'd3:
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard42201_ETC__q90 =
+	      !iFifo$D_OUT[38];
+      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard42201_ETC__q90 =
+		   iFifo$D_OUT[6:4] != 3'd4 || !iFifo$D_OUT[38];
+    endcase
+  end
+  always@(guard__h251240 or iFifo$D_OUT)
+  begin
+    case (guard__h251240)
+      2'b0, 2'b01, 2'b10:
+	  CASE_guard51240_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q91 =
+	      !iFifo$D_OUT[38];
+      2'd3:
+	  CASE_guard51240_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q91 =
+	      guard__h251240 != 2'b11 || !iFifo$D_OUT[38];
+    endcase
+  end
+  always@(iFifo$D_OUT or
+	  CASE_guard51240_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q91 or
+	  guard__h251240)
+  begin
+    case (iFifo$D_OUT[6:4])
+      3'd0:
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard51240_ETC__q92 =
+	      CASE_guard51240_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q91;
+      3'd1:
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard51240_ETC__q92 =
+	      (guard__h251240 == 2'b0) ?
+		!iFifo$D_OUT[38] :
+		guard__h251240 != 2'b01 && guard__h251240 != 2'b10 &&
+		guard__h251240 != 2'b11 ||
+		!iFifo$D_OUT[38];
+      3'd2, 3'd3:
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard51240_ETC__q92 =
+	      !iFifo$D_OUT[38];
+      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard51240_ETC__q92 =
 		   iFifo$D_OUT[6:4] != 3'd4 || !iFifo$D_OUT[38];
     endcase
   end
@@ -7888,593 +10966,527 @@ module mkFPU(CLK,
   begin
     case (iFifo$D_OUT[6:4])
       3'd0, 3'd1, 3'd2, 3'd3:
-	  IF_iFifo_first__288_BITS_6_TO_4_313_EQ_0_382_O_ETC___d2773 =
+	  IF_iFifo_first__087_BITS_6_TO_4_118_EQ_0_191_O_ETC___d4582 =
 	      !iFifo$D_OUT[38];
-      default: IF_iFifo_first__288_BITS_6_TO_4_313_EQ_0_382_O_ETC___d2773 =
+      default: IF_iFifo_first__087_BITS_6_TO_4_118_EQ_0_191_O_ETC___d4582 =
 		   iFifo$D_OUT[6:4] != 3'd4 || !iFifo$D_OUT[38];
     endcase
   end
-  always@(guard__h145957 or iFifo$D_OUT)
+  always@(guard__h194013 or
+	  _theResult___fst_exp__h201974 or
+	  out_exp__h202622 or _theResult___exp__h202619)
   begin
-    case (guard__h145957)
+    case (guard__h194013)
+      2'b0, 2'b01:
+	  CASE_guard94013_0b0_theResult___fst_exp01974_0_ETC__q102 =
+	      _theResult___fst_exp__h201974;
+      2'b10:
+	  CASE_guard94013_0b0_theResult___fst_exp01974_0_ETC__q102 =
+	      out_exp__h202622;
+      2'b11:
+	  CASE_guard94013_0b0_theResult___fst_exp01974_0_ETC__q102 =
+	      _theResult___exp__h202619;
+    endcase
+  end
+  always@(guard__h194013 or
+	  _theResult___fst_exp__h201974 or _theResult___exp__h202619)
+  begin
+    case (guard__h194013)
+      2'b0:
+	  CASE_guard94013_0b0_theResult___fst_exp01974_0_ETC__q103 =
+	      _theResult___fst_exp__h201974;
+      2'b01, 2'b10, 2'b11:
+	  CASE_guard94013_0b0_theResult___fst_exp01974_0_ETC__q103 =
+	      _theResult___exp__h202619;
+    endcase
+  end
+  always@(iFifo$D_OUT or
+	  CASE_guard94013_0b0_theResult___fst_exp01974_0_ETC__q102 or
+	  CASE_guard94013_0b0_theResult___fst_exp01974_0_ETC__q103 or
+	  IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5173 or
+	  IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5175 or
+	  _theResult___fst_exp__h201974)
+  begin
+    case (iFifo$D_OUT[6:4])
+      3'd0:
+	  _theResult___fst_exp__h202697 =
+	      CASE_guard94013_0b0_theResult___fst_exp01974_0_ETC__q102;
+      3'd1:
+	  _theResult___fst_exp__h202697 =
+	      CASE_guard94013_0b0_theResult___fst_exp01974_0_ETC__q103;
+      3'd2:
+	  _theResult___fst_exp__h202697 =
+	      IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5173;
+      3'd3:
+	  _theResult___fst_exp__h202697 =
+	      IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5175;
+      3'd4: _theResult___fst_exp__h202697 = _theResult___fst_exp__h201974;
+      default: _theResult___fst_exp__h202697 = 11'd0;
+    endcase
+  end
+  always@(guard__h203262 or
+	  _theResult___fst_exp__h211490 or
+	  out_exp__h212212 or _theResult___exp__h212209)
+  begin
+    case (guard__h203262)
+      2'b0, 2'b01:
+	  CASE_guard03262_0b0_theResult___fst_exp11490_0_ETC__q104 =
+	      _theResult___fst_exp__h211490;
+      2'b10:
+	  CASE_guard03262_0b0_theResult___fst_exp11490_0_ETC__q104 =
+	      out_exp__h212212;
+      2'b11:
+	  CASE_guard03262_0b0_theResult___fst_exp11490_0_ETC__q104 =
+	      _theResult___exp__h212209;
+    endcase
+  end
+  always@(guard__h203262 or
+	  _theResult___fst_exp__h211490 or _theResult___exp__h212209)
+  begin
+    case (guard__h203262)
+      2'b0:
+	  CASE_guard03262_0b0_theResult___fst_exp11490_0_ETC__q105 =
+	      _theResult___fst_exp__h211490;
+      2'b01, 2'b10, 2'b11:
+	  CASE_guard03262_0b0_theResult___fst_exp11490_0_ETC__q105 =
+	      _theResult___exp__h212209;
+    endcase
+  end
+  always@(iFifo$D_OUT or
+	  CASE_guard03262_0b0_theResult___fst_exp11490_0_ETC__q104 or
+	  CASE_guard03262_0b0_theResult___fst_exp11490_0_ETC__q105 or
+	  IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d5211 or
+	  IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d5213 or
+	  _theResult___fst_exp__h211490)
+  begin
+    case (iFifo$D_OUT[6:4])
+      3'd0:
+	  _theResult___fst_exp__h212287 =
+	      CASE_guard03262_0b0_theResult___fst_exp11490_0_ETC__q104;
+      3'd1:
+	  _theResult___fst_exp__h212287 =
+	      CASE_guard03262_0b0_theResult___fst_exp11490_0_ETC__q105;
+      3'd2:
+	  _theResult___fst_exp__h212287 =
+	      IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d5211;
+      3'd3:
+	  _theResult___fst_exp__h212287 =
+	      IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d5213;
+      3'd4: _theResult___fst_exp__h212287 = _theResult___fst_exp__h211490;
+      default: _theResult___fst_exp__h212287 = 11'd0;
+    endcase
+  end
+  always@(guard__h212301 or
+	  _theResult___fst_exp__h220291 or
+	  out_exp__h220964 or _theResult___exp__h220961)
+  begin
+    case (guard__h212301)
+      2'b0, 2'b01:
+	  CASE_guard12301_0b0_theResult___fst_exp20291_0_ETC__q106 =
+	      _theResult___fst_exp__h220291;
+      2'b10:
+	  CASE_guard12301_0b0_theResult___fst_exp20291_0_ETC__q106 =
+	      out_exp__h220964;
+      2'b11:
+	  CASE_guard12301_0b0_theResult___fst_exp20291_0_ETC__q106 =
+	      _theResult___exp__h220961;
+    endcase
+  end
+  always@(guard__h212301 or
+	  _theResult___fst_exp__h220291 or _theResult___exp__h220961)
+  begin
+    case (guard__h212301)
+      2'b0:
+	  CASE_guard12301_0b0_theResult___fst_exp20291_0_ETC__q107 =
+	      _theResult___fst_exp__h220291;
+      2'b01, 2'b10, 2'b11:
+	  CASE_guard12301_0b0_theResult___fst_exp20291_0_ETC__q107 =
+	      _theResult___exp__h220961;
+    endcase
+  end
+  always@(iFifo$D_OUT or
+	  CASE_guard12301_0b0_theResult___fst_exp20291_0_ETC__q106 or
+	  CASE_guard12301_0b0_theResult___fst_exp20291_0_ETC__q107 or
+	  IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5242 or
+	  IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5244 or
+	  _theResult___fst_exp__h220291)
+  begin
+    case (iFifo$D_OUT[6:4])
+      3'd0:
+	  _theResult___fst_exp__h221039 =
+	      CASE_guard12301_0b0_theResult___fst_exp20291_0_ETC__q106;
+      3'd1:
+	  _theResult___fst_exp__h221039 =
+	      CASE_guard12301_0b0_theResult___fst_exp20291_0_ETC__q107;
+      3'd2:
+	  _theResult___fst_exp__h221039 =
+	      IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5242;
+      3'd3:
+	  _theResult___fst_exp__h221039 =
+	      IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5244;
+      3'd4: _theResult___fst_exp__h221039 = _theResult___fst_exp__h220291;
+      default: _theResult___fst_exp__h221039 = 11'd0;
+    endcase
+  end
+  always@(guard__h194013 or
+	  _theResult___snd__h201925 or
+	  out_sfd__h202623 or _theResult___sfd__h202620)
+  begin
+    case (guard__h194013)
+      2'b0, 2'b01:
+	  CASE_guard94013_0b0_theResult___snd01925_BITS__ETC__q108 =
+	      _theResult___snd__h201925[56:5];
+      2'b10:
+	  CASE_guard94013_0b0_theResult___snd01925_BITS__ETC__q108 =
+	      out_sfd__h202623;
+      2'b11:
+	  CASE_guard94013_0b0_theResult___snd01925_BITS__ETC__q108 =
+	      _theResult___sfd__h202620;
+    endcase
+  end
+  always@(guard__h194013 or
+	  _theResult___snd__h201925 or _theResult___sfd__h202620)
+  begin
+    case (guard__h194013)
+      2'b0:
+	  CASE_guard94013_0b0_theResult___snd01925_BITS__ETC__q109 =
+	      _theResult___snd__h201925[56:5];
+      2'b01, 2'b10, 2'b11:
+	  CASE_guard94013_0b0_theResult___snd01925_BITS__ETC__q109 =
+	      _theResult___sfd__h202620;
+    endcase
+  end
+  always@(iFifo$D_OUT or
+	  CASE_guard94013_0b0_theResult___snd01925_BITS__ETC__q108 or
+	  CASE_guard94013_0b0_theResult___snd01925_BITS__ETC__q109 or
+	  IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5268 or
+	  IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5270 or
+	  _theResult___snd__h201925)
+  begin
+    case (iFifo$D_OUT[6:4])
+      3'd0:
+	  _theResult___fst_sfd__h202698 =
+	      CASE_guard94013_0b0_theResult___snd01925_BITS__ETC__q108;
+      3'd1:
+	  _theResult___fst_sfd__h202698 =
+	      CASE_guard94013_0b0_theResult___snd01925_BITS__ETC__q109;
+      3'd2:
+	  _theResult___fst_sfd__h202698 =
+	      IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5268;
+      3'd3:
+	  _theResult___fst_sfd__h202698 =
+	      IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5270;
+      3'd4: _theResult___fst_sfd__h202698 = _theResult___snd__h201925[56:5];
+      default: _theResult___fst_sfd__h202698 = 52'd0;
+    endcase
+  end
+  always@(guard__h203262 or
+	  sfdin__h211484 or out_sfd__h212213 or _theResult___sfd__h212210)
+  begin
+    case (guard__h203262)
+      2'b0, 2'b01:
+	  CASE_guard03262_0b0_sfdin11484_BITS_56_TO_5_0b_ETC__q110 =
+	      sfdin__h211484[56:5];
+      2'b10:
+	  CASE_guard03262_0b0_sfdin11484_BITS_56_TO_5_0b_ETC__q110 =
+	      out_sfd__h212213;
+      2'b11:
+	  CASE_guard03262_0b0_sfdin11484_BITS_56_TO_5_0b_ETC__q110 =
+	      _theResult___sfd__h212210;
+    endcase
+  end
+  always@(guard__h203262 or sfdin__h211484 or _theResult___sfd__h212210)
+  begin
+    case (guard__h203262)
+      2'b0:
+	  CASE_guard03262_0b0_sfdin11484_BITS_56_TO_5_0b_ETC__q111 =
+	      sfdin__h211484[56:5];
+      2'b01, 2'b10, 2'b11:
+	  CASE_guard03262_0b0_sfdin11484_BITS_56_TO_5_0b_ETC__q111 =
+	      _theResult___sfd__h212210;
+    endcase
+  end
+  always@(iFifo$D_OUT or
+	  CASE_guard03262_0b0_sfdin11484_BITS_56_TO_5_0b_ETC__q110 or
+	  CASE_guard03262_0b0_sfdin11484_BITS_56_TO_5_0b_ETC__q111 or
+	  IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d5294 or
+	  IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d5296 or
+	  sfdin__h211484)
+  begin
+    case (iFifo$D_OUT[6:4])
+      3'd0:
+	  _theResult___fst_sfd__h212288 =
+	      CASE_guard03262_0b0_sfdin11484_BITS_56_TO_5_0b_ETC__q110;
+      3'd1:
+	  _theResult___fst_sfd__h212288 =
+	      CASE_guard03262_0b0_sfdin11484_BITS_56_TO_5_0b_ETC__q111;
+      3'd2:
+	  _theResult___fst_sfd__h212288 =
+	      IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d5294;
+      3'd3:
+	  _theResult___fst_sfd__h212288 =
+	      IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__087_B_ETC___d5296;
+      3'd4: _theResult___fst_sfd__h212288 = sfdin__h211484[56:5];
+      default: _theResult___fst_sfd__h212288 = 52'd0;
+    endcase
+  end
+  always@(guard__h194013 or iFifo$D_OUT)
+  begin
+    case (guard__h194013)
       2'b0, 2'b01, 2'b10:
-	  CASE_guard45957_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q69 =
-	      !iFifo$D_OUT[38];
-      2'd3:
-	  CASE_guard45957_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q69 =
-	      guard__h145957 != 2'b11 || !iFifo$D_OUT[38];
-    endcase
-  end
-  always@(iFifo$D_OUT or
-	  CASE_guard45957_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q69 or
-	  guard__h145957)
-  begin
-    case (iFifo$D_OUT[6:4])
-      3'd0:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard45957_ETC__q70 =
-	      CASE_guard45957_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q69;
-      3'd1:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard45957_ETC__q70 =
-	      (guard__h145957 == 2'b0) ?
-		!iFifo$D_OUT[38] :
-		guard__h145957 != 2'b01 && guard__h145957 != 2'b10 &&
-		guard__h145957 != 2'b11 ||
-		!iFifo$D_OUT[38];
-      3'd2, 3'd3:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard45957_ETC__q70 =
-	      !iFifo$D_OUT[38];
-      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard45957_ETC__q70 =
-		   iFifo$D_OUT[6:4] != 3'd4 || !iFifo$D_OUT[38];
-    endcase
-  end
-  always@(guard__h154996 or iFifo$D_OUT)
-  begin
-    case (guard__h154996)
-      2'b0, 2'b01, 2'b10:
-	  CASE_guard54996_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q71 =
-	      !iFifo$D_OUT[38];
-      2'd3:
-	  CASE_guard54996_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q71 =
-	      guard__h154996 != 2'b11 || !iFifo$D_OUT[38];
-    endcase
-  end
-  always@(iFifo$D_OUT or
-	  CASE_guard54996_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q71 or
-	  guard__h154996)
-  begin
-    case (iFifo$D_OUT[6:4])
-      3'd0:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard54996_ETC__q72 =
-	      CASE_guard54996_0b0_NOT_iFifoD_OUT_BIT_38_0b1_ETC__q71;
-      3'd1:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard54996_ETC__q72 =
-	      (guard__h154996 == 2'b0) ?
-		!iFifo$D_OUT[38] :
-		guard__h154996 != 2'b01 && guard__h154996 != 2'b10 &&
-		guard__h154996 != 2'b11 ||
-		!iFifo$D_OUT[38];
-      3'd2, 3'd3:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard54996_ETC__q72 =
-	      !iFifo$D_OUT[38];
-      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard54996_ETC__q72 =
-		   iFifo$D_OUT[6:4] != 3'd4 || !iFifo$D_OUT[38];
-    endcase
-  end
-  always@(guard__h97801 or
-	  _theResult___fst_exp__h105762 or
-	  out_exp__h106410 or _theResult___exp__h106407)
-  begin
-    case (guard__h97801)
-      2'b0, 2'b01:
-	  CASE_guard7801_0b0_theResult___fst_exp05762_0b_ETC__q82 =
-	      _theResult___fst_exp__h105762;
-      2'b10:
-	  CASE_guard7801_0b0_theResult___fst_exp05762_0b_ETC__q82 =
-	      out_exp__h106410;
-      2'b11:
-	  CASE_guard7801_0b0_theResult___fst_exp05762_0b_ETC__q82 =
-	      _theResult___exp__h106407;
-    endcase
-  end
-  always@(guard__h97801 or
-	  _theResult___fst_exp__h105762 or _theResult___exp__h106407)
-  begin
-    case (guard__h97801)
-      2'b0:
-	  CASE_guard7801_0b0_theResult___fst_exp05762_0b_ETC__q83 =
-	      _theResult___fst_exp__h105762;
-      2'b01, 2'b10, 2'b11:
-	  CASE_guard7801_0b0_theResult___fst_exp05762_0b_ETC__q83 =
-	      _theResult___exp__h106407;
-    endcase
-  end
-  always@(iFifo$D_OUT or
-	  CASE_guard7801_0b0_theResult___fst_exp05762_0b_ETC__q82 or
-	  CASE_guard7801_0b0_theResult___fst_exp05762_0b_ETC__q83 or
-	  IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3364 or
-	  IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3366 or
-	  _theResult___fst_exp__h105762)
-  begin
-    case (iFifo$D_OUT[6:4])
-      3'd0:
-	  _theResult___fst_exp__h106485 =
-	      CASE_guard7801_0b0_theResult___fst_exp05762_0b_ETC__q82;
-      3'd1:
-	  _theResult___fst_exp__h106485 =
-	      CASE_guard7801_0b0_theResult___fst_exp05762_0b_ETC__q83;
-      3'd2:
-	  _theResult___fst_exp__h106485 =
-	      IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3364;
-      3'd3:
-	  _theResult___fst_exp__h106485 =
-	      IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3366;
-      3'd4: _theResult___fst_exp__h106485 = _theResult___fst_exp__h105762;
-      default: _theResult___fst_exp__h106485 = 11'd0;
-    endcase
-  end
-  always@(guard__h107050 or
-	  _theResult___fst_exp__h115278 or
-	  out_exp__h116000 or _theResult___exp__h115997)
-  begin
-    case (guard__h107050)
-      2'b0, 2'b01:
-	  CASE_guard07050_0b0_theResult___fst_exp15278_0_ETC__q84 =
-	      _theResult___fst_exp__h115278;
-      2'b10:
-	  CASE_guard07050_0b0_theResult___fst_exp15278_0_ETC__q84 =
-	      out_exp__h116000;
-      2'b11:
-	  CASE_guard07050_0b0_theResult___fst_exp15278_0_ETC__q84 =
-	      _theResult___exp__h115997;
-    endcase
-  end
-  always@(guard__h107050 or
-	  _theResult___fst_exp__h115278 or _theResult___exp__h115997)
-  begin
-    case (guard__h107050)
-      2'b0:
-	  CASE_guard07050_0b0_theResult___fst_exp15278_0_ETC__q85 =
-	      _theResult___fst_exp__h115278;
-      2'b01, 2'b10, 2'b11:
-	  CASE_guard07050_0b0_theResult___fst_exp15278_0_ETC__q85 =
-	      _theResult___exp__h115997;
-    endcase
-  end
-  always@(iFifo$D_OUT or
-	  CASE_guard07050_0b0_theResult___fst_exp15278_0_ETC__q84 or
-	  CASE_guard07050_0b0_theResult___fst_exp15278_0_ETC__q85 or
-	  IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d3402 or
-	  IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d3404 or
-	  _theResult___fst_exp__h115278)
-  begin
-    case (iFifo$D_OUT[6:4])
-      3'd0:
-	  _theResult___fst_exp__h116075 =
-	      CASE_guard07050_0b0_theResult___fst_exp15278_0_ETC__q84;
-      3'd1:
-	  _theResult___fst_exp__h116075 =
-	      CASE_guard07050_0b0_theResult___fst_exp15278_0_ETC__q85;
-      3'd2:
-	  _theResult___fst_exp__h116075 =
-	      IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d3402;
-      3'd3:
-	  _theResult___fst_exp__h116075 =
-	      IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d3404;
-      3'd4: _theResult___fst_exp__h116075 = _theResult___fst_exp__h115278;
-      default: _theResult___fst_exp__h116075 = 11'd0;
-    endcase
-  end
-  always@(guard__h116089 or
-	  _theResult___fst_exp__h124079 or
-	  out_exp__h124752 or _theResult___exp__h124749)
-  begin
-    case (guard__h116089)
-      2'b0, 2'b01:
-	  CASE_guard16089_0b0_theResult___fst_exp24079_0_ETC__q86 =
-	      _theResult___fst_exp__h124079;
-      2'b10:
-	  CASE_guard16089_0b0_theResult___fst_exp24079_0_ETC__q86 =
-	      out_exp__h124752;
-      2'b11:
-	  CASE_guard16089_0b0_theResult___fst_exp24079_0_ETC__q86 =
-	      _theResult___exp__h124749;
-    endcase
-  end
-  always@(guard__h116089 or
-	  _theResult___fst_exp__h124079 or _theResult___exp__h124749)
-  begin
-    case (guard__h116089)
-      2'b0:
-	  CASE_guard16089_0b0_theResult___fst_exp24079_0_ETC__q87 =
-	      _theResult___fst_exp__h124079;
-      2'b01, 2'b10, 2'b11:
-	  CASE_guard16089_0b0_theResult___fst_exp24079_0_ETC__q87 =
-	      _theResult___exp__h124749;
-    endcase
-  end
-  always@(iFifo$D_OUT or
-	  CASE_guard16089_0b0_theResult___fst_exp24079_0_ETC__q86 or
-	  CASE_guard16089_0b0_theResult___fst_exp24079_0_ETC__q87 or
-	  IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3433 or
-	  IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3435 or
-	  _theResult___fst_exp__h124079)
-  begin
-    case (iFifo$D_OUT[6:4])
-      3'd0:
-	  _theResult___fst_exp__h124827 =
-	      CASE_guard16089_0b0_theResult___fst_exp24079_0_ETC__q86;
-      3'd1:
-	  _theResult___fst_exp__h124827 =
-	      CASE_guard16089_0b0_theResult___fst_exp24079_0_ETC__q87;
-      3'd2:
-	  _theResult___fst_exp__h124827 =
-	      IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3433;
-      3'd3:
-	  _theResult___fst_exp__h124827 =
-	      IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3435;
-      3'd4: _theResult___fst_exp__h124827 = _theResult___fst_exp__h124079;
-      default: _theResult___fst_exp__h124827 = 11'd0;
-    endcase
-  end
-  always@(guard__h97801 or
-	  _theResult___snd__h105713 or
-	  out_sfd__h106411 or _theResult___sfd__h106408)
-  begin
-    case (guard__h97801)
-      2'b0, 2'b01:
-	  CASE_guard7801_0b0_theResult___snd05713_BITS_5_ETC__q88 =
-	      _theResult___snd__h105713[56:5];
-      2'b10:
-	  CASE_guard7801_0b0_theResult___snd05713_BITS_5_ETC__q88 =
-	      out_sfd__h106411;
-      2'b11:
-	  CASE_guard7801_0b0_theResult___snd05713_BITS_5_ETC__q88 =
-	      _theResult___sfd__h106408;
-    endcase
-  end
-  always@(guard__h97801 or
-	  _theResult___snd__h105713 or _theResult___sfd__h106408)
-  begin
-    case (guard__h97801)
-      2'b0:
-	  CASE_guard7801_0b0_theResult___snd05713_BITS_5_ETC__q89 =
-	      _theResult___snd__h105713[56:5];
-      2'b01, 2'b10, 2'b11:
-	  CASE_guard7801_0b0_theResult___snd05713_BITS_5_ETC__q89 =
-	      _theResult___sfd__h106408;
-    endcase
-  end
-  always@(iFifo$D_OUT or
-	  CASE_guard7801_0b0_theResult___snd05713_BITS_5_ETC__q88 or
-	  CASE_guard7801_0b0_theResult___snd05713_BITS_5_ETC__q89 or
-	  IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3459 or
-	  IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3461 or
-	  _theResult___snd__h105713)
-  begin
-    case (iFifo$D_OUT[6:4])
-      3'd0:
-	  _theResult___fst_sfd__h106486 =
-	      CASE_guard7801_0b0_theResult___snd05713_BITS_5_ETC__q88;
-      3'd1:
-	  _theResult___fst_sfd__h106486 =
-	      CASE_guard7801_0b0_theResult___snd05713_BITS_5_ETC__q89;
-      3'd2:
-	  _theResult___fst_sfd__h106486 =
-	      IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3459;
-      3'd3:
-	  _theResult___fst_sfd__h106486 =
-	      IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3461;
-      3'd4: _theResult___fst_sfd__h106486 = _theResult___snd__h105713[56:5];
-      default: _theResult___fst_sfd__h106486 = 52'd0;
-    endcase
-  end
-  always@(guard__h107050 or
-	  sfdin__h115272 or out_sfd__h116001 or _theResult___sfd__h115998)
-  begin
-    case (guard__h107050)
-      2'b0, 2'b01:
-	  CASE_guard07050_0b0_sfdin15272_BITS_56_TO_5_0b_ETC__q90 =
-	      sfdin__h115272[56:5];
-      2'b10:
-	  CASE_guard07050_0b0_sfdin15272_BITS_56_TO_5_0b_ETC__q90 =
-	      out_sfd__h116001;
-      2'b11:
-	  CASE_guard07050_0b0_sfdin15272_BITS_56_TO_5_0b_ETC__q90 =
-	      _theResult___sfd__h115998;
-    endcase
-  end
-  always@(guard__h107050 or sfdin__h115272 or _theResult___sfd__h115998)
-  begin
-    case (guard__h107050)
-      2'b0:
-	  CASE_guard07050_0b0_sfdin15272_BITS_56_TO_5_0b_ETC__q91 =
-	      sfdin__h115272[56:5];
-      2'b01, 2'b10, 2'b11:
-	  CASE_guard07050_0b0_sfdin15272_BITS_56_TO_5_0b_ETC__q91 =
-	      _theResult___sfd__h115998;
-    endcase
-  end
-  always@(iFifo$D_OUT or
-	  CASE_guard07050_0b0_sfdin15272_BITS_56_TO_5_0b_ETC__q90 or
-	  CASE_guard07050_0b0_sfdin15272_BITS_56_TO_5_0b_ETC__q91 or
-	  IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d3485 or
-	  IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d3487 or
-	  sfdin__h115272)
-  begin
-    case (iFifo$D_OUT[6:4])
-      3'd0:
-	  _theResult___fst_sfd__h116076 =
-	      CASE_guard07050_0b0_sfdin15272_BITS_56_TO_5_0b_ETC__q90;
-      3'd1:
-	  _theResult___fst_sfd__h116076 =
-	      CASE_guard07050_0b0_sfdin15272_BITS_56_TO_5_0b_ETC__q91;
-      3'd2:
-	  _theResult___fst_sfd__h116076 =
-	      IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d3485;
-      3'd3:
-	  _theResult___fst_sfd__h116076 =
-	      IF_IF_IF_IF_3074_MINUS_SEXT_iFifo_first__288_B_ETC___d3487;
-      3'd4: _theResult___fst_sfd__h116076 = sfdin__h115272[56:5];
-      default: _theResult___fst_sfd__h116076 = 52'd0;
-    endcase
-  end
-  always@(guard__h116089 or
-	  _theResult___snd__h124025 or
-	  out_sfd__h124753 or _theResult___sfd__h124750)
-  begin
-    case (guard__h116089)
-      2'b0, 2'b01:
-	  CASE_guard16089_0b0_theResult___snd24025_BITS__ETC__q92 =
-	      _theResult___snd__h124025[56:5];
-      2'b10:
-	  CASE_guard16089_0b0_theResult___snd24025_BITS__ETC__q92 =
-	      out_sfd__h124753;
-      2'b11:
-	  CASE_guard16089_0b0_theResult___snd24025_BITS__ETC__q92 =
-	      _theResult___sfd__h124750;
-    endcase
-  end
-  always@(guard__h116089 or
-	  _theResult___snd__h124025 or _theResult___sfd__h124750)
-  begin
-    case (guard__h116089)
-      2'b0:
-	  CASE_guard16089_0b0_theResult___snd24025_BITS__ETC__q93 =
-	      _theResult___snd__h124025[56:5];
-      2'b01, 2'b10, 2'b11:
-	  CASE_guard16089_0b0_theResult___snd24025_BITS__ETC__q93 =
-	      _theResult___sfd__h124750;
-    endcase
-  end
-  always@(iFifo$D_OUT or
-	  CASE_guard16089_0b0_theResult___snd24025_BITS__ETC__q92 or
-	  CASE_guard16089_0b0_theResult___snd24025_BITS__ETC__q93 or
-	  IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3504 or
-	  IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3506 or
-	  _theResult___snd__h124025)
-  begin
-    case (iFifo$D_OUT[6:4])
-      3'd0:
-	  _theResult___fst_sfd__h124828 =
-	      CASE_guard16089_0b0_theResult___snd24025_BITS__ETC__q92;
-      3'd1:
-	  _theResult___fst_sfd__h124828 =
-	      CASE_guard16089_0b0_theResult___snd24025_BITS__ETC__q93;
-      3'd2:
-	  _theResult___fst_sfd__h124828 =
-	      IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3504;
-      3'd3:
-	  _theResult___fst_sfd__h124828 =
-	      IF_IF_IF_iFifo_first__288_BITS_102_TO_95_816_E_ETC___d3506;
-      3'd4: _theResult___fst_sfd__h124828 = _theResult___snd__h124025[56:5];
-      default: _theResult___fst_sfd__h124828 = 52'd0;
-    endcase
-  end
-  always@(guard__h97801 or iFifo$D_OUT)
-  begin
-    case (guard__h97801)
-      2'b0, 2'b01, 2'b10:
-	  CASE_guard7801_0b0_iFifoD_OUT_BIT_103_0b1_iFi_ETC__q94 =
+	  CASE_guard94013_0b0_iFifoD_OUT_BIT_103_0b1_iF_ETC__q112 =
 	      iFifo$D_OUT[103];
       2'd3:
-	  CASE_guard7801_0b0_iFifoD_OUT_BIT_103_0b1_iFi_ETC__q94 =
-	      guard__h97801 == 2'b11 && iFifo$D_OUT[103];
+	  CASE_guard94013_0b0_iFifoD_OUT_BIT_103_0b1_iF_ETC__q112 =
+	      guard__h194013 == 2'b11 && iFifo$D_OUT[103];
     endcase
   end
   always@(iFifo$D_OUT or
-	  CASE_guard7801_0b0_iFifoD_OUT_BIT_103_0b1_iFi_ETC__q94 or
-	  guard__h97801)
+	  CASE_guard94013_0b0_iFifoD_OUT_BIT_103_0b1_iF_ETC__q112 or
+	  guard__h194013)
   begin
     case (iFifo$D_OUT[6:4])
       3'd0:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard7801__ETC__q95 =
-	      CASE_guard7801_0b0_iFifoD_OUT_BIT_103_0b1_iFi_ETC__q94;
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard94013_ETC__q113 =
+	      CASE_guard94013_0b0_iFifoD_OUT_BIT_103_0b1_iF_ETC__q112;
       3'd1:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard7801__ETC__q95 =
-	      (guard__h97801 == 2'b0) ?
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard94013_ETC__q113 =
+	      (guard__h194013 == 2'b0) ?
 		iFifo$D_OUT[103] :
-		(guard__h97801 == 2'b01 || guard__h97801 == 2'b10 ||
-		 guard__h97801 == 2'b11) &&
+		(guard__h194013 == 2'b01 || guard__h194013 == 2'b10 ||
+		 guard__h194013 == 2'b11) &&
 		iFifo$D_OUT[103];
       3'd2, 3'd3:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard7801__ETC__q95 =
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard94013_ETC__q113 =
 	      iFifo$D_OUT[103];
-      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard7801__ETC__q95 =
+      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard94013_ETC__q113 =
 		   iFifo$D_OUT[6:4] == 3'd4 && iFifo$D_OUT[103];
+    endcase
+  end
+  always@(guard__h212301 or
+	  _theResult___snd__h220237 or
+	  out_sfd__h220965 or _theResult___sfd__h220962)
+  begin
+    case (guard__h212301)
+      2'b0, 2'b01:
+	  CASE_guard12301_0b0_theResult___snd20237_BITS__ETC__q114 =
+	      _theResult___snd__h220237[56:5];
+      2'b10:
+	  CASE_guard12301_0b0_theResult___snd20237_BITS__ETC__q114 =
+	      out_sfd__h220965;
+      2'b11:
+	  CASE_guard12301_0b0_theResult___snd20237_BITS__ETC__q114 =
+	      _theResult___sfd__h220962;
+    endcase
+  end
+  always@(guard__h212301 or
+	  _theResult___snd__h220237 or _theResult___sfd__h220962)
+  begin
+    case (guard__h212301)
+      2'b0:
+	  CASE_guard12301_0b0_theResult___snd20237_BITS__ETC__q115 =
+	      _theResult___snd__h220237[56:5];
+      2'b01, 2'b10, 2'b11:
+	  CASE_guard12301_0b0_theResult___snd20237_BITS__ETC__q115 =
+	      _theResult___sfd__h220962;
+    endcase
+  end
+  always@(iFifo$D_OUT or
+	  CASE_guard12301_0b0_theResult___snd20237_BITS__ETC__q114 or
+	  CASE_guard12301_0b0_theResult___snd20237_BITS__ETC__q115 or
+	  IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5313 or
+	  IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5315 or
+	  _theResult___snd__h220237)
+  begin
+    case (iFifo$D_OUT[6:4])
+      3'd0:
+	  _theResult___fst_sfd__h221040 =
+	      CASE_guard12301_0b0_theResult___snd20237_BITS__ETC__q114;
+      3'd1:
+	  _theResult___fst_sfd__h221040 =
+	      CASE_guard12301_0b0_theResult___snd20237_BITS__ETC__q115;
+      3'd2:
+	  _theResult___fst_sfd__h221040 =
+	      IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5313;
+      3'd3:
+	  _theResult___fst_sfd__h221040 =
+	      IF_IF_IF_iFifo_first__087_BITS_102_TO_95_625_E_ETC___d5315;
+      3'd4: _theResult___fst_sfd__h221040 = _theResult___snd__h220237[56:5];
+      default: _theResult___fst_sfd__h221040 = 52'd0;
     endcase
   end
   always@(iFifo$D_OUT)
   begin
     case (iFifo$D_OUT[6:4])
       3'd0, 3'd1, 3'd2, 3'd3:
-	  IF_iFifo_first__288_BITS_6_TO_4_313_EQ_0_382_O_ETC___d2994 =
+	  IF_iFifo_first__087_BITS_6_TO_4_118_EQ_0_191_O_ETC___d4803 =
 	      iFifo$D_OUT[103];
-      default: IF_iFifo_first__288_BITS_6_TO_4_313_EQ_0_382_O_ETC___d2994 =
+      default: IF_iFifo_first__087_BITS_6_TO_4_118_EQ_0_191_O_ETC___d4803 =
 		   iFifo$D_OUT[6:4] == 3'd4 && iFifo$D_OUT[103];
     endcase
   end
-  always@(guard__h107050 or iFifo$D_OUT)
+  always@(guard__h203262 or iFifo$D_OUT)
   begin
-    case (guard__h107050)
+    case (guard__h203262)
       2'b0, 2'b01, 2'b10:
-	  CASE_guard07050_0b0_iFifoD_OUT_BIT_103_0b1_iF_ETC__q96 =
+	  CASE_guard03262_0b0_iFifoD_OUT_BIT_103_0b1_iF_ETC__q116 =
 	      iFifo$D_OUT[103];
       2'd3:
-	  CASE_guard07050_0b0_iFifoD_OUT_BIT_103_0b1_iF_ETC__q96 =
-	      guard__h107050 == 2'b11 && iFifo$D_OUT[103];
+	  CASE_guard03262_0b0_iFifoD_OUT_BIT_103_0b1_iF_ETC__q116 =
+	      guard__h203262 == 2'b11 && iFifo$D_OUT[103];
     endcase
   end
   always@(iFifo$D_OUT or
-	  CASE_guard07050_0b0_iFifoD_OUT_BIT_103_0b1_iF_ETC__q96 or
-	  guard__h107050)
+	  CASE_guard03262_0b0_iFifoD_OUT_BIT_103_0b1_iF_ETC__q116 or
+	  guard__h203262)
   begin
     case (iFifo$D_OUT[6:4])
       3'd0:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard07050_ETC__q97 =
-	      CASE_guard07050_0b0_iFifoD_OUT_BIT_103_0b1_iF_ETC__q96;
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard03262_ETC__q117 =
+	      CASE_guard03262_0b0_iFifoD_OUT_BIT_103_0b1_iF_ETC__q116;
       3'd1:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard07050_ETC__q97 =
-	      (guard__h107050 == 2'b0) ?
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard03262_ETC__q117 =
+	      (guard__h203262 == 2'b0) ?
 		iFifo$D_OUT[103] :
-		(guard__h107050 == 2'b01 || guard__h107050 == 2'b10 ||
-		 guard__h107050 == 2'b11) &&
+		(guard__h203262 == 2'b01 || guard__h203262 == 2'b10 ||
+		 guard__h203262 == 2'b11) &&
 		iFifo$D_OUT[103];
       3'd2, 3'd3:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard07050_ETC__q97 =
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard03262_ETC__q117 =
 	      iFifo$D_OUT[103];
-      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard07050_ETC__q97 =
+      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard03262_ETC__q117 =
 		   iFifo$D_OUT[6:4] == 3'd4 && iFifo$D_OUT[103];
     endcase
   end
-  always@(guard__h116089 or iFifo$D_OUT)
+  always@(guard__h212301 or iFifo$D_OUT)
   begin
-    case (guard__h116089)
+    case (guard__h212301)
       2'b0, 2'b01, 2'b10:
-	  CASE_guard16089_0b0_iFifoD_OUT_BIT_103_0b1_iF_ETC__q98 =
+	  CASE_guard12301_0b0_iFifoD_OUT_BIT_103_0b1_iF_ETC__q118 =
 	      iFifo$D_OUT[103];
       2'd3:
-	  CASE_guard16089_0b0_iFifoD_OUT_BIT_103_0b1_iF_ETC__q98 =
-	      guard__h116089 == 2'b11 && iFifo$D_OUT[103];
+	  CASE_guard12301_0b0_iFifoD_OUT_BIT_103_0b1_iF_ETC__q118 =
+	      guard__h212301 == 2'b11 && iFifo$D_OUT[103];
     endcase
   end
   always@(iFifo$D_OUT or
-	  CASE_guard16089_0b0_iFifoD_OUT_BIT_103_0b1_iF_ETC__q98 or
-	  guard__h116089)
+	  CASE_guard12301_0b0_iFifoD_OUT_BIT_103_0b1_iF_ETC__q118 or
+	  guard__h212301)
   begin
     case (iFifo$D_OUT[6:4])
       3'd0:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard16089_ETC__q99 =
-	      CASE_guard16089_0b0_iFifoD_OUT_BIT_103_0b1_iF_ETC__q98;
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard12301_ETC__q119 =
+	      CASE_guard12301_0b0_iFifoD_OUT_BIT_103_0b1_iF_ETC__q118;
       3'd1:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard16089_ETC__q99 =
-	      (guard__h116089 == 2'b0) ?
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard12301_ETC__q119 =
+	      (guard__h212301 == 2'b0) ?
 		iFifo$D_OUT[103] :
-		(guard__h116089 == 2'b01 || guard__h116089 == 2'b10 ||
-		 guard__h116089 == 2'b11) &&
+		(guard__h212301 == 2'b01 || guard__h212301 == 2'b10 ||
+		 guard__h212301 == 2'b11) &&
 		iFifo$D_OUT[103];
       3'd2, 3'd3:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard16089_ETC__q99 =
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard12301_ETC__q119 =
 	      iFifo$D_OUT[103];
-      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard16089_ETC__q99 =
+      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard12301_ETC__q119 =
 		   iFifo$D_OUT[6:4] == 3'd4 && iFifo$D_OUT[103];
     endcase
   end
-  always@(guard__h97801 or iFifo$D_OUT)
+  always@(guard__h194013 or iFifo$D_OUT)
   begin
-    case (guard__h97801)
+    case (guard__h194013)
       2'b0, 2'b01, 2'b10:
-	  CASE_guard7801_0b0_NOT_iFifoD_OUT_BIT_103_0b1_ETC__q100 =
+	  CASE_guard94013_0b0_NOT_iFifoD_OUT_BIT_103_0b_ETC__q120 =
 	      !iFifo$D_OUT[103];
       2'd3:
-	  CASE_guard7801_0b0_NOT_iFifoD_OUT_BIT_103_0b1_ETC__q100 =
-	      guard__h97801 != 2'b11 || !iFifo$D_OUT[103];
+	  CASE_guard94013_0b0_NOT_iFifoD_OUT_BIT_103_0b_ETC__q120 =
+	      guard__h194013 != 2'b11 || !iFifo$D_OUT[103];
     endcase
   end
   always@(iFifo$D_OUT or
-	  CASE_guard7801_0b0_NOT_iFifoD_OUT_BIT_103_0b1_ETC__q100 or
-	  guard__h97801)
+	  CASE_guard94013_0b0_NOT_iFifoD_OUT_BIT_103_0b_ETC__q120 or
+	  guard__h194013)
   begin
     case (iFifo$D_OUT[6:4])
       3'd0:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard7801__ETC__q101 =
-	      CASE_guard7801_0b0_NOT_iFifoD_OUT_BIT_103_0b1_ETC__q100;
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard94013_ETC__q121 =
+	      CASE_guard94013_0b0_NOT_iFifoD_OUT_BIT_103_0b_ETC__q120;
       3'd1:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard7801__ETC__q101 =
-	      (guard__h97801 == 2'b0) ?
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard94013_ETC__q121 =
+	      (guard__h194013 == 2'b0) ?
 		!iFifo$D_OUT[103] :
-		guard__h97801 != 2'b01 && guard__h97801 != 2'b10 &&
-		guard__h97801 != 2'b11 ||
+		guard__h194013 != 2'b01 && guard__h194013 != 2'b10 &&
+		guard__h194013 != 2'b11 ||
 		!iFifo$D_OUT[103];
       3'd2, 3'd3:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard7801__ETC__q101 =
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard94013_ETC__q121 =
 	      !iFifo$D_OUT[103];
-      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard7801__ETC__q101 =
+      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard94013_ETC__q121 =
 		   iFifo$D_OUT[6:4] != 3'd4 || !iFifo$D_OUT[103];
     endcase
   end
-  always@(guard__h107050 or iFifo$D_OUT)
+  always@(guard__h203262 or iFifo$D_OUT)
   begin
-    case (guard__h107050)
+    case (guard__h203262)
       2'b0, 2'b01, 2'b10:
-	  CASE_guard07050_0b0_NOT_iFifoD_OUT_BIT_103_0b_ETC__q102 =
+	  CASE_guard03262_0b0_NOT_iFifoD_OUT_BIT_103_0b_ETC__q122 =
 	      !iFifo$D_OUT[103];
       2'd3:
-	  CASE_guard07050_0b0_NOT_iFifoD_OUT_BIT_103_0b_ETC__q102 =
-	      guard__h107050 != 2'b11 || !iFifo$D_OUT[103];
+	  CASE_guard03262_0b0_NOT_iFifoD_OUT_BIT_103_0b_ETC__q122 =
+	      guard__h203262 != 2'b11 || !iFifo$D_OUT[103];
     endcase
   end
   always@(iFifo$D_OUT or
-	  CASE_guard07050_0b0_NOT_iFifoD_OUT_BIT_103_0b_ETC__q102 or
-	  guard__h107050)
+	  CASE_guard03262_0b0_NOT_iFifoD_OUT_BIT_103_0b_ETC__q122 or
+	  guard__h203262)
   begin
     case (iFifo$D_OUT[6:4])
       3'd0:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard07050_ETC__q103 =
-	      CASE_guard07050_0b0_NOT_iFifoD_OUT_BIT_103_0b_ETC__q102;
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard03262_ETC__q123 =
+	      CASE_guard03262_0b0_NOT_iFifoD_OUT_BIT_103_0b_ETC__q122;
       3'd1:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard07050_ETC__q103 =
-	      (guard__h107050 == 2'b0) ?
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard03262_ETC__q123 =
+	      (guard__h203262 == 2'b0) ?
 		!iFifo$D_OUT[103] :
-		guard__h107050 != 2'b01 && guard__h107050 != 2'b10 &&
-		guard__h107050 != 2'b11 ||
+		guard__h203262 != 2'b01 && guard__h203262 != 2'b10 &&
+		guard__h203262 != 2'b11 ||
 		!iFifo$D_OUT[103];
       3'd2, 3'd3:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard07050_ETC__q103 =
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard03262_ETC__q123 =
 	      !iFifo$D_OUT[103];
-      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard07050_ETC__q103 =
+      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard03262_ETC__q123 =
 		   iFifo$D_OUT[6:4] != 3'd4 || !iFifo$D_OUT[103];
     endcase
   end
-  always@(guard__h116089 or iFifo$D_OUT)
+  always@(guard__h212301 or iFifo$D_OUT)
   begin
-    case (guard__h116089)
+    case (guard__h212301)
       2'b0, 2'b01, 2'b10:
-	  CASE_guard16089_0b0_NOT_iFifoD_OUT_BIT_103_0b_ETC__q104 =
+	  CASE_guard12301_0b0_NOT_iFifoD_OUT_BIT_103_0b_ETC__q124 =
 	      !iFifo$D_OUT[103];
       2'd3:
-	  CASE_guard16089_0b0_NOT_iFifoD_OUT_BIT_103_0b_ETC__q104 =
-	      guard__h116089 != 2'b11 || !iFifo$D_OUT[103];
+	  CASE_guard12301_0b0_NOT_iFifoD_OUT_BIT_103_0b_ETC__q124 =
+	      guard__h212301 != 2'b11 || !iFifo$D_OUT[103];
     endcase
   end
   always@(iFifo$D_OUT or
-	  CASE_guard16089_0b0_NOT_iFifoD_OUT_BIT_103_0b_ETC__q104 or
-	  guard__h116089)
+	  CASE_guard12301_0b0_NOT_iFifoD_OUT_BIT_103_0b_ETC__q124 or
+	  guard__h212301)
   begin
     case (iFifo$D_OUT[6:4])
       3'd0:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard16089_ETC__q105 =
-	      CASE_guard16089_0b0_NOT_iFifoD_OUT_BIT_103_0b_ETC__q104;
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard12301_ETC__q125 =
+	      CASE_guard12301_0b0_NOT_iFifoD_OUT_BIT_103_0b_ETC__q124;
       3'd1:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard16089_ETC__q105 =
-	      (guard__h116089 == 2'b0) ?
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard12301_ETC__q125 =
+	      (guard__h212301 == 2'b0) ?
 		!iFifo$D_OUT[103] :
-		guard__h116089 != 2'b01 && guard__h116089 != 2'b10 &&
-		guard__h116089 != 2'b11 ||
+		guard__h212301 != 2'b01 && guard__h212301 != 2'b10 &&
+		guard__h212301 != 2'b11 ||
 		!iFifo$D_OUT[103];
       3'd2, 3'd3:
-	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard16089_ETC__q105 =
+	  CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard12301_ETC__q125 =
 	      !iFifo$D_OUT[103];
-      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard16089_ETC__q105 =
+      default: CASE_iFifoD_OUT_BITS_6_TO_4_0_CASE_guard12301_ETC__q125 =
 		   iFifo$D_OUT[6:4] != 3'd4 || !iFifo$D_OUT[103];
     endcase
   end
@@ -8482,737 +11494,33 @@ module mkFPU(CLK,
   begin
     case (iFifo$D_OUT[6:4])
       3'd0, 3'd1, 3'd2, 3'd3:
-	  IF_iFifo_first__288_BITS_6_TO_4_313_EQ_0_382_O_ETC___d3539 =
+	  IF_iFifo_first__087_BITS_6_TO_4_118_EQ_0_191_O_ETC___d5348 =
 	      !iFifo$D_OUT[103];
-      default: IF_iFifo_first__288_BITS_6_TO_4_313_EQ_0_382_O_ETC___d3539 =
+      default: IF_iFifo_first__087_BITS_6_TO_4_118_EQ_0_191_O_ETC___d5348 =
 		   iFifo$D_OUT[6:4] != 3'd4 || !iFifo$D_OUT[103];
-    endcase
-  end
-  always@(guard__h173113 or fpu_madd_fResult_S9$D_OUT)
-  begin
-    case (guard__h173113)
-      2'b0, 2'b01, 2'b10:
-	  CASE_guard73113_0b0_fpu_madd_fResult_S9D_OUT__ETC__q117 =
-	      fpu_madd_fResult_S9$D_OUT[68];
-      2'd3:
-	  CASE_guard73113_0b0_fpu_madd_fResult_S9D_OUT__ETC__q117 =
-	      guard__h173113 == 2'b11 && fpu_madd_fResult_S9$D_OUT[68];
-    endcase
-  end
-  always@(rmdFifo$D_OUT or
-	  fpu_madd_fResult_S9$D_OUT or
-	  CASE_guard73113_0b0_fpu_madd_fResult_S9D_OUT__ETC__q117 or
-	  guard__h173113)
-  begin
-    case (rmdFifo$D_OUT)
-      3'd0:
-	  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_I_ETC___d4573 =
-	      CASE_guard73113_0b0_fpu_madd_fResult_S9D_OUT__ETC__q117;
-      3'd1:
-	  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_I_ETC___d4573 =
-	      (guard__h173113 == 2'b0) ?
-		fpu_madd_fResult_S9$D_OUT[68] :
-		(guard__h173113 == 2'b01 || guard__h173113 == 2'b10 ||
-		 guard__h173113 == 2'b11) &&
-		fpu_madd_fResult_S9$D_OUT[68];
-      3'd2, 3'd3:
-	  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_I_ETC___d4573 =
-	      fpu_madd_fResult_S9$D_OUT[68];
-      default: IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_I_ETC___d4573 =
-		   rmdFifo$D_OUT == 3'd4 && fpu_madd_fResult_S9$D_OUT[68];
-    endcase
-  end
-  always@(guard__h181820 or fpu_madd_fResult_S9$D_OUT)
-  begin
-    case (guard__h181820)
-      2'b0, 2'b01, 2'b10:
-	  CASE_guard81820_0b0_fpu_madd_fResult_S9D_OUT__ETC__q118 =
-	      fpu_madd_fResult_S9$D_OUT[68];
-      2'd3:
-	  CASE_guard81820_0b0_fpu_madd_fResult_S9D_OUT__ETC__q118 =
-	      guard__h181820 == 2'b11 && fpu_madd_fResult_S9$D_OUT[68];
-    endcase
-  end
-  always@(rmdFifo$D_OUT or
-	  fpu_madd_fResult_S9$D_OUT or
-	  CASE_guard81820_0b0_fpu_madd_fResult_S9D_OUT__ETC__q118 or
-	  guard__h181820)
-  begin
-    case (rmdFifo$D_OUT)
-      3'd0:
-	  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_r_ETC___d4582 =
-	      CASE_guard81820_0b0_fpu_madd_fResult_S9D_OUT__ETC__q118;
-      3'd1:
-	  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_r_ETC___d4582 =
-	      (guard__h181820 == 2'b0) ?
-		fpu_madd_fResult_S9$D_OUT[68] :
-		(guard__h181820 == 2'b01 || guard__h181820 == 2'b10 ||
-		 guard__h181820 == 2'b11) &&
-		fpu_madd_fResult_S9$D_OUT[68];
-      3'd2, 3'd3:
-	  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_r_ETC___d4582 =
-	      fpu_madd_fResult_S9$D_OUT[68];
-      default: IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_r_ETC___d4582 =
-		   rmdFifo$D_OUT == 3'd4 && fpu_madd_fResult_S9$D_OUT[68];
-    endcase
-  end
-  always@(guard__h173113 or fpu_madd_fResult_S9$D_OUT)
-  begin
-    case (guard__h173113)
-      2'b0, 2'b01, 2'b10:
-	  CASE_guard73113_0b0_NOT_fpu_madd_fResult_S9D__ETC__q119 =
-	      !fpu_madd_fResult_S9$D_OUT[68];
-      2'd3:
-	  CASE_guard73113_0b0_NOT_fpu_madd_fResult_S9D__ETC__q119 =
-	      guard__h173113 != 2'b11 || !fpu_madd_fResult_S9$D_OUT[68];
-    endcase
-  end
-  always@(rmdFifo$D_OUT or
-	  fpu_madd_fResult_S9$D_OUT or
-	  CASE_guard73113_0b0_NOT_fpu_madd_fResult_S9D__ETC__q119 or
-	  guard__h173113)
-  begin
-    case (rmdFifo$D_OUT)
-      3'd0:
-	  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_I_ETC___d4008 =
-	      CASE_guard73113_0b0_NOT_fpu_madd_fResult_S9D__ETC__q119;
-      3'd1:
-	  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_I_ETC___d4008 =
-	      (guard__h173113 == 2'b0) ?
-		!fpu_madd_fResult_S9$D_OUT[68] :
-		guard__h173113 != 2'b01 && guard__h173113 != 2'b10 &&
-		guard__h173113 != 2'b11 ||
-		!fpu_madd_fResult_S9$D_OUT[68];
-      3'd2, 3'd3:
-	  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_I_ETC___d4008 =
-	      !fpu_madd_fResult_S9$D_OUT[68];
-      default: IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_I_ETC___d4008 =
-		   rmdFifo$D_OUT != 3'd4 || !fpu_madd_fResult_S9$D_OUT[68];
-    endcase
-  end
-  always@(guard__h181820 or fpu_madd_fResult_S9$D_OUT)
-  begin
-    case (guard__h181820)
-      2'b0, 2'b01, 2'b10:
-	  CASE_guard81820_0b0_NOT_fpu_madd_fResult_S9D__ETC__q120 =
-	      !fpu_madd_fResult_S9$D_OUT[68];
-      2'd3:
-	  CASE_guard81820_0b0_NOT_fpu_madd_fResult_S9D__ETC__q120 =
-	      guard__h181820 != 2'b11 || !fpu_madd_fResult_S9$D_OUT[68];
-    endcase
-  end
-  always@(rmdFifo$D_OUT or
-	  fpu_madd_fResult_S9$D_OUT or
-	  CASE_guard81820_0b0_NOT_fpu_madd_fResult_S9D__ETC__q120 or
-	  guard__h181820)
-  begin
-    case (rmdFifo$D_OUT)
-      3'd0:
-	  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_r_ETC___d4208 =
-	      CASE_guard81820_0b0_NOT_fpu_madd_fResult_S9D__ETC__q120;
-      3'd1:
-	  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_r_ETC___d4208 =
-	      (guard__h181820 == 2'b0) ?
-		!fpu_madd_fResult_S9$D_OUT[68] :
-		guard__h181820 != 2'b01 && guard__h181820 != 2'b10 &&
-		guard__h181820 != 2'b11 ||
-		!fpu_madd_fResult_S9$D_OUT[68];
-      3'd2, 3'd3:
-	  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_r_ETC___d4208 =
-	      !fpu_madd_fResult_S9$D_OUT[68];
-      default: IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_r_ETC___d4208 =
-		   rmdFifo$D_OUT != 3'd4 || !fpu_madd_fResult_S9$D_OUT[68];
-    endcase
-  end
-  always@(guard__h190750 or fpu_madd_fResult_S9$D_OUT)
-  begin
-    case (guard__h190750)
-      2'b0, 2'b01, 2'b10:
-	  CASE_guard90750_0b0_fpu_madd_fResult_S9D_OUT__ETC__q121 =
-	      fpu_madd_fResult_S9$D_OUT[68];
-      2'd3:
-	  CASE_guard90750_0b0_fpu_madd_fResult_S9D_OUT__ETC__q121 =
-	      guard__h190750 == 2'b11 && fpu_madd_fResult_S9$D_OUT[68];
-    endcase
-  end
-  always@(rmdFifo$D_OUT or
-	  fpu_madd_fResult_S9$D_OUT or
-	  CASE_guard90750_0b0_fpu_madd_fResult_S9D_OUT__ETC__q121 or
-	  guard__h190750)
-  begin
-    case (rmdFifo$D_OUT)
-      3'd0:
-	  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_I_ETC___d4594 =
-	      CASE_guard90750_0b0_fpu_madd_fResult_S9D_OUT__ETC__q121;
-      3'd1:
-	  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_I_ETC___d4594 =
-	      (guard__h190750 == 2'b0) ?
-		fpu_madd_fResult_S9$D_OUT[68] :
-		(guard__h190750 == 2'b01 || guard__h190750 == 2'b10 ||
-		 guard__h190750 == 2'b11) &&
-		fpu_madd_fResult_S9$D_OUT[68];
-      3'd2, 3'd3:
-	  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_I_ETC___d4594 =
-	      fpu_madd_fResult_S9$D_OUT[68];
-      default: IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_I_ETC___d4594 =
-		   rmdFifo$D_OUT == 3'd4 && fpu_madd_fResult_S9$D_OUT[68];
-    endcase
-  end
-  always@(guard__h199586 or fpu_madd_fResult_S9$D_OUT)
-  begin
-    case (guard__h199586)
-      2'b0, 2'b01, 2'b10:
-	  CASE_guard99586_0b0_fpu_madd_fResult_S9D_OUT__ETC__q122 =
-	      fpu_madd_fResult_S9$D_OUT[68];
-      2'd3:
-	  CASE_guard99586_0b0_fpu_madd_fResult_S9D_OUT__ETC__q122 =
-	      guard__h199586 == 2'b11 && fpu_madd_fResult_S9$D_OUT[68];
-    endcase
-  end
-  always@(rmdFifo$D_OUT or
-	  fpu_madd_fResult_S9$D_OUT or
-	  CASE_guard99586_0b0_fpu_madd_fResult_S9D_OUT__ETC__q122 or
-	  guard__h199586)
-  begin
-    case (rmdFifo$D_OUT)
-      3'd0:
-	  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_r_ETC___d4603 =
-	      CASE_guard99586_0b0_fpu_madd_fResult_S9D_OUT__ETC__q122;
-      3'd1:
-	  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_r_ETC___d4603 =
-	      (guard__h199586 == 2'b0) ?
-		fpu_madd_fResult_S9$D_OUT[68] :
-		(guard__h199586 == 2'b01 || guard__h199586 == 2'b10 ||
-		 guard__h199586 == 2'b11) &&
-		fpu_madd_fResult_S9$D_OUT[68];
-      3'd2, 3'd3:
-	  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_r_ETC___d4603 =
-	      fpu_madd_fResult_S9$D_OUT[68];
-      default: IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_r_ETC___d4603 =
-		   rmdFifo$D_OUT == 3'd4 && fpu_madd_fResult_S9$D_OUT[68];
-    endcase
-  end
-  always@(guard__h190750 or fpu_madd_fResult_S9$D_OUT)
-  begin
-    case (guard__h190750)
-      2'b0, 2'b01, 2'b10:
-	  CASE_guard90750_0b0_NOT_fpu_madd_fResult_S9D__ETC__q123 =
-	      !fpu_madd_fResult_S9$D_OUT[68];
-      2'd3:
-	  CASE_guard90750_0b0_NOT_fpu_madd_fResult_S9D__ETC__q123 =
-	      guard__h190750 != 2'b11 || !fpu_madd_fResult_S9$D_OUT[68];
-    endcase
-  end
-  always@(rmdFifo$D_OUT or
-	  fpu_madd_fResult_S9$D_OUT or
-	  CASE_guard90750_0b0_NOT_fpu_madd_fResult_S9D__ETC__q123 or
-	  guard__h190750)
-  begin
-    case (rmdFifo$D_OUT)
-      3'd0:
-	  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_I_ETC___d4509 =
-	      CASE_guard90750_0b0_NOT_fpu_madd_fResult_S9D__ETC__q123;
-      3'd1:
-	  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_I_ETC___d4509 =
-	      (guard__h190750 == 2'b0) ?
-		!fpu_madd_fResult_S9$D_OUT[68] :
-		guard__h190750 != 2'b01 && guard__h190750 != 2'b10 &&
-		guard__h190750 != 2'b11 ||
-		!fpu_madd_fResult_S9$D_OUT[68];
-      3'd2, 3'd3:
-	  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_I_ETC___d4509 =
-	      !fpu_madd_fResult_S9$D_OUT[68];
-      default: IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_I_ETC___d4509 =
-		   rmdFifo$D_OUT != 3'd4 || !fpu_madd_fResult_S9$D_OUT[68];
-    endcase
-  end
-  always@(guard__h199586 or fpu_madd_fResult_S9$D_OUT)
-  begin
-    case (guard__h199586)
-      2'b0, 2'b01, 2'b10:
-	  CASE_guard99586_0b0_NOT_fpu_madd_fResult_S9D__ETC__q124 =
-	      !fpu_madd_fResult_S9$D_OUT[68];
-      2'd3:
-	  CASE_guard99586_0b0_NOT_fpu_madd_fResult_S9D__ETC__q124 =
-	      guard__h199586 != 2'b11 || !fpu_madd_fResult_S9$D_OUT[68];
-    endcase
-  end
-  always@(rmdFifo$D_OUT or
-	  fpu_madd_fResult_S9$D_OUT or
-	  CASE_guard99586_0b0_NOT_fpu_madd_fResult_S9D__ETC__q124 or
-	  guard__h199586)
-  begin
-    case (rmdFifo$D_OUT)
-      3'd0:
-	  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_r_ETC___d4558 =
-	      CASE_guard99586_0b0_NOT_fpu_madd_fResult_S9D__ETC__q124;
-      3'd1:
-	  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_r_ETC___d4558 =
-	      (guard__h199586 == 2'b0) ?
-		!fpu_madd_fResult_S9$D_OUT[68] :
-		guard__h199586 != 2'b01 && guard__h199586 != 2'b10 &&
-		guard__h199586 != 2'b11 ||
-		!fpu_madd_fResult_S9$D_OUT[68];
-      3'd2, 3'd3:
-	  IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_r_ETC___d4558 =
-	      !fpu_madd_fResult_S9$D_OUT[68];
-      default: IF_rmdFifo_first__963_EQ_0_964_THEN_IF_IF_IF_r_ETC___d4558 =
-		   rmdFifo$D_OUT != 3'd4 || !fpu_madd_fResult_S9$D_OUT[68];
-    endcase
-  end
-  always@(rmdFifo$D_OUT or fpu_madd_fResult_S9$D_OUT)
-  begin
-    case (rmdFifo$D_OUT)
-      3'd0, 3'd1, 3'd2, 3'd3:
-	  IF_rmdFifo_first__963_EQ_0_964_OR_rmdFifo_firs_ETC___d4585 =
-	      fpu_madd_fResult_S9$D_OUT[68];
-      default: IF_rmdFifo_first__963_EQ_0_964_OR_rmdFifo_firs_ETC___d4585 =
-		   rmdFifo$D_OUT == 3'd4 && fpu_madd_fResult_S9$D_OUT[68];
-    endcase
-  end
-  always@(rmdFifo$D_OUT or fpu_madd_fResult_S9$D_OUT)
-  begin
-    case (rmdFifo$D_OUT)
-      3'd0, 3'd1, 3'd2, 3'd3:
-	  IF_rmdFifo_first__963_EQ_0_964_OR_rmdFifo_firs_ETC___d4213 =
-	      !fpu_madd_fResult_S9$D_OUT[68];
-      default: IF_rmdFifo_first__963_EQ_0_964_OR_rmdFifo_firs_ETC___d4213 =
-		   rmdFifo$D_OUT != 3'd4 || !fpu_madd_fResult_S9$D_OUT[68];
-    endcase
-  end
-  always@(guard__h181820 or
-	  _theResult___fst_exp__h189868 or
-	  out_exp__h190313 or _theResult___exp__h190310)
-  begin
-    case (guard__h181820)
-      2'b0, 2'b01:
-	  CASE_guard81820_0b0_theResult___fst_exp89868_0_ETC__q125 =
-	      _theResult___fst_exp__h189868;
-      2'b10:
-	  CASE_guard81820_0b0_theResult___fst_exp89868_0_ETC__q125 =
-	      out_exp__h190313;
-      2'b11:
-	  CASE_guard81820_0b0_theResult___fst_exp89868_0_ETC__q125 =
-	      _theResult___exp__h190310;
-    endcase
-  end
-  always@(guard__h181820 or
-	  _theResult___fst_exp__h189868 or _theResult___exp__h190310)
-  begin
-    case (guard__h181820)
-      2'b0:
-	  CASE_guard81820_0b0_theResult___fst_exp89868_0_ETC__q126 =
-	      _theResult___fst_exp__h189868;
-      2'b01, 2'b10, 2'b11:
-	  CASE_guard81820_0b0_theResult___fst_exp89868_0_ETC__q126 =
-	      _theResult___exp__h190310;
-    endcase
-  end
-  always@(rmdFifo$D_OUT or
-	  CASE_guard81820_0b0_theResult___fst_exp89868_0_ETC__q125 or
-	  CASE_guard81820_0b0_theResult___fst_exp89868_0_ETC__q126 or
-	  IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4664 or
-	  IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4666 or
-	  _theResult___fst_exp__h189868)
-  begin
-    case (rmdFifo$D_OUT)
-      3'd0:
-	  _theResult___fst_exp__h190388 =
-	      CASE_guard81820_0b0_theResult___fst_exp89868_0_ETC__q125;
-      3'd1:
-	  _theResult___fst_exp__h190388 =
-	      CASE_guard81820_0b0_theResult___fst_exp89868_0_ETC__q126;
-      3'd2:
-	  _theResult___fst_exp__h190388 =
-	      IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4664;
-      3'd3:
-	  _theResult___fst_exp__h190388 =
-	      IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4666;
-      3'd4: _theResult___fst_exp__h190388 = _theResult___fst_exp__h189868;
-      default: _theResult___fst_exp__h190388 = 8'd0;
-    endcase
-  end
-  always@(guard__h173113 or
-	  _theResult___fst_exp__h181212 or
-	  out_exp__h181731 or _theResult___exp__h181728)
-  begin
-    case (guard__h173113)
-      2'b0, 2'b01:
-	  CASE_guard73113_0b0_theResult___fst_exp81212_0_ETC__q127 =
-	      _theResult___fst_exp__h181212;
-      2'b10:
-	  CASE_guard73113_0b0_theResult___fst_exp81212_0_ETC__q127 =
-	      out_exp__h181731;
-      2'b11:
-	  CASE_guard73113_0b0_theResult___fst_exp81212_0_ETC__q127 =
-	      _theResult___exp__h181728;
-    endcase
-  end
-  always@(guard__h173113 or
-	  _theResult___fst_exp__h181212 or _theResult___exp__h181728)
-  begin
-    case (guard__h173113)
-      2'b0:
-	  CASE_guard73113_0b0_theResult___fst_exp81212_0_ETC__q128 =
-	      _theResult___fst_exp__h181212;
-      2'b01, 2'b10, 2'b11:
-	  CASE_guard73113_0b0_theResult___fst_exp81212_0_ETC__q128 =
-	      _theResult___exp__h181728;
-    endcase
-  end
-  always@(rmdFifo$D_OUT or
-	  CASE_guard73113_0b0_theResult___fst_exp81212_0_ETC__q127 or
-	  CASE_guard73113_0b0_theResult___fst_exp81212_0_ETC__q128 or
-	  IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__595_B_ETC___d4633 or
-	  IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__595_B_ETC___d4635 or
-	  _theResult___fst_exp__h181212)
-  begin
-    case (rmdFifo$D_OUT)
-      3'd0:
-	  _theResult___fst_exp__h181806 =
-	      CASE_guard73113_0b0_theResult___fst_exp81212_0_ETC__q127;
-      3'd1:
-	  _theResult___fst_exp__h181806 =
-	      CASE_guard73113_0b0_theResult___fst_exp81212_0_ETC__q128;
-      3'd2:
-	  _theResult___fst_exp__h181806 =
-	      IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__595_B_ETC___d4633;
-      3'd3:
-	  _theResult___fst_exp__h181806 =
-	      IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__595_B_ETC___d4635;
-      3'd4: _theResult___fst_exp__h181806 = _theResult___fst_exp__h181212;
-      default: _theResult___fst_exp__h181806 = 8'd0;
-    endcase
-  end
-  always@(guard__h190750 or
-	  _theResult___fst_exp__h198978 or
-	  out_exp__h199497 or _theResult___exp__h199494)
-  begin
-    case (guard__h190750)
-      2'b0, 2'b01:
-	  CASE_guard90750_0b0_theResult___fst_exp98978_0_ETC__q129 =
-	      _theResult___fst_exp__h198978;
-      2'b10:
-	  CASE_guard90750_0b0_theResult___fst_exp98978_0_ETC__q129 =
-	      out_exp__h199497;
-      2'b11:
-	  CASE_guard90750_0b0_theResult___fst_exp98978_0_ETC__q129 =
-	      _theResult___exp__h199494;
-    endcase
-  end
-  always@(guard__h190750 or
-	  _theResult___fst_exp__h198978 or _theResult___exp__h199494)
-  begin
-    case (guard__h190750)
-      2'b0:
-	  CASE_guard90750_0b0_theResult___fst_exp98978_0_ETC__q130 =
-	      _theResult___fst_exp__h198978;
-      2'b01, 2'b10, 2'b11:
-	  CASE_guard90750_0b0_theResult___fst_exp98978_0_ETC__q130 =
-	      _theResult___exp__h199494;
-    endcase
-  end
-  always@(rmdFifo$D_OUT or
-	  CASE_guard90750_0b0_theResult___fst_exp98978_0_ETC__q129 or
-	  CASE_guard90750_0b0_theResult___fst_exp98978_0_ETC__q130 or
-	  IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__595__ETC___d4703 or
-	  IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__595__ETC___d4705 or
-	  _theResult___fst_exp__h198978)
-  begin
-    case (rmdFifo$D_OUT)
-      3'd0:
-	  _theResult___fst_exp__h199572 =
-	      CASE_guard90750_0b0_theResult___fst_exp98978_0_ETC__q129;
-      3'd1:
-	  _theResult___fst_exp__h199572 =
-	      CASE_guard90750_0b0_theResult___fst_exp98978_0_ETC__q130;
-      3'd2:
-	  _theResult___fst_exp__h199572 =
-	      IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__595__ETC___d4703;
-      3'd3:
-	  _theResult___fst_exp__h199572 =
-	      IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__595__ETC___d4705;
-      3'd4: _theResult___fst_exp__h199572 = _theResult___fst_exp__h198978;
-      default: _theResult___fst_exp__h199572 = 8'd0;
-    endcase
-  end
-  always@(guard__h199586 or
-	  _theResult___fst_exp__h207663 or
-	  out_exp__h208133 or _theResult___exp__h208130)
-  begin
-    case (guard__h199586)
-      2'b0, 2'b01:
-	  CASE_guard99586_0b0_theResult___fst_exp07663_0_ETC__q131 =
-	      _theResult___fst_exp__h207663;
-      2'b10:
-	  CASE_guard99586_0b0_theResult___fst_exp07663_0_ETC__q131 =
-	      out_exp__h208133;
-      2'b11:
-	  CASE_guard99586_0b0_theResult___fst_exp07663_0_ETC__q131 =
-	      _theResult___exp__h208130;
-    endcase
-  end
-  always@(guard__h199586 or
-	  _theResult___fst_exp__h207663 or _theResult___exp__h208130)
-  begin
-    case (guard__h199586)
-      2'b0:
-	  CASE_guard99586_0b0_theResult___fst_exp07663_0_ETC__q132 =
-	      _theResult___fst_exp__h207663;
-      2'b01, 2'b10, 2'b11:
-	  CASE_guard99586_0b0_theResult___fst_exp07663_0_ETC__q132 =
-	      _theResult___exp__h208130;
-    endcase
-  end
-  always@(rmdFifo$D_OUT or
-	  CASE_guard99586_0b0_theResult___fst_exp07663_0_ETC__q131 or
-	  CASE_guard99586_0b0_theResult___fst_exp07663_0_ETC__q132 or
-	  IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4734 or
-	  IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4736 or
-	  _theResult___fst_exp__h207663)
-  begin
-    case (rmdFifo$D_OUT)
-      3'd0:
-	  _theResult___fst_exp__h208208 =
-	      CASE_guard99586_0b0_theResult___fst_exp07663_0_ETC__q131;
-      3'd1:
-	  _theResult___fst_exp__h208208 =
-	      CASE_guard99586_0b0_theResult___fst_exp07663_0_ETC__q132;
-      3'd2:
-	  _theResult___fst_exp__h208208 =
-	      IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4734;
-      3'd3:
-	  _theResult___fst_exp__h208208 =
-	      IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4736;
-      3'd4: _theResult___fst_exp__h208208 = _theResult___fst_exp__h207663;
-      default: _theResult___fst_exp__h208208 = 8'd0;
-    endcase
-  end
-  always@(guard__h173113 or
-	  sfdin__h181206 or out_sfd__h181732 or _theResult___sfd__h181729)
-  begin
-    case (guard__h173113)
-      2'b0, 2'b01:
-	  CASE_guard73113_0b0_sfdin81206_BITS_56_TO_34_0_ETC__q133 =
-	      sfdin__h181206[56:34];
-      2'b10:
-	  CASE_guard73113_0b0_sfdin81206_BITS_56_TO_34_0_ETC__q133 =
-	      out_sfd__h181732;
-      2'b11:
-	  CASE_guard73113_0b0_sfdin81206_BITS_56_TO_34_0_ETC__q133 =
-	      _theResult___sfd__h181729;
-    endcase
-  end
-  always@(guard__h173113 or sfdin__h181206 or _theResult___sfd__h181729)
-  begin
-    case (guard__h173113)
-      2'b0:
-	  CASE_guard73113_0b0_sfdin81206_BITS_56_TO_34_0_ETC__q134 =
-	      sfdin__h181206[56:34];
-      2'b01, 2'b10, 2'b11:
-	  CASE_guard73113_0b0_sfdin81206_BITS_56_TO_34_0_ETC__q134 =
-	      _theResult___sfd__h181729;
-    endcase
-  end
-  always@(rmdFifo$D_OUT or
-	  CASE_guard73113_0b0_sfdin81206_BITS_56_TO_34_0_ETC__q133 or
-	  CASE_guard73113_0b0_sfdin81206_BITS_56_TO_34_0_ETC__q134 or
-	  IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__595_B_ETC___d4761 or
-	  IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__595_B_ETC___d4763 or
-	  sfdin__h181206)
-  begin
-    case (rmdFifo$D_OUT)
-      3'd0:
-	  _theResult___fst_sfd__h181807 =
-	      CASE_guard73113_0b0_sfdin81206_BITS_56_TO_34_0_ETC__q133;
-      3'd1:
-	  _theResult___fst_sfd__h181807 =
-	      CASE_guard73113_0b0_sfdin81206_BITS_56_TO_34_0_ETC__q134;
-      3'd2:
-	  _theResult___fst_sfd__h181807 =
-	      IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__595_B_ETC___d4761;
-      3'd3:
-	  _theResult___fst_sfd__h181807 =
-	      IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__595_B_ETC___d4763;
-      3'd4: _theResult___fst_sfd__h181807 = sfdin__h181206[56:34];
-      default: _theResult___fst_sfd__h181807 = 23'd0;
-    endcase
-  end
-  always@(guard__h181820 or
-	  _theResult___snd__h189819 or
-	  out_sfd__h190314 or _theResult___sfd__h190311)
-  begin
-    case (guard__h181820)
-      2'b0, 2'b01:
-	  CASE_guard81820_0b0_theResult___snd89819_BITS__ETC__q135 =
-	      _theResult___snd__h189819[56:34];
-      2'b10:
-	  CASE_guard81820_0b0_theResult___snd89819_BITS__ETC__q135 =
-	      out_sfd__h190314;
-      2'b11:
-	  CASE_guard81820_0b0_theResult___snd89819_BITS__ETC__q135 =
-	      _theResult___sfd__h190311;
-    endcase
-  end
-  always@(guard__h181820 or
-	  _theResult___snd__h189819 or _theResult___sfd__h190311)
-  begin
-    case (guard__h181820)
-      2'b0:
-	  CASE_guard81820_0b0_theResult___snd89819_BITS__ETC__q136 =
-	      _theResult___snd__h189819[56:34];
-      2'b01, 2'b10, 2'b11:
-	  CASE_guard81820_0b0_theResult___snd89819_BITS__ETC__q136 =
-	      _theResult___sfd__h190311;
-    endcase
-  end
-  always@(rmdFifo$D_OUT or
-	  CASE_guard81820_0b0_theResult___snd89819_BITS__ETC__q135 or
-	  CASE_guard81820_0b0_theResult___snd89819_BITS__ETC__q136 or
-	  IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4780 or
-	  IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4782 or
-	  _theResult___snd__h189819)
-  begin
-    case (rmdFifo$D_OUT)
-      3'd0:
-	  _theResult___fst_sfd__h190389 =
-	      CASE_guard81820_0b0_theResult___snd89819_BITS__ETC__q135;
-      3'd1:
-	  _theResult___fst_sfd__h190389 =
-	      CASE_guard81820_0b0_theResult___snd89819_BITS__ETC__q136;
-      3'd2:
-	  _theResult___fst_sfd__h190389 =
-	      IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4780;
-      3'd3:
-	  _theResult___fst_sfd__h190389 =
-	      IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4782;
-      3'd4: _theResult___fst_sfd__h190389 = _theResult___snd__h189819[56:34];
-      default: _theResult___fst_sfd__h190389 = 23'd0;
-    endcase
-  end
-  always@(guard__h190750 or
-	  sfdin__h198972 or out_sfd__h199498 or _theResult___sfd__h199495)
-  begin
-    case (guard__h190750)
-      2'b0, 2'b01:
-	  CASE_guard90750_0b0_sfdin98972_BITS_56_TO_34_0_ETC__q137 =
-	      sfdin__h198972[56:34];
-      2'b10:
-	  CASE_guard90750_0b0_sfdin98972_BITS_56_TO_34_0_ETC__q137 =
-	      out_sfd__h199498;
-      2'b11:
-	  CASE_guard90750_0b0_sfdin98972_BITS_56_TO_34_0_ETC__q137 =
-	      _theResult___sfd__h199495;
-    endcase
-  end
-  always@(guard__h190750 or sfdin__h198972 or _theResult___sfd__h199495)
-  begin
-    case (guard__h190750)
-      2'b0:
-	  CASE_guard90750_0b0_sfdin98972_BITS_56_TO_34_0_ETC__q138 =
-	      sfdin__h198972[56:34];
-      2'b01, 2'b10, 2'b11:
-	  CASE_guard90750_0b0_sfdin98972_BITS_56_TO_34_0_ETC__q138 =
-	      _theResult___sfd__h199495;
-    endcase
-  end
-  always@(rmdFifo$D_OUT or
-	  CASE_guard90750_0b0_sfdin98972_BITS_56_TO_34_0_ETC__q137 or
-	  CASE_guard90750_0b0_sfdin98972_BITS_56_TO_34_0_ETC__q138 or
-	  IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__595__ETC___d4807 or
-	  IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__595__ETC___d4809 or
-	  sfdin__h198972)
-  begin
-    case (rmdFifo$D_OUT)
-      3'd0:
-	  _theResult___fst_sfd__h199573 =
-	      CASE_guard90750_0b0_sfdin98972_BITS_56_TO_34_0_ETC__q137;
-      3'd1:
-	  _theResult___fst_sfd__h199573 =
-	      CASE_guard90750_0b0_sfdin98972_BITS_56_TO_34_0_ETC__q138;
-      3'd2:
-	  _theResult___fst_sfd__h199573 =
-	      IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__595__ETC___d4807;
-      3'd3:
-	  _theResult___fst_sfd__h199573 =
-	      IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__595__ETC___d4809;
-      3'd4: _theResult___fst_sfd__h199573 = sfdin__h198972[56:34];
-      default: _theResult___fst_sfd__h199573 = 23'd0;
-    endcase
-  end
-  always@(guard__h199586 or
-	  _theResult___snd__h207609 or
-	  out_sfd__h208134 or _theResult___sfd__h208131)
-  begin
-    case (guard__h199586)
-      2'b0, 2'b01:
-	  CASE_guard99586_0b0_theResult___snd07609_BITS__ETC__q139 =
-	      _theResult___snd__h207609[56:34];
-      2'b10:
-	  CASE_guard99586_0b0_theResult___snd07609_BITS__ETC__q139 =
-	      out_sfd__h208134;
-      2'b11:
-	  CASE_guard99586_0b0_theResult___snd07609_BITS__ETC__q139 =
-	      _theResult___sfd__h208131;
-    endcase
-  end
-  always@(guard__h199586 or
-	  _theResult___snd__h207609 or _theResult___sfd__h208131)
-  begin
-    case (guard__h199586)
-      2'b0:
-	  CASE_guard99586_0b0_theResult___snd07609_BITS__ETC__q140 =
-	      _theResult___snd__h207609[56:34];
-      2'b01, 2'b10, 2'b11:
-	  CASE_guard99586_0b0_theResult___snd07609_BITS__ETC__q140 =
-	      _theResult___sfd__h208131;
-    endcase
-  end
-  always@(rmdFifo$D_OUT or
-	  CASE_guard99586_0b0_theResult___snd07609_BITS__ETC__q139 or
-	  CASE_guard99586_0b0_theResult___snd07609_BITS__ETC__q140 or
-	  IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4826 or
-	  IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4828 or
-	  _theResult___snd__h207609)
-  begin
-    case (rmdFifo$D_OUT)
-      3'd0:
-	  _theResult___fst_sfd__h208209 =
-	      CASE_guard99586_0b0_theResult___snd07609_BITS__ETC__q139;
-      3'd1:
-	  _theResult___fst_sfd__h208209 =
-	      CASE_guard99586_0b0_theResult___snd07609_BITS__ETC__q140;
-      3'd2:
-	  _theResult___fst_sfd__h208209 =
-	      IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4826;
-      3'd3:
-	  _theResult___fst_sfd__h208209 =
-	      IF_IF_IF_resWire_wget__595_BITS_67_TO_57_601_E_ETC___d4828;
-      3'd4: _theResult___fst_sfd__h208209 = _theResult___snd__h207609[56:34];
-      default: _theResult___fst_sfd__h208209 = 23'd0;
     endcase
   end
   always@(fpu_madd_fState_S8$D_OUT)
   begin
     case (fpu_madd_fState_S8$D_OUT[2:1])
       2'b0, 2'b01, 2'b10:
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q141 =
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q126 =
 	      fpu_madd_fState_S8$D_OUT[66];
       2'd3:
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q141 =
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q126 =
 	      fpu_madd_fState_S8$D_OUT[2:1] == 2'b11 &&
 	      fpu_madd_fState_S8$D_OUT[66];
     endcase
   end
   always@(fpu_madd_fState_S8$D_OUT or
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q141)
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q126)
   begin
     case (fpu_madd_fState_S8$D_OUT[70:68])
       3'd0:
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_70_TO_68_0__ETC__q142 =
-	      CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q141;
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_70_TO_68_0__ETC__q127 =
+	      CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q126;
       3'd1:
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_70_TO_68_0__ETC__q142 =
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_70_TO_68_0__ETC__q127 =
 	      (fpu_madd_fState_S8$D_OUT[2:1] == 2'b0) ?
 		fpu_madd_fState_S8$D_OUT[66] :
 		(fpu_madd_fState_S8$D_OUT[2:1] == 2'b01 ||
@@ -9220,132 +11528,1174 @@ module mkFPU(CLK,
 		 fpu_madd_fState_S8$D_OUT[2:1] == 2'b11) &&
 		fpu_madd_fState_S8$D_OUT[66];
       3'd2, 3'd3:
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_70_TO_68_0__ETC__q142 =
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_70_TO_68_0__ETC__q127 =
 	      fpu_madd_fState_S8$D_OUT[66];
-      default: CASE_fpu_madd_fState_S8D_OUT_BITS_70_TO_68_0__ETC__q142 =
+      default: CASE_fpu_madd_fState_S8D_OUT_BITS_70_TO_68_0__ETC__q127 =
 		   fpu_madd_fState_S8$D_OUT[70:68] == 3'd4 &&
 		   fpu_madd_fState_S8$D_OUT[66];
     endcase
   end
-  always@(iFifo$D_OUT or fpu_madd_fOperand_S0$FULL_N)
-  begin
-    case (iFifo$D_OUT[3:0])
-      4'd0, 4'd1, 4'd2, 4'd5, 4'd6, 4'd7:
-	  CASE_iFifoD_OUT_BITS_3_TO_0_0_fpu_madd_fOpera_ETC__q145 =
-	      fpu_madd_fOperand_S0$FULL_N;
-      default: CASE_iFifoD_OUT_BITS_3_TO_0_0_fpu_madd_fOpera_ETC__q145 =
-		   iFifo$D_OUT[3:0] != 4'd8 || fpu_madd_fOperand_S0$FULL_N;
-    endcase
-  end
   always@(iFifo$D_OUT or
-	  IF_iFifo_first__288_BIT_71_040_THEN_IF_iFifo_f_ETC___d2809 or
-	  IF_iFifo_first__288_BIT_201_310_THEN_IF_iFifo__ETC___d2039 or
-	  IF_iFifo_first__288_BIT_71_040_THEN_IF_iFifo_f_ETC___d2746)
+	  IF_iFifo_first__087_BIT_71_849_THEN_IF_iFifo_f_ETC___d4618 or
+	  IF_iFifo_first__087_BIT_201_115_THEN_IF_iFifo__ETC___d3848 or
+	  IF_iFifo_first__087_BIT_71_849_THEN_IF_iFifo_f_ETC___d4555)
   begin
     case (iFifo$D_OUT[3:0])
       4'd0, 4'd1:
-	  IF_iFifo_first__288_BITS_3_TO_0_289_EQ_0_290_O_ETC___d2814 =
-	      IF_iFifo_first__288_BIT_201_310_THEN_IF_iFifo__ETC___d2039;
+	  IF_iFifo_first__087_BITS_3_TO_0_088_EQ_0_089_O_ETC___d4623 =
+	      IF_iFifo_first__087_BIT_201_115_THEN_IF_iFifo__ETC___d3848;
       4'd5, 4'd7:
-	  IF_iFifo_first__288_BITS_3_TO_0_289_EQ_0_290_O_ETC___d2814 =
-	      IF_iFifo_first__288_BIT_71_040_THEN_IF_iFifo_f_ETC___d2746;
+	  IF_iFifo_first__087_BITS_3_TO_0_088_EQ_0_089_O_ETC___d4623 =
+	      IF_iFifo_first__087_BIT_71_849_THEN_IF_iFifo_f_ETC___d4555;
       4'd6:
-	  IF_iFifo_first__288_BITS_3_TO_0_289_EQ_0_290_O_ETC___d2814 =
-	      IF_iFifo_first__288_BIT_71_040_THEN_IF_iFifo_f_ETC___d2809;
-      default: IF_iFifo_first__288_BITS_3_TO_0_289_EQ_0_290_O_ETC___d2814 =
-		   IF_iFifo_first__288_BIT_71_040_THEN_IF_iFifo_f_ETC___d2809;
+	  IF_iFifo_first__087_BITS_3_TO_0_088_EQ_0_089_O_ETC___d4623 =
+	      IF_iFifo_first__087_BIT_71_849_THEN_IF_iFifo_f_ETC___d4618;
+      default: IF_iFifo_first__087_BITS_3_TO_0_088_EQ_0_089_O_ETC___d4623 =
+		   IF_iFifo_first__087_BIT_71_849_THEN_IF_iFifo_f_ETC___d4618;
+    endcase
+  end
+  always@(iFifo$D_OUT or
+	  fpu_madd_fOperand_S0$FULL_N or
+	  fpu_div64_fOperands_S0$FULL_N or fpu_sqr64_fOperand_S0$FULL_N)
+  begin
+    case (iFifo$D_OUT[3:0])
+      4'd0, 4'd1, 4'd2, 4'd5, 4'd6, 4'd7:
+	  IF_iFifo_first__087_BITS_3_TO_0_088_EQ_0_089_O_ETC___d3110 =
+	      fpu_madd_fOperand_S0$FULL_N;
+      4'd3:
+	  IF_iFifo_first__087_BITS_3_TO_0_088_EQ_0_089_O_ETC___d3110 =
+	      fpu_div64_fOperands_S0$FULL_N;
+      4'd4:
+	  IF_iFifo_first__087_BITS_3_TO_0_088_EQ_0_089_O_ETC___d3110 =
+	      fpu_sqr64_fOperand_S0$FULL_N;
+      default: IF_iFifo_first__087_BITS_3_TO_0_088_EQ_0_089_O_ETC___d3110 =
+		   iFifo$D_OUT[3:0] != 4'd8 || fpu_madd_fOperand_S0$FULL_N;
     endcase
   end
   always@(fpu_madd_fState_S8$D_OUT or
-	  IF_0b0_CONCAT_NOT_fpu_madd_fState_S8_first__16_ETC___d1266)
+	  IF_0b0_CONCAT_NOT_fpu_madd_fState_S8_first__96_ETC___d3065)
   begin
     case (fpu_madd_fState_S8$D_OUT[2:1])
       2'b0, 2'b01:
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q146 =
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q130 =
 	      fpu_madd_fState_S8$D_OUT[65:3];
       2'b10:
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q146 =
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q130 =
 	      fpu_madd_fState_S8$D_OUT[3] ?
-		IF_0b0_CONCAT_NOT_fpu_madd_fState_S8_first__16_ETC___d1266 :
+		IF_0b0_CONCAT_NOT_fpu_madd_fState_S8_first__96_ETC___d3065 :
 		fpu_madd_fState_S8$D_OUT[65:3];
       2'b11:
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q146 =
-	      IF_0b0_CONCAT_NOT_fpu_madd_fState_S8_first__16_ETC___d1266;
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q130 =
+	      IF_0b0_CONCAT_NOT_fpu_madd_fState_S8_first__96_ETC___d3065;
     endcase
   end
   always@(fpu_madd_fState_S8$D_OUT or
-	  IF_0b0_CONCAT_NOT_fpu_madd_fState_S8_first__16_ETC___d1266)
+	  IF_0b0_CONCAT_NOT_fpu_madd_fState_S8_first__96_ETC___d3065)
   begin
     case (fpu_madd_fState_S8$D_OUT[2:1])
       2'b0:
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q147 =
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q131 =
 	      fpu_madd_fState_S8$D_OUT[65:3];
       2'b01, 2'b10, 2'b11:
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q147 =
-	      IF_0b0_CONCAT_NOT_fpu_madd_fState_S8_first__16_ETC___d1266;
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q131 =
+	      IF_0b0_CONCAT_NOT_fpu_madd_fState_S8_first__96_ETC___d3065;
     endcase
   end
   always@(fpu_madd_fState_S8$D_OUT or
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q146 or
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q147 or
-	  IF_0b0_CONCAT_NOT_fpu_madd_fState_S8_first__16_ETC___d1266)
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q130 or
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q131 or
+	  IF_0b0_CONCAT_NOT_fpu_madd_fState_S8_first__96_ETC___d3065)
   begin
     case (fpu_madd_fState_S8$D_OUT[70:68])
       3'd0:
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_70_TO_68_0__ETC__q148 =
-	      CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q146;
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_70_TO_68_0__ETC__q132 =
+	      CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q130;
       3'd1:
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_70_TO_68_0__ETC__q148 =
-	      CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q147;
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_70_TO_68_0__ETC__q132 =
+	      CASE_fpu_madd_fState_S8D_OUT_BITS_2_TO_1_0b0__ETC__q131;
       3'd2:
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_70_TO_68_0__ETC__q148 =
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_70_TO_68_0__ETC__q132 =
 	      (fpu_madd_fState_S8$D_OUT[2:1] == 2'b0 ||
 	       fpu_madd_fState_S8$D_OUT[66]) ?
 		fpu_madd_fState_S8$D_OUT[65:3] :
-		IF_0b0_CONCAT_NOT_fpu_madd_fState_S8_first__16_ETC___d1266;
+		IF_0b0_CONCAT_NOT_fpu_madd_fState_S8_first__96_ETC___d3065;
       3'd3:
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_70_TO_68_0__ETC__q148 =
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_70_TO_68_0__ETC__q132 =
 	      (fpu_madd_fState_S8$D_OUT[2:1] == 2'b0) ?
 		fpu_madd_fState_S8$D_OUT[65:3] :
 		(fpu_madd_fState_S8$D_OUT[66] ?
-		   IF_0b0_CONCAT_NOT_fpu_madd_fState_S8_first__16_ETC___d1266 :
+		   IF_0b0_CONCAT_NOT_fpu_madd_fState_S8_first__96_ETC___d3065 :
 		   fpu_madd_fState_S8$D_OUT[65:3]);
       3'd4:
-	  CASE_fpu_madd_fState_S8D_OUT_BITS_70_TO_68_0__ETC__q148 =
+	  CASE_fpu_madd_fState_S8D_OUT_BITS_70_TO_68_0__ETC__q132 =
 	      fpu_madd_fState_S8$D_OUT[65:3];
-      default: CASE_fpu_madd_fState_S8D_OUT_BITS_70_TO_68_0__ETC__q148 =
+      default: CASE_fpu_madd_fState_S8D_OUT_BITS_70_TO_68_0__ETC__q132 =
+		   63'd0;
+    endcase
+  end
+  always@(rmdFifo$D_OUT or resWire$wget)
+  begin
+    case (rmdFifo$D_OUT)
+      3'd0, 3'd1: _theResult___fst_exp__h269559 = 8'd255;
+      3'd2:
+	  _theResult___fst_exp__h269559 = resWire$wget[68] ? 8'd254 : 8'd255;
+      3'd3:
+	  _theResult___fst_exp__h269559 = resWire$wget[68] ? 8'd255 : 8'd254;
+      3'd4: _theResult___fst_exp__h269559 = 8'd254;
+      default: _theResult___fst_exp__h269559 = 8'd0;
+    endcase
+  end
+  always@(rmdFifo$D_OUT or resWire$wget)
+  begin
+    case (rmdFifo$D_OUT)
+      3'd0, 3'd1: _theResult___fst_sfd__h269560 = 23'd0;
+      3'd2:
+	  _theResult___fst_sfd__h269560 =
+	      resWire$wget[68] ? 23'd8388607 : 23'd0;
+      3'd3:
+	  _theResult___fst_sfd__h269560 =
+	      resWire$wget[68] ? 23'd0 : 23'd8388607;
+      3'd4: _theResult___fst_sfd__h269560 = 23'd8388607;
+      default: _theResult___fst_sfd__h269560 = 23'd0;
+    endcase
+  end
+  always@(guard__h269587 or resWire$wget)
+  begin
+    case (guard__h269587)
+      2'b0, 2'b01, 2'b10:
+	  CASE_guard69587_0b0_resWirewget_BIT_68_0b1_re_ETC__q144 =
+	      resWire$wget[68];
+      2'd3:
+	  CASE_guard69587_0b0_resWirewget_BIT_68_0b1_re_ETC__q144 =
+	      guard__h269587 == 2'b11 && resWire$wget[68];
+    endcase
+  end
+  always@(rmdFifo$D_OUT or
+	  resWire$wget or
+	  CASE_guard69587_0b0_resWirewget_BIT_68_0b1_re_ETC__q144 or
+	  guard__h269587)
+  begin
+    case (rmdFifo$D_OUT)
+      3'd0:
+	  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_I_ETC___d6388 =
+	      CASE_guard69587_0b0_resWirewget_BIT_68_0b1_re_ETC__q144;
+      3'd1:
+	  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_I_ETC___d6388 =
+	      (guard__h269587 == 2'b0) ?
+		resWire$wget[68] :
+		(guard__h269587 == 2'b01 || guard__h269587 == 2'b10 ||
+		 guard__h269587 == 2'b11) &&
+		resWire$wget[68];
+      3'd2, 3'd3:
+	  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_I_ETC___d6388 =
+	      resWire$wget[68];
+      default: IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_I_ETC___d6388 =
+		   rmdFifo$D_OUT == 3'd4 && resWire$wget[68];
+    endcase
+  end
+  always@(guard__h269587 or resWire$wget)
+  begin
+    case (guard__h269587)
+      2'b0, 2'b01, 2'b10:
+	  CASE_guard69587_0b0_NOT_resWirewget_BIT_68_0b_ETC__q145 =
+	      !resWire$wget[68];
+      2'd3:
+	  CASE_guard69587_0b0_NOT_resWirewget_BIT_68_0b_ETC__q145 =
+	      guard__h269587 != 2'b11 || !resWire$wget[68];
+    endcase
+  end
+  always@(rmdFifo$D_OUT or
+	  resWire$wget or
+	  CASE_guard69587_0b0_NOT_resWirewget_BIT_68_0b_ETC__q145 or
+	  guard__h269587)
+  begin
+    case (rmdFifo$D_OUT)
+      3'd0:
+	  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_I_ETC___d5823 =
+	      CASE_guard69587_0b0_NOT_resWirewget_BIT_68_0b_ETC__q145;
+      3'd1:
+	  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_I_ETC___d5823 =
+	      (guard__h269587 == 2'b0) ?
+		!resWire$wget[68] :
+		guard__h269587 != 2'b01 && guard__h269587 != 2'b10 &&
+		guard__h269587 != 2'b11 ||
+		!resWire$wget[68];
+      3'd2, 3'd3:
+	  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_I_ETC___d5823 =
+	      !resWire$wget[68];
+      default: IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_I_ETC___d5823 =
+		   rmdFifo$D_OUT != 3'd4 || !resWire$wget[68];
+    endcase
+  end
+  always@(guard__h278294 or resWire$wget)
+  begin
+    case (guard__h278294)
+      2'b0, 2'b01, 2'b10:
+	  CASE_guard78294_0b0_resWirewget_BIT_68_0b1_re_ETC__q146 =
+	      resWire$wget[68];
+      2'd3:
+	  CASE_guard78294_0b0_resWirewget_BIT_68_0b1_re_ETC__q146 =
+	      guard__h278294 == 2'b11 && resWire$wget[68];
+    endcase
+  end
+  always@(rmdFifo$D_OUT or
+	  resWire$wget or
+	  CASE_guard78294_0b0_resWirewget_BIT_68_0b1_re_ETC__q146 or
+	  guard__h278294)
+  begin
+    case (rmdFifo$D_OUT)
+      3'd0:
+	  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_r_ETC___d6397 =
+	      CASE_guard78294_0b0_resWirewget_BIT_68_0b1_re_ETC__q146;
+      3'd1:
+	  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_r_ETC___d6397 =
+	      (guard__h278294 == 2'b0) ?
+		resWire$wget[68] :
+		(guard__h278294 == 2'b01 || guard__h278294 == 2'b10 ||
+		 guard__h278294 == 2'b11) &&
+		resWire$wget[68];
+      3'd2, 3'd3:
+	  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_r_ETC___d6397 =
+	      resWire$wget[68];
+      default: IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_r_ETC___d6397 =
+		   rmdFifo$D_OUT == 3'd4 && resWire$wget[68];
+    endcase
+  end
+  always@(guard__h278294 or resWire$wget)
+  begin
+    case (guard__h278294)
+      2'b0, 2'b01, 2'b10:
+	  CASE_guard78294_0b0_NOT_resWirewget_BIT_68_0b_ETC__q147 =
+	      !resWire$wget[68];
+      2'd3:
+	  CASE_guard78294_0b0_NOT_resWirewget_BIT_68_0b_ETC__q147 =
+	      guard__h278294 != 2'b11 || !resWire$wget[68];
+    endcase
+  end
+  always@(rmdFifo$D_OUT or
+	  resWire$wget or
+	  CASE_guard78294_0b0_NOT_resWirewget_BIT_68_0b_ETC__q147 or
+	  guard__h278294)
+  begin
+    case (rmdFifo$D_OUT)
+      3'd0:
+	  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_r_ETC___d6023 =
+	      CASE_guard78294_0b0_NOT_resWirewget_BIT_68_0b_ETC__q147;
+      3'd1:
+	  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_r_ETC___d6023 =
+	      (guard__h278294 == 2'b0) ?
+		!resWire$wget[68] :
+		guard__h278294 != 2'b01 && guard__h278294 != 2'b10 &&
+		guard__h278294 != 2'b11 ||
+		!resWire$wget[68];
+      3'd2, 3'd3:
+	  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_r_ETC___d6023 =
+	      !resWire$wget[68];
+      default: IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_r_ETC___d6023 =
+		   rmdFifo$D_OUT != 3'd4 || !resWire$wget[68];
+    endcase
+  end
+  always@(guard__h287224 or resWire$wget)
+  begin
+    case (guard__h287224)
+      2'b0, 2'b01, 2'b10:
+	  CASE_guard87224_0b0_resWirewget_BIT_68_0b1_re_ETC__q148 =
+	      resWire$wget[68];
+      2'd3:
+	  CASE_guard87224_0b0_resWirewget_BIT_68_0b1_re_ETC__q148 =
+	      guard__h287224 == 2'b11 && resWire$wget[68];
+    endcase
+  end
+  always@(rmdFifo$D_OUT or
+	  resWire$wget or
+	  CASE_guard87224_0b0_resWirewget_BIT_68_0b1_re_ETC__q148 or
+	  guard__h287224)
+  begin
+    case (rmdFifo$D_OUT)
+      3'd0:
+	  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_I_ETC___d6409 =
+	      CASE_guard87224_0b0_resWirewget_BIT_68_0b1_re_ETC__q148;
+      3'd1:
+	  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_I_ETC___d6409 =
+	      (guard__h287224 == 2'b0) ?
+		resWire$wget[68] :
+		(guard__h287224 == 2'b01 || guard__h287224 == 2'b10 ||
+		 guard__h287224 == 2'b11) &&
+		resWire$wget[68];
+      3'd2, 3'd3:
+	  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_I_ETC___d6409 =
+	      resWire$wget[68];
+      default: IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_I_ETC___d6409 =
+		   rmdFifo$D_OUT == 3'd4 && resWire$wget[68];
+    endcase
+  end
+  always@(guard__h287224 or resWire$wget)
+  begin
+    case (guard__h287224)
+      2'b0, 2'b01, 2'b10:
+	  CASE_guard87224_0b0_NOT_resWirewget_BIT_68_0b_ETC__q149 =
+	      !resWire$wget[68];
+      2'd3:
+	  CASE_guard87224_0b0_NOT_resWirewget_BIT_68_0b_ETC__q149 =
+	      guard__h287224 != 2'b11 || !resWire$wget[68];
+    endcase
+  end
+  always@(rmdFifo$D_OUT or
+	  resWire$wget or
+	  CASE_guard87224_0b0_NOT_resWirewget_BIT_68_0b_ETC__q149 or
+	  guard__h287224)
+  begin
+    case (rmdFifo$D_OUT)
+      3'd0:
+	  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_I_ETC___d6324 =
+	      CASE_guard87224_0b0_NOT_resWirewget_BIT_68_0b_ETC__q149;
+      3'd1:
+	  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_I_ETC___d6324 =
+	      (guard__h287224 == 2'b0) ?
+		!resWire$wget[68] :
+		guard__h287224 != 2'b01 && guard__h287224 != 2'b10 &&
+		guard__h287224 != 2'b11 ||
+		!resWire$wget[68];
+      3'd2, 3'd3:
+	  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_I_ETC___d6324 =
+	      !resWire$wget[68];
+      default: IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_I_ETC___d6324 =
+		   rmdFifo$D_OUT != 3'd4 || !resWire$wget[68];
+    endcase
+  end
+  always@(guard__h296060 or resWire$wget)
+  begin
+    case (guard__h296060)
+      2'b0, 2'b01, 2'b10:
+	  CASE_guard96060_0b0_resWirewget_BIT_68_0b1_re_ETC__q150 =
+	      resWire$wget[68];
+      2'd3:
+	  CASE_guard96060_0b0_resWirewget_BIT_68_0b1_re_ETC__q150 =
+	      guard__h296060 == 2'b11 && resWire$wget[68];
+    endcase
+  end
+  always@(rmdFifo$D_OUT or
+	  resWire$wget or
+	  CASE_guard96060_0b0_resWirewget_BIT_68_0b1_re_ETC__q150 or
+	  guard__h296060)
+  begin
+    case (rmdFifo$D_OUT)
+      3'd0:
+	  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_r_ETC___d6418 =
+	      CASE_guard96060_0b0_resWirewget_BIT_68_0b1_re_ETC__q150;
+      3'd1:
+	  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_r_ETC___d6418 =
+	      (guard__h296060 == 2'b0) ?
+		resWire$wget[68] :
+		(guard__h296060 == 2'b01 || guard__h296060 == 2'b10 ||
+		 guard__h296060 == 2'b11) &&
+		resWire$wget[68];
+      3'd2, 3'd3:
+	  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_r_ETC___d6418 =
+	      resWire$wget[68];
+      default: IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_r_ETC___d6418 =
+		   rmdFifo$D_OUT == 3'd4 && resWire$wget[68];
+    endcase
+  end
+  always@(guard__h296060 or resWire$wget)
+  begin
+    case (guard__h296060)
+      2'b0, 2'b01, 2'b10:
+	  CASE_guard96060_0b0_NOT_resWirewget_BIT_68_0b_ETC__q151 =
+	      !resWire$wget[68];
+      2'd3:
+	  CASE_guard96060_0b0_NOT_resWirewget_BIT_68_0b_ETC__q151 =
+	      guard__h296060 != 2'b11 || !resWire$wget[68];
+    endcase
+  end
+  always@(rmdFifo$D_OUT or
+	  resWire$wget or
+	  CASE_guard96060_0b0_NOT_resWirewget_BIT_68_0b_ETC__q151 or
+	  guard__h296060)
+  begin
+    case (rmdFifo$D_OUT)
+      3'd0:
+	  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_r_ETC___d6373 =
+	      CASE_guard96060_0b0_NOT_resWirewget_BIT_68_0b_ETC__q151;
+      3'd1:
+	  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_r_ETC___d6373 =
+	      (guard__h296060 == 2'b0) ?
+		!resWire$wget[68] :
+		guard__h296060 != 2'b01 && guard__h296060 != 2'b10 &&
+		guard__h296060 != 2'b11 ||
+		!resWire$wget[68];
+      3'd2, 3'd3:
+	  IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_r_ETC___d6373 =
+	      !resWire$wget[68];
+      default: IF_rmdFifo_first__778_EQ_0_779_THEN_IF_IF_IF_r_ETC___d6373 =
+		   rmdFifo$D_OUT != 3'd4 || !resWire$wget[68];
+    endcase
+  end
+  always@(rmdFifo$D_OUT or resWire$wget)
+  begin
+    case (rmdFifo$D_OUT)
+      3'd0, 3'd1, 3'd2, 3'd3:
+	  IF_rmdFifo_first__778_EQ_0_779_OR_rmdFifo_firs_ETC___d6400 =
+	      resWire$wget[68];
+      default: IF_rmdFifo_first__778_EQ_0_779_OR_rmdFifo_firs_ETC___d6400 =
+		   rmdFifo$D_OUT == 3'd4 && resWire$wget[68];
+    endcase
+  end
+  always@(rmdFifo$D_OUT or resWire$wget)
+  begin
+    case (rmdFifo$D_OUT)
+      3'd0, 3'd1, 3'd2, 3'd3:
+	  IF_rmdFifo_first__778_EQ_0_779_OR_rmdFifo_firs_ETC___d6028 =
+	      !resWire$wget[68];
+      default: IF_rmdFifo_first__778_EQ_0_779_OR_rmdFifo_firs_ETC___d6028 =
+		   rmdFifo$D_OUT != 3'd4 || !resWire$wget[68];
+    endcase
+  end
+  always@(guard__h278294 or
+	  _theResult___fst_exp__h286342 or
+	  out_exp__h286787 or _theResult___exp__h286784)
+  begin
+    case (guard__h278294)
+      2'b0, 2'b01:
+	  CASE_guard78294_0b0_theResult___fst_exp86342_0_ETC__q152 =
+	      _theResult___fst_exp__h286342;
+      2'b10:
+	  CASE_guard78294_0b0_theResult___fst_exp86342_0_ETC__q152 =
+	      out_exp__h286787;
+      2'b11:
+	  CASE_guard78294_0b0_theResult___fst_exp86342_0_ETC__q152 =
+	      _theResult___exp__h286784;
+    endcase
+  end
+  always@(guard__h278294 or
+	  _theResult___fst_exp__h286342 or _theResult___exp__h286784)
+  begin
+    case (guard__h278294)
+      2'b0:
+	  CASE_guard78294_0b0_theResult___fst_exp86342_0_ETC__q153 =
+	      _theResult___fst_exp__h286342;
+      2'b01, 2'b10, 2'b11:
+	  CASE_guard78294_0b0_theResult___fst_exp86342_0_ETC__q153 =
+	      _theResult___exp__h286784;
+    endcase
+  end
+  always@(rmdFifo$D_OUT or
+	  CASE_guard78294_0b0_theResult___fst_exp86342_0_ETC__q152 or
+	  CASE_guard78294_0b0_theResult___fst_exp86342_0_ETC__q153 or
+	  IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6479 or
+	  IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6481 or
+	  _theResult___fst_exp__h286342)
+  begin
+    case (rmdFifo$D_OUT)
+      3'd0:
+	  _theResult___fst_exp__h286862 =
+	      CASE_guard78294_0b0_theResult___fst_exp86342_0_ETC__q152;
+      3'd1:
+	  _theResult___fst_exp__h286862 =
+	      CASE_guard78294_0b0_theResult___fst_exp86342_0_ETC__q153;
+      3'd2:
+	  _theResult___fst_exp__h286862 =
+	      IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6479;
+      3'd3:
+	  _theResult___fst_exp__h286862 =
+	      IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6481;
+      3'd4: _theResult___fst_exp__h286862 = _theResult___fst_exp__h286342;
+      default: _theResult___fst_exp__h286862 = 8'd0;
+    endcase
+  end
+  always@(guard__h269587 or
+	  _theResult___fst_exp__h277686 or
+	  out_exp__h278205 or _theResult___exp__h278202)
+  begin
+    case (guard__h269587)
+      2'b0, 2'b01:
+	  CASE_guard69587_0b0_theResult___fst_exp77686_0_ETC__q154 =
+	      _theResult___fst_exp__h277686;
+      2'b10:
+	  CASE_guard69587_0b0_theResult___fst_exp77686_0_ETC__q154 =
+	      out_exp__h278205;
+      2'b11:
+	  CASE_guard69587_0b0_theResult___fst_exp77686_0_ETC__q154 =
+	      _theResult___exp__h278202;
+    endcase
+  end
+  always@(guard__h269587 or
+	  _theResult___fst_exp__h277686 or _theResult___exp__h278202)
+  begin
+    case (guard__h269587)
+      2'b0:
+	  CASE_guard69587_0b0_theResult___fst_exp77686_0_ETC__q155 =
+	      _theResult___fst_exp__h277686;
+      2'b01, 2'b10, 2'b11:
+	  CASE_guard69587_0b0_theResult___fst_exp77686_0_ETC__q155 =
+	      _theResult___exp__h278202;
+    endcase
+  end
+  always@(rmdFifo$D_OUT or
+	  CASE_guard69587_0b0_theResult___fst_exp77686_0_ETC__q154 or
+	  CASE_guard69587_0b0_theResult___fst_exp77686_0_ETC__q155 or
+	  IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__410_B_ETC___d6448 or
+	  IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__410_B_ETC___d6450 or
+	  _theResult___fst_exp__h277686)
+  begin
+    case (rmdFifo$D_OUT)
+      3'd0:
+	  _theResult___fst_exp__h278280 =
+	      CASE_guard69587_0b0_theResult___fst_exp77686_0_ETC__q154;
+      3'd1:
+	  _theResult___fst_exp__h278280 =
+	      CASE_guard69587_0b0_theResult___fst_exp77686_0_ETC__q155;
+      3'd2:
+	  _theResult___fst_exp__h278280 =
+	      IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__410_B_ETC___d6448;
+      3'd3:
+	  _theResult___fst_exp__h278280 =
+	      IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__410_B_ETC___d6450;
+      3'd4: _theResult___fst_exp__h278280 = _theResult___fst_exp__h277686;
+      default: _theResult___fst_exp__h278280 = 8'd0;
+    endcase
+  end
+  always@(guard__h287224 or
+	  _theResult___fst_exp__h295452 or
+	  out_exp__h295971 or _theResult___exp__h295968)
+  begin
+    case (guard__h287224)
+      2'b0, 2'b01:
+	  CASE_guard87224_0b0_theResult___fst_exp95452_0_ETC__q156 =
+	      _theResult___fst_exp__h295452;
+      2'b10:
+	  CASE_guard87224_0b0_theResult___fst_exp95452_0_ETC__q156 =
+	      out_exp__h295971;
+      2'b11:
+	  CASE_guard87224_0b0_theResult___fst_exp95452_0_ETC__q156 =
+	      _theResult___exp__h295968;
+    endcase
+  end
+  always@(guard__h287224 or
+	  _theResult___fst_exp__h295452 or _theResult___exp__h295968)
+  begin
+    case (guard__h287224)
+      2'b0:
+	  CASE_guard87224_0b0_theResult___fst_exp95452_0_ETC__q157 =
+	      _theResult___fst_exp__h295452;
+      2'b01, 2'b10, 2'b11:
+	  CASE_guard87224_0b0_theResult___fst_exp95452_0_ETC__q157 =
+	      _theResult___exp__h295968;
+    endcase
+  end
+  always@(rmdFifo$D_OUT or
+	  CASE_guard87224_0b0_theResult___fst_exp95452_0_ETC__q156 or
+	  CASE_guard87224_0b0_theResult___fst_exp95452_0_ETC__q157 or
+	  IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__410__ETC___d6518 or
+	  IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__410__ETC___d6520 or
+	  _theResult___fst_exp__h295452)
+  begin
+    case (rmdFifo$D_OUT)
+      3'd0:
+	  _theResult___fst_exp__h296046 =
+	      CASE_guard87224_0b0_theResult___fst_exp95452_0_ETC__q156;
+      3'd1:
+	  _theResult___fst_exp__h296046 =
+	      CASE_guard87224_0b0_theResult___fst_exp95452_0_ETC__q157;
+      3'd2:
+	  _theResult___fst_exp__h296046 =
+	      IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__410__ETC___d6518;
+      3'd3:
+	  _theResult___fst_exp__h296046 =
+	      IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__410__ETC___d6520;
+      3'd4: _theResult___fst_exp__h296046 = _theResult___fst_exp__h295452;
+      default: _theResult___fst_exp__h296046 = 8'd0;
+    endcase
+  end
+  always@(guard__h296060 or
+	  _theResult___fst_exp__h304137 or
+	  out_exp__h304607 or _theResult___exp__h304604)
+  begin
+    case (guard__h296060)
+      2'b0, 2'b01:
+	  CASE_guard96060_0b0_theResult___fst_exp04137_0_ETC__q158 =
+	      _theResult___fst_exp__h304137;
+      2'b10:
+	  CASE_guard96060_0b0_theResult___fst_exp04137_0_ETC__q158 =
+	      out_exp__h304607;
+      2'b11:
+	  CASE_guard96060_0b0_theResult___fst_exp04137_0_ETC__q158 =
+	      _theResult___exp__h304604;
+    endcase
+  end
+  always@(guard__h296060 or
+	  _theResult___fst_exp__h304137 or _theResult___exp__h304604)
+  begin
+    case (guard__h296060)
+      2'b0:
+	  CASE_guard96060_0b0_theResult___fst_exp04137_0_ETC__q159 =
+	      _theResult___fst_exp__h304137;
+      2'b01, 2'b10, 2'b11:
+	  CASE_guard96060_0b0_theResult___fst_exp04137_0_ETC__q159 =
+	      _theResult___exp__h304604;
+    endcase
+  end
+  always@(rmdFifo$D_OUT or
+	  CASE_guard96060_0b0_theResult___fst_exp04137_0_ETC__q158 or
+	  CASE_guard96060_0b0_theResult___fst_exp04137_0_ETC__q159 or
+	  IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6549 or
+	  IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6551 or
+	  _theResult___fst_exp__h304137)
+  begin
+    case (rmdFifo$D_OUT)
+      3'd0:
+	  _theResult___fst_exp__h304682 =
+	      CASE_guard96060_0b0_theResult___fst_exp04137_0_ETC__q158;
+      3'd1:
+	  _theResult___fst_exp__h304682 =
+	      CASE_guard96060_0b0_theResult___fst_exp04137_0_ETC__q159;
+      3'd2:
+	  _theResult___fst_exp__h304682 =
+	      IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6549;
+      3'd3:
+	  _theResult___fst_exp__h304682 =
+	      IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6551;
+      3'd4: _theResult___fst_exp__h304682 = _theResult___fst_exp__h304137;
+      default: _theResult___fst_exp__h304682 = 8'd0;
+    endcase
+  end
+  always@(guard__h278294 or
+	  _theResult___snd__h286293 or
+	  out_sfd__h286788 or _theResult___sfd__h286785)
+  begin
+    case (guard__h278294)
+      2'b0, 2'b01:
+	  CASE_guard78294_0b0_theResult___snd86293_BITS__ETC__q160 =
+	      _theResult___snd__h286293[56:34];
+      2'b10:
+	  CASE_guard78294_0b0_theResult___snd86293_BITS__ETC__q160 =
+	      out_sfd__h286788;
+      2'b11:
+	  CASE_guard78294_0b0_theResult___snd86293_BITS__ETC__q160 =
+	      _theResult___sfd__h286785;
+    endcase
+  end
+  always@(guard__h278294 or
+	  _theResult___snd__h286293 or _theResult___sfd__h286785)
+  begin
+    case (guard__h278294)
+      2'b0:
+	  CASE_guard78294_0b0_theResult___snd86293_BITS__ETC__q161 =
+	      _theResult___snd__h286293[56:34];
+      2'b01, 2'b10, 2'b11:
+	  CASE_guard78294_0b0_theResult___snd86293_BITS__ETC__q161 =
+	      _theResult___sfd__h286785;
+    endcase
+  end
+  always@(rmdFifo$D_OUT or
+	  CASE_guard78294_0b0_theResult___snd86293_BITS__ETC__q160 or
+	  CASE_guard78294_0b0_theResult___snd86293_BITS__ETC__q161 or
+	  IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6595 or
+	  IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6597 or
+	  _theResult___snd__h286293)
+  begin
+    case (rmdFifo$D_OUT)
+      3'd0:
+	  _theResult___fst_sfd__h286863 =
+	      CASE_guard78294_0b0_theResult___snd86293_BITS__ETC__q160;
+      3'd1:
+	  _theResult___fst_sfd__h286863 =
+	      CASE_guard78294_0b0_theResult___snd86293_BITS__ETC__q161;
+      3'd2:
+	  _theResult___fst_sfd__h286863 =
+	      IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6595;
+      3'd3:
+	  _theResult___fst_sfd__h286863 =
+	      IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6597;
+      3'd4: _theResult___fst_sfd__h286863 = _theResult___snd__h286293[56:34];
+      default: _theResult___fst_sfd__h286863 = 23'd0;
+    endcase
+  end
+  always@(guard__h269587 or
+	  sfdin__h277680 or out_sfd__h278206 or _theResult___sfd__h278203)
+  begin
+    case (guard__h269587)
+      2'b0, 2'b01:
+	  CASE_guard69587_0b0_sfdin77680_BITS_56_TO_34_0_ETC__q162 =
+	      sfdin__h277680[56:34];
+      2'b10:
+	  CASE_guard69587_0b0_sfdin77680_BITS_56_TO_34_0_ETC__q162 =
+	      out_sfd__h278206;
+      2'b11:
+	  CASE_guard69587_0b0_sfdin77680_BITS_56_TO_34_0_ETC__q162 =
+	      _theResult___sfd__h278203;
+    endcase
+  end
+  always@(guard__h269587 or sfdin__h277680 or _theResult___sfd__h278203)
+  begin
+    case (guard__h269587)
+      2'b0:
+	  CASE_guard69587_0b0_sfdin77680_BITS_56_TO_34_0_ETC__q163 =
+	      sfdin__h277680[56:34];
+      2'b01, 2'b10, 2'b11:
+	  CASE_guard69587_0b0_sfdin77680_BITS_56_TO_34_0_ETC__q163 =
+	      _theResult___sfd__h278203;
+    endcase
+  end
+  always@(rmdFifo$D_OUT or
+	  CASE_guard69587_0b0_sfdin77680_BITS_56_TO_34_0_ETC__q162 or
+	  CASE_guard69587_0b0_sfdin77680_BITS_56_TO_34_0_ETC__q163 or
+	  IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__410_B_ETC___d6576 or
+	  IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__410_B_ETC___d6578 or
+	  sfdin__h277680)
+  begin
+    case (rmdFifo$D_OUT)
+      3'd0:
+	  _theResult___fst_sfd__h278281 =
+	      CASE_guard69587_0b0_sfdin77680_BITS_56_TO_34_0_ETC__q162;
+      3'd1:
+	  _theResult___fst_sfd__h278281 =
+	      CASE_guard69587_0b0_sfdin77680_BITS_56_TO_34_0_ETC__q163;
+      3'd2:
+	  _theResult___fst_sfd__h278281 =
+	      IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__410_B_ETC___d6576;
+      3'd3:
+	  _theResult___fst_sfd__h278281 =
+	      IF_IF_IF_IF_0b0_CONCAT_NOT_resWire_wget__410_B_ETC___d6578;
+      3'd4: _theResult___fst_sfd__h278281 = sfdin__h277680[56:34];
+      default: _theResult___fst_sfd__h278281 = 23'd0;
+    endcase
+  end
+  always@(guard__h287224 or
+	  sfdin__h295446 or out_sfd__h295972 or _theResult___sfd__h295969)
+  begin
+    case (guard__h287224)
+      2'b0, 2'b01:
+	  CASE_guard87224_0b0_sfdin95446_BITS_56_TO_34_0_ETC__q164 =
+	      sfdin__h295446[56:34];
+      2'b10:
+	  CASE_guard87224_0b0_sfdin95446_BITS_56_TO_34_0_ETC__q164 =
+	      out_sfd__h295972;
+      2'b11:
+	  CASE_guard87224_0b0_sfdin95446_BITS_56_TO_34_0_ETC__q164 =
+	      _theResult___sfd__h295969;
+    endcase
+  end
+  always@(guard__h287224 or sfdin__h295446 or _theResult___sfd__h295969)
+  begin
+    case (guard__h287224)
+      2'b0:
+	  CASE_guard87224_0b0_sfdin95446_BITS_56_TO_34_0_ETC__q165 =
+	      sfdin__h295446[56:34];
+      2'b01, 2'b10, 2'b11:
+	  CASE_guard87224_0b0_sfdin95446_BITS_56_TO_34_0_ETC__q165 =
+	      _theResult___sfd__h295969;
+    endcase
+  end
+  always@(rmdFifo$D_OUT or
+	  CASE_guard87224_0b0_sfdin95446_BITS_56_TO_34_0_ETC__q164 or
+	  CASE_guard87224_0b0_sfdin95446_BITS_56_TO_34_0_ETC__q165 or
+	  IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__410__ETC___d6622 or
+	  IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__410__ETC___d6624 or
+	  sfdin__h295446)
+  begin
+    case (rmdFifo$D_OUT)
+      3'd0:
+	  _theResult___fst_sfd__h296047 =
+	      CASE_guard87224_0b0_sfdin95446_BITS_56_TO_34_0_ETC__q164;
+      3'd1:
+	  _theResult___fst_sfd__h296047 =
+	      CASE_guard87224_0b0_sfdin95446_BITS_56_TO_34_0_ETC__q165;
+      3'd2:
+	  _theResult___fst_sfd__h296047 =
+	      IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__410__ETC___d6622;
+      3'd3:
+	  _theResult___fst_sfd__h296047 =
+	      IF_IF_IF_IF_3970_MINUS_SEXT_resWire_wget__410__ETC___d6624;
+      3'd4: _theResult___fst_sfd__h296047 = sfdin__h295446[56:34];
+      default: _theResult___fst_sfd__h296047 = 23'd0;
+    endcase
+  end
+  always@(guard__h296060 or
+	  _theResult___snd__h304083 or
+	  out_sfd__h304608 or _theResult___sfd__h304605)
+  begin
+    case (guard__h296060)
+      2'b0, 2'b01:
+	  CASE_guard96060_0b0_theResult___snd04083_BITS__ETC__q166 =
+	      _theResult___snd__h304083[56:34];
+      2'b10:
+	  CASE_guard96060_0b0_theResult___snd04083_BITS__ETC__q166 =
+	      out_sfd__h304608;
+      2'b11:
+	  CASE_guard96060_0b0_theResult___snd04083_BITS__ETC__q166 =
+	      _theResult___sfd__h304605;
+    endcase
+  end
+  always@(guard__h296060 or
+	  _theResult___snd__h304083 or _theResult___sfd__h304605)
+  begin
+    case (guard__h296060)
+      2'b0:
+	  CASE_guard96060_0b0_theResult___snd04083_BITS__ETC__q167 =
+	      _theResult___snd__h304083[56:34];
+      2'b01, 2'b10, 2'b11:
+	  CASE_guard96060_0b0_theResult___snd04083_BITS__ETC__q167 =
+	      _theResult___sfd__h304605;
+    endcase
+  end
+  always@(rmdFifo$D_OUT or
+	  CASE_guard96060_0b0_theResult___snd04083_BITS__ETC__q166 or
+	  CASE_guard96060_0b0_theResult___snd04083_BITS__ETC__q167 or
+	  IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6641 or
+	  IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6643 or
+	  _theResult___snd__h304083)
+  begin
+    case (rmdFifo$D_OUT)
+      3'd0:
+	  _theResult___fst_sfd__h304683 =
+	      CASE_guard96060_0b0_theResult___snd04083_BITS__ETC__q166;
+      3'd1:
+	  _theResult___fst_sfd__h304683 =
+	      CASE_guard96060_0b0_theResult___snd04083_BITS__ETC__q167;
+      3'd2:
+	  _theResult___fst_sfd__h304683 =
+	      IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6641;
+      3'd3:
+	  _theResult___fst_sfd__h304683 =
+	      IF_IF_IF_resWire_wget__410_BITS_67_TO_57_416_E_ETC___d6643;
+      3'd4: _theResult___fst_sfd__h304683 = _theResult___snd__h304083[56:34];
+      default: _theResult___fst_sfd__h304683 = 23'd0;
+    endcase
+  end
+  always@(fpu_div64_fState_S4$D_OUT)
+  begin
+    case (fpu_div64_fState_S4$D_OUT[68:66])
+      3'd2, 3'd3:
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_68_TO_66_2_ETC__q168 =
+	      fpu_div64_fState_S4$D_OUT[65];
+      default: CASE_fpu_div64_fState_S4D_OUT_BITS_68_TO_66_2_ETC__q168 =
+		   fpu_div64_fState_S4$D_OUT[68:66] == 3'd4 &&
+		   fpu_div64_fState_S4$D_OUT[65];
+    endcase
+  end
+  always@(fpu_div64_fState_S4$D_OUT or
+	  IF_0b0_CONCAT_NOT_fpu_div64_fState_S4_first__4_ETC___d980)
+  begin
+    case (fpu_div64_fState_S4$D_OUT[68:66])
+      3'd2:
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_68_TO_66_2_ETC__q169 =
+	      (fpu_div64_fState_S4$D_OUT[1:0] == 2'b0 ||
+	       fpu_div64_fState_S4$D_OUT[65]) ?
+		fpu_div64_fState_S4$D_OUT[64:2] :
+		IF_0b0_CONCAT_NOT_fpu_div64_fState_S4_first__4_ETC___d980;
+      3'd3:
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_68_TO_66_2_ETC__q169 =
+	      (fpu_div64_fState_S4$D_OUT[1:0] == 2'b0) ?
+		fpu_div64_fState_S4$D_OUT[64:2] :
+		(fpu_div64_fState_S4$D_OUT[65] ?
+		   IF_0b0_CONCAT_NOT_fpu_div64_fState_S4_first__4_ETC___d980 :
+		   fpu_div64_fState_S4$D_OUT[64:2]);
+      3'd4:
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_68_TO_66_2_ETC__q169 =
+	      fpu_div64_fState_S4$D_OUT[64:2];
+      default: CASE_fpu_div64_fState_S4D_OUT_BITS_68_TO_66_2_ETC__q169 =
+		   63'd0;
+    endcase
+  end
+  always@(fpu_div64_fState_S4$D_OUT)
+  begin
+    case (fpu_div64_fState_S4$D_OUT[1:0])
+      2'b0, 2'b01, 2'b10:
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q170 =
+	      fpu_div64_fState_S4$D_OUT[65];
+      2'd3:
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q170 =
+	      fpu_div64_fState_S4$D_OUT[1:0] == 2'b11 &&
+	      fpu_div64_fState_S4$D_OUT[65];
+    endcase
+  end
+  always@(fpu_div64_fState_S4$D_OUT or
+	  IF_0b0_CONCAT_NOT_fpu_div64_fState_S4_first__4_ETC___d980)
+  begin
+    case (fpu_div64_fState_S4$D_OUT[1:0])
+      2'b0, 2'b01:
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q171 =
+	      fpu_div64_fState_S4$D_OUT[64:2];
+      2'b10:
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q171 =
+	      fpu_div64_fState_S4$D_OUT[2] ?
+		IF_0b0_CONCAT_NOT_fpu_div64_fState_S4_first__4_ETC___d980 :
+		fpu_div64_fState_S4$D_OUT[64:2];
+      2'b11:
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q171 =
+	      IF_0b0_CONCAT_NOT_fpu_div64_fState_S4_first__4_ETC___d980;
+    endcase
+  end
+  always@(fpu_div64_fState_S4$D_OUT or
+	  IF_0b0_CONCAT_NOT_fpu_div64_fState_S4_first__4_ETC___d980)
+  begin
+    case (fpu_div64_fState_S4$D_OUT[1:0])
+      2'd0: CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0_0_ETC__q172 = 63'd0;
+      2'b01, 2'b10, 2'b11:
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0_0_ETC__q172 =
+	      IF_0b0_CONCAT_NOT_fpu_div64_fState_S4_first__4_ETC___d980;
+    endcase
+  end
+  always@(fpu_div64_fState_S4$D_OUT or
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_68_TO_66_2_ETC__q168 or
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_68_TO_66_2_ETC__q169 or
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q170 or
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q171 or
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0_0_ETC__q172)
+  begin
+    case (fpu_div64_fState_S4$D_OUT[68:66])
+      3'd0:
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_68_TO_66_0_ETC__q173 =
+	      { CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q170,
+		CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q171 };
+      3'd1:
+	  CASE_fpu_div64_fState_S4D_OUT_BITS_68_TO_66_0_ETC__q173 =
+	      (fpu_div64_fState_S4$D_OUT[1:0] == 2'b0) ?
+		fpu_div64_fState_S4$D_OUT[65:2] :
+		{ (fpu_div64_fState_S4$D_OUT[1:0] == 2'b01 ||
+		   fpu_div64_fState_S4$D_OUT[1:0] == 2'b10 ||
+		   fpu_div64_fState_S4$D_OUT[1:0] == 2'b11) &&
+		  fpu_div64_fState_S4$D_OUT[65],
+		  CASE_fpu_div64_fState_S4D_OUT_BITS_1_TO_0_0_0_ETC__q172 };
+      default: CASE_fpu_div64_fState_S4D_OUT_BITS_68_TO_66_0_ETC__q173 =
+		   { CASE_fpu_div64_fState_S4D_OUT_BITS_68_TO_66_2_ETC__q168,
+		     CASE_fpu_div64_fState_S4D_OUT_BITS_68_TO_66_2_ETC__q169 };
+    endcase
+  end
+  always@(fpu_div64_fState_S3$D_OUT)
+  begin
+    case (fpu_div64_fState_S3$D_OUT[124:122])
+      3'd0, 3'd1, 3'd2, 3'd3:
+	  CASE_fpu_div64_fState_S3D_OUT_BITS_124_TO_122_ETC__q174 =
+	      fpu_div64_fState_S3$D_OUT[121];
+      default: CASE_fpu_div64_fState_S3D_OUT_BITS_124_TO_122_ETC__q174 =
+		   fpu_div64_fState_S3$D_OUT[124:122] == 3'd4 &&
+		   fpu_div64_fState_S3$D_OUT[121];
+    endcase
+  end
+  always@(fpu_div64_fState_S3$D_OUT)
+  begin
+    case (fpu_div64_fState_S3$D_OUT[124:122])
+      3'd0, 3'd1:
+	  CASE_fpu_div64_fState_S3D_OUT_BITS_124_TO_122_ETC__q175 =
+	      63'h7FF0000000000000;
+      3'd2:
+	  CASE_fpu_div64_fState_S3D_OUT_BITS_124_TO_122_ETC__q175 =
+	      fpu_div64_fState_S3$D_OUT[121] ?
+		63'h7FEFFFFFFFFFFFFF :
+		63'h7FF0000000000000;
+      3'd3:
+	  CASE_fpu_div64_fState_S3D_OUT_BITS_124_TO_122_ETC__q175 =
+	      fpu_div64_fState_S3$D_OUT[121] ?
+		63'h7FF0000000000000 :
+		63'h7FEFFFFFFFFFFFFF;
+      3'd4:
+	  CASE_fpu_div64_fState_S3D_OUT_BITS_124_TO_122_ETC__q175 =
+	      63'h7FEFFFFFFFFFFFFF;
+      default: CASE_fpu_div64_fState_S3D_OUT_BITS_124_TO_122_ETC__q175 =
 		   63'd0;
     endcase
   end
   always@(iFifo$D_OUT or
-	  IF_iFifo_first__288_BIT_201_310_THEN_IF_iFifo__ETC___d2039 or
-	  IF_iFifo_first__288_BIT_136_815_THEN_IF_iFifo__ETC___d3521 or
-	  IF_iFifo_first__288_BITS_102_TO_95_816_EQ_255__ETC___d3569)
+	  IF_iFifo_first__087_BIT_201_115_THEN_IF_iFifo__ETC___d3848 or
+	  IF_iFifo_first__087_BIT_136_624_THEN_IF_iFifo__ETC___d5330 or
+	  IF_iFifo_first__087_BITS_102_TO_95_625_EQ_255__ETC___d5378)
   begin
     case (iFifo$D_OUT[3:0])
       4'd0:
-	  CASE_iFifoD_OUT_BITS_3_TO_0_0_IF_iFifo_first__ETC__q149 =
-	      IF_iFifo_first__288_BIT_136_815_THEN_IF_iFifo__ETC___d3521;
+	  CASE_iFifoD_OUT_BITS_3_TO_0_0_IF_iFifo_first__ETC__q176 =
+	      IF_iFifo_first__087_BIT_136_624_THEN_IF_iFifo__ETC___d5330;
       4'd1:
-	  CASE_iFifoD_OUT_BITS_3_TO_0_0_IF_iFifo_first__ETC__q149 =
+	  CASE_iFifoD_OUT_BITS_3_TO_0_0_IF_iFifo_first__ETC__q176 =
 	      iFifo$D_OUT[136] ?
-		IF_iFifo_first__288_BITS_102_TO_95_816_EQ_255__ETC___d3569 :
+		IF_iFifo_first__087_BITS_102_TO_95_625_EQ_255__ETC___d5378 :
 		{ iFifo$D_OUT[136] || !iFifo$D_OUT[135],
 		  iFifo$D_OUT[134:72] };
-      default: CASE_iFifoD_OUT_BITS_3_TO_0_0_IF_iFifo_first__ETC__q149 =
-		   IF_iFifo_first__288_BIT_201_310_THEN_IF_iFifo__ETC___d2039;
+      default: CASE_iFifoD_OUT_BITS_3_TO_0_0_IF_iFifo_first__ETC__q176 =
+		   IF_iFifo_first__087_BIT_201_115_THEN_IF_iFifo__ETC___d3848;
     endcase
   end
   always@(iFifo$D_OUT or
-	  IF_iFifo_first__288_BIT_136_815_THEN_IF_iFifo__ETC___d3521)
+	  IF_iFifo_first__087_BIT_136_624_THEN_IF_iFifo__ETC___d5330)
   begin
     case (iFifo$D_OUT[3:0])
       4'd0, 4'd1:
-	  CASE_iFifoD_OUT_BITS_3_TO_0_0_460718241880001_ETC__q150 =
+	  CASE_iFifoD_OUT_BITS_3_TO_0_0_460718241880001_ETC__q177 =
 	      64'h3FF0000000000000;
-      default: CASE_iFifoD_OUT_BITS_3_TO_0_0_460718241880001_ETC__q150 =
-		   IF_iFifo_first__288_BIT_136_815_THEN_IF_iFifo__ETC___d3521;
+      default: CASE_iFifoD_OUT_BITS_3_TO_0_0_460718241880001_ETC__q177 =
+		   IF_iFifo_first__087_BIT_136_624_THEN_IF_iFifo__ETC___d5330;
     endcase
   end
+  always@(fpu_sqr64_fState_S4$D_OUT)
+  begin
+    case (fpu_sqr64_fState_S4$D_OUT[68:66])
+      3'd2, 3'd3:
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_68_TO_66_2_ETC__q178 =
+	      fpu_sqr64_fState_S4$D_OUT[65];
+      default: CASE_fpu_sqr64_fState_S4D_OUT_BITS_68_TO_66_2_ETC__q178 =
+		   fpu_sqr64_fState_S4$D_OUT[68:66] == 3'd4 &&
+		   fpu_sqr64_fState_S4$D_OUT[65];
+    endcase
+  end
+  always@(fpu_sqr64_fState_S4$D_OUT or
+	  IF_0b0_CONCAT_NOT_fpu_sqr64_fState_S4_first__6_ETC___d1724)
+  begin
+    case (fpu_sqr64_fState_S4$D_OUT[68:66])
+      3'd2:
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_68_TO_66_2_ETC__q179 =
+	      (fpu_sqr64_fState_S4$D_OUT[1:0] == 2'b0 ||
+	       fpu_sqr64_fState_S4$D_OUT[65]) ?
+		fpu_sqr64_fState_S4$D_OUT[64:2] :
+		IF_0b0_CONCAT_NOT_fpu_sqr64_fState_S4_first__6_ETC___d1724;
+      3'd3:
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_68_TO_66_2_ETC__q179 =
+	      (fpu_sqr64_fState_S4$D_OUT[1:0] == 2'b0) ?
+		fpu_sqr64_fState_S4$D_OUT[64:2] :
+		(fpu_sqr64_fState_S4$D_OUT[65] ?
+		   IF_0b0_CONCAT_NOT_fpu_sqr64_fState_S4_first__6_ETC___d1724 :
+		   fpu_sqr64_fState_S4$D_OUT[64:2]);
+      3'd4:
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_68_TO_66_2_ETC__q179 =
+	      fpu_sqr64_fState_S4$D_OUT[64:2];
+      default: CASE_fpu_sqr64_fState_S4D_OUT_BITS_68_TO_66_2_ETC__q179 =
+		   63'd0;
+    endcase
+  end
+  always@(fpu_sqr64_fState_S4$D_OUT)
+  begin
+    case (fpu_sqr64_fState_S4$D_OUT[1:0])
+      2'b0, 2'b01, 2'b10:
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q180 =
+	      fpu_sqr64_fState_S4$D_OUT[65];
+      2'd3:
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q180 =
+	      fpu_sqr64_fState_S4$D_OUT[1:0] == 2'b11 &&
+	      fpu_sqr64_fState_S4$D_OUT[65];
+    endcase
+  end
+  always@(fpu_sqr64_fState_S4$D_OUT or
+	  IF_0b0_CONCAT_NOT_fpu_sqr64_fState_S4_first__6_ETC___d1724)
+  begin
+    case (fpu_sqr64_fState_S4$D_OUT[1:0])
+      2'b0, 2'b01:
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q181 =
+	      fpu_sqr64_fState_S4$D_OUT[64:2];
+      2'b10:
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q181 =
+	      fpu_sqr64_fState_S4$D_OUT[2] ?
+		IF_0b0_CONCAT_NOT_fpu_sqr64_fState_S4_first__6_ETC___d1724 :
+		fpu_sqr64_fState_S4$D_OUT[64:2];
+      2'b11:
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q181 =
+	      IF_0b0_CONCAT_NOT_fpu_sqr64_fState_S4_first__6_ETC___d1724;
+    endcase
+  end
+  always@(fpu_sqr64_fState_S4$D_OUT or
+	  IF_0b0_CONCAT_NOT_fpu_sqr64_fState_S4_first__6_ETC___d1724)
+  begin
+    case (fpu_sqr64_fState_S4$D_OUT[1:0])
+      2'd0: CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0_0_ETC__q182 = 63'd0;
+      2'b01, 2'b10, 2'b11:
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0_0_ETC__q182 =
+	      IF_0b0_CONCAT_NOT_fpu_sqr64_fState_S4_first__6_ETC___d1724;
+    endcase
+  end
+  always@(fpu_sqr64_fState_S4$D_OUT or
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_68_TO_66_2_ETC__q178 or
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_68_TO_66_2_ETC__q179 or
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q180 or
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q181 or
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0_0_ETC__q182)
+  begin
+    case (fpu_sqr64_fState_S4$D_OUT[68:66])
+      3'd0:
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_68_TO_66_0_ETC__q183 =
+	      { CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q180,
+		CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0b0_ETC__q181 };
+      3'd1:
+	  CASE_fpu_sqr64_fState_S4D_OUT_BITS_68_TO_66_0_ETC__q183 =
+	      (fpu_sqr64_fState_S4$D_OUT[1:0] == 2'b0) ?
+		fpu_sqr64_fState_S4$D_OUT[65:2] :
+		{ (fpu_sqr64_fState_S4$D_OUT[1:0] == 2'b01 ||
+		   fpu_sqr64_fState_S4$D_OUT[1:0] == 2'b10 ||
+		   fpu_sqr64_fState_S4$D_OUT[1:0] == 2'b11) &&
+		  fpu_sqr64_fState_S4$D_OUT[65],
+		  CASE_fpu_sqr64_fState_S4D_OUT_BITS_1_TO_0_0_0_ETC__q182 };
+      default: CASE_fpu_sqr64_fState_S4D_OUT_BITS_68_TO_66_0_ETC__q183 =
+		   { CASE_fpu_sqr64_fState_S4D_OUT_BITS_68_TO_66_2_ETC__q178,
+		     CASE_fpu_sqr64_fState_S4D_OUT_BITS_68_TO_66_2_ETC__q179 };
+    endcase
+  end
+
+  // handling of inlined registers
+
+  always@(posedge CLK)
+  begin
+    if (RST_N == `BSV_RESET_VALUE)
+      begin
+        crg_done <= `BSV_ASSIGNMENT_DELAY 1'd0;
+	crg_done_1 <= `BSV_ASSIGNMENT_DELAY 1'd0;
+	rg_busy <= `BSV_ASSIGNMENT_DELAY 1'd0;
+	rg_busy_1 <= `BSV_ASSIGNMENT_DELAY 1'd0;
+      end
+    else
+      begin
+        if (crg_done$EN) crg_done <= `BSV_ASSIGNMENT_DELAY crg_done$D_IN;
+	if (crg_done_1$EN)
+	  crg_done_1 <= `BSV_ASSIGNMENT_DELAY crg_done_1$D_IN;
+	if (rg_busy$EN) rg_busy <= `BSV_ASSIGNMENT_DELAY rg_busy$D_IN;
+	if (rg_busy_1$EN) rg_busy_1 <= `BSV_ASSIGNMENT_DELAY rg_busy_1$D_IN;
+      end
+    if (rg_b$EN) rg_b <= `BSV_ASSIGNMENT_DELAY rg_b$D_IN;
+    if (rg_d$EN) rg_d <= `BSV_ASSIGNMENT_DELAY rg_d$D_IN;
+    if (rg_index$EN) rg_index <= `BSV_ASSIGNMENT_DELAY rg_index$D_IN;
+    if (rg_index_1$EN) rg_index_1 <= `BSV_ASSIGNMENT_DELAY rg_index_1$D_IN;
+    if (rg_q$EN) rg_q <= `BSV_ASSIGNMENT_DELAY rg_q$D_IN;
+    if (rg_r$EN) rg_r <= `BSV_ASSIGNMENT_DELAY rg_r$D_IN;
+    if (rg_r_1$EN) rg_r_1 <= `BSV_ASSIGNMENT_DELAY rg_r_1$D_IN;
+    if (rg_res$EN) rg_res <= `BSV_ASSIGNMENT_DELAY rg_res$D_IN;
+    if (rg_s$EN) rg_s <= `BSV_ASSIGNMENT_DELAY rg_s$D_IN;
+  end
+
+  // synopsys translate_off
+  `ifdef BSV_NO_INITIAL_BLOCKS
+  `else // not BSV_NO_INITIAL_BLOCKS
+  initial
+  begin
+    crg_done = 1'h0;
+    crg_done_1 = 1'h0;
+    rg_b = 116'hAAAAAAAAAAAAAAAAAAAAAAAAAAAAA;
+    rg_busy = 1'h0;
+    rg_busy_1 = 1'h0;
+    rg_d = 58'h2AAAAAAAAAAAAAA;
+    rg_index = 6'h2A;
+    rg_index_1 = 6'h2A;
+    rg_q = 58'h2AAAAAAAAAAAAAA;
+    rg_r = 116'hAAAAAAAAAAAAAAAAAAAAAAAAAAAAA;
+    rg_r_1 = 116'hAAAAAAAAAAAAAAAAAAAAAAAAAAAAA;
+    rg_res = 117'h0AAAAAAAAAAAAAAAAAAAAAAAAAAAAA;
+    rg_s = 116'hAAAAAAAAAAAAAAAAAAAAAAAAAAAAA;
+  end
+  `endif // BSV_NO_INITIAL_BLOCKS
+  // synopsys translate_on
+
+  // handling of system tasks
+
+  // synopsys translate_off
+  always@(negedge CLK)
+  begin
+    #0;
+    if (RST_N != `BSV_RESET_VALUE)
+      if (fpu_div64_fResult_S5$EMPTY_N && fpu_madd_fResult_S9$EMPTY_N)
+	$display("Error: \"../../src_Core/Core/FPU.bsv\", line 109, column 29: (R0001)\n  Mutually exclusive rules (from the ME sets [RL_getResDiv] and\n  [RL_getResMAdd] ) fired in the same clock cycle.\n");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (fpu_div64_fResult_S5$EMPTY_N && fpu_sqr64_fResult_S5$EMPTY_N)
+	$display("Error: \"../../src_Core/Core/FPU.bsv\", line 109, column 29: (R0001)\n  Mutually exclusive rules (from the ME sets [RL_getResDiv] and [RL_getResSqr]\n  ) fired in the same clock cycle.\n");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (fpu_sqr64_fResult_S5$EMPTY_N && fpu_madd_fResult_S9$EMPTY_N)
+	$display("Error: \"../../src_Core/Core/FPU.bsv\", line 109, column 40: (R0001)\n  Mutually exclusive rules (from the ME sets [RL_getResSqr] and\n  [RL_getResMAdd] ) fired in the same clock cycle.\n");
+  end
+  // synopsys translate_on
 endmodule  // mkFPU
 

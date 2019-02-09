@@ -1416,14 +1416,7 @@ module mkCPU(CLK,
        MUX_imem_rg_priv$write_1__SEL_2,
        MUX_near_mem$imem_req_1__SEL_7,
        MUX_rg_epoch$write_1__SEL_1,
-       MUX_rg_state$write_1__SEL_1,
-       MUX_rg_state$write_1__SEL_2,
-       MUX_rg_state$write_1__SEL_3,
        MUX_rg_state$write_1__SEL_5,
-       MUX_rg_state$write_1__SEL_6,
-       MUX_rg_state$write_1__SEL_7,
-       MUX_rg_state$write_1__SEL_8,
-       MUX_rg_state$write_1__SEL_9,
        MUX_stage1_rg_full$write_1__VAL_2,
        MUX_stage2_rg_full$write_1__VAL_2,
        MUX_stageD_rg_full$write_1__VAL_2;
@@ -1716,7 +1709,6 @@ module mkCPU(CLK,
        csr_regfile_read_misa__1_BIT_2_265_AND_stageD__ETC___d1349,
        csr_regfile_read_mstatus__4_BITS_14_TO_13_6_EQ_ETC___d623,
        epoch__h23850,
-       gpr_regfile_RDY_server_reset_request_put__756__ETC___d1774,
        near_mem_imem_pc_BITS_31_TO_2_EQ_imem_rg_pc_BI_ETC___d8,
        near_mem_imem_pc_EQ_imem_rg_pc_PLUS_2_9_623_OR_ETC___d1656,
        near_mem_imem_pc_EQ_imem_rg_pc_PLUS_2_9_623_OR_ETC___d1658,
@@ -2532,12 +2524,19 @@ module mkCPU(CLK,
   assign WILL_FIRE_RL_rl_stage2_nonpipe = CAN_FIRE_RL_rl_stage2_nonpipe ;
 
   // rule RL_rl_stage1_CSRR_W
-  assign CAN_FIRE_RL_rl_stage1_CSRR_W = MUX_rg_state$write_1__SEL_1 ;
-  assign WILL_FIRE_RL_rl_stage1_CSRR_W = MUX_rg_state$write_1__SEL_1 ;
+  assign CAN_FIRE_RL_rl_stage1_CSRR_W =
+	     rg_state_2_EQ_2_833_AND_NOT_rg_halt_811_812_AN_ETC___d2058 &&
+	     IF_stage1_rg_stage_input_06_BIT_270_07_EQ_rg_e_ETC___d878 ==
+	     4'd3 ;
+  assign WILL_FIRE_RL_rl_stage1_CSRR_W = CAN_FIRE_RL_rl_stage1_CSRR_W ;
 
   // rule RL_rl_stage1_CSRR_S_or_C
-  assign CAN_FIRE_RL_rl_stage1_CSRR_S_or_C = MUX_rg_state$write_1__SEL_2 ;
-  assign WILL_FIRE_RL_rl_stage1_CSRR_S_or_C = MUX_rg_state$write_1__SEL_2 ;
+  assign CAN_FIRE_RL_rl_stage1_CSRR_S_or_C =
+	     rg_state_2_EQ_2_833_AND_NOT_rg_halt_811_812_AN_ETC___d2058 &&
+	     IF_stage1_rg_stage_input_06_BIT_270_07_EQ_rg_e_ETC___d878 ==
+	     4'd4 ;
+  assign WILL_FIRE_RL_rl_stage1_CSRR_S_or_C =
+	     CAN_FIRE_RL_rl_stage1_CSRR_S_or_C ;
 
   // rule RL_rl_stage1_restart_after_csrrx
   assign CAN_FIRE_RL_rl_stage1_restart_after_csrrx =
@@ -2553,8 +2552,10 @@ module mkCPU(CLK,
   assign WILL_FIRE_RL_rl_stage1_xRET = CAN_FIRE_RL_rl_stage1_xRET ;
 
   // rule RL_rl_stage1_FENCE_I
-  assign CAN_FIRE_RL_rl_stage1_FENCE_I = MUX_rg_state$write_1__SEL_6 ;
-  assign WILL_FIRE_RL_rl_stage1_FENCE_I = MUX_rg_state$write_1__SEL_6 ;
+  assign CAN_FIRE_RL_rl_stage1_FENCE_I =
+	     near_mem$RDY_server_fence_i_request_put &&
+	     rg_state_2_EQ_2_833_AND_NOT_rg_halt_811_812_AN_ETC___d2121 ;
+  assign WILL_FIRE_RL_rl_stage1_FENCE_I = CAN_FIRE_RL_rl_stage1_FENCE_I ;
 
   // rule RL_rl_finish_FENCE_I
   assign CAN_FIRE_RL_rl_finish_FENCE_I =
@@ -2563,8 +2564,10 @@ module mkCPU(CLK,
   assign WILL_FIRE_RL_rl_finish_FENCE_I = CAN_FIRE_RL_rl_finish_FENCE_I ;
 
   // rule RL_rl_stage1_FENCE
-  assign CAN_FIRE_RL_rl_stage1_FENCE = MUX_rg_state$write_1__SEL_7 ;
-  assign WILL_FIRE_RL_rl_stage1_FENCE = MUX_rg_state$write_1__SEL_7 ;
+  assign CAN_FIRE_RL_rl_stage1_FENCE =
+	     near_mem$RDY_server_fence_request_put &&
+	     rg_state_2_EQ_2_833_AND_NOT_rg_halt_811_812_AN_ETC___d2133 ;
+  assign WILL_FIRE_RL_rl_stage1_FENCE = CAN_FIRE_RL_rl_stage1_FENCE ;
 
   // rule RL_rl_finish_FENCE
   assign CAN_FIRE_RL_rl_finish_FENCE =
@@ -2580,8 +2583,14 @@ module mkCPU(CLK,
 	     CAN_FIRE_RL_rl_finish_SFENCE_VMA ;
 
   // rule RL_rl_stage1_WFI
-  assign CAN_FIRE_RL_rl_stage1_WFI = MUX_rg_state$write_1__SEL_9 ;
-  assign WILL_FIRE_RL_rl_stage1_WFI = MUX_rg_state$write_1__SEL_9 ;
+  assign CAN_FIRE_RL_rl_stage1_WFI =
+	     rg_state_2_EQ_2_833_AND_NOT_rg_halt_811_812_AN_ETC___d2058 &&
+	     IF_stage1_rg_stage_input_06_BIT_270_07_EQ_rg_e_ETC___d878 ==
+	     4'd11 &&
+	     (!stageF_rg_full ||
+	      near_mem$imem_valid &&
+	      near_mem_imem_pc_EQ_imem_rg_pc_PLUS_2_9_623_OR_ETC___d1658) ;
+  assign WILL_FIRE_RL_rl_stage1_WFI = CAN_FIRE_RL_rl_stage1_WFI ;
 
   // rule RL_rl_WFI_resume
   assign CAN_FIRE_RL_rl_WFI_resume =
@@ -2592,7 +2601,8 @@ module mkCPU(CLK,
   // rule RL_rl_reset_from_WFI
   assign CAN_FIRE_RL_rl_reset_from_WFI =
 	     rg_state == 4'd8 && f_reset_reqs$EMPTY_N ;
-  assign WILL_FIRE_RL_rl_reset_from_WFI = MUX_rg_state$write_1__SEL_3 ;
+  assign WILL_FIRE_RL_rl_reset_from_WFI =
+	     CAN_FIRE_RL_rl_reset_from_WFI && !WILL_FIRE_RL_rl_WFI_resume ;
 
   // rule RL_rl_stage1_trap
   assign CAN_FIRE_RL_rl_stage1_trap =
@@ -2633,11 +2643,16 @@ module mkCPU(CLK,
 	     (!stageF_rg_full ||
 	      near_mem$imem_valid &&
 	      near_mem_imem_pc_EQ_imem_rg_pc_PLUS_2_9_623_OR_ETC___d1658) ;
-  assign WILL_FIRE_RL_rl_stage1_SFENCE_VMA = MUX_rg_state$write_1__SEL_8 ;
+  assign WILL_FIRE_RL_rl_stage1_SFENCE_VMA =
+	     CAN_FIRE_RL_rl_stage1_SFENCE_VMA &&
+	     !WILL_FIRE_RL_imem_rl_fetch_next_32b ;
 
   // rule RL_rl_reset_start
   assign CAN_FIRE_RL_rl_reset_start =
-	     gpr_regfile_RDY_server_reset_request_put__756__ETC___d1774 &&
+	     gpr_regfile$RDY_server_reset_request_put &&
+	     fpr_regfile$RDY_server_reset_request_put &&
+	     near_mem$RDY_server_reset_request_put &&
+	     csr_regfile_RDY_server_reset_request_put__759__ETC___d1771 &&
 	     rg_state == 4'd0 ;
   assign WILL_FIRE_RL_rl_reset_start = CAN_FIRE_RL_rl_reset_start ;
 
@@ -2748,16 +2763,6 @@ module mkCPU(CLK,
 	     IF_NOT_rg_halt_811_812_AND_NOT_csr_regfile_int_ETC___d2003 &&
 	     stage1_rg_full_05_AND_NOT_stage1_rg_stage_inpu_ETC___d2012 &&
 	     !IF_IF_stage1_rg_stage_input_06_BITS_151_TO_145_ETC___d1250 ;
-  assign MUX_rg_state$write_1__SEL_1 =
-	     rg_state_2_EQ_2_833_AND_NOT_rg_halt_811_812_AN_ETC___d2058 &&
-	     IF_stage1_rg_stage_input_06_BIT_270_07_EQ_rg_e_ETC___d878 ==
-	     4'd3 ;
-  assign MUX_rg_state$write_1__SEL_2 =
-	     rg_state_2_EQ_2_833_AND_NOT_rg_halt_811_812_AN_ETC___d2058 &&
-	     IF_stage1_rg_stage_input_06_BIT_270_07_EQ_rg_e_ETC___d878 ==
-	     4'd4 ;
-  assign MUX_rg_state$write_1__SEL_3 =
-	     CAN_FIRE_RL_rl_reset_from_WFI && !WILL_FIRE_RL_rl_WFI_resume ;
   assign MUX_rg_state$write_1__SEL_5 =
 	     WILL_FIRE_RL_rl_stage1_trap || WILL_FIRE_RL_rl_WFI_resume ||
 	     WILL_FIRE_RL_rl_finish_SFENCE_VMA ||
@@ -2765,22 +2770,6 @@ module mkCPU(CLK,
 	     WILL_FIRE_RL_rl_finish_FENCE_I ||
 	     WILL_FIRE_RL_rl_stage1_restart_after_csrrx ||
 	     WILL_FIRE_RL_rl_reset_complete ;
-  assign MUX_rg_state$write_1__SEL_6 =
-	     near_mem$RDY_server_fence_i_request_put &&
-	     rg_state_2_EQ_2_833_AND_NOT_rg_halt_811_812_AN_ETC___d2121 ;
-  assign MUX_rg_state$write_1__SEL_7 =
-	     near_mem$RDY_server_fence_request_put &&
-	     rg_state_2_EQ_2_833_AND_NOT_rg_halt_811_812_AN_ETC___d2133 ;
-  assign MUX_rg_state$write_1__SEL_8 =
-	     CAN_FIRE_RL_rl_stage1_SFENCE_VMA &&
-	     !WILL_FIRE_RL_imem_rl_fetch_next_32b ;
-  assign MUX_rg_state$write_1__SEL_9 =
-	     rg_state_2_EQ_2_833_AND_NOT_rg_halt_811_812_AN_ETC___d2058 &&
-	     IF_stage1_rg_stage_input_06_BIT_270_07_EQ_rg_e_ETC___d878 ==
-	     4'd11 &&
-	     (!stageF_rg_full ||
-	      near_mem$imem_valid &&
-	      near_mem_imem_pc_EQ_imem_rg_pc_PLUS_2_9_623_OR_ETC___d1658) ;
   always@(stage1_rg_stage_input_BITS_231_TO_200__q22 or
 	  csr_regfile$read_csr or
 	  y__h26197 or
@@ -3141,8 +3130,8 @@ module mkCPU(CLK,
 	     WILL_FIRE_RL_rl_stage1_xRET ||
 	     WILL_FIRE_RL_rl_stage1_restart_after_csrrx ||
 	     WILL_FIRE_RL_rl_stage2_nonpipe ||
-	     WILL_FIRE_RL_stage1_rl_reset ||
-	     WILL_FIRE_RL_rl_reset_complete ;
+	     WILL_FIRE_RL_rl_reset_complete ||
+	     WILL_FIRE_RL_stage1_rl_reset ;
 
   // register stage1_rg_stage_input
   assign stage1_rg_stage_input$D_IN =
@@ -3189,8 +3178,8 @@ module mkCPU(CLK,
   endcase
   assign stage2_rg_full$EN =
 	     WILL_FIRE_RL_rl_pipe || WILL_FIRE_RL_rl_stage2_nonpipe ||
-	     WILL_FIRE_RL_stage2_rl_reset_begin ||
-	     WILL_FIRE_RL_rl_reset_complete ;
+	     WILL_FIRE_RL_rl_reset_complete ||
+	     WILL_FIRE_RL_stage2_rl_reset_begin ;
 
   // register stage2_rg_resetting
   assign stage2_rg_resetting$D_IN = WILL_FIRE_RL_stage2_rl_reset_begin ;
@@ -3249,8 +3238,8 @@ module mkCPU(CLK,
     default: stage3_rg_full$D_IN = 1'b0 /* unspecified value */ ;
   endcase
   assign stage3_rg_full$EN =
-	     WILL_FIRE_RL_rl_pipe || WILL_FIRE_RL_stage3_rl_reset ||
-	     WILL_FIRE_RL_rl_reset_complete ;
+	     WILL_FIRE_RL_rl_pipe || WILL_FIRE_RL_rl_reset_complete ||
+	     WILL_FIRE_RL_stage3_rl_reset ;
 
   // register stage3_rg_stage3
   assign stage3_rg_stage3$D_IN =
@@ -3325,8 +3314,8 @@ module mkCPU(CLK,
 	     WILL_FIRE_RL_rl_stage1_xRET ||
 	     WILL_FIRE_RL_rl_stage1_restart_after_csrrx ||
 	     WILL_FIRE_RL_rl_stage2_nonpipe ||
-	     WILL_FIRE_RL_stageD_rl_reset ||
-	     WILL_FIRE_RL_rl_reset_complete ;
+	     WILL_FIRE_RL_rl_reset_complete ||
+	     WILL_FIRE_RL_stageD_rl_reset ;
 
   // register stageF_rg_epoch
   always@(WILL_FIRE_RL_stageF_rl_reset or
@@ -3572,15 +3561,11 @@ module mkCPU(CLK,
 
   // submodule f_reset_reqs
   assign f_reset_reqs$ENQ = EN_hart0_server_reset_request_put ;
-  assign f_reset_reqs$DEQ =
-	     gpr_regfile_RDY_server_reset_request_put__756__ETC___d1774 &&
-	     rg_state == 4'd0 ;
+  assign f_reset_reqs$DEQ = CAN_FIRE_RL_rl_reset_start ;
   assign f_reset_reqs$CLR = 1'b0 ;
 
   // submodule f_reset_rsps
-  assign f_reset_rsps$ENQ =
-	     NOT_near_mem_imem_pc_BITS_31_TO_2_EQ_imem_rg_p_ETC___d1800 &&
-	     rg_state == 4'd1 ;
+  assign f_reset_rsps$ENQ = CAN_FIRE_RL_rl_reset_complete ;
   assign f_reset_rsps$DEQ = EN_hart0_server_reset_response_get ;
   assign f_reset_rsps$CLR = 1'b0 ;
 
@@ -3846,12 +3831,12 @@ module mkCPU(CLK,
 	      IF_stage1_rg_stage_input_06_BIT_270_07_EQ_rg_e_ETC___d968 ==
 	      3'd4) ;
   assign near_mem$EN_server_fence_i_request_put =
-	     MUX_rg_state$write_1__SEL_6 ;
+	     CAN_FIRE_RL_rl_stage1_FENCE_I ;
   assign near_mem$EN_server_fence_i_response_get =
 	     CAN_FIRE_RL_rl_finish_FENCE_I ;
-  assign near_mem$EN_server_fence_request_put = MUX_rg_state$write_1__SEL_7 ;
+  assign near_mem$EN_server_fence_request_put = CAN_FIRE_RL_rl_stage1_FENCE ;
   assign near_mem$EN_server_fence_response_get = CAN_FIRE_RL_rl_finish_FENCE ;
-  assign near_mem$EN_sfence_vma = MUX_rg_state$write_1__SEL_8 ;
+  assign near_mem$EN_sfence_vma = WILL_FIRE_RL_rl_stage1_SFENCE_VMA ;
   assign near_mem$EN_get_timer_interrupt_req_get =
 	     near_mem$RDY_get_timer_interrupt_req_get ;
   assign near_mem$EN_get_sw_interrupt_req_get =
@@ -4769,11 +4754,6 @@ module mkCPU(CLK,
 	      x_out_fbypass_rd__h8027 == stage1_rg_stage_input[134:130]) ?
 	       x_out_fbypass_rd_val__h8028 :
 	       rd_val__h11991 ;
-  assign gpr_regfile_RDY_server_reset_request_put__756__ETC___d1774 =
-	     gpr_regfile$RDY_server_reset_request_put &&
-	     fpr_regfile$RDY_server_reset_request_put &&
-	     near_mem$RDY_server_reset_request_put &&
-	     csr_regfile_RDY_server_reset_request_put__759__ETC___d1771 ;
   assign imm12__h12378 = { 4'd0, offset__h12250 } ;
   assign imm12__h12715 = { 5'd0, offset__h12657 } ;
   assign imm12__h14630 = { {6{imm6__h14628[5]}}, imm6__h14628 } ;
@@ -5456,13 +5436,6 @@ module mkCPU(CLK,
       default: x_out_trap_info_exc_code__h7625 = 4'd2;
     endcase
   end
-  always@(stage2_rg_stage2)
-  begin
-    case (stage2_rg_stage2[235:233])
-      3'd1, 3'd2, 3'd4: value__h7649 = stage2_rg_stage2[227:196];
-      default: value__h7649 = 32'd0;
-    endcase
-  end
   always@(stage2_rg_stage2 or stage2_fbox$word_snd)
   begin
     case (stage2_rg_stage2[235:233])
@@ -5474,8 +5447,8 @@ module mkCPU(CLK,
   always@(stage2_rg_stage2)
   begin
     case (stage2_rg_stage2[235:233])
-      3'd0, 3'd1, 3'd4: x_out_bypass_rd__h7879 = stage2_rg_stage2[232:228];
-      default: x_out_bypass_rd__h7879 = stage2_rg_stage2[232:228];
+      3'd1, 3'd2, 3'd4: value__h7649 = stage2_rg_stage2[227:196];
+      default: value__h7649 = 32'd0;
     endcase
   end
   always@(stage2_rg_stage2)
@@ -5485,6 +5458,13 @@ module mkCPU(CLK,
 	  x_out_data_to_stage3_rd__h7342 = stage2_rg_stage2[232:228];
       3'd2: x_out_data_to_stage3_rd__h7342 = 5'd0;
       default: x_out_data_to_stage3_rd__h7342 = stage2_rg_stage2[232:228];
+    endcase
+  end
+  always@(stage2_rg_stage2)
+  begin
+    case (stage2_rg_stage2[235:233])
+      3'd0, 3'd1, 3'd4: x_out_bypass_rd__h7879 = stage2_rg_stage2[232:228];
+      default: x_out_bypass_rd__h7879 = stage2_rg_stage2[232:228];
     endcase
   end
   always@(stage2_rg_stage2)
@@ -5520,15 +5500,6 @@ module mkCPU(CLK,
       default: x_out_bypass_rd_val__h7880 = _theResult___fst_rd_val__h7869;
     endcase
   end
-  always@(stage2_rg_stage2 or
-	  _theResult___snd_rd_val__h8019 or _theResult___snd_rd_val__h8013)
-  begin
-    case (stage2_rg_stage2[235:233])
-      3'd1, 3'd4:
-	  x_out_fbypass_rd_val__h8028 = _theResult___snd_rd_val__h8013;
-      default: x_out_fbypass_rd_val__h8028 = _theResult___snd_rd_val__h8019;
-    endcase
-  end
   always@(stage1_rg_stage_input)
   begin
     case (stage1_rg_stage_input[151:145])
@@ -5543,6 +5514,15 @@ module mkCPU(CLK,
 	  data_to_stage2_rd__h8322 = stage1_rg_stage_input[144:140];
       7'b1100011: data_to_stage2_rd__h8322 = 5'd0;
       default: data_to_stage2_rd__h8322 = stage1_rg_stage_input[144:140];
+    endcase
+  end
+  always@(stage2_rg_stage2 or
+	  _theResult___snd_rd_val__h8019 or _theResult___snd_rd_val__h8013)
+  begin
+    case (stage2_rg_stage2[235:233])
+      3'd1, 3'd4:
+	  x_out_fbypass_rd_val__h8028 = _theResult___snd_rd_val__h8013;
+      default: x_out_fbypass_rd_val__h8028 = _theResult___snd_rd_val__h8019;
     endcase
   end
   always@(stage2_rg_stage2 or
@@ -5568,13 +5548,13 @@ module mkCPU(CLK,
   begin
     case (stage2_rg_stage2[235:233])
       3'd1, 3'd2, 3'd4:
-	  IF_stage2_rg_stage2_06_BITS_235_TO_233_07_EQ_1_ETC___d157 =
-	      !near_mem$dmem_valid || near_mem$dmem_exc;
+	  IF_stage2_rg_stage2_06_BITS_235_TO_233_07_EQ_1_ETC___d167 =
+	      near_mem$dmem_valid && !near_mem$dmem_exc;
       3'd3:
-	  IF_stage2_rg_stage2_06_BITS_235_TO_233_07_EQ_1_ETC___d157 =
-	      !stage2_mbox$valid;
-      default: IF_stage2_rg_stage2_06_BITS_235_TO_233_07_EQ_1_ETC___d157 =
-		   !stage2_fbox$valid;
+	  IF_stage2_rg_stage2_06_BITS_235_TO_233_07_EQ_1_ETC___d167 =
+	      stage2_mbox$valid;
+      default: IF_stage2_rg_stage2_06_BITS_235_TO_233_07_EQ_1_ETC___d167 =
+		   stage2_fbox$valid;
     endcase
   end
   always@(stage2_rg_stage2 or
@@ -5583,13 +5563,13 @@ module mkCPU(CLK,
   begin
     case (stage2_rg_stage2[235:233])
       3'd1, 3'd2, 3'd4:
-	  IF_stage2_rg_stage2_06_BITS_235_TO_233_07_EQ_1_ETC___d167 =
-	      near_mem$dmem_valid && !near_mem$dmem_exc;
+	  IF_stage2_rg_stage2_06_BITS_235_TO_233_07_EQ_1_ETC___d157 =
+	      !near_mem$dmem_valid || near_mem$dmem_exc;
       3'd3:
-	  IF_stage2_rg_stage2_06_BITS_235_TO_233_07_EQ_1_ETC___d167 =
-	      stage2_mbox$valid;
-      default: IF_stage2_rg_stage2_06_BITS_235_TO_233_07_EQ_1_ETC___d167 =
-		   stage2_fbox$valid;
+	  IF_stage2_rg_stage2_06_BITS_235_TO_233_07_EQ_1_ETC___d157 =
+	      !stage2_mbox$valid;
+      default: IF_stage2_rg_stage2_06_BITS_235_TO_233_07_EQ_1_ETC___d157 =
+		   !stage2_fbox$valid;
     endcase
   end
   always@(stage2_rg_stage2 or
