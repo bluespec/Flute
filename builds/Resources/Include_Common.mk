@@ -34,7 +34,7 @@ all: compile  simulator
 # ================================================================
 # Search path for bsc for .bsv files
 
-CORE_DIRS = $(REPO)/src_Core/ISA:$(REPO)/src_Core/RegFiles:$(REPO)/src_Core/Core:$(REPO)/src_Core/Near_Mem_VM:$(REPO)/src_Core/Debug_Module:$(REPO)/src_Core/BSV_Additional_Libs
+CORE_DIRS = $(REPO)/src_Core/ISA:$(REPO)/src_Core/RegFiles:$(REPO)/src_Core/Core:$(REPO)/src_Core/Near_Mem_VM:$(REPO)/src_Core/PLIC:$(REPO)/src_Core/Debug_Module:$(REPO)/src_Core/BSV_Additional_Libs
 
 TESTBENCH_DIRS  = $(REPO)/src_Testbench/Top:$(REPO)/src_Testbench/SoC:$(REPO)/src_Testbench/Fabrics/AXI4
 
@@ -50,7 +50,7 @@ TOPMODULE = mkTop_HW_Side
 # bsc compilation flags
 
 BSC_COMPILATION_FLAGS += \
-	-keep-fires -aggressive-conditions -no-warn-action-shadowing -no-show-timestamps \
+	-keep-fires -aggressive-conditions -no-warn-action-shadowing -no-show-timestamps -check-assert \
 	-suppress-warnings G0020    \
 	+RTS -K128M -RTS  -show-range-conflict
 
