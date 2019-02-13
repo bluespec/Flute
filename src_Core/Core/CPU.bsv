@@ -105,6 +105,7 @@ typedef enum {CPU_RESET1,
 `endif
 	      CPU_RUNNING,          // Normal operation
 	      CPU_TRAP,
+	      CPU_TRAP_FETCH,       // To initiate IFetch after Stg1 or Stg2 traps
 	      CPU_CSRRX_RESTART,    // Restart pipe after a CSRRX instruction
 	      CPU_FENCE_I,          // While waiting for FENCE.I to complete in Near_Mem
 	      CPU_FENCE,            // While waiting for FENCE to complete in Near_Mem
@@ -725,23 +726,24 @@ module mkCPU (CPU_IFC);
       let tval     = stage2.out.trap_info.tval;
       let instr    = stage2.out.data_to_stage3.instr;
 
-      // Take trap
-      match {.next_pc,
-	     .new_mstatus,
-	     .mcause,
-	     .new_priv}    <- csr_regfile.csr_trap_actions (rg_cur_priv,    // from priv
-							    epc,
-							    False,          // interrupt_req
-							    exc_code,
-							    tval);
+      // Take trap, save trap information for next phase
+      let trap_info <- csr_regfile.csr_trap_actions (
+         rg_cur_priv,    // from priv
+	 epc,
+	 False,          // interrupt_req
+	 exc_code,
+	 tval);
+
+      let next_pc    = trap_info.pc;
+      let new_mstatus= trap_info.mstatus;
+      let mcause     = trap_info.mcause;
+      let new_priv   = trap_info.priv;
+
+      // Save new privilege and pc for ifetch
       rg_cur_priv <= new_priv;
+      rg_next_pc  <= next_pc;
+      rg_state    <= CPU_TRAP_FETCH;
 
-      let new_epoch <- fav_update_epoch;
-      let m_old_pc   = tagged Invalid;
-      fa_start_ifetch (new_epoch, m_old_pc, next_pc, new_priv);
-      stageF.set_full (True);
-
-      stageD.set_full (False);
       stage1.set_full (False);
       stage2.set_full (False);
 
@@ -769,7 +771,7 @@ module mkCPU (CPU_IFC);
       if (cur_verbosity != 0)
 	 $display ("    mcause:0x%0h  epc 0x%0h  tval:0x%0h  new pc 0x%0h, new mstatus 0x%0h",
 		   mcause, epc, tval, next_pc, new_mstatus);
-   endrule: rl_stage2_nonpipe
+   endrule : rl_stage2_nonpipe
 
    // ================================================================
    // Stage1: nonpipe special: CSRRW and CSRRWI
@@ -1272,26 +1274,26 @@ module mkCPU (CPU_IFC);
       let tval     = stage1.out.trap_info.tval;
       let instr    = stage1.out.data_to_stage2.instr;
 
-      // Take trap
-      match {.next_pc,
-	     .new_mstatus,
-	     .mcause,
-	     .new_priv}    <- csr_regfile.csr_trap_actions (rg_cur_priv,    // from priv
-							    epc,
-							    False,          // interrupt_req,
-							    exc_code,
-							    tval);
+      // Take trap, save trap information for next phase
+      let trap_info <- csr_regfile.csr_trap_actions (
+         rg_cur_priv, // from priv
+	 epc,
+	 False,       // interrupt_req
+	 exc_code,
+	 tval);
+
+      let next_pc    = trap_info.pc;
+      let new_mstatus= trap_info.mstatus;
+      let mcause     = trap_info.mcause;
+      let new_priv   = trap_info.priv;
+
+      // Save new privilege and pc for ifetch
       rg_cur_priv <= new_priv;
-
-      let new_epoch <- fav_update_epoch;
-      let m_old_pc   = tagged Invalid;
-      fa_start_ifetch (new_epoch, m_old_pc, next_pc, new_priv);
-      stageF.set_full (True);
-      rg_state <= CPU_RUNNING;
-
-      stageD.set_full (False);
+      rg_next_pc  <= next_pc;
+      rg_state <= CPU_TRAP_FETCH;
       stage1.set_full (False);
 
+      // Tandem Verification and Debug related actions
 `ifdef INCLUDE_TANDEM_VERIF
       // Trace data
       let trace_data = stage1.out.data_to_stage2.trace_data;
@@ -1324,7 +1326,20 @@ module mkCPU (CPU_IFC);
 		   mcycle, rg_cur_priv, mcause, epc);
 	 $display ("    tval:0x%0h  new pc:0x%0h  new mstatus:0x%0h", tval, next_pc, new_mstatus);
       end
-   endrule: rl_stage1_trap
+   endrule : rl_stage1_trap
+
+   // Initiate the instruction fetch from the new_pc on a trap. These actions
+   // were formerly part of the stage1 and stage2 trap rules. Separated to
+   // break a long timing path
+   rule rl_trap_fetch (rg_state == CPU_TRAP_FETCH);
+      let new_epoch <- fav_update_epoch;
+      let m_old_pc   = tagged Invalid;
+      fa_start_ifetch (new_epoch, m_old_pc, rg_next_pc, rg_cur_priv);
+      stageF.set_full (True);
+      rg_state <= CPU_RUNNING;
+
+      stageD.set_full (False);
+   endrule : rl_trap_fetch
 
    // ================================================================
    // Stage1: nonpipe trap: BREAK into Debug Mode when dcsr.ebreakm/s/u is set
@@ -1396,14 +1411,18 @@ module mkCPU (CPU_IFC);
       let instr = stage1.out.data_to_stage2.instr;
 
       // Take trap
-      match {.next_pc,
-	     .new_mstatus,
-	     .mcause,
-	     .new_priv}    <- csr_regfile.csr_trap_actions (rg_cur_priv,    // from priv
-							    epc,
-							    True,           // interrupt_req,
-							    exc_code,
-							    0);             // tval
+      let trap_info <- csr_regfile.csr_trap_actions (
+         rg_cur_priv,    // from priv
+	 epc,
+	 True,           // interrupt_req,
+	 exc_code,
+	 0);             // tval
+      let next_pc       = trap_info.pc; 
+      let new_mstatus   = trap_info.mstatus;
+      let mcause        = trap_info.mcause;
+      let new_priv      = trap_info.priv; 
+
+      // Save new priviege
       rg_cur_priv <= new_priv;
 
       // Just enq the next_pc into stage1,
