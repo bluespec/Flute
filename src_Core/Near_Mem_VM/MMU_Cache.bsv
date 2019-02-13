@@ -1678,8 +1678,8 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
 
       let req = Near_Mem_IO_Req {read_not_write: False,
 				 addr: zeroExtend (rg_pa),
-				 wdata: fabric_data,
-				 wstrb: fabric_strb};    // NOTE: not using size
+				 wdata: zeroExtend (fabric_data),
+				 wstrb: zeroExtend (fabric_strb) };    // NOTE: not using size
       f_near_mem_io_reqs.enq (req);
 
       rg_state <= CACHE_ST_AMO_RSP;
