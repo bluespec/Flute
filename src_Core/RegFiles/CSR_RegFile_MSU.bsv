@@ -168,9 +168,9 @@ interface CSR_RegFile_IFC;
    // Read dcsr.step
    method Bool read_dcsr_step ();
 
-   // Update 'cause' in DCSR
+   // Update 'cause' and 'priv' in DCSR
    (* always_ready *)
-   method Action write_dcsr_cause (DCSR_Cause cause);
+   method Action write_dcsr_cause_priv (DCSR_Cause  cause, Priv_Mode  priv);
 
 `endif
 
@@ -377,19 +377,21 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 
 `ifdef INCLUDE_GDB_CONTROL
       // rg_dpc  <= pc_reset_value;    // Should be set by GDB
-      rg_dcsr <= zeroExtend ({4'h4,    // xdebugver
-			      12'h0,   // reserved
-			      1'h1,    // ebreakm
-			      1'h0,    // reserved
-			      1'h1,    // ebreaks
-			      1'h1,    // ebreaku
-			      1'h0,    // stepie
-			      1'h0,    // stepcount
-			      1'h0,    // steptime
-			      3'h0,    // cause    // WARNING: 0 is non-standard
-			      3'h0,    // reserved
-			      1'h0,    // step
-			      2'h0}    // prv
+      rg_dcsr <= zeroExtend ({4'h4,    // [31:28]  xdebugver
+			      12'h0,   // [27:16]  reserved
+			      1'h1,    // [15]     ebreakm
+			      1'h0,    // [14]     reserved
+			      1'h1,    // [13]     ebreaks
+			      1'h1,    // [12]     ebreaku
+			      1'h0,    // [11]     stepie
+			      1'h0,    // [10]     stopcount
+			      1'h0,    // [9]      stoptime
+			      3'h0,    // [8:7]    cause    // WARNING: 0 is non-standard
+			      1'h0,    // [5]      reserved
+			      1'h1,    // [4]      mprven
+			      1'h0,    // [3]      nmip
+			      1'h0,    // [2]      step
+			      2'h3}    // [1:0]    prv (machine mode)
 			     );
 `endif
 
@@ -878,14 +880,17 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 
 `ifdef INCLUDE_GDB_CONTROL
 	       csr_addr_dcsr:       begin
-				       Bit #(32) new_dcsr = {// xdebugver: read-only
-							     rg_dcsr [31:28],
-							     // ebreakm/s/u, stepie, stopcount, stoptime
-							     wordxl [27:9],
-							     // cause: read-only
-							     rg_dcsr [8:6],
-							     // step, prv
-							     wordxl [5:0]};
+				       Bit #(32) new_dcsr
+				       = {rg_dcsr [31:28],   // xdebugver: read-only
+					  rg_dcsr [27:16],   // reserved
+					  wordxl  [15:12],   // ebreakm/s/u,
+					  wordxl  [11:9],    // stepie, stopcount, stoptime
+					  rg_dcsr [8:6],     // cause: read-only
+					  rg_dcsr [5],       // reserved
+					  wordxl  [4],       // mprvn
+					  rg_dcsr [3],       // nmip: read-only
+					  wordxl  [2],       // step
+					  wordxl  [1:0]};    // prv
 				       result   = zeroExtend (new_dcsr);
 				       rg_dcsr <= new_dcsr;
 				    end
@@ -1254,10 +1259,10 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
       return unpack (rg_dcsr [2]);
    endmethod
 
-   // Update 'cause' in DCSR
-   method Action write_dcsr_cause (DCSR_Cause cause);
+   // Update 'cause' and 'priv' in DCSR
+   method Action write_dcsr_cause_priv (DCSR_Cause  cause, Priv_Mode  priv);
       Bit #(3) b3 = pack (cause);
-      rg_dcsr <= { rg_dcsr [31:9], b3, rg_dcsr [5:0] };
+      rg_dcsr <= { rg_dcsr [31:9], b3, rg_dcsr [5:2], priv };
    endmethod
 
 `endif

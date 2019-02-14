@@ -1247,10 +1247,10 @@ module mkNear_Mem(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h1782;
-  reg [31 : 0] v__h1995;
-  reg [31 : 0] v__h1776;
-  reg [31 : 0] v__h1989;
+  reg [31 : 0] v__h1783;
+  reg [31 : 0] v__h2003;
+  reg [31 : 0] v__h1777;
+  reg [31 : 0] v__h1997;
   // synopsys translate_on
 
   // remaining internal signals
@@ -2055,25 +2055,25 @@ module mkNear_Mem(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset && NOT_cfg_verbosity_read_ULE_1_0___d11)
 	begin
-	  v__h1782 = $stime;
+	  v__h1783 = $stime;
 	  #0;
 	end
-    v__h1776 = v__h1782 / 32'd10;
+    v__h1777 = v__h1783 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset && NOT_cfg_verbosity_read_ULE_1_0___d11)
-	$display("%0d: Near_Mem.rl_reset", v__h1776);
+	$display("%0d: Near_Mem.rl_reset", v__h1777);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset_complete &&
 	  NOT_cfg_verbosity_read_ULE_1_0___d11)
 	begin
-	  v__h1995 = $stime;
+	  v__h2003 = $stime;
 	  #0;
 	end
-    v__h1989 = v__h1995 / 32'd10;
+    v__h1997 = v__h2003 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset_complete &&
 	  NOT_cfg_verbosity_read_ULE_1_0___d11)
-	$display("%0d: Near_Mem.rl_reset_complete", v__h1989);
+	$display("%0d: Near_Mem.rl_reset_complete", v__h1997);
   end
   // synopsys translate_on
 endmodule  // mkNear_Mem

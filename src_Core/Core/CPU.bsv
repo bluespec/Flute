@@ -233,8 +233,11 @@ module mkCPU (CPU_IFC);
    FIFOF #(Bool)  f_run_halt_reqs <- mkFIFOF;
    FIFOF #(Bool)  f_run_halt_rsps <- mkFIFOF;
 
-   Reg #(Bool)  rg_stop_req      <- mkReg (False);    // stop-request from debugger
-   Reg #(Bool)  rg_step_req      <- mkReg (False);    // step-request from dcsr.step
+   // Stop-request from debugger (e.g., GDB ^C or Dsharp 'stop')
+   Reg #(Bool) rg_stop_req <- mkReg (False);
+
+   // Count instrs after step-request from debugger (via dcsr.step)
+   Reg #(Bit #(1))  rg_step_count <- mkReg (0);
 
    // Debugger GPR read/write request/response
    FIFOF #(MemoryRequest  #(5,  XLEN)) f_gpr_reqs <- mkFIFOF1;
@@ -314,13 +317,14 @@ module mkCPU (CPU_IFC);
       actionvalue
 	 let new_epoch = rg_epoch + 1;
 	 rg_epoch     <= new_epoch;
+	 if (cfg_verbosity > 1)
+	    $display ("%0d: fav_update_epoch: %0d -> %0d", mcycle, rg_epoch, new_epoch);
 	 return new_epoch;
       endactionvalue
    endfunction
 
    // ================================================================
    // Feed a new PC into StageF (instruction fetch)
-   // Set rg_halt on debugger stop request or dcsr.step step request
 
    function Action fa_start_ifetch (Epoch epoch, Maybe #(WordXL)  m_old_pc,  WordXL  next_pc, Priv_Mode priv);
       action
@@ -338,36 +342,6 @@ module mkCPU (CPU_IFC);
 		     sstatus_SUM,
 		     mstatus_MXR,
 		     csr_regfile.read_satp);
-
-	 // Set rg_halt if requested by GDB (stop req, step req)
-	 Bool do_halt = False;
-
-`ifdef INCLUDE_GDB_CONTROL
-	 // Debugger stop-request
-	 if ((! do_halt) && rg_stop_req && (cur_verbosity != 0))
-	    $display ("    CPU.fa_start_ifetch: halting due to stop_req: PC = 0x%08h", next_pc);
-
-	 do_halt = (do_halt || rg_stop_req);
-
-	 // dcsr.step step-request
-	 if ((! do_halt) && rg_step_req && (cur_verbosity != 0))
-	    $display (" CPU.fa_start_ifetch: halting due to step req: PC = 0x%08h",
-		      next_pc);
-	 do_halt = (do_halt || rg_step_req);
-
-	 // If not halting now, and dcsr.step=1, set rg_step_req to cause a stop at next fetch
-	 if ((! do_halt) && (csr_regfile.read_dcsr_step)) begin
-	    rg_step_req <= True;
-	    if (cur_verbosity != 0)
-	       $display ("    CPU.fa_start_ifetch: dcsr.step=1; will stop at next fetch");
-	 end
-`endif
-
-	 if (do_halt) begin
-	    rg_halt <= True;
-	    if (cur_verbosity > 1)
-	       $display ("    CPU.fa_start_ifetch: rg_halt <= True");
-	 end
       endaction
    endfunction
 
@@ -488,8 +462,8 @@ module mkCPU (CPU_IFC);
 	 $display ("%0d: CPU.rl_reset_start", mcycle);
 
 `ifdef INCLUDE_GDB_CONTROL
-      rg_stop_req <= False;
-      rg_step_req <= False;
+      rg_stop_req   <= False;
+      rg_step_count <= 0;
 `endif
 
 `ifdef INCLUDE_TANDEM_VERIF
@@ -522,7 +496,7 @@ module mkCPU (CPU_IFC);
 	 $display ("%0d: CPU.reset_complete", mcycle);
 
 `ifdef INCLUDE_GDB_CONTROL
-      csr_regfile.write_dcsr_cause (DCSR_CAUSE_HALTREQ);
+      csr_regfile.write_dcsr_cause_priv (DCSR_CAUSE_HALTREQ, m_Priv_Mode);
       rg_state <= CPU_DEBUG_MODE;
 
       if (cur_verbosity != 0)
@@ -551,15 +525,54 @@ module mkCPU (CPU_IFC);
 				&& (stage2.out.ostatus == OSTATUS_EMPTY)
 				&& (stage1.out.ostatus == OSTATUS_NONPIPE)));
 
-   Bool halting = (rg_halt || mip_cmd_needed || interrupt_pending);
+   // Stage 1 contains an architectural (not mis-predicted) instruction
+   Bool stage1_has_arch_instr = (   (   (stage1.out.ostatus == OSTATUS_PIPE)
+				     && (stage1.out.control != CONTROL_DISCARD))
+				 || (stage1.out.ostatus == OSTATUS_NONPIPE));
+
+   // Debugger stop and step should only happen on architectural instructions
+`ifdef INCLUDE_GDB_CONTROL
+   Bool stop_step_halt = (   stage1_has_arch_instr
+			  && (   rg_stop_req
+			      || rg_step_count == 1));
+`else
+   Bool stop_step_halt = False;
+`endif
+
+   // Halting conditions
+   Bool halting = (stop_step_halt || mip_cmd_needed || interrupt_pending);
+   // Stage1 can halt only when actually contains an instruction and downstream is empty
    Bool stage1_halted = (   halting
 			 && (   (stage1.out.ostatus == OSTATUS_PIPE)
 			     || (stage1.out.ostatus == OSTATUS_NONPIPE))
 			 && (stage2.out.ostatus == OSTATUS_EMPTY)
 			 && (stage3.out.ostatus == OSTATUS_EMPTY));
-   Bool stage1_send_mip_cmd = stage1_halted && mip_cmd_needed;
+
+   // Stage1 halt reasons, in decreasing priority order
+   Bool stage1_send_mip_cmd   = stage1_halted && mip_cmd_needed;
    Bool stage1_take_interrupt = stage1_halted && (! mip_cmd_needed) && interrupt_pending;
-   Bool stage1_stop = stage1_halted && (! mip_cmd_needed) && (! interrupt_pending);
+   Bool stage1_stop           = stage1_halted && (! mip_cmd_needed) && (! interrupt_pending);
+
+   // ================================================================
+   // Every time an instruction finishes stage 1
+   //    (i.e., stage1.set_full () is invoked, and Stage 1 has an architectural instruction)
+   // this function checks if this is a 'stepped' instruction
+   //    (i.e., dcsr.step is set and rg_step_count == 0)
+   // If so, set rg_step_count <= 1 so the stage will halt on the next
+   // architectural instruction.
+
+   function Action fa_step_check;
+      action
+`ifdef INCLUDE_GDB_CONTROL
+	 if (   stage1_has_arch_instr
+	    && csr_regfile.read_dcsr_step
+	    && (rg_step_count == 0)) begin
+
+	    rg_step_count <= 1;
+	 end
+`endif
+      endaction
+   endfunction
 
    // ================================================================
 
@@ -705,7 +718,7 @@ module mkCPU (CPU_IFC);
 
       stage3.set_full (stage3_full);
       stage2.set_full (stage2_full);
-      stage1.set_full (stage1_full);
+      stage1.set_full (stage1_full);    fa_step_check;
       stageD.set_full (stageD_full);
       stageF.set_full (stageF_full);
    endrule: rl_pipe
@@ -959,7 +972,7 @@ module mkCPU (CPU_IFC);
       stageF.set_full (True);
 
       stageD.set_full (False);
-      stage1.set_full (False);
+      stage1.set_full (False);    fa_step_check;
 
       rg_state <= CPU_RUNNING;
       if (cur_verbosity > 1)
@@ -995,7 +1008,7 @@ module mkCPU (CPU_IFC);
       stageF.set_full (True);
 
       stageD.set_full (False);
-      stage1.set_full (False);
+      stage1.set_full (False);    fa_step_check;
 
       // Accounting
       csr_regfile.csr_minstret_incr;
@@ -1062,7 +1075,7 @@ module mkCPU (CPU_IFC);
       stageF.set_full (True);
 
       stageD.set_full (False);
-      stage1.set_full (False);
+      stage1.set_full (False);    fa_step_check;
 
       if (cur_verbosity > 1)
 	 $display ("    CPU.rl_finish_FENCE_I");
@@ -1116,7 +1129,7 @@ module mkCPU (CPU_IFC);
       stageF.set_full (True);
 
       stageD.set_full (False);
-      stage1.set_full (False);
+      stage1.set_full (False);    fa_step_check;
 
       if (cur_verbosity > 1)
 	 $display ("    CPU.rl_finish_FENCE");
@@ -1176,7 +1189,7 @@ module mkCPU (CPU_IFC);
       stageF.set_full (True);
 
       stageD.set_full (False);
-      stage1.set_full (False);
+      stage1.set_full (False);    fa_step_check;
 
       if (cur_verbosity > 1)
 	 $display ("    CPU.rl_finish_SFENCE_VMA");
@@ -1232,7 +1245,7 @@ module mkCPU (CPU_IFC);
       stageF.set_full (True);
 
       stageD.set_full (False);
-      stage1.set_full (False);
+      stage1.set_full (False);    fa_step_check;
    endrule: rl_WFI_resume
 
    // ----------------
@@ -1252,9 +1265,6 @@ module mkCPU (CPU_IFC);
 `else
    Bool break_into_Debug_Mode = False;
 `endif
-
-   let machine_mode_BREAK = (   (rg_cur_priv == m_Priv_Mode)
-			     && (stage1.out.trap_info.exc_code == exc_code_BREAKPOINT));
 
    rule rl_stage1_trap (   (   (rg_state == CPU_TRAP)
 			    || (   (rg_state == CPU_RUNNING)
@@ -1290,7 +1300,7 @@ module mkCPU (CPU_IFC);
       rg_state <= CPU_RUNNING;
 
       stageD.set_full (False);
-      stage1.set_full (False);
+      stage1.set_full (False);    fa_step_check;
 
 `ifdef INCLUDE_TANDEM_VERIF
       // Trace data
@@ -1347,7 +1357,7 @@ module mkCPU (CPU_IFC);
       if (cur_verbosity > 1)
 	 $display ("    Flushing caches");
 
-      csr_regfile.write_dcsr_cause (DCSR_CAUSE_EBREAK);
+      csr_regfile.write_dcsr_cause_priv (DCSR_CAUSE_EBREAK, rg_cur_priv);
       csr_regfile.write_dpc (pc);    // Where we'll resume on 'continue'
       rg_state <= CPU_GDB_PAUSING;
 
@@ -1447,9 +1457,7 @@ module mkCPU (CPU_IFC);
    // and stageD, stage1, stage2 and stage3 are empty
 
 `ifdef INCLUDE_GDB_CONTROL
-   rule rl_stage1_stop (   (rg_state== CPU_RUNNING)
-			&& stage1_stop
-			&& (rg_stop_req || rg_step_req));
+   rule rl_stage1_stop ((rg_state== CPU_RUNNING) && stage1_stop);
       if (cur_verbosity > 1) $display ("%0d:  CPU.rl_stage1_stop", mcycle);
 
       let pc    = stage1.out.data_to_stage2.pc;    // We'll retry this instruction on 'continue'
@@ -1461,17 +1469,16 @@ module mkCPU (CPU_IFC);
 		   mcycle, minstret, rg_cur_priv, pc, instr);
 	 fa_report_CPI;
       end
-      else begin
+      else
 	 $display ("%0d: CPU.rl_stop: Stop after single-step. PC = 0x%08h", mcycle, pc);
-      end
 
       DCSR_Cause cause= (rg_stop_req ? DCSR_CAUSE_HALTREQ : DCSR_CAUSE_STEP);
-      csr_regfile.write_dcsr_cause (cause);
+      csr_regfile.write_dcsr_cause_priv (cause, rg_cur_priv);
       csr_regfile.write_dpc (pc);    // We'll retry this instruction on 'continue'
-      rg_state    <= CPU_GDB_PAUSING;
-      rg_halt     <= False;
-      rg_stop_req <= False;
-      rg_step_req <= False;
+      rg_state      <= CPU_GDB_PAUSING;
+      rg_halt       <= False;
+      rg_stop_req   <= False;
+      rg_step_count <= 0;
 
       // Notify debugger that we've halted
       f_run_halt_rsps.enq (False);
