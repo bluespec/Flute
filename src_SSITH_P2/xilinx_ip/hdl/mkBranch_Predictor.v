@@ -8,11 +8,11 @@
 // Name                         I/O  size props
 // RDY_reset                      O     1 const
 // RDY_predict_req                O     1
-// predict_rsp                    O    32
+// predict_rsp                    O    64
 // CLK                            I     1 clock
 // RST_N                          I     1 reset
-// predict_req_pc                 I    32
-// predict_req_m_old_pc           I    33
+// predict_req_pc                 I    64
+// predict_req_m_old_pc           I    65
 // EN_reset                       I     1
 // EN_predict_req                 I     1
 //
@@ -53,16 +53,16 @@ module mkBranch_Predictor(CLK,
   output RDY_reset;
 
   // action method predict_req
-  input  [31 : 0] predict_req_pc;
-  input  [32 : 0] predict_req_m_old_pc;
+  input  [63 : 0] predict_req_pc;
+  input  [64 : 0] predict_req_m_old_pc;
   input  EN_predict_req;
   output RDY_predict_req;
 
   // value method predict_rsp
-  output [31 : 0] predict_rsp;
+  output [63 : 0] predict_rsp;
 
   // signals for module outputs
-  wire [31 : 0] predict_rsp;
+  wire [63 : 0] predict_rsp;
   wire RDY_predict_req, RDY_reset;
 
   // register cfg_verbosity
@@ -76,8 +76,8 @@ module mkBranch_Predictor(CLK,
   wire rg_index$EN;
 
   // register rg_pc
-  reg [31 : 0] rg_pc;
-  wire [31 : 0] rg_pc$D_IN;
+  reg [63 : 0] rg_pc;
+  wire [63 : 0] rg_pc$D_IN;
   wire rg_pc$EN;
 
   // register rg_resetting
@@ -85,7 +85,7 @@ module mkBranch_Predictor(CLK,
   wire rg_resetting$D_IN, rg_resetting$EN;
 
   // ports of submodule bramcore2
-  wire [53 : 0] bramcore2$DIA, bramcore2$DIB, bramcore2$DOA;
+  wire [117 : 0] bramcore2$DIA, bramcore2$DIB, bramcore2$DOA;
   wire [8 : 0] bramcore2$ADDRA, bramcore2$ADDRB;
   wire bramcore2$ENA, bramcore2$ENB, bramcore2$WEA, bramcore2$WEB;
 
@@ -98,7 +98,7 @@ module mkBranch_Predictor(CLK,
        WILL_FIRE_reset;
 
   // inputs to muxes for submodule ports
-  wire [53 : 0] MUX_bramcore2$b_put_3__VAL_1;
+  wire [117 : 0] MUX_bramcore2$b_put_3__VAL_1;
   wire [8 : 0] MUX_rg_index$write_1__VAL_2;
   wire MUX_bramcore2$b_put_1__SEL_1;
 
@@ -109,7 +109,7 @@ module mkBranch_Predictor(CLK,
   // synopsys translate_on
 
   // remaining internal signals
-  wire [31 : 0] pred_pc__h1011, pred_pc__h1012;
+  wire [63 : 0] pred_pc__h1011, pred_pc__h1012;
   wire NOT_cfg_verbosity_read_SLE_1___d6;
 
   // action method reset
@@ -124,14 +124,14 @@ module mkBranch_Predictor(CLK,
 
   // value method predict_rsp
   assign predict_rsp =
-	     (bramcore2$DOA[53] && bramcore2$DOA[52:31] == rg_pc[31:10]) ?
+	     (bramcore2$DOA[117] && bramcore2$DOA[116:63] == rg_pc[63:10]) ?
 	       pred_pc__h1011 :
 	       pred_pc__h1012 ;
 
   // submodule bramcore2
   BRAM2 #(.PIPELINED(1'd0),
 	  .ADDR_WIDTH(32'd9),
-	  .DATA_WIDTH(32'd54),
+	  .DATA_WIDTH(32'd118),
 	  .MEMSIZE(10'd512)) bramcore2(.CLKA(CLK),
 				       .CLKB(CLK),
 				       .ADDRA(bramcore2$ADDRA),
@@ -151,9 +151,9 @@ module mkBranch_Predictor(CLK,
 
   // inputs to muxes for submodule ports
   assign MUX_bramcore2$b_put_1__SEL_1 =
-	     EN_predict_req && predict_req_m_old_pc[32] ;
+	     EN_predict_req && predict_req_m_old_pc[64] ;
   assign MUX_bramcore2$b_put_3__VAL_1 =
-	     { 1'd1, predict_req_m_old_pc[31:10], predict_req_pc[31:1] } ;
+	     { 1'd1, predict_req_m_old_pc[63:10], predict_req_pc[63:1] } ;
   assign MUX_rg_index$write_1__VAL_2 = rg_index + 9'd1 ;
 
   // register cfg_verbosity
@@ -178,22 +178,23 @@ module mkBranch_Predictor(CLK,
 	     MUX_bramcore2$b_put_1__SEL_1 ?
 	       predict_req_m_old_pc[9:1] :
 	       rg_index ;
-  assign bramcore2$DIA = 54'h2AAAAAAAAAAAAA /* unspecified value */  ;
+  assign bramcore2$DIA =
+	     118'h2AAAAAAAAAAAAAAAAAAAAAAAAAAAAA /* unspecified value */  ;
   assign bramcore2$DIB =
 	     MUX_bramcore2$b_put_1__SEL_1 ?
 	       MUX_bramcore2$b_put_3__VAL_1 :
-	       54'd0 ;
+	       118'd0 ;
   assign bramcore2$WEA = 1'd0 ;
   assign bramcore2$WEB = 1'd1 ;
   assign bramcore2$ENA = EN_predict_req ;
   assign bramcore2$ENB =
-	     EN_predict_req && predict_req_m_old_pc[32] || rg_resetting ;
+	     EN_predict_req && predict_req_m_old_pc[64] || rg_resetting ;
 
   // remaining internal signals
   assign NOT_cfg_verbosity_read_SLE_1___d6 =
 	     (cfg_verbosity ^ 32'h80000000) > 32'h80000001 ;
-  assign pred_pc__h1011 = { bramcore2$DOA[30:0], 1'b0 } ;
-  assign pred_pc__h1012 = rg_pc + 32'd4 ;
+  assign pred_pc__h1011 = { bramcore2$DOA[62:0], 1'b0 } ;
+  assign pred_pc__h1012 = rg_pc + 64'd4 ;
 
   // handling of inlined registers
 
@@ -223,7 +224,7 @@ module mkBranch_Predictor(CLK,
   begin
     cfg_verbosity = 32'hAAAAAAAA;
     rg_index = 9'h0AA;
-    rg_pc = 32'hAAAAAAAA;
+    rg_pc = 64'hAAAAAAAAAAAAAAAA;
     rg_resetting = 1'h0;
   end
   `endif // BSV_NO_INITIAL_BLOCKS
@@ -240,11 +241,11 @@ module mkBranch_Predictor(CLK,
 	$display("    Branch_Predictor.predict_req (pc 0x%0h)",
 		 predict_req_pc);
     if (RST_N != `BSV_RESET_VALUE)
-      if (EN_predict_req && predict_req_m_old_pc[32] &&
+      if (EN_predict_req && predict_req_m_old_pc[64] &&
 	  NOT_cfg_verbosity_read_SLE_1___d6)
 	$display("        insert prediction [0x%0h] <= (from pc 0x%0h, to pc 0x%0h)",
 		 predict_req_m_old_pc[9:1],
-		 predict_req_m_old_pc[31:0],
+		 predict_req_m_old_pc[63:0],
 		 predict_req_pc);
     if (RST_N != `BSV_RESET_VALUE)
       if (rg_resetting && rg_index == 9'd511 &&

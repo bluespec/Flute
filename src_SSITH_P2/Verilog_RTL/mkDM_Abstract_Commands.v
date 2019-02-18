@@ -10,10 +10,10 @@
 // av_read                        O    32
 // RDY_av_read                    O     1 const
 // RDY_write                      O     1 const
-// hart0_gpr_mem_client_request_get  O    42 reg
+// hart0_gpr_mem_client_request_get  O    78 reg
 // RDY_hart0_gpr_mem_client_request_get  O     1 reg
 // RDY_hart0_gpr_mem_client_response_put  O     1 reg
-// hart0_csr_mem_client_request_get  O    49 reg
+// hart0_csr_mem_client_request_get  O    85 reg
 // RDY_hart0_csr_mem_client_request_get  O     1 reg
 // RDY_hart0_csr_mem_client_response_put  O     1 reg
 // CLK                            I     1 clock
@@ -21,8 +21,8 @@
 // av_read_dm_addr                I     7
 // write_dm_addr                  I     7
 // write_dm_word                  I    32
-// hart0_gpr_mem_client_response_put  I    32 reg
-// hart0_csr_mem_client_response_put  I    32 reg
+// hart0_gpr_mem_client_response_put  I    64 reg
+// hart0_csr_mem_client_response_put  I    64 reg
 // EN_reset                       I     1
 // EN_write                       I     1
 // EN_hart0_gpr_mem_client_response_put  I     1
@@ -101,28 +101,28 @@ module mkDM_Abstract_Commands(CLK,
 
   // actionvalue method hart0_gpr_mem_client_request_get
   input  EN_hart0_gpr_mem_client_request_get;
-  output [41 : 0] hart0_gpr_mem_client_request_get;
+  output [77 : 0] hart0_gpr_mem_client_request_get;
   output RDY_hart0_gpr_mem_client_request_get;
 
   // action method hart0_gpr_mem_client_response_put
-  input  [31 : 0] hart0_gpr_mem_client_response_put;
+  input  [63 : 0] hart0_gpr_mem_client_response_put;
   input  EN_hart0_gpr_mem_client_response_put;
   output RDY_hart0_gpr_mem_client_response_put;
 
   // actionvalue method hart0_csr_mem_client_request_get
   input  EN_hart0_csr_mem_client_request_get;
-  output [48 : 0] hart0_csr_mem_client_request_get;
+  output [84 : 0] hart0_csr_mem_client_request_get;
   output RDY_hart0_csr_mem_client_request_get;
 
   // action method hart0_csr_mem_client_response_put
-  input  [31 : 0] hart0_csr_mem_client_response_put;
+  input  [63 : 0] hart0_csr_mem_client_response_put;
   input  EN_hart0_csr_mem_client_response_put;
   output RDY_hart0_csr_mem_client_response_put;
 
   // signals for module outputs
   reg [31 : 0] av_read;
-  wire [48 : 0] hart0_csr_mem_client_request_get;
-  wire [41 : 0] hart0_gpr_mem_client_request_get;
+  wire [84 : 0] hart0_csr_mem_client_request_get;
+  wire [77 : 0] hart0_gpr_mem_client_request_get;
   wire RDY_av_read,
        RDY_hart0_csr_mem_client_request_get,
        RDY_hart0_csr_mem_client_response_put,
@@ -155,13 +155,18 @@ module mkDM_Abstract_Commands(CLK,
   reg [31 : 0] rg_data0$D_IN;
   wire rg_data0$EN;
 
+  // register rg_data1
+  reg [31 : 0] rg_data1;
+  reg [31 : 0] rg_data1$D_IN;
+  wire rg_data1$EN;
+
   // register rg_start_reg_access
   reg rg_start_reg_access;
   reg rg_start_reg_access$D_IN;
   wire rg_start_reg_access$EN;
 
   // ports of submodule f_hart0_csr_reqs
-  wire [48 : 0] f_hart0_csr_reqs$D_IN, f_hart0_csr_reqs$D_OUT;
+  wire [84 : 0] f_hart0_csr_reqs$D_IN, f_hart0_csr_reqs$D_OUT;
   wire f_hart0_csr_reqs$CLR,
        f_hart0_csr_reqs$DEQ,
        f_hart0_csr_reqs$EMPTY_N,
@@ -169,7 +174,7 @@ module mkDM_Abstract_Commands(CLK,
        f_hart0_csr_reqs$FULL_N;
 
   // ports of submodule f_hart0_csr_rsps
-  wire [31 : 0] f_hart0_csr_rsps$D_IN, f_hart0_csr_rsps$D_OUT;
+  wire [63 : 0] f_hart0_csr_rsps$D_IN, f_hart0_csr_rsps$D_OUT;
   wire f_hart0_csr_rsps$CLR,
        f_hart0_csr_rsps$DEQ,
        f_hart0_csr_rsps$EMPTY_N,
@@ -177,7 +182,7 @@ module mkDM_Abstract_Commands(CLK,
        f_hart0_csr_rsps$FULL_N;
 
   // ports of submodule f_hart0_gpr_reqs
-  wire [41 : 0] f_hart0_gpr_reqs$D_IN, f_hart0_gpr_reqs$D_OUT;
+  wire [77 : 0] f_hart0_gpr_reqs$D_IN, f_hart0_gpr_reqs$D_OUT;
   wire f_hart0_gpr_reqs$CLR,
        f_hart0_gpr_reqs$DEQ,
        f_hart0_gpr_reqs$EMPTY_N,
@@ -185,7 +190,7 @@ module mkDM_Abstract_Commands(CLK,
        f_hart0_gpr_reqs$FULL_N;
 
   // ports of submodule f_hart0_gpr_rsps
-  wire [31 : 0] f_hart0_gpr_rsps$D_IN, f_hart0_gpr_rsps$D_OUT;
+  wire [63 : 0] f_hart0_gpr_rsps$D_IN, f_hart0_gpr_rsps$D_OUT;
   wire f_hart0_gpr_rsps$CLR,
        f_hart0_gpr_rsps$DEQ,
        f_hart0_gpr_rsps$EMPTY_N,
@@ -226,48 +231,50 @@ module mkDM_Abstract_Commands(CLK,
 
   // inputs to muxes for submodule ports
   reg [2 : 0] MUX_rg_abstractcs_cmderr$write_1__VAL_6;
-  wire [48 : 0] MUX_f_hart0_csr_reqs$enq_1__VAL_1,
+  wire [84 : 0] MUX_f_hart0_csr_reqs$enq_1__VAL_1,
 		MUX_f_hart0_csr_reqs$enq_1__VAL_2;
-  wire [41 : 0] MUX_f_hart0_gpr_reqs$enq_1__VAL_1,
+  wire [77 : 0] MUX_f_hart0_gpr_reqs$enq_1__VAL_1,
 		MUX_f_hart0_gpr_reqs$enq_1__VAL_2;
   wire MUX_rg_abstractcs_busy$write_1__SEL_6,
        MUX_rg_abstractcs_cmderr$write_1__SEL_6,
-       MUX_rg_data0$write_1__SEL_4;
+       MUX_rg_data0$write_1__SEL_4,
+       MUX_rg_data1$write_1__SEL_4;
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h1888;
-  reg [31 : 0] v__h2127;
-  reg [31 : 0] v__h2252;
-  reg [31 : 0] v__h2579;
-  reg [31 : 0] v__h2696;
-  reg [31 : 0] v__h2409;
-  reg [31 : 0] v__h3111;
-  reg [31 : 0] v__h1882;
-  reg [31 : 0] v__h2121;
-  reg [31 : 0] v__h2246;
-  reg [31 : 0] v__h2403;
-  reg [31 : 0] v__h2573;
-  reg [31 : 0] v__h2690;
-  reg [31 : 0] v__h3105;
+  reg [31 : 0] v__h2047;
+  reg [31 : 0] v__h2286;
+  reg [31 : 0] v__h2411;
+  reg [31 : 0] v__h2738;
+  reg [31 : 0] v__h2855;
+  reg [31 : 0] v__h2568;
+  reg [31 : 0] v__h3346;
+  reg [31 : 0] v__h2041;
+  reg [31 : 0] v__h2280;
+  reg [31 : 0] v__h2405;
+  reg [31 : 0] v__h2562;
+  reg [31 : 0] v__h2732;
+  reg [31 : 0] v__h2849;
+  reg [31 : 0] v__h3340;
   // synopsys translate_on
 
   // remaining internal signals
-  wire [31 : 0] virt_rg_abstractcs__h497, virt_rg_command__h561;
-  wire [15 : 0] regno__h1703;
-  wire [12 : 0] x__h988;
-  wire rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d27,
-       rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d32,
-       rg_abstractcs_cmderr_6_EQ_0_0_AND_write_dm_add_ETC___d123,
-       rg_abstractcs_cmderr_6_EQ_0_0_AND_write_dm_add_ETC___d91,
-       rg_command_access_reg_regno_ULE_0x101F___d25,
+  wire [63 : 0] req_data__h702;
+  wire [31 : 0] virt_rg_abstractcs__h529, virt_rg_command__h593;
+  wire [15 : 0] regno__h1871;
+  wire [12 : 0] x__h1085;
+  wire rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d31,
+       rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d36,
+       rg_abstractcs_cmderr_2_EQ_0_8_AND_write_dm_add_ETC___d103,
+       rg_abstractcs_cmderr_2_EQ_0_8_AND_write_dm_add_ETC___d135,
+       rg_command_access_reg_regno_ULE_0x101F___d29,
        rg_command_access_reg_regno_ULE_0xFFF___d8,
-       rg_command_access_reg_regno_ULT_0x1000___d23,
-       write_dm_addr_EQ_0x16_3_AND_rg_abstractcs_busy_ETC___d65,
-       write_dm_addr_EQ_0x17_7_AND_NOT_rg_abstractcs__ETC___d107,
-       write_dm_addr_EQ_0x17_7_AND_NOT_rg_abstractcs__ETC___d116,
-       write_dm_addr_EQ_0x17_7_AND_NOT_rg_abstractcs__ETC___d170,
-       write_dm_addr_EQ_0x17_7_AND_NOT_rg_abstractcs__ETC___d98;
+       rg_command_access_reg_regno_ULT_0x1000___d27,
+       write_dm_addr_EQ_0x16_1_AND_rg_abstractcs_busy_ETC___d78,
+       write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d110,
+       write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d119,
+       write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d128,
+       write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d182;
 
   // action method reset
   assign RDY_reset = 1'd1 ;
@@ -276,12 +283,14 @@ module mkDM_Abstract_Commands(CLK,
 
   // actionvalue method av_read
   always@(av_read_dm_addr or
-	  rg_data0 or virt_rg_abstractcs__h497 or virt_rg_command__h561)
+	  rg_data1 or
+	  rg_data0 or virt_rg_abstractcs__h529 or virt_rg_command__h593)
   begin
     case (av_read_dm_addr)
-      7'h16: av_read = virt_rg_abstractcs__h497;
-      7'h17: av_read = virt_rg_command__h561;
-      default: av_read = rg_data0;
+      7'h04: av_read = rg_data0;
+      7'h16: av_read = virt_rg_abstractcs__h529;
+      7'h17: av_read = virt_rg_command__h593;
+      default: av_read = rg_data1;
     endcase
   end
   assign RDY_av_read = 1'd1 ;
@@ -324,7 +333,7 @@ module mkDM_Abstract_Commands(CLK,
 	     EN_hart0_csr_mem_client_response_put ;
 
   // submodule f_hart0_csr_reqs
-  FIFO1 #(.width(32'd49), .guarded(32'd1)) f_hart0_csr_reqs(.RST(RST_N),
+  FIFO1 #(.width(32'd85), .guarded(32'd1)) f_hart0_csr_reqs(.RST(RST_N),
 							    .CLK(CLK),
 							    .D_IN(f_hart0_csr_reqs$D_IN),
 							    .ENQ(f_hart0_csr_reqs$ENQ),
@@ -335,7 +344,7 @@ module mkDM_Abstract_Commands(CLK,
 							    .EMPTY_N(f_hart0_csr_reqs$EMPTY_N));
 
   // submodule f_hart0_csr_rsps
-  FIFO1 #(.width(32'd32), .guarded(32'd1)) f_hart0_csr_rsps(.RST(RST_N),
+  FIFO1 #(.width(32'd64), .guarded(32'd1)) f_hart0_csr_rsps(.RST(RST_N),
 							    .CLK(CLK),
 							    .D_IN(f_hart0_csr_rsps$D_IN),
 							    .ENQ(f_hart0_csr_rsps$ENQ),
@@ -346,7 +355,7 @@ module mkDM_Abstract_Commands(CLK,
 							    .EMPTY_N(f_hart0_csr_rsps$EMPTY_N));
 
   // submodule f_hart0_gpr_reqs
-  FIFO1 #(.width(32'd42), .guarded(32'd1)) f_hart0_gpr_reqs(.RST(RST_N),
+  FIFO1 #(.width(32'd78), .guarded(32'd1)) f_hart0_gpr_reqs(.RST(RST_N),
 							    .CLK(CLK),
 							    .D_IN(f_hart0_gpr_reqs$D_IN),
 							    .ENQ(f_hart0_gpr_reqs$ENQ),
@@ -357,7 +366,7 @@ module mkDM_Abstract_Commands(CLK,
 							    .EMPTY_N(f_hart0_gpr_reqs$EMPTY_N));
 
   // submodule f_hart0_gpr_rsps
-  FIFO1 #(.width(32'd32), .guarded(32'd1)) f_hart0_gpr_rsps(.RST(RST_N),
+  FIFO1 #(.width(32'd64), .guarded(32'd1)) f_hart0_gpr_rsps(.RST(RST_N),
 							    .CLK(CLK),
 							    .D_IN(f_hart0_gpr_rsps$D_IN),
 							    .ENQ(f_hart0_gpr_rsps$ENQ),
@@ -387,7 +396,7 @@ module mkDM_Abstract_Commands(CLK,
   // rule RL_rl_start_write_gpr
   assign CAN_FIRE_RL_rl_start_write_gpr =
 	     f_hart0_gpr_reqs$FULL_N &&
-	     rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d27 ;
+	     rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d31 ;
   assign WILL_FIRE_RL_rl_start_write_gpr =
 	     CAN_FIRE_RL_rl_start_write_gpr &&
 	     !WILL_FIRE_RL_rl_finish_csr_read &&
@@ -396,7 +405,7 @@ module mkDM_Abstract_Commands(CLK,
   // rule RL_rl_start_read_gpr
   assign CAN_FIRE_RL_rl_start_read_gpr =
 	     f_hart0_gpr_reqs$FULL_N &&
-	     rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d32 ;
+	     rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d36 ;
   assign WILL_FIRE_RL_rl_start_read_gpr = CAN_FIRE_RL_rl_start_read_gpr ;
 
   // rule RL_rl_finish_csr_read
@@ -422,8 +431,8 @@ module mkDM_Abstract_Commands(CLK,
 	     rg_abstractcs_busy && rg_start_reg_access &&
 	     rg_command_access_reg_write &&
 	     !rg_command_access_reg_regno_ULE_0xFFF___d8 &&
-	     (rg_command_access_reg_regno_ULT_0x1000___d23 ||
-	      !rg_command_access_reg_regno_ULE_0x101F___d25) ;
+	     (rg_command_access_reg_regno_ULT_0x1000___d27 ||
+	      !rg_command_access_reg_regno_ULE_0x101F___d29) ;
   assign WILL_FIRE_RL_rl_start_write_unknown =
 	     CAN_FIRE_RL_rl_start_write_unknown &&
 	     !WILL_FIRE_RL_rl_finish_gpr_read &&
@@ -435,8 +444,8 @@ module mkDM_Abstract_Commands(CLK,
 	     rg_abstractcs_busy && rg_start_reg_access &&
 	     !rg_command_access_reg_write &&
 	     !rg_command_access_reg_regno_ULE_0xFFF___d8 &&
-	     (rg_command_access_reg_regno_ULT_0x1000___d23 ||
-	      !rg_command_access_reg_regno_ULE_0x101F___d25) ;
+	     (rg_command_access_reg_regno_ULT_0x1000___d27 ||
+	      !rg_command_access_reg_regno_ULE_0x101F___d29) ;
   assign WILL_FIRE_RL_rl_start_read_unknown =
 	     CAN_FIRE_RL_rl_start_read_unknown &&
 	     !WILL_FIRE_RL_rl_finish_gpr_read &&
@@ -446,21 +455,26 @@ module mkDM_Abstract_Commands(CLK,
   // inputs to muxes for submodule ports
   assign MUX_rg_abstractcs_busy$write_1__SEL_6 =
 	     EN_write && rg_abstractcs_cmderr == 3'd0 &&
-	     write_dm_addr_EQ_0x17_7_AND_NOT_rg_abstractcs__ETC___d107 ;
+	     write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d119 ;
   assign MUX_rg_abstractcs_cmderr$write_1__SEL_6 =
 	     EN_write &&
-	     write_dm_addr_EQ_0x16_3_AND_rg_abstractcs_busy_ETC___d65 ;
+	     write_dm_addr_EQ_0x16_1_AND_rg_abstractcs_busy_ETC___d78 ;
   assign MUX_rg_data0$write_1__SEL_4 =
 	     EN_write && rg_abstractcs_cmderr == 3'd0 &&
 	     write_dm_addr == 7'h04 ;
+  assign MUX_rg_data1$write_1__SEL_4 =
+	     EN_write && rg_abstractcs_cmderr == 3'd0 &&
+	     write_dm_addr == 7'h05 ;
   assign MUX_f_hart0_csr_reqs$enq_1__VAL_1 =
-	     { 5'd31, rg_command_access_reg_regno[11:0], rg_data0 } ;
+	     { 9'd511, rg_command_access_reg_regno[11:0], req_data__h702 } ;
   assign MUX_f_hart0_csr_reqs$enq_1__VAL_2 =
-	     { 5'd15, rg_command_access_reg_regno[11:0], 32'hAAAAAAAA } ;
+	     { 9'd255,
+	       rg_command_access_reg_regno[11:0],
+	       64'hAAAAAAAAAAAAAAAA } ;
   assign MUX_f_hart0_gpr_reqs$enq_1__VAL_1 =
-	     { 5'd31, x__h988[4:0], rg_data0 } ;
+	     { 9'd511, x__h1085[4:0], req_data__h702 } ;
   assign MUX_f_hart0_gpr_reqs$enq_1__VAL_2 =
-	     { 5'd15, x__h988[4:0], 32'hAAAAAAAA } ;
+	     { 9'd255, x__h1085[4:0], 64'hAAAAAAAAAAAAAAAA } ;
   always@(write_dm_addr or rg_abstractcs_busy or write_dm_word)
   begin
     case (write_dm_addr)
@@ -471,7 +485,7 @@ module mkDM_Abstract_Commands(CLK,
 	  MUX_rg_abstractcs_cmderr$write_1__VAL_6 =
 	      rg_abstractcs_busy ?
 		3'd1 :
-		((write_dm_word[24] || write_dm_word[22:20] != 3'd2 ||
+		((write_dm_word[24] || write_dm_word[22:20] != 3'd3 ||
 		  write_dm_word[18]) ?
 		   3'd2 :
 		   (write_dm_word[17] ? 3'd0 : 3'd2));
@@ -500,7 +514,7 @@ module mkDM_Abstract_Commands(CLK,
   endcase
   assign rg_abstractcs_busy$EN =
 	     EN_write && rg_abstractcs_cmderr == 3'd0 &&
-	     write_dm_addr_EQ_0x17_7_AND_NOT_rg_abstractcs__ETC___d107 ||
+	     write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d119 ||
 	     WILL_FIRE_RL_rl_start_read_unknown ||
 	     WILL_FIRE_RL_rl_start_write_unknown ||
 	     WILL_FIRE_RL_rl_finish_gpr_read ||
@@ -529,7 +543,7 @@ module mkDM_Abstract_Commands(CLK,
   endcase
   assign rg_abstractcs_cmderr$EN =
 	     EN_write &&
-	     write_dm_addr_EQ_0x16_3_AND_rg_abstractcs_busy_ETC___d65 ||
+	     write_dm_addr_EQ_0x16_1_AND_rg_abstractcs_busy_ETC___d78 ||
 	     WILL_FIRE_RL_rl_finish_gpr_read ||
 	     WILL_FIRE_RL_rl_finish_csr_read ||
 	     EN_reset ||
@@ -541,14 +555,14 @@ module mkDM_Abstract_Commands(CLK,
 	     EN_reset ? 13'h1000 : write_dm_word[12:0] ;
   assign rg_command_access_reg_regno$EN =
 	     EN_write && rg_abstractcs_cmderr == 3'd0 &&
-	     write_dm_addr_EQ_0x17_7_AND_NOT_rg_abstractcs__ETC___d107 ||
+	     write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d119 ||
 	     EN_reset ;
 
   // register rg_command_access_reg_write
   assign rg_command_access_reg_write$D_IN = !EN_reset && write_dm_word[16] ;
   assign rg_command_access_reg_write$EN =
 	     EN_write && rg_abstractcs_cmderr == 3'd0 &&
-	     write_dm_addr_EQ_0x17_7_AND_NOT_rg_abstractcs__ETC___d107 ||
+	     write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d119 ||
 	     EN_reset ;
 
   // register rg_data0
@@ -560,16 +574,41 @@ module mkDM_Abstract_Commands(CLK,
 	  MUX_rg_data0$write_1__SEL_4 or write_dm_word)
   case (1'b1)
     EN_reset: rg_data0$D_IN = 32'd0;
-    WILL_FIRE_RL_rl_finish_gpr_read: rg_data0$D_IN = f_hart0_gpr_rsps$D_OUT;
-    WILL_FIRE_RL_rl_finish_csr_read: rg_data0$D_IN = f_hart0_csr_rsps$D_OUT;
+    WILL_FIRE_RL_rl_finish_gpr_read:
+	rg_data0$D_IN = f_hart0_gpr_rsps$D_OUT[31:0];
+    WILL_FIRE_RL_rl_finish_csr_read:
+	rg_data0$D_IN = f_hart0_csr_rsps$D_OUT[31:0];
     MUX_rg_data0$write_1__SEL_4: rg_data0$D_IN = write_dm_word;
     default: rg_data0$D_IN = 32'hAAAAAAAA /* unspecified value */ ;
   endcase
   assign rg_data0$EN =
 	     EN_write && rg_abstractcs_cmderr == 3'd0 &&
 	     write_dm_addr == 7'h04 ||
-	     WILL_FIRE_RL_rl_finish_gpr_read ||
 	     WILL_FIRE_RL_rl_finish_csr_read ||
+	     WILL_FIRE_RL_rl_finish_gpr_read ||
+	     EN_reset ;
+
+  // register rg_data1
+  always@(EN_reset or
+	  WILL_FIRE_RL_rl_finish_gpr_read or
+	  f_hart0_gpr_rsps$D_OUT or
+	  WILL_FIRE_RL_rl_finish_csr_read or
+	  f_hart0_csr_rsps$D_OUT or
+	  MUX_rg_data1$write_1__SEL_4 or write_dm_word)
+  case (1'b1)
+    EN_reset: rg_data1$D_IN = 32'd0;
+    WILL_FIRE_RL_rl_finish_gpr_read:
+	rg_data1$D_IN = f_hart0_gpr_rsps$D_OUT[63:32];
+    WILL_FIRE_RL_rl_finish_csr_read:
+	rg_data1$D_IN = f_hart0_csr_rsps$D_OUT[63:32];
+    MUX_rg_data1$write_1__SEL_4: rg_data1$D_IN = write_dm_word;
+    default: rg_data1$D_IN = 32'hAAAAAAAA /* unspecified value */ ;
+  endcase
+  assign rg_data1$EN =
+	     EN_write && rg_abstractcs_cmderr == 3'd0 &&
+	     write_dm_addr == 7'h05 ||
+	     WILL_FIRE_RL_rl_finish_csr_read ||
+	     WILL_FIRE_RL_rl_finish_gpr_read ||
 	     EN_reset ;
 
   // register rg_start_reg_access
@@ -593,7 +632,7 @@ module mkDM_Abstract_Commands(CLK,
   endcase
   assign rg_start_reg_access$EN =
 	     EN_write && rg_abstractcs_cmderr == 3'd0 &&
-	     write_dm_addr_EQ_0x17_7_AND_NOT_rg_abstractcs__ETC___d107 ||
+	     write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d119 ||
 	     WILL_FIRE_RL_rl_start_read_unknown ||
 	     WILL_FIRE_RL_rl_start_write_unknown ||
 	     WILL_FIRE_RL_rl_start_read_gpr ||
@@ -637,69 +676,71 @@ module mkDM_Abstract_Commands(CLK,
   assign f_hart0_gpr_rsps$CLR = EN_reset ;
 
   // remaining internal signals
-  assign regno__h1703 = { 3'd0, rg_command_access_reg_regno } ;
-  assign rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d27 =
+  assign regno__h1871 = { 3'd0, rg_command_access_reg_regno } ;
+  assign req_data__h702 = { rg_data1, rg_data0 } ;
+  assign rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d31 =
 	     rg_abstractcs_busy && rg_start_reg_access &&
 	     rg_command_access_reg_write &&
-	     !rg_command_access_reg_regno_ULT_0x1000___d23 &&
-	     rg_command_access_reg_regno_ULE_0x101F___d25 ;
-  assign rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d32 =
+	     !rg_command_access_reg_regno_ULT_0x1000___d27 &&
+	     rg_command_access_reg_regno_ULE_0x101F___d29 ;
+  assign rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d36 =
 	     rg_abstractcs_busy && rg_start_reg_access &&
 	     !rg_command_access_reg_write &&
-	     !rg_command_access_reg_regno_ULT_0x1000___d23 &&
-	     rg_command_access_reg_regno_ULE_0x101F___d25 ;
-  assign rg_abstractcs_cmderr_6_EQ_0_0_AND_write_dm_add_ETC___d123 =
-	     rg_abstractcs_cmderr == 3'd0 && write_dm_addr == 7'h17 &&
-	     !rg_abstractcs_busy &&
-	     !write_dm_word[24] &&
-	     write_dm_word[22:20] != 3'd2 ;
-  assign rg_abstractcs_cmderr_6_EQ_0_0_AND_write_dm_add_ETC___d91 =
+	     !rg_command_access_reg_regno_ULT_0x1000___d27 &&
+	     rg_command_access_reg_regno_ULE_0x101F___d29 ;
+  assign rg_abstractcs_cmderr_2_EQ_0_8_AND_write_dm_add_ETC___d103 =
 	     rg_abstractcs_cmderr == 3'd0 && write_dm_addr == 7'h17 &&
 	     !rg_abstractcs_busy &&
 	     write_dm_word[24] ;
-  assign rg_command_access_reg_regno_ULE_0x101F___d25 =
+  assign rg_abstractcs_cmderr_2_EQ_0_8_AND_write_dm_add_ETC___d135 =
+	     rg_abstractcs_cmderr == 3'd0 && write_dm_addr == 7'h17 &&
+	     !rg_abstractcs_busy &&
+	     !write_dm_word[24] &&
+	     write_dm_word[22:20] != 3'd3 ;
+  assign rg_command_access_reg_regno_ULE_0x101F___d29 =
 	     rg_command_access_reg_regno <= 13'h101F ;
   assign rg_command_access_reg_regno_ULE_0xFFF___d8 =
 	     rg_command_access_reg_regno <= 13'h0FFF ;
-  assign rg_command_access_reg_regno_ULT_0x1000___d23 =
+  assign rg_command_access_reg_regno_ULT_0x1000___d27 =
 	     rg_command_access_reg_regno < 13'h1000 ;
-  assign virt_rg_abstractcs__h497 =
+  assign virt_rg_abstractcs__h529 =
 	     { 19'd0, rg_abstractcs_busy, 1'b0, rg_abstractcs_cmderr, 8'd0 } ;
-  assign virt_rg_command__h561 =
-	     { 15'd17, rg_command_access_reg_write, regno__h1703 } ;
-  assign write_dm_addr_EQ_0x16_3_AND_rg_abstractcs_busy_ETC___d65 =
+  assign virt_rg_command__h593 =
+	     { 15'd17, rg_command_access_reg_write, regno__h1871 } ;
+  assign write_dm_addr_EQ_0x16_1_AND_rg_abstractcs_busy_ETC___d78 =
 	     write_dm_addr == 7'h16 &&
 	     (rg_abstractcs_busy || write_dm_word[10:8] != 3'd0) ||
 	     write_dm_addr != 7'h16 && rg_abstractcs_cmderr == 3'd0 &&
-	     write_dm_addr != 7'h04 ;
-  assign write_dm_addr_EQ_0x17_7_AND_NOT_rg_abstractcs__ETC___d107 =
+	     write_dm_addr != 7'h04 &&
+	     write_dm_addr != 7'h05 ;
+  assign write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d110 =
 	     write_dm_addr == 7'h17 && !rg_abstractcs_busy &&
 	     !write_dm_word[24] &&
-	     write_dm_word[22:20] == 3'd2 &&
+	     write_dm_word[22:20] == 3'd3 &&
+	     write_dm_word[18] ;
+  assign write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d119 =
+	     write_dm_addr == 7'h17 && !rg_abstractcs_busy &&
+	     !write_dm_word[24] &&
+	     write_dm_word[22:20] == 3'd3 &&
 	     !write_dm_word[18] &&
 	     write_dm_word[17] ;
-  assign write_dm_addr_EQ_0x17_7_AND_NOT_rg_abstractcs__ETC___d116 =
+  assign write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d128 =
 	     write_dm_addr == 7'h17 && !rg_abstractcs_busy &&
 	     !write_dm_word[24] &&
-	     write_dm_word[22:20] == 3'd2 &&
+	     write_dm_word[22:20] == 3'd3 &&
 	     !write_dm_word[18] &&
 	     !write_dm_word[17] ;
-  assign write_dm_addr_EQ_0x17_7_AND_NOT_rg_abstractcs__ETC___d170 =
+  assign write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d182 =
 	     write_dm_addr == 7'h17 && !rg_abstractcs_busy &&
 	     !write_dm_word[24] &&
-	     write_dm_word[22:20] != 3'd2 &&
+	     write_dm_word[22:20] != 3'd3 &&
 	     write_dm_word[22:20] != 3'd0 &&
 	     write_dm_word[22:20] != 3'd1 &&
-	     write_dm_word[22:20] != 3'd3 &&
+	     write_dm_word[22:20] != 3'd2 &&
 	     write_dm_word[22:20] != 3'd4 &&
 	     write_dm_word[22:20] != 3'd5 &&
 	     write_dm_word[22:20] != 3'd6 ;
-  assign write_dm_addr_EQ_0x17_7_AND_NOT_rg_abstractcs__ETC___d98 =
-	     write_dm_addr == 7'h17 && !rg_abstractcs_busy &&
-	     !write_dm_word[24] &&
-	     write_dm_word[22:20] == 3'd2 &&
-	     write_dm_word[18] ;
-  assign x__h988 = rg_command_access_reg_regno - 13'h1000 ;
+  assign x__h1085 = rg_command_access_reg_regno - 13'h1000 ;
 
   // handling of inlined registers
 
@@ -726,6 +767,7 @@ module mkDM_Abstract_Commands(CLK,
       rg_command_access_reg_write <= `BSV_ASSIGNMENT_DELAY
 	  rg_command_access_reg_write$D_IN;
     if (rg_data0$EN) rg_data0 <= `BSV_ASSIGNMENT_DELAY rg_data0$D_IN;
+    if (rg_data1$EN) rg_data1 <= `BSV_ASSIGNMENT_DELAY rg_data1$D_IN;
   end
 
   // synopsys translate_off
@@ -738,6 +780,7 @@ module mkDM_Abstract_Commands(CLK,
     rg_command_access_reg_regno = 13'h0AAA;
     rg_command_access_reg_write = 1'h0;
     rg_data0 = 32'hAAAAAAAA;
+    rg_data1 = 32'hAAAAAAAA;
     rg_start_reg_access = 1'h0;
   end
   `endif // BSV_NO_INITIAL_BLOCKS
@@ -752,14 +795,14 @@ module mkDM_Abstract_Commands(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr == 7'h16 && rg_abstractcs_busy)
 	begin
-	  v__h1888 = $stime;
+	  v__h2047 = $stime;
 	  #0;
 	end
-    v__h1882 = v__h1888 / 32'd10;
+    v__h2041 = v__h2047 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr == 7'h16 && rg_abstractcs_busy)
 	$display("(%0d): DM_Abstract_Commands.write: [abstractcs] <= 0x%08h: ERROR",
-		 v__h1882,
+		 v__h2041,
 		 write_dm_word);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr == 7'h16 && rg_abstractcs_busy)
@@ -769,16 +812,16 @@ module mkDM_Abstract_Commands(CLK,
 	  write_dm_addr == 7'h17 &&
 	  rg_abstractcs_busy)
 	begin
-	  v__h2127 = $stime;
+	  v__h2286 = $stime;
 	  #0;
 	end
-    v__h2121 = v__h2127 / 32'd10;
+    v__h2280 = v__h2286 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
 	  write_dm_addr == 7'h17 &&
 	  rg_abstractcs_busy)
 	$display("(%0d): DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR",
-		 v__h2121,
+		 v__h2280,
 		 write_dm_word);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
@@ -787,83 +830,83 @@ module mkDM_Abstract_Commands(CLK,
 	$display("    DM is busy with a previous abstract command");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write &&
-	  rg_abstractcs_cmderr_6_EQ_0_0_AND_write_dm_add_ETC___d91)
+	  rg_abstractcs_cmderr_2_EQ_0_8_AND_write_dm_add_ETC___d103)
 	begin
-	  v__h2252 = $stime;
+	  v__h2411 = $stime;
 	  #0;
 	end
-    v__h2246 = v__h2252 / 32'd10;
+    v__h2405 = v__h2411 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write &&
-	  rg_abstractcs_cmderr_6_EQ_0_0_AND_write_dm_add_ETC___d91)
+	  rg_abstractcs_cmderr_2_EQ_0_8_AND_write_dm_add_ETC___d103)
 	$display("(%0d): DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR",
-		 v__h2246,
+		 v__h2405,
 		 write_dm_word);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write &&
-	  rg_abstractcs_cmderr_6_EQ_0_0_AND_write_dm_add_ETC___d91)
+	  rg_abstractcs_cmderr_2_EQ_0_8_AND_write_dm_add_ETC___d103)
 	$write("    ");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write &&
-	  rg_abstractcs_cmderr_6_EQ_0_0_AND_write_dm_add_ETC___d91)
+	  rg_abstractcs_cmderr_2_EQ_0_8_AND_write_dm_add_ETC___d103)
 	$write("DM_COMMAND_CMDTYPE_QUICK_ACCESS");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write &&
-	  rg_abstractcs_cmderr_6_EQ_0_0_AND_write_dm_add_ETC___d91)
+	  rg_abstractcs_cmderr_2_EQ_0_8_AND_write_dm_add_ETC___d103)
 	$write(" not supported", "\n");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
-	  write_dm_addr_EQ_0x17_7_AND_NOT_rg_abstractcs__ETC___d98)
+	  write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d110)
 	begin
-	  v__h2579 = $stime;
+	  v__h2738 = $stime;
 	  #0;
 	end
-    v__h2573 = v__h2579 / 32'd10;
+    v__h2732 = v__h2738 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
-	  write_dm_addr_EQ_0x17_7_AND_NOT_rg_abstractcs__ETC___d98)
+	  write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d110)
 	$display("(%0d): DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR",
-		 v__h2573,
+		 v__h2732,
 		 write_dm_word);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
-	  write_dm_addr_EQ_0x17_7_AND_NOT_rg_abstractcs__ETC___d98)
+	  write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d110)
 	$display("    For DM_COMMAND_CMDTYPE_ACCESS_REG, postexec not supported");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
-	  write_dm_addr_EQ_0x17_7_AND_NOT_rg_abstractcs__ETC___d116)
+	  write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d128)
 	begin
-	  v__h2696 = $stime;
+	  v__h2855 = $stime;
 	  #0;
 	end
-    v__h2690 = v__h2696 / 32'd10;
+    v__h2849 = v__h2855 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
-	  write_dm_addr_EQ_0x17_7_AND_NOT_rg_abstractcs__ETC___d116)
+	  write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d128)
 	$display("(%0d): DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR",
-		 v__h2690,
+		 v__h2849,
 		 write_dm_word);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
-	  write_dm_addr_EQ_0x17_7_AND_NOT_rg_abstractcs__ETC___d116)
+	  write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d128)
 	$display("    For DM_COMMAND_CMDTYPE_ACCESS_REG, no-transfer not supported");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write &&
-	  rg_abstractcs_cmderr_6_EQ_0_0_AND_write_dm_add_ETC___d123)
+	  rg_abstractcs_cmderr_2_EQ_0_8_AND_write_dm_add_ETC___d135)
 	begin
-	  v__h2409 = $stime;
+	  v__h2568 = $stime;
 	  #0;
 	end
-    v__h2403 = v__h2409 / 32'd10;
+    v__h2562 = v__h2568 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write &&
-	  rg_abstractcs_cmderr_6_EQ_0_0_AND_write_dm_add_ETC___d123)
+	  rg_abstractcs_cmderr_2_EQ_0_8_AND_write_dm_add_ETC___d135)
 	$display("(%0d): DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR",
-		 v__h2403,
+		 v__h2562,
 		 write_dm_word);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write &&
-	  rg_abstractcs_cmderr_6_EQ_0_0_AND_write_dm_add_ETC___d123)
+	  rg_abstractcs_cmderr_2_EQ_0_8_AND_write_dm_add_ETC___d135)
 	$write("    For DM_COMMAND_CMDTYPE_ACCESS_REG, ");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
@@ -884,8 +927,8 @@ module mkDM_Abstract_Commands(CLK,
 	  write_dm_addr == 7'h17 &&
 	  !rg_abstractcs_busy &&
 	  !write_dm_word[24] &&
-	  write_dm_word[22:20] == 3'd3)
-	$write("DM_COMMAND_ACCESS_REG_SIZE_LOWER64");
+	  write_dm_word[22:20] == 3'd2)
+	$write("DM_COMMAND_ACCESS_REG_SIZE_LOWER32");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
 	  write_dm_addr == 7'h17 &&
@@ -909,28 +952,30 @@ module mkDM_Abstract_Commands(CLK,
 	$write("DM_COMMAND_ACCESS_REG_SIZE_UNDEF6");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
-	  write_dm_addr_EQ_0x17_7_AND_NOT_rg_abstractcs__ETC___d170)
+	  write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d182)
 	$write("DM_COMMAND_ACCESS_REG_SIZE_UNDEF7");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write &&
-	  rg_abstractcs_cmderr_6_EQ_0_0_AND_write_dm_add_ETC___d123)
-	$write(" not supported", "\n");
+	  rg_abstractcs_cmderr_2_EQ_0_8_AND_write_dm_add_ETC___d135)
+	$write(" not supported in RV64 mode", "\n");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr != 7'h16 &&
 	  rg_abstractcs_cmderr == 3'd0 &&
 	  write_dm_addr != 7'h17 &&
-	  write_dm_addr != 7'h04)
+	  write_dm_addr != 7'h04 &&
+	  write_dm_addr != 7'h05)
 	begin
-	  v__h3111 = $stime;
+	  v__h3346 = $stime;
 	  #0;
 	end
-    v__h3105 = v__h3111 / 32'd10;
+    v__h3340 = v__h3346 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr != 7'h16 &&
 	  rg_abstractcs_cmderr == 3'd0 &&
 	  write_dm_addr != 7'h17 &&
-	  write_dm_addr != 7'h04)
-	$write("(%0d): DM_Abstract_Commands.write: [", v__h3105);
+	  write_dm_addr != 7'h04 &&
+	  write_dm_addr != 7'h05)
+	$write("(%0d): DM_Abstract_Commands.write: [", v__h3340);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 && write_dm_addr == 7'h10)
 	$write("dm_addr_dmcontrol");
@@ -964,9 +1009,6 @@ module mkDM_Abstract_Commands(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 && write_dm_addr == 7'h60)
 	$write("dm_addr_verbosity");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (EN_write && rg_abstractcs_cmderr == 3'd0 && write_dm_addr == 7'h05)
-	$write("dm_addr_data1");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 && write_dm_addr == 7'h06)
 	$write("dm_addr_data2");
@@ -1029,6 +1071,7 @@ module mkDM_Abstract_Commands(CLK,
 	  rg_abstractcs_cmderr == 3'd0 &&
 	  write_dm_addr != 7'h17 &&
 	  write_dm_addr != 7'h04 &&
+	  write_dm_addr != 7'h05 &&
 	  write_dm_addr != 7'h10 &&
 	  write_dm_addr != 7'h11 &&
 	  write_dm_addr != 7'h12 &&
@@ -1040,7 +1083,6 @@ module mkDM_Abstract_Commands(CLK,
 	  write_dm_addr != 7'h40 &&
 	  write_dm_addr != 7'h5F &&
 	  write_dm_addr != 7'h60 &&
-	  write_dm_addr != 7'h05 &&
 	  write_dm_addr != 7'h06 &&
 	  write_dm_addr != 7'h07 &&
 	  write_dm_addr != 7'h08 &&
@@ -1065,7 +1107,8 @@ module mkDM_Abstract_Commands(CLK,
       if (EN_write && write_dm_addr != 7'h16 &&
 	  rg_abstractcs_cmderr == 3'd0 &&
 	  write_dm_addr != 7'h17 &&
-	  write_dm_addr != 7'h04)
+	  write_dm_addr != 7'h04 &&
+	  write_dm_addr != 7'h05)
 	$write("] <= 0x%08h: ERROR: not supported", write_dm_word, "\n");
   end
   // synopsys translate_on

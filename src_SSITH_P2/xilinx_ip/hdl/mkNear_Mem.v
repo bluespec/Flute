@@ -10,11 +10,11 @@
 // RDY_server_reset_response_get  O     1 reg
 // imem_valid                     O     1
 // imem_is_i32_not_i16            O     1 const
-// imem_pc                        O    32 reg
+// imem_pc                        O    64 reg
 // imem_instr                     O    32
 // imem_exc                       O     1
 // imem_exc_code                  O     4 reg
-// imem_tval                      O    32 reg
+// imem_tval                      O    64 reg
 // imem_master_awvalid            O     1
 // imem_master_awid               O     4 reg
 // imem_master_awaddr             O    64 reg
@@ -101,11 +101,11 @@
 // CLK                            I     1 clock
 // RST_N                          I     1 reset
 // imem_req_f3                    I     3
-// imem_req_addr                  I    32
-// imem_req_priv                  I     2 unused
-// imem_req_sstatus_SUM           I     1 unused
-// imem_req_mstatus_MXR           I     1 unused
-// imem_req_satp                  I    32 unused
+// imem_req_addr                  I    64
+// imem_req_priv                  I     2 reg
+// imem_req_sstatus_SUM           I     1 reg
+// imem_req_mstatus_MXR           I     1 reg
+// imem_req_satp                  I    64 reg
 // imem_master_awready            I     1
 // imem_master_wready             I     1
 // imem_master_bvalid             I     1
@@ -120,12 +120,12 @@
 // dmem_req_op                    I     2
 // dmem_req_f3                    I     3
 // dmem_req_amo_funct7            I     7 reg
-// dmem_req_addr                  I    32
+// dmem_req_addr                  I    64
 // dmem_req_store_value           I    64
-// dmem_req_priv                  I     2 unused
-// dmem_req_sstatus_SUM           I     1 unused
-// dmem_req_mstatus_MXR           I     1 unused
-// dmem_req_satp                  I    32 unused
+// dmem_req_priv                  I     2 reg
+// dmem_req_sstatus_SUM           I     1 reg
+// dmem_req_mstatus_MXR           I     1 reg
+// dmem_req_satp                  I    64 reg
 // dmem_master_awready            I     1
 // dmem_master_wready             I     1
 // dmem_master_bvalid             I     1
@@ -175,7 +175,7 @@
 // EN_server_fence_i_response_get  I     1
 // EN_server_fence_request_put    I     1
 // EN_server_fence_response_get   I     1
-// EN_sfence_vma                  I     1 unused
+// EN_sfence_vma                  I     1
 // EN_get_timer_interrupt_req_get  I     1
 // EN_get_sw_interrupt_req_get    I     1
 //
@@ -183,12 +183,18 @@
 //   (imem_master_awready, imem_master_wready) -> imem_valid
 //   (imem_master_awready, imem_master_wready) -> imem_instr
 //   (imem_master_awready, imem_master_wready) -> imem_master_bready
-//   (imem_master_awready, imem_master_wready, EN_imem_req) -> imem_master_rready
+//   (imem_master_awready,
+//    imem_master_wready,
+//    imem_master_arready,
+//    EN_imem_req) -> imem_master_rready
 //   (dmem_master_awready, dmem_master_wready) -> dmem_valid
 //   (dmem_master_awready, dmem_master_wready) -> dmem_word64
 //   (dmem_master_awready, dmem_master_wready) -> dmem_st_amo_val
 //   (dmem_master_awready, dmem_master_wready) -> dmem_master_bready
-//   (dmem_master_awready, dmem_master_wready, EN_dmem_req) -> dmem_master_rready
+//   (dmem_master_awready,
+//    dmem_master_wready,
+//    dmem_master_arready,
+//    EN_dmem_req) -> dmem_master_rready
 //
 //
 
@@ -497,11 +503,11 @@ module mkNear_Mem(CLK,
 
   // action method imem_req
   input  [2 : 0] imem_req_f3;
-  input  [31 : 0] imem_req_addr;
+  input  [63 : 0] imem_req_addr;
   input  [1 : 0] imem_req_priv;
   input  imem_req_sstatus_SUM;
   input  imem_req_mstatus_MXR;
-  input  [31 : 0] imem_req_satp;
+  input  [63 : 0] imem_req_satp;
   input  EN_imem_req;
 
   // value method imem_valid
@@ -511,7 +517,7 @@ module mkNear_Mem(CLK,
   output imem_is_i32_not_i16;
 
   // value method imem_pc
-  output [31 : 0] imem_pc;
+  output [63 : 0] imem_pc;
 
   // value method imem_instr
   output [31 : 0] imem_instr;
@@ -523,7 +529,7 @@ module mkNear_Mem(CLK,
   output [3 : 0] imem_exc_code;
 
   // value method imem_tval
-  output [31 : 0] imem_tval;
+  output [63 : 0] imem_tval;
 
   // value method imem_master_m_awvalid
   output imem_master_awvalid;
@@ -643,12 +649,12 @@ module mkNear_Mem(CLK,
   input  [1 : 0] dmem_req_op;
   input  [2 : 0] dmem_req_f3;
   input  [6 : 0] dmem_req_amo_funct7;
-  input  [31 : 0] dmem_req_addr;
+  input  [63 : 0] dmem_req_addr;
   input  [63 : 0] dmem_req_store_value;
   input  [1 : 0] dmem_req_priv;
   input  dmem_req_sstatus_SUM;
   input  dmem_req_mstatus_MXR;
-  input  [31 : 0] dmem_req_satp;
+  input  [63 : 0] dmem_req_satp;
   input  EN_dmem_req;
 
   // value method dmem_valid
@@ -896,8 +902,10 @@ module mkNear_Mem(CLK,
 		imem_master_araddr,
 		imem_master_awaddr,
 		imem_master_wdata,
+		imem_pc,
+		imem_tval,
 		near_mem_slave_rdata;
-  wire [31 : 0] imem_instr, imem_pc, imem_tval;
+  wire [31 : 0] imem_instr;
   wire [7 : 0] dmem_master_arlen,
 	       dmem_master_awlen,
 	       dmem_master_wstrb,
@@ -996,10 +1004,11 @@ module mkNear_Mem(CLK,
 		dcache$mem_master_awaddr,
 		dcache$mem_master_rdata,
 		dcache$mem_master_wdata,
+		dcache$req_addr,
+		dcache$req_satp,
 		dcache$req_st_value,
 		dcache$st_amo_val,
 		dcache$word64;
-  wire [31 : 0] dcache$req_addr, dcache$req_satp;
   wire [7 : 0] dcache$mem_master_arlen,
 	       dcache$mem_master_awlen,
 	       dcache$mem_master_wstrb;
@@ -1071,13 +1080,15 @@ module mkNear_Mem(CLK,
 
   // ports of submodule icache
   wire [65 : 0] icache$near_mem_io_client_response_put;
-  wire [63 : 0] icache$mem_master_araddr,
+  wire [63 : 0] icache$addr,
+		icache$mem_master_araddr,
 		icache$mem_master_awaddr,
 		icache$mem_master_rdata,
 		icache$mem_master_wdata,
+		icache$req_addr,
+		icache$req_satp,
 		icache$req_st_value,
 		icache$word64;
-  wire [31 : 0] icache$addr, icache$req_addr, icache$req_satp;
   wire [7 : 0] icache$mem_master_arlen,
 	       icache$mem_master_awlen,
 	       icache$mem_master_wstrb;
@@ -1236,10 +1247,10 @@ module mkNear_Mem(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h1926;
-  reg [31 : 0] v__h2139;
-  reg [31 : 0] v__h1920;
-  reg [31 : 0] v__h2133;
+  reg [31 : 0] v__h1927;
+  reg [31 : 0] v__h2147;
+  reg [31 : 0] v__h1921;
+  reg [31 : 0] v__h2141;
   // synopsys translate_on
 
   // remaining internal signals
@@ -2058,25 +2069,25 @@ module mkNear_Mem(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset && NOT_cfg_verbosity_read_ULE_1_0___d11)
 	begin
-	  v__h1926 = $stime;
+	  v__h1927 = $stime;
 	  #0;
 	end
-    v__h1920 = v__h1926 / 32'd10;
+    v__h1921 = v__h1927 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset && NOT_cfg_verbosity_read_ULE_1_0___d11)
-	$display("%0d: Near_Mem.rl_reset", v__h1920);
+	$display("%0d: Near_Mem.rl_reset", v__h1921);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset_complete &&
 	  NOT_cfg_verbosity_read_ULE_1_0___d11)
 	begin
-	  v__h2139 = $stime;
+	  v__h2147 = $stime;
 	  #0;
 	end
-    v__h2133 = v__h2139 / 32'd10;
+    v__h2141 = v__h2147 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset_complete &&
 	  NOT_cfg_verbosity_read_ULE_1_0___d11)
-	$display("%0d: Near_Mem.rl_reset_complete", v__h2133);
+	$display("%0d: Near_Mem.rl_reset_complete", v__h2141);
   end
   // synopsys translate_on
 endmodule  // mkNear_Mem

@@ -8,16 +8,16 @@
 // Name                         I/O  size props
 // RDY_server_reset_request_put   O     1 reg
 // RDY_server_reset_response_get  O     1
-// read_rs1                       O    32
-// read_rs1_port2                 O    32
-// read_rs2                       O    32
+// read_rs1                       O    64
+// read_rs1_port2                 O    64
+// read_rs2                       O    64
 // CLK                            I     1 clock
 // RST_N                          I     1 reset
 // read_rs1_rs1                   I     5
 // read_rs1_port2_rs1             I     5
 // read_rs2_rs2                   I     5
 // write_rd_rd                    I     5
-// write_rd_rd_val                I    32 reg
+// write_rd_rd_val                I    64 reg
 // EN_server_reset_request_put    I     1
 // EN_server_reset_response_get   I     1
 // EN_write_rd                    I     1
@@ -76,23 +76,23 @@ module mkGPR_RegFile(CLK,
 
   // value method read_rs1
   input  [4 : 0] read_rs1_rs1;
-  output [31 : 0] read_rs1;
+  output [63 : 0] read_rs1;
 
   // value method read_rs1_port2
   input  [4 : 0] read_rs1_port2_rs1;
-  output [31 : 0] read_rs1_port2;
+  output [63 : 0] read_rs1_port2;
 
   // value method read_rs2
   input  [4 : 0] read_rs2_rs2;
-  output [31 : 0] read_rs2;
+  output [63 : 0] read_rs2;
 
   // action method write_rd
   input  [4 : 0] write_rd_rd;
-  input  [31 : 0] write_rd_rd_val;
+  input  [63 : 0] write_rd_rd_val;
   input  EN_write_rd;
 
   // signals for module outputs
-  wire [31 : 0] read_rs1, read_rs1_port2, read_rs2;
+  wire [63 : 0] read_rs1, read_rs1_port2, read_rs2;
   wire RDY_server_reset_request_put, RDY_server_reset_response_get;
 
   // register rg_state
@@ -108,7 +108,7 @@ module mkGPR_RegFile(CLK,
        f_reset_rsps$FULL_N;
 
   // ports of submodule regfile
-  wire [31 : 0] regfile$D_IN,
+  wire [63 : 0] regfile$D_IN,
 		regfile$D_OUT_1,
 		regfile$D_OUT_2,
 		regfile$D_OUT_3;
@@ -145,14 +145,14 @@ module mkGPR_RegFile(CLK,
   assign WILL_FIRE_server_reset_response_get = EN_server_reset_response_get ;
 
   // value method read_rs1
-  assign read_rs1 = (read_rs1_rs1 == 5'd0) ? 32'd0 : regfile$D_OUT_3 ;
+  assign read_rs1 = (read_rs1_rs1 == 5'd0) ? 64'd0 : regfile$D_OUT_3 ;
 
   // value method read_rs1_port2
   assign read_rs1_port2 =
-	     (read_rs1_port2_rs1 == 5'd0) ? 32'd0 : regfile$D_OUT_2 ;
+	     (read_rs1_port2_rs1 == 5'd0) ? 64'd0 : regfile$D_OUT_2 ;
 
   // value method read_rs2
-  assign read_rs2 = (read_rs2_rs2 == 5'd0) ? 32'd0 : regfile$D_OUT_1 ;
+  assign read_rs2 = (read_rs2_rs2 == 5'd0) ? 64'd0 : regfile$D_OUT_1 ;
 
   // action method write_rd
   assign CAN_FIRE_write_rd = 1'd1 ;
@@ -169,7 +169,7 @@ module mkGPR_RegFile(CLK,
 
   // submodule regfile
   RegFile #(.addr_width(32'd5),
-	    .data_width(32'd32),
+	    .data_width(32'd64),
 	    .lo(5'h0),
 	    .hi(5'd31)) regfile(.CLK(CLK),
 				.ADDR_1(regfile$ADDR_1),

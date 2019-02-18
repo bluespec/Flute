@@ -6,14 +6,18 @@
 //
 // Ports:
 // Name                         I/O  size props
-// fv_read                        O    32
-// fav_write                      O    32
+// fv_read                        O    64
+// fav_write                      O    64
+// fv_sip_read                    O    64
+// fav_sip_write                  O    64
 // RDY_software_interrupt_req     O     1 const
 // RDY_timer_interrupt_req        O     1 const
 // CLK                            I     1 clock
 // RST_N                          I     1 reset
 // fav_write_misa                 I    28
-// fav_write_wordxl               I    32
+// fav_write_wordxl               I    64
+// fav_sip_write_misa             I    28
+// fav_sip_write_wordxl           I    64
 // external_interrupt_req_req     I     1 reg
 // software_interrupt_req_req     I     1
 // timer_interrupt_req_req        I     1
@@ -21,9 +25,11 @@
 // EN_software_interrupt_req      I     1
 // EN_timer_interrupt_req         I     1
 // EN_fav_write                   I     1
+// EN_fav_sip_write               I     1
 //
 // Combinational paths from inputs to outputs:
 //   (fav_write_misa, fav_write_wordxl) -> fav_write
+//   (fav_sip_write_misa, fav_sip_write_wordxl) -> fav_sip_write
 //
 //
 
@@ -52,6 +58,13 @@ module mkCSR_MIP(CLK,
 		 EN_fav_write,
 		 fav_write,
 
+		 fv_sip_read,
+
+		 fav_sip_write_misa,
+		 fav_sip_write_wordxl,
+		 EN_fav_sip_write,
+		 fav_sip_write,
+
 		 external_interrupt_req_req,
 
 		 software_interrupt_req_req,
@@ -68,13 +81,22 @@ module mkCSR_MIP(CLK,
   input  EN_reset;
 
   // value method fv_read
-  output [31 : 0] fv_read;
+  output [63 : 0] fv_read;
 
   // actionvalue method fav_write
   input  [27 : 0] fav_write_misa;
-  input  [31 : 0] fav_write_wordxl;
+  input  [63 : 0] fav_write_wordxl;
   input  EN_fav_write;
-  output [31 : 0] fav_write;
+  output [63 : 0] fav_write;
+
+  // value method fv_sip_read
+  output [63 : 0] fv_sip_read;
+
+  // actionvalue method fav_sip_write
+  input  [27 : 0] fav_sip_write_misa;
+  input  [63 : 0] fav_sip_write_wordxl;
+  input  EN_fav_sip_write;
+  output [63 : 0] fav_sip_write;
 
   // action method external_interrupt_req
   input  external_interrupt_req_req;
@@ -90,7 +112,7 @@ module mkCSR_MIP(CLK,
   output RDY_timer_interrupt_req;
 
   // signals for module outputs
-  wire [31 : 0] fav_write, fv_read;
+  wire [63 : 0] fav_sip_write, fav_write, fv_read, fv_sip_read;
   wire RDY_software_interrupt_req, RDY_timer_interrupt_req;
 
   // register rg_meip
@@ -111,7 +133,8 @@ module mkCSR_MIP(CLK,
 
   // register rg_ssip
   reg rg_ssip;
-  wire rg_ssip$D_IN, rg_ssip$EN;
+  reg rg_ssip$D_IN;
+  wire rg_ssip$EN;
 
   // register rg_stip
   reg rg_stip;
@@ -119,11 +142,13 @@ module mkCSR_MIP(CLK,
 
   // register rg_ueip
   reg rg_ueip;
-  wire rg_ueip$D_IN, rg_ueip$EN;
+  reg rg_ueip$D_IN;
+  wire rg_ueip$EN;
 
   // register rg_usip
   reg rg_usip;
-  wire rg_usip$D_IN, rg_usip$EN;
+  reg rg_usip$D_IN;
+  wire rg_usip$EN;
 
   // register rg_utip
   reg rg_utip;
@@ -131,31 +156,67 @@ module mkCSR_MIP(CLK,
 
   // rule scheduling signals
   wire CAN_FIRE_external_interrupt_req,
+       CAN_FIRE_fav_sip_write,
        CAN_FIRE_fav_write,
        CAN_FIRE_reset,
        CAN_FIRE_software_interrupt_req,
        CAN_FIRE_timer_interrupt_req,
        WILL_FIRE_external_interrupt_req,
+       WILL_FIRE_fav_sip_write,
        WILL_FIRE_fav_write,
        WILL_FIRE_reset,
        WILL_FIRE_software_interrupt_req,
        WILL_FIRE_timer_interrupt_req;
 
   // remaining internal signals
-  wire [11 : 0] new_mip__h524, new_mip__h942;
-  wire seip__h558, ssip__h562, stip__h560, ueip__h559, usip__h563, utip__h561;
+  wire [11 : 0] new_mip__h528, new_mip__h946;
+  wire seip__h562,
+       ssip__h566,
+       ssip__h986,
+       stip__h564,
+       ueip__h563,
+       ueip__h985,
+       usip__h567,
+       usip__h987,
+       utip__h565;
 
   // action method reset
   assign CAN_FIRE_reset = 1'd1 ;
   assign WILL_FIRE_reset = EN_reset ;
 
   // value method fv_read
-  assign fv_read = { 20'd0, new_mip__h524 } ;
+  assign fv_read = { 52'd0, new_mip__h528 } ;
 
   // actionvalue method fav_write
-  assign fav_write = { 20'd0, new_mip__h942 } ;
+  assign fav_write = { 52'd0, new_mip__h946 } ;
   assign CAN_FIRE_fav_write = 1'd1 ;
   assign WILL_FIRE_fav_write = EN_fav_write ;
+
+  // value method fv_sip_read
+  assign fv_sip_read =
+	     { 54'd0,
+	       rg_seip,
+	       rg_ueip,
+	       2'b0,
+	       rg_stip,
+	       rg_utip,
+	       2'b0,
+	       rg_ssip,
+	       rg_usip } ;
+
+  // actionvalue method fav_sip_write
+  assign fav_sip_write =
+	     { 54'd0,
+	       rg_seip,
+	       ueip__h985,
+	       2'b0,
+	       rg_stip,
+	       rg_utip,
+	       2'b0,
+	       ssip__h986,
+	       usip__h987 } ;
+  assign CAN_FIRE_fav_sip_write = 1'd1 ;
+  assign WILL_FIRE_fav_sip_write = EN_fav_sip_write ;
 
   // action method external_interrupt_req
   assign CAN_FIRE_external_interrupt_req = 1'd1 ;
@@ -185,31 +246,52 @@ module mkCSR_MIP(CLK,
   assign rg_mtip$EN = EN_timer_interrupt_req || EN_reset ;
 
   // register rg_seip
-  assign rg_seip$D_IN = !EN_reset && seip__h558 ;
+  assign rg_seip$D_IN = !EN_reset && seip__h562 ;
   assign rg_seip$EN = EN_fav_write || EN_reset ;
 
   // register rg_ssip
-  assign rg_ssip$D_IN = !EN_reset && ssip__h562 ;
-  assign rg_ssip$EN = EN_fav_write || EN_reset ;
+  always@(EN_reset or
+	  EN_fav_write or ssip__h566 or EN_fav_sip_write or ssip__h986)
+  case (1'b1)
+    EN_reset: rg_ssip$D_IN = 1'd0;
+    EN_fav_write: rg_ssip$D_IN = ssip__h566;
+    EN_fav_sip_write: rg_ssip$D_IN = ssip__h986;
+    default: rg_ssip$D_IN = 1'b0 /* unspecified value */ ;
+  endcase
+  assign rg_ssip$EN = EN_fav_write || EN_fav_sip_write || EN_reset ;
 
   // register rg_stip
-  assign rg_stip$D_IN = !EN_reset && stip__h560 ;
+  assign rg_stip$D_IN = !EN_reset && stip__h564 ;
   assign rg_stip$EN = EN_fav_write || EN_reset ;
 
   // register rg_ueip
-  assign rg_ueip$D_IN = !EN_reset && ueip__h559 ;
-  assign rg_ueip$EN = EN_fav_write || EN_reset ;
+  always@(EN_reset or
+	  EN_fav_write or ueip__h563 or EN_fav_sip_write or ueip__h985)
+  case (1'b1)
+    EN_reset: rg_ueip$D_IN = 1'd0;
+    EN_fav_write: rg_ueip$D_IN = ueip__h563;
+    EN_fav_sip_write: rg_ueip$D_IN = ueip__h985;
+    default: rg_ueip$D_IN = 1'b0 /* unspecified value */ ;
+  endcase
+  assign rg_ueip$EN = EN_fav_write || EN_fav_sip_write || EN_reset ;
 
   // register rg_usip
-  assign rg_usip$D_IN = !EN_reset && usip__h563 ;
-  assign rg_usip$EN = EN_fav_write || EN_reset ;
+  always@(EN_reset or
+	  EN_fav_write or usip__h567 or EN_fav_sip_write or usip__h987)
+  case (1'b1)
+    EN_reset: rg_usip$D_IN = 1'd0;
+    EN_fav_write: rg_usip$D_IN = usip__h567;
+    EN_fav_sip_write: rg_usip$D_IN = usip__h987;
+    default: rg_usip$D_IN = 1'b0 /* unspecified value */ ;
+  endcase
+  assign rg_usip$EN = EN_fav_write || EN_fav_sip_write || EN_reset ;
 
   // register rg_utip
-  assign rg_utip$D_IN = !EN_reset && utip__h561 ;
+  assign rg_utip$D_IN = !EN_reset && utip__h565 ;
   assign rg_utip$EN = EN_fav_write || EN_reset ;
 
   // remaining internal signals
-  assign new_mip__h524 =
+  assign new_mip__h528 =
 	     { rg_meip,
 	       1'b0,
 	       rg_seip,
@@ -222,25 +304,28 @@ module mkCSR_MIP(CLK,
 	       1'b0,
 	       rg_ssip,
 	       rg_usip } ;
-  assign new_mip__h942 =
+  assign new_mip__h946 =
 	     { rg_meip,
 	       1'b0,
-	       seip__h558,
-	       ueip__h559,
+	       seip__h562,
+	       ueip__h563,
 	       rg_mtip,
 	       1'b0,
-	       stip__h560,
-	       utip__h561,
+	       stip__h564,
+	       utip__h565,
 	       rg_msip,
 	       1'b0,
-	       ssip__h562,
-	       usip__h563 } ;
-  assign seip__h558 = fav_write_misa[18] && fav_write_wordxl[9] ;
-  assign ssip__h562 = fav_write_misa[18] && fav_write_wordxl[1] ;
-  assign stip__h560 = fav_write_misa[18] && fav_write_wordxl[5] ;
-  assign ueip__h559 = fav_write_misa[13] && fav_write_wordxl[8] ;
-  assign usip__h563 = fav_write_misa[13] && fav_write_wordxl[0] ;
-  assign utip__h561 = fav_write_misa[13] && fav_write_wordxl[4] ;
+	       ssip__h566,
+	       usip__h567 } ;
+  assign seip__h562 = fav_write_misa[18] && fav_write_wordxl[9] ;
+  assign ssip__h566 = fav_write_misa[18] && fav_write_wordxl[1] ;
+  assign ssip__h986 = fav_sip_write_misa[18] && fav_sip_write_wordxl[1] ;
+  assign stip__h564 = fav_write_misa[18] && fav_write_wordxl[5] ;
+  assign ueip__h563 = fav_write_misa[13] && fav_write_wordxl[8] ;
+  assign ueip__h985 = fav_sip_write_misa[13] && fav_sip_write_wordxl[8] ;
+  assign usip__h567 = fav_write_misa[13] && fav_write_wordxl[0] ;
+  assign usip__h987 = fav_sip_write_misa[13] && fav_sip_write_wordxl[0] ;
+  assign utip__h565 = fav_write_misa[13] && fav_write_wordxl[4] ;
 
   // handling of inlined registers
 

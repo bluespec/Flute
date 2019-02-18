@@ -194,12 +194,14 @@
 //   (cpu_imem_master_awready, cpu_imem_master_wready) -> cpu_imem_master_bready
 //   (cpu_imem_master_awready,
 //    cpu_imem_master_wready,
+//    cpu_imem_master_arready,
 //    cpu_dmem_master_awready,
 //    cpu_dmem_master_wready) -> cpu_imem_master_rready
 //   (cpu_imem_master_awready,
 //    cpu_imem_master_wready,
 //    cpu_dmem_master_awready,
-//    cpu_dmem_master_wready) -> cpu_dmem_master_rready
+//    cpu_dmem_master_wready,
+//    cpu_dmem_master_arready) -> cpu_dmem_master_rready
 //   (cpu_dmem_master_awready, cpu_dmem_master_wready) -> cpu_dmem_master_bready
 //   (dm_dmi_read_addr_dm_addr,
 //    dm_master_arready,
@@ -1101,10 +1103,14 @@ module mkCore(CLK,
        dm_master_wvalid;
 
   // ports of submodule cpu
+  wire [84 : 0] cpu$hart0_csr_mem_server_request_put;
+  wire [77 : 0] cpu$hart0_gpr_mem_server_request_put;
   wire [63 : 0] cpu$dmem_master_araddr,
 		cpu$dmem_master_awaddr,
 		cpu$dmem_master_rdata,
 		cpu$dmem_master_wdata,
+		cpu$hart0_csr_mem_server_response_get,
+		cpu$hart0_gpr_mem_server_response_get,
 		cpu$imem_master_araddr,
 		cpu$imem_master_awaddr,
 		cpu$imem_master_rdata,
@@ -1114,10 +1120,6 @@ module mkCore(CLK,
 		cpu$near_mem_slave_rdata,
 		cpu$near_mem_slave_wdata,
 		cpu$set_verbosity_logdelay;
-  wire [48 : 0] cpu$hart0_csr_mem_server_request_put;
-  wire [41 : 0] cpu$hart0_gpr_mem_server_request_put;
-  wire [31 : 0] cpu$hart0_csr_mem_server_response_get,
-		cpu$hart0_gpr_mem_server_response_get;
   wire [7 : 0] cpu$dmem_master_arlen,
 	       cpu$dmem_master_awlen,
 	       cpu$dmem_master_wstrb,
@@ -1251,16 +1253,15 @@ module mkCore(CLK,
        cpu$near_mem_slave_wvalid;
 
   // ports of submodule debug_module
-  wire [63 : 0] debug_module$master_araddr,
+  wire [84 : 0] debug_module$hart0_csr_mem_client_request_get;
+  wire [77 : 0] debug_module$hart0_gpr_mem_client_request_get;
+  wire [63 : 0] debug_module$hart0_csr_mem_client_response_put,
+		debug_module$hart0_gpr_mem_client_response_put,
+		debug_module$master_araddr,
 		debug_module$master_awaddr,
 		debug_module$master_rdata,
 		debug_module$master_wdata;
-  wire [48 : 0] debug_module$hart0_csr_mem_client_request_get;
-  wire [41 : 0] debug_module$hart0_gpr_mem_client_request_get;
-  wire [31 : 0] debug_module$dmi_read_data,
-		debug_module$dmi_write_dm_word,
-		debug_module$hart0_csr_mem_client_response_put,
-		debug_module$hart0_gpr_mem_client_response_put;
+  wire [31 : 0] debug_module$dmi_read_data, debug_module$dmi_write_dm_word;
   wire [7 : 0] debug_module$master_arlen,
 	       debug_module$master_awlen,
 	       debug_module$master_wstrb;

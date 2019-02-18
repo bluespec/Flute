@@ -16,15 +16,17 @@ all: compile
 # ================================================================
 
 REPO ?= ..
-ARCH ?= RV32ACIMU
+ARCH ?= RV64ACDFIMSU
 
 # ================================================================
 # RISC-V config macros passed into Bluespec 'bsc' compiler
 
 BSC_COMPILATION_FLAGS += \
-	-D RV32 \
-	-D ISA_PRIV_M  -D ISA_PRIV_U  \
+	-D RV64 \
+	-D SV39 \
+	-D ISA_PRIV_M  -D ISA_PRIV_S  -D ISA_PRIV_U  \
 	-D ISA_I  -D ISA_M  -D ISA_A  -D ISA_C  \
+	-D ISA_FD  -D ISA_FD_DIV  \
 	-D SHIFT_BARREL    \
 	-D MULT_SYNTH    \
 	-D Near_Mem_Caches    \

@@ -98,7 +98,7 @@
 //
 // Combinational paths from inputs to outputs:
 //   (master1_awready, master1_wready) -> master1_bready
-//   (master1_awready, master1_wready) -> master1_rready
+//   (master1_awready, master1_wready, master1_arready) -> master1_rready
 //
 //
 
