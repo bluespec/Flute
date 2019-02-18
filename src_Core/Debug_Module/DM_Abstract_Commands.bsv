@@ -162,7 +162,7 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 	       cmderr = DM_ABSTRACTCS_CMDERR_NOT_SUPPORTED;
 	       $display ("(%0d): DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR", cur_cycle, dm_word);
 	       $display ("    For DM_COMMAND_CMDTYPE_ACCESS_REG, ",
-			 fshow (fn_command_access_reg_size (dm_word)), " not supported");
+			 fshow (fn_command_access_reg_size (dm_word)), " not supported in RV32 mode");
 	    end
 `endif
 `ifdef RV64
@@ -172,7 +172,7 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 		  cmderr = DM_ABSTRACTCS_CMDERR_NOT_SUPPORTED;
 		  $display ("(%0d): DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR", cur_cycle, dm_word);
 		  $display ("    For DM_COMMAND_CMDTYPE_ACCESS_REG, ",
-			    fshow (fn_command_access_reg_size (dm_word)), " not supported");
+			    fshow (fn_command_access_reg_size (dm_word)), " not supported in RV64 mode");
 	       end
 `endif
 

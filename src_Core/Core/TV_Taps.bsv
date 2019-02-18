@@ -81,7 +81,7 @@ module mkDM_Mem_Tap (DM_Mem_Tap_IFC);
  	 stval = (wr_data.wdata & 'h_FFFF_FFFF);
       end
       else if (wr_data.wstrb == 'hf0) begin
-	 paddr = zeroExtend (wr_addr.awaddr + 4);
+	 paddr = zeroExtend (wr_addr.awaddr);
 	 stval = ((wr_data.wdata >> 32) & 'h_FFFF_FFFF);
       end
       else

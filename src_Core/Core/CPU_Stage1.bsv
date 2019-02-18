@@ -200,8 +200,8 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
 
       // Wrong branch-prediction epoch: discard instruction (convert into a NOOP)
       else if (rg_stage_input.epoch != cur_epoch) begin
-	 output_stage1.ostatus        = OSTATUS_PIPE;
-	 output_stage1.control        = CONTROL_DISCARD;
+	 output_stage1.ostatus = OSTATUS_PIPE;
+	 output_stage1.control = CONTROL_DISCARD;
 
 	 // For debugging only
 	 let data_to_stage2 = Data_Stage1_to_Stage2 {pc:        rg_stage_input.pc,

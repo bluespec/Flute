@@ -475,7 +475,7 @@ endmodule
 // ================================================================
 
 (* synthesize *)
-module mkPLIC_32_1_7 (PLIC_IFC #(32, 1, 7));
+module mkPLIC_16_2_7 (PLIC_IFC #(16, 2, 7));
    let m <- mkPLIC;
    return m;
 endmodule
