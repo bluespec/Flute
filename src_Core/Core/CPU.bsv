@@ -105,6 +105,7 @@ typedef enum {CPU_RESET1,
 `endif
 	      CPU_RUNNING,          // Normal operation
 	      CPU_TRAP,
+	      CPU_SPLIT_FETCH,      // To initiate IFetch after traps/interrupts/RET
 	      CPU_CSRRX_RESTART,    // Restart pipe after a CSRRX instruction
 	      CPU_FENCE_I,          // While waiting for FENCE.I to complete in Near_Mem
 	      CPU_FENCE,            // While waiting for FENCE to complete in Near_Mem
@@ -174,8 +175,15 @@ module mkCPU (CPU_IFC);
    Reg #(Priv_Mode)  rg_cur_priv <- mkReg (m_Priv_Mode);
    Reg #(Epoch)      rg_epoch    <- mkRegU;
 
-   // Save next_pc across split-phase FENCE.I and other split-phase ops
+   // Save next_pc across split-phase FENCE.I and other split-phase ops. This
+   // register is also used for initiating fetches on a trap or external
+   // interrupt
    Reg #(WordXL) rg_next_pc <- mkRegU;
+
+   // Save sstatus_SUM and mstatus_MXR to initiate fetches on an external
+   // interrupt
+   Reg #(Bit #(1)) rg_sstatus_SUM <- mkRegU;
+   Reg #(Bit #(1)) rg_mstatus_MXR <- mkRegU;
 
    // ----------------
    // Pipeline stages
@@ -326,15 +334,15 @@ module mkCPU (CPU_IFC);
    // ================================================================
    // Feed a new PC into StageF (instruction fetch)
 
-   function Action fa_start_ifetch (Epoch epoch, Maybe #(WordXL)  m_old_pc,  WordXL  next_pc, Priv_Mode priv);
+   function Action fa_start_ifetch (
+        Epoch epoch
+      , Maybe #(WordXL)  m_old_pc
+      , WordXL  next_pc
+      , Priv_Mode priv
+      , Bit #(1) mstatus_MXR
+      , Bit #(1) sstatus_SUM);
       action
 	 // Initiate the fetch
-`ifdef ISA_PRIV_S
-	 Bit #(1) sstatus_SUM = (csr_regfile.read_sstatus) [18];
-`else
-	 Bit #(1) sstatus_SUM = 0;
-`endif
-	 Bit #(1) mstatus_MXR = mstatus [19];
 	 stageF.enq (epoch,
 		     m_old_pc,
 		     next_pc,
@@ -351,9 +359,26 @@ module mkCPU (CPU_IFC);
 
    function Action fa_restart (Addr resume_pc);
       action
+         // MSTATUS.MXR for initiating FETCH
+         Bit #(1) mstatus_MXR = mstatus [19];
+         Bit #(1) sstatus_SUM = 0;
+
+         // SSTATUS.SUM for initiating FETCH
+`ifdef ISA_PRIV_S
+         sstatus_SUM = (csr_regfile.read_sstatus) [18];
+`else
+         sstatus_SUM = 0;
+`endif
+
 	 let new_epoch <- fav_update_epoch;
 	 Maybe #(WordXL) m_old_pc = tagged Invalid;
-	 fa_start_ifetch (new_epoch,  m_old_pc, resume_pc, rg_cur_priv);
+	 fa_start_ifetch (
+              new_epoch
+            , m_old_pc
+            , resume_pc
+            , rg_cur_priv
+            , mstatus_MXR
+            , sstatus_SUM);
 	 stageF.set_full (True);
 
 	 stageD.set_full (False);
@@ -712,7 +737,24 @@ module mkCPU (CPU_IFC);
 			       new_epoch, next_pc, fshow (m_old_pc));
 	       end
 
-	    fa_start_ifetch (epoch, m_old_pc, next_pc, rg_cur_priv);
+            // MSTATUS.MXR for initiating FETCH
+            Bit #(1) mstatus_MXR = mstatus [19];
+            Bit #(1) sstatus_SUM = 0;
+
+            // SSTATUS.SUM for initiating FETCH
+`ifdef ISA_PRIV_S
+            sstatus_SUM = (csr_regfile.read_sstatus) [18];
+`else
+            sstatus_SUM = 0;
+`endif
+
+	    fa_start_ifetch (
+                 epoch
+               , m_old_pc
+               , next_pc
+               , rg_cur_priv
+               , mstatus_MXR
+               , sstatus_SUM);
 	    stageF_full = True;
 	 end
 
@@ -738,23 +780,34 @@ module mkCPU (CPU_IFC);
       let tval     = stage2.out.trap_info.tval;
       let instr    = stage2.out.data_to_stage3.instr;
 
-      // Take trap
-      match {.next_pc,
-	     .new_mstatus,
-	     .mcause,
-	     .new_priv}    <- csr_regfile.csr_trap_actions (rg_cur_priv,    // from priv
-							    epc,
-							    False,          // interrupt_req
-							    exc_code,
-							    tval);
+      // Take trap, save trap information for next phase
+      let trap_info <- csr_regfile.csr_trap_actions (
+         rg_cur_priv,    // from priv
+	 epc,
+	 False,          // interrupt_req
+	 exc_code,
+	 tval);
+
+      let next_pc    = trap_info.pc;
+      let new_mstatus= trap_info.mstatus;
+      let mcause     = trap_info.mcause;
+      let new_priv   = trap_info.priv;
+
+      // Save new privilege and pc for ifetch
       rg_cur_priv <= new_priv;
+      rg_next_pc  <= next_pc;
 
-      let new_epoch <- fav_update_epoch;
-      let m_old_pc   = tagged Invalid;
-      fa_start_ifetch (new_epoch, m_old_pc, next_pc, new_priv);
-      stageF.set_full (True);
+      // Note old MSTATUS.MXR for initiating FETCH in next phase
+      rg_mstatus_MXR <= mstatus [19];
 
-      stageD.set_full (False);
+      // Note SSTATUS.SUM for initiating FETCH in next phase
+`ifdef ISA_PRIV_S
+      rg_sstatus_SUM <= (csr_regfile.read_sstatus) [18];
+`else
+      rg_sstatus_SUM <= 0;
+`endif
+      rg_state    <= CPU_SPLIT_FETCH;
+
       stage1.set_full (False);
       stage2.set_full (False);
 
@@ -782,7 +835,7 @@ module mkCPU (CPU_IFC);
       if (cur_verbosity != 0)
 	 $display ("    mcause:0x%0h  epc 0x%0h  tval:0x%0h  new pc 0x%0h, new mstatus 0x%0h",
 		   mcause, epc, tval, next_pc, new_mstatus);
-   endrule: rl_stage2_nonpipe
+   endrule : rl_stage2_nonpipe
 
    // ================================================================
    // Stage1: nonpipe special: CSRRW and CSRRWI
@@ -968,7 +1021,26 @@ module mkCPU (CPU_IFC);
       let next_pc    = stage1.out.next_pc;
       let new_epoch <- fav_update_epoch;
       let m_old_pc   = tagged Invalid;
-      fa_start_ifetch (new_epoch, m_old_pc, next_pc, rg_cur_priv);
+
+      // MSTATUS.MXR for initiating FETCH
+      Bit #(1) mstatus_MXR = mstatus [19];
+      Bit #(1) sstatus_SUM = 0;
+
+      // SSTATUS.SUM for initiating FETCH
+`ifdef ISA_PRIV_S
+      sstatus_SUM = (csr_regfile.read_sstatus) [18];
+`else
+      sstatus_SUM = 0;
+`endif
+
+      fa_start_ifetch (
+           new_epoch
+         , m_old_pc
+         , next_pc
+         , rg_cur_priv
+         , mstatus_MXR
+         , sstatus_SUM);
+
       stageF.set_full (True);
 
       stageD.set_full (False);
@@ -999,13 +1071,21 @@ module mkCPU (CPU_IFC);
 			     m_Priv_Mode : ((stage1.out.control == CONTROL_SRET) ?
 					    s_Priv_Mode : u_Priv_Mode));
       match { .next_pc, .new_priv, .new_mstatus } <- csr_regfile.csr_ret_actions (from_priv);
+      // Save new privilege and pc for ifetch
       rg_cur_priv <= new_priv;
+      rg_next_pc  <= next_pc;
 
-      // Redirect PC
-      let new_epoch <- fav_update_epoch;
-      let m_old_pc   = tagged Invalid;
-      fa_start_ifetch (new_epoch, m_old_pc, next_pc, new_priv);
-      stageF.set_full (True);
+      // Note MSTATUS.MXR for initiating FETCH
+      rg_mstatus_MXR <= mstatus [19];
+
+      // Note SSTATUS.SUM for initiating FETCH
+`ifdef ISA_PRIV_S
+      rg_sstatus_SUM <= (csr_regfile.read_sstatus) [18];
+`else
+      rg_sstatus_SUM <= 0;
+`endif
+
+      rg_state    <= CPU_SPLIT_FETCH;
 
       stageD.set_full (False);
       stage1.set_full (False);    fa_step_check;
@@ -1067,13 +1147,30 @@ module mkCPU (CPU_IFC);
       // Await mem system FENCE.I completion
       let dummy <- near_mem.server_fence_i.response.get;
 
+      // MSTATUS.MXR for initiating FETCH
+      Bit #(1) mstatus_MXR = mstatus [19];
+      Bit #(1) sstatus_SUM = 0;
+
+      // SSTATUS.SUM for initiating FETCH
+`ifdef ISA_PRIV_S
+      sstatus_SUM = (csr_regfile.read_sstatus) [18];
+`else
+      sstatus_SUM = 0;
+`endif
+
       // Resume pipe
       rg_state <= CPU_RUNNING;
       let new_epoch <- fav_update_epoch;
       let m_old_pc   = tagged Invalid;
-      fa_start_ifetch (new_epoch, m_old_pc, rg_next_pc, rg_cur_priv);
-      stageF.set_full (True);
+      fa_start_ifetch (
+           new_epoch
+         , m_old_pc
+         , rg_next_pc
+         , rg_cur_priv
+         , mstatus_MXR
+         , sstatus_SUM);
 
+      stageF.set_full (True);
       stageD.set_full (False);
       stage1.set_full (False);    fa_step_check;
 
@@ -1121,11 +1218,28 @@ module mkCPU (CPU_IFC);
       // Await mem system FENCE completion
       let dummy <- near_mem.server_fence.response.get;
 
+      // MSTATUS.MXR for initiating FETCH
+      Bit #(1) mstatus_MXR = mstatus [19];
+      Bit #(1) sstatus_SUM = 0;
+
+      // SSTATUS.SUM for initiating FETCH
+`ifdef ISA_PRIV_S
+      sstatus_SUM = (csr_regfile.read_sstatus) [18];
+`else
+      sstatus_SUM = 0;
+`endif
+
       // Resume pipe
       rg_state <= CPU_RUNNING;
       let new_epoch <- fav_update_epoch;
       let m_old_pc   = tagged Invalid;
-      fa_start_ifetch (new_epoch, m_old_pc, rg_next_pc, rg_cur_priv);
+      fa_start_ifetch (
+           new_epoch
+         , m_old_pc
+         , rg_next_pc
+         , rg_cur_priv
+         , mstatus_MXR
+         , sstatus_SUM);
       stageF.set_full (True);
 
       stageD.set_full (False);
@@ -1183,9 +1297,26 @@ module mkCPU (CPU_IFC);
       // Resume pipe
       rg_state <= CPU_RUNNING;
 
+      // MSTATUS.MXR for initiating FETCH
+      Bit #(1) mstatus_MXR = mstatus [19];
+      Bit #(1) sstatus_SUM = 0;
+
+      // SSTATUS.SUM for initiating FETCH
+`ifdef ISA_PRIV_S
+      sstatus_SUM = (csr_regfile.read_sstatus) [18];
+`else
+      sstatus_SUM = 0;
+`endif
+
       let new_epoch <- fav_update_epoch;
       let m_old_pc   = tagged Invalid;
-      fa_start_ifetch (new_epoch, m_old_pc, rg_next_pc, rg_cur_priv);
+      fa_start_ifetch (
+           new_epoch
+         , m_old_pc
+         , rg_next_pc
+         , rg_cur_priv
+         , mstatus_MXR
+         , sstatus_SUM);
       stageF.set_full (True);
 
       stageD.set_full (False);
@@ -1232,6 +1363,17 @@ module mkCPU (CPU_IFC);
 		       && (stageF.out.ostatus != OSTATUS_BUSY));
       if (cur_verbosity > 1) $display ("%0d:  CPU.rl_WFI_resume", mcycle);
 
+      // MSTATUS.MXR for initiating FETCH
+      Bit #(1) mstatus_MXR = mstatus [19];
+      Bit #(1) sstatus_SUM = 0;
+
+      // SSTATUS.SUM for initiating FETCH
+`ifdef ISA_PRIV_S
+      sstatus_SUM = (csr_regfile.read_sstatus) [18];
+`else
+      sstatus_SUM = 0;
+`endif
+
       // Debug
       if (cur_verbosity >= 1)
 	 $display ("    WFI resume");
@@ -1241,7 +1383,13 @@ module mkCPU (CPU_IFC);
 
       let new_epoch <- fav_update_epoch;
       let m_old_pc   = tagged Invalid;
-      fa_start_ifetch (new_epoch, m_old_pc, rg_next_pc, rg_cur_priv);
+      fa_start_ifetch (
+           new_epoch
+         , m_old_pc
+         , rg_next_pc
+         , rg_cur_priv
+         , mstatus_MXR
+         , sstatus_SUM);
       stageF.set_full (True);
 
       stageD.set_full (False);
@@ -1282,26 +1430,39 @@ module mkCPU (CPU_IFC);
       let tval     = stage1.out.trap_info.tval;
       let instr    = stage1.out.data_to_stage2.instr;
 
-      // Take trap
-      match {.next_pc,
-	     .new_mstatus,
-	     .mcause,
-	     .new_priv}    <- csr_regfile.csr_trap_actions (rg_cur_priv,    // from priv
-							    epc,
-							    False,          // interrupt_req,
-							    exc_code,
-							    tval);
+      // Take trap, save trap information for next phase
+      let trap_info <- csr_regfile.csr_trap_actions (
+         rg_cur_priv, // from priv
+	 epc,
+	 False,       // interrupt_req
+	 exc_code,
+	 tval);
+
+      let next_pc    = trap_info.pc;
+      let new_mstatus= trap_info.mstatus;
+      let mcause     = trap_info.mcause;
+      let new_priv   = trap_info.priv;
+
+      // Save new privilege and pc for ifetch
       rg_cur_priv <= new_priv;
+      rg_next_pc  <= next_pc;
 
-      let new_epoch <- fav_update_epoch;
-      let m_old_pc   = tagged Invalid;
-      fa_start_ifetch (new_epoch, m_old_pc, next_pc, new_priv);
-      stageF.set_full (True);
-      rg_state <= CPU_RUNNING;
+      // Note old MSTATUS.MXR for initiating FETCH in next phase
+      rg_mstatus_MXR <= mstatus [19];
 
+      // Note SSTATUS.SUM for initiating FETCH in next phase
+`ifdef ISA_PRIV_S
+      rg_sstatus_SUM <= (csr_regfile.read_sstatus) [18];
+`else
+      rg_sstatus_SUM <= 0;
+`endif
+
+      rg_state <= CPU_SPLIT_FETCH;
+      
       stageD.set_full (False);
       stage1.set_full (False);    fa_step_check;
 
+      // Tandem Verification and Debug related actions
 `ifdef INCLUDE_TANDEM_VERIF
       // Trace data
       let trace_data = stage1.out.data_to_stage2.trace_data;
@@ -1334,7 +1495,26 @@ module mkCPU (CPU_IFC);
 		   mcycle, rg_cur_priv, mcause, epc);
 	 $display ("    tval:0x%0h  new pc:0x%0h  new mstatus:0x%0h", tval, next_pc, new_mstatus);
       end
-   endrule: rl_stage1_trap
+   endrule : rl_stage1_trap
+
+   // Initiate the instruction fetch from the new_pc. These actions
+   // were formerly part of the stage1 and stage2 trap, external interrupt and
+   // RET rules. Separated to break long timing paths from stage2 and stage3
+   // status to IFetch
+   rule rl_trap_fetch (rg_state == CPU_SPLIT_FETCH);
+      let new_epoch <- fav_update_epoch;
+      let m_old_pc   = tagged Invalid;
+      fa_start_ifetch (
+           new_epoch
+         , m_old_pc
+         , rg_next_pc
+         , rg_cur_priv
+         , rg_mstatus_MXR
+         , rg_sstatus_SUM);
+      stageF.set_full (True);
+      stageD.set_full (False);
+      rg_state <= CPU_RUNNING;
+   endrule : rl_trap_fetch
 
    // ================================================================
    // Stage1: nonpipe trap: BREAK into Debug Mode when dcsr.ebreakm/s/u is set
@@ -1406,32 +1586,29 @@ module mkCPU (CPU_IFC);
       let instr = stage1.out.data_to_stage2.instr;
 
       // Take trap
-      match {.next_pc,
-	     .new_mstatus,
-	     .mcause,
-	     .new_priv}    <- csr_regfile.csr_trap_actions (rg_cur_priv,    // from priv
-							    epc,
-							    True,           // interrupt_req,
-							    exc_code,
-							    0);             // tval
+      let trap_info <- csr_regfile.csr_trap_actions (
+         rg_cur_priv,    // from priv
+	 epc,
+	 True,           // interrupt_req,
+	 exc_code,
+	 0);             // tval
+      let next_pc       = trap_info.pc; 
+      let new_mstatus   = trap_info.mstatus;
+      let mcause        = trap_info.mcause;
+      let new_priv      = trap_info.priv; 
+
+      // Prepare the next_pc into stage1, for enq as the interrupt is taken
+      rg_next_pc  <= next_pc;
+
+      // Save new priviege
       rg_cur_priv <= new_priv;
 
-      // Just enq the next_pc into stage1,
-      // as the interrupt is taken
-      Bit #(1) sstatus_SUM = new_mstatus [18];    // TODO: project new_mstatus to new_sstatus?
-      Bit #(1) mstatus_MXR = new_mstatus [19];
-      let new_epoch <- fav_update_epoch ();
-      let m_old_pc   = tagged Invalid;
-      stageF.enq (new_epoch,
-		  m_old_pc,
-		  next_pc,
-		  new_priv,
-		  sstatus_SUM,
-		  mstatus_MXR,
-		  csr_regfile.read_satp);
-      stageF.set_full (True);
+      // TODO: project new_mstatus to new_sstatus?
+      rg_sstatus_SUM <= new_mstatus [18];
+      rg_mstatus_MXR <= new_mstatus [19];
 
-      stageD.set_full (False);
+      rg_state <= CPU_SPLIT_FETCH;
+
       stage1.set_full (False);
 
       // Accounting: none (instruction is abandoned)

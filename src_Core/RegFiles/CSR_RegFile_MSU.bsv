@@ -98,7 +98,7 @@ interface CSR_RegFile_IFC;
    method WordXL read_satp;
 
    // CSR trap actions
-   method ActionValue #(Tuple4 #(Addr, Word, Word, Priv_Mode))
+   method ActionValue #(Trap_Info)
           csr_trap_actions (Priv_Mode  from_priv,
 			    Word       pc,
 			    Bool       interrupt,
@@ -1059,10 +1059,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
    endmethod
 
    // CSR Trap actions
-   method ActionValue #(Tuple4 #(Addr,          // new PC
-				 WordXL,        // new mstatus
-				 WordXL,        // new mcause
-				 Priv_Mode))    // new priv
+   method ActionValue #(Trap_Info)
           csr_trap_actions (Priv_Mode  from_priv,
 			    WordXL     pc,
 			    Bool       interrupt,
@@ -1129,10 +1126,11 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 	 $display ("");
       end
 
-      return tuple4 (exc_pc,                       // New PC
-		     new_status,                   // New mstatus/sstatus/ustatus
-		     mcause_to_word  (xcause),     // New mcause
-		     new_priv);                    // New priv
+      return (Trap_Info {
+         pc       : exc_pc,                     // New PC
+	 mstatus  : new_status,                 // New mstatus/sstatus/ustatus
+	 mcause   : mcause_to_word  (xcause),   // New mcause
+	 priv     : new_priv});                 // New priv
    endmethod: csr_trap_actions
 
    // CSR RET actions (return from exception)

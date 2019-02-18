@@ -1092,6 +1092,14 @@ CSR_Addr   csr_addr_hpmcounter29h  = 12'hC9D;    // Upper 32 bits of performance
 CSR_Addr   csr_addr_hpmcounter30h  = 12'hC9E;    // Upper 32 bits of performance-monitoring counter
 CSR_Addr   csr_addr_hpmcounter31h  = 12'hC9F;    // Upper 32 bits of performance-monitoring counter
 
+// Information from the CSR on a new trap. 
+typedef struct {
+   Addr        pc;
+   WordXL      mstatus;
+   WordXL      mcause;
+   Priv_Mode   priv;
+} Trap_Info deriving (Bits, Eq, FShow);
+
 // ================================================================
 // 'C' Extension ("compressed" instructions)
 
