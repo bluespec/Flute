@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <spirit:component xmlns:xilinx="http://www.xilinx.com" xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1685-2009" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <spirit:vendor>bluespec</spirit:vendor>
+  <spirit:vendor>ssith</spirit:vendor>
   <spirit:library>user</spirit:library>
-  <spirit:name>mkP2_Core</spirit:name>
+  <spirit:name>ssith_processor</spirit:name>
   <spirit:version>1.0</spirit:version>
   <spirit:busInterfaces>
     <spirit:busInterface>
@@ -2528,7 +2528,7 @@
       <xilinx:coreCreationDateTime>2019-02-12T00:28:10Z</xilinx:coreCreationDateTime>
       <xilinx:tags>
         <xilinx:tag xilinx:name="nopcore"/>
-        <xilinx:tag xilinx:name="bluespec:user:mkP2_Core:1.0_ARCHIVE_LOCATION">src_SSITH_P2/xilinx_ip</xilinx:tag>
+        <xilinx:tag xilinx:name="ssith:user:ssith_processor:1.0_ARCHIVE_LOCATION">src_SSITH_P2/xilinx_ip</xilinx:tag>
       </xilinx:tags>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
