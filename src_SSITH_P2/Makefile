@@ -32,6 +32,7 @@ BSC_COMPILATION_FLAGS += \
 	-D Near_Mem_Caches    \
 	-D FABRIC64    \
 	-D INCLUDE_GDB_CONTROL \
+	-D INCLUDE_TANDEM_VERIF \
 	-D XILINX_BSCAN  -D XILINX_XCVU9P  -D JTAG_TAP
 
 # ================================================================
