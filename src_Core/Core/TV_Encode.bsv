@@ -49,7 +49,7 @@ module mkTV_Encode (TV_Encode_IFC);
 
    // Keep track of last PC for more efficient encoding of incremented PCs
    // TODO: currently always sending full PC
-   Reg #(Bit #(64)) rg_last_pc <- mkReg (0);
+   Reg #(WordXL) rg_last_pc <- mkReg (0);
 
    FIFOF #(Trace_Data)                        f_trace_data <- mkFIFOF;
    FIFOF #(Tuple2 #(Bit #(32), TV_Vec_Bytes)) f_vb         <- mkFIFOF;
@@ -165,7 +165,7 @@ module mkTV_Encode (TV_Encode_IFC);
 
       // Encode components of td into byte vecs
       match { .n0, .vb0 } = encode_byte (te_op_begin_group);
-      match { .n1, .vb1 } = encode_reg (fv_csr_regnum (csr_addr_dpc), td.pc);
+      match { .n1, .vb1 } = encode_pc (td.pc);
       match { .n2, .vb2 } = encode_instr (td.instr_sz, td.instr);
       match { .nN, .vbN } = encode_byte (te_op_end_group);
 
@@ -183,7 +183,7 @@ module mkTV_Encode (TV_Encode_IFC);
 
       // Encode components of td into byte vecs
       match { .n0, .vb0 } = encode_byte (te_op_begin_group);
-      match { .n1, .vb1 } = encode_reg (fv_csr_regnum (csr_addr_dpc), td.pc);
+      match { .n1, .vb1 } = encode_pc (td.pc);
       match { .n2, .vb2 } = encode_instr (td.instr_sz, td.instr);
       match { .n3, .vb3 } = encode_reg (fv_gpr_regnum (td.rd), td.word1);
       match { .nN, .vbN } = encode_byte (te_op_end_group);
@@ -203,7 +203,7 @@ module mkTV_Encode (TV_Encode_IFC);
 
       // Encode components of td into byte vecs
       match { .n0, .vb0 } = encode_byte (te_op_begin_group);
-      match { .n1, .vb1 } = encode_reg (fv_csr_regnum (csr_addr_dpc), td.pc);
+      match { .n1, .vb1 } = encode_pc (td.pc);
       match { .n2, .vb2 } = encode_instr (td.instr_sz, td.instr);
       match { .n3, .vb3 } = encode_reg (fv_fpr_regnum (td.rd), td.word1);
       match { .nN, .vbN } = encode_byte (te_op_end_group);
@@ -222,7 +222,7 @@ module mkTV_Encode (TV_Encode_IFC);
 
       // Encode components of td into byte vecs
       match { .n0, .vb0 } = encode_byte (te_op_begin_group);
-      match { .n1, .vb1 } = encode_reg (fv_csr_regnum (csr_addr_dpc), td.pc);
+      match { .n1, .vb1 } = encode_pc (td.pc);
       match { .n2, .vb2 } = encode_instr (td.instr_sz, td.instr);
       match { .n3, .vb3 } = encode_reg (fv_gpr_regnum (td.rd), td.word1);
       match { .n4, .vb4 } = encode_eaddr (truncate (td.word3));
@@ -244,7 +244,7 @@ module mkTV_Encode (TV_Encode_IFC);
 
       // Encode components of td into byte vecs
       match { .n0, .vb0 } = encode_byte (te_op_begin_group);
-      match { .n1, .vb1 } = encode_reg (fv_csr_regnum (csr_addr_dpc), td.pc);
+      match { .n1, .vb1 } = encode_pc (td.pc);
       match { .n2, .vb2 } = encode_instr (td.instr_sz, td.instr);
       match { .n3, .vb3 } = encode_reg (fv_fpr_regnum (td.rd), td.word1);
       match { .n4, .vb4 } = encode_eaddr (truncate (td.word3));
@@ -269,7 +269,7 @@ module mkTV_Encode (TV_Encode_IFC);
 
       // Encode components of td into byte vecs
       match { .n0, .vb0 } = encode_byte (te_op_begin_group);
-      match { .n1, .vb1 } = encode_reg (fv_csr_regnum (csr_addr_dpc), td.pc);
+      match { .n1, .vb1 } = encode_pc (td.pc);
       match { .n2, .vb2 } = encode_instr (td.instr_sz, td.instr);
       match { .n3, .vb3 } = encode_stval (mem_req_size, td.word2);
       match { .n4, .vb4 } = encode_eaddr (truncate (td.word3));
@@ -294,7 +294,7 @@ module mkTV_Encode (TV_Encode_IFC);
 
       // Encode components of td into byte vecs
       match { .n0, .vb0 } = encode_byte (te_op_begin_group);
-      match { .n1, .vb1 } = encode_reg (fv_csr_regnum (csr_addr_dpc), td.pc);
+      match { .n1, .vb1 } = encode_pc (td.pc);
       match { .n2, .vb2 } = encode_instr (td.instr_sz, td.instr);
       match { .n3, .vb3 } = encode_reg (fv_gpr_regnum (td.rd), td.word1);
       match { .n4, .vb4 } = encode_stval (mem_req_size, td.word2);
@@ -318,7 +318,7 @@ module mkTV_Encode (TV_Encode_IFC);
 
       // Encode components of td into byte vecs
       match { .n0, .vb0 } = encode_byte (te_op_begin_group);
-      match { .n1, .vb1 } = encode_reg (fv_csr_regnum (csr_addr_dpc), td.pc);
+      match { .n1, .vb1 } = encode_pc (td.pc);
       match { .n2, .vb2 } = encode_instr (td.instr_sz, td.instr);
       match { .n3, .vb3 } = encode_reg (fv_gpr_regnum (td.rd), td.word1);
       match { .n4, .vb4 } = ((td.word2 == 0)
@@ -365,7 +365,7 @@ module mkTV_Encode (TV_Encode_IFC);
 
       // Encode components of td into byte vecs
       match { .n0, .vb0 } = encode_byte (te_op_begin_group);
-      match { .n1, .vb1 } = encode_reg (fv_csr_regnum (csr_addr_dpc), td.pc);
+      match { .n1, .vb1 } = encode_pc (td.pc);
       match { .n2, .vb2 } = (is_instr_fault
 			     ? tuple2 (0, ?)
 			     : encode_instr (td.instr_sz, td.instr));
@@ -414,7 +414,7 @@ module mkTV_Encode (TV_Encode_IFC);
 
       // Encode components of td into byte vecs
       match { .n0, .vb0 } = encode_byte (te_op_begin_group);
-      match { .n1, .vb1 } = encode_reg (fv_csr_regnum (csr_addr_dpc), td.pc);
+      match { .n1, .vb1 } = encode_pc (td.pc);
       match { .n2, .vb2 } = encode_priv (td.rd);
       match { .n3, .vb3 } = encode_reg (fv_csr_regnum (csr_addr_status), td.word1);
       match { .n4, .vb4 } = encode_reg (fv_csr_regnum (csr_addr_cause),  td.word2);
@@ -440,7 +440,7 @@ module mkTV_Encode (TV_Encode_IFC);
 
       // Encode components of td into byte vecs
       match { .n0, .vb0 } = encode_byte (te_op_begin_group);
-      match { .n1, .vb1 } = encode_reg (fv_csr_regnum (csr_addr_dpc), td.pc);
+      match { .n1, .vb1 } = encode_pc (td.pc);
       match { .n2, .vb2 } = encode_instr (td.instr_sz, td.instr);
       match { .n3, .vb3 } = encode_priv (td.rd);
       match { .n4, .vb4 } = encode_reg (fv_csr_regnum (csr_addr_mstatus), td.word1);
@@ -482,7 +482,7 @@ Bit #(8) te_op_incr_pc         = 3;
 Bit #(8) te_op_full_reg        = 4;
 Bit #(8) te_op_incr_reg        = 5;
 Bit #(8) te_op_incr_reg_OR     = 6;
-Bit #(8) te_op_microarch_state = 7;
+Bit #(8) te_op_addl_state      = 7;
 Bit #(8) te_op_mem_req         = 8;
 Bit #(8) te_op_mem_rsp         = 9;
 Bit #(8) te_op_hart_reset      = 10;
@@ -513,22 +513,22 @@ Bit #(4) te_mem_req_op_ifetch     = 13;
 Bit #(4) te_mem_result_success    = 0;
 Bit #(4) te_mem_result_failure    = 1;
 
-Bit #(8) te_op_microarch_state_priv     = 1;
-Bit #(8) te_op_microarch_state_paddr    = 2;
-Bit #(8) te_op_microarch_state_eaddr    = 3;
-Bit #(8) te_op_microarch_state_data8    = 4;
-Bit #(8) te_op_microarch_state_data16   = 5;
-Bit #(8) te_op_microarch_state_data32   = 6;
-Bit #(8) te_op_microarch_state_data64   = 7;
-Bit #(8) te_op_microarch_state_mtime    = 8;
-Bit #(8) te_op_microarch_state_pc_paddr = 9;
+Bit #(8) te_op_addl_state_priv     = 1;
+Bit #(8) te_op_addl_state_paddr    = 2;
+Bit #(8) te_op_addl_state_eaddr    = 3;
+Bit #(8) te_op_addl_state_data8    = 4;
+Bit #(8) te_op_addl_state_data16   = 5;
+Bit #(8) te_op_addl_state_data32   = 6;
+Bit #(8) te_op_addl_state_data64   = 7;
+Bit #(8) te_op_addl_state_mtime    = 8;
+Bit #(8) te_op_addl_state_pc_paddr = 9;
+Bit #(8) te_op_addl_state_pc       = 10;
 
 // ================================================================
 // Architectural register address encodings
 // cf. "RISC-V External Debug Support"
 //      2018-10-02_riscv_debug_spec_v0.13_DRAFT_f2873e71
 //     "Table 3.3 Abstract Register Numbers"
-// Note: the PC is numbered at fv_csr_regnum (csr_addr_dpc)
 
 function Bit #(16) fv_csr_regnum (CSR_Addr  csr_addr);
    return zeroExtend (csr_addr);
@@ -656,18 +656,38 @@ endfunction
 
 function Tuple2 #(Bit #(32), Vector #(TV_VB_SIZE, Byte)) encode_priv (Bit #(5) priv);
    Vector #(TV_VB_SIZE, Byte) vb = newVector;
-   vb [0] = te_op_microarch_state;
-   vb [1] = te_op_microarch_state_priv;
+   vb [0] = te_op_addl_state;
+   vb [1] = te_op_addl_state_priv;
    vb [2] = zeroExtend (priv);
    return tuple2 (3, vb);
+endfunction
+
+function Tuple2 #(Bit #(32), Vector #(TV_VB_SIZE, Byte)) encode_pc (WordXL word);
+   Vector #(TV_VB_SIZE, Byte) vb = newVector;
+   Bit #(32) n;
+   vb [0] = te_op_addl_state;
+   vb [1] = te_op_addl_state_pc;
+   vb [2] = word [7:0];
+   vb [3] = word [15:8];
+   vb [4] = word [23:16];
+   vb [5] = word [31:24];
+   n = 6;
+`ifdef RV64
+   vb [6] = word [39:32];
+   vb [7] = word [47:40];
+   vb [8] = word [55:48];
+   vb [9] = word [63:56];
+   n = 10;
+`endif
+   return tuple2 (n, vb);
 endfunction
 
 function Tuple2 #(Bit #(32), Vector #(TV_VB_SIZE, Byte)) encode_eaddr (WordXL word);
    Vector #(TV_VB_SIZE, Byte) vb = newVector;
    Bit #(32)            n;
-   vb [0] = te_op_microarch_state;
-   vb [1] = te_op_microarch_state_eaddr;
-   vb [2] = word[7:0];
+   vb [0] = te_op_addl_state;
+   vb [1] = te_op_addl_state_eaddr;
+   vb [2] = word [7:0];
    vb [3] = word [15:8];
    vb [4] = word [23:16];
    vb [5] = word [31:24];
@@ -685,14 +705,14 @@ endfunction
 function Tuple2 #(Bit #(32), Vector #(TV_VB_SIZE, Byte)) encode_stval (MemReqSize mem_req_size, WordXL word);
    Vector #(TV_VB_SIZE, Byte) vb = newVector;
    Bit #(32)            n;
-   vb [0] = te_op_microarch_state;
+   vb [0] = te_op_addl_state;
    vb [1] = case (mem_req_size)
-	       f3_SIZE_B: te_op_microarch_state_data8;
-	       f3_SIZE_H: te_op_microarch_state_data16;
-	       f3_SIZE_W: te_op_microarch_state_data32;
-	       f3_SIZE_D: te_op_microarch_state_data64;
+	       f3_SIZE_B: te_op_addl_state_data8;
+	       f3_SIZE_H: te_op_addl_state_data16;
+	       f3_SIZE_W: te_op_addl_state_data32;
+	       f3_SIZE_D: te_op_addl_state_data64;
 	    endcase;
-   vb [2] = word[7:0];
+   vb [2] = word [7:0];
    vb [3] = word [15:8];
    vb [4] = word [23:16];
    vb [5] = word [31:24];
