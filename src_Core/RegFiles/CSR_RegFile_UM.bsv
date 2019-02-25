@@ -909,11 +909,10 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 	 $display ("");
       end
 
-      return (Trap_Info {
-         pc       : exc_pc,                        // New PC
-	 mstatus  : mstatus_to_word (new_mstatus), // New mstatus
-	 mcause   : mcause_to_word  (xcause),      // New mcause
-	 priv     : new_priv});                    // New priv
+      return (Trap_Info {pc       : exc_pc,                        // New PC
+			 mstatus  : mstatus_to_word (new_mstatus), // New mstatus
+			 mcause   : mcause_to_word  (xcause),      // New mcause
+			 priv     : new_priv});                    // New priv
    endmethod
 
    // CSR RET actions (return from exception)

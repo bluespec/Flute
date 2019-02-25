@@ -781,12 +781,11 @@ module mkCPU (CPU_IFC);
       let instr    = stage2.out.data_to_stage3.instr;
 
       // Take trap, save trap information for next phase
-      let trap_info <- csr_regfile.csr_trap_actions (
-         rg_cur_priv,    // from priv
-	 epc,
-	 False,          // interrupt_req
-	 exc_code,
-	 tval);
+      let trap_info <- csr_regfile.csr_trap_actions (rg_cur_priv,    // from priv
+						     epc,
+						     False,          // interrupt_req
+						     exc_code,
+						     tval);
 
       let next_pc    = trap_info.pc;
       let new_mstatus= trap_info.mstatus;
@@ -1431,12 +1430,11 @@ module mkCPU (CPU_IFC);
       let instr    = stage1.out.data_to_stage2.instr;
 
       // Take trap, save trap information for next phase
-      let trap_info <- csr_regfile.csr_trap_actions (
-         rg_cur_priv, // from priv
-	 epc,
-	 False,       // interrupt_req
-	 exc_code,
-	 tval);
+      let trap_info <- csr_regfile.csr_trap_actions (rg_cur_priv, // from priv
+						     epc,
+						     False,       // interrupt_req
+						     exc_code,
+						     tval);
 
       let next_pc    = trap_info.pc;
       let new_mstatus= trap_info.mstatus;
@@ -1586,21 +1584,20 @@ module mkCPU (CPU_IFC);
       let instr = stage1.out.data_to_stage2.instr;
 
       // Take trap
-      let trap_info <- csr_regfile.csr_trap_actions (
-         rg_cur_priv,    // from priv
-	 epc,
-	 True,           // interrupt_req,
-	 exc_code,
-	 0);             // tval
-      let next_pc       = trap_info.pc; 
+      let trap_info <- csr_regfile.csr_trap_actions (rg_cur_priv,    // from priv
+						     epc,
+						     True,           // interrupt_req,
+						     exc_code,
+						     0);             // tval
+      let next_pc       = trap_info.pc;
       let new_mstatus   = trap_info.mstatus;
       let mcause        = trap_info.mcause;
-      let new_priv      = trap_info.priv; 
+      let new_priv      = trap_info.priv;
 
       // Prepare the next_pc into stage1, for enq as the interrupt is taken
       rg_next_pc  <= next_pc;
 
-      // Save new priviege
+      // Save new privilege
       rg_cur_priv <= new_priv;
 
       // TODO: project new_mstatus to new_sstatus?

@@ -1126,11 +1126,10 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 	 $display ("");
       end
 
-      return (Trap_Info {
-         pc       : exc_pc,                     // New PC
-	 mstatus  : new_status,                 // New mstatus/sstatus/ustatus
-	 mcause   : mcause_to_word  (xcause),   // New mcause
-	 priv     : new_priv});                 // New priv
+      return (Trap_Info {pc       : exc_pc,                     // New PC
+			 mstatus  : new_status,                 // New mstatus/sstatus/ustatus
+			 mcause   : mcause_to_word  (xcause),   // New mcause
+			 priv     : new_priv});                 // New priv
    endmethod: csr_trap_actions
 
    // CSR RET actions (return from exception)
