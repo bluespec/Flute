@@ -29,6 +29,10 @@ package SoC_Map;
 
 export  SoC_Map_IFC (..), mkSoC_Map;
 
+export  N_External_Interrupt_Sources;
+export  n_external_interrupt_sources;
+export  irq_num_uart0;
+
 // ================================================================
 // Bluespec library imports
 
@@ -305,6 +309,15 @@ module mkSoC_Map (SoC_Map_IFC);
 
    method  Bit #(64)  m_nmi_vector     = nmi_vector;
 endmodule
+
+// ================================================================
+// Interrupt request numbers (== index in to vector of
+// interrupt-request lines in Core)
+
+typedef  16  N_External_Interrupt_Sources;
+Integer  n_external_interrupt_sources = valueOf (N_External_Interrupt_Sources);
+
+Integer irq_num_uart0 = 0;
 
 // ================================================================
 

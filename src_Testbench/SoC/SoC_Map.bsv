@@ -27,15 +27,17 @@ export  SoC_Map_IFC (..), mkSoC_Map;
 // export  fn_addr_in_range;
 
 export  Num_Masters;
-export  debug_module_master_num;
 export  imem_master_num;
 export  dmem_master_num;
 
 export  Num_Slaves;
 export  boot_rom_slave_num;
-export  tcm_back_door_slave_num;
 export  mem0_controller_slave_num;
 export  uart0_slave_num;
+
+export  N_External_Interrupt_Sources;
+export  n_external_interrupt_sources;
+export  irq_num_uart0;
 
 // ================================================================
 // Bluespec library imports
@@ -51,13 +53,17 @@ import Fabric_Defs :: *;    // Only for type Fabric_Addr
 // Interface and module for the address map
 
 interface SoC_Map_IFC;
-   (* always_ready *)   method  Fabric_Addr  m_uart0_addr_base;
-   (* always_ready *)   method  Fabric_Addr  m_uart0_addr_size;
-   (* always_ready *)   method  Fabric_Addr  m_uart0_addr_lim;
-
    (* always_ready *)   method  Fabric_Addr  m_near_mem_io_addr_base;
    (* always_ready *)   method  Fabric_Addr  m_near_mem_io_addr_size;
    (* always_ready *)   method  Fabric_Addr  m_near_mem_io_addr_lim;
+
+   (* always_ready *)   method  Fabric_Addr  m_plic_addr_base;
+   (* always_ready *)   method  Fabric_Addr  m_plic_addr_size;
+   (* always_ready *)   method  Fabric_Addr  m_plic_addr_lim;
+
+   (* always_ready *)   method  Fabric_Addr  m_uart0_addr_base;
+   (* always_ready *)   method  Fabric_Addr  m_uart0_addr_size;
+   (* always_ready *)   method  Fabric_Addr  m_uart0_addr_lim;
 
    (* always_ready *)   method  Fabric_Addr  m_boot_rom_addr_base;
    (* always_ready *)   method  Fabric_Addr  m_boot_rom_addr_size;
@@ -81,23 +87,14 @@ interface SoC_Map_IFC;
    method  Bool  m_is_near_mem_IO_addr (Fabric_Addr addr);
 
    (* always_ready *)   method  Bit #(64)    m_pc_reset_value;
+
+   (* always_ready *)   method  Bit #(64)  m_nmi_vector;
 endinterface
 
 // ================================================================
 
 (* synthesize *)
 module mkSoC_Map (SoC_Map_IFC);
-
-   // ----------------------------------------------------------------
-   // UART 0
-
-   Fabric_Addr uart0_addr_base = 'hC000_0000;
-   Fabric_Addr uart0_addr_size = 'h0000_0080;    // 128
-   Fabric_Addr uart0_addr_lim  = uart0_addr_base + uart0_addr_size;
-
-   function Bool fn_is_uart0_addr (Fabric_Addr addr);
-      return ((uart0_addr_base <= addr) && (addr < uart0_addr_lim));
-   endfunction
 
    // ----------------------------------------------------------------
    // Near_Mem_IO (including CLINT, the core-local interruptor)
@@ -108,6 +105,28 @@ module mkSoC_Map (SoC_Map_IFC);
 
    function Bool fn_is_near_mem_io_addr (Fabric_Addr addr);
       return ((near_mem_io_addr_base <= addr) && (addr < near_mem_io_addr_lim));
+   endfunction
+
+   // ----------------------------------------------------------------
+   // PLIC
+
+   Fabric_Addr plic_addr_base = 'h_1100_0000;
+   Fabric_Addr plic_addr_size = 'h_0010_0000;    // 1M
+   Fabric_Addr plic_addr_lim  = plic_addr_base + plic_addr_size;
+
+   function Bool fn_is_plic_addr (Fabric_Addr addr);
+      return ((plic_addr_base <= addr) && (addr < plic_addr_lim));
+   endfunction
+
+   // ----------------------------------------------------------------
+   // UART 0
+
+   Fabric_Addr uart0_addr_base = 'hC000_0000;
+   Fabric_Addr uart0_addr_size = 'h0000_0080;    // 128
+   Fabric_Addr uart0_addr_lim  = uart0_addr_base + uart0_addr_size;
+
+   function Bool fn_is_uart0_addr (Fabric_Addr addr);
+      return ((uart0_addr_base <= addr) && (addr < uart0_addr_lim));
    endfunction
 
    // ----------------------------------------------------------------
@@ -172,8 +191,9 @@ module mkSoC_Map (SoC_Map_IFC);
    // (Caches need this information to avoid cacheing these addresses.)
 
    function Bool fn_is_IO_addr (Fabric_Addr addr);
-      return (   fn_is_uart0_addr  (addr)
-	      || fn_is_near_mem_io_addr (addr)
+      return (   fn_is_near_mem_io_addr (addr)
+	      || fn_is_plic_addr (addr)
+	      || fn_is_uart0_addr  (addr)
 	      );
    endfunction
 
@@ -182,16 +202,25 @@ module mkSoC_Map (SoC_Map_IFC);
 
    Bit #(64) pc_reset_value = boot_rom_addr_base;
 
+   // ----------------------------------------------------------------
+   // Non-maskable Interrupt vector
+
+   Bit #(64) nmi_vector = ?;    // TODO
+
    // ================================================================
    // INTERFACE
-
-   method  Fabric_Addr  m_uart0_addr_base = uart0_addr_base;
-   method  Fabric_Addr  m_uart0_addr_size = uart0_addr_size;
-   method  Fabric_Addr  m_uart0_addr_lim  = uart0_addr_lim;
 
    method  Fabric_Addr  m_near_mem_io_addr_base = near_mem_io_addr_base;
    method  Fabric_Addr  m_near_mem_io_addr_size = near_mem_io_addr_size;
    method  Fabric_Addr  m_near_mem_io_addr_lim  = near_mem_io_addr_lim;
+
+   method  Fabric_Addr  m_plic_addr_base = plic_addr_base;
+   method  Fabric_Addr  m_plic_addr_size = plic_addr_size;
+   method  Fabric_Addr  m_plic_addr_lim  = plic_addr_lim;
+
+   method  Fabric_Addr  m_uart0_addr_base = uart0_addr_base;
+   method  Fabric_Addr  m_uart0_addr_size = uart0_addr_size;
+   method  Fabric_Addr  m_uart0_addr_lim  = uart0_addr_lim;
 
    method  Fabric_Addr  m_boot_rom_addr_base = boot_rom_addr_base;
    method  Fabric_Addr  m_boot_rom_addr_size = boot_rom_addr_size;
@@ -212,26 +241,35 @@ module mkSoC_Map (SoC_Map_IFC);
    method  Bool  m_is_near_mem_IO_addr (Fabric_Addr addr) = fn_is_near_mem_io_addr (addr);
 
    method  Bit #(64)    m_pc_reset_value = pc_reset_value;
+
+   method  Bit #(64)  m_nmi_vector     = nmi_vector;
 endmodule
 
 // ================================================================
 // Count and master-numbers of masters in the fabric.
 
-typedef 3 Num_Masters;
+typedef 2 Num_Masters;
 
-Integer debug_module_master_num = 0;
-Integer imem_master_num         = 1;
-Integer dmem_master_num         = 2;
+Integer imem_master_num = 0;
+Integer dmem_master_num = 1;
 
 // ================================================================
 // Count and slave-numbers of slaves in the fabric.
 
-typedef 4 Num_Slaves;
+typedef 3 Num_Slaves;
 
-Integer tcm_back_door_slave_num   = 0;
-Integer boot_rom_slave_num        = 1;
-Integer mem0_controller_slave_num = 2;
-Integer uart0_slave_num           = 3;
+Integer boot_rom_slave_num        = 0;
+Integer mem0_controller_slave_num = 1;
+Integer uart0_slave_num           = 2;
+
+// ================================================================
+// Interrupt request numbers (== index in to vector of
+// interrupt-request lines in Core)
+
+typedef  16  N_External_Interrupt_Sources;
+Integer  n_external_interrupt_sources = valueOf (N_External_Interrupt_Sources);
+
+Integer irq_num_uart0 = 0;
 
 // ================================================================
 

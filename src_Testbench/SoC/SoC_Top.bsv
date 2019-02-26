@@ -40,8 +40,10 @@ import SoC_Map     :: *;
 import SoC_Fabric  :: *;
 
 // SoC components (CPU, mem, and IPs)
+
 import Core_IFC :: *;
 import Core     :: *;
+import PLIC     :: *;    // For interface to PLIC interrupt sources, in Core_IFC
 
 import Boot_ROM       :: *;
 import Mem_Controller :: *;
@@ -110,8 +112,8 @@ module mkSoC_Top (SoC_Top_IFC);
    // SoC address map specifying base and limit for memories, IPs, etc.
    SoC_Map_IFC soc_map <- mkSoC_Map;
 
-   // CPU + Debug module
-   Core_IFC  core <- mkCore;
+   // Core: CPU + Near_Mem_IO (CLINT) + PLIC + Debug module (optional) + TV (optional)
+   Core_IFC #(N_External_Interrupt_Sources)  core <- mkCore;
 
    // SoC Fabric
    Fabric_AXI4_IFC  fabric <- mkFabric_AXI4;
@@ -140,14 +142,6 @@ module mkSoC_Top (SoC_Top_IFC);
    // CPU DMem master to fabric
    mkConnection (core.cpu_dmem_master,  fabric.v_from_masters [dmem_master_num]);
 
-`ifdef INCLUDE_GDB_CONTROL
-   // Debug Module system buf interface (mem interface) to fabric
-   mkConnection (core.dm_master,  fabric.v_from_masters [debug_module_master_num]);
-`else
-   AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) dummy_dm_master = dummy_AXI4_Master_ifc;
-   mkConnection (dummy_dm_master,  fabric.v_from_masters [debug_module_master_num]);
-`endif
-
 `ifdef INCLUDE_ACCEL0
    // accel_aes0 to fabric
    mkConnection (accel_aes0.master,  fabric.v_from_masters [accel0_master_num]);
@@ -158,10 +152,7 @@ module mkSoC_Top (SoC_Top_IFC);
    // Note: see 'SoC_Map' for 'slave_num' definitions
 
    // Fabric to Boot ROM
-   mkConnection (fabric.v_to_slaves [boot_rom_slave_num], boot_rom.slave);
-
-   // Fabric to CPU's Near_Mem back door
-   mkConnection (fabric.v_to_slaves [tcm_back_door_slave_num],   core.cpu_slave);
+   mkConnection (fabric.v_to_slaves [boot_rom_slave_num],        boot_rom.slave);
 
    // Fabric to Mem Controller
    mkConnection (fabric.v_to_slaves [mem0_controller_slave_num], mem0_controller.slave);
@@ -182,16 +173,19 @@ module mkSoC_Top (SoC_Top_IFC);
 
    // ----------------
    // Connect interrupt sources for CPU external interrupt request inputs.
-   // Currently only one source of interrupts: UART
-   // Future: PLIC
 
    // Reg #(Bool) rg_intr_prev <- mkReg (False);    // For debugging only
 
    (* fire_when_enabled, no_implicit_conditions *)
-   rule rl_connect_external_interrupt_request;
+   rule rl_connect_external_interrupt_requests;
       Bool intr = uart0.intr;
 
-      core.cpu_external_interrupt_req (intr);
+      // UART
+      core.core_external_interrupt_sources [irq_num_uart0].m_interrupt_req (intr);
+
+      // Tie off remaining interrupt request lines (1..N)
+      for (Integer j = 1; j < valueOf (N_External_Interrupt_Sources); j = j + 1)
+	 core.core_external_interrupt_sources [j].m_interrupt_req (False);
 
       /* For debugging only
       if ((! rg_intr_prev) && intr)

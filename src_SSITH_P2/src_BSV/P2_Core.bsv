@@ -9,7 +9,7 @@ package P2_Core;
 //    - Flute CPU, including
 //        - Near_Mem (ICache and DCache)
 //        - Near_Mem_IO (Timer, Software-interrupt, and other mem-mapped-locations)
-//        - External interrupt request line
+//        - External interrupt request lines
 //        - 2 x AXI4 Master interfaces (from DM and ICache, and from DCache)
 //    - RISC-V Debug Module (DM)
 //    - JTAG TAP interface for DM
@@ -18,6 +18,7 @@ package P2_Core;
 // ================================================================
 // BSV library imports
 
+import Vector        :: *;
 import FIFO          :: *;
 import GetPut        :: *;
 import ClientServer  :: *;
@@ -32,17 +33,19 @@ import GetPut_Aux :: *;
 // ================================================================
 // Project imports
 
+import SoC_Map  :: *;
+
 // The basic core
 import Core_IFC :: *;
 import Core     :: *;
+
+// External interrupt request interface
+import PLIC :: *;    // for PLIC_Source_IFC type which is exposed at P2_Core interface
 
 // Main Fabric
 import AXI4_Types   :: *;
 import AXI4_Fabric  :: *;
 import Fabric_Defs  :: *;
-
-// 2x1 AXI4 fabric to mux IMem and Debug Module masters into a single master
-import IMem_DM_Mux_Fabric :: *;
 
 `ifdef INCLUDE_TANDEM_VERIF
 import TV_Info :: *;
@@ -62,15 +65,14 @@ interface P2_Core_IFC;
    // ----------------------------------------------------------------
    // Core CPU interfaces
 
-   // CPU IMem and DM to Fabric master interface
+   // CPU IMem to Fabric master interface
    interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) master0;
 
-   // CPU DMem to Fabric master interface
+   // CPU DMem (incl. I/O) to Fabric master interface
    interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) master1;
 
-   // External interrupts
-   (* always_ready, always_enabled *)
-   method Action cpu_external_interrupt (Bool req);
+   // External interrupt sources
+   interface Vector #(N_External_Interrupt_Sources, PLIC_Source_IFC)  core_external_interrupt_sources;
 
 `ifdef INCLUDE_TANDEM_VERIF
    // ----------------------------------------------------------------
@@ -96,15 +98,11 @@ endinterface
 (* synthesize *)
 module mkP2_Core (P2_Core_IFC);
 
-   // CPU + Debug module
-   Core_IFC::Core_IFC  core <- mkCore;
+   // Core: CPU + Near_Mem_IO (CLINT) + PLIC + Debug module (optional) + TV (optional)
+   Core_IFC::Core_IFC #(N_External_Interrupt_Sources)  core <- mkCore;
 
    // ================================================================
    // Tie-offs (not used in SSITH GFE)
-
-   // CPU Back-door slave interface from fabric
-   AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) axi_master_stub = dummy_AXI4_Master_ifc;
-   mkConnection (axi_master_stub, core.cpu_slave);
 
    // Set core's verbosity
    rule rl_never (False);
@@ -130,21 +128,6 @@ module mkP2_Core (P2_Core_IFC);
       let tmp <- core.dm_ndm_reset_req_get.get;
       rg_once <= False;
    endrule
-
-   // ================================================================
-   // Merge IMem and Debug Module AXI4 Masters
-   // since Flute uses 3 masters (IMem, DMem and Debug Module)
-   // but SSITH GFE only has 2 masters
-
-`ifdef INCLUDE_GDB_CONTROL
-   Fabric_2x1_IFC  fabric_2x1 <- mkFabric_2x1;
-
-   mkConnection (core.cpu_imem_master, fabric_2x1.v_from_masters [0]);
-   mkConnection (core.dm_master,       fabric_2x1.v_from_masters [1]);
-   let imem_dm_master = fabric_2x1.v_to_slaves [0];
-`else
-   let imem_dm_master = core.cpu_imem_master;
-`endif
 
    // ================================================================
 `ifdef INCLUDE_GDB_CONTROL
@@ -212,13 +195,13 @@ module mkP2_Core (P2_Core_IFC);
    // INTERFACE
 
    // CPU IMem to Fabric master interface
-   interface AXI4_Master_IFC master0 = imem_dm_master;
+   interface AXI4_Master_IFC master0 = core.cpu_imem_master;
 
    // CPU DMem to Fabric master interface
    interface AXI4_Master_IFC master1 = core.cpu_dmem_master;
 
    // External interrupts
-   method Action cpu_external_interrupt (req) = core.cpu_external_interrupt_req (req);
+   interface core_external_interrupt_sources = core.core_external_interrupt_sources;
 
 `ifdef INCLUDE_TANDEM_VERIF
    // ----------------------------------------------------------------

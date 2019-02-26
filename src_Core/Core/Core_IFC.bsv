@@ -3,14 +3,19 @@
 package Core_IFC;
 
 // ================================================================
-// This package defines the interface of the Core module which
+// This package defines the interface of a Core module which
 // contains:
-// - The RISC-V CPU with Tandem Verifier (TV) logic
-// - RISC-V Debug Module
+//     - mkCPU (the RISC-V CPU)
+//     - mkFabric_2x3
+//     - mkNear_Mem_IO_AXI4
+//     - mkPLIC_16_2_7
+//     - mkTV_Encode          (Tandem-Verification logic, optional: INCLUDE_TANDEM_VERIF)
+//     - mkDebug_Module       (RISC-V Debug Module, optional: INCLUDE_GDB_CONTROL)
 
 // ================================================================
 // BSV library imports
 
+import Vector        :: *;
 import GetPut        :: *;
 import ClientServer  :: *;
 
@@ -20,6 +25,9 @@ import ClientServer  :: *;
 // Main fabric
 import AXI4_Types   :: *;
 import Fabric_Defs  :: *;
+
+// External interrupt request interface
+import PLIC  :: *;
 
 `ifdef INCLUDE_TANDEM_VERIF
 import TV_Info  :: *;
@@ -32,13 +40,20 @@ import Debug_Module  :: *;
 // ================================================================
 // The Core interface
 
-interface Core_IFC;
+interface Core_IFC #(numeric type t_n_interrupt_sources);
 
    // ----------------------------------------------------------------
-   // Core CPU interfaces
+   // Debugging: set core's verbosity
 
-   // Reset
+   method Action  set_verbosity (Bit #(4)  verbosity, Bit #(64)  logdelay);
+
+   // ----------------------------------------------------------------
+   // Soft reset
+
    interface Server #(Bit #(0), Bit #(0))  cpu_reset_server;
+
+   // ----------------------------------------------------------------
+   // AXI4 Fabric interfaces
 
    // CPU IMem to Fabric master interface
    interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) cpu_imem_master;
@@ -46,16 +61,10 @@ interface Core_IFC;
    // CPU DMem to Fabric master interface
    interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) cpu_dmem_master;
 
-   // CPU Back-door slave interface from fabric
-   interface AXI4_Slave_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) cpu_slave;
-
-   // External interrupts
-   (* always_ready, always_enabled *)
-   method Action cpu_external_interrupt_req (Bool set_not_clear);
-
    // ----------------------------------------------------------------
-   // Set core's verbosity
-   method Action  set_verbosity (Bit #(4)  verbosity, Bit #(64)  logdelay);
+   // External interrupt sources
+
+   interface Vector #(t_n_interrupt_sources, PLIC_Source_IFC)  core_external_interrupt_sources;
 
 `ifdef INCLUDE_TANDEM_VERIF
    // ----------------------------------------------------------------
@@ -77,12 +86,9 @@ interface Core_IFC;
 
    // ----------------
    // Facing Platform
-
    // Non-Debug-Module Reset (reset all except DM)
-   interface Get #(Bit #(0)) dm_ndm_reset_req_get;
 
-   // Read/Write RISC-V memory
-   interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) dm_master;
+   interface Get #(Bit #(0)) dm_ndm_reset_req_get;
 `endif
 endinterface
 

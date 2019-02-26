@@ -259,7 +259,7 @@ module mkUART (UART_IFC);
       else if (msbs != 0) begin
 	 $display ("%0d: ERROR: UART.rl_process_rd_req: unrecognized addr", cur_cycle);
 	 $display ("            ", fshow (rda));
-	 rresp = axi4_resp_slverr;
+	 rresp = axi4_resp_decerr;
       end
 
       // offset 0: RBR
@@ -296,7 +296,7 @@ module mkUART (UART_IFC);
       else begin
 	 $display ("%0d: ERROR: UART.rl_process_rd_req: unrecognized addr", cur_cycle);
 	 $display ("            ", fshow (rda));
-	 rresp = axi4_resp_slverr;
+	 rresp = axi4_resp_decerr;
       end
 
       // Send read-response to bus
@@ -341,7 +341,7 @@ module mkUART (UART_IFC);
 	 $display ("%0d: ERROR: UART.rl_process_wr_req: unrecognized addr", cur_cycle);
 	 $display ("            ", fshow (wra));
 	 $display ("            ", fshow (wrd));
-	 bresp = axi4_resp_slverr;
+	 bresp = axi4_resp_decerr;
       end
 
       // offset 0: THR
@@ -379,7 +379,7 @@ module mkUART (UART_IFC);
 	 $display ("%0d: ERROR: UART.rl_process_wr_req: unrecognized addr", cur_cycle);
 	 $display ("            ", fshow (wra));
 	 $display ("            ", fshow (wrd));
-	 bresp = axi4_resp_slverr;
+	 bresp = axi4_resp_decerr;
       end
 
       // Send write-response to bus

@@ -6,7 +6,7 @@
 //
 // Ports:
 // Name                         I/O  size props
-// master0_awvalid                O     1 reg
+// master0_awvalid                O     1
 // master0_awid                   O     4 reg
 // master0_awaddr                 O    64 reg
 // master0_awlen                  O     8 reg
@@ -17,13 +17,13 @@
 // master0_awprot                 O     3 reg
 // master0_awqos                  O     4 reg
 // master0_awregion               O     4 reg
-// master0_wvalid                 O     1 reg
+// master0_wvalid                 O     1
 // master0_wid                    O     4 reg
 // master0_wdata                  O    64 reg
 // master0_wstrb                  O     8 reg
 // master0_wlast                  O     1 reg
-// master0_bready                 O     1 reg
-// master0_arvalid                O     1 reg
+// master0_bready                 O     1
+// master0_arvalid                O     1
 // master0_arid                   O     4 reg
 // master0_araddr                 O    64 reg
 // master0_arlen                  O     8 reg
@@ -34,8 +34,8 @@
 // master0_arprot                 O     3 reg
 // master0_arqos                  O     4 reg
 // master0_arregion               O     4 reg
-// master0_rready                 O     1 reg
-// master1_awvalid                O     1
+// master0_rready                 O     1
+// master1_awvalid                O     1 reg
 // master1_awid                   O     4 reg
 // master1_awaddr                 O    64 reg
 // master1_awlen                  O     8 reg
@@ -46,13 +46,13 @@
 // master1_awprot                 O     3 reg
 // master1_awqos                  O     4 reg
 // master1_awregion               O     4 reg
-// master1_wvalid                 O     1
+// master1_wvalid                 O     1 reg
 // master1_wid                    O     4 reg
 // master1_wdata                  O    64 reg
 // master1_wstrb                  O     8 reg
 // master1_wlast                  O     1 reg
-// master1_bready                 O     1
-// master1_arvalid                O     1
+// master1_bready                 O     1 reg
+// master1_arvalid                O     1 reg
 // master1_arid                   O     4 reg
 // master1_araddr                 O    64 reg
 // master1_arlen                  O     8 reg
@@ -63,7 +63,7 @@
 // master1_arprot                 O     3 reg
 // master1_arqos                  O     4 reg
 // master1_arregion               O     4 reg
-// master1_rready                 O     1
+// master1_rready                 O     1 reg
 // jtag_tdo                       O     1
 // CLK_jtag_tclk_out              O     1 clock
 // CLK_GATE_jtag_tclk_out         O     1 const
@@ -91,14 +91,29 @@
 // master1_rdata                  I    64 reg
 // master1_rresp                  I     2 reg
 // master1_rlast                  I     1 reg
-// cpu_external_interrupt_req     I     1 reg
+// core_external_interrupt_sources_0_m_interrupt_req_set_not_clear  I     1
+// core_external_interrupt_sources_1_m_interrupt_req_set_not_clear  I     1
+// core_external_interrupt_sources_2_m_interrupt_req_set_not_clear  I     1
+// core_external_interrupt_sources_3_m_interrupt_req_set_not_clear  I     1
+// core_external_interrupt_sources_4_m_interrupt_req_set_not_clear  I     1
+// core_external_interrupt_sources_5_m_interrupt_req_set_not_clear  I     1
+// core_external_interrupt_sources_6_m_interrupt_req_set_not_clear  I     1
+// core_external_interrupt_sources_7_m_interrupt_req_set_not_clear  I     1
+// core_external_interrupt_sources_8_m_interrupt_req_set_not_clear  I     1
+// core_external_interrupt_sources_9_m_interrupt_req_set_not_clear  I     1
+// core_external_interrupt_sources_10_m_interrupt_req_set_not_clear  I     1
+// core_external_interrupt_sources_11_m_interrupt_req_set_not_clear  I     1
+// core_external_interrupt_sources_12_m_interrupt_req_set_not_clear  I     1
+// core_external_interrupt_sources_13_m_interrupt_req_set_not_clear  I     1
+// core_external_interrupt_sources_14_m_interrupt_req_set_not_clear  I     1
+// core_external_interrupt_sources_15_m_interrupt_req_set_not_clear  I     1
 // jtag_tdi                       I     1
 // jtag_tms                       I     1
 // jtag_tclk                      I     1
 //
 // Combinational paths from inputs to outputs:
-//   (master1_awready, master1_wready) -> master1_bready
-//   (master1_awready, master1_wready, master1_arready) -> master1_rready
+//   (master0_awready, master0_wready) -> master0_bready
+//   (master0_awready, master0_wready, master0_arready) -> master0_rready
 //
 //
 
@@ -266,7 +281,37 @@ module mkP2_Core(CLK,
 
 		 master1_rready,
 
-		 cpu_external_interrupt_req,
+		 core_external_interrupt_sources_0_m_interrupt_req_set_not_clear,
+
+		 core_external_interrupt_sources_1_m_interrupt_req_set_not_clear,
+
+		 core_external_interrupt_sources_2_m_interrupt_req_set_not_clear,
+
+		 core_external_interrupt_sources_3_m_interrupt_req_set_not_clear,
+
+		 core_external_interrupt_sources_4_m_interrupt_req_set_not_clear,
+
+		 core_external_interrupt_sources_5_m_interrupt_req_set_not_clear,
+
+		 core_external_interrupt_sources_6_m_interrupt_req_set_not_clear,
+
+		 core_external_interrupt_sources_7_m_interrupt_req_set_not_clear,
+
+		 core_external_interrupt_sources_8_m_interrupt_req_set_not_clear,
+
+		 core_external_interrupt_sources_9_m_interrupt_req_set_not_clear,
+
+		 core_external_interrupt_sources_10_m_interrupt_req_set_not_clear,
+
+		 core_external_interrupt_sources_11_m_interrupt_req_set_not_clear,
+
+		 core_external_interrupt_sources_12_m_interrupt_req_set_not_clear,
+
+		 core_external_interrupt_sources_13_m_interrupt_req_set_not_clear,
+
+		 core_external_interrupt_sources_14_m_interrupt_req_set_not_clear,
+
+		 core_external_interrupt_sources_15_m_interrupt_req_set_not_clear,
 
 		 jtag_tdi,
 
@@ -509,8 +554,53 @@ module mkP2_Core(CLK,
   // value method master1_m_rready
   output master1_rready;
 
-  // action method cpu_external_interrupt
-  input  cpu_external_interrupt_req;
+  // action method core_external_interrupt_sources_0_m_interrupt_req
+  input  core_external_interrupt_sources_0_m_interrupt_req_set_not_clear;
+
+  // action method core_external_interrupt_sources_1_m_interrupt_req
+  input  core_external_interrupt_sources_1_m_interrupt_req_set_not_clear;
+
+  // action method core_external_interrupt_sources_2_m_interrupt_req
+  input  core_external_interrupt_sources_2_m_interrupt_req_set_not_clear;
+
+  // action method core_external_interrupt_sources_3_m_interrupt_req
+  input  core_external_interrupt_sources_3_m_interrupt_req_set_not_clear;
+
+  // action method core_external_interrupt_sources_4_m_interrupt_req
+  input  core_external_interrupt_sources_4_m_interrupt_req_set_not_clear;
+
+  // action method core_external_interrupt_sources_5_m_interrupt_req
+  input  core_external_interrupt_sources_5_m_interrupt_req_set_not_clear;
+
+  // action method core_external_interrupt_sources_6_m_interrupt_req
+  input  core_external_interrupt_sources_6_m_interrupt_req_set_not_clear;
+
+  // action method core_external_interrupt_sources_7_m_interrupt_req
+  input  core_external_interrupt_sources_7_m_interrupt_req_set_not_clear;
+
+  // action method core_external_interrupt_sources_8_m_interrupt_req
+  input  core_external_interrupt_sources_8_m_interrupt_req_set_not_clear;
+
+  // action method core_external_interrupt_sources_9_m_interrupt_req
+  input  core_external_interrupt_sources_9_m_interrupt_req_set_not_clear;
+
+  // action method core_external_interrupt_sources_10_m_interrupt_req
+  input  core_external_interrupt_sources_10_m_interrupt_req_set_not_clear;
+
+  // action method core_external_interrupt_sources_11_m_interrupt_req
+  input  core_external_interrupt_sources_11_m_interrupt_req_set_not_clear;
+
+  // action method core_external_interrupt_sources_12_m_interrupt_req
+  input  core_external_interrupt_sources_12_m_interrupt_req_set_not_clear;
+
+  // action method core_external_interrupt_sources_13_m_interrupt_req
+  input  core_external_interrupt_sources_13_m_interrupt_req_set_not_clear;
+
+  // action method core_external_interrupt_sources_14_m_interrupt_req
+  input  core_external_interrupt_sources_14_m_interrupt_req_set_not_clear;
+
+  // action method core_external_interrupt_sources_15_m_interrupt_req
+  input  core_external_interrupt_sources_15_m_interrupt_req_set_not_clear;
 
   // action method jtag_tdi
   input  jtag_tdi;
@@ -631,13 +721,6 @@ module mkP2_Core(CLK,
 		core$cpu_imem_master_awaddr,
 		core$cpu_imem_master_rdata,
 		core$cpu_imem_master_wdata,
-		core$cpu_slave_araddr,
-		core$cpu_slave_awaddr,
-		core$cpu_slave_wdata,
-		core$dm_master_araddr,
-		core$dm_master_awaddr,
-		core$dm_master_rdata,
-		core$dm_master_wdata,
 		core$set_verbosity_logdelay;
   wire [31 : 0] core$dm_dmi_read_data, core$dm_dmi_write_dm_word;
   wire [7 : 0] core$cpu_dmem_master_arlen,
@@ -645,13 +728,7 @@ module mkP2_Core(CLK,
 	       core$cpu_dmem_master_wstrb,
 	       core$cpu_imem_master_arlen,
 	       core$cpu_imem_master_awlen,
-	       core$cpu_imem_master_wstrb,
-	       core$cpu_slave_arlen,
-	       core$cpu_slave_awlen,
-	       core$cpu_slave_wstrb,
-	       core$dm_master_arlen,
-	       core$dm_master_awlen,
-	       core$dm_master_wstrb;
+	       core$cpu_imem_master_wstrb;
   wire [6 : 0] core$dm_dmi_read_addr_dm_addr, core$dm_dmi_write_dm_addr;
   wire [3 : 0] core$cpu_dmem_master_arcache,
 	       core$cpu_dmem_master_arid,
@@ -675,26 +752,6 @@ module mkP2_Core(CLK,
 	       core$cpu_imem_master_bid,
 	       core$cpu_imem_master_rid,
 	       core$cpu_imem_master_wid,
-	       core$cpu_slave_arcache,
-	       core$cpu_slave_arid,
-	       core$cpu_slave_arqos,
-	       core$cpu_slave_arregion,
-	       core$cpu_slave_awcache,
-	       core$cpu_slave_awid,
-	       core$cpu_slave_awqos,
-	       core$cpu_slave_awregion,
-	       core$cpu_slave_wid,
-	       core$dm_master_arcache,
-	       core$dm_master_arid,
-	       core$dm_master_arqos,
-	       core$dm_master_arregion,
-	       core$dm_master_awcache,
-	       core$dm_master_awid,
-	       core$dm_master_awqos,
-	       core$dm_master_awregion,
-	       core$dm_master_bid,
-	       core$dm_master_rid,
-	       core$dm_master_wid,
 	       core$set_verbosity_verbosity;
   wire [2 : 0] core$cpu_dmem_master_arprot,
 	       core$cpu_dmem_master_arsize,
@@ -703,15 +760,7 @@ module mkP2_Core(CLK,
 	       core$cpu_imem_master_arprot,
 	       core$cpu_imem_master_arsize,
 	       core$cpu_imem_master_awprot,
-	       core$cpu_imem_master_awsize,
-	       core$cpu_slave_arprot,
-	       core$cpu_slave_arsize,
-	       core$cpu_slave_awprot,
-	       core$cpu_slave_awsize,
-	       core$dm_master_arprot,
-	       core$dm_master_arsize,
-	       core$dm_master_awprot,
-	       core$dm_master_awsize;
+	       core$cpu_imem_master_awsize;
   wire [1 : 0] core$cpu_dmem_master_arburst,
 	       core$cpu_dmem_master_awburst,
 	       core$cpu_dmem_master_bresp,
@@ -719,13 +768,7 @@ module mkP2_Core(CLK,
 	       core$cpu_imem_master_arburst,
 	       core$cpu_imem_master_awburst,
 	       core$cpu_imem_master_bresp,
-	       core$cpu_imem_master_rresp,
-	       core$cpu_slave_arburst,
-	       core$cpu_slave_awburst,
-	       core$dm_master_arburst,
-	       core$dm_master_awburst,
-	       core$dm_master_bresp,
-	       core$dm_master_rresp;
+	       core$cpu_imem_master_rresp;
   wire core$EN_cpu_reset_server_request_put,
        core$EN_cpu_reset_server_response_get,
        core$EN_dm_dmi_read_addr,
@@ -739,6 +782,22 @@ module mkP2_Core(CLK,
        core$RDY_dm_dmi_read_data,
        core$RDY_dm_dmi_write,
        core$RDY_dm_ndm_reset_req_get_get,
+       core$core_external_interrupt_sources_0_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_10_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_11_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_12_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_13_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_14_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_15_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_1_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_2_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_3_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_4_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_5_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_6_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_7_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_8_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_9_m_interrupt_req_set_not_clear,
        core$cpu_dmem_master_arlock,
        core$cpu_dmem_master_arready,
        core$cpu_dmem_master_arvalid,
@@ -753,7 +812,6 @@ module mkP2_Core(CLK,
        core$cpu_dmem_master_wlast,
        core$cpu_dmem_master_wready,
        core$cpu_dmem_master_wvalid,
-       core$cpu_external_interrupt_req_set_not_clear,
        core$cpu_imem_master_arlock,
        core$cpu_imem_master_arready,
        core$cpu_imem_master_arvalid,
@@ -767,154 +825,7 @@ module mkP2_Core(CLK,
        core$cpu_imem_master_rvalid,
        core$cpu_imem_master_wlast,
        core$cpu_imem_master_wready,
-       core$cpu_imem_master_wvalid,
-       core$cpu_slave_arlock,
-       core$cpu_slave_arvalid,
-       core$cpu_slave_awlock,
-       core$cpu_slave_awvalid,
-       core$cpu_slave_bready,
-       core$cpu_slave_rready,
-       core$cpu_slave_wlast,
-       core$cpu_slave_wvalid,
-       core$dm_master_arlock,
-       core$dm_master_arready,
-       core$dm_master_arvalid,
-       core$dm_master_awlock,
-       core$dm_master_awready,
-       core$dm_master_awvalid,
-       core$dm_master_bready,
-       core$dm_master_bvalid,
-       core$dm_master_rlast,
-       core$dm_master_rready,
-       core$dm_master_rvalid,
-       core$dm_master_wlast,
-       core$dm_master_wready,
-       core$dm_master_wvalid;
-
-  // ports of submodule fabric_2x1
-  wire [63 : 0] fabric_2x1$v_from_masters_0_araddr,
-		fabric_2x1$v_from_masters_0_awaddr,
-		fabric_2x1$v_from_masters_0_rdata,
-		fabric_2x1$v_from_masters_0_wdata,
-		fabric_2x1$v_from_masters_1_araddr,
-		fabric_2x1$v_from_masters_1_awaddr,
-		fabric_2x1$v_from_masters_1_rdata,
-		fabric_2x1$v_from_masters_1_wdata,
-		fabric_2x1$v_to_slaves_0_araddr,
-		fabric_2x1$v_to_slaves_0_awaddr,
-		fabric_2x1$v_to_slaves_0_rdata,
-		fabric_2x1$v_to_slaves_0_wdata;
-  wire [7 : 0] fabric_2x1$v_from_masters_0_arlen,
-	       fabric_2x1$v_from_masters_0_awlen,
-	       fabric_2x1$v_from_masters_0_wstrb,
-	       fabric_2x1$v_from_masters_1_arlen,
-	       fabric_2x1$v_from_masters_1_awlen,
-	       fabric_2x1$v_from_masters_1_wstrb,
-	       fabric_2x1$v_to_slaves_0_arlen,
-	       fabric_2x1$v_to_slaves_0_awlen,
-	       fabric_2x1$v_to_slaves_0_wstrb;
-  wire [3 : 0] fabric_2x1$set_verbosity_verbosity,
-	       fabric_2x1$v_from_masters_0_arcache,
-	       fabric_2x1$v_from_masters_0_arid,
-	       fabric_2x1$v_from_masters_0_arqos,
-	       fabric_2x1$v_from_masters_0_arregion,
-	       fabric_2x1$v_from_masters_0_awcache,
-	       fabric_2x1$v_from_masters_0_awid,
-	       fabric_2x1$v_from_masters_0_awqos,
-	       fabric_2x1$v_from_masters_0_awregion,
-	       fabric_2x1$v_from_masters_0_bid,
-	       fabric_2x1$v_from_masters_0_rid,
-	       fabric_2x1$v_from_masters_0_wid,
-	       fabric_2x1$v_from_masters_1_arcache,
-	       fabric_2x1$v_from_masters_1_arid,
-	       fabric_2x1$v_from_masters_1_arqos,
-	       fabric_2x1$v_from_masters_1_arregion,
-	       fabric_2x1$v_from_masters_1_awcache,
-	       fabric_2x1$v_from_masters_1_awid,
-	       fabric_2x1$v_from_masters_1_awqos,
-	       fabric_2x1$v_from_masters_1_awregion,
-	       fabric_2x1$v_from_masters_1_bid,
-	       fabric_2x1$v_from_masters_1_rid,
-	       fabric_2x1$v_from_masters_1_wid,
-	       fabric_2x1$v_to_slaves_0_arcache,
-	       fabric_2x1$v_to_slaves_0_arid,
-	       fabric_2x1$v_to_slaves_0_arqos,
-	       fabric_2x1$v_to_slaves_0_arregion,
-	       fabric_2x1$v_to_slaves_0_awcache,
-	       fabric_2x1$v_to_slaves_0_awid,
-	       fabric_2x1$v_to_slaves_0_awqos,
-	       fabric_2x1$v_to_slaves_0_awregion,
-	       fabric_2x1$v_to_slaves_0_bid,
-	       fabric_2x1$v_to_slaves_0_rid,
-	       fabric_2x1$v_to_slaves_0_wid;
-  wire [2 : 0] fabric_2x1$v_from_masters_0_arprot,
-	       fabric_2x1$v_from_masters_0_arsize,
-	       fabric_2x1$v_from_masters_0_awprot,
-	       fabric_2x1$v_from_masters_0_awsize,
-	       fabric_2x1$v_from_masters_1_arprot,
-	       fabric_2x1$v_from_masters_1_arsize,
-	       fabric_2x1$v_from_masters_1_awprot,
-	       fabric_2x1$v_from_masters_1_awsize,
-	       fabric_2x1$v_to_slaves_0_arprot,
-	       fabric_2x1$v_to_slaves_0_arsize,
-	       fabric_2x1$v_to_slaves_0_awprot,
-	       fabric_2x1$v_to_slaves_0_awsize;
-  wire [1 : 0] fabric_2x1$v_from_masters_0_arburst,
-	       fabric_2x1$v_from_masters_0_awburst,
-	       fabric_2x1$v_from_masters_0_bresp,
-	       fabric_2x1$v_from_masters_0_rresp,
-	       fabric_2x1$v_from_masters_1_arburst,
-	       fabric_2x1$v_from_masters_1_awburst,
-	       fabric_2x1$v_from_masters_1_bresp,
-	       fabric_2x1$v_from_masters_1_rresp,
-	       fabric_2x1$v_to_slaves_0_arburst,
-	       fabric_2x1$v_to_slaves_0_awburst,
-	       fabric_2x1$v_to_slaves_0_bresp,
-	       fabric_2x1$v_to_slaves_0_rresp;
-  wire fabric_2x1$EN_reset,
-       fabric_2x1$EN_set_verbosity,
-       fabric_2x1$v_from_masters_0_arlock,
-       fabric_2x1$v_from_masters_0_arready,
-       fabric_2x1$v_from_masters_0_arvalid,
-       fabric_2x1$v_from_masters_0_awlock,
-       fabric_2x1$v_from_masters_0_awready,
-       fabric_2x1$v_from_masters_0_awvalid,
-       fabric_2x1$v_from_masters_0_bready,
-       fabric_2x1$v_from_masters_0_bvalid,
-       fabric_2x1$v_from_masters_0_rlast,
-       fabric_2x1$v_from_masters_0_rready,
-       fabric_2x1$v_from_masters_0_rvalid,
-       fabric_2x1$v_from_masters_0_wlast,
-       fabric_2x1$v_from_masters_0_wready,
-       fabric_2x1$v_from_masters_0_wvalid,
-       fabric_2x1$v_from_masters_1_arlock,
-       fabric_2x1$v_from_masters_1_arready,
-       fabric_2x1$v_from_masters_1_arvalid,
-       fabric_2x1$v_from_masters_1_awlock,
-       fabric_2x1$v_from_masters_1_awready,
-       fabric_2x1$v_from_masters_1_awvalid,
-       fabric_2x1$v_from_masters_1_bready,
-       fabric_2x1$v_from_masters_1_bvalid,
-       fabric_2x1$v_from_masters_1_rlast,
-       fabric_2x1$v_from_masters_1_rready,
-       fabric_2x1$v_from_masters_1_rvalid,
-       fabric_2x1$v_from_masters_1_wlast,
-       fabric_2x1$v_from_masters_1_wready,
-       fabric_2x1$v_from_masters_1_wvalid,
-       fabric_2x1$v_to_slaves_0_arlock,
-       fabric_2x1$v_to_slaves_0_arready,
-       fabric_2x1$v_to_slaves_0_arvalid,
-       fabric_2x1$v_to_slaves_0_awlock,
-       fabric_2x1$v_to_slaves_0_awready,
-       fabric_2x1$v_to_slaves_0_awvalid,
-       fabric_2x1$v_to_slaves_0_bready,
-       fabric_2x1$v_to_slaves_0_bvalid,
-       fabric_2x1$v_to_slaves_0_rlast,
-       fabric_2x1$v_to_slaves_0_rready,
-       fabric_2x1$v_to_slaves_0_rvalid,
-       fabric_2x1$v_to_slaves_0_wlast,
-       fabric_2x1$v_to_slaves_0_wready,
-       fabric_2x1$v_to_slaves_0_wvalid;
+       core$cpu_imem_master_wvalid;
 
   // ports of submodule jtagtap
   wire [31 : 0] jtagtap$dmi_req_data, jtagtap$dmi_rsp_data;
@@ -951,23 +862,23 @@ module mkP2_Core(CLK,
        CAN_FIRE_RL_rl_dmi_rsp_cpu,
        CAN_FIRE_RL_rl_ndmreset,
        CAN_FIRE_RL_rl_once,
-       CAN_FIRE_RL_rl_rd_addr_channel,
-       CAN_FIRE_RL_rl_rd_addr_channel_1,
-       CAN_FIRE_RL_rl_rd_addr_channel_2,
-       CAN_FIRE_RL_rl_rd_data_channel,
-       CAN_FIRE_RL_rl_rd_data_channel_1,
-       CAN_FIRE_RL_rl_rd_data_channel_2,
        CAN_FIRE_RL_rl_reset_response,
-       CAN_FIRE_RL_rl_wr_addr_channel,
-       CAN_FIRE_RL_rl_wr_addr_channel_1,
-       CAN_FIRE_RL_rl_wr_addr_channel_2,
-       CAN_FIRE_RL_rl_wr_data_channel,
-       CAN_FIRE_RL_rl_wr_data_channel_1,
-       CAN_FIRE_RL_rl_wr_data_channel_2,
-       CAN_FIRE_RL_rl_wr_response_channel,
-       CAN_FIRE_RL_rl_wr_response_channel_1,
-       CAN_FIRE_RL_rl_wr_response_channel_2,
-       CAN_FIRE_cpu_external_interrupt,
+       CAN_FIRE_core_external_interrupt_sources_0_m_interrupt_req,
+       CAN_FIRE_core_external_interrupt_sources_10_m_interrupt_req,
+       CAN_FIRE_core_external_interrupt_sources_11_m_interrupt_req,
+       CAN_FIRE_core_external_interrupt_sources_12_m_interrupt_req,
+       CAN_FIRE_core_external_interrupt_sources_13_m_interrupt_req,
+       CAN_FIRE_core_external_interrupt_sources_14_m_interrupt_req,
+       CAN_FIRE_core_external_interrupt_sources_15_m_interrupt_req,
+       CAN_FIRE_core_external_interrupt_sources_1_m_interrupt_req,
+       CAN_FIRE_core_external_interrupt_sources_2_m_interrupt_req,
+       CAN_FIRE_core_external_interrupt_sources_3_m_interrupt_req,
+       CAN_FIRE_core_external_interrupt_sources_4_m_interrupt_req,
+       CAN_FIRE_core_external_interrupt_sources_5_m_interrupt_req,
+       CAN_FIRE_core_external_interrupt_sources_6_m_interrupt_req,
+       CAN_FIRE_core_external_interrupt_sources_7_m_interrupt_req,
+       CAN_FIRE_core_external_interrupt_sources_8_m_interrupt_req,
+       CAN_FIRE_core_external_interrupt_sources_9_m_interrupt_req,
        CAN_FIRE_jtag_tclk,
        CAN_FIRE_jtag_tdi,
        CAN_FIRE_jtag_tms,
@@ -1001,23 +912,23 @@ module mkP2_Core(CLK,
        WILL_FIRE_RL_rl_dmi_rsp_cpu,
        WILL_FIRE_RL_rl_ndmreset,
        WILL_FIRE_RL_rl_once,
-       WILL_FIRE_RL_rl_rd_addr_channel,
-       WILL_FIRE_RL_rl_rd_addr_channel_1,
-       WILL_FIRE_RL_rl_rd_addr_channel_2,
-       WILL_FIRE_RL_rl_rd_data_channel,
-       WILL_FIRE_RL_rl_rd_data_channel_1,
-       WILL_FIRE_RL_rl_rd_data_channel_2,
        WILL_FIRE_RL_rl_reset_response,
-       WILL_FIRE_RL_rl_wr_addr_channel,
-       WILL_FIRE_RL_rl_wr_addr_channel_1,
-       WILL_FIRE_RL_rl_wr_addr_channel_2,
-       WILL_FIRE_RL_rl_wr_data_channel,
-       WILL_FIRE_RL_rl_wr_data_channel_1,
-       WILL_FIRE_RL_rl_wr_data_channel_2,
-       WILL_FIRE_RL_rl_wr_response_channel,
-       WILL_FIRE_RL_rl_wr_response_channel_1,
-       WILL_FIRE_RL_rl_wr_response_channel_2,
-       WILL_FIRE_cpu_external_interrupt,
+       WILL_FIRE_core_external_interrupt_sources_0_m_interrupt_req,
+       WILL_FIRE_core_external_interrupt_sources_10_m_interrupt_req,
+       WILL_FIRE_core_external_interrupt_sources_11_m_interrupt_req,
+       WILL_FIRE_core_external_interrupt_sources_12_m_interrupt_req,
+       WILL_FIRE_core_external_interrupt_sources_13_m_interrupt_req,
+       WILL_FIRE_core_external_interrupt_sources_14_m_interrupt_req,
+       WILL_FIRE_core_external_interrupt_sources_15_m_interrupt_req,
+       WILL_FIRE_core_external_interrupt_sources_1_m_interrupt_req,
+       WILL_FIRE_core_external_interrupt_sources_2_m_interrupt_req,
+       WILL_FIRE_core_external_interrupt_sources_3_m_interrupt_req,
+       WILL_FIRE_core_external_interrupt_sources_4_m_interrupt_req,
+       WILL_FIRE_core_external_interrupt_sources_5_m_interrupt_req,
+       WILL_FIRE_core_external_interrupt_sources_6_m_interrupt_req,
+       WILL_FIRE_core_external_interrupt_sources_7_m_interrupt_req,
+       WILL_FIRE_core_external_interrupt_sources_8_m_interrupt_req,
+       WILL_FIRE_core_external_interrupt_sources_9_m_interrupt_req,
        WILL_FIRE_jtag_tclk,
        WILL_FIRE_jtag_tdi,
        WILL_FIRE_jtag_tms,
@@ -1035,7 +946,7 @@ module mkP2_Core(CLK,
   // inputs to muxes for submodule ports
   wire [33 : 0] MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1,
 		MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2,
-		MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_2,
+		MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_1,
 		MUX_bus_dmi_rsp_fifof_x_wire$wset_1__VAL_1,
 		MUX_bus_dmi_rsp_fifof_x_wire$wset_1__VAL_2;
   wire [1 : 0] MUX_bus_dmi_rsp_fifof_cntr_r$write_1__VAL_2;
@@ -1046,8 +957,8 @@ module mkP2_Core(CLK,
        MUX_bus_dmi_rsp_fifof_x_wire$wset_1__SEL_1;
 
   // remaining internal signals
-  wire [1 : 0] bus_dmi_rsp_fifof_cntr_r_10_MINUS_1___d118;
-  wire IF_bus_dmi_req_fifof_first__57_BITS_1_TO_0_58__ETC___d168,
+  wire [1 : 0] bus_dmi_rsp_fifof_cntr_r_0_MINUS_1___d28;
+  wire IF_bus_dmi_req_fifof_first__7_BITS_1_TO_0_8_EQ_ETC___d78,
        _dfoo1,
        _dfoo3;
 
@@ -1056,56 +967,56 @@ module mkP2_Core(CLK,
   assign CLK_GATE_jtag_tclk_out = 1'b1 ;
 
   // value method master0_m_awvalid
-  assign master0_awvalid = fabric_2x1$v_to_slaves_0_awvalid ;
+  assign master0_awvalid = core$cpu_imem_master_awvalid ;
 
   // value method master0_m_awid
-  assign master0_awid = fabric_2x1$v_to_slaves_0_awid ;
+  assign master0_awid = core$cpu_imem_master_awid ;
 
   // value method master0_m_awaddr
-  assign master0_awaddr = fabric_2x1$v_to_slaves_0_awaddr ;
+  assign master0_awaddr = core$cpu_imem_master_awaddr ;
 
   // value method master0_m_awlen
-  assign master0_awlen = fabric_2x1$v_to_slaves_0_awlen ;
+  assign master0_awlen = core$cpu_imem_master_awlen ;
 
   // value method master0_m_awsize
-  assign master0_awsize = fabric_2x1$v_to_slaves_0_awsize ;
+  assign master0_awsize = core$cpu_imem_master_awsize ;
 
   // value method master0_m_awburst
-  assign master0_awburst = fabric_2x1$v_to_slaves_0_awburst ;
+  assign master0_awburst = core$cpu_imem_master_awburst ;
 
   // value method master0_m_awlock
-  assign master0_awlock = fabric_2x1$v_to_slaves_0_awlock ;
+  assign master0_awlock = core$cpu_imem_master_awlock ;
 
   // value method master0_m_awcache
-  assign master0_awcache = fabric_2x1$v_to_slaves_0_awcache ;
+  assign master0_awcache = core$cpu_imem_master_awcache ;
 
   // value method master0_m_awprot
-  assign master0_awprot = fabric_2x1$v_to_slaves_0_awprot ;
+  assign master0_awprot = core$cpu_imem_master_awprot ;
 
   // value method master0_m_awqos
-  assign master0_awqos = fabric_2x1$v_to_slaves_0_awqos ;
+  assign master0_awqos = core$cpu_imem_master_awqos ;
 
   // value method master0_m_awregion
-  assign master0_awregion = fabric_2x1$v_to_slaves_0_awregion ;
+  assign master0_awregion = core$cpu_imem_master_awregion ;
 
   // action method master0_m_awready
   assign CAN_FIRE_master0_m_awready = 1'd1 ;
   assign WILL_FIRE_master0_m_awready = 1'd1 ;
 
   // value method master0_m_wvalid
-  assign master0_wvalid = fabric_2x1$v_to_slaves_0_wvalid ;
+  assign master0_wvalid = core$cpu_imem_master_wvalid ;
 
   // value method master0_m_wid
-  assign master0_wid = fabric_2x1$v_to_slaves_0_wid ;
+  assign master0_wid = core$cpu_imem_master_wid ;
 
   // value method master0_m_wdata
-  assign master0_wdata = fabric_2x1$v_to_slaves_0_wdata ;
+  assign master0_wdata = core$cpu_imem_master_wdata ;
 
   // value method master0_m_wstrb
-  assign master0_wstrb = fabric_2x1$v_to_slaves_0_wstrb ;
+  assign master0_wstrb = core$cpu_imem_master_wstrb ;
 
   // value method master0_m_wlast
-  assign master0_wlast = fabric_2x1$v_to_slaves_0_wlast ;
+  assign master0_wlast = core$cpu_imem_master_wlast ;
 
   // action method master0_m_wready
   assign CAN_FIRE_master0_m_wready = 1'd1 ;
@@ -1116,40 +1027,40 @@ module mkP2_Core(CLK,
   assign WILL_FIRE_master0_m_bvalid = 1'd1 ;
 
   // value method master0_m_bready
-  assign master0_bready = fabric_2x1$v_to_slaves_0_bready ;
+  assign master0_bready = core$cpu_imem_master_bready ;
 
   // value method master0_m_arvalid
-  assign master0_arvalid = fabric_2x1$v_to_slaves_0_arvalid ;
+  assign master0_arvalid = core$cpu_imem_master_arvalid ;
 
   // value method master0_m_arid
-  assign master0_arid = fabric_2x1$v_to_slaves_0_arid ;
+  assign master0_arid = core$cpu_imem_master_arid ;
 
   // value method master0_m_araddr
-  assign master0_araddr = fabric_2x1$v_to_slaves_0_araddr ;
+  assign master0_araddr = core$cpu_imem_master_araddr ;
 
   // value method master0_m_arlen
-  assign master0_arlen = fabric_2x1$v_to_slaves_0_arlen ;
+  assign master0_arlen = core$cpu_imem_master_arlen ;
 
   // value method master0_m_arsize
-  assign master0_arsize = fabric_2x1$v_to_slaves_0_arsize ;
+  assign master0_arsize = core$cpu_imem_master_arsize ;
 
   // value method master0_m_arburst
-  assign master0_arburst = fabric_2x1$v_to_slaves_0_arburst ;
+  assign master0_arburst = core$cpu_imem_master_arburst ;
 
   // value method master0_m_arlock
-  assign master0_arlock = fabric_2x1$v_to_slaves_0_arlock ;
+  assign master0_arlock = core$cpu_imem_master_arlock ;
 
   // value method master0_m_arcache
-  assign master0_arcache = fabric_2x1$v_to_slaves_0_arcache ;
+  assign master0_arcache = core$cpu_imem_master_arcache ;
 
   // value method master0_m_arprot
-  assign master0_arprot = fabric_2x1$v_to_slaves_0_arprot ;
+  assign master0_arprot = core$cpu_imem_master_arprot ;
 
   // value method master0_m_arqos
-  assign master0_arqos = fabric_2x1$v_to_slaves_0_arqos ;
+  assign master0_arqos = core$cpu_imem_master_arqos ;
 
   // value method master0_m_arregion
-  assign master0_arregion = fabric_2x1$v_to_slaves_0_arregion ;
+  assign master0_arregion = core$cpu_imem_master_arregion ;
 
   // action method master0_m_arready
   assign CAN_FIRE_master0_m_arready = 1'd1 ;
@@ -1160,7 +1071,7 @@ module mkP2_Core(CLK,
   assign WILL_FIRE_master0_m_rvalid = 1'd1 ;
 
   // value method master0_m_rready
-  assign master0_rready = fabric_2x1$v_to_slaves_0_rready ;
+  assign master0_rready = core$cpu_imem_master_rready ;
 
   // value method master1_m_awvalid
   assign master1_awvalid = core$cpu_dmem_master_awvalid ;
@@ -1269,9 +1180,69 @@ module mkP2_Core(CLK,
   // value method master1_m_rready
   assign master1_rready = core$cpu_dmem_master_rready ;
 
-  // action method cpu_external_interrupt
-  assign CAN_FIRE_cpu_external_interrupt = 1'd1 ;
-  assign WILL_FIRE_cpu_external_interrupt = 1'd1 ;
+  // action method core_external_interrupt_sources_0_m_interrupt_req
+  assign CAN_FIRE_core_external_interrupt_sources_0_m_interrupt_req = 1'd1 ;
+  assign WILL_FIRE_core_external_interrupt_sources_0_m_interrupt_req = 1'd1 ;
+
+  // action method core_external_interrupt_sources_1_m_interrupt_req
+  assign CAN_FIRE_core_external_interrupt_sources_1_m_interrupt_req = 1'd1 ;
+  assign WILL_FIRE_core_external_interrupt_sources_1_m_interrupt_req = 1'd1 ;
+
+  // action method core_external_interrupt_sources_2_m_interrupt_req
+  assign CAN_FIRE_core_external_interrupt_sources_2_m_interrupt_req = 1'd1 ;
+  assign WILL_FIRE_core_external_interrupt_sources_2_m_interrupt_req = 1'd1 ;
+
+  // action method core_external_interrupt_sources_3_m_interrupt_req
+  assign CAN_FIRE_core_external_interrupt_sources_3_m_interrupt_req = 1'd1 ;
+  assign WILL_FIRE_core_external_interrupt_sources_3_m_interrupt_req = 1'd1 ;
+
+  // action method core_external_interrupt_sources_4_m_interrupt_req
+  assign CAN_FIRE_core_external_interrupt_sources_4_m_interrupt_req = 1'd1 ;
+  assign WILL_FIRE_core_external_interrupt_sources_4_m_interrupt_req = 1'd1 ;
+
+  // action method core_external_interrupt_sources_5_m_interrupt_req
+  assign CAN_FIRE_core_external_interrupt_sources_5_m_interrupt_req = 1'd1 ;
+  assign WILL_FIRE_core_external_interrupt_sources_5_m_interrupt_req = 1'd1 ;
+
+  // action method core_external_interrupt_sources_6_m_interrupt_req
+  assign CAN_FIRE_core_external_interrupt_sources_6_m_interrupt_req = 1'd1 ;
+  assign WILL_FIRE_core_external_interrupt_sources_6_m_interrupt_req = 1'd1 ;
+
+  // action method core_external_interrupt_sources_7_m_interrupt_req
+  assign CAN_FIRE_core_external_interrupt_sources_7_m_interrupt_req = 1'd1 ;
+  assign WILL_FIRE_core_external_interrupt_sources_7_m_interrupt_req = 1'd1 ;
+
+  // action method core_external_interrupt_sources_8_m_interrupt_req
+  assign CAN_FIRE_core_external_interrupt_sources_8_m_interrupt_req = 1'd1 ;
+  assign WILL_FIRE_core_external_interrupt_sources_8_m_interrupt_req = 1'd1 ;
+
+  // action method core_external_interrupt_sources_9_m_interrupt_req
+  assign CAN_FIRE_core_external_interrupt_sources_9_m_interrupt_req = 1'd1 ;
+  assign WILL_FIRE_core_external_interrupt_sources_9_m_interrupt_req = 1'd1 ;
+
+  // action method core_external_interrupt_sources_10_m_interrupt_req
+  assign CAN_FIRE_core_external_interrupt_sources_10_m_interrupt_req = 1'd1 ;
+  assign WILL_FIRE_core_external_interrupt_sources_10_m_interrupt_req = 1'd1 ;
+
+  // action method core_external_interrupt_sources_11_m_interrupt_req
+  assign CAN_FIRE_core_external_interrupt_sources_11_m_interrupt_req = 1'd1 ;
+  assign WILL_FIRE_core_external_interrupt_sources_11_m_interrupt_req = 1'd1 ;
+
+  // action method core_external_interrupt_sources_12_m_interrupt_req
+  assign CAN_FIRE_core_external_interrupt_sources_12_m_interrupt_req = 1'd1 ;
+  assign WILL_FIRE_core_external_interrupt_sources_12_m_interrupt_req = 1'd1 ;
+
+  // action method core_external_interrupt_sources_13_m_interrupt_req
+  assign CAN_FIRE_core_external_interrupt_sources_13_m_interrupt_req = 1'd1 ;
+  assign WILL_FIRE_core_external_interrupt_sources_13_m_interrupt_req = 1'd1 ;
+
+  // action method core_external_interrupt_sources_14_m_interrupt_req
+  assign CAN_FIRE_core_external_interrupt_sources_14_m_interrupt_req = 1'd1 ;
+  assign WILL_FIRE_core_external_interrupt_sources_14_m_interrupt_req = 1'd1 ;
+
+  // action method core_external_interrupt_sources_15_m_interrupt_req
+  assign CAN_FIRE_core_external_interrupt_sources_15_m_interrupt_req = 1'd1 ;
+  assign WILL_FIRE_core_external_interrupt_sources_15_m_interrupt_req = 1'd1 ;
 
   // action method jtag_tdi
   assign CAN_FIRE_jtag_tdi = 1'd1 ;
@@ -1302,6 +1273,22 @@ module mkP2_Core(CLK,
   // submodule core
   mkCore core(.CLK(CLK),
 	      .RST_N(RST_N),
+	      .core_external_interrupt_sources_0_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_0_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_10_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_10_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_11_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_11_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_12_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_12_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_13_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_13_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_14_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_14_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_15_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_15_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_1_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_1_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_2_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_2_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_3_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_3_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_4_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_4_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_5_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_5_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_6_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_6_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_7_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_7_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_8_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_8_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_9_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_9_m_interrupt_req_set_not_clear),
 	      .cpu_dmem_master_arready(core$cpu_dmem_master_arready),
 	      .cpu_dmem_master_awready(core$cpu_dmem_master_awready),
 	      .cpu_dmem_master_bid(core$cpu_dmem_master_bid),
@@ -1313,7 +1300,6 @@ module mkP2_Core(CLK,
 	      .cpu_dmem_master_rresp(core$cpu_dmem_master_rresp),
 	      .cpu_dmem_master_rvalid(core$cpu_dmem_master_rvalid),
 	      .cpu_dmem_master_wready(core$cpu_dmem_master_wready),
-	      .cpu_external_interrupt_req_set_not_clear(core$cpu_external_interrupt_req_set_not_clear),
 	      .cpu_imem_master_arready(core$cpu_imem_master_arready),
 	      .cpu_imem_master_awready(core$cpu_imem_master_awready),
 	      .cpu_imem_master_bid(core$cpu_imem_master_bid),
@@ -1325,58 +1311,19 @@ module mkP2_Core(CLK,
 	      .cpu_imem_master_rresp(core$cpu_imem_master_rresp),
 	      .cpu_imem_master_rvalid(core$cpu_imem_master_rvalid),
 	      .cpu_imem_master_wready(core$cpu_imem_master_wready),
-	      .cpu_slave_araddr(core$cpu_slave_araddr),
-	      .cpu_slave_arburst(core$cpu_slave_arburst),
-	      .cpu_slave_arcache(core$cpu_slave_arcache),
-	      .cpu_slave_arid(core$cpu_slave_arid),
-	      .cpu_slave_arlen(core$cpu_slave_arlen),
-	      .cpu_slave_arlock(core$cpu_slave_arlock),
-	      .cpu_slave_arprot(core$cpu_slave_arprot),
-	      .cpu_slave_arqos(core$cpu_slave_arqos),
-	      .cpu_slave_arregion(core$cpu_slave_arregion),
-	      .cpu_slave_arsize(core$cpu_slave_arsize),
-	      .cpu_slave_arvalid(core$cpu_slave_arvalid),
-	      .cpu_slave_awaddr(core$cpu_slave_awaddr),
-	      .cpu_slave_awburst(core$cpu_slave_awburst),
-	      .cpu_slave_awcache(core$cpu_slave_awcache),
-	      .cpu_slave_awid(core$cpu_slave_awid),
-	      .cpu_slave_awlen(core$cpu_slave_awlen),
-	      .cpu_slave_awlock(core$cpu_slave_awlock),
-	      .cpu_slave_awprot(core$cpu_slave_awprot),
-	      .cpu_slave_awqos(core$cpu_slave_awqos),
-	      .cpu_slave_awregion(core$cpu_slave_awregion),
-	      .cpu_slave_awsize(core$cpu_slave_awsize),
-	      .cpu_slave_awvalid(core$cpu_slave_awvalid),
-	      .cpu_slave_bready(core$cpu_slave_bready),
-	      .cpu_slave_rready(core$cpu_slave_rready),
-	      .cpu_slave_wdata(core$cpu_slave_wdata),
-	      .cpu_slave_wid(core$cpu_slave_wid),
-	      .cpu_slave_wlast(core$cpu_slave_wlast),
-	      .cpu_slave_wstrb(core$cpu_slave_wstrb),
-	      .cpu_slave_wvalid(core$cpu_slave_wvalid),
 	      .dm_dmi_read_addr_dm_addr(core$dm_dmi_read_addr_dm_addr),
 	      .dm_dmi_write_dm_addr(core$dm_dmi_write_dm_addr),
 	      .dm_dmi_write_dm_word(core$dm_dmi_write_dm_word),
-	      .dm_master_arready(core$dm_master_arready),
-	      .dm_master_awready(core$dm_master_awready),
-	      .dm_master_bid(core$dm_master_bid),
-	      .dm_master_bresp(core$dm_master_bresp),
-	      .dm_master_bvalid(core$dm_master_bvalid),
-	      .dm_master_rdata(core$dm_master_rdata),
-	      .dm_master_rid(core$dm_master_rid),
-	      .dm_master_rlast(core$dm_master_rlast),
-	      .dm_master_rresp(core$dm_master_rresp),
-	      .dm_master_rvalid(core$dm_master_rvalid),
-	      .dm_master_wready(core$dm_master_wready),
 	      .set_verbosity_logdelay(core$set_verbosity_logdelay),
 	      .set_verbosity_verbosity(core$set_verbosity_verbosity),
+	      .EN_set_verbosity(core$EN_set_verbosity),
 	      .EN_cpu_reset_server_request_put(core$EN_cpu_reset_server_request_put),
 	      .EN_cpu_reset_server_response_get(core$EN_cpu_reset_server_response_get),
-	      .EN_set_verbosity(core$EN_set_verbosity),
 	      .EN_dm_dmi_read_addr(core$EN_dm_dmi_read_addr),
 	      .EN_dm_dmi_read_data(core$EN_dm_dmi_read_data),
 	      .EN_dm_dmi_write(core$EN_dm_dmi_write),
 	      .EN_dm_ndm_reset_req_get_get(core$EN_dm_ndm_reset_req_get_get),
+	      .RDY_set_verbosity(),
 	      .RDY_cpu_reset_server_request_put(core$RDY_cpu_reset_server_request_put),
 	      .RDY_cpu_reset_server_response_get(core$RDY_cpu_reset_server_response_get),
 	      .cpu_imem_master_awvalid(core$cpu_imem_master_awvalid),
@@ -1437,181 +1384,11 @@ module mkP2_Core(CLK,
 	      .cpu_dmem_master_arqos(core$cpu_dmem_master_arqos),
 	      .cpu_dmem_master_arregion(core$cpu_dmem_master_arregion),
 	      .cpu_dmem_master_rready(core$cpu_dmem_master_rready),
-	      .cpu_slave_awready(),
-	      .cpu_slave_wready(),
-	      .cpu_slave_bvalid(),
-	      .cpu_slave_bid(),
-	      .cpu_slave_bresp(),
-	      .cpu_slave_arready(),
-	      .cpu_slave_rvalid(),
-	      .cpu_slave_rid(),
-	      .cpu_slave_rdata(),
-	      .cpu_slave_rresp(),
-	      .cpu_slave_rlast(),
-	      .RDY_set_verbosity(),
 	      .RDY_dm_dmi_read_addr(core$RDY_dm_dmi_read_addr),
 	      .dm_dmi_read_data(core$dm_dmi_read_data),
 	      .RDY_dm_dmi_read_data(core$RDY_dm_dmi_read_data),
 	      .RDY_dm_dmi_write(core$RDY_dm_dmi_write),
-	      .RDY_dm_ndm_reset_req_get_get(core$RDY_dm_ndm_reset_req_get_get),
-	      .dm_master_awvalid(core$dm_master_awvalid),
-	      .dm_master_awid(core$dm_master_awid),
-	      .dm_master_awaddr(core$dm_master_awaddr),
-	      .dm_master_awlen(core$dm_master_awlen),
-	      .dm_master_awsize(core$dm_master_awsize),
-	      .dm_master_awburst(core$dm_master_awburst),
-	      .dm_master_awlock(core$dm_master_awlock),
-	      .dm_master_awcache(core$dm_master_awcache),
-	      .dm_master_awprot(core$dm_master_awprot),
-	      .dm_master_awqos(core$dm_master_awqos),
-	      .dm_master_awregion(core$dm_master_awregion),
-	      .dm_master_wvalid(core$dm_master_wvalid),
-	      .dm_master_wid(core$dm_master_wid),
-	      .dm_master_wdata(core$dm_master_wdata),
-	      .dm_master_wstrb(core$dm_master_wstrb),
-	      .dm_master_wlast(core$dm_master_wlast),
-	      .dm_master_bready(core$dm_master_bready),
-	      .dm_master_arvalid(core$dm_master_arvalid),
-	      .dm_master_arid(core$dm_master_arid),
-	      .dm_master_araddr(core$dm_master_araddr),
-	      .dm_master_arlen(core$dm_master_arlen),
-	      .dm_master_arsize(core$dm_master_arsize),
-	      .dm_master_arburst(core$dm_master_arburst),
-	      .dm_master_arlock(core$dm_master_arlock),
-	      .dm_master_arcache(core$dm_master_arcache),
-	      .dm_master_arprot(core$dm_master_arprot),
-	      .dm_master_arqos(core$dm_master_arqos),
-	      .dm_master_arregion(core$dm_master_arregion),
-	      .dm_master_rready(core$dm_master_rready));
-
-  // submodule fabric_2x1
-  mkFabric_2x1 fabric_2x1(.CLK(CLK),
-			  .RST_N(RST_N),
-			  .set_verbosity_verbosity(fabric_2x1$set_verbosity_verbosity),
-			  .v_from_masters_0_araddr(fabric_2x1$v_from_masters_0_araddr),
-			  .v_from_masters_0_arburst(fabric_2x1$v_from_masters_0_arburst),
-			  .v_from_masters_0_arcache(fabric_2x1$v_from_masters_0_arcache),
-			  .v_from_masters_0_arid(fabric_2x1$v_from_masters_0_arid),
-			  .v_from_masters_0_arlen(fabric_2x1$v_from_masters_0_arlen),
-			  .v_from_masters_0_arlock(fabric_2x1$v_from_masters_0_arlock),
-			  .v_from_masters_0_arprot(fabric_2x1$v_from_masters_0_arprot),
-			  .v_from_masters_0_arqos(fabric_2x1$v_from_masters_0_arqos),
-			  .v_from_masters_0_arregion(fabric_2x1$v_from_masters_0_arregion),
-			  .v_from_masters_0_arsize(fabric_2x1$v_from_masters_0_arsize),
-			  .v_from_masters_0_arvalid(fabric_2x1$v_from_masters_0_arvalid),
-			  .v_from_masters_0_awaddr(fabric_2x1$v_from_masters_0_awaddr),
-			  .v_from_masters_0_awburst(fabric_2x1$v_from_masters_0_awburst),
-			  .v_from_masters_0_awcache(fabric_2x1$v_from_masters_0_awcache),
-			  .v_from_masters_0_awid(fabric_2x1$v_from_masters_0_awid),
-			  .v_from_masters_0_awlen(fabric_2x1$v_from_masters_0_awlen),
-			  .v_from_masters_0_awlock(fabric_2x1$v_from_masters_0_awlock),
-			  .v_from_masters_0_awprot(fabric_2x1$v_from_masters_0_awprot),
-			  .v_from_masters_0_awqos(fabric_2x1$v_from_masters_0_awqos),
-			  .v_from_masters_0_awregion(fabric_2x1$v_from_masters_0_awregion),
-			  .v_from_masters_0_awsize(fabric_2x1$v_from_masters_0_awsize),
-			  .v_from_masters_0_awvalid(fabric_2x1$v_from_masters_0_awvalid),
-			  .v_from_masters_0_bready(fabric_2x1$v_from_masters_0_bready),
-			  .v_from_masters_0_rready(fabric_2x1$v_from_masters_0_rready),
-			  .v_from_masters_0_wdata(fabric_2x1$v_from_masters_0_wdata),
-			  .v_from_masters_0_wid(fabric_2x1$v_from_masters_0_wid),
-			  .v_from_masters_0_wlast(fabric_2x1$v_from_masters_0_wlast),
-			  .v_from_masters_0_wstrb(fabric_2x1$v_from_masters_0_wstrb),
-			  .v_from_masters_0_wvalid(fabric_2x1$v_from_masters_0_wvalid),
-			  .v_from_masters_1_araddr(fabric_2x1$v_from_masters_1_araddr),
-			  .v_from_masters_1_arburst(fabric_2x1$v_from_masters_1_arburst),
-			  .v_from_masters_1_arcache(fabric_2x1$v_from_masters_1_arcache),
-			  .v_from_masters_1_arid(fabric_2x1$v_from_masters_1_arid),
-			  .v_from_masters_1_arlen(fabric_2x1$v_from_masters_1_arlen),
-			  .v_from_masters_1_arlock(fabric_2x1$v_from_masters_1_arlock),
-			  .v_from_masters_1_arprot(fabric_2x1$v_from_masters_1_arprot),
-			  .v_from_masters_1_arqos(fabric_2x1$v_from_masters_1_arqos),
-			  .v_from_masters_1_arregion(fabric_2x1$v_from_masters_1_arregion),
-			  .v_from_masters_1_arsize(fabric_2x1$v_from_masters_1_arsize),
-			  .v_from_masters_1_arvalid(fabric_2x1$v_from_masters_1_arvalid),
-			  .v_from_masters_1_awaddr(fabric_2x1$v_from_masters_1_awaddr),
-			  .v_from_masters_1_awburst(fabric_2x1$v_from_masters_1_awburst),
-			  .v_from_masters_1_awcache(fabric_2x1$v_from_masters_1_awcache),
-			  .v_from_masters_1_awid(fabric_2x1$v_from_masters_1_awid),
-			  .v_from_masters_1_awlen(fabric_2x1$v_from_masters_1_awlen),
-			  .v_from_masters_1_awlock(fabric_2x1$v_from_masters_1_awlock),
-			  .v_from_masters_1_awprot(fabric_2x1$v_from_masters_1_awprot),
-			  .v_from_masters_1_awqos(fabric_2x1$v_from_masters_1_awqos),
-			  .v_from_masters_1_awregion(fabric_2x1$v_from_masters_1_awregion),
-			  .v_from_masters_1_awsize(fabric_2x1$v_from_masters_1_awsize),
-			  .v_from_masters_1_awvalid(fabric_2x1$v_from_masters_1_awvalid),
-			  .v_from_masters_1_bready(fabric_2x1$v_from_masters_1_bready),
-			  .v_from_masters_1_rready(fabric_2x1$v_from_masters_1_rready),
-			  .v_from_masters_1_wdata(fabric_2x1$v_from_masters_1_wdata),
-			  .v_from_masters_1_wid(fabric_2x1$v_from_masters_1_wid),
-			  .v_from_masters_1_wlast(fabric_2x1$v_from_masters_1_wlast),
-			  .v_from_masters_1_wstrb(fabric_2x1$v_from_masters_1_wstrb),
-			  .v_from_masters_1_wvalid(fabric_2x1$v_from_masters_1_wvalid),
-			  .v_to_slaves_0_arready(fabric_2x1$v_to_slaves_0_arready),
-			  .v_to_slaves_0_awready(fabric_2x1$v_to_slaves_0_awready),
-			  .v_to_slaves_0_bid(fabric_2x1$v_to_slaves_0_bid),
-			  .v_to_slaves_0_bresp(fabric_2x1$v_to_slaves_0_bresp),
-			  .v_to_slaves_0_bvalid(fabric_2x1$v_to_slaves_0_bvalid),
-			  .v_to_slaves_0_rdata(fabric_2x1$v_to_slaves_0_rdata),
-			  .v_to_slaves_0_rid(fabric_2x1$v_to_slaves_0_rid),
-			  .v_to_slaves_0_rlast(fabric_2x1$v_to_slaves_0_rlast),
-			  .v_to_slaves_0_rresp(fabric_2x1$v_to_slaves_0_rresp),
-			  .v_to_slaves_0_rvalid(fabric_2x1$v_to_slaves_0_rvalid),
-			  .v_to_slaves_0_wready(fabric_2x1$v_to_slaves_0_wready),
-			  .EN_reset(fabric_2x1$EN_reset),
-			  .EN_set_verbosity(fabric_2x1$EN_set_verbosity),
-			  .RDY_reset(),
-			  .RDY_set_verbosity(),
-			  .v_from_masters_0_awready(fabric_2x1$v_from_masters_0_awready),
-			  .v_from_masters_0_wready(fabric_2x1$v_from_masters_0_wready),
-			  .v_from_masters_0_bvalid(fabric_2x1$v_from_masters_0_bvalid),
-			  .v_from_masters_0_bid(fabric_2x1$v_from_masters_0_bid),
-			  .v_from_masters_0_bresp(fabric_2x1$v_from_masters_0_bresp),
-			  .v_from_masters_0_arready(fabric_2x1$v_from_masters_0_arready),
-			  .v_from_masters_0_rvalid(fabric_2x1$v_from_masters_0_rvalid),
-			  .v_from_masters_0_rid(fabric_2x1$v_from_masters_0_rid),
-			  .v_from_masters_0_rdata(fabric_2x1$v_from_masters_0_rdata),
-			  .v_from_masters_0_rresp(fabric_2x1$v_from_masters_0_rresp),
-			  .v_from_masters_0_rlast(fabric_2x1$v_from_masters_0_rlast),
-			  .v_from_masters_1_awready(fabric_2x1$v_from_masters_1_awready),
-			  .v_from_masters_1_wready(fabric_2x1$v_from_masters_1_wready),
-			  .v_from_masters_1_bvalid(fabric_2x1$v_from_masters_1_bvalid),
-			  .v_from_masters_1_bid(fabric_2x1$v_from_masters_1_bid),
-			  .v_from_masters_1_bresp(fabric_2x1$v_from_masters_1_bresp),
-			  .v_from_masters_1_arready(fabric_2x1$v_from_masters_1_arready),
-			  .v_from_masters_1_rvalid(fabric_2x1$v_from_masters_1_rvalid),
-			  .v_from_masters_1_rid(fabric_2x1$v_from_masters_1_rid),
-			  .v_from_masters_1_rdata(fabric_2x1$v_from_masters_1_rdata),
-			  .v_from_masters_1_rresp(fabric_2x1$v_from_masters_1_rresp),
-			  .v_from_masters_1_rlast(fabric_2x1$v_from_masters_1_rlast),
-			  .v_to_slaves_0_awvalid(fabric_2x1$v_to_slaves_0_awvalid),
-			  .v_to_slaves_0_awid(fabric_2x1$v_to_slaves_0_awid),
-			  .v_to_slaves_0_awaddr(fabric_2x1$v_to_slaves_0_awaddr),
-			  .v_to_slaves_0_awlen(fabric_2x1$v_to_slaves_0_awlen),
-			  .v_to_slaves_0_awsize(fabric_2x1$v_to_slaves_0_awsize),
-			  .v_to_slaves_0_awburst(fabric_2x1$v_to_slaves_0_awburst),
-			  .v_to_slaves_0_awlock(fabric_2x1$v_to_slaves_0_awlock),
-			  .v_to_slaves_0_awcache(fabric_2x1$v_to_slaves_0_awcache),
-			  .v_to_slaves_0_awprot(fabric_2x1$v_to_slaves_0_awprot),
-			  .v_to_slaves_0_awqos(fabric_2x1$v_to_slaves_0_awqos),
-			  .v_to_slaves_0_awregion(fabric_2x1$v_to_slaves_0_awregion),
-			  .v_to_slaves_0_wvalid(fabric_2x1$v_to_slaves_0_wvalid),
-			  .v_to_slaves_0_wid(fabric_2x1$v_to_slaves_0_wid),
-			  .v_to_slaves_0_wdata(fabric_2x1$v_to_slaves_0_wdata),
-			  .v_to_slaves_0_wstrb(fabric_2x1$v_to_slaves_0_wstrb),
-			  .v_to_slaves_0_wlast(fabric_2x1$v_to_slaves_0_wlast),
-			  .v_to_slaves_0_bready(fabric_2x1$v_to_slaves_0_bready),
-			  .v_to_slaves_0_arvalid(fabric_2x1$v_to_slaves_0_arvalid),
-			  .v_to_slaves_0_arid(fabric_2x1$v_to_slaves_0_arid),
-			  .v_to_slaves_0_araddr(fabric_2x1$v_to_slaves_0_araddr),
-			  .v_to_slaves_0_arlen(fabric_2x1$v_to_slaves_0_arlen),
-			  .v_to_slaves_0_arsize(fabric_2x1$v_to_slaves_0_arsize),
-			  .v_to_slaves_0_arburst(fabric_2x1$v_to_slaves_0_arburst),
-			  .v_to_slaves_0_arlock(fabric_2x1$v_to_slaves_0_arlock),
-			  .v_to_slaves_0_arcache(fabric_2x1$v_to_slaves_0_arcache),
-			  .v_to_slaves_0_arprot(fabric_2x1$v_to_slaves_0_arprot),
-			  .v_to_slaves_0_arqos(fabric_2x1$v_to_slaves_0_arqos),
-			  .v_to_slaves_0_arregion(fabric_2x1$v_to_slaves_0_arregion),
-			  .v_to_slaves_0_rready(fabric_2x1$v_to_slaves_0_rready));
+	      .RDY_dm_ndm_reset_req_get_get(core$RDY_dm_ndm_reset_req_get_get));
 
   // submodule jtagtap
   mkJtagTap jtagtap(.CLK(CLK),
@@ -1632,26 +1409,6 @@ module mkP2_Core(CLK,
 		    .CLK_jtag_tclk_out(jtagtap$CLK_jtag_tclk_out),
 		    .CLK_GATE_jtag_tclk_out());
 
-  // rule RL_rl_wr_addr_channel
-  assign CAN_FIRE_RL_rl_wr_addr_channel = 1'd1 ;
-  assign WILL_FIRE_RL_rl_wr_addr_channel = 1'd1 ;
-
-  // rule RL_rl_wr_data_channel
-  assign CAN_FIRE_RL_rl_wr_data_channel = 1'd1 ;
-  assign WILL_FIRE_RL_rl_wr_data_channel = 1'd1 ;
-
-  // rule RL_rl_wr_response_channel
-  assign CAN_FIRE_RL_rl_wr_response_channel = 1'd1 ;
-  assign WILL_FIRE_RL_rl_wr_response_channel = 1'd1 ;
-
-  // rule RL_rl_rd_addr_channel
-  assign CAN_FIRE_RL_rl_rd_addr_channel = 1'd1 ;
-  assign WILL_FIRE_RL_rl_rd_addr_channel = 1'd1 ;
-
-  // rule RL_rl_rd_data_channel
-  assign CAN_FIRE_RL_rl_rd_data_channel = 1'd1 ;
-  assign WILL_FIRE_RL_rl_rd_data_channel = 1'd1 ;
-
   // rule RL_rl_once
   assign CAN_FIRE_RL_rl_once =
 	     core$RDY_cpu_reset_server_request_put && !rg_once ;
@@ -1667,42 +1424,6 @@ module mkP2_Core(CLK,
   assign CAN_FIRE_RL_rl_ndmreset =
 	     core$RDY_dm_ndm_reset_req_get_get && rg_once ;
   assign WILL_FIRE_RL_rl_ndmreset = CAN_FIRE_RL_rl_ndmreset ;
-
-  // rule RL_rl_wr_addr_channel_1
-  assign CAN_FIRE_RL_rl_wr_addr_channel_1 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_wr_addr_channel_1 = 1'd1 ;
-
-  // rule RL_rl_wr_data_channel_1
-  assign CAN_FIRE_RL_rl_wr_data_channel_1 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_wr_data_channel_1 = 1'd1 ;
-
-  // rule RL_rl_rd_addr_channel_1
-  assign CAN_FIRE_RL_rl_rd_addr_channel_1 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_rd_addr_channel_1 = 1'd1 ;
-
-  // rule RL_rl_wr_response_channel_1
-  assign CAN_FIRE_RL_rl_wr_response_channel_1 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_wr_response_channel_1 = 1'd1 ;
-
-  // rule RL_rl_rd_data_channel_1
-  assign CAN_FIRE_RL_rl_rd_data_channel_1 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_rd_data_channel_1 = 1'd1 ;
-
-  // rule RL_rl_wr_addr_channel_2
-  assign CAN_FIRE_RL_rl_wr_addr_channel_2 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_wr_addr_channel_2 = 1'd1 ;
-
-  // rule RL_rl_wr_data_channel_2
-  assign CAN_FIRE_RL_rl_wr_data_channel_2 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_wr_data_channel_2 = 1'd1 ;
-
-  // rule RL_rl_rd_addr_channel_2
-  assign CAN_FIRE_RL_rl_rd_addr_channel_2 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_rd_addr_channel_2 = 1'd1 ;
-
-  // rule RL_rl_rd_data_channel_2
-  assign CAN_FIRE_RL_rl_rd_data_channel_2 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_rd_data_channel_2 = 1'd1 ;
 
   // rule RL_mkConnectionVtoAf
   assign CAN_FIRE_RL_mkConnectionVtoAf = 1'd1 ;
@@ -1751,7 +1472,7 @@ module mkP2_Core(CLK,
   // rule RL_rl_dmi_req_cpu
   assign CAN_FIRE_RL_rl_dmi_req_cpu =
 	     bus_dmi_req_fifof$EMPTY_N &&
-	     IF_bus_dmi_req_fifof_first__57_BITS_1_TO_0_58__ETC___d168 ;
+	     IF_bus_dmi_req_fifof_first__7_BITS_1_TO_0_8_EQ_ETC___d78 ;
   assign WILL_FIRE_RL_rl_dmi_req_cpu = CAN_FIRE_RL_rl_dmi_req_cpu ;
 
   // rule RL_rl_dmi_rsp_cpu
@@ -1759,10 +1480,6 @@ module mkP2_Core(CLK,
 	     bus_dmi_rsp_fifof_cntr_r != 2'd2 && core$RDY_dm_dmi_read_data ;
   assign WILL_FIRE_RL_rl_dmi_rsp_cpu =
 	     CAN_FIRE_RL_rl_dmi_rsp_cpu && !WILL_FIRE_RL_rl_dmi_req_cpu ;
-
-  // rule RL_rl_wr_response_channel_2
-  assign CAN_FIRE_RL_rl_wr_response_channel_2 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_wr_response_channel_2 = 1'd1 ;
 
   // rule RL_bus_dmi_req_do_enq
   assign CAN_FIRE_RL_bus_dmi_req_do_enq =
@@ -1799,31 +1516,31 @@ module mkP2_Core(CLK,
 
   // inputs to muxes for submodule ports
   assign MUX_bus_dmi_rsp_fifof_q_0$write_1__SEL_1 =
+	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo3 ;
+  assign MUX_bus_dmi_rsp_fifof_q_0$write_1__SEL_2 =
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_incCtr &&
 	     bus_dmi_rsp_fifof_cntr_r == 2'd0 ;
-  assign MUX_bus_dmi_rsp_fifof_q_0$write_1__SEL_2 =
-	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo3 ;
   assign MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_1 =
+	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo1 ;
+  assign MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_2 =
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_incCtr &&
 	     bus_dmi_rsp_fifof_cntr_r == 2'd1 ;
-  assign MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_2 =
-	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo1 ;
   assign MUX_bus_dmi_rsp_fifof_x_wire$wset_1__SEL_1 =
 	     WILL_FIRE_RL_rl_dmi_req_cpu &&
 	     bus_dmi_req_fifof$D_OUT[1:0] != 2'd1 ;
   assign MUX_bus_dmi_rsp_fifof_cntr_r$write_1__VAL_2 =
 	     bus_dmi_rsp_fifof_cntr_r + 2'd1 ;
   assign MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1 =
+	     (bus_dmi_rsp_fifof_cntr_r == 2'd1) ?
+	       MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2 :
+	       bus_dmi_rsp_fifof_q_1 ;
+  assign MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2 =
 	     MUX_bus_dmi_rsp_fifof_x_wire$wset_1__SEL_1 ?
 	       MUX_bus_dmi_rsp_fifof_x_wire$wset_1__VAL_1 :
 	       MUX_bus_dmi_rsp_fifof_x_wire$wset_1__VAL_2 ;
-  assign MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2 =
-	     (bus_dmi_rsp_fifof_cntr_r == 2'd1) ?
-	       MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1 :
-	       bus_dmi_rsp_fifof_q_1 ;
-  assign MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_2 =
+  assign MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_1 =
 	     (bus_dmi_rsp_fifof_cntr_r == 2'd2) ?
-	       MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1 :
+	       MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2 :
 	       34'd0 ;
   assign MUX_bus_dmi_rsp_fifof_x_wire$wset_1__VAL_1 =
 	     { 32'hAAAAAAAA,
@@ -1844,7 +1561,7 @@ module mkP2_Core(CLK,
   // register bus_dmi_rsp_fifof_cntr_r
   assign bus_dmi_rsp_fifof_cntr_r$D_IN =
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_decCtr ?
-	       bus_dmi_rsp_fifof_cntr_r_10_MINUS_1___d118 :
+	       bus_dmi_rsp_fifof_cntr_r_0_MINUS_1___d28 :
 	       MUX_bus_dmi_rsp_fifof_cntr_r$write_1__VAL_2 ;
   assign bus_dmi_rsp_fifof_cntr_r$EN =
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_decCtr ||
@@ -1871,25 +1588,25 @@ module mkP2_Core(CLK,
     endcase
   end
   assign bus_dmi_rsp_fifof_q_0$EN =
+	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo3 ||
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_incCtr &&
 	     bus_dmi_rsp_fifof_cntr_r == 2'd0 ||
-	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo3 ||
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_decCtr ;
 
   // register bus_dmi_rsp_fifof_q_1
   always@(MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_1 or
-	  MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1 or
+	  MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_1 or
 	  MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_2 or
-	  MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_2 or
+	  MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2 or
 	  WILL_FIRE_RL_bus_dmi_rsp_fifof_decCtr)
   begin
     case (1'b1) // synopsys parallel_case
       MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_1:
 	  bus_dmi_rsp_fifof_q_1$D_IN =
-	      MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1;
+	      MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_1;
       MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_2:
 	  bus_dmi_rsp_fifof_q_1$D_IN =
-	      MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_2;
+	      MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2;
       WILL_FIRE_RL_bus_dmi_rsp_fifof_decCtr:
 	  bus_dmi_rsp_fifof_q_1$D_IN = 34'd0;
       default: bus_dmi_rsp_fifof_q_1$D_IN =
@@ -1897,9 +1614,9 @@ module mkP2_Core(CLK,
     endcase
   end
   assign bus_dmi_rsp_fifof_q_1$EN =
+	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo1 ||
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_incCtr &&
 	     bus_dmi_rsp_fifof_cntr_r == 2'd1 ||
-	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo1 ||
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_decCtr ;
 
   // register rg_once
@@ -1913,6 +1630,38 @@ module mkP2_Core(CLK,
   assign bus_dmi_req_fifof$CLR = 1'b0 ;
 
   // submodule core
+  assign core$core_external_interrupt_sources_0_m_interrupt_req_set_not_clear =
+	     core_external_interrupt_sources_0_m_interrupt_req_set_not_clear ;
+  assign core$core_external_interrupt_sources_10_m_interrupt_req_set_not_clear =
+	     core_external_interrupt_sources_10_m_interrupt_req_set_not_clear ;
+  assign core$core_external_interrupt_sources_11_m_interrupt_req_set_not_clear =
+	     core_external_interrupt_sources_11_m_interrupt_req_set_not_clear ;
+  assign core$core_external_interrupt_sources_12_m_interrupt_req_set_not_clear =
+	     core_external_interrupt_sources_12_m_interrupt_req_set_not_clear ;
+  assign core$core_external_interrupt_sources_13_m_interrupt_req_set_not_clear =
+	     core_external_interrupt_sources_13_m_interrupt_req_set_not_clear ;
+  assign core$core_external_interrupt_sources_14_m_interrupt_req_set_not_clear =
+	     core_external_interrupt_sources_14_m_interrupt_req_set_not_clear ;
+  assign core$core_external_interrupt_sources_15_m_interrupt_req_set_not_clear =
+	     core_external_interrupt_sources_15_m_interrupt_req_set_not_clear ;
+  assign core$core_external_interrupt_sources_1_m_interrupt_req_set_not_clear =
+	     core_external_interrupt_sources_1_m_interrupt_req_set_not_clear ;
+  assign core$core_external_interrupt_sources_2_m_interrupt_req_set_not_clear =
+	     core_external_interrupt_sources_2_m_interrupt_req_set_not_clear ;
+  assign core$core_external_interrupt_sources_3_m_interrupt_req_set_not_clear =
+	     core_external_interrupt_sources_3_m_interrupt_req_set_not_clear ;
+  assign core$core_external_interrupt_sources_4_m_interrupt_req_set_not_clear =
+	     core_external_interrupt_sources_4_m_interrupt_req_set_not_clear ;
+  assign core$core_external_interrupt_sources_5_m_interrupt_req_set_not_clear =
+	     core_external_interrupt_sources_5_m_interrupt_req_set_not_clear ;
+  assign core$core_external_interrupt_sources_6_m_interrupt_req_set_not_clear =
+	     core_external_interrupt_sources_6_m_interrupt_req_set_not_clear ;
+  assign core$core_external_interrupt_sources_7_m_interrupt_req_set_not_clear =
+	     core_external_interrupt_sources_7_m_interrupt_req_set_not_clear ;
+  assign core$core_external_interrupt_sources_8_m_interrupt_req_set_not_clear =
+	     core_external_interrupt_sources_8_m_interrupt_req_set_not_clear ;
+  assign core$core_external_interrupt_sources_9_m_interrupt_req_set_not_clear =
+	     core_external_interrupt_sources_9_m_interrupt_req_set_not_clear ;
   assign core$cpu_dmem_master_arready = master1_arready ;
   assign core$cpu_dmem_master_awready = master1_awready ;
   assign core$cpu_dmem_master_bid = master1_bid ;
@@ -1924,71 +1673,26 @@ module mkP2_Core(CLK,
   assign core$cpu_dmem_master_rresp = master1_rresp ;
   assign core$cpu_dmem_master_rvalid = master1_rvalid ;
   assign core$cpu_dmem_master_wready = master1_wready ;
-  assign core$cpu_external_interrupt_req_set_not_clear =
-	     cpu_external_interrupt_req ;
-  assign core$cpu_imem_master_arready = fabric_2x1$v_from_masters_0_arready ;
-  assign core$cpu_imem_master_awready = fabric_2x1$v_from_masters_0_awready ;
-  assign core$cpu_imem_master_bid = fabric_2x1$v_from_masters_0_bid ;
-  assign core$cpu_imem_master_bresp = fabric_2x1$v_from_masters_0_bresp ;
-  assign core$cpu_imem_master_bvalid = fabric_2x1$v_from_masters_0_bvalid ;
-  assign core$cpu_imem_master_rdata = fabric_2x1$v_from_masters_0_rdata ;
-  assign core$cpu_imem_master_rid = fabric_2x1$v_from_masters_0_rid ;
-  assign core$cpu_imem_master_rlast = fabric_2x1$v_from_masters_0_rlast ;
-  assign core$cpu_imem_master_rresp = fabric_2x1$v_from_masters_0_rresp ;
-  assign core$cpu_imem_master_rvalid = fabric_2x1$v_from_masters_0_rvalid ;
-  assign core$cpu_imem_master_wready = fabric_2x1$v_from_masters_0_wready ;
-  assign core$cpu_slave_araddr =
-	     64'hAAAAAAAAAAAAAAAA /* unspecified value */  ;
-  assign core$cpu_slave_arburst = 2'b10 /* unspecified value */  ;
-  assign core$cpu_slave_arcache = 4'b1010 /* unspecified value */  ;
-  assign core$cpu_slave_arid = 4'b1010 /* unspecified value */  ;
-  assign core$cpu_slave_arlen = 8'b10101010 /* unspecified value */  ;
-  assign core$cpu_slave_arlock = 1'b0 /* unspecified value */  ;
-  assign core$cpu_slave_arprot = 3'b010 /* unspecified value */  ;
-  assign core$cpu_slave_arqos = 4'b1010 /* unspecified value */  ;
-  assign core$cpu_slave_arregion = 4'b1010 /* unspecified value */  ;
-  assign core$cpu_slave_arsize = 3'b010 /* unspecified value */  ;
-  assign core$cpu_slave_arvalid = 1'd0 ;
-  assign core$cpu_slave_awaddr =
-	     64'hAAAAAAAAAAAAAAAA /* unspecified value */  ;
-  assign core$cpu_slave_awburst = 2'b10 /* unspecified value */  ;
-  assign core$cpu_slave_awcache = 4'b1010 /* unspecified value */  ;
-  assign core$cpu_slave_awid = 4'b1010 /* unspecified value */  ;
-  assign core$cpu_slave_awlen = 8'b10101010 /* unspecified value */  ;
-  assign core$cpu_slave_awlock = 1'b0 /* unspecified value */  ;
-  assign core$cpu_slave_awprot = 3'b010 /* unspecified value */  ;
-  assign core$cpu_slave_awqos = 4'b1010 /* unspecified value */  ;
-  assign core$cpu_slave_awregion = 4'b1010 /* unspecified value */  ;
-  assign core$cpu_slave_awsize = 3'b010 /* unspecified value */  ;
-  assign core$cpu_slave_awvalid = 1'd0 ;
-  assign core$cpu_slave_bready = 1'd0 ;
-  assign core$cpu_slave_rready = 1'd0 ;
-  assign core$cpu_slave_wdata =
-	     64'hAAAAAAAAAAAAAAAA /* unspecified value */  ;
-  assign core$cpu_slave_wid = 4'b1010 /* unspecified value */  ;
-  assign core$cpu_slave_wlast = 1'b0 /* unspecified value */  ;
-  assign core$cpu_slave_wstrb = 8'b10101010 /* unspecified value */  ;
-  assign core$cpu_slave_wvalid = 1'd0 ;
+  assign core$cpu_imem_master_arready = master0_arready ;
+  assign core$cpu_imem_master_awready = master0_awready ;
+  assign core$cpu_imem_master_bid = master0_bid ;
+  assign core$cpu_imem_master_bresp = master0_bresp ;
+  assign core$cpu_imem_master_bvalid = master0_bvalid ;
+  assign core$cpu_imem_master_rdata = master0_rdata ;
+  assign core$cpu_imem_master_rid = master0_rid ;
+  assign core$cpu_imem_master_rlast = master0_rlast ;
+  assign core$cpu_imem_master_rresp = master0_rresp ;
+  assign core$cpu_imem_master_rvalid = master0_rvalid ;
+  assign core$cpu_imem_master_wready = master0_wready ;
   assign core$dm_dmi_read_addr_dm_addr = bus_dmi_req_fifof$D_OUT[40:34] ;
   assign core$dm_dmi_write_dm_addr = bus_dmi_req_fifof$D_OUT[40:34] ;
   assign core$dm_dmi_write_dm_word = bus_dmi_req_fifof$D_OUT[33:2] ;
-  assign core$dm_master_arready = fabric_2x1$v_from_masters_1_arready ;
-  assign core$dm_master_awready = fabric_2x1$v_from_masters_1_awready ;
-  assign core$dm_master_bid = fabric_2x1$v_from_masters_1_bid ;
-  assign core$dm_master_bresp = fabric_2x1$v_from_masters_1_bresp ;
-  assign core$dm_master_bvalid = fabric_2x1$v_from_masters_1_bvalid ;
-  assign core$dm_master_rdata = fabric_2x1$v_from_masters_1_rdata ;
-  assign core$dm_master_rid = fabric_2x1$v_from_masters_1_rid ;
-  assign core$dm_master_rlast = fabric_2x1$v_from_masters_1_rlast ;
-  assign core$dm_master_rresp = fabric_2x1$v_from_masters_1_rresp ;
-  assign core$dm_master_rvalid = fabric_2x1$v_from_masters_1_rvalid ;
-  assign core$dm_master_wready = fabric_2x1$v_from_masters_1_wready ;
   assign core$set_verbosity_logdelay = 64'h0 ;
   assign core$set_verbosity_verbosity = 4'h0 ;
+  assign core$EN_set_verbosity = 1'b0 ;
   assign core$EN_cpu_reset_server_request_put = CAN_FIRE_RL_rl_once ;
   assign core$EN_cpu_reset_server_response_get =
 	     core$RDY_cpu_reset_server_response_get ;
-  assign core$EN_set_verbosity = 1'b0 ;
   assign core$EN_dm_dmi_read_addr =
 	     WILL_FIRE_RL_rl_dmi_req_cpu &&
 	     bus_dmi_req_fifof$D_OUT[1:0] == 2'd1 ;
@@ -1997,82 +1701,6 @@ module mkP2_Core(CLK,
 	     WILL_FIRE_RL_rl_dmi_req_cpu &&
 	     bus_dmi_req_fifof$D_OUT[1:0] == 2'd2 ;
   assign core$EN_dm_ndm_reset_req_get_get = CAN_FIRE_RL_rl_ndmreset ;
-
-  // submodule fabric_2x1
-  assign fabric_2x1$set_verbosity_verbosity = 4'h0 ;
-  assign fabric_2x1$v_from_masters_0_araddr = core$cpu_imem_master_araddr ;
-  assign fabric_2x1$v_from_masters_0_arburst = core$cpu_imem_master_arburst ;
-  assign fabric_2x1$v_from_masters_0_arcache = core$cpu_imem_master_arcache ;
-  assign fabric_2x1$v_from_masters_0_arid = core$cpu_imem_master_arid ;
-  assign fabric_2x1$v_from_masters_0_arlen = core$cpu_imem_master_arlen ;
-  assign fabric_2x1$v_from_masters_0_arlock = core$cpu_imem_master_arlock ;
-  assign fabric_2x1$v_from_masters_0_arprot = core$cpu_imem_master_arprot ;
-  assign fabric_2x1$v_from_masters_0_arqos = core$cpu_imem_master_arqos ;
-  assign fabric_2x1$v_from_masters_0_arregion =
-	     core$cpu_imem_master_arregion ;
-  assign fabric_2x1$v_from_masters_0_arsize = core$cpu_imem_master_arsize ;
-  assign fabric_2x1$v_from_masters_0_arvalid = core$cpu_imem_master_arvalid ;
-  assign fabric_2x1$v_from_masters_0_awaddr = core$cpu_imem_master_awaddr ;
-  assign fabric_2x1$v_from_masters_0_awburst = core$cpu_imem_master_awburst ;
-  assign fabric_2x1$v_from_masters_0_awcache = core$cpu_imem_master_awcache ;
-  assign fabric_2x1$v_from_masters_0_awid = core$cpu_imem_master_awid ;
-  assign fabric_2x1$v_from_masters_0_awlen = core$cpu_imem_master_awlen ;
-  assign fabric_2x1$v_from_masters_0_awlock = core$cpu_imem_master_awlock ;
-  assign fabric_2x1$v_from_masters_0_awprot = core$cpu_imem_master_awprot ;
-  assign fabric_2x1$v_from_masters_0_awqos = core$cpu_imem_master_awqos ;
-  assign fabric_2x1$v_from_masters_0_awregion =
-	     core$cpu_imem_master_awregion ;
-  assign fabric_2x1$v_from_masters_0_awsize = core$cpu_imem_master_awsize ;
-  assign fabric_2x1$v_from_masters_0_awvalid = core$cpu_imem_master_awvalid ;
-  assign fabric_2x1$v_from_masters_0_bready = core$cpu_imem_master_bready ;
-  assign fabric_2x1$v_from_masters_0_rready = core$cpu_imem_master_rready ;
-  assign fabric_2x1$v_from_masters_0_wdata = core$cpu_imem_master_wdata ;
-  assign fabric_2x1$v_from_masters_0_wid = core$cpu_imem_master_wid ;
-  assign fabric_2x1$v_from_masters_0_wlast = core$cpu_imem_master_wlast ;
-  assign fabric_2x1$v_from_masters_0_wstrb = core$cpu_imem_master_wstrb ;
-  assign fabric_2x1$v_from_masters_0_wvalid = core$cpu_imem_master_wvalid ;
-  assign fabric_2x1$v_from_masters_1_araddr = core$dm_master_araddr ;
-  assign fabric_2x1$v_from_masters_1_arburst = core$dm_master_arburst ;
-  assign fabric_2x1$v_from_masters_1_arcache = core$dm_master_arcache ;
-  assign fabric_2x1$v_from_masters_1_arid = core$dm_master_arid ;
-  assign fabric_2x1$v_from_masters_1_arlen = core$dm_master_arlen ;
-  assign fabric_2x1$v_from_masters_1_arlock = core$dm_master_arlock ;
-  assign fabric_2x1$v_from_masters_1_arprot = core$dm_master_arprot ;
-  assign fabric_2x1$v_from_masters_1_arqos = core$dm_master_arqos ;
-  assign fabric_2x1$v_from_masters_1_arregion = core$dm_master_arregion ;
-  assign fabric_2x1$v_from_masters_1_arsize = core$dm_master_arsize ;
-  assign fabric_2x1$v_from_masters_1_arvalid = core$dm_master_arvalid ;
-  assign fabric_2x1$v_from_masters_1_awaddr = core$dm_master_awaddr ;
-  assign fabric_2x1$v_from_masters_1_awburst = core$dm_master_awburst ;
-  assign fabric_2x1$v_from_masters_1_awcache = core$dm_master_awcache ;
-  assign fabric_2x1$v_from_masters_1_awid = core$dm_master_awid ;
-  assign fabric_2x1$v_from_masters_1_awlen = core$dm_master_awlen ;
-  assign fabric_2x1$v_from_masters_1_awlock = core$dm_master_awlock ;
-  assign fabric_2x1$v_from_masters_1_awprot = core$dm_master_awprot ;
-  assign fabric_2x1$v_from_masters_1_awqos = core$dm_master_awqos ;
-  assign fabric_2x1$v_from_masters_1_awregion = core$dm_master_awregion ;
-  assign fabric_2x1$v_from_masters_1_awsize = core$dm_master_awsize ;
-  assign fabric_2x1$v_from_masters_1_awvalid = core$dm_master_awvalid ;
-  assign fabric_2x1$v_from_masters_1_bready = core$dm_master_bready ;
-  assign fabric_2x1$v_from_masters_1_rready = core$dm_master_rready ;
-  assign fabric_2x1$v_from_masters_1_wdata = core$dm_master_wdata ;
-  assign fabric_2x1$v_from_masters_1_wid = core$dm_master_wid ;
-  assign fabric_2x1$v_from_masters_1_wlast = core$dm_master_wlast ;
-  assign fabric_2x1$v_from_masters_1_wstrb = core$dm_master_wstrb ;
-  assign fabric_2x1$v_from_masters_1_wvalid = core$dm_master_wvalid ;
-  assign fabric_2x1$v_to_slaves_0_arready = master0_arready ;
-  assign fabric_2x1$v_to_slaves_0_awready = master0_awready ;
-  assign fabric_2x1$v_to_slaves_0_bid = master0_bid ;
-  assign fabric_2x1$v_to_slaves_0_bresp = master0_bresp ;
-  assign fabric_2x1$v_to_slaves_0_bvalid = master0_bvalid ;
-  assign fabric_2x1$v_to_slaves_0_rdata = master0_rdata ;
-  assign fabric_2x1$v_to_slaves_0_rid = master0_rid ;
-  assign fabric_2x1$v_to_slaves_0_rlast = master0_rlast ;
-  assign fabric_2x1$v_to_slaves_0_rresp = master0_rresp ;
-  assign fabric_2x1$v_to_slaves_0_rvalid = master0_rvalid ;
-  assign fabric_2x1$v_to_slaves_0_wready = master0_wready ;
-  assign fabric_2x1$EN_reset = 1'b0 ;
-  assign fabric_2x1$EN_set_verbosity = 1'b0 ;
 
   // submodule jtagtap
   assign jtagtap$dmi_req_ready = bus_dmi_req_fifof$FULL_N ;
@@ -2084,7 +1712,7 @@ module mkP2_Core(CLK,
   assign jtagtap$jtag_tms = jtag_tms ;
 
   // remaining internal signals
-  assign IF_bus_dmi_req_fifof_first__57_BITS_1_TO_0_58__ETC___d168 =
+  assign IF_bus_dmi_req_fifof_first__7_BITS_1_TO_0_8_EQ_ETC___d78 =
 	     (bus_dmi_req_fifof$D_OUT[1:0] == 2'd1) ?
 	       core$RDY_dm_dmi_read_addr :
 	       (bus_dmi_req_fifof$D_OUT[1:0] == 2'd2 ||
@@ -2093,11 +1721,11 @@ module mkP2_Core(CLK,
 		bus_dmi_rsp_fifof_cntr_r != 2'd2 && core$RDY_dm_dmi_write) ;
   assign _dfoo1 =
 	     bus_dmi_rsp_fifof_cntr_r != 2'd2 ||
-	     bus_dmi_rsp_fifof_cntr_r_10_MINUS_1___d118 == 2'd1 ;
+	     bus_dmi_rsp_fifof_cntr_r_0_MINUS_1___d28 == 2'd1 ;
   assign _dfoo3 =
 	     bus_dmi_rsp_fifof_cntr_r != 2'd1 ||
-	     bus_dmi_rsp_fifof_cntr_r_10_MINUS_1___d118 == 2'd0 ;
-  assign bus_dmi_rsp_fifof_cntr_r_10_MINUS_1___d118 =
+	     bus_dmi_rsp_fifof_cntr_r_0_MINUS_1___d28 == 2'd0 ;
+  assign bus_dmi_rsp_fifof_cntr_r_0_MINUS_1___d28 =
 	     bus_dmi_rsp_fifof_cntr_r - 2'd1 ;
 
   // handling of inlined registers

@@ -24,11 +24,14 @@ import  Assert       :: *;
 
 import  Cur_Cycle  :: *;
 import  GetPut_Aux :: *;
+import  Semi_FIFOF :: *;
 
 // ================================================================
 // Project imports
 
-// None
+import AXI4_Types   :: *;
+import AXI4_Fabric  :: *;
+import Fabric_Defs  :: *;    // for Wd_Id, Wd_Addr, Wd_Data, Wd_User
 
 // ================================================================
 // Change bitwidth without requiring < or > constraints.
@@ -41,25 +44,6 @@ endfunction
 
 // ================================================================
 // Interfaces
-
-// ----------------
-// PLIC requests and responses
-// TODO: These are same as near_mem_IO; unify them in a separate file.
-
-typedef struct {
-   Bool       read_not_write;
-   Bit #(64)  addr;
-   Bit #(64)  wdata;    // write-data (not relevant for reads)
-   Bit #(8)   wstrb;    // byte-enable strobe (for write-data)
-   } PLIC_Req
-deriving (Bits, FShow);
-
-typedef struct {
-   Bool       read_not_write;
-   Bool       ok;
-   Bit #(64)  rdata;
-   } PLIC_Rsp
-deriving (Bits, FShow);
 
 // ----------------
 // Individual source interface
@@ -89,14 +73,14 @@ interface PLIC_IFC #(numeric type  t_n_sources,
    // set_addr_map should be called after this module's reset
    method Action set_addr_map (Bit #(64)  addr_base, Bit #(64)  addr_lim);
 
-   // Memory-mapped Reqs/Rsps
-   interface Server #(PLIC_Req, PLIC_Rsp)  server_csrs;
+   // Memory-mapped access
+   interface AXI4_Slave_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) axi4_slave;
 
    // sources
-   interface Vector #(t_n_sources, PLIC_Source_IFC)  sources;
+   interface Vector #(t_n_sources, PLIC_Source_IFC)  v_sources;
 
    // targets EIPs (External Interrupt Pending)
-   interface Vector #(t_n_targets, PLIC_Target_IFC) targets;
+   interface Vector #(t_n_targets, PLIC_Target_IFC) v_targets;
 endinterface
 
 // ================================================================
@@ -116,13 +100,20 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
    Integer  n_sources = valueOf (t_n_sources);
    Integer  n_targets = valueOf (t_n_targets);
 
+   // ----------------
+   // Soft reset requests and responses
+   FIFOF #(Bit #(0))  f_reset_reqs <- mkFIFOF;
+   FIFOF #(Bit #(0))  f_reset_rsps <- mkFIFOF;
+
+   // ----------------
+   // Memory-mapped access
+
    // Base and limit addrs for this memory-mapped block.
    Reg #(Bit #(64))  rg_addr_base <- mkRegU;
    Reg #(Bit #(64))  rg_addr_lim  <- mkRegU;
 
-   // Soft reset requests and responses
-   FIFOF #(Bit #(0))  f_reset_reqs <- mkFIFOF;
-   FIFOF #(Bit #(0))  f_reset_rsps <- mkFIFOF;
+   // Connector to AXI4 fabric
+   AXI4_Slave_Xactor_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) slave_xactor <- mkAXI4_Slave_Xactor;
 
    // ----------------
    // Per-interrupt source state
@@ -148,12 +139,6 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
    // Interrupt enables from source to target
    Vector #(t_n_targets,
 	    Vector #(t_n_sources, Reg #(Bool)))  vvrg_ie <- replicateM (replicateM (mkReg (False)));
-
-   // ----------------
-   // Memory-mapped requests and responses
-
-   FIFOF #(PLIC_Req)  f_reqs <- mkFIFOF;
-   FIFOF #(PLIC_Rsp)  f_rsps <- mkFIFOF;
 
    // ================================================================
    // Compute outputs for each target (combinational)
@@ -199,8 +184,7 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
 	 for (Integer source_id = 0; source_id < n_sources; source_id = source_id + 1)
 	    vvrg_ie [target_id][source_id] <= False;
 
-      f_reqs.clear;
-      f_rsps.clear;
+      slave_xactor.reset;
 
       f_reset_rsps.enq (?);
    endrule
@@ -213,25 +197,29 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
    // ----------------------------------------------------------------
    // Handle memory-mapped read requests
 
-   rule rl_process_rd_req (f_reqs.first.read_not_write);
-      let req <- pop (f_reqs);
+   rule rl_process_rd_req  (! f_reset_reqs.notEmpty);
+
+      let rda <- pop_o (slave_xactor.o_rd_addr);
       if (cfg_verbosity > 1) begin
 	 $display ("%0d: PLIC.rl_process_rd_req:", cur_cycle);
-	 $display ("    ", fshow (req));
+	 $display ("    ", fshow (rda));
       end
 
-      let addr_offset = req.addr - rg_addr_base;
+      let        addr_offset = rda.araddr - rg_addr_base;
+      Bit #(64)  rdata       = 0;
+      AXI4_Resp  rresp       = axi4_resp_okay;
 
-      Bit #(64) rdata = 0;
-      Bool      rok   = False;
+      if (rda.araddr < rg_addr_base) begin
+	 $display ("%0d: ERROR: PLIC.rl_process_rd_req: unrecognized addr", cur_cycle);
+	 $display ("            ", fshow (rda));
+	 rresp = axi4_resp_decerr;
+      end
 
       // Source priority 
-      if (addr_offset < 'h1000) begin
+      else if (addr_offset < 'h1000) begin
 	 Bit #(10) source_id = addr_offset [11:2];
-	 if ((0 < source_id) && (source_id < fromInteger (n_sources))) begin
+	 if ((0 < source_id) && (source_id < fromInteger (n_sources)))
 	    rdata = changeWidth (vrg_source_prio [source_id]);
-	    rok = True;
-	 end
       end
 
       // Source IPs (interrupt pending).
@@ -250,7 +238,6 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
 	 if (source_id_base < fromInteger (n_sources)) begin
 	    Bit #(32) v_ip = pack (genWith  (fn_ip_source_id));
 	    rdata = changeWidth (v_ip);
-	    rok   = True;
 	 end
       end
 
@@ -272,17 +259,14 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
 	     && (target_id      < fromInteger (n_targets))) begin
 	    Bit #(32) v_ie = pack (genWith  (fn_ie_source_id));
 	    rdata = changeWidth (v_ie);
-	    rok   = True;
 	 end
       end
 
       // Target threshold
       else if ((addr_offset [31:0] & 32'hFFFF_0FFF) == 32'h0020_0000) begin
 	 Bit #(4) target_id = addr_offset [15:12];
-	 if (target_id < fromInteger (n_targets)) begin
+	 if (target_id < fromInteger (n_targets))
 	    rdata = changeWidth (vrg_target_threshold [target_id]);
-	    rok   = True;
-	 end
       end
 
       // Interrupt service claim by target
@@ -296,6 +280,7 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
 	       $display ("    Still servicing interrupt from source %0d", vrg_servicing_source [target_id]);
 	       $display ("    Trying to claim service   for  source %0d", max_id);
 	       $display ("    Ignoring.");
+	       rresp = axi4_resp_slverr;
 	    end
 	    else begin
 	       if (max_id != 0) begin
@@ -304,51 +289,68 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
 		  vrg_servicing_source [target_id] <= max_id;
 	       end
 	       rdata = changeWidth (max_id);
-	       rok = True;
 	    end
 	 end
       end
 
       else
-	 rok = False;
+	 rresp = axi4_resp_decerr;
 
-      if (! rok) begin
+      if (rresp != axi4_resp_okay) begin
 	 $display ("%0d: ERROR: PLIC.rl_process_rd_req: unrecognized addr", cur_cycle);
-	 $display ("            ", fshow (req));
+	 $display ("            ", fshow (rda));
       end
 
       if (addr_offset [2:0] != 0)
 	 rdata = { rdata [31:0], 32'h0 };
 
-      let rsp = PLIC_Rsp {read_not_write: True, ok: rok, rdata: rdata};
-      f_rsps.enq (rsp);
+      // Send read-response to bus
+      Fabric_Data x = truncate (rdata);
+      let rdr = AXI4_Rd_Data {rid:   rda.arid,
+			      rdata: x,
+			      rresp: rresp,
+			      rlast: True,
+			      ruser: rda.aruser};
+      slave_xactor.i_rd_data.enq (rdr);
 
       if (cfg_verbosity > 1) begin
-	 $display ("    <= ", fshow (rsp));
+	 $display ("%0d: PLIC.rl_process_rd_req", cur_cycle);
+	 $display ("            ", fshow (rda));
+	 $display ("            ", fshow (rdr));
       end
    endrule: rl_process_rd_req
 
    // ----------------------------------------------------------------
    // Handle memory-mapped write requests
 
-   rule rl_process_wr_req (! f_reqs.first.read_not_write);
-      let req <- pop (f_reqs);
+   (* descending_urgency = "rl_process_wr_req, rl_process_rd_req" *)    // ad hoc choice
+
+   rule rl_process_wr_req (! f_reset_reqs.notEmpty);
+
+      let wra <- pop_o (slave_xactor.o_wr_addr);
+      let wrd <- pop_o (slave_xactor.o_wr_data);
       if (cfg_verbosity > 1) begin
-	 $display ("%0d: PLIC.rl_process_wr_req:", cur_cycle);
-	 $display ("    ", fshow (req));
+	 $display ("%0d: PLIC.rl_process_wr_req", cur_cycle);
+	 $display ("    ", fshow (wra));
+	 $display ("    ", fshow (wrd));
       end
 
-      let addr_offset = req.addr - rg_addr_base;
-      let wdata32     = (((addr_offset & 'h7) == 0) ? req.wdata [31:0] : req.wdata [63:32]);
-      let wok         = False;
+      let addr_offset  = wra.awaddr - rg_addr_base;
+      let wdata32      = (((addr_offset & 'h7) == 0) ? wrd.wdata [31:0] : wrd.wdata [63:32]);
+      AXI4_Resp  bresp = axi4_resp_okay;
+
+      if (wra.awaddr < rg_addr_base) begin
+	 $display ("%0d: ERROR: PLIC.rl_process_wr_req: unrecognized addr", cur_cycle);
+	 $display ("            ", fshow (wra));
+	 $display ("            ", fshow (wrd));
+	 bresp = axi4_resp_decerr;
+      end
 
       // Source priority 
-      if (addr_offset < 'h1000) begin
+      else if (addr_offset < 'h1000) begin
 	 Bit #(10) source_id = addr_offset [11:2];
-	 if ((0 < source_id) && (source_id < fromInteger (n_sources))) begin
+	 if ((0 < source_id) && (source_id < fromInteger (n_sources)))
 	    vrg_source_prio [source_id] <= changeWidth (wdata32);
-	    wok = True;
-	 end
       end
 
       // Source IPs (interrupt pending).
@@ -356,8 +358,8 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
       else if (('h1000 <= addr_offset) && (addr_offset < 'h2000)) begin
 	 Bit #(15) source_id_base = { addr_offset [11:0], 3'h0 };
 
-	 if (source_id_base < fromInteger (n_sources))
-	    wok = True;
+	 if (source_id_base >= fromInteger (n_sources))
+	    bresp = axi4_resp_decerr;
       end
 
       // Source IEs (interrupt enables) for a target
@@ -374,17 +376,14 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
 	       if (source_id < fromInteger (n_sources))
 		  vvrg_ie [target_id][source_id] <= unpack (wdata32 [k]);
 	    end
-	    wok = True;
 	 end
       end
 
       // Target threshold
       else if ((addr_offset [31:0] & 32'hFFFF_0FFF) == 32'h0020_0000) begin
 	 Bit #(4) target_id = addr_offset [15:12];
-	 if (target_id < fromInteger (n_targets)) begin
+	 if (target_id < fromInteger (n_targets))
 	    vrg_target_threshold [target_id] <= changeWidth (wdata32);
-	    wok = True;
-	 end
       end
 
       // Interrupt service completion by target
@@ -403,16 +402,31 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
 			 cur_cycle);
 	       $display ("    Completion message from target %0d to source %0d", target_id, source_id);
 	       $display ("    Ignoring");
+	       bresp = axi4_resp_slverr;
 	    end
-	    wok = True;
 	 end
       end
 
-      let rsp = PLIC_Rsp {read_not_write: False, ok: wok, rdata: ?};
-      f_rsps.enq (rsp);
-			 
+      else
+	 bresp = axi4_resp_decerr;
+
+      if (bresp != axi4_resp_okay) begin
+	 $display ("%0d: ERROR: PLIC.rl_process_wr_req: unrecognized addr", cur_cycle);
+	 $display ("            ", fshow (wra));
+	 $display ("            ", fshow (wrd));
+      end
+
+      // Send write-response to bus
+      let wrr = AXI4_Wr_Resp {bid:   wra.awid,
+			      bresp: bresp,
+			      buser: wra.awuser};
+      slave_xactor.i_wr_resp.enq (wrr);
+
       if (cfg_verbosity > 1) begin
-	 $display ("    <= ", fshow (rsp));
+	 $display ("%0d: PLIC.AXI4.rl_process_wr_req", cur_cycle);
+	 $display ("            ", fshow (wra));
+	 $display ("            ", fshow (wrd));
+	 $display ("            ", fshow (wrr));
       end
    endrule: rl_process_wr_req
 
@@ -462,22 +476,14 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
       rg_addr_lim  <= addr_lim;
    endmethod
 
-   // Memory-mapped Reqs/Rsps
-   interface  server_csrs = toGPServer (f_reqs, f_rsps);
+   // Memory-mapped access
+   interface  axi4_slave = slave_xactor.axi_side;
 
    // sources
-   interface  sources = genWith  (fn_mk_PLIC_Source_IFC);
+   interface  v_sources = genWith  (fn_mk_PLIC_Source_IFC);
 
    // targets
-   interface  targets = genWith  (fn_mk_PLIC_Target_IFC);
-endmodule
-
-// ================================================================
-
-(* synthesize *)
-module mkPLIC_16_2_7 (PLIC_IFC #(16, 2, 7));
-   let m <- mkPLIC;
-   return m;
+   interface  v_targets = genWith  (fn_mk_PLIC_Target_IFC);
 endmodule
 
 // ================================================================

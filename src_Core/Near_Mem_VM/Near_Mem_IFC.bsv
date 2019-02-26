@@ -6,12 +6,9 @@
 // On the CPU side it directly services instruction fetches and DMem
 // reads and writes.
 
-// On the Fabric side it has two Master sub-interfaces and one Slave
-// sub-interface.  The Master sub-interfaces are used for memory and
-// memory-mapped I/O requests/responses from the CPU to the fabric.
-// There are two Master interfaces, for concurrent IMem and DMem
-// access.  The Slave sub-interface is used in the TCM variant for
-// back-door access from the fabric to the TCM.
+// On the Fabric side it has two Master sub-interfaces.
+// One master sub-interface is used for instruction-memory access.
+// The other master sub-interface is used for data-memory and I/O access.
 
 // It can have various implementations:
 //  - As an almost empty pass-through to the fabric
@@ -74,20 +71,6 @@ interface Near_Mem_IFC;
 
    // SFENCE_VMA
    method Action sfence_vma;
-
-   // ----------------
-   // Interrupts from nearby memory-mapped IO (timer, SIP, ...)
-
-   // Timer interrupt
-   // True/False = set/clear interrupt-pending in CPU's MTIP
-   interface Get #(Bool)  get_timer_interrupt_req;
-
-   // Software interrupt
-   interface Get #(Bool)  get_sw_interrupt_req;
-
-   // ----------------
-   // Back-door slave interface from fabric into Near_Mem
-   interface AXI4_Slave_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) near_mem_slave;
 endinterface
    
 // ================================================================

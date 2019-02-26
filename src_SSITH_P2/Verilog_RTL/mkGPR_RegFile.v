@@ -192,7 +192,7 @@ module mkGPR_RegFile(CLK,
 
   // rule RL_rl_reset_loop
   assign CAN_FIRE_RL_rl_reset_loop = rg_state == 2'd1 ;
-  assign WILL_FIRE_RL_rl_reset_loop = CAN_FIRE_RL_rl_reset_loop ;
+  assign WILL_FIRE_RL_rl_reset_loop = rg_state == 2'd1 ;
 
   // register rg_state
   always@(EN_server_reset_request_put or

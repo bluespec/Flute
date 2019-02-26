@@ -30,10 +30,9 @@
 
 // Internally, the data RAM width is fixed at 64b.
 
-// After MMU translation, there is a 3-way triage based on physical addr:
+// After MMU translation, there is a 2-way triage based on physical addr:
 //  - Memory addrs: request goes to the cache logic
 //                      (back end of cache logic talks to fabric interface)
-//  - Near_Mem_IO:  request goes directly to 'near_mem_io_client' interface (no cacheing)
 //  - IO:           request does directly to fabric interface (no cacheing)
 
 // VM-SYNTH-OPT: Comments beginning with this indicate that the following state
@@ -81,8 +80,6 @@ import SoC_Map      :: *;
 import AXI4_Types   :: *;
 import Fabric_Defs  :: *;
 
-import Near_Mem_IO  :: *;    // For Near_Mem_IO_Req/Rsp types
-
 // ================================================================
 
 export  MMU_Cache_IFC (..),  mkMMU_Cache;
@@ -127,9 +124,6 @@ interface MMU_Cache_IFC;
 
    // Fabric master interface
    interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) mem_master;
-
-   // Near-mem IO interface (nearby memory-mapped locations like timer, core configs, ...)
-   interface Client #(Near_Mem_IO_Req, Near_Mem_IO_Rsp) near_mem_io_client;
 endinterface
 
 // ****************************************************************
@@ -432,9 +426,8 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
    // Overall state of this module
    Reg #(Module_State)  rg_state  <- mkReg (MODULE_PRERESET);
 
-   // SoC_Map is needed for methods
-   // - m_is_IO_addr to distinguish mem (cached) and IO (non-cached) addrs
-   // - m_is_near_mem_IO_addr to identify near-mem I/O addresses
+   // SoC_Map is needed for method 'm_is_mem_addr' to distinguish mem
+   // (cached) and other (non-cached) addrs
    SoC_Map_IFC soc_map <- mkSoC_Map;
 
    // Reset request/response: REQUESTOR_RESET_IFC, REQUESTOR_FLUSH_IFC
@@ -443,9 +436,6 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
 
    // Fabric request/response
    AXI4_Master_Xactor_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) master_xactor <- mkAXI4_Master_Xactor_2;
-
-   FIFOF #(Near_Mem_IO_Req) f_near_mem_io_reqs <- mkFIFOF;
-   FIFOF #(Near_Mem_IO_Rsp) f_near_mem_io_rsps <- mkFIFOF;
 
 `ifdef ISA_PRIV_S
    // The TLB
@@ -1527,8 +1517,7 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
    // No caching, send request directly to fabric
 
    rule rl_io_read_req (   (rg_state == IO_REQ)
-			&& ((rg_op == CACHE_LD) || is_AMO_LR)
-			&& (! soc_map.m_is_near_mem_IO_addr (fn_PA_to_Fabric_Addr (rg_pa))));
+			&& ((rg_op == CACHE_LD) || is_AMO_LR));
 
       if (cfg_verbosity > 1)
 	 $display ("%0d: %s.rl_io_read_req; f3 0x%0h vaddr %0h  paddr %0h",
@@ -1547,8 +1536,7 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
    // ----------------------------------------------------------------
    // Receive I/O read response from fabric
 
-   rule rl_io_read_rsp ((rg_state == IO_AWAITING_READ_RSP)
-			&& (! soc_map.m_is_near_mem_IO_addr (fn_PA_to_Fabric_Addr (rg_pa))));
+   rule rl_io_read_rsp ((rg_state == IO_AWAITING_READ_RSP));
 
       let rd_data <- pop_o (master_xactor.o_rd_data);
       if (cfg_verbosity > 1) begin
@@ -1575,67 +1563,6 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
       end
    endrule
 
-   // ----------------------------------------------------------------
-   // Memory-mapped I/O read requests (LD and AMO_LR) to near-mem-io
-   // LRs are treated just like LDs, but we do not place any reservation on the address
-   // (so a subsequent SC is guaranteed to fail).
-   // TODO: Move this into rl_probe_and_immed_rsp, post MMU translation
-   // No caching, send request directly to fabric
-
-   rule rl_io_near_mem_read_req (   (rg_state == IO_REQ)
-				 && ((rg_op == CACHE_LD) || is_AMO_LR)
-				 && soc_map.m_is_near_mem_IO_addr (fn_PA_to_Fabric_Addr (rg_pa)));
-      let req = Near_Mem_IO_Req {read_not_write: True,
-				 addr: zeroExtend (rg_pa),
-				 wdata: ?,
-				 wstrb: ?};
-      f_near_mem_io_reqs.enq (req);
-
-`ifdef ISA_A
-      // Invalidate LR/SC reservation if AMO_LR
-      if (is_AMO_LR) rg_lrsc_valid <= False;
-`endif
-
-      rg_state <= IO_AWAITING_READ_RSP;
-
-      if (cfg_verbosity > 1) begin
-	 $display ("%0d: %s.rl_io_near_mem_read_req; f3 0x%0h vaddr %0h  paddr %0h",
-		   cur_cycle, d_or_i, rg_f3, rg_addr, rg_pa);
-	 $display ("    ", req);
-      end
-   endrule
-
-   // ----------------------------------------------------------------
-   // Receive near-mem I/O read response
-
-   rule rl_io_near_mem_read_rsp ((rg_state == IO_AWAITING_READ_RSP)
-				 && soc_map.m_is_near_mem_IO_addr (fn_PA_to_Fabric_Addr (rg_pa))
-				 && f_near_mem_io_rsps.first.read_not_write);
-      let rsp <- pop (f_near_mem_io_rsps);
-      if (cfg_verbosity > 1) begin
-	 $display ("%0d: %s.rl_io_near_mem_read_rsp: vaddr 0x%0h  paddr 0x%0h", cur_cycle, d_or_i, rg_addr, rg_pa);
-	 $display ("    ", fshow (rsp));
-      end
-
-      let ld_val = fn_extract_and_extend_bytes(rg_f3, rg_addr, zeroExtend (rsp.rdata));
-      rg_ld_val <= ld_val;
-
-      // Successful read
-      if (rsp.ok) begin
-	 fa_drive_IO_read_rsp (rg_f3, rg_addr, ld_val);
-	 rg_state <= IO_READ_RSP;
-      end
-
-      // Bus error
-      else begin
-	 rg_state    <= MODULE_EXCEPTION_RSP;
-	 rg_exc_code <= exc_code_LOAD_ACCESS_FAULT;
-	 if (cfg_verbosity > 1)
-	    $display ("%0d: %s.rl_io_near_mem_read_rsp: FABRIC_RSP_ERR: raising trap LOAD_ACCESS_FAULT",
-		      cur_cycle, d_or_i);
-      end
-   endrule
-
    // ----------------
    // Maintain I/O-read response
    // Stays in this state until CPU's next request puts it back into RUNNING state
@@ -1649,8 +1576,7 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
    // No caching, send request directly to fabric.
    // TODO: Move this into rl_probe_and_immed_rsp, post MMU translation
 
-   rule rl_io_write_req ((rg_state == IO_REQ) && (rg_op == CACHE_ST)
-			 && (! soc_map.m_is_near_mem_IO_addr (fn_PA_to_Fabric_Addr (rg_pa))));
+   rule rl_io_write_req ((rg_state == IO_REQ) && (rg_op == CACHE_ST));
       if (cfg_verbosity > 1)
 	 $display ("%0d: %s: rl_io_write_req; f3 0x%0h  vaddr %0h  paddr %0h  word64 0x%0h",
 		   cur_cycle, d_or_i, rg_f3, rg_addr, rg_pa, rg_st_amo_val);
@@ -1664,52 +1590,10 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
    endrule
 
    // ----------------------------------------------------------------
-   // Memory-mapped I/O write requests (ST) to near-mem IO
-   // No caching, send request directly to fabric.
-   // TODO: Move this into rl_probe_and_immed_rsp, post MMU translation
-
-   rule rl_io_near_mem_write_req ((rg_state == IO_REQ) && (rg_op == CACHE_ST)
-				  && soc_map.m_is_near_mem_IO_addr (fn_PA_to_Fabric_Addr (rg_pa)));
-
-      match {.fabric_addr,
-	     .fabric_data,
-	     .fabric_strb,
-	     .fabric_size} = fn_to_fabric_write_fields (rg_f3, rg_pa, rg_st_amo_val);
-
-      let req = Near_Mem_IO_Req {read_not_write: False,
-				 addr: zeroExtend (rg_pa),
-				 wdata: zeroExtend (fabric_data),
-				 wstrb: zeroExtend (fabric_strb) };    // NOTE: not using size
-      f_near_mem_io_reqs.enq (req);
-
-      rg_state <= CACHE_ST_AMO_RSP;
-
-      if (cfg_verbosity > 1) begin
-	 $display ("%0d: %s: rl_io_near_mem_write_req; f3 0x%0h  vaddr %0h  paddr %0h  word64 0x%0h",
-		   cur_cycle, d_or_i, rg_f3, rg_addr, rg_pa, rg_st_amo_val);
-	 $display ("    ", fshow (req));
-	 $display ("    => rl_ST_AMO_response");
-      end
-   endrule
-
-   // ----------------------------------------------------------------
-   // Receive and discard near-mem I/O write response
-
-   rule rl_io_near_mem_write_rsp (! f_near_mem_io_rsps.first.read_not_write);
-      let rsp <- pop (f_near_mem_io_rsps);
-      if (cfg_verbosity > 1) begin
-	 $display ("%0d: %s.rl_io_near_mem_write_rsp", cur_cycle, d_or_i);
-	 $display ("    ", fshow (rsp));
-      end
-   endrule
-
-   // ----------------------------------------------------------------
    // Memory-mapped I/O AMO_SC requests. Always fail.
 
 `ifdef ISA_A
-   rule rl_io_AMO_SC_req ((rg_state == IO_REQ) &&
-			  is_AMO_SC
-			  && (! soc_map.m_is_near_mem_IO_addr (fn_PA_to_Fabric_Addr (rg_pa))));
+   rule rl_io_AMO_SC_req ((rg_state == IO_REQ) && is_AMO_SC);
 
       rg_ld_val <= 1;    // 1 is LR/SC failure value
       rg_state  <= CACHE_ST_AMO_RSP;
@@ -1953,9 +1837,6 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
 
    // Fabric interface
    interface mem_master = master_xactor.axi_side;
-
-   // Near-mem IO interface (nearby memory-mapped locations like timer, core configs, ...)
-   interface  near_mem_io_client = toGPClient (f_near_mem_io_reqs, f_near_mem_io_rsps);
 endmodule: mkMMU_Cache
 
 // ================================================================

@@ -1516,7 +1516,8 @@ module mkCPU (CPU_IFC);
 
    // ================================================================
    // Stage1: nonpipe trap: BREAK into Debug Mode when dcsr.ebreakm/s/u is set
-   // TODO: We are supposed to set mtval on a machine mode BREAK. Not doing so as we are breaking to the debugger
+   // TODO: We are supposed to set mtval on a machine mode BREAK.
+   // Not doing so as we are breaking to the debugger
 
 `ifdef INCLUDE_GDB_CONTROL
    rule rl_trap_BREAK_to_Debug_Mode (   (rg_state == CPU_RUNNING)
@@ -1667,23 +1668,6 @@ module mkCPU (CPU_IFC);
    // ================================================================
    // ================================================================
    // ================================================================
-   // Connect timer and software interrupts
-
-   rule rl_relay_sw_interrupts;
-      let x <- near_mem.get_sw_interrupt_req.get;
-      csr_regfile.software_interrupt_req (x);
-      // $display ("%0d: CPU.rl_relay_sw_interrupts: relaying: %d", mcycle, pack (x));
-   endrule
-
-   rule rl_relay_timer_interrupts;
-      let x <- near_mem.get_timer_interrupt_req.get;
-      csr_regfile.timer_interrupt_req (x);
-      // $display ("%0d: CPU.rl_relay_timer_interrupts: relaying: %d", mcycle, pack (x));
-   endrule
-
-   // ================================================================
-   // ================================================================
-   // ================================================================
    // DEBUGGER ACCESS
 
    // ----------------
@@ -1830,13 +1814,12 @@ module mkCPU (CPU_IFC);
    // DMem to fabric master interface
    interface  dmem_master = near_mem.dmem_master;
 
-   // Near_Mem back door slave interface
-   interface  near_mem_slave = near_mem.near_mem_slave;
-
    // ----------------
    // External interrupts
 
    method Action  external_interrupt_req (x) = csr_regfile.external_interrupt_req (x);
+   method Action  software_interrupt_req (x) = csr_regfile.software_interrupt_req (x);
+   method Action  timer_interrupt_req    (x) = csr_regfile.timer_interrupt_req    (x);
 
    // ----------------
    // For tracing
