@@ -72,8 +72,8 @@ interface P2_Core_IFC;
    interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) master1;
 
    // External interrupt sources
-   (* always_ready, always_enabled, prefix="interrupt" *)
-   method  Action interrupt_reqs (Bit #(N_External_Interrupt_Sources)  reqs);
+   (* always_ready, always_enabled, prefix="" *)
+   method  Action interrupt_reqs ((* port="cpu_external_interrupt_req" *) Bit #(N_External_Interrupt_Sources)  reqs);
 
 `ifdef INCLUDE_TANDEM_VERIF
    // ----------------------------------------------------------------
