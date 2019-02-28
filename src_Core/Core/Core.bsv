@@ -30,6 +30,7 @@ import Connectable   :: *;
 // ----------------
 // BSV additional libs
 
+import Cur_Cycle  :: *;
 import GetPut_Aux :: *;
 
 // ================================================================
@@ -313,18 +314,21 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
    rule rl_relay_sw_interrupts;    // from Near_Mem_IO (CLINT)
       Bool x <- near_mem_io.get_sw_interrupt_req.get;
       cpu.software_interrupt_req (x);
-      // $display ("%0d: CPU.rl_relay_sw_interrupts: relaying: %d", mcycle, pack (x));
+      // $display ("%0d: CPU.rl_relay_sw_interrupts: relaying: %d", cur_cycle, pack (x));
    endrule
 
    rule rl_relay_timer_interrupts;    // from Near_Mem_IO (CLINT)
       Bool x <- near_mem_io.get_timer_interrupt_req.get;
       cpu.timer_interrupt_req (x);
-      // $display ("%0d: CPU.rl_relay_timer_interrupts: relaying: %d", mcycle, pack (x));
+
+      // $display ("%0d: CPU.rl_relay_timer_interrupts: relaying: %d", cur_cycle, pack (x));
    endrule
 
    rule rl_relay_external_interrupts;    // from PLIC
       Bool x = plic.v_targets [0].m_eip;
       cpu.external_interrupt_req (x);
+
+      // $display ("%0d: CPU.rl_relay_external_interrupts: relaying: %d", cur_cycle, pack (x));
    endrule
 
    // ================================================================

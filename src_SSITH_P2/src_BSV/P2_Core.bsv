@@ -72,7 +72,8 @@ interface P2_Core_IFC;
    interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) master1;
 
    // External interrupt sources
-   interface Vector #(N_External_Interrupt_Sources, PLIC_Source_IFC)  core_external_interrupt_sources;
+   (* always_ready, always_enabled, prefix="interrupt" *)
+   method  Action interrupt_reqs (Bit #(N_External_Interrupt_Sources)  reqs);
 
 `ifdef INCLUDE_TANDEM_VERIF
    // ----------------------------------------------------------------
@@ -201,7 +202,12 @@ module mkP2_Core (P2_Core_IFC);
    interface AXI4_Master_IFC master1 = core.cpu_dmem_master;
 
    // External interrupts
-   interface core_external_interrupt_sources = core.core_external_interrupt_sources;
+   method  Action interrupt_reqs (Bit #(N_External_Interrupt_Sources) reqs);
+      for (Integer j = 0; j < valueOf (N_External_Interrupt_Sources); j = j + 1) begin
+	 Bool req_j = unpack (reqs [j]);
+	 core.core_external_interrupt_sources [j].m_interrupt_req (req_j);
+      end
+   endmethod
 
 `ifdef INCLUDE_TANDEM_VERIF
    // ----------------------------------------------------------------

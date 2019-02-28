@@ -91,22 +91,7 @@
 // master1_rdata                  I    64 reg
 // master1_rresp                  I     2 reg
 // master1_rlast                  I     1 reg
-// core_external_interrupt_sources_0_m_interrupt_req_set_not_clear  I     1
-// core_external_interrupt_sources_1_m_interrupt_req_set_not_clear  I     1
-// core_external_interrupt_sources_2_m_interrupt_req_set_not_clear  I     1
-// core_external_interrupt_sources_3_m_interrupt_req_set_not_clear  I     1
-// core_external_interrupt_sources_4_m_interrupt_req_set_not_clear  I     1
-// core_external_interrupt_sources_5_m_interrupt_req_set_not_clear  I     1
-// core_external_interrupt_sources_6_m_interrupt_req_set_not_clear  I     1
-// core_external_interrupt_sources_7_m_interrupt_req_set_not_clear  I     1
-// core_external_interrupt_sources_8_m_interrupt_req_set_not_clear  I     1
-// core_external_interrupt_sources_9_m_interrupt_req_set_not_clear  I     1
-// core_external_interrupt_sources_10_m_interrupt_req_set_not_clear  I     1
-// core_external_interrupt_sources_11_m_interrupt_req_set_not_clear  I     1
-// core_external_interrupt_sources_12_m_interrupt_req_set_not_clear  I     1
-// core_external_interrupt_sources_13_m_interrupt_req_set_not_clear  I     1
-// core_external_interrupt_sources_14_m_interrupt_req_set_not_clear  I     1
-// core_external_interrupt_sources_15_m_interrupt_req_set_not_clear  I     1
+// interrupt_reqs                 I    16
 // jtag_tdi                       I     1
 // jtag_tms                       I     1
 // jtag_tclk                      I     1
@@ -281,37 +266,7 @@ module mkP2_Core(CLK,
 
 		 master1_rready,
 
-		 core_external_interrupt_sources_0_m_interrupt_req_set_not_clear,
-
-		 core_external_interrupt_sources_1_m_interrupt_req_set_not_clear,
-
-		 core_external_interrupt_sources_2_m_interrupt_req_set_not_clear,
-
-		 core_external_interrupt_sources_3_m_interrupt_req_set_not_clear,
-
-		 core_external_interrupt_sources_4_m_interrupt_req_set_not_clear,
-
-		 core_external_interrupt_sources_5_m_interrupt_req_set_not_clear,
-
-		 core_external_interrupt_sources_6_m_interrupt_req_set_not_clear,
-
-		 core_external_interrupt_sources_7_m_interrupt_req_set_not_clear,
-
-		 core_external_interrupt_sources_8_m_interrupt_req_set_not_clear,
-
-		 core_external_interrupt_sources_9_m_interrupt_req_set_not_clear,
-
-		 core_external_interrupt_sources_10_m_interrupt_req_set_not_clear,
-
-		 core_external_interrupt_sources_11_m_interrupt_req_set_not_clear,
-
-		 core_external_interrupt_sources_12_m_interrupt_req_set_not_clear,
-
-		 core_external_interrupt_sources_13_m_interrupt_req_set_not_clear,
-
-		 core_external_interrupt_sources_14_m_interrupt_req_set_not_clear,
-
-		 core_external_interrupt_sources_15_m_interrupt_req_set_not_clear,
+		 interrupt_reqs,
 
 		 jtag_tdi,
 
@@ -554,53 +509,8 @@ module mkP2_Core(CLK,
   // value method master1_m_rready
   output master1_rready;
 
-  // action method core_external_interrupt_sources_0_m_interrupt_req
-  input  core_external_interrupt_sources_0_m_interrupt_req_set_not_clear;
-
-  // action method core_external_interrupt_sources_1_m_interrupt_req
-  input  core_external_interrupt_sources_1_m_interrupt_req_set_not_clear;
-
-  // action method core_external_interrupt_sources_2_m_interrupt_req
-  input  core_external_interrupt_sources_2_m_interrupt_req_set_not_clear;
-
-  // action method core_external_interrupt_sources_3_m_interrupt_req
-  input  core_external_interrupt_sources_3_m_interrupt_req_set_not_clear;
-
-  // action method core_external_interrupt_sources_4_m_interrupt_req
-  input  core_external_interrupt_sources_4_m_interrupt_req_set_not_clear;
-
-  // action method core_external_interrupt_sources_5_m_interrupt_req
-  input  core_external_interrupt_sources_5_m_interrupt_req_set_not_clear;
-
-  // action method core_external_interrupt_sources_6_m_interrupt_req
-  input  core_external_interrupt_sources_6_m_interrupt_req_set_not_clear;
-
-  // action method core_external_interrupt_sources_7_m_interrupt_req
-  input  core_external_interrupt_sources_7_m_interrupt_req_set_not_clear;
-
-  // action method core_external_interrupt_sources_8_m_interrupt_req
-  input  core_external_interrupt_sources_8_m_interrupt_req_set_not_clear;
-
-  // action method core_external_interrupt_sources_9_m_interrupt_req
-  input  core_external_interrupt_sources_9_m_interrupt_req_set_not_clear;
-
-  // action method core_external_interrupt_sources_10_m_interrupt_req
-  input  core_external_interrupt_sources_10_m_interrupt_req_set_not_clear;
-
-  // action method core_external_interrupt_sources_11_m_interrupt_req
-  input  core_external_interrupt_sources_11_m_interrupt_req_set_not_clear;
-
-  // action method core_external_interrupt_sources_12_m_interrupt_req
-  input  core_external_interrupt_sources_12_m_interrupt_req_set_not_clear;
-
-  // action method core_external_interrupt_sources_13_m_interrupt_req
-  input  core_external_interrupt_sources_13_m_interrupt_req_set_not_clear;
-
-  // action method core_external_interrupt_sources_14_m_interrupt_req
-  input  core_external_interrupt_sources_14_m_interrupt_req_set_not_clear;
-
-  // action method core_external_interrupt_sources_15_m_interrupt_req
-  input  core_external_interrupt_sources_15_m_interrupt_req_set_not_clear;
+  // action method interrupt_reqs
+  input  [15 : 0] interrupt_reqs;
 
   // action method jtag_tdi
   input  jtag_tdi;
@@ -863,22 +773,7 @@ module mkP2_Core(CLK,
        CAN_FIRE_RL_rl_ndmreset,
        CAN_FIRE_RL_rl_once,
        CAN_FIRE_RL_rl_reset_response,
-       CAN_FIRE_core_external_interrupt_sources_0_m_interrupt_req,
-       CAN_FIRE_core_external_interrupt_sources_10_m_interrupt_req,
-       CAN_FIRE_core_external_interrupt_sources_11_m_interrupt_req,
-       CAN_FIRE_core_external_interrupt_sources_12_m_interrupt_req,
-       CAN_FIRE_core_external_interrupt_sources_13_m_interrupt_req,
-       CAN_FIRE_core_external_interrupt_sources_14_m_interrupt_req,
-       CAN_FIRE_core_external_interrupt_sources_15_m_interrupt_req,
-       CAN_FIRE_core_external_interrupt_sources_1_m_interrupt_req,
-       CAN_FIRE_core_external_interrupt_sources_2_m_interrupt_req,
-       CAN_FIRE_core_external_interrupt_sources_3_m_interrupt_req,
-       CAN_FIRE_core_external_interrupt_sources_4_m_interrupt_req,
-       CAN_FIRE_core_external_interrupt_sources_5_m_interrupt_req,
-       CAN_FIRE_core_external_interrupt_sources_6_m_interrupt_req,
-       CAN_FIRE_core_external_interrupt_sources_7_m_interrupt_req,
-       CAN_FIRE_core_external_interrupt_sources_8_m_interrupt_req,
-       CAN_FIRE_core_external_interrupt_sources_9_m_interrupt_req,
+       CAN_FIRE_interrupt_reqs,
        CAN_FIRE_jtag_tclk,
        CAN_FIRE_jtag_tdi,
        CAN_FIRE_jtag_tms,
@@ -913,22 +808,7 @@ module mkP2_Core(CLK,
        WILL_FIRE_RL_rl_ndmreset,
        WILL_FIRE_RL_rl_once,
        WILL_FIRE_RL_rl_reset_response,
-       WILL_FIRE_core_external_interrupt_sources_0_m_interrupt_req,
-       WILL_FIRE_core_external_interrupt_sources_10_m_interrupt_req,
-       WILL_FIRE_core_external_interrupt_sources_11_m_interrupt_req,
-       WILL_FIRE_core_external_interrupt_sources_12_m_interrupt_req,
-       WILL_FIRE_core_external_interrupt_sources_13_m_interrupt_req,
-       WILL_FIRE_core_external_interrupt_sources_14_m_interrupt_req,
-       WILL_FIRE_core_external_interrupt_sources_15_m_interrupt_req,
-       WILL_FIRE_core_external_interrupt_sources_1_m_interrupt_req,
-       WILL_FIRE_core_external_interrupt_sources_2_m_interrupt_req,
-       WILL_FIRE_core_external_interrupt_sources_3_m_interrupt_req,
-       WILL_FIRE_core_external_interrupt_sources_4_m_interrupt_req,
-       WILL_FIRE_core_external_interrupt_sources_5_m_interrupt_req,
-       WILL_FIRE_core_external_interrupt_sources_6_m_interrupt_req,
-       WILL_FIRE_core_external_interrupt_sources_7_m_interrupt_req,
-       WILL_FIRE_core_external_interrupt_sources_8_m_interrupt_req,
-       WILL_FIRE_core_external_interrupt_sources_9_m_interrupt_req,
+       WILL_FIRE_interrupt_reqs,
        WILL_FIRE_jtag_tclk,
        WILL_FIRE_jtag_tdi,
        WILL_FIRE_jtag_tms,
@@ -946,7 +826,7 @@ module mkP2_Core(CLK,
   // inputs to muxes for submodule ports
   wire [33 : 0] MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1,
 		MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2,
-		MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_1,
+		MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_2,
 		MUX_bus_dmi_rsp_fifof_x_wire$wset_1__VAL_1,
 		MUX_bus_dmi_rsp_fifof_x_wire$wset_1__VAL_2;
   wire [1 : 0] MUX_bus_dmi_rsp_fifof_cntr_r$write_1__VAL_2;
@@ -1180,69 +1060,9 @@ module mkP2_Core(CLK,
   // value method master1_m_rready
   assign master1_rready = core$cpu_dmem_master_rready ;
 
-  // action method core_external_interrupt_sources_0_m_interrupt_req
-  assign CAN_FIRE_core_external_interrupt_sources_0_m_interrupt_req = 1'd1 ;
-  assign WILL_FIRE_core_external_interrupt_sources_0_m_interrupt_req = 1'd1 ;
-
-  // action method core_external_interrupt_sources_1_m_interrupt_req
-  assign CAN_FIRE_core_external_interrupt_sources_1_m_interrupt_req = 1'd1 ;
-  assign WILL_FIRE_core_external_interrupt_sources_1_m_interrupt_req = 1'd1 ;
-
-  // action method core_external_interrupt_sources_2_m_interrupt_req
-  assign CAN_FIRE_core_external_interrupt_sources_2_m_interrupt_req = 1'd1 ;
-  assign WILL_FIRE_core_external_interrupt_sources_2_m_interrupt_req = 1'd1 ;
-
-  // action method core_external_interrupt_sources_3_m_interrupt_req
-  assign CAN_FIRE_core_external_interrupt_sources_3_m_interrupt_req = 1'd1 ;
-  assign WILL_FIRE_core_external_interrupt_sources_3_m_interrupt_req = 1'd1 ;
-
-  // action method core_external_interrupt_sources_4_m_interrupt_req
-  assign CAN_FIRE_core_external_interrupt_sources_4_m_interrupt_req = 1'd1 ;
-  assign WILL_FIRE_core_external_interrupt_sources_4_m_interrupt_req = 1'd1 ;
-
-  // action method core_external_interrupt_sources_5_m_interrupt_req
-  assign CAN_FIRE_core_external_interrupt_sources_5_m_interrupt_req = 1'd1 ;
-  assign WILL_FIRE_core_external_interrupt_sources_5_m_interrupt_req = 1'd1 ;
-
-  // action method core_external_interrupt_sources_6_m_interrupt_req
-  assign CAN_FIRE_core_external_interrupt_sources_6_m_interrupt_req = 1'd1 ;
-  assign WILL_FIRE_core_external_interrupt_sources_6_m_interrupt_req = 1'd1 ;
-
-  // action method core_external_interrupt_sources_7_m_interrupt_req
-  assign CAN_FIRE_core_external_interrupt_sources_7_m_interrupt_req = 1'd1 ;
-  assign WILL_FIRE_core_external_interrupt_sources_7_m_interrupt_req = 1'd1 ;
-
-  // action method core_external_interrupt_sources_8_m_interrupt_req
-  assign CAN_FIRE_core_external_interrupt_sources_8_m_interrupt_req = 1'd1 ;
-  assign WILL_FIRE_core_external_interrupt_sources_8_m_interrupt_req = 1'd1 ;
-
-  // action method core_external_interrupt_sources_9_m_interrupt_req
-  assign CAN_FIRE_core_external_interrupt_sources_9_m_interrupt_req = 1'd1 ;
-  assign WILL_FIRE_core_external_interrupt_sources_9_m_interrupt_req = 1'd1 ;
-
-  // action method core_external_interrupt_sources_10_m_interrupt_req
-  assign CAN_FIRE_core_external_interrupt_sources_10_m_interrupt_req = 1'd1 ;
-  assign WILL_FIRE_core_external_interrupt_sources_10_m_interrupt_req = 1'd1 ;
-
-  // action method core_external_interrupt_sources_11_m_interrupt_req
-  assign CAN_FIRE_core_external_interrupt_sources_11_m_interrupt_req = 1'd1 ;
-  assign WILL_FIRE_core_external_interrupt_sources_11_m_interrupt_req = 1'd1 ;
-
-  // action method core_external_interrupt_sources_12_m_interrupt_req
-  assign CAN_FIRE_core_external_interrupt_sources_12_m_interrupt_req = 1'd1 ;
-  assign WILL_FIRE_core_external_interrupt_sources_12_m_interrupt_req = 1'd1 ;
-
-  // action method core_external_interrupt_sources_13_m_interrupt_req
-  assign CAN_FIRE_core_external_interrupt_sources_13_m_interrupt_req = 1'd1 ;
-  assign WILL_FIRE_core_external_interrupt_sources_13_m_interrupt_req = 1'd1 ;
-
-  // action method core_external_interrupt_sources_14_m_interrupt_req
-  assign CAN_FIRE_core_external_interrupt_sources_14_m_interrupt_req = 1'd1 ;
-  assign WILL_FIRE_core_external_interrupt_sources_14_m_interrupt_req = 1'd1 ;
-
-  // action method core_external_interrupt_sources_15_m_interrupt_req
-  assign CAN_FIRE_core_external_interrupt_sources_15_m_interrupt_req = 1'd1 ;
-  assign WILL_FIRE_core_external_interrupt_sources_15_m_interrupt_req = 1'd1 ;
+  // action method interrupt_reqs
+  assign CAN_FIRE_interrupt_reqs = 1'd1 ;
+  assign WILL_FIRE_interrupt_reqs = 1'd1 ;
 
   // action method jtag_tdi
   assign CAN_FIRE_jtag_tdi = 1'd1 ;
@@ -1516,31 +1336,31 @@ module mkP2_Core(CLK,
 
   // inputs to muxes for submodule ports
   assign MUX_bus_dmi_rsp_fifof_q_0$write_1__SEL_1 =
-	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo3 ;
-  assign MUX_bus_dmi_rsp_fifof_q_0$write_1__SEL_2 =
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_incCtr &&
 	     bus_dmi_rsp_fifof_cntr_r == 2'd0 ;
+  assign MUX_bus_dmi_rsp_fifof_q_0$write_1__SEL_2 =
+	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo3 ;
   assign MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_1 =
-	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo1 ;
-  assign MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_2 =
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_incCtr &&
 	     bus_dmi_rsp_fifof_cntr_r == 2'd1 ;
+  assign MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_2 =
+	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo1 ;
   assign MUX_bus_dmi_rsp_fifof_x_wire$wset_1__SEL_1 =
 	     WILL_FIRE_RL_rl_dmi_req_cpu &&
 	     bus_dmi_req_fifof$D_OUT[1:0] != 2'd1 ;
   assign MUX_bus_dmi_rsp_fifof_cntr_r$write_1__VAL_2 =
 	     bus_dmi_rsp_fifof_cntr_r + 2'd1 ;
   assign MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1 =
-	     (bus_dmi_rsp_fifof_cntr_r == 2'd1) ?
-	       MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2 :
-	       bus_dmi_rsp_fifof_q_1 ;
-  assign MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2 =
 	     MUX_bus_dmi_rsp_fifof_x_wire$wset_1__SEL_1 ?
 	       MUX_bus_dmi_rsp_fifof_x_wire$wset_1__VAL_1 :
 	       MUX_bus_dmi_rsp_fifof_x_wire$wset_1__VAL_2 ;
-  assign MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_1 =
+  assign MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2 =
+	     (bus_dmi_rsp_fifof_cntr_r == 2'd1) ?
+	       MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1 :
+	       bus_dmi_rsp_fifof_q_1 ;
+  assign MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_2 =
 	     (bus_dmi_rsp_fifof_cntr_r == 2'd2) ?
-	       MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2 :
+	       MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1 :
 	       34'd0 ;
   assign MUX_bus_dmi_rsp_fifof_x_wire$wset_1__VAL_1 =
 	     { 32'hAAAAAAAA,
@@ -1588,25 +1408,25 @@ module mkP2_Core(CLK,
     endcase
   end
   assign bus_dmi_rsp_fifof_q_0$EN =
-	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo3 ||
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_incCtr &&
 	     bus_dmi_rsp_fifof_cntr_r == 2'd0 ||
+	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo3 ||
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_decCtr ;
 
   // register bus_dmi_rsp_fifof_q_1
   always@(MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_1 or
-	  MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_1 or
+	  MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1 or
 	  MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_2 or
-	  MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2 or
+	  MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_2 or
 	  WILL_FIRE_RL_bus_dmi_rsp_fifof_decCtr)
   begin
     case (1'b1) // synopsys parallel_case
       MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_1:
 	  bus_dmi_rsp_fifof_q_1$D_IN =
-	      MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_1;
+	      MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1;
       MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_2:
 	  bus_dmi_rsp_fifof_q_1$D_IN =
-	      MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2;
+	      MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_2;
       WILL_FIRE_RL_bus_dmi_rsp_fifof_decCtr:
 	  bus_dmi_rsp_fifof_q_1$D_IN = 34'd0;
       default: bus_dmi_rsp_fifof_q_1$D_IN =
@@ -1614,9 +1434,9 @@ module mkP2_Core(CLK,
     endcase
   end
   assign bus_dmi_rsp_fifof_q_1$EN =
-	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo1 ||
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_incCtr &&
 	     bus_dmi_rsp_fifof_cntr_r == 2'd1 ||
+	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo1 ||
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_decCtr ;
 
   // register rg_once
@@ -1631,37 +1451,37 @@ module mkP2_Core(CLK,
 
   // submodule core
   assign core$core_external_interrupt_sources_0_m_interrupt_req_set_not_clear =
-	     core_external_interrupt_sources_0_m_interrupt_req_set_not_clear ;
+	     interrupt_reqs[0] ;
   assign core$core_external_interrupt_sources_10_m_interrupt_req_set_not_clear =
-	     core_external_interrupt_sources_10_m_interrupt_req_set_not_clear ;
+	     interrupt_reqs[10] ;
   assign core$core_external_interrupt_sources_11_m_interrupt_req_set_not_clear =
-	     core_external_interrupt_sources_11_m_interrupt_req_set_not_clear ;
+	     interrupt_reqs[11] ;
   assign core$core_external_interrupt_sources_12_m_interrupt_req_set_not_clear =
-	     core_external_interrupt_sources_12_m_interrupt_req_set_not_clear ;
+	     interrupt_reqs[12] ;
   assign core$core_external_interrupt_sources_13_m_interrupt_req_set_not_clear =
-	     core_external_interrupt_sources_13_m_interrupt_req_set_not_clear ;
+	     interrupt_reqs[13] ;
   assign core$core_external_interrupt_sources_14_m_interrupt_req_set_not_clear =
-	     core_external_interrupt_sources_14_m_interrupt_req_set_not_clear ;
+	     interrupt_reqs[14] ;
   assign core$core_external_interrupt_sources_15_m_interrupt_req_set_not_clear =
-	     core_external_interrupt_sources_15_m_interrupt_req_set_not_clear ;
+	     interrupt_reqs[15] ;
   assign core$core_external_interrupt_sources_1_m_interrupt_req_set_not_clear =
-	     core_external_interrupt_sources_1_m_interrupt_req_set_not_clear ;
+	     interrupt_reqs[1] ;
   assign core$core_external_interrupt_sources_2_m_interrupt_req_set_not_clear =
-	     core_external_interrupt_sources_2_m_interrupt_req_set_not_clear ;
+	     interrupt_reqs[2] ;
   assign core$core_external_interrupt_sources_3_m_interrupt_req_set_not_clear =
-	     core_external_interrupt_sources_3_m_interrupt_req_set_not_clear ;
+	     interrupt_reqs[3] ;
   assign core$core_external_interrupt_sources_4_m_interrupt_req_set_not_clear =
-	     core_external_interrupt_sources_4_m_interrupt_req_set_not_clear ;
+	     interrupt_reqs[4] ;
   assign core$core_external_interrupt_sources_5_m_interrupt_req_set_not_clear =
-	     core_external_interrupt_sources_5_m_interrupt_req_set_not_clear ;
+	     interrupt_reqs[5] ;
   assign core$core_external_interrupt_sources_6_m_interrupt_req_set_not_clear =
-	     core_external_interrupt_sources_6_m_interrupt_req_set_not_clear ;
+	     interrupt_reqs[6] ;
   assign core$core_external_interrupt_sources_7_m_interrupt_req_set_not_clear =
-	     core_external_interrupt_sources_7_m_interrupt_req_set_not_clear ;
+	     interrupt_reqs[7] ;
   assign core$core_external_interrupt_sources_8_m_interrupt_req_set_not_clear =
-	     core_external_interrupt_sources_8_m_interrupt_req_set_not_clear ;
+	     interrupt_reqs[8] ;
   assign core$core_external_interrupt_sources_9_m_interrupt_req_set_not_clear =
-	     core_external_interrupt_sources_9_m_interrupt_req_set_not_clear ;
+	     interrupt_reqs[9] ;
   assign core$cpu_dmem_master_arready = master1_arready ;
   assign core$cpu_dmem_master_awready = master1_awready ;
   assign core$cpu_dmem_master_bid = master1_bid ;
