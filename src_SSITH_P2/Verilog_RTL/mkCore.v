@@ -742,7 +742,8 @@ module mkCore(CLK,
 
   // ports of submodule cpu
   wire [84 : 0] cpu$hart0_csr_mem_server_request_put;
-  wire [77 : 0] cpu$hart0_gpr_mem_server_request_put;
+  wire [77 : 0] cpu$hart0_fpr_mem_server_request_put,
+		cpu$hart0_gpr_mem_server_request_put;
   wire [63 : 0] cpu$dmem_master_araddr,
 		cpu$dmem_master_awaddr,
 		cpu$dmem_master_rdata,
@@ -802,6 +803,8 @@ module mkCore(CLK,
 	       cpu$imem_master_rresp;
   wire cpu$EN_hart0_csr_mem_server_request_put,
        cpu$EN_hart0_csr_mem_server_response_get,
+       cpu$EN_hart0_fpr_mem_server_request_put,
+       cpu$EN_hart0_fpr_mem_server_response_get,
        cpu$EN_hart0_gpr_mem_server_request_put,
        cpu$EN_hart0_gpr_mem_server_response_get,
        cpu$EN_hart0_put_other_req_put,
@@ -1756,6 +1759,7 @@ module mkCore(CLK,
 	    .dmem_master_wready(cpu$dmem_master_wready),
 	    .external_interrupt_req_set_not_clear(cpu$external_interrupt_req_set_not_clear),
 	    .hart0_csr_mem_server_request_put(cpu$hart0_csr_mem_server_request_put),
+	    .hart0_fpr_mem_server_request_put(cpu$hart0_fpr_mem_server_request_put),
 	    .hart0_gpr_mem_server_request_put(cpu$hart0_gpr_mem_server_request_put),
 	    .hart0_put_other_req_put(cpu$hart0_put_other_req_put),
 	    .hart0_server_run_halt_request_put(cpu$hart0_server_run_halt_request_put),
@@ -1782,6 +1786,8 @@ module mkCore(CLK,
 	    .EN_hart0_put_other_req_put(cpu$EN_hart0_put_other_req_put),
 	    .EN_hart0_gpr_mem_server_request_put(cpu$EN_hart0_gpr_mem_server_request_put),
 	    .EN_hart0_gpr_mem_server_response_get(cpu$EN_hart0_gpr_mem_server_response_get),
+	    .EN_hart0_fpr_mem_server_request_put(cpu$EN_hart0_fpr_mem_server_request_put),
+	    .EN_hart0_fpr_mem_server_response_get(cpu$EN_hart0_fpr_mem_server_response_get),
 	    .EN_hart0_csr_mem_server_request_put(cpu$EN_hart0_csr_mem_server_request_put),
 	    .EN_hart0_csr_mem_server_response_get(cpu$EN_hart0_csr_mem_server_response_get),
 	    .RDY_hart0_server_reset_request_put(cpu$RDY_hart0_server_reset_request_put),
@@ -1852,6 +1858,9 @@ module mkCore(CLK,
 	    .RDY_hart0_gpr_mem_server_request_put(cpu$RDY_hart0_gpr_mem_server_request_put),
 	    .hart0_gpr_mem_server_response_get(cpu$hart0_gpr_mem_server_response_get),
 	    .RDY_hart0_gpr_mem_server_response_get(cpu$RDY_hart0_gpr_mem_server_response_get),
+	    .RDY_hart0_fpr_mem_server_request_put(),
+	    .hart0_fpr_mem_server_response_get(),
+	    .RDY_hart0_fpr_mem_server_response_get(),
 	    .RDY_hart0_csr_mem_server_request_put(cpu$RDY_hart0_csr_mem_server_request_put),
 	    .hart0_csr_mem_server_response_get(cpu$hart0_csr_mem_server_response_get),
 	    .RDY_hart0_csr_mem_server_response_get(cpu$RDY_hart0_csr_mem_server_response_get));
@@ -2531,6 +2540,7 @@ module mkCore(CLK,
   assign cpu$external_interrupt_req_set_not_clear = plic$v_targets_0_m_eip ;
   assign cpu$hart0_csr_mem_server_request_put =
 	     debug_module$hart0_csr_mem_client_request_get ;
+  assign cpu$hart0_fpr_mem_server_request_put = 78'h0 ;
   assign cpu$hart0_gpr_mem_server_request_put =
 	     debug_module$hart0_gpr_mem_client_request_get ;
   assign cpu$hart0_put_other_req_put = debug_module$hart0_get_other_req_get ;
@@ -2569,6 +2579,8 @@ module mkCore(CLK,
 	     CAN_FIRE_RL_ClientServerRequest_1 ;
   assign cpu$EN_hart0_gpr_mem_server_response_get =
 	     CAN_FIRE_RL_ClientServerResponse_1 ;
+  assign cpu$EN_hart0_fpr_mem_server_request_put = 1'b0 ;
+  assign cpu$EN_hart0_fpr_mem_server_response_get = 1'b0 ;
   assign cpu$EN_hart0_csr_mem_server_request_put =
 	     CAN_FIRE_RL_ClientServerRequest_2 ;
   assign cpu$EN_hart0_csr_mem_server_response_get =
