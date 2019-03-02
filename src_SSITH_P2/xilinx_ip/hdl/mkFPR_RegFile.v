@@ -11,21 +11,20 @@
 // read_rs1                       O    64
 // read_rs1_port2                 O    64
 // read_rs2                       O    64
+// read_rs3                       O    64
 // CLK                            I     1 clock
 // RST_N                          I     1 reset
 // read_rs1_rs1                   I     5
 // read_rs1_port2_rs1             I     5
 // read_rs2_rs2                   I     5
+// read_rs3_rs3                   I     5
 // write_rd_rd                    I     5
 // write_rd_rd_val                I    64 reg
 // EN_server_reset_request_put    I     1
 // EN_server_reset_response_get   I     1
 // EN_write_rd                    I     1
 //
-// Combinational paths from inputs to outputs:
-//   read_rs1_rs1 -> read_rs1
-//   read_rs1_port2_rs1 -> read_rs1_port2
-//   read_rs2_rs2 -> read_rs2
+// No combinational paths from inputs to outputs
 //
 //
 
@@ -42,7 +41,7 @@
   `define BSV_RESET_EDGE negedge
 `endif
 
-module mkGPR_RegFile(CLK,
+module mkFPR_RegFile(CLK,
 		     RST_N,
 
 		     EN_server_reset_request_put,
@@ -59,6 +58,9 @@ module mkGPR_RegFile(CLK,
 
 		     read_rs2_rs2,
 		     read_rs2,
+
+		     read_rs3_rs3,
+		     read_rs3,
 
 		     write_rd_rd,
 		     write_rd_rd_val,
@@ -86,13 +88,17 @@ module mkGPR_RegFile(CLK,
   input  [4 : 0] read_rs2_rs2;
   output [63 : 0] read_rs2;
 
+  // value method read_rs3
+  input  [4 : 0] read_rs3_rs3;
+  output [63 : 0] read_rs3;
+
   // action method write_rd
   input  [4 : 0] write_rd_rd;
   input  [63 : 0] write_rd_rd_val;
   input  EN_write_rd;
 
   // signals for module outputs
-  wire [63 : 0] read_rs1, read_rs1_port2, read_rs2;
+  wire [63 : 0] read_rs1, read_rs1_port2, read_rs2, read_rs3;
   wire RDY_server_reset_request_put, RDY_server_reset_response_get;
 
   // register rg_state
@@ -111,7 +117,8 @@ module mkGPR_RegFile(CLK,
   wire [63 : 0] regfile$D_IN,
 		regfile$D_OUT_1,
 		regfile$D_OUT_2,
-		regfile$D_OUT_3;
+		regfile$D_OUT_3,
+		regfile$D_OUT_4;
   wire [4 : 0] regfile$ADDR_1,
 	       regfile$ADDR_2,
 	       regfile$ADDR_3,
@@ -145,14 +152,16 @@ module mkGPR_RegFile(CLK,
   assign WILL_FIRE_server_reset_response_get = EN_server_reset_response_get ;
 
   // value method read_rs1
-  assign read_rs1 = (read_rs1_rs1 == 5'd0) ? 64'd0 : regfile$D_OUT_3 ;
+  assign read_rs1 = regfile$D_OUT_4 ;
 
   // value method read_rs1_port2
-  assign read_rs1_port2 =
-	     (read_rs1_port2_rs1 == 5'd0) ? 64'd0 : regfile$D_OUT_2 ;
+  assign read_rs1_port2 = regfile$D_OUT_3 ;
 
   // value method read_rs2
-  assign read_rs2 = (read_rs2_rs2 == 5'd0) ? 64'd0 : regfile$D_OUT_1 ;
+  assign read_rs2 = regfile$D_OUT_2 ;
+
+  // value method read_rs3
+  assign read_rs3 = regfile$D_OUT_1 ;
 
   // action method write_rd
   assign CAN_FIRE_write_rd = 1'd1 ;
@@ -183,7 +192,7 @@ module mkGPR_RegFile(CLK,
 				.D_OUT_1(regfile$D_OUT_1),
 				.D_OUT_2(regfile$D_OUT_2),
 				.D_OUT_3(regfile$D_OUT_3),
-				.D_OUT_4(),
+				.D_OUT_4(regfile$D_OUT_4),
 				.D_OUT_5());
 
   // rule RL_rl_reset_start
@@ -213,14 +222,14 @@ module mkGPR_RegFile(CLK,
   assign f_reset_rsps$CLR = 1'b0 ;
 
   // submodule regfile
-  assign regfile$ADDR_1 = read_rs2_rs2 ;
-  assign regfile$ADDR_2 = read_rs1_port2_rs1 ;
-  assign regfile$ADDR_3 = read_rs1_rs1 ;
-  assign regfile$ADDR_4 = 5'h0 ;
+  assign regfile$ADDR_1 = read_rs3_rs3 ;
+  assign regfile$ADDR_2 = read_rs2_rs2 ;
+  assign regfile$ADDR_3 = read_rs1_port2_rs1 ;
+  assign regfile$ADDR_4 = read_rs1_rs1 ;
   assign regfile$ADDR_5 = 5'h0 ;
   assign regfile$ADDR_IN = write_rd_rd ;
   assign regfile$D_IN = write_rd_rd_val ;
-  assign regfile$WE = EN_write_rd && write_rd_rd != 5'd0 ;
+  assign regfile$WE = EN_write_rd ;
 
   // handling of inlined registers
 
@@ -245,5 +254,5 @@ module mkGPR_RegFile(CLK,
   end
   `endif // BSV_NO_INITIAL_BLOCKS
   // synopsys translate_on
-endmodule  // mkGPR_RegFile
+endmodule  // mkFPR_RegFile
 
