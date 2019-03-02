@@ -716,6 +716,36 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
    endfunction
 
    // ================================================================
+   // When PTE.A or PTE.D is updated, this function records it in the TLB
+   // and enqueues a writeback to memory.
+
+`ifdef ISA_PRIV_S
+   FIFOF #(Tuple2 #(PA, PTE)) f_pte_writebacks <- mkFIFOF;
+
+   function Action fa_record_pte_A_D_updates (TLB_Lookup_Result  tlb_result1,  VM_Xlate_Result  vm_xlate_result);
+      action
+	 if (vm_xlate_result.pte_modified) begin
+	    // Update the TLB
+	    tlb.insert (asid, vpn, vm_xlate_result.pte, tlb_result1.pte_level, tlb_result1.pte_pa);
+	    // Enqueue it to be written back to memory
+	    f_pte_writebacks.enq (tuple2 (tlb_result1.pte_pa, vm_xlate_result.pte));
+	    if (cfg_verbosity >= 2) begin
+	       $display ("    fa_record_pte_A_D_updates:");
+	       $display ("      ", fshow (tlb_result1));
+	       $display ("      ", fshow (vm_xlate_result));
+	    end
+	 end
+      endaction
+   endfunction
+
+   rule rl_writeback_updated_PTE;
+      match { .pa, .pte } <- pop (f_pte_writebacks);
+      let f3 = ((xlen == 32) ? f3_SW : f3_SD);
+      fa_fabric_send_write_req (f3, pa, zeroExtend (pte));
+   endrule
+`endif
+
+   // ================================================================
    // BEHAVIOR
 
    // ----------------------------------------------------------------
@@ -773,6 +803,10 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
    // Otherwise, moves to other states that handle TLB misses, cache
    // misses, 1-cycle delayed responses for ST and AMO, I/O requests, etc.
 
+`ifdef ISA_PRIV_S
+   (* descending_urgency = "rl_probe_and_immed_rsp, rl_writeback_updated_PTE" *)
+`endif
+
    rule rl_probe_and_immed_rsp (rg_state == MODULE_RUNNING);
       // Print some initial information for debugging
       if (cfg_verbosity > 1) begin
@@ -824,14 +858,19 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
       if (vm_xlate_result.outcome == VM_XLATE_TLB_MISS) begin
 	 rg_state <= PTW_START;
       end
+
       // ---- TLB translation excepion
       else if (vm_xlate_result.outcome == VM_XLATE_EXCEPTION) begin
 	 rg_state <= MODULE_EXCEPTION_RSP;
 	 rg_exc_code <= vm_xlate_result.exc_code;
       end
-      // ---- TLB translation ok
+
+      // ---- vm_xlate_result.outcome == VM_XLATE_OK
       else begin
-	 // (vm_xlate_result.outcome == VM_XLATE_OK)
+`ifdef ISA_PRIV_S
+	 fa_record_pte_A_D_updates (tlb_result, vm_xlate_result);
+`endif
+
 	 rg_pa <= vm_xlate_result.pa;
 	 let is_mem_addr = soc_map.m_is_mem_addr (fn_PA_to_Fabric_Addr (vm_xlate_result.pa));
 
@@ -839,7 +878,7 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
 	 if (dmem_not_imem && (! is_mem_addr)) begin
 	    // IO requests
 	    rg_state <= IO_REQ;
-	    // TODO: mark the pte A and D bits, writeback PTE if changed
+
 	    if (cfg_verbosity > 1)
 	       $display ("    => IO_REQ");
 	 end
@@ -865,9 +904,6 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
 			$display ("        AMO LR: reserving PA 0x%0h", vm_xlate_result.pa);
 		  end
 `endif
-
-		  // TODO: mark the pte A bit, writeback PTE if changed
-
 		  if (cfg_verbosity > 1) begin
 		     $display ("        Read-hit: addr 0x%0h word64 0x%0h", rg_addr, word64);
 		  end
@@ -947,8 +983,6 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
 		  // For write-hits and write-misses, writeback data to memory (so cache remains clean)
 		  fa_fabric_send_write_req (rg_f3, vm_xlate_result.pa, rg_st_amo_val);
 
-		  // TODO: mark the pte A and D bits, writeback PTE if changed
-
 		  // Provide write-response after 1-cycle delay (thus locking the cset for 1 cycle),
 		  // in case the next incoming request tries to read from the same SRAM address.
 		  rg_state <= CACHE_ST_AMO_RSP;
@@ -1008,8 +1042,6 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
 		     if (cfg_verbosity > 1)
 			$display ("        AMO_op: cancelling LR/SC reservation for PA", vm_xlate_result.pa);
 		  end
-
-		  // TODO: mark the pte A and D bits, writeback PTE if changed
 
 		  // Provide amo response after 1-cycle delay (thus locking the cset for 1 cycle),
 		  // in case the next incoming request tries to read from the same address.
@@ -1576,6 +1608,10 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
    // No caching, send request directly to fabric.
    // TODO: Move this into rl_probe_and_immed_rsp, post MMU translation
 
+`ifdef ISA_PRIV_S
+   (* descending_urgency = "rl_io_write_req, rl_writeback_updated_PTE" *)
+`endif
+
    rule rl_io_write_req ((rg_state == IO_REQ) && (rg_op == CACHE_ST));
       if (cfg_verbosity > 1)
 	 $display ("%0d: %s: rl_io_write_req; f3 0x%0h  vaddr %0h  paddr %0h  word64 0x%0h",
@@ -1631,6 +1667,10 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
    // Do the AMO op, and send store to fabric
 
 `ifdef ISA_A
+`ifdef ISA_PRIV_S
+   (* descending_urgency = "rl_io_AMO_read_rsp, rl_writeback_updated_PTE" *)
+`endif
+
    rule rl_io_AMO_read_rsp (rg_state == IO_AWAITING_AMO_READ_RSP);
       let rd_data <- pop_o (master_xactor.o_rd_data);
       if (cfg_verbosity > 1) begin

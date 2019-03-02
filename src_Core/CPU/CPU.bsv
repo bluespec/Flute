@@ -516,7 +516,6 @@ module mkCPU (CPU_IFC);
       let ack3 <- stage3.server_reset.response.get;
 
       WordXL dpc = truncate (soc_map.m_pc_reset_value);
-      csr_regfile.write_dpc (dpc);
 
       f_reset_rsps.enq (?);
 
@@ -525,6 +524,7 @@ module mkCPU (CPU_IFC);
 
 `ifdef INCLUDE_GDB_CONTROL
       csr_regfile.write_dcsr_cause_priv (DCSR_CAUSE_HALTREQ, m_Priv_Mode);
+      csr_regfile.write_dpc (dpc);
       rg_state <= CPU_DEBUG_MODE;
 
       if (cur_verbosity != 0)
@@ -873,8 +873,8 @@ module mkCPU (CPU_IFC);
 
       if (! permitted) begin
 	 rg_state <= CPU_TRAP;
+
 	 // Debug
-	 fa_emit_instr_trace (minstret, stage1.out.data_to_stage2.pc, instr, rg_cur_priv);
 	 if (cur_verbosity > 1) begin
 	    $display ("    rl_stage1_CSRR_W: Trap on CSR permissions: Rs1 %0d Rs1_val 0x%0h csr 0x%0h Rd %0d",
 		      rs1, rs1_val, csr_addr, rd);
@@ -958,8 +958,8 @@ module mkCPU (CPU_IFC);
 
       if (! permitted) begin
 	 rg_state <= CPU_TRAP;
+
 	 // Debug
-	 fa_emit_instr_trace (minstret, stage1.out.data_to_stage2.pc, instr, rg_cur_priv);
 	 if (cur_verbosity > 1) begin
 	    $display ("    rl_stage1_CSRR_S_or_C: Trap on CSR permissions: Rs1 %0d Rs1_val 0x%0h csr 0x%0h Rd %0d",
 		      rs1, rs1_val, csr_addr, rd);

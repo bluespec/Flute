@@ -411,12 +411,14 @@ function ActionValue #(VM_Xlate_Result)  fav_vm_xlate (WordXL             addr,
 				    fn_Addr_to_Offset (addr) });
 `endif
 
+	       // $display ("    fav_vm_xlate: PTE.A = %0d", fn_PTE_to_A (pte));
 	       if (fn_PTE_to_A (pte) == 1'b0) begin
 		  pte_modified = True;
 		  WordXL tmp = 1;
 		  pte = (pte | (tmp << pte_A_offset));
 	       end
 
+	       // $display ("    fav_vm_xlate: PTE.D = %0d  read = %0d", fn_PTE_to_D (pte), pack (read_not_write));
 	       if ((fn_PTE_to_D (pte) == 1'b0) && (! read_not_write)) begin
 		  pte_modified = True;
 		  WordXL tmp = 1;
@@ -433,7 +435,7 @@ function ActionValue #(VM_Xlate_Result)  fav_vm_xlate (WordXL             addr,
 			      pte_modified: pte_modified,
 			      pte:          pte};
    endactionvalue
-endfunction
+endfunction: fav_vm_xlate
 
 // ================================================================
 
