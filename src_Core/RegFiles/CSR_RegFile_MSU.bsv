@@ -379,10 +379,10 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
       // rg_dpc  <= pc_reset_value;    // Should be set by GDB
       rg_dcsr <= zeroExtend ({4'h4,    // [31:28]  xdebugver
 			      12'h0,   // [27:16]  reserved
-			      1'h1,    // [15]     ebreakm
+			      1'h0,    // [15]     ebreakm
 			      1'h0,    // [14]     reserved
-			      1'h1,    // [13]     ebreaks
-			      1'h1,    // [12]     ebreaku
+			      1'h0,    // [13]     ebreaks
+			      1'h0,    // [12]     ebreaku
 			      1'h0,    // [11]     stepie
 			      1'h0,    // [10]     stopcount
 			      1'h0,    // [9]      stoptime

@@ -515,6 +515,9 @@ module mkCPU (CPU_IFC);
       let ack2 <- stage2.server_reset.response.get;
       let ack3 <- stage3.server_reset.response.get;
 
+      WordXL dpc = truncate (soc_map.m_pc_reset_value);
+      csr_regfile.write_dpc (dpc);
+
       f_reset_rsps.enq (?);
 
       if (cur_verbosity != 0)
@@ -527,7 +530,6 @@ module mkCPU (CPU_IFC);
       if (cur_verbosity != 0)
 	 $display ("    CPU entering DEBUG_MODE");
 `else
-      WordXL dpc = truncate (soc_map.m_pc_reset_value);
       fa_restart (dpc);
 `endif
    endrule: rl_reset_complete
