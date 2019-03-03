@@ -222,9 +222,6 @@ module mkP2_Core (P2_Core_IFC);
    // ----------------------------------------------------------------
    // Optional Debug Module interfaces
 
-   // ----------------
-   // TODO: JTAG interface
-
 `ifdef JTAG_TAP
    interface JTAG_IFC jtag = jtagtap.jtag;
 `endif

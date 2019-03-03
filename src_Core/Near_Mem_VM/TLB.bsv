@@ -367,10 +367,10 @@ function ActionValue #(VM_Xlate_Result)  fav_vm_xlate (WordXL             addr,
 
 `ifdef RV32
       Bool xlate = ((priv <= s_Priv_Mode) && (fn_satp_to_VM_Mode (satp) == satp_mode_RV32_sv32));
-      PA   pa    = zeroExtend (addr);    // TODO: or should this be signExtend?
+      PA   pa    = zeroExtend (addr);
 `elsif SV39
       Bool xlate = ((priv <= s_Priv_Mode) && (fn_satp_to_VM_Mode (satp) == satp_mode_RV64_sv39));
-      PA   pa    = truncate (addr);    // TODO: should this be zeroExtend (fn_WordXL_to_VA (addr))?
+      PA   pa    = truncate (addr);
 `endif
 
       VM_Xlate_Outcome   outcome      = VM_XLATE_OK;
@@ -387,7 +387,6 @@ function ActionValue #(VM_Xlate_Result)  fav_vm_xlate (WordXL             addr,
 	       // $display ("fav_vm_xlate: page fault due to pte_denial");
 	    end
 
-	    // TODO: see updates below: evolve towards updating A,D bits?
 	    else if (is_pte_A_D_fault (read_not_write, pte)) begin
 	       outcome = VM_XLATE_EXCEPTION;
 	       exc_code = fn_page_fault_exc_code (dmem_not_imem, read_not_write);

@@ -884,7 +884,7 @@ module mkCPU (CPU_IFC);
 	 // Read the CSR only if Rd is not 0
 	 WordXL csr_val = ?;
 	 if (rd != 0) begin
-	    // TODO: csr_regfile.read should become ActionValue (it may have side effects)
+	    // Note: csr_regfile.read should become ActionValue if it acquires side effects
 	    let m_csr_val = csr_regfile.read_csr (csr_addr);
 	    csr_val   = fromMaybe (?, m_csr_val);
 	 end
@@ -967,7 +967,7 @@ module mkCPU (CPU_IFC);
       end
       else begin
 	 // Read the CSR
-	 // TODO: csr_regfile.read should become ActionValue (it may have side effects)
+	 // Note: csr_regfile.read should become ActionValue if it acquites side effects
 	 let m_csr_val  = csr_regfile.read_csr (csr_addr);
 	 WordXL csr_val = fromMaybe (?, m_csr_val);
 
@@ -1293,7 +1293,7 @@ module mkCPU (CPU_IFC);
    rule rl_finish_SFENCE_VMA (rg_state == CPU_SFENCE_VMA);
       if (cur_verbosity > 1) $display ("%0d:  CPU.rl_finish_SFENCE_VMA", mcycle);
 
-      // TODO: Await mem system SFENCE.VMA completion
+      // Note: Await mem system SFENCE.VMA completion, if SFENCE.VMA becomes split-phase
 
       // Resume pipe
       rg_state <= CPU_RUNNING;
@@ -1518,8 +1518,8 @@ module mkCPU (CPU_IFC);
 
    // ================================================================
    // Stage1: nonpipe trap: BREAK into Debug Mode when dcsr.ebreakm/s/u is set
-   // TODO: We are supposed to set mtval on a machine mode BREAK.
-   // Not doing so as we are breaking to the debugger
+   // Not setting tval, as we are breaking to the debugger.
+   // TODO: Does the spec say anything about this?
 
 `ifdef INCLUDE_GDB_CONTROL
    rule rl_trap_BREAK_to_Debug_Mode (   (rg_state == CPU_RUNNING)
@@ -1603,7 +1603,6 @@ module mkCPU (CPU_IFC);
       // Save new privilege
       rg_cur_priv <= new_priv;
 
-      // TODO: project new_mstatus to new_sstatus?
       rg_sstatus_SUM <= new_mstatus [18];
       rg_mstatus_MXR <= new_mstatus [19];
 

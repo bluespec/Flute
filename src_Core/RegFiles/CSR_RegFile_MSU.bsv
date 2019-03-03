@@ -30,6 +30,7 @@ import GetPut_Aux :: *;
 // Project imports
 
 import ISA_Decls :: *;
+import SoC_Map   :: *;
 
 `ifdef INCLUDE_GDB_CONTROL
 import DM_Common :: *;    // Debug Module defs
@@ -241,11 +242,6 @@ function MISA misa_reset_value;
 endfunction
 
 // ================================================================
-// MTVEC reset value (our choice; not part of the spec)
-
-Word mtvec_reset_value = 'h1000;
-
-// ================================================================
 // Major states of mkCSR_RegFile module
 
 typedef enum { RF_RESET_START, RF_RUNNING } RF_State
@@ -258,6 +254,8 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 
    Reg #(Bit #(4)) cfg_verbosity <- mkConfigReg (0);
    Reg #(RF_State) rg_state      <- mkReg (RF_RESET_START);
+
+   SoC_Map_IFC soc_map <- mkSoC_Map;
 
    // Reset
    FIFOF #(Token) f_reset_rsps <- mkFIFOF;
@@ -336,7 +334,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 
    // Debug
    Reg #(Bit #(32)) rg_dcsr      <- mkRegU;    // Is 32b even in RV64
-   Reg #(WordXL)    rg_dpc       <- mkReg(mtvec_reset_value);
+   Reg #(WordXL)    rg_dpc       <- mkRegU;
    Reg #(WordXL)    rg_dscratch0 <- mkRegU;
    Reg #(WordXL)    rg_dscratch1 <- mkRegU;
 
@@ -353,7 +351,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 
       // Supervisor-level CSRs
 `ifdef ISA_PRIV_S
-      rg_stvec    <= word_to_mtvec (mtvec_reset_value);
+      rg_stvec    <= word_to_mtvec (soc_map.m_mtvec_reset_value);
       rg_scause   <= word_to_mcause (0);    // Supposed to be the cause of the reset.
       rg_satp     <= 0;
       //rg_scounteren <= mcounteren_reset_value;
@@ -364,7 +362,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
       csr_mie.reset;
       csr_mip.reset;
 
-      rg_mtvec      <= word_to_mtvec (mtvec_reset_value);
+      rg_mtvec      <= word_to_mtvec (soc_map.m_mtvec_reset_value);
       rg_mcause     <= word_to_mcause (0);    // Supposed to be the cause of the reset.
 `ifdef ISA_PRIV_S
       rg_medeleg    <= 0;
@@ -376,7 +374,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
       rw_minstret.wset (0);
 
 `ifdef INCLUDE_GDB_CONTROL
-      // rg_dpc  <= pc_reset_value;    // Should be set by GDB
+      rg_dpc  <= soc_map.m_pc_reset_value;
       rg_dcsr <= zeroExtend ({4'h4,    // [31:28]  xdebugver
 			      12'h0,   // [27:16]  reserved
 			      1'h0,    // [15]     ebreakm

@@ -1731,7 +1731,6 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
 	 // TODO: need to raise a non-maskable interrupt (NMI) here
 	 $display ("%0d: %s.rl_discard_write_rsp: fabric response error: exit", cur_cycle, d_or_i);
 	 $display ("    ", fshow (wr_resp));
-	 $finish (1);    // TODO: error response on memory write; raise interrupt
       end
       else if (cfg_verbosity > 1) begin
 	 $display ("%0d: %s.rl_discard_write_rsp: pending %0d ",

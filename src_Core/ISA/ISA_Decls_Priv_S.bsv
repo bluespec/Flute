@@ -34,30 +34,34 @@ CSR_Addr   csr_addr_sip        = 12'h144;    // Supervisor interrupt pending
 
 CSR_Addr   csr_addr_satp       = 12'h180;    // Supervisor address translation and protection
 
-// ----------------
-// Bit-fields of the CSR_SSTATUS register
-// [TODO: This is from older spec, FIXUP]
+// ================================================================
+// SSTATUS
 
-function bit sstatus_sd   (WordXL sstatus_val); return sstatus_val [xlen-1]; endfunction
-function Bit #(TSub #(XLEN,18)) sstatus_mbz_17 (WordXL sstatus_val);
-   return sstatus_val [xlen-2:17];
-endfunction
-function bit      sstatus_mprv  (WordXL sstatus_val); return sstatus_val [16]; endfunction
-function Bit #(2) sstatus_xs    (WordXL sstatus_val); return sstatus_val [15:14]; endfunction
-function Bit #(2) sstatus_fs    (WordXL sstatus_val); return sstatus_val [13:12]; endfunction
-function Bit #(7) sstatus_mbz_5 (WordXL sstatus_val); return sstatus_val [11:5]; endfunction
-function bit      sstatus_ps    (WordXL sstatus_val); return sstatus_val [4]; endfunction
-function bit      sstatus_pie   (WordXL sstatus_val); return sstatus_val [3]; endfunction
-function Bit #(2) sstatus_mbz_1 (WordXL sstatus_val); return sstatus_val [2:1]; endfunction
-function bit      sstatus_ie    (WordXL sstatus_val); return sstatus_val [0]; endfunction
+function Bit #(1) fn_sstatus_sd    (WordXL sstatus_val); return sstatus_val [xlen-1]; endfunction
+
+`ifdef RV64
+function Bit #(2) fn_sstatus_UXL   (WordXL sstatus_val); return sstatus_val [33:32]; endfunction
+`endif
+
+function Bit #(1) fn_sstatus_SUM   (WordXL sstatus_val); return sstatus_val [19]; endfunction
+function Bit #(1) fn_sstatus_MXR   (WordXL sstatus_val); return sstatus_val [18]; endfunction
+
+function Bit #(2) fn_sstatus_xs    (WordXL sstatus_val); return sstatus_val [16:15]; endfunction
+function Bit #(2) fn_sstatus_fs    (WordXL sstatus_val); return sstatus_val [14:13]; endfunction
+
+function Bit #(1) fn_sstatus_spp   (WordXL sstatus_val); return sstatus_val [8]; endfunction
+
+function Bit #(1) fn_sstatus_spie  (WordXL sstatus_val); return sstatus_val [5]; endfunction
+function Bit #(1) fn_sstatus_upie  (WordXL sstatus_val); return sstatus_val [4]; endfunction
+
+function Bit #(1) fn_sstatus_sie   (WordXL sstatus_val); return sstatus_val [1]; endfunction
+function Bit #(1) fn_sstatus_uie   (WordXL sstatus_val); return sstatus_val [0]; endfunction
 
 // ----------------
 // SCAUSE (reason for exception)
-// [TODO: This is from older spec, FIXUP]
 
-function bit scause_interrupt (WordXL scause_val); return scause_val [xlen-1]; endfunction
-function Bit #(TSub #(XLEN,5)) scause_mbz_5 (WordXL scause_val); return scause_val [xlen-2:4]; endfunction
-function Bit #(4) scause_exception_code (WordXL scause_val); return scause_val [3:0]; endfunction
+function Bit #(1)              scause_interrupt      (WordXL scause_val); return scause_val [xlen-1];   endfunction
+function Bit #(TSub #(XLEN,1)) scause_exception_code (WordXL scause_val); return scause_val [xlen-2:0]; endfunction
 
 // ================================================================
 

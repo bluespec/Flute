@@ -266,12 +266,6 @@ function ALU_Outputs fv_JAL (ALU_Inputs inputs);
    Addr  next_pc = pack (unpack (inputs.pc) + offset);
    Addr  ret_pc  = fall_through_pc (inputs);
 
-   // nsharma: 2017-05-26 Bug fix
-   // nsharma: next_pc[0] should be cleared for JAL/JALR
-   // riscv-spec-v2.2. Secn 2.5. Page 16
-   // TODO: but the offset is scaled by 2, so is this necessary?
-   next_pc [0] = 1'b0;
-
    Bool misaligned_target = (next_pc [1] == 1'b1);
 `ifdef ISA_C
    misaligned_target = False;
@@ -312,9 +306,7 @@ function ALU_Outputs fv_JALR (ALU_Inputs inputs);
    Addr  next_pc   = pack (s_rs1_val + offset);
    Addr  ret_pc    = fall_through_pc (inputs);
 
-   // nsharma: 2017-05-26 Bug fix
-   // nsharma: next_pc[0] should be cleared for JAL/JALR
-   // riscv-spec-v2.2. Secn 2.5. Page 16
+   // next_pc [0] should be cleared
    next_pc [0] = 1'b0;
 
    Bool misaligned_target = (next_pc [1] == 1'b1);
@@ -849,7 +841,6 @@ function ALU_Outputs fv_SYSTEM (ALU_Inputs inputs);
 	       end
 
 	    // SRET instruction
-	    // TODO: If MSTATUS.TSR bit is set, mode must be >= m_Priv_Mode
 	    else if (   (   (inputs.cur_priv == m_Priv_Mode)
 			 || (   (inputs.cur_priv == s_Priv_Mode)
 			     && (inputs.mstatus [mstatus_tsr_bitpos] == 0)))
@@ -1118,8 +1109,6 @@ function ALU_Outputs fv_ALU (ALU_Inputs inputs);
 		|| (inputs.decoded_instr.funct3 == f3_SRLI)
 		|| (inputs.decoded_instr.funct3 == f3_SRAI)))
       alu_outputs = fv_OP_and_OP_IMM_shifts (inputs);
-
-   // TODO: set up floating point ops for next stage, similar to 'M' setup
 
    // Remaining OP_IMM and OP (excluding shifts and 'M' ops MUL/DIV/REM)
    else if (   (inputs.decoded_instr.opcode == op_OP_IMM)
