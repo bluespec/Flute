@@ -1234,13 +1234,12 @@ module mkCPU (CPU_IFC);
       rg_state <= CPU_RUNNING;
       let new_epoch <- fav_update_epoch;
       let m_old_pc   = tagged Invalid;
-      fa_start_ifetch (
-           new_epoch
-         , m_old_pc
-         , rg_next_pc
-         , rg_cur_priv
-         , mstatus_MXR
-         , sstatus_SUM);
+      fa_start_ifetch (new_epoch,
+		       m_old_pc,
+		       rg_next_pc,
+		       rg_cur_priv,
+		       mstatus_MXR,
+		       sstatus_SUM);
       stageF.set_full (True);
 
       stageD.set_full (False);
@@ -1295,29 +1294,23 @@ module mkCPU (CPU_IFC);
 
       // Note: Await mem system SFENCE.VMA completion, if SFENCE.VMA becomes split-phase
 
-      // Resume pipe
-      rg_state <= CPU_RUNNING;
-
-      // MSTATUS.MXR for initiating FETCH
       Bit #(1) mstatus_MXR = mstatus [19];
-      Bit #(1) sstatus_SUM = 0;
-
-      // SSTATUS.SUM for initiating FETCH
 `ifdef ISA_PRIV_S
-      sstatus_SUM = (csr_regfile.read_sstatus) [18];
+      Bit #(1) sstatus_SUM = (csr_regfile.read_sstatus) [18];
 `else
-      sstatus_SUM = 0;
+      Bit #(1) sstatus_SUM = 0;
 `endif
 
+      // Resume pipe
+      rg_state <= CPU_RUNNING;
       let new_epoch <- fav_update_epoch;
       let m_old_pc   = tagged Invalid;
-      fa_start_ifetch (
-           new_epoch
-         , m_old_pc
-         , rg_next_pc
-         , rg_cur_priv
-         , mstatus_MXR
-         , sstatus_SUM);
+      fa_start_ifetch (new_epoch,
+		       m_old_pc,
+		       rg_next_pc,
+		       rg_cur_priv,
+		       mstatus_MXR,
+		       sstatus_SUM);
       stageF.set_full (True);
 
       stageD.set_full (False);
@@ -1528,6 +1521,7 @@ module mkCPU (CPU_IFC);
 				     && (stage2.out.ostatus == OSTATUS_EMPTY)
 				     && (stage1.out.ostatus == OSTATUS_NONPIPE)
 				     && (stage1.out.control == CONTROL_TRAP)
+				     && (stageF.out.ostatus != OSTATUS_BUSY)
 				     && break_into_Debug_Mode);
       if (cur_verbosity > 1) $display ("%0d:  CPU.rl_trap_BREAK_to_Debug_Mode", mcycle);
 
@@ -1633,7 +1627,9 @@ module mkCPU (CPU_IFC);
    // and stageD, stage1, stage2 and stage3 are empty
 
 `ifdef INCLUDE_GDB_CONTROL
-   rule rl_stage1_stop ((rg_state== CPU_RUNNING) && stage1_stop);
+   rule rl_stage1_stop ((rg_state== CPU_RUNNING)
+			&& stage1_stop
+			&& (stageF.out.ostatus != OSTATUS_BUSY));
       if (cur_verbosity > 1) $display ("%0d:  CPU.rl_stage1_stop", mcycle);
 
       let pc    = stage1.out.data_to_stage2.pc;    // We'll retry this instruction on 'continue'
@@ -1641,12 +1637,12 @@ module mkCPU (CPU_IFC);
 
       // Report CPI only stop-req, but not on step-req (where it's not very useful)
       if (rg_stop_req) begin
-	 $display ("%0d: CPU.rl_stop: Stop for debugger. minstret %0d priv %0d PC 0x%0h instr 0x%0h",
+	 $display ("%0d: CPU.rl_stage1_stop: Stop for debugger. minstret %0d priv %0d PC 0x%0h instr 0x%0h",
 		   mcycle, minstret, rg_cur_priv, pc, instr);
 	 fa_report_CPI;
       end
       else
-	 $display ("%0d: CPU.rl_stop: Stop after single-step. PC = 0x%08h", mcycle, pc);
+	 $display ("%0d: CPU.rl_stage1_stop: Stop after single-step. PC = 0x%08h", mcycle, pc);
 
       DCSR_Cause cause= (rg_stop_req ? DCSR_CAUSE_HALTREQ : DCSR_CAUSE_STEP);
       csr_regfile.write_dcsr_cause_priv (cause, rg_cur_priv);

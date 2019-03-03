@@ -6893,7 +6893,7 @@ module mkMMU_Cache(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cache_refill_rsps_loop &&
 	  NOT_cfg_verbosity_read__8_ULE_2_043___d1044)
-	$display("        Updating Cache [0x%0x] (Word64_Set %0d) old => new",
+	$display("        Updating Cache word64_set 0x%0x, word64_in_cline %0d) old => new",
 		 rg_word64_set_in_cache,
 		 rg_word64_set_in_cache[2:0]);
     if (RST_N != `BSV_RESET_VALUE)
@@ -8182,7 +8182,7 @@ module mkMMU_Cache(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_start_cache_refill &&
 	  !cfg_verbosity_read__8_ULE_1___d19)
-	$display("    Victim way is %0d; => CACHE_REFILL", 1'd0);
+	$display("    Victim way %0d; => CACHE_REFILL", 1'd0);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_tlb_flush && !cfg_verbosity_read__8_ULE_1___d19)
 	begin

@@ -329,7 +329,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 
       // Supervisor-level CSRs
 `ifdef ISA_PRIV_S
-      rg_stvec    <= word_to_mtvec (soc_map.m_mtvec_reset_value);
+      rg_stvec    <= word_to_mtvec (truncate (soc_map.m_mtvec_reset_value));
       rg_scause   <= word_to_mcause (0);    // Supposed to be the cause of the reset.
       rg_satp     <= 0;
       //rg_scounteren <= mcounteren_reset_value;
@@ -338,7 +338,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
       // Machine-level CSRs
       rg_mstatus    <= mstatus_reset_value;
       rg_mie        <= mie_reset_value;
-      rg_mtvec      <= word_to_mtvec (soc_map.m_mtvec_reset_value);
+      rg_mtvec      <= word_to_mtvec (truncate (soc_map.m_mtvec_reset_value));
       rg_mcause     <= word_to_mcause (0);    // Supposed to be the cause of the reset.
       rg_mip        <= mip_reset_value;
 `ifdef ISA_PRIV_S
@@ -350,7 +350,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
       rw_minstret.wset (0);
 
 `ifdef INCLUDE_GDB_CONTROL
-      rg_dpc  <= soc_map.m_pc_reset_value;
+      rg_dpc  <= truncate (soc_map.m_pc_reset_value);
       rg_dcsr <= zeroExtend ({4'h4,    // [31:28]  xdebugver
 			      12'h0,   // [27:16]  reserved
 			      1'h1,    // [15]     ebreakm

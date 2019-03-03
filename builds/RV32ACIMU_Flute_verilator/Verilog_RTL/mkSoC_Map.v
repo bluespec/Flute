@@ -28,7 +28,8 @@
 // m_is_IO_addr                   O     1
 // m_is_near_mem_IO_addr          O     1
 // m_pc_reset_value               O    64 const
-// m_nmi_vector                   O    64 const
+// m_mtvec_reset_value            O    64 const
+// m_nmivec_reset_value           O    64 const
 // CLK                            I     1 unused
 // RST_N                          I     1 unused
 // m_is_mem_addr_addr             I    64
@@ -105,7 +106,9 @@ module mkSoC_Map(CLK,
 
 		 m_pc_reset_value,
 
-		 m_nmi_vector);
+		 m_mtvec_reset_value,
+
+		 m_nmivec_reset_value);
   input  CLK;
   input  RST_N;
 
@@ -178,8 +181,11 @@ module mkSoC_Map(CLK,
   // value method m_pc_reset_value
   output [63 : 0] m_pc_reset_value;
 
-  // value method m_nmi_vector
-  output [63 : 0] m_nmi_vector;
+  // value method m_mtvec_reset_value
+  output [63 : 0] m_mtvec_reset_value;
+
+  // value method m_nmivec_reset_value
+  output [63 : 0] m_nmivec_reset_value;
 
   // signals for module outputs
   wire [63 : 0] m_boot_rom_addr_base,
@@ -188,10 +194,11 @@ module mkSoC_Map(CLK,
 		m_mem0_controller_addr_base,
 		m_mem0_controller_addr_lim,
 		m_mem0_controller_addr_size,
+		m_mtvec_reset_value,
 		m_near_mem_io_addr_base,
 		m_near_mem_io_addr_lim,
 		m_near_mem_io_addr_size,
-		m_nmi_vector,
+		m_nmivec_reset_value,
 		m_pc_reset_value,
 		m_plic_addr_base,
 		m_plic_addr_lim,
@@ -282,7 +289,10 @@ module mkSoC_Map(CLK,
   // value method m_pc_reset_value
   assign m_pc_reset_value = 64'h0000000000001000 ;
 
-  // value method m_nmi_vector
-  assign m_nmi_vector = 64'hAAAAAAAAAAAAAAAA ;
+  // value method m_mtvec_reset_value
+  assign m_mtvec_reset_value = 64'h0000000000001000 ;
+
+  // value method m_nmivec_reset_value
+  assign m_nmivec_reset_value = 64'hAAAAAAAAAAAAAAAA ;
 endmodule  // mkSoC_Map
 

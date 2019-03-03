@@ -1403,7 +1403,7 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
       rg_state               <= CACHE_REFILL;
 
       if (cfg_verbosity > 1)
-	 $display ("    Victim way is %0d; => CACHE_REFILL", new_victim_way);
+	 $display ("    Victim way %0d; => CACHE_REFILL", new_victim_way);
    endrule: rl_start_cache_refill
 
    // Loop that issues requests for subsequent fabric-words in cline refill
@@ -1414,7 +1414,7 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
       // Send request into fabric for next fabric-word of cache line
       PA          cline_addr        = fn_align_Addr_to_CLine (rg_pa);
       Fabric_Addr cline_fabric_addr = (fn_PA_to_Fabric_Addr (cline_addr) | rg_req_byte_in_cline);
-      AXI4_Size      axi4_size         = ((bytes_per_fabric_data == 4) ? axsize_4 : axsize_8);
+      AXI4_Size   axi4_size         = ((bytes_per_fabric_data == 4) ? axsize_4 : axsize_8);
       fa_fabric_send_read_req (cline_fabric_addr, axi4_size);
 
       // Check if end of refill loop (req_byte_in_cline is last one)
@@ -1470,6 +1470,8 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
       if ((valueOf (Wd_Data) == 32) && (! rg_lower_word32_full)) begin
 	 rg_lower_word32      <= truncate (mem_rsp.rdata);
 	 rg_lower_word32_full <= True;
+	 if (cfg_verbosity > 2)
+	    $display ("        Recording rdata in rg_lower_word32");
       end
 
       // Refill 64b of cache line
@@ -1479,6 +1481,8 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
 	    // Assert: rg_lower_32_full == True
 	    new_word64 = { new_word64 [31:0], rg_lower_word32 };
 	    rg_lower_word32_full <= False;
+	    if (cfg_verbosity > 2)
+	       $display ("        32b fabric: concat with rg_lower_word32: new_word64 0x%0x", new_word64);
 	 end
 
 	 // Update the Word64_Set (BRAM port A) (if this response was not an error)
@@ -1513,7 +1517,7 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
 	 end
 
 	 if (cfg_verbosity > 2) begin
-	    $display ("        Updating Cache [0x%0x] (Word64_Set %0d) old => new",
+	    $display ("        Updating Cache word64_set 0x%0x, word64_in_cline %0d) old => new",
 		      rg_word64_set_in_cache, word64_in_cline);
 
 	    fa_display_word64_set (cset_in_cache, word64_in_cline, word64_set);
