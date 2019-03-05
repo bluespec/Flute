@@ -681,10 +681,10 @@ module mkSoC_Top(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h8663;
-  reg [31 : 0] v__h8923;
-  reg [31 : 0] v__h8657;
-  reg [31 : 0] v__h8917;
+  reg [31 : 0] v__h8672;
+  reg [31 : 0] v__h8932;
+  reg [31 : 0] v__h8666;
+  reg [31 : 0] v__h8926;
   // synopsys translate_on
 
   // action method set_verbosity
@@ -1178,7 +1178,8 @@ module mkSoC_Top(CLK,
 		    .m_is_IO_addr(),
 		    .m_is_near_mem_IO_addr(),
 		    .m_pc_reset_value(),
-		    .m_nmi_vector());
+		    .m_mtvec_reset_value(),
+		    .m_nmivec_reset_value());
 
   // submodule uart0
   mkUART uart0(.CLK(CLK),
@@ -1688,23 +1689,23 @@ module mkSoC_Top(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset_start_2)
 	begin
-	  v__h8663 = $stime;
+	  v__h8672 = $stime;
 	  #0;
 	end
-    v__h8657 = v__h8663 / 32'd10;
+    v__h8666 = v__h8672 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset_start_2)
-	$display("%0d: SoC_Top. Reset start ...", v__h8657);
+	$display("%0d: SoC_Top. Reset start ...", v__h8666);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset_complete)
 	begin
-	  v__h8923 = $stime;
+	  v__h8932 = $stime;
 	  #0;
 	end
-    v__h8917 = v__h8923 / 32'd10;
+    v__h8926 = v__h8932 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset_complete)
-	$display("%0d: SoC_Top. Reset complete ...", v__h8917);
+	$display("%0d: SoC_Top. Reset complete ...", v__h8926);
   end
   // synopsys translate_on
 endmodule  // mkSoC_Top
