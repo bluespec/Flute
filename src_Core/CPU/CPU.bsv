@@ -80,20 +80,6 @@ import Debug_Module :: *;
 import SoC_Map :: *;
 
 // ================================================================
-// Assertion check.  TODO: move to a local lib
-
-function Action fa_assert_eq (String msg, Bit #(64) mcycle, Bit #(n) v1, Bit #(n) v2);
-   action
-      if (v1 != v2) begin
-	 $display ("%d: fa_assert_eq: ASSERTION FAILURE: %s", mcycle, msg);
-	 $display ("    v1 = %0d", v1);
-	 $display ("    v2 = %0d", v2);
-	 $finish (1);
-      end
-   endaction
-endfunction
-
-// ================================================================
 // Major States of CPU
 
 typedef enum {CPU_RESET1,
@@ -213,6 +199,14 @@ module mkCPU (CPU_IFC);
    CPU_StageD_IFC  stageD <- mkCPU_StageD (cur_verbosity, misa);
 
    CPU_StageF_IFC  stageF <- mkCPU_StageF (cur_verbosity, imem);
+
+   // ----------------
+   // FIFO from Stage1 back to StageF.  Each (e, pc1, pc2) says:
+   //  - pc1 was followed by pc2, and was mis-predicted to something other than pc2.
+   //        (so StageF must be fetching from the wrong pc)
+   //  - re-start fetching from pc2, with new epoch e.
+
+   FIFOF #(Tuple3 #(Epoch, WordXL, WordXL)) f_redirects <- mkFIFOF;
 
    // ----------------
    // Halt requests (interrupts, debugger stop-request, or dcsr.step step-request).
@@ -690,6 +684,13 @@ module mkCPU (CPU_IFC);
 	    else if ((! stage1.out.redirect) || (stageF.out.ostatus != OSTATUS_BUSY)) begin
 	       stage2.enq (stage1.out.data_to_stage2);  stage2_full = True;
 	       stage1.deq;                              stage1_full = False;
+
+	       if (stage1.out.redirect) begin
+		  let new_epoch <- fav_update_epoch;
+		  f_redirects.enq (tuple3 (new_epoch,
+					   stage1.out.data_to_stage2.pc,
+					   stage1.out.next_pc));
+	       end
 	    end
 	 end
 	  
@@ -716,47 +717,33 @@ module mkCPU (CPU_IFC);
       if (   (! stageF_full)
 	  && (stageF.out.ostatus == OSTATUS_PIPE))
 	 begin
-	    fa_assert_eq ("StageF output epoch == CPU.rg_epoch",
-			  mcycle, stageF.out.data_to_stageD.epoch, rg_epoch);
-
 	    // Straight-line case
 	    Epoch            epoch    = stageF.out.data_to_stageD.epoch;
 	    WordXL           next_pc  = stageF.out.data_to_stageD.pred_pc;    // Predicted
 	    Maybe #(WordXL)  m_old_pc = tagged Invalid;
 
 	    // Override, if stage1 is redirecting
-	    if (   (stage1.out.ostatus == OSTATUS_PIPE)
-		&& (stage1.out.control != CONTROL_DISCARD)
-		&& stage1.out.redirect)
-	       begin
-		  let new_epoch <- fav_update_epoch;
-		  epoch    =  new_epoch;
-		  next_pc  =  stage1.out.next_pc;
-		  m_old_pc =  tagged Valid stage1.out.data_to_stage2.pc;
+	    if (f_redirects.notEmpty) begin
+	       match { .e, .pc1, .pc2 } <- pop (f_redirects);
+	       epoch   = e;
+	       next_pc = pc2;
+	       m_old_pc = tagged Valid pc1;
+	    end
 
-		  if (cur_verbosity > 1)
-		     $display ("    StageF redirected by Stage1: new_epoch:%0d  next_pc:%0h  m_old_pc:",
-			       new_epoch, next_pc, fshow (m_old_pc));
-	       end
-
-            // MSTATUS.MXR for initiating FETCH
+            // MSTATUS.MXR and SSTATUS.SUM for initiating FETCH
             Bit #(1) mstatus_MXR = mstatus [19];
-            Bit #(1) sstatus_SUM = 0;
-
-            // SSTATUS.SUM for initiating FETCH
 `ifdef ISA_PRIV_S
-            sstatus_SUM = (csr_regfile.read_sstatus) [18];
+            Bit #(1) sstatus_SUM = (csr_regfile.read_sstatus) [18];
 `else
-            sstatus_SUM = 0;
+            Bit #(1) sstatus_SUM = 0;
 `endif
 
-	    fa_start_ifetch (
-                 epoch
-               , m_old_pc
-               , next_pc
-               , rg_cur_priv
-               , mstatus_MXR
-               , sstatus_SUM);
+	    fa_start_ifetch (epoch,
+			     m_old_pc,
+			     next_pc,
+			     rg_cur_priv,
+			     mstatus_MXR,
+			     sstatus_SUM);
 	    stageF_full = True;
 	 end
 
