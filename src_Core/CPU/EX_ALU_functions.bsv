@@ -985,11 +985,18 @@ function ALU_Outputs fv_FP (ALU_Inputs inputs);
    alu_outputs.rd_in_fpr = !fv_is_rd_in_GPR (funct7, rs2);
 
    // Normal trace output (if no trap)
-   alu_outputs.trace_data = mkTrace_I_RD (fall_through_pc (inputs),
-  					fv_trace_isize (inputs),
-  					fv_trace_instr (inputs),
-  					inputs.decoded_instr.rd,
-  					?);
+   if (alu_outputs.rd_in_fpr)
+      alu_outputs.trace_data = mkTrace_F_RD (fall_through_pc (inputs),
+					     fv_trace_isize (inputs),
+					     fv_trace_instr (inputs),
+					     inputs.decoded_instr.rd,
+					     ?);
+   else
+      alu_outputs.trace_data = mkTrace_I_RD (fall_through_pc (inputs),
+					     fv_trace_isize (inputs),
+					     fv_trace_instr (inputs),
+					     inputs.decoded_instr.rd,
+					     ?);
 
    return alu_outputs;
 endfunction
