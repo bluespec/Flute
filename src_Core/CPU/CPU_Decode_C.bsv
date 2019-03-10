@@ -455,7 +455,7 @@ function Tuple2 #(Bool, Instr) fv_decode_C_FLW (MISA  misa,  Bit #(2)  xl,  Inst
 		       && (op == opcode_C0)
 		       && (funct3 == funct3_C_FLW));
 
-      let     instr = mkInstr_I_type (zeroExtend (offset),  rs1,  f3_FLW,  rd,  op_LOAD);
+      let     instr = mkInstr_I_type (zeroExtend (offset),  rs1,  f3_FLW,  rd,  op_LOAD_FP);
 
       return tuple2 (is_legal, instr);
    end
@@ -476,7 +476,7 @@ function Tuple2 #(Bool, Instr) fv_decode_C_FLD (MISA  misa,  Bit #(2)  xl,  Inst
 		       && (   (xl == misa_mxl_64)
 			   || (xl == misa_mxl_128)));
 
-      let     instr = mkInstr_I_type (zeroExtend (offset),  rs1,  f3_FLD,  rd,  op_LOAD);
+      let     instr = mkInstr_I_type (zeroExtend (offset),  rs1,  f3_FLD,  rd,  op_LOAD_FP);
 
       return tuple2 (is_legal, instr);
    end
