@@ -57,6 +57,9 @@ module mkCPU_Fetch_C #(IMem_IFC  imem32) (IMem_IFC);
    Reg #(Bit #(1))  rg_mstatus_MXR <- mkRegU;
    Reg #(WordXL)    rg_satp        <- mkRegU;
 
+   // Holds the faulting address
+   Reg #(WordXL) rg_tval <- mkRegU;
+
    // ----------------------------------------------------------------
 
    function Bool is_even_h_pc (WordXL pc);
@@ -132,6 +135,7 @@ module mkCPU_Fetch_C #(IMem_IFC  imem32) (IMem_IFC);
       Addr next_word_addr = rg_pc + 2;
       imem32.req (rg_f3, next_word_addr, rg_priv, rg_sstatus_SUM, rg_mstatus_MXR, rg_satp);
       rg_instr_15_0 <= imem32.instr [31:16];
+      rg_tval <= next_word_addr;
       if (verbosity != 0)
 	 $display ("CPU_Fetch_C.rl_fetch_next_32b:  imem32.pc 0x%0h  next_word_addr 0x%0h",
 		   imem32.pc, next_word_addr);
@@ -173,6 +177,7 @@ module mkCPU_Fetch_C #(IMem_IFC  imem32) (IMem_IFC);
       rg_sstatus_SUM <= sstatus_SUM;
       rg_mstatus_MXR <= mstatus_MXR;
       rg_satp        <= satp;
+      rg_tval        <= addr;
       WordXL even_addr = { addr [xlen-1:2], 2'b_00 };
       imem32.req (f3, even_addr, priv, sstatus_SUM, mstatus_MXR, satp);
       if (verbosity > 0) begin
@@ -192,7 +197,7 @@ module mkCPU_Fetch_C #(IMem_IFC  imem32) (IMem_IFC);
    method Instr    instr    = instr_out;
    method Bool     exc      = imem32.exc;
    method Exc_Code exc_code = imem32.exc_code;
-   method WordXL   tval     = imem32.pc;        // Can be different from rg_pc
+   method WordXL   tval     = rg_tval;        // Can be different from rg_pc
 
 endmodule
 

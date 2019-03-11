@@ -561,7 +561,7 @@ module mkCPU (CPU_IFC);
 `endif
 
    // Halting conditions
-   Bool halting = (stop_step_halt || mip_cmd_needed || interrupt_pending);
+   Bool halting = (stop_step_halt || mip_cmd_needed || (interrupt_pending && stage1_has_arch_instr));
    // Stage1 can halt only when actually contains an instruction and downstream is empty
    Bool stage1_halted = (   halting
 			 && (   (stage1.out.ostatus == OSTATUS_PIPE)
@@ -571,8 +571,8 @@ module mkCPU (CPU_IFC);
 
    // Stage1 halt reasons, in decreasing priority order
    Bool stage1_send_mip_cmd   = stage1_halted && mip_cmd_needed;
-   Bool stage1_take_interrupt = stage1_halted && (! mip_cmd_needed) && interrupt_pending;
-   Bool stage1_stop           = stage1_halted && (! mip_cmd_needed) && (! interrupt_pending);
+   Bool stage1_take_interrupt = stage1_halted && (! mip_cmd_needed) && interrupt_pending && stage1_has_arch_instr;
+   Bool stage1_stop           = stage1_halted && (! mip_cmd_needed) && (! (interrupt_pending && stage1_has_arch_instr));
 
    // ================================================================
    // Every time an instruction finishes stage 1

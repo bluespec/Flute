@@ -42,7 +42,7 @@ deriving (Eq, Bits, FShow);
 // ================================================================
 // Branch-prediction info
 
-typedef Bit #(1)  Epoch;
+typedef Bit #(2)  Epoch;
 
 // ================================================================
 // Bypass information
