@@ -92,8 +92,9 @@ endinterface
 // ================================================================
 // PLIC module implementation
 
-module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
-   provisos (Add #(_any_0, TLog #(t_n_sources), T_wd_source_id),
+module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
+   provisos (Add #(1, t_n_external_sources, t_n_sources),           // source 0 is reserved for 'no source'
+	     Add #(_any_0, TLog #(t_n_sources), T_wd_source_id),
 	     Add #(_any_1, TLog #(t_n_targets), T_wd_target_id),
 	     Log #(TAdd #(t_max_priority, 1), t_wd_priority));
 
@@ -126,7 +127,7 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
    // Per-interrupt source state
 
    // Interrupt pending from source
-   Vector #(t_n_sources, Reg #(Bool))                  vrg_source_ip   <- replicateM (mkReg (False));
+   Vector #(t_n_sources, Reg #(Bool))                  vrg_source_ip   <- replicateM (mkConfigReg (False));
    // Interrupt claimed and being serviced by a hart
    Vector #(t_n_sources, Reg #(Bool))                  vrg_source_busy <- replicateM (mkReg (False));
    // Priority for this source
@@ -180,7 +181,7 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
 
       for (Integer source_id = 0; source_id < n_sources; source_id = source_id + 1) begin
 	 vrg_source_ip   [source_id] <= False;
-	 vrg_source_busy [source_id]  <= False;
+	 vrg_source_busy [source_id] <= False;
 	 vrg_source_prio [source_id] <= 0;
       end
 
@@ -220,6 +221,8 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
       AXI4_Resp  rresp       = axi4_resp_okay;
 
       if (rda.araddr < rg_addr_base) begin
+	 // Technically this should not happen: the fabric should
+	 // never have delivered such an addr to this IP.
 	 $display ("%0d: ERROR: PLIC.rl_process_rd_req: unrecognized addr", cur_cycle);
 	 $display ("            ", fshow (rda));
 	 rresp = axi4_resp_decerr;
@@ -232,7 +235,7 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
 	    rdata = changeWidth (vrg_source_prio [source_id]);
 
 	    if (cfg_verbosity > 1)
-	       $display ("%0d: ERROR: PLIC.rl_process_rd_req: reading Source Priority 0x%0h = 0x%0h",
+	       $display ("%0d: PLIC.rl_process_rd_req: reading Source Priority 0x%0h = 0x%0h",
 			 cur_cycle, source_id, rdata);
 	 end
 	 else
@@ -257,7 +260,7 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
 	    rdata = changeWidth (v_ip);
 
 	    if (cfg_verbosity > 1)
-	       $display ("%0d: ERROR: PLIC.rl_process_rd_req: reading Intr Pending 32 bits from [0x%0h] = 0x%0h",
+	       $display ("%0d: PLIC.rl_process_rd_req: reading Intr Pending 32 bits from [0x%0h] = 0x%0h",
 			 cur_cycle, source_id_base, rdata);
 	 end
 	 else
@@ -284,7 +287,7 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
 	    rdata = changeWidth (v_ie);
 
 	    if (cfg_verbosity > 1)
-	       $display ("%0d: ERROR: PLIC.rl_process_rd_req: reading Intr Enable 32 bits from [0x%0h] = 0x%0h",
+	       $display ("%0d: PLIC.rl_process_rd_req: reading Intr Enable 32 bits from [0x%0h] = 0x%0h",
 			 cur_cycle, source_id_base, rdata);
 	 end
 	 else
@@ -298,7 +301,7 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
 	    rdata = changeWidth (vrg_target_threshold [target_id]);
 
 	    if (cfg_verbosity > 1)
-	       $display ("%0d: ERROR: PLIC.rl_process_rd_req: reading Threshold for target 0x%0h = 0x%0h",
+	       $display ("%0d: PLIC.rl_process_rd_req: reading Threshold for target 0x%0h = 0x%0h",
 			 cur_cycle, target_id, rdata);
 	 end
 	 else
@@ -326,7 +329,7 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
 		  rdata = changeWidth (max_id);
 
 		  if (cfg_verbosity > 1)
-		     $display ("%0d: ERROR: PLIC.rl_process_rd_req: reading Claim for target 0x%0h = 0x%0h",
+		     $display ("%0d: PLIC.rl_process_rd_req: reading Claim for target 0x%0h = 0x%0h",
 			cur_cycle, target_id, rdata);
 	       end
 	    end
@@ -336,14 +339,14 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
       end
 
       else
-	 rresp = axi4_resp_decerr;
+	 rresp = axi4_resp_slverr;
 
       if (rresp != axi4_resp_okay) begin
 	 $display ("%0d: ERROR: PLIC.rl_process_rd_req: unrecognized addr", cur_cycle);
 	 $display ("            ", fshow (rda));
       end
 
-      if (addr_offset [2:0] != 0)
+      if ((valueOf (Wd_Data) == 64) && ((addr_offset & 'h7) == 'h4))
 	 rdata = { rdata [31:0], 32'h0 };
 
       // Send read-response to bus
@@ -365,7 +368,7 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
    // ----------------------------------------------------------------
    // Handle memory-mapped write requests
 
-   (* descending_urgency = "rl_process_wr_req, rl_process_rd_req" *)    // ad hoc choice
+   (* descending_urgency = "rl_process_rd_req, rl_process_wr_req" *)    // Ad hoc order
 
    rule rl_process_wr_req (! f_reset_reqs.notEmpty);
 
@@ -378,12 +381,14 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
       end
 
       let addr_offset  = wra.awaddr - rg_addr_base;
-      let wdata32      = (((valueOf (Wd_Data) == 64) && ((addr_offset & 'h7) == 'h100))
+      let wdata32      = (((valueOf (Wd_Data) == 64) && ((addr_offset & 'h7) == 'h4))
 			  ? wrd.wdata [63:32]
 			  : wrd.wdata [31:0]);
       let bresp = axi4_resp_okay;
 
       if (wra.awaddr < rg_addr_base) begin
+	 // Technically this should not happen: the fabric should
+	 // never have delivered such an addr to this IP.
 	 $display ("%0d: ERROR: PLIC.rl_process_wr_req: unrecognized addr", cur_cycle);
 	 $display ("            ", fshow (wra));
 	 $display ("            ", fshow (wrd));
@@ -397,11 +402,13 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
 	    vrg_source_prio [source_id] <= changeWidth (wdata32);
 
 	    if (cfg_verbosity > 1)
-	       $display ("%0d: ERROR: PLIC.rl_process_wr_req: writing Source Priority 0x%0h = 0x%0h",
+	       $display ("%0d: PLIC.rl_process_wr_req: writing Source Priority 0x%0h = 0x%0h",
 			 cur_cycle, source_id, wdata32);
 	 end
-	 else
-	    bresp = axi4_resp_decerr;
+	 else begin
+	    // Note: write to source_id 0 is error; should it just be ignored?
+	    bresp = axi4_resp_slverr;
+	 end
       end
 
       // Source IPs (interrupt pending).
@@ -411,11 +418,11 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
 
 	 if (source_id_base <= fromInteger (n_sources - 1)) begin
 	    if (cfg_verbosity > 1)
-	       $display ("%0d: ERROR: PLIC.rl_process_wr_req: Ignoring write to Read-only Intr Pending 32 bits from [0x%0h]",
+	       $display ("%0d: PLIC.rl_process_wr_req: Ignoring write to Read-only Intr Pending 32 bits from [0x%0h]",
 			 cur_cycle, source_id_base);
 	 end
 	 else
-	    bresp = axi4_resp_decerr;
+	    bresp = axi4_resp_slverr;
       end
 
       // Source IEs (interrupt enables) for a target
@@ -434,11 +441,11 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
 	    end
 
 	    if (cfg_verbosity > 1)
-	       $display ("%0d: ERROR: PLIC.rl_process_wr_req: writing Intr Enable 32 bits for target 0x%0d from source [0x%0h] = 0x%0h",
+	       $display ("%0d: PLIC.rl_process_wr_req: writing Intr Enable 32 bits for target 0x%0d from source [0x%0h] = 0x%0h",
 			 cur_cycle, target_id, source_id_base, wdata32);
 	 end
 	 else
-	    bresp = axi4_resp_decerr;
+	    bresp = axi4_resp_slverr;
       end
 
       // Target threshold
@@ -448,11 +455,11 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
 	    vrg_target_threshold [target_id] <= changeWidth (wdata32);
 
 	    if (cfg_verbosity > 1)
-	       $display ("%0d: ERROR: PLIC.rl_process_wr_req: writing threshold for target [0x%0h] = 0x%0h",
+	       $display ("%0d: PLIC.rl_process_wr_req: writing threshold for target [0x%0h] = 0x%0h",
 			 cur_cycle, target_id, wdata32);
 	 end
 	 else
-	    bresp = axi4_resp_decerr;
+	    bresp = axi4_resp_slverr;
       end
 
       // Interrupt service completion by target
@@ -466,7 +473,7 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
 	       vrg_source_busy [source_id] <= False;
 	       vrg_servicing_source [target_id] <= 0;
 	       if (cfg_verbosity > 1)
-		  $display ("%0d: ERROR: PLIC.rl_process_wr_req: writing completion for target [0x%0h] for source 0x%0h",
+		  $display ("%0d: PLIC.rl_process_wr_req: writing completion for target [0x%0h] for source 0x%0h",
 		     cur_cycle, target_id, source_id);
 	    end
 	    else begin
@@ -478,11 +485,11 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
 	    end
 	 end
 	 else
-	    bresp = axi4_resp_decerr;
+	    bresp = axi4_resp_slverr;
       end
 
       else
-	 bresp = axi4_resp_decerr;
+	 bresp = axi4_resp_slverr;
 
       if (bresp != axi4_resp_okay) begin
 	 $display ("%0d: ERROR: PLIC.rl_process_wr_req: unrecognized addr", cur_cycle);

@@ -162,8 +162,6 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
       plic.set_addr_map (zeroExtend (soc_map.m_plic_addr_base),
 			 zeroExtend (soc_map.m_plic_addr_lim));
 
-      // fabric_2x3.set_verbosity (2);    // debugging only
-
       Bit #(1) requestor = reset_requestor_soc;
 `ifdef INCLUDE_GDB_CONTROL
       requestor <- pop (f_reset_requestor);
