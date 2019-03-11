@@ -43,6 +43,12 @@ function Bit #(m) changeWidth (Bit #(n) x);
 endfunction
 
 // ================================================================
+// Maximum supported sources, targets, ...
+
+typedef  10  T_wd_source_id;    // Max 1024 sources (source 0 is reserved for 'no interrupt')
+typedef   5  T_wd_target_id;    // Max 32 targets
+
+// ================================================================
 // Interfaces
 
 // ----------------
@@ -87,15 +93,16 @@ endinterface
 // PLIC module implementation
 
 module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
-   provisos (Log #(t_n_sources,    t_wd_source_id),
-	     Log #(t_max_priority, t_wd_priority));
+   provisos (Add #(_any_0, TLog #(t_n_sources), T_wd_source_id),
+	     Add #(_any_1, TLog #(t_n_targets), T_wd_target_id),
+	     Log #(TAdd #(t_max_priority, 1), t_wd_priority));
 
    Reg #(Bit #(8)) cfg_verbosity <- mkConfigReg (0);
 
    // Source_Ids and Priorities are read and written over the memory interface
    // and should fit within the data bus width, currently 64 bits.
-   staticAssert ((valueOf (t_wd_source_id) <= valueOf (64)), "PLIC: t_n_sources parameter too large");
-   staticAssert ((valueOf (t_wd_priority)  <= valueOf (64)), "PLIC: t_max_priority parameter too large");
+   staticAssert ((valueOf (TLog #(t_n_sources))               <= 64), "PLIC: t_n_sources parameter too large");
+   staticAssert ((valueOf (TLog #(TAdd #(t_max_priority, 1))) <= 64), "PLIC: t_max_priority parameter too large");
 
    Integer  n_sources = valueOf (t_n_sources);
    Integer  n_targets = valueOf (t_n_targets);
@@ -129,9 +136,9 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
    // Per-target hart context state
 
    // Threshold: interrupts at or below threshold should be masked out for target
-   Vector #(t_n_targets, Reg #(Bit #(t_wd_priority)))  vrg_target_threshold <- replicateM (mkReg ('1));
+   Vector #(t_n_targets, Reg #(Bit #(t_wd_priority)))   vrg_target_threshold <- replicateM (mkReg ('1));
    // Target has claimed interrupt for source and is servicing it
-   Vector #(t_n_targets, Reg #(Bit #(t_wd_source_id))) vrg_servicing_source <- replicateM (mkReg (0));
+   Vector #(t_n_targets, Reg #(Bit #(TLog #(t_n_sources))))  vrg_servicing_source <- replicateM (mkReg (0));
 
    // ----------------
    // Per-target, per-source state
@@ -143,8 +150,8 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
    // ================================================================
    // Compute outputs for each target (combinational)
 
-   function Tuple2 #(Bool, Bit #(t_wd_source_id)) fn_target_output (Integer target_id);
-      Bit #(t_wd_source_id) max_id = 0;
+   function Tuple2 #(Bool, Bit #(TLog #(t_n_sources))) fn_target_output (Integer target_id);
+      Bit #(TLog #(t_n_sources)) max_id = 0;
       Bit #(t_wd_priority)  prio   = 0;
       // Note: source_ids begin at 1, not 0.
       for (Integer source_id = 1; source_id < n_sources; source_id = source_id + 1)
@@ -160,7 +167,7 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
 
    // For each target: (interrupt pending, source)
    Vector #(t_n_targets,
-	    Tuple2 #(Bool, Bit #(t_wd_source_id)))  v_target_outputs = genWith (fn_target_output);
+	    Tuple2 #(Bool, Bit #(TLog #(t_n_sources))))  v_target_outputs = genWith (fn_target_output);
 
    // ================================================================
    // Soft reset
@@ -217,63 +224,71 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
 
       // Source priority 
       else if (addr_offset < 'h1000) begin
-	 Bit #(10) source_id = addr_offset [11:2];
-	 if ((0 < source_id) && (source_id < fromInteger (n_sources)))
+	 Bit #(T_wd_source_id)  source_id = truncate (addr_offset [11:2]);
+	 if ((0 < source_id) && (source_id <= fromInteger (n_sources - 1)))
 	    rdata = changeWidth (vrg_source_prio [source_id]);
+	 else
+	    rresp = axi4_resp_slverr;
       end
 
       // Source IPs (interrupt pending).
       // Return 32 consecutive IP bits starting with addr.
       else if (('h1000 <= addr_offset) && (addr_offset < 'h2000)) begin
-	 Bit #(15) source_id_base = { addr_offset [11:0], 3'h0 };
+	 Bit #(T_wd_source_id)  source_id_base = truncate ({ addr_offset [11:0], 5'h0 });
 
 	 function Bool fn_ip_source_id (Integer source_id_offset);
 	    let source_id = source_id_base + fromInteger (source_id_offset);
-	    Bool ip_source_id = False;
-	    if (source_id < fromInteger (n_sources))
-	       ip_source_id = vrg_source_ip [source_id];
+	    Bool ip_source_id = (  (source_id <= fromInteger (n_sources - 1))
+				 ? vrg_source_ip [source_id]
+				 : False);
 	    return ip_source_id;
 	 endfunction
 
-	 if (source_id_base < fromInteger (n_sources)) begin
+	 if (source_id_base <= fromInteger (n_sources - 1)) begin
 	    Bit #(32) v_ip = pack (genWith  (fn_ip_source_id));
 	    rdata = changeWidth (v_ip);
 	 end
+	 else
+	    rresp = axi4_resp_slverr;
       end
 
       // Source IEs (interrupt enables) for a target
       // Return 32 consecutive IE bits starting with addr.
       // Target 0 addrs: 2000-207F, Target 1 addrs: 2080-20FF, ...
       else if (('h2000 <= addr_offset) && (addr_offset < 'h3000)) begin
-	 Bit #(5)  target_id      = addr_offset [11:7];
-	 Bit #(10) source_id_base = { addr_offset [6:0], 3'h0 };
+	 Bit #(T_wd_target_id)  target_id      = truncate (addr_offset [11:7]);
+	 Bit #(T_wd_source_id)  source_id_base = truncate ({ addr_offset [6:0], 5'h0 });
 
 	 function Bool fn_ie_source_id (Integer source_id_offset);
 	    let source_id = fromInteger (source_id_offset) + source_id_base;
-	    return (  (source_id < fromInteger (n_sources))
+	    return (  (source_id <= fromInteger (n_sources - 1))
 		    ? vvrg_ie [target_id][source_id]
 		    : False);
 	 endfunction
 
-	 if (   (source_id_base < fromInteger (n_sources))
-	     && (target_id      < fromInteger (n_targets))) begin
+	 if (   (source_id_base <= fromInteger (n_sources - 1))
+	     && (target_id      <= fromInteger (n_targets - 1))) begin
 	    Bit #(32) v_ie = pack (genWith  (fn_ie_source_id));
 	    rdata = changeWidth (v_ie);
 	 end
+	 else
+	    rresp = axi4_resp_slverr;
       end
 
       // Target threshold
       else if ((addr_offset [31:0] & 32'hFFFF_0FFF) == 32'h0020_0000) begin
-	 Bit #(4) target_id = addr_offset [15:12];
-	 if (target_id < fromInteger (n_targets))
+	 Bit #(T_wd_target_id)  target_id = truncate (addr_offset [20:12]);
+	 if (target_id <= fromInteger (n_targets - 1))
 	    rdata = changeWidth (vrg_target_threshold [target_id]);
+	 else
+	    rresp = axi4_resp_slverr;
       end
 
       // Interrupt service claim by target
       else if ((addr_offset [31:0] & 32'hFFFF_0FFF) == 32'h0020_0004) begin
-	 Bit #(4) target_id  = addr_offset [15:12];
+	 Bit #(T_wd_target_id)  target_id  = truncate (addr_offset [20:12]);
 	 match { .eip, .max_id } = v_target_outputs [target_id];
-	 if (target_id < fromInteger (n_targets)) begin
+	 if (target_id <= fromInteger (n_targets - 1)) begin
 	    if (vrg_servicing_source [target_id] != 0) begin
 	       $display ("%0d: ERROR: PLIC: target %0d claiming without prior completion",
 			 cur_cycle, target_id);
@@ -286,11 +301,13 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
 	       if (max_id != 0) begin
 		  vrg_source_ip   [max_id]         <= False;
 		  vrg_source_busy [max_id]         <= True;
-		  vrg_servicing_source [target_id] <= max_id;
+		  vrg_servicing_source [target_id] <= truncate (max_id);
 	       end
 	       rdata = changeWidth (max_id);
 	    end
 	 end
+	 else
+	    rresp = axi4_resp_slverr;
       end
 
       else
@@ -336,8 +353,9 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
       end
 
       let addr_offset  = wra.awaddr - rg_addr_base;
-      let wdata32      = (((addr_offset & 'h7) == 0) ? wrd.wdata [31:0] : wrd.wdata [63:32]);
-      AXI4_Resp  bresp = axi4_resp_okay;
+      let wdata32      = (((Wd_Data == 64) && ((addr_offset & 0x7 == 'h100)))
+			  ? wrd_data [63:32]
+			  : wrd_data [31:0])
 
       if (wra.awaddr < rg_addr_base) begin
 	 $display ("%0d: ERROR: PLIC.rl_process_wr_req: unrecognized addr", cur_cycle);
@@ -348,17 +366,17 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
 
       // Source priority 
       else if (addr_offset < 'h1000) begin
-	 Bit #(10) source_id = addr_offset [11:2];
-	 if ((0 < source_id) && (source_id < fromInteger (n_sources)))
+	 Bit #(T_wd_source_id)  source_id = truncate (addr_offset [11:2]);
+	 if ((0 < source_id) && (source_id <= fromInteger (n_sources - 1)))
 	    vrg_source_prio [source_id] <= changeWidth (wdata32);
       end
 
       // Source IPs (interrupt pending).
       // Read-only, so ignore write; just check that addr ok.
       else if (('h1000 <= addr_offset) && (addr_offset < 'h2000)) begin
-	 Bit #(15) source_id_base = { addr_offset [11:0], 3'h0 };
+	 Bit #(T_wd_source_id)  source_id_base = truncate ({ addr_offset [11:0], 5'h0 });
 
-	 if (source_id_base >= fromInteger (n_sources))
+	 if (! (source_id_base <= fromInteger (n_sources - 1)))
 	    bresp = axi4_resp_decerr;
       end
 
@@ -366,33 +384,37 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
       // Write 32 consecutive IE bits starting with addr.
       // Target 0 addrs: 2000-207F, Target 1 addrs: 2080-20FF, ...
       else if (('h2000 <= addr_offset) && (addr_offset < 'h3000)) begin
-	 Bit #(5)  target_id      = addr_offset [11:7];
-	 Bit #(10) source_id_base = { addr_offset [6:0], 3'h0 };
+	 Bit #(T_wd_target_id)  target_id      = truncate (addr_offset [11:7]);
+	 Bit #(T_wd_source_id)  source_id_base = truncate ({ addr_offset [6:0], 5'h0 });
 
-	 if (   (source_id_base < fromInteger (n_sources))
-	     && (target_id      < fromInteger (n_targets))) begin
-	    for (Bit #(10) k = 0; k < 32; k = k + 1) begin
-	       Bit #(10) source_id = source_id_base + k;
-	       if (source_id < fromInteger (n_sources))
+	 if (   (source_id_base <= fromInteger (n_sources - 1))
+	     && (target_id      <= fromInteger (n_targets - 1))) begin
+	    for (Bit #(T_wd_source_id)  k = 0; k < 32; k = k + 1) begin
+	       Bit #(T_wd_source_id)  source_id = source_id_base + k;
+	       if (source_id <= fromInteger (n_sources - 1))
 		  vvrg_ie [target_id][source_id] <= unpack (wdata32 [k]);
 	    end
 	 end
+	 else
+	    bresp = axi4_resp_decerr;
       end
 
       // Target threshold
       else if ((addr_offset [31:0] & 32'hFFFF_0FFF) == 32'h0020_0000) begin
-	 Bit #(4) target_id = addr_offset [15:12];
-	 if (target_id < fromInteger (n_targets))
+	 Bit #(T_wd_target_id)  target_id = truncate (addr_offset [20:12]);
+	 if (target_id <= fromInteger (n_targets - 1))
 	    vrg_target_threshold [target_id] <= changeWidth (wdata32);
+	 else
+	    bresp = axi4_resp_decerr;
       end
 
       // Interrupt service completion by target
       // Actual memory-write-data is irrelevant.
       else if ((addr_offset [31:0] & 32'hFFFF_0FFF) == 32'h0020_0004) begin
-	 Bit #(4)               target_id = addr_offset [15:12];
-	 Bit #(t_wd_source_id)  source_id = vrg_servicing_source [target_id];
+	 Bit #(T_wd_target_id)  target_id = truncate (addr_offset [20:12]);
+	 Bit #(T_wd_source_id)  source_id = zeroExtend (vrg_servicing_source [target_id]);
 
-	 if (target_id < fromInteger (n_targets)) begin
+	 if (target_id <= fromInteger (n_targets - 1)) begin
 	    if (vrg_source_busy [source_id]) begin
 	       vrg_source_busy [source_id] <= False;
 	       vrg_servicing_source [target_id] <= 0;
@@ -405,6 +427,8 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
 	       bresp = axi4_resp_slverr;
 	    end
 	 end
+	 else
+	    bresp = axi4_resp_decerr;
       end
 
       else
