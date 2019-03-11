@@ -10,20 +10,17 @@
 // fav_write                      O    64
 // fv_sip_read                    O    64
 // fav_sip_write                  O    64
-// RDY_software_interrupt_req     O     1 const
-// RDY_timer_interrupt_req        O     1 const
 // CLK                            I     1 clock
 // RST_N                          I     1 reset
 // fav_write_misa                 I    28
 // fav_write_wordxl               I    64
 // fav_sip_write_misa             I    28
 // fav_sip_write_wordxl           I    64
-// external_interrupt_req_req     I     1 reg
-// software_interrupt_req_req     I     1
-// timer_interrupt_req_req        I     1
+// m_external_interrupt_req_req   I     1 reg
+// s_external_interrupt_req_req   I     1 reg
+// software_interrupt_req_req     I     1 reg
+// timer_interrupt_req_req        I     1 reg
 // EN_reset                       I     1
-// EN_software_interrupt_req      I     1
-// EN_timer_interrupt_req         I     1
 // EN_fav_write                   I     1
 // EN_fav_sip_write               I     1
 //
@@ -65,15 +62,13 @@ module mkCSR_MIP(CLK,
 		 EN_fav_sip_write,
 		 fav_sip_write,
 
-		 external_interrupt_req_req,
+		 m_external_interrupt_req_req,
+
+		 s_external_interrupt_req_req,
 
 		 software_interrupt_req_req,
-		 EN_software_interrupt_req,
-		 RDY_software_interrupt_req,
 
-		 timer_interrupt_req_req,
-		 EN_timer_interrupt_req,
-		 RDY_timer_interrupt_req);
+		 timer_interrupt_req_req);
   input  CLK;
   input  RST_N;
 
@@ -98,22 +93,20 @@ module mkCSR_MIP(CLK,
   input  EN_fav_sip_write;
   output [63 : 0] fav_sip_write;
 
-  // action method external_interrupt_req
-  input  external_interrupt_req_req;
+  // action method m_external_interrupt_req
+  input  m_external_interrupt_req_req;
+
+  // action method s_external_interrupt_req
+  input  s_external_interrupt_req_req;
 
   // action method software_interrupt_req
   input  software_interrupt_req_req;
-  input  EN_software_interrupt_req;
-  output RDY_software_interrupt_req;
 
   // action method timer_interrupt_req
   input  timer_interrupt_req_req;
-  input  EN_timer_interrupt_req;
-  output RDY_timer_interrupt_req;
 
   // signals for module outputs
   wire [63 : 0] fav_sip_write, fav_write, fv_read, fv_sip_read;
-  wire RDY_software_interrupt_req, RDY_timer_interrupt_req;
 
   // register rg_meip
   reg rg_meip;
@@ -155,16 +148,18 @@ module mkCSR_MIP(CLK,
   wire rg_utip$D_IN, rg_utip$EN;
 
   // rule scheduling signals
-  wire CAN_FIRE_external_interrupt_req,
-       CAN_FIRE_fav_sip_write,
+  wire CAN_FIRE_fav_sip_write,
        CAN_FIRE_fav_write,
+       CAN_FIRE_m_external_interrupt_req,
        CAN_FIRE_reset,
+       CAN_FIRE_s_external_interrupt_req,
        CAN_FIRE_software_interrupt_req,
        CAN_FIRE_timer_interrupt_req,
-       WILL_FIRE_external_interrupt_req,
        WILL_FIRE_fav_sip_write,
        WILL_FIRE_fav_write,
+       WILL_FIRE_m_external_interrupt_req,
        WILL_FIRE_reset,
+       WILL_FIRE_s_external_interrupt_req,
        WILL_FIRE_software_interrupt_req,
        WILL_FIRE_timer_interrupt_req;
 
@@ -218,36 +213,37 @@ module mkCSR_MIP(CLK,
   assign CAN_FIRE_fav_sip_write = 1'd1 ;
   assign WILL_FIRE_fav_sip_write = EN_fav_sip_write ;
 
-  // action method external_interrupt_req
-  assign CAN_FIRE_external_interrupt_req = 1'd1 ;
-  assign WILL_FIRE_external_interrupt_req = 1'd1 ;
+  // action method m_external_interrupt_req
+  assign CAN_FIRE_m_external_interrupt_req = 1'd1 ;
+  assign WILL_FIRE_m_external_interrupt_req = 1'd1 ;
+
+  // action method s_external_interrupt_req
+  assign CAN_FIRE_s_external_interrupt_req = 1'd1 ;
+  assign WILL_FIRE_s_external_interrupt_req = 1'd1 ;
 
   // action method software_interrupt_req
-  assign RDY_software_interrupt_req = 1'd1 ;
   assign CAN_FIRE_software_interrupt_req = 1'd1 ;
-  assign WILL_FIRE_software_interrupt_req = EN_software_interrupt_req ;
+  assign WILL_FIRE_software_interrupt_req = 1'd1 ;
 
   // action method timer_interrupt_req
-  assign RDY_timer_interrupt_req = 1'd1 ;
   assign CAN_FIRE_timer_interrupt_req = 1'd1 ;
-  assign WILL_FIRE_timer_interrupt_req = EN_timer_interrupt_req ;
+  assign WILL_FIRE_timer_interrupt_req = 1'd1 ;
 
   // register rg_meip
-  assign rg_meip$D_IN = external_interrupt_req_req ;
+  assign rg_meip$D_IN = m_external_interrupt_req_req ;
   assign rg_meip$EN = 1'b1 ;
 
   // register rg_msip
-  assign rg_msip$D_IN =
-	     EN_software_interrupt_req && software_interrupt_req_req ;
-  assign rg_msip$EN = EN_software_interrupt_req || EN_reset ;
+  assign rg_msip$D_IN = software_interrupt_req_req ;
+  assign rg_msip$EN = 1'b1 ;
 
   // register rg_mtip
-  assign rg_mtip$D_IN = EN_timer_interrupt_req && timer_interrupt_req_req ;
-  assign rg_mtip$EN = EN_timer_interrupt_req || EN_reset ;
+  assign rg_mtip$D_IN = timer_interrupt_req_req ;
+  assign rg_mtip$EN = 1'b1 ;
 
   // register rg_seip
-  assign rg_seip$D_IN = !EN_reset && seip__h562 ;
-  assign rg_seip$EN = EN_fav_write || EN_reset ;
+  assign rg_seip$D_IN = s_external_interrupt_req_req ;
+  assign rg_seip$EN = 1'b1 ;
 
   // register rg_ssip
   always@(EN_reset or

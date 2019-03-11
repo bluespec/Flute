@@ -835,7 +835,6 @@ module mkCore(CLK,
        cpu$dmem_master_wlast,
        cpu$dmem_master_wready,
        cpu$dmem_master_wvalid,
-       cpu$external_interrupt_req_set_not_clear,
        cpu$hart0_server_run_halt_request_put,
        cpu$hart0_server_run_halt_response_get,
        cpu$imem_master_arlock,
@@ -852,6 +851,9 @@ module mkCore(CLK,
        cpu$imem_master_wlast,
        cpu$imem_master_wready,
        cpu$imem_master_wvalid,
+       cpu$m_external_interrupt_req_set_not_clear,
+       cpu$non_maskable_interrupt_req_set_not_clear,
+       cpu$s_external_interrupt_req_set_not_clear,
        cpu$software_interrupt_req_set_not_clear,
        cpu$timer_interrupt_req_set_not_clear;
 
@@ -1279,7 +1281,8 @@ module mkCore(CLK,
        plic$v_sources_7_m_interrupt_req_set_not_clear,
        plic$v_sources_8_m_interrupt_req_set_not_clear,
        plic$v_sources_9_m_interrupt_req_set_not_clear,
-       plic$v_targets_0_m_eip;
+       plic$v_targets_0_m_eip,
+       plic$v_targets_1_m_eip;
 
   // ports of submodule soc_map
   wire [63 : 0] soc_map$m_is_IO_addr_addr,
@@ -1308,6 +1311,7 @@ module mkCore(CLK,
        CAN_FIRE_RL_rl_rd_data_channel_2,
        CAN_FIRE_RL_rl_rd_data_channel_3,
        CAN_FIRE_RL_rl_relay_external_interrupts,
+       CAN_FIRE_RL_rl_relay_non_maskable_interrupt,
        CAN_FIRE_RL_rl_relay_sw_interrupts,
        CAN_FIRE_RL_rl_relay_timer_interrupts,
        CAN_FIRE_RL_rl_wr_addr_channel,
@@ -1374,6 +1378,7 @@ module mkCore(CLK,
        WILL_FIRE_RL_rl_rd_data_channel_2,
        WILL_FIRE_RL_rl_rd_data_channel_3,
        WILL_FIRE_RL_rl_relay_external_interrupts,
+       WILL_FIRE_RL_rl_relay_non_maskable_interrupt,
        WILL_FIRE_RL_rl_relay_sw_interrupts,
        WILL_FIRE_RL_rl_relay_timer_interrupts,
        WILL_FIRE_RL_rl_wr_addr_channel,
@@ -1423,7 +1428,7 @@ module mkCore(CLK,
        WILL_FIRE_set_verbosity;
 
   // remaining internal signals
-  wire fabric_2x3_RDY_reset_AND_cpu_RDY_hart0_server__ETC___d9;
+  wire near_mem_io_RDY_server_reset_request_put_AND_c_ETC___d9;
 
   // action method set_verbosity
   assign RDY_set_verbosity = 1'd1 ;
@@ -1757,7 +1762,6 @@ module mkCore(CLK,
 	    .dmem_master_rresp(cpu$dmem_master_rresp),
 	    .dmem_master_rvalid(cpu$dmem_master_rvalid),
 	    .dmem_master_wready(cpu$dmem_master_wready),
-	    .external_interrupt_req_set_not_clear(cpu$external_interrupt_req_set_not_clear),
 	    .hart0_csr_mem_server_request_put(cpu$hart0_csr_mem_server_request_put),
 	    .hart0_fpr_mem_server_request_put(cpu$hart0_fpr_mem_server_request_put),
 	    .hart0_gpr_mem_server_request_put(cpu$hart0_gpr_mem_server_request_put),
@@ -1774,6 +1778,9 @@ module mkCore(CLK,
 	    .imem_master_rresp(cpu$imem_master_rresp),
 	    .imem_master_rvalid(cpu$imem_master_rvalid),
 	    .imem_master_wready(cpu$imem_master_wready),
+	    .m_external_interrupt_req_set_not_clear(cpu$m_external_interrupt_req_set_not_clear),
+	    .non_maskable_interrupt_req_set_not_clear(cpu$non_maskable_interrupt_req_set_not_clear),
+	    .s_external_interrupt_req_set_not_clear(cpu$s_external_interrupt_req_set_not_clear),
 	    .set_verbosity_logdelay(cpu$set_verbosity_logdelay),
 	    .set_verbosity_verbosity(cpu$set_verbosity_verbosity),
 	    .software_interrupt_req_set_not_clear(cpu$software_interrupt_req_set_not_clear),
@@ -2308,7 +2315,7 @@ module mkCore(CLK,
 		     .axi4_slave_rresp(plic$axi4_slave_rresp),
 		     .axi4_slave_rlast(plic$axi4_slave_rlast),
 		     .v_targets_0_m_eip(plic$v_targets_0_m_eip),
-		     .v_targets_1_m_eip());
+		     .v_targets_1_m_eip(plic$v_targets_1_m_eip));
 
   // submodule soc_map
   mkSoC_Map soc_map(.CLK(CLK),
@@ -2501,18 +2508,17 @@ module mkCore(CLK,
 
   // rule RL_rl_cpu_hart0_reset_from_soc_start
   assign CAN_FIRE_RL_rl_cpu_hart0_reset_from_soc_start =
-	     plic$RDY_server_reset_request_put &&
-	     near_mem_io$RDY_server_reset_request_put &&
-	     fabric_2x3_RDY_reset_AND_cpu_RDY_hart0_server__ETC___d9 ;
+	     fabric_2x3$RDY_reset && plic$RDY_server_reset_request_put &&
+	     near_mem_io_RDY_server_reset_request_put_AND_c_ETC___d9 ;
   assign WILL_FIRE_RL_rl_cpu_hart0_reset_from_soc_start =
 	     CAN_FIRE_RL_rl_cpu_hart0_reset_from_soc_start ;
 
   // rule RL_rl_cpu_hart0_reset_from_dm_start
   assign CAN_FIRE_RL_rl_cpu_hart0_reset_from_dm_start =
+	     debug_module$RDY_hart0_get_reset_req_get &&
+	     fabric_2x3$RDY_reset &&
 	     plic$RDY_server_reset_request_put &&
 	     near_mem_io$RDY_server_reset_request_put &&
-	     fabric_2x3$RDY_reset &&
-	     debug_module$RDY_hart0_get_reset_req_get &&
 	     cpu$RDY_hart0_server_reset_request_put &&
 	     f_reset_requestor$FULL_N ;
   assign WILL_FIRE_RL_rl_cpu_hart0_reset_from_dm_start =
@@ -2522,6 +2528,10 @@ module mkCore(CLK,
   // rule RL_rl_wr_response_channel_1
   assign CAN_FIRE_RL_rl_wr_response_channel_1 = 1'd1 ;
   assign WILL_FIRE_RL_rl_wr_response_channel_1 = 1'd1 ;
+
+  // rule RL_rl_relay_non_maskable_interrupt
+  assign CAN_FIRE_RL_rl_relay_non_maskable_interrupt = 1'd1 ;
+  assign WILL_FIRE_RL_rl_relay_non_maskable_interrupt = 1'd1 ;
 
   // submodule cpu
   assign cpu$dmem_master_arready = fabric_2x3$v_from_masters_0_arready ;
@@ -2535,7 +2545,6 @@ module mkCore(CLK,
   assign cpu$dmem_master_rresp = fabric_2x3$v_from_masters_0_rresp ;
   assign cpu$dmem_master_rvalid = fabric_2x3$v_from_masters_0_rvalid ;
   assign cpu$dmem_master_wready = fabric_2x3$v_from_masters_0_wready ;
-  assign cpu$external_interrupt_req_set_not_clear = plic$v_targets_0_m_eip ;
   assign cpu$hart0_csr_mem_server_request_put =
 	     debug_module$hart0_csr_mem_client_request_get ;
   assign cpu$hart0_fpr_mem_server_request_put = 78'h0 ;
@@ -2555,6 +2564,9 @@ module mkCore(CLK,
   assign cpu$imem_master_rresp = cpu_imem_master_rresp ;
   assign cpu$imem_master_rvalid = cpu_imem_master_rvalid ;
   assign cpu$imem_master_wready = cpu_imem_master_wready ;
+  assign cpu$m_external_interrupt_req_set_not_clear = plic$v_targets_0_m_eip ;
+  assign cpu$non_maskable_interrupt_req_set_not_clear = 1'd0 ;
+  assign cpu$s_external_interrupt_req_set_not_clear = plic$v_targets_1_m_eip ;
   assign cpu$set_verbosity_logdelay = set_verbosity_logdelay ;
   assign cpu$set_verbosity_verbosity = set_verbosity_verbosity ;
   assign cpu$software_interrupt_req_set_not_clear =
@@ -2629,9 +2641,8 @@ module mkCore(CLK,
   // submodule f_reset_reqs
   assign f_reset_reqs$ENQ = EN_cpu_reset_server_request_put ;
   assign f_reset_reqs$DEQ =
-	     plic$RDY_server_reset_request_put &&
-	     near_mem_io$RDY_server_reset_request_put &&
-	     fabric_2x3_RDY_reset_AND_cpu_RDY_hart0_server__ETC___d9 ;
+	     fabric_2x3$RDY_reset && plic$RDY_server_reset_request_put &&
+	     near_mem_io_RDY_server_reset_request_put_AND_c_ETC___d9 ;
   assign f_reset_reqs$CLR = 1'b0 ;
 
   // submodule f_reset_requestor
@@ -2870,8 +2881,9 @@ module mkCore(CLK,
   assign soc_map$m_is_near_mem_IO_addr_addr = 64'h0 ;
 
   // remaining internal signals
-  assign fabric_2x3_RDY_reset_AND_cpu_RDY_hart0_server__ETC___d9 =
-	     fabric_2x3$RDY_reset && cpu$RDY_hart0_server_reset_request_put &&
+  assign near_mem_io_RDY_server_reset_request_put_AND_c_ETC___d9 =
+	     near_mem_io$RDY_server_reset_request_put &&
+	     cpu$RDY_hart0_server_reset_request_put &&
 	     f_reset_reqs$EMPTY_N &&
 	     f_reset_requestor$FULL_N ;
 endmodule  // mkCore

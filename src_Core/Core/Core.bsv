@@ -325,10 +325,20 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
    endrule
 
    rule rl_relay_external_interrupts;    // from PLIC
-      Bool x = plic.v_targets [0].m_eip;
-      cpu.external_interrupt_req (x);
+      Bool meip = plic.v_targets [0].m_eip;
+      cpu.m_external_interrupt_req (meip);
+
+      Bool seip = plic.v_targets [1].m_eip;
+      cpu.s_external_interrupt_req (seip);
 
       // $display ("%0d: CPU.rl_relay_external_interrupts: relaying: %d", cur_cycle, pack (x));
+   endrule
+
+   // TODO: fixup.  Need to combine NMIs from multiple sources (cache, fabric, devices, ...)
+   rule rl_relay_non_maskable_interrupt;
+      cpu.non_maskable_interrupt_req (False);
+
+      // $display ("%0d: CPU.rl_relay_non_maskable_interrupts: relaying: %d", cur_cycle, pack (x));
    endrule
 
    // ================================================================

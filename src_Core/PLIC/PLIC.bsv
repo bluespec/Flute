@@ -353,9 +353,10 @@ module mkPLIC (PLIC_IFC #(t_n_sources, t_n_targets, t_max_priority))
       end
 
       let addr_offset  = wra.awaddr - rg_addr_base;
-      let wdata32      = (((Wd_Data == 64) && ((addr_offset & 0x7 == 'h100)))
-			  ? wrd_data [63:32]
-			  : wrd_data [31:0])
+      let wdata32      = (((valueOf (Wd_Data) == 64) && ((addr_offset & 'h7) == 'h100))
+			  ? wrd.wdata [63:32]
+			  : wrd.wdata [31:0]);
+      let bresp = axi4_resp_okay;
 
       if (wra.awaddr < rg_addr_base) begin
 	 $display ("%0d: ERROR: PLIC.rl_process_wr_req: unrecognized addr", cur_cycle);

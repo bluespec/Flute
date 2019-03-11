@@ -141,9 +141,13 @@ interface CSR_RegFile_IFC;
 
    // Interrupts
    (* always_ready, always_enabled *)
-   method Action external_interrupt_req (Bool set_not_clear);
+   method Action m_external_interrupt_req (Bool set_not_clear);
+   method Action s_external_interrupt_req (Bool set_not_clear);
 
+   (* always_ready, always_enabled *)
    method Action timer_interrupt_req    (Bool set_not_clear);
+
+   (* always_ready, always_enabled *)
    method Action software_interrupt_req (Bool set_not_clear);
 
    (* always_ready *)
@@ -1191,10 +1195,16 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
    endmethod
 
    // Interrupts
-   method Action external_interrupt_req (Bool set_not_clear);
-      csr_mip.external_interrupt_req  (set_not_clear);     
+   method Action m_external_interrupt_req (Bool set_not_clear);
+      csr_mip.m_external_interrupt_req  (set_not_clear);
       if (cfg_verbosity > 1)
-	 $display ("%0d: CSR_RegFile: external_interrupt_req: %x", rg_mcycle, set_not_clear);
+	 $display ("%0d: CSR_RegFile: m_external_interrupt_req: %x", rg_mcycle, set_not_clear);
+   endmethod
+
+   method Action s_external_interrupt_req (Bool set_not_clear);
+      csr_mip.s_external_interrupt_req  (set_not_clear);
+      if (cfg_verbosity > 1)
+	 $display ("%0d: CSR_RegFile: s_external_interrupt_req: %x", rg_mcycle, set_not_clear);
    endmethod
 
    method Action timer_interrupt_req (Bool set_not_clear);
