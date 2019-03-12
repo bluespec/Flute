@@ -46,11 +46,12 @@ import SoC_Map      :: *;
 import Debug_Module     :: *;
 `endif
 
-import Core_IFC         :: *;
+import Core_IFC          :: *;
 import CPU_IFC           :: *;
 import CPU               :: *;
 import Near_Mem_IO_AXI4  :: *;
 import PLIC              :: *;
+import PLIC_16_2_7       :: *;
 
 `ifdef INCLUDE_TANDEM_VERIF
 import TV_Info   :: *;
@@ -472,17 +473,6 @@ module mkFabric_2x3 (Fabric_2x3_IFC);
 
    return fabric;
 endmodule: mkFabric_2x3
-
-// ================================================================
-// PLIC for this core
-
-typedef  PLIC_IFC #(N_External_Interrupt_Sources, 2, 7)  PLIC_IFC_16_2_7;
-
-(* synthesize *)
-module mkPLIC_16_2_7 (PLIC_IFC_16_2_7);
-   let m <- mkPLIC;
-   return m;
-endmodule
 
 // ================================================================
 

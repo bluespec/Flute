@@ -70,9 +70,13 @@ endinterface
 // ----------------
 // PLIC interface
 
-interface PLIC_IFC #(numeric type  t_n_sources,
+interface PLIC_IFC #(numeric type  t_n_external_sources,
 		     numeric type  t_n_targets,
 		     numeric type  t_max_priority);
+   // Debugging
+   method Action set_verbosity (Bit #(4) verbosity);
+   method Action show_PLIC_state;
+
    // Reset
    interface Server #(Bit #(0), Bit #(0))  server_reset;
 
@@ -83,7 +87,7 @@ interface PLIC_IFC #(numeric type  t_n_sources,
    interface AXI4_Slave_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) axi4_slave;
 
    // sources
-   interface Vector #(t_n_sources, PLIC_Source_IFC)  v_sources;
+   interface Vector #(t_n_external_sources, PLIC_Source_IFC)  v_sources;
 
    // targets EIPs (External Interrupt Pending)
    interface Vector #(t_n_targets, PLIC_Target_IFC) v_targets;
@@ -98,7 +102,7 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
 	     Add #(_any_1, TLog #(t_n_targets), T_wd_target_id),
 	     Log #(TAdd #(t_max_priority, 1), t_wd_priority));
 
-   Reg #(Bit #(8)) cfg_verbosity <- mkConfigReg (0);
+   Reg #(Bit #(4)) cfg_verbosity <- mkConfigReg (0);
 
    // Source_Ids and Priorities are read and written over the memory interface
    // and should fit within the data bus width, currently 64 bits.
@@ -151,24 +155,52 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
    // ================================================================
    // Compute outputs for each target (combinational)
 
-   function Tuple2 #(Bool, Bit #(TLog #(t_n_sources))) fn_target_output (Integer target_id);
-      Bit #(TLog #(t_n_sources)) max_id = 0;
-      Bit #(t_wd_priority)  prio   = 0;
+   function Tuple2 #(Bit #(t_wd_priority), Bit #(TLog #(t_n_sources)))
+            fn_target_max_prio_and_max_id (Bit #(T_wd_target_id)  target_id);
+
+      Bit #(t_wd_priority)       max_prio = 0;
+      Bit #(TLog #(t_n_sources)) max_id   = 0;
+
       // Note: source_ids begin at 1, not 0.
       for (Integer source_id = 1; source_id < n_sources; source_id = source_id + 1)
 	 if (   vrg_source_ip [source_id]
-	     && (vrg_source_prio [source_id] > prio)) begin
-	    max_id = fromInteger (source_id);
-	    prio   = vrg_source_prio [source_id];
+	     && (vrg_source_prio [source_id] > max_prio)
+	     && (vvrg_ie [target_id][source_id])) begin
+	    max_id   = fromInteger (source_id);
+	    max_prio = vrg_source_prio [source_id];
 	 end
-      // Assertion: if any interrupt is pending, prio > 0
-      Bool eip = (prio > vrg_target_threshold [target_id]);
-      return tuple2 (eip, max_id);
+      // Assert: if any interrupt is pending (max_id > 0), then prio > 0
+      return tuple2 (max_prio, max_id);
    endfunction
 
-   // For each target: (interrupt pending, source)
-   Vector #(t_n_targets,
-	    Tuple2 #(Bool, Bit #(TLog #(t_n_sources))))  v_target_outputs = genWith (fn_target_output);
+   function Action fa_show_PLIC_state;
+      action
+	 $display ("----------------");
+	 $write ("Src IPs  :");
+	 for (Integer source_id = 0; source_id < n_sources; source_id = source_id + 1)
+	    $write (" %0d", pack (vrg_source_ip [source_id]));
+	 $display ("");
+
+	 $write ("Src Prios:");
+	 for (Integer source_id = 0; source_id < n_sources; source_id = source_id + 1)
+	    $write (" %0d", vrg_source_prio [source_id]);
+	 $display ("");
+
+	 $write ("Src busy :");
+	 for (Integer source_id = 0; source_id < n_sources; source_id = source_id + 1)
+	    $write (" %0d", pack (vrg_source_busy [source_id]));
+	 $display ("");
+
+	 for (Integer target_id = 0; target_id < n_targets; target_id = target_id + 1) begin
+	    $write ("T %0d IEs  :", target_id);
+	    for (Integer source_id = 0; source_id < n_sources; source_id = source_id + 1)
+	       $write (" %0d", vvrg_ie [target_id][source_id]);
+	    match { .max_prio, .max_id } = fn_target_max_prio_and_max_id (fromInteger (target_id));
+	    $display (" MaxPri %0d, Thresh %0d, MaxId %0d, Svcing %0d",
+		      max_prio, vrg_target_threshold [target_id], max_id, vrg_servicing_source [target_id]);
+	 end
+      endaction
+   endfunction
 
    // ================================================================
    // Soft reset
@@ -211,7 +243,7 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
    rule rl_process_rd_req (! f_reset_reqs.notEmpty);
 
       let rda <- pop_o (slave_xactor.o_rd_addr);
-      if (cfg_verbosity > 0) begin
+      if (cfg_verbosity > 1) begin
 	 $display ("%0d: PLIC.rl_process_rd_req:", cur_cycle);
 	 $display ("    ", fshow (rda));
       end
@@ -234,8 +266,8 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
 	 if ((0 < source_id) && (source_id <= fromInteger (n_sources - 1))) begin
 	    rdata = changeWidth (vrg_source_prio [source_id]);
 
-	    if (cfg_verbosity > 1)
-	       $display ("%0d: PLIC.rl_process_rd_req: reading Source Priority 0x%0h = 0x%0h",
+	    if (cfg_verbosity > 0)
+	       $display ("%0d: PLIC.rl_process_rd_req: reading Source Priority: source %0d = 0x%0h",
 			 cur_cycle, source_id, rdata);
 	 end
 	 else
@@ -259,8 +291,8 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
 	    Bit #(32) v_ip = pack (genWith  (fn_ip_source_id));
 	    rdata = changeWidth (v_ip);
 
-	    if (cfg_verbosity > 1)
-	       $display ("%0d: PLIC.rl_process_rd_req: reading Intr Pending 32 bits from [0x%0h] = 0x%0h",
+	    if (cfg_verbosity > 0)
+	       $display ("%0d: PLIC.rl_process_rd_req: reading Intr Pending 32 bits from source %0d = 0x%0h",
 			 cur_cycle, source_id_base, rdata);
 	 end
 	 else
@@ -286,8 +318,8 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
 	    Bit #(32) v_ie = pack (genWith  (fn_ie_source_id));
 	    rdata = changeWidth (v_ie);
 
-	    if (cfg_verbosity > 1)
-	       $display ("%0d: PLIC.rl_process_rd_req: reading Intr Enable 32 bits from [0x%0h] = 0x%0h",
+	    if (cfg_verbosity > 0)
+	       $display ("%0d: PLIC.rl_process_rd_req: reading Intr Enable 32 bits from source %0d = 0x%0h",
 			 cur_cycle, source_id_base, rdata);
 	 end
 	 else
@@ -300,8 +332,8 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
 	 if (target_id <= fromInteger (n_targets - 1)) begin
 	    rdata = changeWidth (vrg_target_threshold [target_id]);
 
-	    if (cfg_verbosity > 1)
-	       $display ("%0d: PLIC.rl_process_rd_req: reading Threshold for target 0x%0h = 0x%0h",
+	    if (cfg_verbosity > 0)
+	       $display ("%0d: PLIC.rl_process_rd_req: reading Threshold for target %0d = 0x%0h",
 			 cur_cycle, target_id, rdata);
 	 end
 	 else
@@ -311,7 +343,8 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
       // Interrupt service claim by target
       else if ((addr_offset [31:0] & 32'hFFFF_0FFF) == 32'h0020_0004) begin
 	 Bit #(T_wd_target_id)  target_id  = truncate (addr_offset [20:12]);
-	 match { .eip, .max_id } = v_target_outputs [target_id];
+	 match { .max_prio, .max_id } = fn_target_max_prio_and_max_id (target_id);
+	 Bool eip = (max_prio > vrg_target_threshold [target_id]);
 	 if (target_id <= fromInteger (n_targets - 1)) begin
 	    if (vrg_servicing_source [target_id] != 0) begin
 	       $display ("%0d: ERROR: PLIC: target %0d claiming without prior completion",
@@ -328,8 +361,8 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
 		  vrg_servicing_source [target_id] <= truncate (max_id);
 		  rdata = changeWidth (max_id);
 
-		  if (cfg_verbosity > 1)
-		     $display ("%0d: PLIC.rl_process_rd_req: reading Claim for target 0x%0h = 0x%0h",
+		  if (cfg_verbosity > 0)
+		     $display ("%0d: PLIC.rl_process_rd_req: reading Claim for target %0d = 0x%0h",
 			cur_cycle, target_id, rdata);
 	       end
 	    end
@@ -358,7 +391,7 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
 			      ruser: rda.aruser};
       slave_xactor.i_rd_data.enq (rdr);
 
-      if (cfg_verbosity > 0) begin
+      if (cfg_verbosity > 1) begin
 	 $display ("%0d: PLIC.rl_process_rd_req", cur_cycle);
 	 $display ("            ", fshow (rda));
 	 $display ("            ", fshow (rdr));
@@ -374,7 +407,7 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
 
       let wra <- pop_o (slave_xactor.o_wr_addr);
       let wrd <- pop_o (slave_xactor.o_wr_data);
-      if (cfg_verbosity > 0) begin
+      if (cfg_verbosity > 1) begin
 	 $display ("%0d: PLIC.rl_process_wr_req", cur_cycle);
 	 $display ("    ", fshow (wra));
 	 $display ("    ", fshow (wrd));
@@ -401,8 +434,8 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
 	 if ((0 < source_id) && (source_id <= fromInteger (n_sources - 1))) begin
 	    vrg_source_prio [source_id] <= changeWidth (wdata32);
 
-	    if (cfg_verbosity > 1)
-	       $display ("%0d: PLIC.rl_process_wr_req: writing Source Priority 0x%0h = 0x%0h",
+	    if (cfg_verbosity > 0)
+	       $display ("%0d: PLIC.rl_process_wr_req: writing Source Priority: source %0d = 0x%0h",
 			 cur_cycle, source_id, wdata32);
 	 end
 	 else begin
@@ -417,8 +450,8 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
 	 Bit #(T_wd_source_id)  source_id_base = truncate ({ addr_offset [11:0], 5'h0 });
 
 	 if (source_id_base <= fromInteger (n_sources - 1)) begin
-	    if (cfg_verbosity > 1)
-	       $display ("%0d: PLIC.rl_process_wr_req: Ignoring write to Read-only Intr Pending 32 bits from [0x%0h]",
+	    if (cfg_verbosity > 0)
+	       $display ("%0d: PLIC.rl_process_wr_req: Ignoring write to Read-only Intr Pending 32 bits from source %0d",
 			 cur_cycle, source_id_base);
 	 end
 	 else
@@ -440,8 +473,8 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
 		  vvrg_ie [target_id][source_id] <= unpack (wdata32 [k]);
 	    end
 
-	    if (cfg_verbosity > 1)
-	       $display ("%0d: PLIC.rl_process_wr_req: writing Intr Enable 32 bits for target 0x%0d from source [0x%0h] = 0x%0h",
+	    if (cfg_verbosity > 0)
+	       $display ("%0d: PLIC.rl_process_wr_req: writing Intr Enable 32 bits for target %0d from source %0d = 0x%0h",
 			 cur_cycle, target_id, source_id_base, wdata32);
 	 end
 	 else
@@ -454,8 +487,8 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
 	 if (target_id <= fromInteger (n_targets - 1)) begin
 	    vrg_target_threshold [target_id] <= changeWidth (wdata32);
 
-	    if (cfg_verbosity > 1)
-	       $display ("%0d: PLIC.rl_process_wr_req: writing threshold for target [0x%0h] = 0x%0h",
+	    if (cfg_verbosity > 0)
+	       $display ("%0d: PLIC.rl_process_wr_req: writing threshold for target %0d = 0x%0h",
 			 cur_cycle, target_id, wdata32);
 	 end
 	 else
@@ -472,8 +505,8 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
 	    if (vrg_source_busy [source_id]) begin
 	       vrg_source_busy [source_id] <= False;
 	       vrg_servicing_source [target_id] <= 0;
-	       if (cfg_verbosity > 1)
-		  $display ("%0d: PLIC.rl_process_wr_req: writing completion for target [0x%0h] for source 0x%0h",
+	       if (cfg_verbosity > 0)
+		  $display ("%0d: PLIC.rl_process_wr_req: writing completion for target %0d for source 0x%0h",
 		     cur_cycle, target_id, source_id);
 	    end
 	    else begin
@@ -503,7 +536,7 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
 			      buser: wra.awuser};
       slave_xactor.i_wr_resp.enq (wrr);
 
-      if (cfg_verbosity > 0) begin
+      if (cfg_verbosity > 1) begin
 	 $display ("%0d: PLIC.AXI4.rl_process_wr_req", cur_cycle);
 	 $display ("            ", fshow (wra));
 	 $display ("            ", fshow (wrd));
@@ -518,8 +551,13 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
       return interface PLIC_Source_IFC;
 		method Action  m_interrupt_req (Bool set_not_clear);
 		   action
-		      if (! vrg_source_busy [source_id])
+		      if (! vrg_source_busy [source_id]) begin
 			 vrg_source_ip [source_id] <= set_not_clear;
+
+			 if ((cfg_verbosity > 0) && (vrg_source_ip [source_id] != set_not_clear))
+			    $display ("%0d: Changing vrg_source_ip [%0d] to %0d",
+				      cur_cycle, source_id, pack (set_not_clear));
+		      end
 		   endaction
 		endmethod
 	     endinterface;
@@ -531,7 +569,8 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
    function PLIC_Target_IFC  fn_mk_PLIC_Target_IFC (Integer target_id);
       return interface PLIC_Target_IFC;
 		method Bool m_eip;    // external interrupt pending
-		   match { .eip, .max_id } = v_target_outputs [target_id];
+		   match { .max_prio, .max_id } = fn_target_max_prio_and_max_id (fromInteger (target_id));
+		   Bool eip = (max_prio > vrg_target_threshold [target_id]);
 		   return eip;
 		endmethod
 	     endinterface;
@@ -539,6 +578,15 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
 
    // ================================================================
    // INTERFACE
+
+   // Debugging
+   method Action set_verbosity (Bit #(4) verbosity);
+      cfg_verbosity <= verbosity;
+   endmethod
+
+   method Action show_PLIC_state;
+      fa_show_PLIC_state;
+   endmethod
 
    // Reset
    interface server_reset   = toGPServer (f_reset_reqs, f_reset_rsps);

@@ -142,6 +142,8 @@ interface CSR_RegFile_IFC;
    // Interrupts
    (* always_ready, always_enabled *)
    method Action m_external_interrupt_req (Bool set_not_clear);
+
+   (* always_ready, always_enabled *)
    method Action s_external_interrupt_req (Bool set_not_clear);
 
    (* always_ready, always_enabled *)

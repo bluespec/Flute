@@ -1237,7 +1237,8 @@ module mkCore(CLK,
 	       plic$axi4_slave_awregion,
 	       plic$axi4_slave_bid,
 	       plic$axi4_slave_rid,
-	       plic$axi4_slave_wid;
+	       plic$axi4_slave_wid,
+	       plic$set_verbosity_verbosity;
   wire [2 : 0] plic$axi4_slave_arprot,
 	       plic$axi4_slave_arsize,
 	       plic$axi4_slave_awprot,
@@ -1249,6 +1250,8 @@ module mkCore(CLK,
   wire plic$EN_server_reset_request_put,
        plic$EN_server_reset_response_get,
        plic$EN_set_addr_map,
+       plic$EN_set_verbosity,
+       plic$EN_show_PLIC_state,
        plic$RDY_server_reset_request_put,
        plic$RDY_server_reset_response_get,
        plic$axi4_slave_arlock,
@@ -1431,16 +1434,16 @@ module mkCore(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h5050;
-  reg [31 : 0] v__h5256;
-  reg [31 : 0] v__h5556;
-  reg [31 : 0] v__h5044;
-  reg [31 : 0] v__h5250;
-  reg [31 : 0] v__h5550;
+  reg [31 : 0] v__h5060;
+  reg [31 : 0] v__h5266;
+  reg [31 : 0] v__h5566;
+  reg [31 : 0] v__h5054;
+  reg [31 : 0] v__h5260;
+  reg [31 : 0] v__h5560;
   // synopsys translate_on
 
   // remaining internal signals
-  wire near_mem_io_RDY_server_reset_request_put_AND_c_ETC___d9;
+  wire fabric_2x3_RDY_reset_AND_cpu_RDY_hart0_server__ETC___d9;
 
   // action method set_verbosity
   assign RDY_set_verbosity = 1'd1 ;
@@ -2293,6 +2296,7 @@ module mkCore(CLK,
 		     .axi4_slave_wvalid(plic$axi4_slave_wvalid),
 		     .set_addr_map_addr_base(plic$set_addr_map_addr_base),
 		     .set_addr_map_addr_lim(plic$set_addr_map_addr_lim),
+		     .set_verbosity_verbosity(plic$set_verbosity_verbosity),
 		     .v_sources_0_m_interrupt_req_set_not_clear(plic$v_sources_0_m_interrupt_req_set_not_clear),
 		     .v_sources_10_m_interrupt_req_set_not_clear(plic$v_sources_10_m_interrupt_req_set_not_clear),
 		     .v_sources_11_m_interrupt_req_set_not_clear(plic$v_sources_11_m_interrupt_req_set_not_clear),
@@ -2309,9 +2313,13 @@ module mkCore(CLK,
 		     .v_sources_7_m_interrupt_req_set_not_clear(plic$v_sources_7_m_interrupt_req_set_not_clear),
 		     .v_sources_8_m_interrupt_req_set_not_clear(plic$v_sources_8_m_interrupt_req_set_not_clear),
 		     .v_sources_9_m_interrupt_req_set_not_clear(plic$v_sources_9_m_interrupt_req_set_not_clear),
+		     .EN_set_verbosity(plic$EN_set_verbosity),
+		     .EN_show_PLIC_state(plic$EN_show_PLIC_state),
 		     .EN_server_reset_request_put(plic$EN_server_reset_request_put),
 		     .EN_server_reset_response_get(plic$EN_server_reset_response_get),
 		     .EN_set_addr_map(plic$EN_set_addr_map),
+		     .RDY_set_verbosity(),
+		     .RDY_show_PLIC_state(),
 		     .RDY_server_reset_request_put(plic$RDY_server_reset_request_put),
 		     .RDY_server_reset_response_get(plic$RDY_server_reset_response_get),
 		     .RDY_set_addr_map(),
@@ -2510,17 +2518,18 @@ module mkCore(CLK,
 
   // rule RL_rl_cpu_hart0_reset_from_soc_start
   assign CAN_FIRE_RL_rl_cpu_hart0_reset_from_soc_start =
-	     fabric_2x3$RDY_reset && plic$RDY_server_reset_request_put &&
-	     near_mem_io_RDY_server_reset_request_put_AND_c_ETC___d9 ;
+	     near_mem_io$RDY_server_reset_request_put &&
+	     plic$RDY_server_reset_request_put &&
+	     fabric_2x3_RDY_reset_AND_cpu_RDY_hart0_server__ETC___d9 ;
   assign WILL_FIRE_RL_rl_cpu_hart0_reset_from_soc_start =
 	     CAN_FIRE_RL_rl_cpu_hart0_reset_from_soc_start ;
 
   // rule RL_rl_cpu_hart0_reset_from_dm_start
   assign CAN_FIRE_RL_rl_cpu_hart0_reset_from_dm_start =
+	     near_mem_io$RDY_server_reset_request_put &&
+	     plic$RDY_server_reset_request_put &&
 	     debug_module$RDY_hart0_get_reset_req_get &&
 	     fabric_2x3$RDY_reset &&
-	     plic$RDY_server_reset_request_put &&
-	     near_mem_io$RDY_server_reset_request_put &&
 	     cpu$RDY_hart0_server_reset_request_put &&
 	     f_reset_requestor$FULL_N ;
   assign WILL_FIRE_RL_rl_cpu_hart0_reset_from_dm_start =
@@ -2529,8 +2538,8 @@ module mkCore(CLK,
 
   // rule RL_rl_cpu_hart0_reset_complete
   assign CAN_FIRE_RL_rl_cpu_hart0_reset_complete =
-	     plic$RDY_server_reset_response_get &&
 	     near_mem_io$RDY_server_reset_response_get &&
+	     plic$RDY_server_reset_response_get &&
 	     cpu$RDY_hart0_server_reset_response_get &&
 	     f_reset_requestor$EMPTY_N &&
 	     (!f_reset_requestor$D_OUT || f_reset_rsps$FULL_N) ;
@@ -2653,8 +2662,9 @@ module mkCore(CLK,
   // submodule f_reset_reqs
   assign f_reset_reqs$ENQ = EN_cpu_reset_server_request_put ;
   assign f_reset_reqs$DEQ =
-	     fabric_2x3$RDY_reset && plic$RDY_server_reset_request_put &&
-	     near_mem_io_RDY_server_reset_request_put_AND_c_ETC___d9 ;
+	     near_mem_io$RDY_server_reset_request_put &&
+	     plic$RDY_server_reset_request_put &&
+	     fabric_2x3_RDY_reset_AND_cpu_RDY_hart0_server__ETC___d9 ;
   assign f_reset_reqs$CLR = 1'b0 ;
 
   // submodule f_reset_requestor
@@ -2848,6 +2858,7 @@ module mkCore(CLK,
   assign plic$axi4_slave_wvalid = fabric_2x3$v_to_slaves_2_wvalid ;
   assign plic$set_addr_map_addr_base = soc_map$m_plic_addr_base ;
   assign plic$set_addr_map_addr_lim = soc_map$m_plic_addr_lim ;
+  assign plic$set_verbosity_verbosity = 4'h0 ;
   assign plic$v_sources_0_m_interrupt_req_set_not_clear =
 	     core_external_interrupt_sources_0_m_interrupt_req_set_not_clear ;
   assign plic$v_sources_10_m_interrupt_req_set_not_clear =
@@ -2880,6 +2891,8 @@ module mkCore(CLK,
 	     core_external_interrupt_sources_8_m_interrupt_req_set_not_clear ;
   assign plic$v_sources_9_m_interrupt_req_set_not_clear =
 	     core_external_interrupt_sources_9_m_interrupt_req_set_not_clear ;
+  assign plic$EN_set_verbosity = 1'b0 ;
+  assign plic$EN_show_PLIC_state = 1'b0 ;
   assign plic$EN_server_reset_request_put =
 	     WILL_FIRE_RL_rl_cpu_hart0_reset_from_dm_start ||
 	     WILL_FIRE_RL_rl_cpu_hart0_reset_from_soc_start ;
@@ -2893,9 +2906,8 @@ module mkCore(CLK,
   assign soc_map$m_is_near_mem_IO_addr_addr = 64'h0 ;
 
   // remaining internal signals
-  assign near_mem_io_RDY_server_reset_request_put_AND_c_ETC___d9 =
-	     near_mem_io$RDY_server_reset_request_put &&
-	     cpu$RDY_hart0_server_reset_request_put &&
+  assign fabric_2x3_RDY_reset_AND_cpu_RDY_hart0_server__ETC___d9 =
+	     fabric_2x3$RDY_reset && cpu$RDY_hart0_server_reset_request_put &&
 	     f_reset_reqs$EMPTY_N &&
 	     f_reset_requestor$FULL_N ;
 
@@ -2908,33 +2920,33 @@ module mkCore(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_from_soc_start)
 	begin
-	  v__h5050 = $stime;
+	  v__h5060 = $stime;
 	  #0;
 	end
-    v__h5044 = v__h5050 / 32'd10;
+    v__h5054 = v__h5060 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_from_soc_start)
-	$display("%0d: Core.rl_cpu_hart0_reset_from_soc_start", v__h5044);
+	$display("%0d: Core.rl_cpu_hart0_reset_from_soc_start", v__h5054);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_from_dm_start)
 	begin
-	  v__h5256 = $stime;
+	  v__h5266 = $stime;
 	  #0;
 	end
-    v__h5250 = v__h5256 / 32'd10;
+    v__h5260 = v__h5266 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_from_dm_start)
-	$display("%0d: Core.rl_cpu_hart0_reset_from_dm_start", v__h5250);
+	$display("%0d: Core.rl_cpu_hart0_reset_from_dm_start", v__h5260);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_complete)
 	begin
-	  v__h5556 = $stime;
+	  v__h5566 = $stime;
 	  #0;
 	end
-    v__h5550 = v__h5556 / 32'd10;
+    v__h5560 = v__h5566 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_complete)
-	$display("%0d: Core.rl_cpu_hart0_reset_complete", v__h5550);
+	$display("%0d: Core.rl_cpu_hart0_reset_complete", v__h5560);
   end
   // synopsys translate_on
 endmodule  // mkCore
