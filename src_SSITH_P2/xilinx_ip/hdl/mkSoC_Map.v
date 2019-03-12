@@ -290,10 +290,10 @@ module mkSoC_Map(CLK,
   assign m_plic_addr_base = 64'h000000000C000000 ;
 
   // value method m_plic_addr_size
-  assign m_plic_addr_size = 64'h0000000000010000 ;
+  assign m_plic_addr_size = 64'h0000000000400000 ;
 
   // value method m_plic_addr_lim
-  assign m_plic_addr_lim = 64'd201392128 ;
+  assign m_plic_addr_lim = 64'd205520896 ;
 
   // value method m_flash_mem_addr_base
   assign m_flash_mem_addr_base = 64'h0000000040000000 ;
@@ -368,7 +368,7 @@ module mkSoC_Map(CLK,
 	     m_is_IO_addr_addr >= 64'h0000000010000000 &&
 	     m_is_IO_addr_addr < 64'd268500992 ||
 	     m_is_IO_addr_addr >= 64'h000000000C000000 &&
-	     m_is_IO_addr_addr < 64'd201392128 ||
+	     m_is_IO_addr_addr < 64'd205520896 ||
 	     m_is_IO_addr_addr >= 64'h0000000040000000 &&
 	     m_is_IO_addr_addr < 64'd1073807360 ||
 	     m_is_IO_addr_addr >= 64'h0000000062100000 &&

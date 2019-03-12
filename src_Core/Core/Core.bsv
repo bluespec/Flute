@@ -46,11 +46,12 @@ import SoC_Map      :: *;
 import Debug_Module     :: *;
 `endif
 
-import Core_IFC         :: *;
+import Core_IFC          :: *;
 import CPU_IFC           :: *;
 import CPU               :: *;
 import Near_Mem_IO_AXI4  :: *;
 import PLIC              :: *;
+import PLIC_16_2_7       :: *;
 
 `ifdef INCLUDE_TANDEM_VERIF
 import TV_Info   :: *;
@@ -132,6 +133,7 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
       // Remember the requestor, so we can respond to it
       f_reset_requestor.enq (reset_requestor_soc);
 `endif
+      $display ("%0d: Core.rl_cpu_hart0_reset_from_soc_start", cur_cycle);
    endrule
 
 `ifdef INCLUDE_GDB_CONTROL
@@ -146,6 +148,7 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
 
       // Remember the requestor, so we can respond to it
       f_reset_requestor.enq (reset_requestor_dm);
+      $display ("%0d: Core.rl_cpu_hart0_reset_from_dm_start", cur_cycle);
    endrule
 `endif
 
@@ -157,12 +160,17 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
       near_mem_io.set_addr_map (zeroExtend (soc_map.m_near_mem_io_addr_base),
 				zeroExtend (soc_map.m_near_mem_io_addr_lim));
 
+      plic.set_addr_map (zeroExtend (soc_map.m_plic_addr_base),
+			 zeroExtend (soc_map.m_plic_addr_lim));
+
       Bit #(1) requestor = reset_requestor_soc;
 `ifdef INCLUDE_GDB_CONTROL
       requestor <- pop (f_reset_requestor);
 `endif
       if (requestor == reset_requestor_soc)
 	 f_reset_rsps.enq (?);
+
+      $display ("%0d: Core.rl_cpu_hart0_reset_complete", cur_cycle);
    endrule
 
    // ================================================================
@@ -314,21 +322,31 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
    rule rl_relay_sw_interrupts;    // from Near_Mem_IO (CLINT)
       Bool x <- near_mem_io.get_sw_interrupt_req.get;
       cpu.software_interrupt_req (x);
-      // $display ("%0d: CPU.rl_relay_sw_interrupts: relaying: %d", cur_cycle, pack (x));
+      // $display ("%0d: Core.rl_relay_sw_interrupts: relaying: %d", cur_cycle, pack (x));
    endrule
 
    rule rl_relay_timer_interrupts;    // from Near_Mem_IO (CLINT)
       Bool x <- near_mem_io.get_timer_interrupt_req.get;
       cpu.timer_interrupt_req (x);
 
-      // $display ("%0d: CPU.rl_relay_timer_interrupts: relaying: %d", cur_cycle, pack (x));
+      // $display ("%0d: Core.rl_relay_timer_interrupts: relaying: %d", cur_cycle, pack (x));
    endrule
 
    rule rl_relay_external_interrupts;    // from PLIC
-      Bool x = plic.v_targets [0].m_eip;
-      cpu.external_interrupt_req (x);
+      Bool meip = plic.v_targets [0].m_eip;
+      cpu.m_external_interrupt_req (meip);
 
-      // $display ("%0d: CPU.rl_relay_external_interrupts: relaying: %d", cur_cycle, pack (x));
+      Bool seip = plic.v_targets [1].m_eip;
+      cpu.s_external_interrupt_req (seip);
+
+      // $display ("%0d: Core.rl_relay_external_interrupts: relaying: %d", cur_cycle, pack (x));
+   endrule
+
+   // TODO: fixup.  Need to combine NMIs from multiple sources (cache, fabric, devices, ...)
+   rule rl_relay_non_maskable_interrupt;
+      cpu.non_maskable_interrupt_req (False);
+
+      // $display ("%0d: Core.rl_relay_non_maskable_interrupts: relaying: %d", cur_cycle, pack (x));
    endrule
 
    // ================================================================
@@ -455,17 +473,6 @@ module mkFabric_2x3 (Fabric_2x3_IFC);
 
    return fabric;
 endmodule: mkFabric_2x3
-
-// ================================================================
-// PLIC for this core
-
-typedef  PLIC_IFC #(N_External_Interrupt_Sources, 2, 7)  PLIC_IFC_16_2_7;
-
-(* synthesize *)
-module mkPLIC_16_2_7 (PLIC_IFC_16_2_7);
-   let m <- mkPLIC;
-   return m;
-endmodule
 
 // ================================================================
 

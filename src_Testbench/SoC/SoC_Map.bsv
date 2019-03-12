@@ -110,8 +110,8 @@ module mkSoC_Map (SoC_Map_IFC);
    // ----------------------------------------------------------------
    // PLIC
 
-   Fabric_Addr plic_addr_base = 'h_1100_0000;
-   Fabric_Addr plic_addr_size = 'h_0010_0000;    // 1M
+   Fabric_Addr plic_addr_base = 'h_0C00_0000;
+   Fabric_Addr plic_addr_size = 'h_0040_0000;    // 4M
    Fabric_Addr plic_addr_lim  = plic_addr_base + plic_addr_size;
 
    function Bool fn_is_plic_addr (Fabric_Addr addr);

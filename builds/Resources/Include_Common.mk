@@ -43,8 +43,8 @@ BSC_PATH = -p $(CORE_DIRS):$(TESTBENCH_DIRS):+
 # ----------------
 # Top-level file and module
 
-TOPFILE   = $(REPO)/src_Testbench/Top/Top_HW_Side.bsv
-TOPMODULE = mkTop_HW_Side
+TOPFILE   ?= $(REPO)/src_Testbench/Top/Top_HW_Side.bsv
+TOPMODULE ?= mkTop_HW_Side
 
 # ================================================================
 # bsc compilation flags

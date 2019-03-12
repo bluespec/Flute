@@ -1801,9 +1801,20 @@ module mkCPU (CPU_IFC);
    // ----------------
    // External interrupts
 
-   method Action  external_interrupt_req (x) = csr_regfile.external_interrupt_req (x);
+   method Action  m_external_interrupt_req (x) = csr_regfile.m_external_interrupt_req (x);
+   method Action  s_external_interrupt_req (x) = csr_regfile.s_external_interrupt_req (x);
+
+   // ----------------
+   // Software and timer interrupts (from Near_Mem_IO/CLINT)
+
    method Action  software_interrupt_req (x) = csr_regfile.software_interrupt_req (x);
    method Action  timer_interrupt_req    (x) = csr_regfile.timer_interrupt_req    (x);
+
+   // ----------------
+   // Non-maskable interrupt
+
+   // TODO: fixup: NMIs should send CPU to an NMI vector (TBD in SoC_Map)
+   method Action  non_maskable_interrupt_req (Bool set_not_clear) = noAction;
 
    // ----------------
    // For tracing

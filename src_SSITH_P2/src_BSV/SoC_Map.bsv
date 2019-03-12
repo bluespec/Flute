@@ -115,6 +115,17 @@ endinterface
 module mkSoC_Map (SoC_Map_IFC);
 
    // ----------------------------------------------------------------
+   // PLIC
+
+   Fabric_Addr plic_addr_base = 'h_0C00_0000;
+   Fabric_Addr plic_addr_size = 'h_0040_0000;    // 4M
+   Fabric_Addr plic_addr_lim  = plic_addr_base + plic_addr_size;
+
+   function Bool fn_is_plic_addr (Fabric_Addr addr);
+      return ((plic_addr_base <= addr) && (addr < plic_addr_lim));
+   endfunction
+
+   // ----------------------------------------------------------------
    // Near_Mem_IO (CLINT)
 
    Fabric_Addr near_mem_io_addr_base = 'h_1000_0000;
@@ -123,17 +134,6 @@ module mkSoC_Map (SoC_Map_IFC);
 
    function Bool fn_is_near_mem_io_addr (Fabric_Addr addr);
       return ((near_mem_io_addr_base <= addr) && (addr < near_mem_io_addr_lim));
-   endfunction
-
-   // ----------------------------------------------------------------
-   // PLIC
-
-   Fabric_Addr plic_addr_base = 'h_0C00_0000;
-   Fabric_Addr plic_addr_size = 'h_0001_0000;    // 64K
-   Fabric_Addr plic_addr_lim  = plic_addr_base + plic_addr_size;
-
-   function Bool fn_is_plic_addr (Fabric_Addr addr);
-      return ((plic_addr_base <= addr) && (addr < plic_addr_lim));
    endfunction
 
    // ----------------------------------------------------------------

@@ -38,16 +38,28 @@ interface CPU_IFC;
    interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User)  dmem_master;
 
    // ----------------
-   // External, software and timer interrupts
+   // External interrupts
 
    (* always_ready, always_enabled *)
-   method Action  external_interrupt_req (Bool set_not_clear);
+   method Action  m_external_interrupt_req (Bool set_not_clear);
+
+   (* always_ready, always_enabled *)
+   method Action  s_external_interrupt_req (Bool set_not_clear);
+
+   // ----------------
+   // Software and timer interrupts (from Near_Mem_IO/CLINT)
 
    (* always_ready, always_enabled *)
    method Action  software_interrupt_req (Bool set_not_clear);
 
    (* always_ready, always_enabled *)
    method Action  timer_interrupt_req    (Bool set_not_clear);
+
+   // ----------------
+   // Non-maskable interrupt
+
+   (* always_ready, always_enabled *)
+   method Action  non_maskable_interrupt_req (Bool set_not_clear);
 
    // ----------------
    // Set core's verbosity

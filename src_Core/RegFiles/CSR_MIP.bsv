@@ -51,9 +51,15 @@ interface CSR_MIP_IFC;
 `endif
 
    (* always_ready, always_enabled *)
-   method Action external_interrupt_req (Bool req);
+   method Action m_external_interrupt_req (Bool req);
 
+   (* always_ready, always_enabled *)
+   method Action s_external_interrupt_req (Bool req);
+
+   (* always_ready, always_enabled *)
    method Action software_interrupt_req (Bool req);
+
+   (* always_ready, always_enabled *)
    method Action timer_interrupt_req (Bool req);
 endinterface
 
@@ -161,8 +167,12 @@ module mkCSR_MIP (CSR_MIP_IFC);
    endmethod
 `endif
 
-   method Action external_interrupt_req (Bool req);
+   method Action m_external_interrupt_req (Bool req);
       rg_meip <= pack (req);
+   endmethod
+
+   method Action s_external_interrupt_req (Bool req);
+      rg_seip <= pack (req);
    endmethod
 
    method Action software_interrupt_req (Bool req);
