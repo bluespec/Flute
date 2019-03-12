@@ -983,10 +983,10 @@ module mkNear_Mem(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h1756;
-  reg [31 : 0] v__h1907;
-  reg [31 : 0] v__h1750;
-  reg [31 : 0] v__h1901;
+  reg [31 : 0] v__h1783;
+  reg [31 : 0] v__h1934;
+  reg [31 : 0] v__h1777;
+  reg [31 : 0] v__h1928;
   // synopsys translate_on
 
   // remaining internal signals
@@ -1483,9 +1483,12 @@ module mkNear_Mem(CLK,
 		    .m_boot_rom_addr_base(),
 		    .m_boot_rom_addr_size(),
 		    .m_boot_rom_addr_lim(),
-		    .m_ddr4_0_addr_base(),
-		    .m_ddr4_0_addr_size(),
-		    .m_ddr4_0_addr_lim(),
+		    .m_ddr4_0_uncached_addr_base(),
+		    .m_ddr4_0_uncached_addr_size(),
+		    .m_ddr4_0_uncached_addr_lim(),
+		    .m_ddr4_0_cached_addr_base(),
+		    .m_ddr4_0_cached_addr_size(),
+		    .m_ddr4_0_cached_addr_lim(),
 		    .m_is_mem_addr(),
 		    .m_is_IO_addr(),
 		    .m_is_near_mem_IO_addr(),
@@ -1650,23 +1653,23 @@ module mkNear_Mem(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset && NOT_cfg_verbosity_read_ULE_1___d9)
 	begin
-	  v__h1756 = $stime;
+	  v__h1783 = $stime;
 	  #0;
 	end
-    v__h1750 = v__h1756 / 32'd10;
+    v__h1777 = v__h1783 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset && NOT_cfg_verbosity_read_ULE_1___d9)
-	$display("%0d: Near_Mem.rl_reset", v__h1750);
+	$display("%0d: Near_Mem.rl_reset", v__h1777);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset_complete && NOT_cfg_verbosity_read_ULE_1___d9)
 	begin
-	  v__h1907 = $stime;
+	  v__h1934 = $stime;
 	  #0;
 	end
-    v__h1901 = v__h1907 / 32'd10;
+    v__h1928 = v__h1934 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset_complete && NOT_cfg_verbosity_read_ULE_1___d9)
-	$display("%0d: Near_Mem.rl_reset_complete", v__h1901);
+	$display("%0d: Near_Mem.rl_reset_complete", v__h1928);
   end
   // synopsys translate_on
 endmodule  // mkNear_Mem

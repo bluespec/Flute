@@ -30,9 +30,12 @@
 // m_boot_rom_addr_base           O    64 const
 // m_boot_rom_addr_size           O    64 const
 // m_boot_rom_addr_lim            O    64 const
-// m_ddr4_0_addr_base             O    64 const
-// m_ddr4_0_addr_size             O    64 const
-// m_ddr4_0_addr_lim              O    64 const
+// m_ddr4_0_uncached_addr_base    O    64 const
+// m_ddr4_0_uncached_addr_size    O    64 const
+// m_ddr4_0_uncached_addr_lim     O    64 const
+// m_ddr4_0_cached_addr_base      O    64 const
+// m_ddr4_0_cached_addr_size      O    64 const
+// m_ddr4_0_cached_addr_lim       O    64 const
 // m_is_mem_addr                  O     1
 // m_is_IO_addr                   O     1
 // m_is_near_mem_IO_addr          O     1
@@ -116,11 +119,17 @@ module mkSoC_Map(CLK,
 
 		 m_boot_rom_addr_lim,
 
-		 m_ddr4_0_addr_base,
+		 m_ddr4_0_uncached_addr_base,
 
-		 m_ddr4_0_addr_size,
+		 m_ddr4_0_uncached_addr_size,
 
-		 m_ddr4_0_addr_lim,
+		 m_ddr4_0_uncached_addr_lim,
+
+		 m_ddr4_0_cached_addr_base,
+
+		 m_ddr4_0_cached_addr_size,
+
+		 m_ddr4_0_cached_addr_lim,
 
 		 m_is_mem_addr_addr,
 		 m_is_mem_addr,
@@ -211,14 +220,23 @@ module mkSoC_Map(CLK,
   // value method m_boot_rom_addr_lim
   output [63 : 0] m_boot_rom_addr_lim;
 
-  // value method m_ddr4_0_addr_base
-  output [63 : 0] m_ddr4_0_addr_base;
+  // value method m_ddr4_0_uncached_addr_base
+  output [63 : 0] m_ddr4_0_uncached_addr_base;
 
-  // value method m_ddr4_0_addr_size
-  output [63 : 0] m_ddr4_0_addr_size;
+  // value method m_ddr4_0_uncached_addr_size
+  output [63 : 0] m_ddr4_0_uncached_addr_size;
 
-  // value method m_ddr4_0_addr_lim
-  output [63 : 0] m_ddr4_0_addr_lim;
+  // value method m_ddr4_0_uncached_addr_lim
+  output [63 : 0] m_ddr4_0_uncached_addr_lim;
+
+  // value method m_ddr4_0_cached_addr_base
+  output [63 : 0] m_ddr4_0_cached_addr_base;
+
+  // value method m_ddr4_0_cached_addr_size
+  output [63 : 0] m_ddr4_0_cached_addr_size;
+
+  // value method m_ddr4_0_cached_addr_lim
+  output [63 : 0] m_ddr4_0_cached_addr_lim;
 
   // value method m_is_mem_addr
   input  [63 : 0] m_is_mem_addr_addr;
@@ -245,9 +263,12 @@ module mkSoC_Map(CLK,
   wire [63 : 0] m_boot_rom_addr_base,
 		m_boot_rom_addr_lim,
 		m_boot_rom_addr_size,
-		m_ddr4_0_addr_base,
-		m_ddr4_0_addr_lim,
-		m_ddr4_0_addr_size,
+		m_ddr4_0_cached_addr_base,
+		m_ddr4_0_cached_addr_lim,
+		m_ddr4_0_cached_addr_size,
+		m_ddr4_0_uncached_addr_base,
+		m_ddr4_0_uncached_addr_lim,
+		m_ddr4_0_uncached_addr_size,
 		m_dma_0_addr_base,
 		m_dma_0_addr_lim,
 		m_dma_0_addr_size,
@@ -349,14 +370,23 @@ module mkSoC_Map(CLK,
   // value method m_boot_rom_addr_lim
   assign m_boot_rom_addr_lim = 64'd1879052288 ;
 
-  // value method m_ddr4_0_addr_base
-  assign m_ddr4_0_addr_base = 64'h0000000080000000 ;
+  // value method m_ddr4_0_uncached_addr_base
+  assign m_ddr4_0_uncached_addr_base = 64'h0000000080000000 ;
 
-  // value method m_ddr4_0_addr_size
-  assign m_ddr4_0_addr_size = 64'h0000000040000000 ;
+  // value method m_ddr4_0_uncached_addr_size
+  assign m_ddr4_0_uncached_addr_size = 64'h0000000040000000 ;
 
-  // value method m_ddr4_0_addr_lim
-  assign m_ddr4_0_addr_lim = 64'h00000000C0000000 ;
+  // value method m_ddr4_0_uncached_addr_lim
+  assign m_ddr4_0_uncached_addr_lim = 64'h00000000C0000000 ;
+
+  // value method m_ddr4_0_cached_addr_base
+  assign m_ddr4_0_cached_addr_base = 64'h0000000080000000 ;
+
+  // value method m_ddr4_0_cached_addr_size
+  assign m_ddr4_0_cached_addr_size = 64'h0000000040000000 ;
+
+  // value method m_ddr4_0_cached_addr_lim
+  assign m_ddr4_0_cached_addr_lim = 64'h00000000C0000000 ;
 
   // value method m_is_mem_addr
   assign m_is_mem_addr =

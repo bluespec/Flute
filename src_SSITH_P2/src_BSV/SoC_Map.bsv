@@ -91,9 +91,13 @@ interface SoC_Map_IFC;
    (* always_ready *)   method  Fabric_Addr  m_boot_rom_addr_size;
    (* always_ready *)   method  Fabric_Addr  m_boot_rom_addr_lim;
 
-   (* always_ready *)   method  Fabric_Addr  m_ddr4_0_addr_base;
-   (* always_ready *)   method  Fabric_Addr  m_ddr4_0_addr_size;
-   (* always_ready *)   method  Fabric_Addr  m_ddr4_0_addr_lim;
+   (* always_ready *)   method  Fabric_Addr  m_ddr4_0_uncached_addr_base;
+   (* always_ready *)   method  Fabric_Addr  m_ddr4_0_uncached_addr_size;
+   (* always_ready *)   method  Fabric_Addr  m_ddr4_0_uncached_addr_lim;
+
+   (* always_ready *)   method  Fabric_Addr  m_ddr4_0_cached_addr_base;
+   (* always_ready *)   method  Fabric_Addr  m_ddr4_0_cached_addr_size;
+   (* always_ready *)   method  Fabric_Addr  m_ddr4_0_cached_addr_lim;
 
    (* always_ready *)
    method  Bool  m_is_mem_addr (Fabric_Addr addr);
@@ -231,14 +235,25 @@ module mkSoC_Map (SoC_Map_IFC);
    endfunction
 
    // ----------------------------------------------------------------
-   // DDR memory 0
+   // DDR memory 0 uncached
 
-   Fabric_Addr ddr4_0_addr_base = 'h_8000_0000;
-   Fabric_Addr ddr4_0_addr_size = 'h_4000_0000;    // 1G
-   Fabric_Addr ddr4_0_addr_lim  = ddr4_0_addr_base + ddr4_0_addr_size;
+   Fabric_Addr ddr4_0_uncached_addr_base = 'h_8000_0000;
+   Fabric_Addr ddr4_0_uncached_addr_size = 'h_4000_0000;    // 1G
+   Fabric_Addr ddr4_0_uncached_addr_lim  = ddr4_0_uncached_addr_base + ddr4_0_uncached_addr_size;
 
-   function Bool fn_is_ddr4_0_addr (Fabric_Addr addr);
-      return ((ddr4_0_addr_base <= addr) && (addr < ddr4_0_addr_lim));
+   function Bool fn_is_ddr4_0_uncached_addr (Fabric_Addr addr);
+      return ((ddr4_0_uncached_addr_base <= addr) && (addr < ddr4_0_uncached_addr_lim));
+   endfunction
+
+   // ----------------------------------------------------------------
+   // DDR memory 0 cached
+
+   Fabric_Addr ddr4_0_cached_addr_base = 'h_C000_0000;
+   Fabric_Addr ddr4_0_cached_addr_size = 'h_4000_0000;    // 1G
+   Fabric_Addr ddr4_0_cached_addr_lim  = ddr4_0_cached_addr_base + ddr4_0_cached_addr_size;
+
+   function Bool fn_is_ddr4_0_cached_addr (Fabric_Addr addr);
+      return ((ddr4_0_cached_addr_base <= addr) && (addr < ddr4_0_cached_addr_lim));
    endfunction
 
    // ----------------------------------------------------------------
@@ -247,7 +262,7 @@ module mkSoC_Map (SoC_Map_IFC);
    // (Caches needs this information to cache these addresses.)
 
    function Bool fn_is_mem_addr (Fabric_Addr addr);
-      return (   fn_is_ddr4_0_addr (addr)
+      return (   fn_is_ddr4_0_cached_addr (addr)
 	      );
    endfunction
 
@@ -324,9 +339,13 @@ module mkSoC_Map (SoC_Map_IFC);
    method  Fabric_Addr  m_boot_rom_addr_size = boot_rom_addr_size;
    method  Fabric_Addr  m_boot_rom_addr_lim  = boot_rom_addr_lim;
 
-   method  Fabric_Addr  m_ddr4_0_addr_base = ddr4_0_addr_base;
-   method  Fabric_Addr  m_ddr4_0_addr_size = ddr4_0_addr_size;
-   method  Fabric_Addr  m_ddr4_0_addr_lim  = ddr4_0_addr_lim;
+   method  Fabric_Addr  m_ddr4_0_uncached_addr_base = ddr4_0_uncached_addr_base;
+   method  Fabric_Addr  m_ddr4_0_uncached_addr_size = ddr4_0_uncached_addr_size;
+   method  Fabric_Addr  m_ddr4_0_uncached_addr_lim  = ddr4_0_uncached_addr_lim;
+
+   method  Fabric_Addr  m_ddr4_0_cached_addr_base = ddr4_0_cached_addr_base;
+   method  Fabric_Addr  m_ddr4_0_cached_addr_size = ddr4_0_cached_addr_size;
+   method  Fabric_Addr  m_ddr4_0_cached_addr_lim  = ddr4_0_cached_addr_lim;
 
    method  Bool  m_is_mem_addr (Fabric_Addr addr) = fn_is_mem_addr (addr);
 
