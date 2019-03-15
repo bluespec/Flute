@@ -686,6 +686,7 @@ function ALU_Outputs fv_LD (ALU_Inputs inputs);
 `endif
 
    // Normal trace output (if no trap)
+`ifdef ISA_F
    if (alu_outputs.rd_in_fpr)
       alu_outputs.trace_data = mkTrace_F_LOAD (fall_through_pc (inputs),
 					       fv_trace_isize (inputs),
@@ -694,6 +695,7 @@ function ALU_Outputs fv_LD (ALU_Inputs inputs);
 					       ?,
 					       eaddr);
    else
+`endif
       alu_outputs.trace_data = mkTrace_I_LOAD (fall_through_pc (inputs),
 					       fv_trace_isize (inputs),
 					       fv_trace_instr (inputs),
