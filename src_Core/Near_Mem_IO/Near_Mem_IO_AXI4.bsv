@@ -99,7 +99,7 @@ endinterface
 module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
 
    // Verbosity: 0: quiet; 1: reset; 2: timer interrupts, all reads and writes
-   Reg #(Bit #(4)) cfg_verbosity <- mkConfigReg (1);
+   Reg #(Bit #(4)) cfg_verbosity <- mkConfigReg (0);
 
    Reg #(Module_State) rg_state     <- mkReg (MODULE_STATE_START);
 
@@ -232,13 +232,21 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
 	 // MSIPH
 	 rdata = 0;
 
-      else if (byte_addr == 'h_4004)
+      else if (byte_addr == 'h_4004) begin
 	 // MTIMECMPH
-	 rdata = zeroExtend (crg_timecmp [0] [63:32]);    // extends for 64b fabrics
+	 Bit #(64) x64 = crg_timecmp [0];
+	 if (valueOf (Wd_Data) == 32)
+	    x64 = { 0, x64 [63:32] };
+	 rdata = zeroExtend (x64);    // extends for 64b fabrics
+      end
 
-      else if (byte_addr == 'h_BFFC)
+      else if (byte_addr == 'h_BFFC) begin
 	 // MTIMEH
-	 rdata = zeroExtend (crg_time    [0] [63:32]);    // extends for 64b fabrics
+	 Bit #(64) x64 = crg_time [0];
+	 if (valueOf (Wd_Data) == 32)
+	    x64 = { 0, x64 [63:32] };
+	 rdata = zeroExtend (x64);    // extends for 64b fabrics
+      end
 
       else
 	 rresp = axi4_resp_decerr;
@@ -336,16 +344,21 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
       end
 
       // The following ALIGN4B writes are only needed for 32b fabrics
-      else if (byte_addr == 'h_0004)
+      else if (byte_addr == 'h_0004) begin
 	 // MSIPH
-	 noAction;
+	 noAction;    // upper 32 bits wired to 0
+      end
 
       else if (byte_addr == 'h_4004) begin
 	 // MTIMECMPH
 	 Bit #(64) old_timecmp = crg_timecmp [1];
-	 Bit #(64) new_timecmp = fn_update_strobed_bytes (old_timecmp,
-							  { wdata [31:0], 32'h0 },
-							  { wstrb [3:0], 4'h0 });
+	 Bit #(64) x64      = zeroExtend (wdata);
+	 Bit #(8)  x64_strb = zeroExtend (wstrb);
+	 if (valueOf (Wd_Data) == 32) begin
+	    x64      = { x64 [31:0], 0 };
+	    x64_strb = { x64_strb [3:0], 0 };
+	 end
+	 Bit #(64) new_timecmp = fn_update_strobed_bytes (old_timecmp, x64, x64_strb);
 	 crg_timecmp [1] <= new_timecmp;
 
 	 if (cfg_verbosity > 1) begin
@@ -360,9 +373,13 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
       else if (byte_addr == 'h_BFFC) begin
 	 // MTIMEH
 	 Bit #(64) old_time = crg_time [1];
-	 Bit #(64) new_time = fn_update_strobed_bytes (old_time,
-						       { wdata [31:0], 32'h0 },
-						       { wstrb [3:0], 4'h0 });
+	 Bit #(64) x64      = zeroExtend (wdata);
+	 Bit #(8)  x64_strb = zeroExtend (wstrb);
+	 if (valueOf (Wd_Data) == 32) begin
+	    x64      = { x64 [31:0], 0 };
+	    x64_strb = { x64_strb [3:0], 0 };
+	 end
+	 Bit #(64) new_time = fn_update_strobed_bytes (old_time, x64, x64_strb);
 	 crg_time [1] <= new_time;
 
 	 if (cfg_verbosity > 1) begin
