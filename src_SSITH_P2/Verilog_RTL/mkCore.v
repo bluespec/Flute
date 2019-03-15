@@ -2531,8 +2531,8 @@ module mkCore(CLK,
   assign CAN_FIRE_RL_rl_cpu_hart0_reset_from_dm_start =
 	     near_mem_io$RDY_server_reset_request_put &&
 	     plic$RDY_server_reset_request_put &&
-	     fabric_2x3$RDY_reset &&
 	     debug_module$RDY_hart0_get_reset_req_get &&
+	     fabric_2x3$RDY_reset &&
 	     cpu$RDY_hart0_server_reset_request_put &&
 	     f_reset_requestor$FULL_N ;
   assign WILL_FIRE_RL_rl_cpu_hart0_reset_from_dm_start =
