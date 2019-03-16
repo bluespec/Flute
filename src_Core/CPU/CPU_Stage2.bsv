@@ -284,36 +284,40 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 	    data_to_stage3.rd_val   = result;
 `endif
 
-            // Update the bypass channel
+            // Update the bypass channel, if not trapping (NONPIPE)
 	    let bypass = bypass_base;
-
 `ifdef ISA_F
             // In a system with FD, the LD result may be meant for FPR or GPR
             // Check before updating the appropriate bypass channel
-            let upd_fpr             = rg_stage2.rd_in_fpr;
-	    let fbypass             = fbypass_base;
-            data_to_stage3.rd_in_fpr= upd_fpr;
-
-            // Bypassing FPR value. We are not using dcache.word64 or result
-            // here as nanboxing has been taken care of in the data being sent
-            // to stage3
-            if (upd_fpr) begin
-	       fbypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
-	       fbypass.rd_val       = data_to_stage3.rd_val;
-            end
-
-            // Bypassing GPR value in a FD system
-            else if (rg_stage2.rd != 0) begin    // TODO: is this test necessary?
-	       bypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
-	       bypass.rd_val       = result;
-	    end
-`else
-            // Bypassing GPR value in a non-FD system. LD result meant for GPR
-	    if (rg_stage2.rd != 0) begin    // TODO: is this test necessary?
-	       bypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
-	       bypass.rd_val       = result;
-	    end
+            let upd_fpr = rg_stage2.rd_in_fpr;
+	    let fbypass = fbypass_base;
 `endif
+
+	    if (ostatus != OSTATUS_NONPIPE) begin
+`ifdef ISA_F
+               data_to_stage3.rd_in_fpr= upd_fpr;
+
+               // Bypassing FPR value. We are not using dcache.word64 or result
+               // here as nanboxing has been taken care of in the data being sent
+               // to stage3
+               if (upd_fpr) begin
+		  fbypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
+		  fbypass.rd_val       = data_to_stage3.rd_val;
+               end
+
+               // Bypassing GPR value in a FD system
+               else if (rg_stage2.rd != 0) begin    // TODO: is this test necessary?
+		  bypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
+		  bypass.rd_val       = result;
+	       end
+`else
+               // Bypassing GPR value in a non-FD system. LD result meant for GPR
+	       if (rg_stage2.rd != 0) begin    // TODO: is this test necessary?
+		  bypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
+		  bypass.rd_val       = result;
+	       end
+`endif
+	    end
 
 	    let trace_data   = ?;
 `ifdef INCLUDE_TANDEM_VERIF

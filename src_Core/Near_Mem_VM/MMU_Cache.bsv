@@ -891,7 +891,7 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
 	 rg_state <= PTW_START;
       end
 
-      // ---- TLB translation excepion
+      // ---- TLB translation exception
       else if (vm_xlate_result.outcome == VM_XLATE_EXCEPTION) begin
 	 rg_state <= MODULE_EXCEPTION_RSP;
 	 rg_exc_code <= vm_xlate_result.exc_code;
@@ -1551,7 +1551,7 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
 	 end
 
 	 if (cfg_verbosity > 2) begin
-	    $display ("        Updating Cache word64_set 0x%0x, word64_in_cline %0d) old => new",
+	    $display ("        Updating Cache word64_set 0x%0h, word64_in_cline %0d) old => new",
 		      rg_word64_set_in_cache, word64_in_cline);
 
 	    fa_display_word64_set (cset_in_cache, word64_in_cline, word64_set);

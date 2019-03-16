@@ -251,13 +251,13 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
 	 // Compute MTVAL in case of traps
 	 let tval = 0;
 	 if (alu_outputs.exc_code == exc_code_ILLEGAL_INSTRUCTION)
-	    tval = rg_stage_input.is_i32_not_i16 ?
-	    zeroExtend (rg_stage_input.instr) :
-	    zeroExtend (rg_stage_input.instr_C);    // The instruction
+	    tval = (rg_stage_input.is_i32_not_i16
+		    ? zeroExtend (rg_stage_input.instr)
+		    : zeroExtend (rg_stage_input.instr_C));    // The instruction
 	 else if (alu_outputs.exc_code == exc_code_INSTR_ADDR_MISALIGNED)
-	    tval = alu_outputs.addr;                     // The branch target pc
+	    tval = alu_outputs.addr;                           // The branch target pc
 	 else if (alu_outputs.exc_code == exc_code_BREAKPOINT)
-	    tval = rg_stage_input.pc;                    // The faulting virtual address
+	    tval = rg_stage_input.pc;                          // The faulting virtual address
 
 	 let trap_info = Trap_Info {epc:      rg_stage_input.pc,
 				    exc_code: alu_outputs.exc_code,
@@ -298,7 +298,7 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
    method Action enq (Data_StageD_to_Stage1  data);
       rg_stage_input <= data;
       if (verbosity > 1)
-	 $display ("    CPU_Stage1.enq: 0x%08x", data.pc);
+	 $display ("    CPU_Stage1.enq: 0x%08h", data.pc);
    endmethod
 
    method Action set_full (Bool full);

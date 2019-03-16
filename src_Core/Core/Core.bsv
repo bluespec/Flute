@@ -7,7 +7,6 @@ package Core;
 //     Core_IFC
 //     mkCore #(Core_IFC)
 //     mkFabric_2x3    -- specialized AXI4 fabric used inside this core
-//     mkPLIC_16_2_7   -- specialized PLIC used inside this core
 //
 // mkCore instantiates:
 //     - mkCPU (the RISC-V CPU)
@@ -80,7 +79,7 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
    // The CPU
    CPU_IFC  cpu <- mkCPU;
 
-   // A 2x3 fabric for connecting {CPU, Debug_Module, External} to {Fabric, Near_Mem_IO, PLIC}
+   // A 2x3 fabric for connecting {CPU, Debug_Module} to {Fabric, Near_Mem_IO, PLIC}
    Fabric_2x3_IFC  fabric_2x3 <- mkFabric_2x3;
 
    // Near_Mem_IO
@@ -261,9 +260,8 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
    // END SECTION: GDB and TV
 `else
    // for ifdef INCLUDE_TANDEM_VERIF
-   // BEGIN SECTION: GDB and no TV
    // ----------------------------------------------------------------
-   // DM present, no TV
+   // BEGIN SECTION: GDB and no TV
 
    // Connect DM's GPR interface directly to CPU
    mkConnection (debug_module.hart0_gpr_mem_client, cpu.hart0_gpr_mem_server);
@@ -292,10 +290,8 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
    dm_master_local = dummy_AXI4_Master_ifc;
 
 `ifdef INCLUDE_TANDEM_VERIF
-   // BEGIN SECTION: no GDB, TV
-
    // ----------------------------------------------------------------
-   // TV present, no DM
+   // BEGIN SECTION: no GDB, TV
 
    // Connect CPU's TV out directly to TV encoder
    mkConnection (cpu.trace_data_out, tv_encode.trace_data_in);
@@ -378,10 +374,10 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
 
    interface core_external_interrupt_sources = plic.v_sources;
 
-`ifdef INCLUDE_TANDEM_VERIF
-   // ----------------
+   // ----------------------------------------------------------------
    // Optional TV interface
 
+`ifdef INCLUDE_TANDEM_VERIF
    interface Get tv_verifier_info_get;
       method ActionValue #(Info_CPU_to_Verifier) get();
          match { .n, .v } <- tv_encode.tv_vb_out.get;
@@ -390,10 +386,10 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
    endinterface
 `endif
 
-`ifdef INCLUDE_GDB_CONTROL
    // ----------------------------------------------------------------
    // Optional DM interfaces
 
+`ifdef INCLUDE_GDB_CONTROL
    // ----------------
    // DMI (Debug Module Interface) facing remote debugger
 

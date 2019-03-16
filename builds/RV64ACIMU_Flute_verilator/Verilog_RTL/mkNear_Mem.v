@@ -83,21 +83,6 @@
 // RDY_server_fence_request_put   O     1 reg
 // RDY_server_fence_response_get  O     1
 // RDY_sfence_vma                 O     1 const
-// get_timer_interrupt_req_get    O     1 reg
-// RDY_get_timer_interrupt_req_get  O     1 reg
-// get_sw_interrupt_req_get       O     1 reg
-// RDY_get_sw_interrupt_req_get   O     1 reg
-// near_mem_slave_awready         O     1 const
-// near_mem_slave_wready          O     1 const
-// near_mem_slave_bvalid          O     1 const
-// near_mem_slave_bid             O     4 const
-// near_mem_slave_bresp           O     2 const
-// near_mem_slave_arready         O     1 const
-// near_mem_slave_rvalid          O     1 const
-// near_mem_slave_rid             O     4 const
-// near_mem_slave_rdata           O    64 const
-// near_mem_slave_rresp           O     2 const
-// near_mem_slave_rlast           O     1 const
 // CLK                            I     1 clock
 // RST_N                          I     1 reset
 // imem_req_f3                    I     3
@@ -138,35 +123,6 @@
 // dmem_master_rresp              I     2 reg
 // dmem_master_rlast              I     1 reg
 // server_fence_request_put       I     8 unused
-// near_mem_slave_awvalid         I     1 unused
-// near_mem_slave_awid            I     4 unused
-// near_mem_slave_awaddr          I    64 unused
-// near_mem_slave_awlen           I     8 unused
-// near_mem_slave_awsize          I     3 unused
-// near_mem_slave_awburst         I     2 unused
-// near_mem_slave_awlock          I     1 unused
-// near_mem_slave_awcache         I     4 unused
-// near_mem_slave_awprot          I     3 unused
-// near_mem_slave_awqos           I     4 unused
-// near_mem_slave_awregion        I     4 unused
-// near_mem_slave_wvalid          I     1 unused
-// near_mem_slave_wid             I     4 unused
-// near_mem_slave_wdata           I    64 unused
-// near_mem_slave_wstrb           I     8 unused
-// near_mem_slave_wlast           I     1 unused
-// near_mem_slave_bready          I     1 unused
-// near_mem_slave_arvalid         I     1 unused
-// near_mem_slave_arid            I     4 unused
-// near_mem_slave_araddr          I    64 unused
-// near_mem_slave_arlen           I     8 unused
-// near_mem_slave_arsize          I     3 unused
-// near_mem_slave_arburst         I     2 unused
-// near_mem_slave_arlock          I     1 unused
-// near_mem_slave_arcache         I     4 unused
-// near_mem_slave_arprot          I     3 unused
-// near_mem_slave_arqos           I     4 unused
-// near_mem_slave_arregion        I     4 unused
-// near_mem_slave_rready          I     1 unused
 // EN_server_reset_request_put    I     1
 // EN_server_reset_response_get   I     1
 // EN_imem_req                    I     1
@@ -176,8 +132,6 @@
 // EN_server_fence_request_put    I     1
 // EN_server_fence_response_get   I     1
 // EN_sfence_vma                  I     1 unused
-// EN_get_timer_interrupt_req_get  I     1
-// EN_get_sw_interrupt_req_get    I     1
 //
 // Combinational paths from inputs to outputs:
 //   (imem_master_awready, imem_master_wready) -> imem_valid
@@ -419,71 +373,7 @@ module mkNear_Mem(CLK,
 		  RDY_server_fence_response_get,
 
 		  EN_sfence_vma,
-		  RDY_sfence_vma,
-
-		  EN_get_timer_interrupt_req_get,
-		  get_timer_interrupt_req_get,
-		  RDY_get_timer_interrupt_req_get,
-
-		  EN_get_sw_interrupt_req_get,
-		  get_sw_interrupt_req_get,
-		  RDY_get_sw_interrupt_req_get,
-
-		  near_mem_slave_awvalid,
-		  near_mem_slave_awid,
-		  near_mem_slave_awaddr,
-		  near_mem_slave_awlen,
-		  near_mem_slave_awsize,
-		  near_mem_slave_awburst,
-		  near_mem_slave_awlock,
-		  near_mem_slave_awcache,
-		  near_mem_slave_awprot,
-		  near_mem_slave_awqos,
-		  near_mem_slave_awregion,
-
-		  near_mem_slave_awready,
-
-		  near_mem_slave_wvalid,
-		  near_mem_slave_wid,
-		  near_mem_slave_wdata,
-		  near_mem_slave_wstrb,
-		  near_mem_slave_wlast,
-
-		  near_mem_slave_wready,
-
-		  near_mem_slave_bvalid,
-
-		  near_mem_slave_bid,
-
-		  near_mem_slave_bresp,
-
-		  near_mem_slave_bready,
-
-		  near_mem_slave_arvalid,
-		  near_mem_slave_arid,
-		  near_mem_slave_araddr,
-		  near_mem_slave_arlen,
-		  near_mem_slave_arsize,
-		  near_mem_slave_arburst,
-		  near_mem_slave_arlock,
-		  near_mem_slave_arcache,
-		  near_mem_slave_arprot,
-		  near_mem_slave_arqos,
-		  near_mem_slave_arregion,
-
-		  near_mem_slave_arready,
-
-		  near_mem_slave_rvalid,
-
-		  near_mem_slave_rid,
-
-		  near_mem_slave_rdata,
-
-		  near_mem_slave_rresp,
-
-		  near_mem_slave_rlast,
-
-		  near_mem_slave_rready);
+		  RDY_sfence_vma);
   input  CLK;
   input  RST_N;
 
@@ -801,92 +691,6 @@ module mkNear_Mem(CLK,
   input  EN_sfence_vma;
   output RDY_sfence_vma;
 
-  // actionvalue method get_timer_interrupt_req_get
-  input  EN_get_timer_interrupt_req_get;
-  output get_timer_interrupt_req_get;
-  output RDY_get_timer_interrupt_req_get;
-
-  // actionvalue method get_sw_interrupt_req_get
-  input  EN_get_sw_interrupt_req_get;
-  output get_sw_interrupt_req_get;
-  output RDY_get_sw_interrupt_req_get;
-
-  // action method near_mem_slave_m_awvalid
-  input  near_mem_slave_awvalid;
-  input  [3 : 0] near_mem_slave_awid;
-  input  [63 : 0] near_mem_slave_awaddr;
-  input  [7 : 0] near_mem_slave_awlen;
-  input  [2 : 0] near_mem_slave_awsize;
-  input  [1 : 0] near_mem_slave_awburst;
-  input  near_mem_slave_awlock;
-  input  [3 : 0] near_mem_slave_awcache;
-  input  [2 : 0] near_mem_slave_awprot;
-  input  [3 : 0] near_mem_slave_awqos;
-  input  [3 : 0] near_mem_slave_awregion;
-
-  // value method near_mem_slave_m_awready
-  output near_mem_slave_awready;
-
-  // action method near_mem_slave_m_wvalid
-  input  near_mem_slave_wvalid;
-  input  [3 : 0] near_mem_slave_wid;
-  input  [63 : 0] near_mem_slave_wdata;
-  input  [7 : 0] near_mem_slave_wstrb;
-  input  near_mem_slave_wlast;
-
-  // value method near_mem_slave_m_wready
-  output near_mem_slave_wready;
-
-  // value method near_mem_slave_m_bvalid
-  output near_mem_slave_bvalid;
-
-  // value method near_mem_slave_m_bid
-  output [3 : 0] near_mem_slave_bid;
-
-  // value method near_mem_slave_m_bresp
-  output [1 : 0] near_mem_slave_bresp;
-
-  // value method near_mem_slave_m_buser
-
-  // action method near_mem_slave_m_bready
-  input  near_mem_slave_bready;
-
-  // action method near_mem_slave_m_arvalid
-  input  near_mem_slave_arvalid;
-  input  [3 : 0] near_mem_slave_arid;
-  input  [63 : 0] near_mem_slave_araddr;
-  input  [7 : 0] near_mem_slave_arlen;
-  input  [2 : 0] near_mem_slave_arsize;
-  input  [1 : 0] near_mem_slave_arburst;
-  input  near_mem_slave_arlock;
-  input  [3 : 0] near_mem_slave_arcache;
-  input  [2 : 0] near_mem_slave_arprot;
-  input  [3 : 0] near_mem_slave_arqos;
-  input  [3 : 0] near_mem_slave_arregion;
-
-  // value method near_mem_slave_m_arready
-  output near_mem_slave_arready;
-
-  // value method near_mem_slave_m_rvalid
-  output near_mem_slave_rvalid;
-
-  // value method near_mem_slave_m_rid
-  output [3 : 0] near_mem_slave_rid;
-
-  // value method near_mem_slave_m_rdata
-  output [63 : 0] near_mem_slave_rdata;
-
-  // value method near_mem_slave_m_rresp
-  output [1 : 0] near_mem_slave_rresp;
-
-  // value method near_mem_slave_m_rlast
-  output near_mem_slave_rlast;
-
-  // value method near_mem_slave_m_ruser
-
-  // action method near_mem_slave_m_rready
-  input  near_mem_slave_rready;
-
   // signals for module outputs
   wire [63 : 0] dmem_master_araddr,
 		dmem_master_awaddr,
@@ -897,8 +701,7 @@ module mkNear_Mem(CLK,
 		imem_master_awaddr,
 		imem_master_wdata,
 		imem_pc,
-		imem_tval,
-		near_mem_slave_rdata;
+		imem_tval;
   wire [31 : 0] imem_instr;
   wire [7 : 0] dmem_master_arlen,
 	       dmem_master_awlen,
@@ -925,9 +728,7 @@ module mkNear_Mem(CLK,
 	       imem_master_awid,
 	       imem_master_awqos,
 	       imem_master_awregion,
-	       imem_master_wid,
-	       near_mem_slave_bid,
-	       near_mem_slave_rid;
+	       imem_master_wid;
   wire [2 : 0] dmem_master_arprot,
 	       dmem_master_arsize,
 	       dmem_master_awprot,
@@ -939,12 +740,8 @@ module mkNear_Mem(CLK,
   wire [1 : 0] dmem_master_arburst,
 	       dmem_master_awburst,
 	       imem_master_arburst,
-	       imem_master_awburst,
-	       near_mem_slave_bresp,
-	       near_mem_slave_rresp;
-  wire RDY_get_sw_interrupt_req_get,
-       RDY_get_timer_interrupt_req_get,
-       RDY_server_fence_i_request_put,
+	       imem_master_awburst;
+  wire RDY_server_fence_i_request_put,
        RDY_server_fence_i_response_get,
        RDY_server_fence_request_put,
        RDY_server_fence_response_get,
@@ -961,8 +758,6 @@ module mkNear_Mem(CLK,
        dmem_master_wlast,
        dmem_master_wvalid,
        dmem_valid,
-       get_sw_interrupt_req_get,
-       get_timer_interrupt_req_get,
        imem_exc,
        imem_is_i32_not_i16,
        imem_master_arlock,
@@ -973,13 +768,7 @@ module mkNear_Mem(CLK,
        imem_master_rready,
        imem_master_wlast,
        imem_master_wvalid,
-       imem_valid,
-       near_mem_slave_arready,
-       near_mem_slave_awready,
-       near_mem_slave_bvalid,
-       near_mem_slave_rlast,
-       near_mem_slave_rvalid,
-       near_mem_slave_wready;
+       imem_valid;
 
   // register cfg_verbosity
   reg [3 : 0] cfg_verbosity;
@@ -992,8 +781,6 @@ module mkNear_Mem(CLK,
   wire rg_state$EN;
 
   // ports of submodule dcache
-  wire [136 : 0] dcache$near_mem_io_client_request_get;
-  wire [65 : 0] dcache$near_mem_io_client_response_put;
   wire [63 : 0] dcache$mem_master_araddr,
 		dcache$mem_master_awaddr,
 		dcache$mem_master_rdata,
@@ -1031,17 +818,13 @@ module mkNear_Mem(CLK,
 	       dcache$mem_master_rresp,
 	       dcache$req_op,
 	       dcache$req_priv;
-  wire dcache$EN_near_mem_io_client_request_get,
-       dcache$EN_near_mem_io_client_response_put,
-       dcache$EN_req,
+  wire dcache$EN_req,
        dcache$EN_server_flush_request_put,
        dcache$EN_server_flush_response_get,
        dcache$EN_server_reset_request_put,
        dcache$EN_server_reset_response_get,
        dcache$EN_set_verbosity,
        dcache$EN_tlb_flush,
-       dcache$RDY_near_mem_io_client_request_get,
-       dcache$RDY_near_mem_io_client_response_put,
        dcache$RDY_server_flush_request_put,
        dcache$RDY_server_flush_response_get,
        dcache$RDY_server_reset_request_put,
@@ -1073,7 +856,6 @@ module mkNear_Mem(CLK,
        f_reset_rsps$FULL_N;
 
   // ports of submodule icache
-  wire [65 : 0] icache$near_mem_io_client_response_put;
   wire [63 : 0] icache$addr,
 		icache$mem_master_araddr,
 		icache$mem_master_awaddr,
@@ -1111,16 +893,13 @@ module mkNear_Mem(CLK,
 	       icache$mem_master_rresp,
 	       icache$req_op,
 	       icache$req_priv;
-  wire icache$EN_near_mem_io_client_request_get,
-       icache$EN_near_mem_io_client_response_put,
-       icache$EN_req,
+  wire icache$EN_req,
        icache$EN_server_flush_request_put,
        icache$EN_server_flush_response_get,
        icache$EN_server_reset_request_put,
        icache$EN_server_reset_response_get,
        icache$EN_set_verbosity,
        icache$EN_tlb_flush,
-       icache$RDY_near_mem_io_client_request_get,
        icache$RDY_server_flush_request_put,
        icache$RDY_server_flush_response_get,
        icache$RDY_server_reset_request_put,
@@ -1144,39 +923,13 @@ module mkNear_Mem(CLK,
        icache$req_sstatus_SUM,
        icache$valid;
 
-  // ports of submodule near_mem_io
-  wire [136 : 0] near_mem_io$server_request_put;
-  wire [65 : 0] near_mem_io$server_response_get;
-  wire [63 : 0] near_mem_io$set_addr_map_addr_base,
-		near_mem_io$set_addr_map_addr_lim;
-  wire near_mem_io$EN_get_sw_interrupt_req_get,
-       near_mem_io$EN_get_timer_interrupt_req_get,
-       near_mem_io$EN_server_request_put,
-       near_mem_io$EN_server_reset_request_put,
-       near_mem_io$EN_server_reset_response_get,
-       near_mem_io$EN_server_response_get,
-       near_mem_io$EN_set_addr_map,
-       near_mem_io$RDY_get_sw_interrupt_req_get,
-       near_mem_io$RDY_get_timer_interrupt_req_get,
-       near_mem_io$RDY_server_request_put,
-       near_mem_io$RDY_server_reset_request_put,
-       near_mem_io$RDY_server_reset_response_get,
-       near_mem_io$RDY_server_response_get,
-       near_mem_io$get_sw_interrupt_req_get,
-       near_mem_io$get_timer_interrupt_req_get;
-
   // ports of submodule soc_map
   wire [63 : 0] soc_map$m_is_IO_addr_addr,
 		soc_map$m_is_mem_addr_addr,
-		soc_map$m_is_near_mem_IO_addr_addr,
-		soc_map$m_near_mem_io_addr_base,
-		soc_map$m_near_mem_io_addr_lim;
+		soc_map$m_is_near_mem_IO_addr_addr;
 
   // rule scheduling signals
-  wire CAN_FIRE_RL_ClientServerRequest,
-       CAN_FIRE_RL_ClientServerRequest_1,
-       CAN_FIRE_RL_ClientServerResponse_1,
-       CAN_FIRE_RL_rl_reset,
+  wire CAN_FIRE_RL_rl_reset,
        CAN_FIRE_RL_rl_reset_complete,
        CAN_FIRE_dmem_master_m_arready,
        CAN_FIRE_dmem_master_m_awready,
@@ -1184,19 +937,12 @@ module mkNear_Mem(CLK,
        CAN_FIRE_dmem_master_m_rvalid,
        CAN_FIRE_dmem_master_m_wready,
        CAN_FIRE_dmem_req,
-       CAN_FIRE_get_sw_interrupt_req_get,
-       CAN_FIRE_get_timer_interrupt_req_get,
        CAN_FIRE_imem_master_m_arready,
        CAN_FIRE_imem_master_m_awready,
        CAN_FIRE_imem_master_m_bvalid,
        CAN_FIRE_imem_master_m_rvalid,
        CAN_FIRE_imem_master_m_wready,
        CAN_FIRE_imem_req,
-       CAN_FIRE_near_mem_slave_m_arvalid,
-       CAN_FIRE_near_mem_slave_m_awvalid,
-       CAN_FIRE_near_mem_slave_m_bready,
-       CAN_FIRE_near_mem_slave_m_rready,
-       CAN_FIRE_near_mem_slave_m_wvalid,
        CAN_FIRE_server_fence_i_request_put,
        CAN_FIRE_server_fence_i_response_get,
        CAN_FIRE_server_fence_request_put,
@@ -1204,9 +950,6 @@ module mkNear_Mem(CLK,
        CAN_FIRE_server_reset_request_put,
        CAN_FIRE_server_reset_response_get,
        CAN_FIRE_sfence_vma,
-       WILL_FIRE_RL_ClientServerRequest,
-       WILL_FIRE_RL_ClientServerRequest_1,
-       WILL_FIRE_RL_ClientServerResponse_1,
        WILL_FIRE_RL_rl_reset,
        WILL_FIRE_RL_rl_reset_complete,
        WILL_FIRE_dmem_master_m_arready,
@@ -1215,19 +958,12 @@ module mkNear_Mem(CLK,
        WILL_FIRE_dmem_master_m_rvalid,
        WILL_FIRE_dmem_master_m_wready,
        WILL_FIRE_dmem_req,
-       WILL_FIRE_get_sw_interrupt_req_get,
-       WILL_FIRE_get_timer_interrupt_req_get,
        WILL_FIRE_imem_master_m_arready,
        WILL_FIRE_imem_master_m_awready,
        WILL_FIRE_imem_master_m_bvalid,
        WILL_FIRE_imem_master_m_rvalid,
        WILL_FIRE_imem_master_m_wready,
        WILL_FIRE_imem_req,
-       WILL_FIRE_near_mem_slave_m_arvalid,
-       WILL_FIRE_near_mem_slave_m_awvalid,
-       WILL_FIRE_near_mem_slave_m_bready,
-       WILL_FIRE_near_mem_slave_m_rready,
-       WILL_FIRE_near_mem_slave_m_wvalid,
        WILL_FIRE_server_fence_i_request_put,
        WILL_FIRE_server_fence_i_response_get,
        WILL_FIRE_server_fence_request_put,
@@ -1241,14 +977,14 @@ module mkNear_Mem(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h1782;
-  reg [31 : 0] v__h1995;
-  reg [31 : 0] v__h1776;
-  reg [31 : 0] v__h1989;
+  reg [31 : 0] v__h1675;
+  reg [31 : 0] v__h1826;
+  reg [31 : 0] v__h1669;
+  reg [31 : 0] v__h1820;
   // synopsys translate_on
 
   // remaining internal signals
-  wire NOT_cfg_verbosity_read_ULE_1_0___d11;
+  wire NOT_cfg_verbosity_read_ULE_1___d9;
 
   // action method server_reset_request_put
   assign RDY_server_reset_request_put = rg_state == 2'd2 ;
@@ -1556,77 +1292,6 @@ module mkNear_Mem(CLK,
   assign CAN_FIRE_sfence_vma = 1'd1 ;
   assign WILL_FIRE_sfence_vma = EN_sfence_vma ;
 
-  // actionvalue method get_timer_interrupt_req_get
-  assign get_timer_interrupt_req_get =
-	     near_mem_io$get_timer_interrupt_req_get ;
-  assign RDY_get_timer_interrupt_req_get =
-	     near_mem_io$RDY_get_timer_interrupt_req_get ;
-  assign CAN_FIRE_get_timer_interrupt_req_get =
-	     near_mem_io$RDY_get_timer_interrupt_req_get ;
-  assign WILL_FIRE_get_timer_interrupt_req_get =
-	     EN_get_timer_interrupt_req_get ;
-
-  // actionvalue method get_sw_interrupt_req_get
-  assign get_sw_interrupt_req_get = near_mem_io$get_sw_interrupt_req_get ;
-  assign RDY_get_sw_interrupt_req_get =
-	     near_mem_io$RDY_get_sw_interrupt_req_get ;
-  assign CAN_FIRE_get_sw_interrupt_req_get =
-	     near_mem_io$RDY_get_sw_interrupt_req_get ;
-  assign WILL_FIRE_get_sw_interrupt_req_get = EN_get_sw_interrupt_req_get ;
-
-  // action method near_mem_slave_m_awvalid
-  assign CAN_FIRE_near_mem_slave_m_awvalid = 1'd1 ;
-  assign WILL_FIRE_near_mem_slave_m_awvalid = 1'd1 ;
-
-  // value method near_mem_slave_m_awready
-  assign near_mem_slave_awready = 1'd0 ;
-
-  // action method near_mem_slave_m_wvalid
-  assign CAN_FIRE_near_mem_slave_m_wvalid = 1'd1 ;
-  assign WILL_FIRE_near_mem_slave_m_wvalid = 1'd1 ;
-
-  // value method near_mem_slave_m_wready
-  assign near_mem_slave_wready = 1'd0 ;
-
-  // value method near_mem_slave_m_bvalid
-  assign near_mem_slave_bvalid = 1'd0 ;
-
-  // value method near_mem_slave_m_bid
-  assign near_mem_slave_bid = 4'hA ;
-
-  // value method near_mem_slave_m_bresp
-  assign near_mem_slave_bresp = 2'd0 ;
-
-  // action method near_mem_slave_m_bready
-  assign CAN_FIRE_near_mem_slave_m_bready = 1'd1 ;
-  assign WILL_FIRE_near_mem_slave_m_bready = 1'd1 ;
-
-  // action method near_mem_slave_m_arvalid
-  assign CAN_FIRE_near_mem_slave_m_arvalid = 1'd1 ;
-  assign WILL_FIRE_near_mem_slave_m_arvalid = 1'd1 ;
-
-  // value method near_mem_slave_m_arready
-  assign near_mem_slave_arready = 1'd0 ;
-
-  // value method near_mem_slave_m_rvalid
-  assign near_mem_slave_rvalid = 1'd0 ;
-
-  // value method near_mem_slave_m_rid
-  assign near_mem_slave_rid = 4'd0 ;
-
-  // value method near_mem_slave_m_rdata
-  assign near_mem_slave_rdata = 64'd0 ;
-
-  // value method near_mem_slave_m_rresp
-  assign near_mem_slave_rresp = 2'd0 ;
-
-  // value method near_mem_slave_m_rlast
-  assign near_mem_slave_rlast = 1'd1 ;
-
-  // action method near_mem_slave_m_rready
-  assign CAN_FIRE_near_mem_slave_m_rready = 1'd1 ;
-  assign WILL_FIRE_near_mem_slave_m_rready = 1'd1 ;
-
   // submodule dcache
   mkMMU_Cache #(.dmem_not_imem(1'd1)) dcache(.CLK(CLK),
 					     .RST_N(RST_N),
@@ -1641,7 +1306,6 @@ module mkNear_Mem(CLK,
 					     .mem_master_rresp(dcache$mem_master_rresp),
 					     .mem_master_rvalid(dcache$mem_master_rvalid),
 					     .mem_master_wready(dcache$mem_master_wready),
-					     .near_mem_io_client_response_put(dcache$near_mem_io_client_response_put),
 					     .req_addr(dcache$req_addr),
 					     .req_amo_funct7(dcache$req_amo_funct7),
 					     .req_f3(dcache$req_f3),
@@ -1659,8 +1323,6 @@ module mkNear_Mem(CLK,
 					     .EN_server_flush_request_put(dcache$EN_server_flush_request_put),
 					     .EN_server_flush_response_get(dcache$EN_server_flush_response_get),
 					     .EN_tlb_flush(dcache$EN_tlb_flush),
-					     .EN_near_mem_io_client_request_get(dcache$EN_near_mem_io_client_request_get),
-					     .EN_near_mem_io_client_response_put(dcache$EN_near_mem_io_client_response_put),
 					     .RDY_set_verbosity(),
 					     .RDY_server_reset_request_put(dcache$RDY_server_reset_request_put),
 					     .RDY_server_reset_response_get(dcache$RDY_server_reset_response_get),
@@ -1701,10 +1363,7 @@ module mkNear_Mem(CLK,
 					     .mem_master_arprot(dcache$mem_master_arprot),
 					     .mem_master_arqos(dcache$mem_master_arqos),
 					     .mem_master_arregion(dcache$mem_master_arregion),
-					     .mem_master_rready(dcache$mem_master_rready),
-					     .near_mem_io_client_request_get(dcache$near_mem_io_client_request_get),
-					     .RDY_near_mem_io_client_request_get(dcache$RDY_near_mem_io_client_request_get),
-					     .RDY_near_mem_io_client_response_put(dcache$RDY_near_mem_io_client_response_put));
+					     .mem_master_rready(dcache$mem_master_rready));
 
   // submodule f_reset_rsps
   FIFO20 #(.guarded(32'd1)) f_reset_rsps(.RST(RST_N),
@@ -1729,7 +1388,6 @@ module mkNear_Mem(CLK,
 					     .mem_master_rresp(icache$mem_master_rresp),
 					     .mem_master_rvalid(icache$mem_master_rvalid),
 					     .mem_master_wready(icache$mem_master_wready),
-					     .near_mem_io_client_response_put(icache$near_mem_io_client_response_put),
 					     .req_addr(icache$req_addr),
 					     .req_amo_funct7(icache$req_amo_funct7),
 					     .req_f3(icache$req_f3),
@@ -1747,8 +1405,6 @@ module mkNear_Mem(CLK,
 					     .EN_server_flush_request_put(icache$EN_server_flush_request_put),
 					     .EN_server_flush_response_get(icache$EN_server_flush_response_get),
 					     .EN_tlb_flush(icache$EN_tlb_flush),
-					     .EN_near_mem_io_client_request_get(icache$EN_near_mem_io_client_request_get),
-					     .EN_near_mem_io_client_response_put(icache$EN_near_mem_io_client_response_put),
 					     .RDY_set_verbosity(),
 					     .RDY_server_reset_request_put(icache$RDY_server_reset_request_put),
 					     .RDY_server_reset_response_get(icache$RDY_server_reset_response_get),
@@ -1789,34 +1445,7 @@ module mkNear_Mem(CLK,
 					     .mem_master_arprot(icache$mem_master_arprot),
 					     .mem_master_arqos(icache$mem_master_arqos),
 					     .mem_master_arregion(icache$mem_master_arregion),
-					     .mem_master_rready(icache$mem_master_rready),
-					     .near_mem_io_client_request_get(),
-					     .RDY_near_mem_io_client_request_get(icache$RDY_near_mem_io_client_request_get),
-					     .RDY_near_mem_io_client_response_put());
-
-  // submodule near_mem_io
-  mkNear_Mem_IO near_mem_io(.CLK(CLK),
-			    .RST_N(RST_N),
-			    .server_request_put(near_mem_io$server_request_put),
-			    .set_addr_map_addr_base(near_mem_io$set_addr_map_addr_base),
-			    .set_addr_map_addr_lim(near_mem_io$set_addr_map_addr_lim),
-			    .EN_server_reset_request_put(near_mem_io$EN_server_reset_request_put),
-			    .EN_server_reset_response_get(near_mem_io$EN_server_reset_response_get),
-			    .EN_set_addr_map(near_mem_io$EN_set_addr_map),
-			    .EN_server_request_put(near_mem_io$EN_server_request_put),
-			    .EN_server_response_get(near_mem_io$EN_server_response_get),
-			    .EN_get_timer_interrupt_req_get(near_mem_io$EN_get_timer_interrupt_req_get),
-			    .EN_get_sw_interrupt_req_get(near_mem_io$EN_get_sw_interrupt_req_get),
-			    .RDY_server_reset_request_put(near_mem_io$RDY_server_reset_request_put),
-			    .RDY_server_reset_response_get(near_mem_io$RDY_server_reset_response_get),
-			    .RDY_set_addr_map(),
-			    .RDY_server_request_put(near_mem_io$RDY_server_request_put),
-			    .server_response_get(near_mem_io$server_response_get),
-			    .RDY_server_response_get(near_mem_io$RDY_server_response_get),
-			    .get_timer_interrupt_req_get(near_mem_io$get_timer_interrupt_req_get),
-			    .RDY_get_timer_interrupt_req_get(near_mem_io$RDY_get_timer_interrupt_req_get),
-			    .get_sw_interrupt_req_get(near_mem_io$get_sw_interrupt_req_get),
-			    .RDY_get_sw_interrupt_req_get(near_mem_io$RDY_get_sw_interrupt_req_get));
+					     .mem_master_rready(icache$mem_master_rready));
 
   // submodule soc_map
   mkSoC_Map soc_map(.CLK(CLK),
@@ -1824,12 +1453,15 @@ module mkNear_Mem(CLK,
 		    .m_is_IO_addr_addr(soc_map$m_is_IO_addr_addr),
 		    .m_is_mem_addr_addr(soc_map$m_is_mem_addr_addr),
 		    .m_is_near_mem_IO_addr_addr(soc_map$m_is_near_mem_IO_addr_addr),
+		    .m_near_mem_io_addr_base(),
+		    .m_near_mem_io_addr_size(),
+		    .m_near_mem_io_addr_lim(),
+		    .m_plic_addr_base(),
+		    .m_plic_addr_size(),
+		    .m_plic_addr_lim(),
 		    .m_uart0_addr_base(),
 		    .m_uart0_addr_size(),
 		    .m_uart0_addr_lim(),
-		    .m_near_mem_io_addr_base(soc_map$m_near_mem_io_addr_base),
-		    .m_near_mem_io_addr_size(),
-		    .m_near_mem_io_addr_lim(soc_map$m_near_mem_io_addr_lim),
 		    .m_boot_rom_addr_base(),
 		    .m_boot_rom_addr_size(),
 		    .m_boot_rom_addr_lim(),
@@ -1842,39 +1474,20 @@ module mkNear_Mem(CLK,
 		    .m_is_mem_addr(),
 		    .m_is_IO_addr(),
 		    .m_is_near_mem_IO_addr(),
-		    .m_pc_reset_value());
+		    .m_pc_reset_value(),
+		    .m_mtvec_reset_value(),
+		    .m_nmivec_reset_value());
 
   // rule RL_rl_reset
   assign CAN_FIRE_RL_rl_reset =
 	     dcache$RDY_server_reset_request_put &&
 	     icache$RDY_server_reset_request_put &&
-	     near_mem_io$RDY_server_reset_request_put &&
 	     rg_state == 2'd0 ;
   assign WILL_FIRE_RL_rl_reset = MUX_rg_state$write_1__SEL_2 ;
 
   // rule RL_rl_reset_complete
   assign CAN_FIRE_RL_rl_reset_complete = MUX_rg_state$write_1__SEL_3 ;
   assign WILL_FIRE_RL_rl_reset_complete = MUX_rg_state$write_1__SEL_3 ;
-
-  // rule RL_ClientServerRequest
-  assign CAN_FIRE_RL_ClientServerRequest =
-	     icache$RDY_near_mem_io_client_request_get ;
-  assign WILL_FIRE_RL_ClientServerRequest =
-	     icache$RDY_near_mem_io_client_request_get ;
-
-  // rule RL_ClientServerRequest_1
-  assign CAN_FIRE_RL_ClientServerRequest_1 =
-	     near_mem_io$RDY_server_request_put &&
-	     dcache$RDY_near_mem_io_client_request_get ;
-  assign WILL_FIRE_RL_ClientServerRequest_1 =
-	     CAN_FIRE_RL_ClientServerRequest_1 ;
-
-  // rule RL_ClientServerResponse_1
-  assign CAN_FIRE_RL_ClientServerResponse_1 =
-	     near_mem_io$RDY_server_response_get &&
-	     dcache$RDY_near_mem_io_client_response_put ;
-  assign WILL_FIRE_RL_ClientServerResponse_1 =
-	     CAN_FIRE_RL_ClientServerResponse_1 ;
 
   // inputs to muxes for submodule ports
   assign MUX_rg_state$write_1__SEL_2 =
@@ -1883,7 +1496,6 @@ module mkNear_Mem(CLK,
   assign MUX_rg_state$write_1__SEL_3 =
 	     dcache$RDY_server_reset_response_get &&
 	     icache$RDY_server_reset_response_get &&
-	     near_mem_io$RDY_server_reset_response_get &&
 	     f_reset_rsps$FULL_N &&
 	     rg_state == 2'd1 ;
 
@@ -1918,8 +1530,6 @@ module mkNear_Mem(CLK,
   assign dcache$mem_master_rresp = dmem_master_rresp ;
   assign dcache$mem_master_rvalid = dmem_master_rvalid ;
   assign dcache$mem_master_wready = dmem_master_wready ;
-  assign dcache$near_mem_io_client_response_put =
-	     near_mem_io$server_response_get ;
   assign dcache$req_addr = dmem_req_addr ;
   assign dcache$req_amo_funct7 = dmem_req_amo_funct7 ;
   assign dcache$req_f3 = dmem_req_f3 ;
@@ -1939,10 +1549,6 @@ module mkNear_Mem(CLK,
   assign dcache$EN_server_flush_response_get =
 	     EN_server_fence_i_response_get || EN_server_fence_response_get ;
   assign dcache$EN_tlb_flush = EN_sfence_vma ;
-  assign dcache$EN_near_mem_io_client_request_get =
-	     CAN_FIRE_RL_ClientServerRequest_1 ;
-  assign dcache$EN_near_mem_io_client_response_put =
-	     CAN_FIRE_RL_ClientServerResponse_1 ;
 
   // submodule f_reset_rsps
   assign f_reset_rsps$ENQ = MUX_rg_state$write_1__SEL_3 ;
@@ -1961,7 +1567,6 @@ module mkNear_Mem(CLK,
   assign icache$mem_master_rresp = imem_master_rresp ;
   assign icache$mem_master_rvalid = imem_master_rvalid ;
   assign icache$mem_master_wready = imem_master_wready ;
-  assign icache$near_mem_io_client_response_put = 66'h0 ;
   assign icache$req_addr = imem_req_addr ;
   assign icache$req_amo_funct7 = 7'b0101010 /* unspecified value */  ;
   assign icache$req_f3 = imem_req_f3 ;
@@ -1980,29 +1585,6 @@ module mkNear_Mem(CLK,
   assign icache$EN_server_flush_response_get =
 	     EN_server_fence_i_response_get ;
   assign icache$EN_tlb_flush = EN_sfence_vma ;
-  assign icache$EN_near_mem_io_client_request_get =
-	     icache$RDY_near_mem_io_client_request_get ;
-  assign icache$EN_near_mem_io_client_response_put = 1'b0 ;
-
-  // submodule near_mem_io
-  assign near_mem_io$server_request_put =
-	     dcache$near_mem_io_client_request_get ;
-  assign near_mem_io$set_addr_map_addr_base =
-	     soc_map$m_near_mem_io_addr_base ;
-  assign near_mem_io$set_addr_map_addr_lim = soc_map$m_near_mem_io_addr_lim ;
-  assign near_mem_io$EN_server_reset_request_put =
-	     MUX_rg_state$write_1__SEL_2 ;
-  assign near_mem_io$EN_server_reset_response_get =
-	     MUX_rg_state$write_1__SEL_3 ;
-  assign near_mem_io$EN_set_addr_map = MUX_rg_state$write_1__SEL_3 ;
-  assign near_mem_io$EN_server_request_put =
-	     CAN_FIRE_RL_ClientServerRequest_1 ;
-  assign near_mem_io$EN_server_response_get =
-	     CAN_FIRE_RL_ClientServerResponse_1 ;
-  assign near_mem_io$EN_get_timer_interrupt_req_get =
-	     EN_get_timer_interrupt_req_get ;
-  assign near_mem_io$EN_get_sw_interrupt_req_get =
-	     EN_get_sw_interrupt_req_get ;
 
   // submodule soc_map
   assign soc_map$m_is_IO_addr_addr = 64'h0 ;
@@ -2010,7 +1592,7 @@ module mkNear_Mem(CLK,
   assign soc_map$m_is_near_mem_IO_addr_addr = 64'h0 ;
 
   // remaining internal signals
-  assign NOT_cfg_verbosity_read_ULE_1_0___d11 = cfg_verbosity > 4'd1 ;
+  assign NOT_cfg_verbosity_read_ULE_1___d9 = cfg_verbosity > 4'd1 ;
 
   // handling of inlined registers
 
@@ -2047,27 +1629,25 @@ module mkNear_Mem(CLK,
   begin
     #0;
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_reset && NOT_cfg_verbosity_read_ULE_1_0___d11)
+      if (WILL_FIRE_RL_rl_reset && NOT_cfg_verbosity_read_ULE_1___d9)
 	begin
-	  v__h1782 = $stime;
+	  v__h1675 = $stime;
 	  #0;
 	end
-    v__h1776 = v__h1782 / 32'd10;
+    v__h1669 = v__h1675 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_reset && NOT_cfg_verbosity_read_ULE_1_0___d11)
-	$display("%0d: Near_Mem.rl_reset", v__h1776);
+      if (WILL_FIRE_RL_rl_reset && NOT_cfg_verbosity_read_ULE_1___d9)
+	$display("%0d: Near_Mem.rl_reset", v__h1669);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_reset_complete &&
-	  NOT_cfg_verbosity_read_ULE_1_0___d11)
+      if (WILL_FIRE_RL_rl_reset_complete && NOT_cfg_verbosity_read_ULE_1___d9)
 	begin
-	  v__h1995 = $stime;
+	  v__h1826 = $stime;
 	  #0;
 	end
-    v__h1989 = v__h1995 / 32'd10;
+    v__h1820 = v__h1826 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_reset_complete &&
-	  NOT_cfg_verbosity_read_ULE_1_0___d11)
-	$display("%0d: Near_Mem.rl_reset_complete", v__h1989);
+      if (WILL_FIRE_RL_rl_reset_complete && NOT_cfg_verbosity_read_ULE_1___d9)
+	$display("%0d: Near_Mem.rl_reset_complete", v__h1820);
   end
   // synopsys translate_on
 endmodule  // mkNear_Mem
