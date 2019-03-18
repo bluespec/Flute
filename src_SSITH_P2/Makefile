@@ -28,7 +28,7 @@ BSC_COMPILATION_FLAGS += \
 	-D ISA_I  -D ISA_M  -D ISA_A  -D ISA_C  \
 	-D ISA_F -D ISA_D -D ISA_FD_DIV  \
 	-D SHIFT_BARREL    \
-	-D MULT_SYNTH    \
+	-D MULT_SERIAL    \
 	-D Near_Mem_Caches    \
 	-D FABRIC64    \
 	-D INCLUDE_GDB_CONTROL \

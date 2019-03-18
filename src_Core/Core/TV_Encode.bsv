@@ -600,7 +600,6 @@ endfunction
 
 function Tuple2 #(Bit #(32), Vector #(TV_VB_SIZE, Byte)) encode_mdata (MemReqSize mem_req_size, WordXL word);
    Vector #(TV_VB_SIZE, Byte) vb = newVector;
-   Bit #(32)            n;
    vb [0] = word[7:0];
    vb [1] = word [15:8];
    vb [2] = word [23:16];
@@ -611,12 +610,7 @@ function Tuple2 #(Bit #(32), Vector #(TV_VB_SIZE, Byte)) encode_mdata (MemReqSiz
    vb [6] = word [55:48];
    vb [7] = word [63:56];
 `endif
-   n = case (mem_req_size)
-	  f3_SIZE_B: 1;
-	  f3_SIZE_H: 2;
-	  f3_SIZE_W: 4;
-	  f3_SIZE_D: 8;
-       endcase;
+   Bit #(32) n = (1 << pack(mem_req_size));
    return tuple2 (n, vb);
 endfunction
 
@@ -704,7 +698,6 @@ endfunction
 
 function Tuple2 #(Bit #(32), Vector #(TV_VB_SIZE, Byte)) encode_stval (MemReqSize mem_req_size, WordXL word);
    Vector #(TV_VB_SIZE, Byte) vb = newVector;
-   Bit #(32)            n;
    vb [0] = te_op_addl_state;
    vb [1] = case (mem_req_size)
 	       f3_SIZE_B: te_op_addl_state_data8;
@@ -722,12 +715,7 @@ function Tuple2 #(Bit #(32), Vector #(TV_VB_SIZE, Byte)) encode_stval (MemReqSiz
    vb [8] = word [55:48];
    vb [9] = word [63:56];
 `endif
-   n = case (mem_req_size)
-	  f3_SIZE_B: 2 + 1;
-	  f3_SIZE_H: 2 + 2;
-	  f3_SIZE_W: 2 + 4;
-	  f3_SIZE_D: 2 + 8;
-       endcase;
+   Bit #(32) n = (1 << pack(mem_req_size)) + 2;
    return tuple2 (n, vb);
 endfunction
 

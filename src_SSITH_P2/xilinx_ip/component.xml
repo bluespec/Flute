@@ -796,7 +796,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>981bd829</spirit:value>
+            <spirit:value>073ddeff</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -812,7 +812,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>35c0a856</spirit:value>
+            <spirit:value>a38db3fe</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -2459,10 +2459,6 @@
         <spirit:fileType>verilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>hdl/mkFabric_2x1.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-      </spirit:file>
-      <spirit:file>
         <spirit:name>hdl/mkGPR_RegFile.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
       </spirit:file>
@@ -2476,10 +2472,6 @@
       </spirit:file>
       <spirit:file>
         <spirit:name>hdl/mkNear_Mem.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>hdl/mkNear_Mem_IO.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
@@ -2507,7 +2499,6 @@
       <spirit:file>
         <spirit:name>hdl/mkIntMul_32.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
       </spirit:file>
       <spirit:file>
         <spirit:name>hdl/mkDM_CSR_Tap.v</spirit:name>
@@ -2522,12 +2513,6 @@
       <spirit:file>
         <spirit:name>hdl/ClockGen.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>hdl/mkP1_Core.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
       </spirit:file>
       <spirit:file>
         <spirit:name>hdl/mkDM_GPR_Tap.v</spirit:name>
@@ -2542,23 +2527,9 @@
       <spirit:file>
         <spirit:name>hdl/mkIntMul_64.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_a39ec604</spirit:userFileType>
-        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>hdl/ClockGen.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
         <spirit:name>hdl/mkFabric_2x3.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>hdl/mkIntMul_32.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>hdl/mkIntMul_64.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
@@ -2588,6 +2559,7 @@
       <spirit:file>
         <spirit:name>hdl/FIFOL1.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
+        <spirit:userFileType>CHECKSUM_bfe3b3df</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
     <spirit:fileSet>
@@ -2677,10 +2649,6 @@
         <spirit:fileType>verilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>hdl/mkFabric_2x1.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-      </spirit:file>
-      <spirit:file>
         <spirit:name>hdl/mkGPR_RegFile.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
       </spirit:file>
@@ -2694,10 +2662,6 @@
       </spirit:file>
       <spirit:file>
         <spirit:name>hdl/mkNear_Mem.v</spirit:name>
-        <spirit:fileType>verilogSource</spirit:fileType>
-      </spirit:file>
-      <spirit:file>
-        <spirit:name>hdl/mkNear_Mem_IO.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
@@ -2807,8 +2771,8 @@
       </xilinx:taxonomies>
       <xilinx:displayName>mkP2_Core_v1_0</xilinx:displayName>
       <xilinx:definitionSource>package_project</xilinx:definitionSource>
-      <xilinx:coreRevision>4</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2019-02-20T22:40:00Z</xilinx:coreCreationDateTime>
+      <xilinx:coreRevision>6</xilinx:coreRevision>
+      <xilinx:coreCreationDateTime>2019-03-16T16:37:14Z</xilinx:coreCreationDateTime>
       <xilinx:tags>
         <xilinx:tag xilinx:name="nopcore"/>
         <xilinx:tag xilinx:name="ssith:user:ssith_processor:1.0_ARCHIVE_LOCATION">/export/home/stoy/examples/galois/gfe1/bluespec-processors/P2/Flute/src_SSITH_P2/xilinx_ip</xilinx:tag>
@@ -2818,7 +2782,7 @@
       <xilinx:xilinxVersion>2017.4</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="683c18e5"/>
       <xilinx:checksum xilinx:scope="addressSpaces" xilinx:value="3315be85"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="6ac502a3"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="ba124cd5"/>
       <xilinx:checksum xilinx:scope="ports" xilinx:value="2d96e421"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="fb7325a1"/>
     </xilinx:packagingInfo>

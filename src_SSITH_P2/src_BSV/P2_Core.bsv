@@ -6,7 +6,7 @@ package P2_Core;
 // This package defines the interface and implementation of the 'P2 Core'
 // for the DARPA SSITH project.
 // This P2 core contains:
-//    - Piccolo CPU, including
+//    - Flute CPU, including
 //        - Near_Mem (ICache and DCache)
 //        - Near_Mem_IO (Timer, Software-interrupt, and other mem-mapped-locations)
 //        - External interrupt request lines
