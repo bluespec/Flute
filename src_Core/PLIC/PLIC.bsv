@@ -551,12 +551,12 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
       return interface PLIC_Source_IFC;
 		method Action  m_interrupt_req (Bool set_not_clear);
 		   action
-		      if (! vrg_source_busy [source_id]) begin
-			 vrg_source_ip [source_id] <= set_not_clear;
+		      if (! vrg_source_busy [source_id+1]) begin
+			 vrg_source_ip [source_id+1] <= set_not_clear;
 
-			 if ((cfg_verbosity > 0) && (vrg_source_ip [source_id] != set_not_clear))
+			 if ((cfg_verbosity > 0) && (vrg_source_ip [source_id+1] != set_not_clear))
 			    $display ("%0d: Changing vrg_source_ip [%0d] to %0d",
-				      cur_cycle, source_id, pack (set_not_clear));
+				      cur_cycle, source_id+1, pack (set_not_clear));
 		      end
 		   endaction
 		endmethod
