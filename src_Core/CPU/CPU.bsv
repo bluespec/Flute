@@ -370,11 +370,6 @@ module mkCPU (CPU_IFC);
 
 	 rg_state <= CPU_RUNNING;
 
-`ifdef INCLUDE_GDB_CONTROL
-	 // Notify debugger that we've started running
-	 f_run_halt_rsps.enq (True);
-`endif
-
 	 rg_start_CPI_cycles <= mcycle;
 	 rg_start_CPI_instrs <= minstret;
 
@@ -504,12 +499,19 @@ module mkCPU (CPU_IFC);
 	 $display ("%0d: CPU.reset_complete", mcycle);
 
 `ifdef INCLUDE_GDB_CONTROL
-      csr_regfile.write_dcsr_cause_priv (DCSR_CAUSE_HALTREQ, m_Priv_Mode);
-      csr_regfile.write_dpc (dpc);
-      rg_state <= CPU_DEBUG_MODE;
+      // TODO: 'resethaltreq' is new Debug-Module functionality, to be implemented.
+      // Until then, we come out of reset running.
+      Bit #(1) resethaltreq = 0;
+      if (resethaltreq == 1'b1) begin
+	 csr_regfile.write_dcsr_cause_priv (DCSR_CAUSE_HALTREQ, m_Priv_Mode);
+	 csr_regfile.write_dpc (dpc);
+	 rg_state <= CPU_DEBUG_MODE;
 
-      if (cur_verbosity != 0)
-	 $display ("    CPU entering DEBUG_MODE");
+	 if (cur_verbosity != 0)
+	    $display ("    CPU entering DEBUG_MODE");
+      end
+      else
+	 fa_restart (dpc);
 `else
       fa_restart (dpc);
 `endif
@@ -1632,6 +1634,10 @@ module mkCPU (CPU_IFC);
       // Debugger 'resume' request (e.g., GDB 'continue' command)
       let dpc = csr_regfile.read_dpc;
       fa_restart (dpc);
+
+      // Notify debugger that we've started running
+      f_run_halt_rsps.enq (True);
+
       if (cur_verbosity > 1)
 	 $display ("%0d: CPU.rl_debug_run: 'run' from dpc 0x%0h", mcycle, dpc);
    endrule
