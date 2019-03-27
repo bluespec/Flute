@@ -29,6 +29,7 @@ import Bus           :: *;
 // BSV additional libs
 
 import GetPut_Aux :: *;
+import Semi_FIFOF :: *;
 
 // ================================================================
 // Project imports
@@ -49,6 +50,7 @@ import Fabric_Defs  :: *;
 
 `ifdef INCLUDE_TANDEM_VERIF
 import TV_Info :: *;
+import AXI4_Stream ::*;
 `endif
 
 `ifdef INCLUDE_GDB_CONTROL
@@ -77,11 +79,11 @@ interface P2_Core_IFC;
 
 `ifdef INCLUDE_TANDEM_VERIF
    // ----------------------------------------------------------------
-   // Optional Tandem Verifier interface output tuples (n,vb),
-   // where 'vb' is a vector of bytes
-   // with relevant bytes in locations [0]..[n-1]
+   // Optional Tandem Verifier interface.  The data signal is
+   // packed output tuples (n,vb),/ where 'vb' is a vector of
+   // bytes with relevant bytes in locations [0]..[n-1]
 
-   interface Get #(Info_CPU_to_Verifier)  tv_verifier_info_get;
+      interface AXI4_Stream_Master_IFC #(Wd_SId, Wd_SDest, Wd_SData, Wd_SUser)  tv_verifier_info_tx;
 `endif
 
 `ifdef INCLUDE_GDB_CONTROL
@@ -192,6 +194,11 @@ module mkP2_Core (P2_Core_IFC);
 
 `endif
 
+`ifdef INCLUDE_TANDEM_VERIF
+   let tv_xactor <- mkTV_Xactor;
+   mkConnection (core.tv_verifier_info_get, tv_xactor.tv_in);
+`endif
+
    // ================================================================
    // INTERFACE
 
@@ -211,11 +218,11 @@ module mkP2_Core (P2_Core_IFC);
 
 `ifdef INCLUDE_TANDEM_VERIF
    // ----------------------------------------------------------------
-   // Optional Tandem Verifier interface output tuples (n,vb),
-   // where 'vb' is a vector of bytes
-   // with relevant bytes in locations [0]..[n-1]
+   // Optional Tandem Verifier interface.  The data signal is
+   // packed output tuples (n,vb),/ where 'vb' is a vector of
+   // bytes with relevant bytes in locations [0]..[n-1]
 
-   interface Get tv_verifier_info_get = core.tv_verifier_info_get;
+   interface tv_verifier_info_tx = tv_xactor.axi_out;
 `endif
 
 `ifdef INCLUDE_GDB_CONTROL
@@ -228,6 +235,51 @@ module mkP2_Core (P2_Core_IFC);
 
 `endif
 endmodule
+
+// ================================================================
+// The TV to AXI4 Stream transactor
+
+`ifdef INCLUDE_TANDEM_VERIF
+
+// ================================================================
+// TV AXI4 Stream Parameters
+
+typedef SizeOf #(Info_CPU_to_Verifier)Wd_SData;
+typedef 0 Wd_SDest;
+typedef 0 Wd_SUser;
+typedef 0 Wd_SId;
+
+// ================================================================
+
+interface TV_Xactor;
+   interface Put #(Info_CPU_to_Verifier) tv_in;
+   interface AXI4_Stream_Master_IFC #(Wd_SId, Wd_SDest, Wd_SData, Wd_SUser)  axi_out;
+endinterface
+
+function AXI4_Stream #(Wd_SId, Wd_SDest, Wd_SData, Wd_SUser) fn_TVToAxiS (Info_CPU_to_Verifier x);
+   return AXI4_Stream {tid: ?,
+		       tdata: pack(x),
+		       tstrb: '1,
+		       tkeep: '1,
+		       tlast: True,
+		       tdest: ?,
+		       tuser: ? };
+endfunction
+
+(*synthesize*)
+module mkTV_Xactor (TV_Xactor);
+   AXI4_Stream_Master_Xactor_IFC #(Wd_SId, Wd_SDest, Wd_SData, Wd_SUser)
+                               tv_xactor <- mkAXI4_Stream_Master_Xactor;
+
+   interface Put tv_in;
+      method Action put(x);
+	 toPut(tv_xactor.i_stream).put(fn_TVToAxiS(x));
+      endmethod
+   endinterface
+
+   interface axi_out = tv_xactor.axi_side;
+endmodule
+`endif
 
 // ================================================================
 
