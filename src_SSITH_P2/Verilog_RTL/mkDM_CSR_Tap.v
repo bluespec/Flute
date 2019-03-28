@@ -6,18 +6,18 @@
 //
 // Ports:
 // Name                         I/O  size props
-// client_request_get             O    85 reg
+// client_request_get             O    77 reg
 // RDY_client_request_get         O     1 reg
 // RDY_client_response_put        O     1 reg
 // RDY_server_request_put         O     1 reg
-// server_response_get            O    64 reg
+// server_response_get            O    65 reg
 // RDY_server_response_get        O     1 reg
 // trace_data_out_get             O   362 reg
 // RDY_trace_data_out_get         O     1 reg
 // CLK                            I     1 clock
 // RST_N                          I     1 reset
-// client_response_put            I    64 reg
-// server_request_put             I    85 reg
+// client_response_put            I    65 reg
+// server_request_put             I    77 reg
 // EN_client_response_put         I     1
 // EN_server_request_put          I     1
 // EN_client_request_get          I     1
@@ -68,22 +68,22 @@ module mkDM_CSR_Tap(CLK,
 
   // actionvalue method client_request_get
   input  EN_client_request_get;
-  output [84 : 0] client_request_get;
+  output [76 : 0] client_request_get;
   output RDY_client_request_get;
 
   // action method client_response_put
-  input  [63 : 0] client_response_put;
+  input  [64 : 0] client_response_put;
   input  EN_client_response_put;
   output RDY_client_response_put;
 
   // action method server_request_put
-  input  [84 : 0] server_request_put;
+  input  [76 : 0] server_request_put;
   input  EN_server_request_put;
   output RDY_server_request_put;
 
   // actionvalue method server_response_get
   input  EN_server_response_get;
-  output [63 : 0] server_response_get;
+  output [64 : 0] server_response_get;
   output RDY_server_response_get;
 
   // actionvalue method trace_data_out_get
@@ -93,8 +93,8 @@ module mkDM_CSR_Tap(CLK,
 
   // signals for module outputs
   wire [361 : 0] trace_data_out_get;
-  wire [84 : 0] client_request_get;
-  wire [63 : 0] server_response_get;
+  wire [76 : 0] client_request_get;
+  wire [64 : 0] server_response_get;
   wire RDY_client_request_get,
        RDY_client_response_put,
        RDY_server_request_put,
@@ -102,7 +102,7 @@ module mkDM_CSR_Tap(CLK,
        RDY_trace_data_out_get;
 
   // ports of submodule f_req_in
-  wire [84 : 0] f_req_in$D_IN, f_req_in$D_OUT;
+  wire [76 : 0] f_req_in$D_IN, f_req_in$D_OUT;
   wire f_req_in$CLR,
        f_req_in$DEQ,
        f_req_in$EMPTY_N,
@@ -110,7 +110,7 @@ module mkDM_CSR_Tap(CLK,
        f_req_in$FULL_N;
 
   // ports of submodule f_req_out
-  wire [84 : 0] f_req_out$D_IN, f_req_out$D_OUT;
+  wire [76 : 0] f_req_out$D_IN, f_req_out$D_OUT;
   wire f_req_out$CLR,
        f_req_out$DEQ,
        f_req_out$EMPTY_N,
@@ -118,7 +118,7 @@ module mkDM_CSR_Tap(CLK,
        f_req_out$FULL_N;
 
   // ports of submodule f_rsp
-  wire [63 : 0] f_rsp$D_IN, f_rsp$D_OUT;
+  wire [64 : 0] f_rsp$D_IN, f_rsp$D_OUT;
   wire f_rsp$CLR, f_rsp$DEQ, f_rsp$EMPTY_N, f_rsp$ENQ, f_rsp$FULL_N;
 
   // ports of submodule f_trace_data
@@ -172,7 +172,7 @@ module mkDM_CSR_Tap(CLK,
   assign WILL_FIRE_trace_data_out_get = EN_trace_data_out_get ;
 
   // submodule f_req_in
-  FIFO2 #(.width(32'd85), .guarded(32'd1)) f_req_in(.RST(RST_N),
+  FIFO2 #(.width(32'd77), .guarded(32'd1)) f_req_in(.RST(RST_N),
 						    .CLK(CLK),
 						    .D_IN(f_req_in$D_IN),
 						    .ENQ(f_req_in$ENQ),
@@ -183,7 +183,7 @@ module mkDM_CSR_Tap(CLK,
 						    .EMPTY_N(f_req_in$EMPTY_N));
 
   // submodule f_req_out
-  FIFO2 #(.width(32'd85), .guarded(32'd1)) f_req_out(.RST(RST_N),
+  FIFO2 #(.width(32'd77), .guarded(32'd1)) f_req_out(.RST(RST_N),
 						     .CLK(CLK),
 						     .D_IN(f_req_out$D_IN),
 						     .ENQ(f_req_out$ENQ),
@@ -194,7 +194,7 @@ module mkDM_CSR_Tap(CLK,
 						     .EMPTY_N(f_req_out$EMPTY_N));
 
   // submodule f_rsp
-  FIFO2 #(.width(32'd64), .guarded(32'd1)) f_rsp(.RST(RST_N),
+  FIFO2 #(.width(32'd65), .guarded(32'd1)) f_rsp(.RST(RST_N),
 						 .CLK(CLK),
 						 .D_IN(f_rsp$D_IN),
 						 .ENQ(f_rsp$ENQ),
@@ -218,7 +218,7 @@ module mkDM_CSR_Tap(CLK,
   // rule RL_request
   assign CAN_FIRE_RL_request =
 	     f_req_in$EMPTY_N && f_req_out$FULL_N &&
-	     (!f_req_in$D_OUT[84] || f_trace_data$FULL_N) ;
+	     (!f_req_in$D_OUT[76] || f_trace_data$FULL_N) ;
   assign WILL_FIRE_RL_request = CAN_FIRE_RL_request ;
 
   // submodule f_req_in
@@ -243,7 +243,7 @@ module mkDM_CSR_Tap(CLK,
   assign f_trace_data$D_IN =
 	     { 286'h0EAAAAAAAAAAAAAAA955555554AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA0000000000000,
 	       f_req_in$D_OUT[75:0] } ;
-  assign f_trace_data$ENQ = WILL_FIRE_RL_request && f_req_in$D_OUT[84] ;
+  assign f_trace_data$ENQ = WILL_FIRE_RL_request && f_req_in$D_OUT[76] ;
   assign f_trace_data$DEQ = EN_trace_data_out_get ;
   assign f_trace_data$CLR = 1'b0 ;
 endmodule  // mkDM_CSR_Tap

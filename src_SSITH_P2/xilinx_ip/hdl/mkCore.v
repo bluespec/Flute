@@ -756,15 +756,15 @@ module mkCore(CLK,
 
   // ports of submodule cpu
   wire [361 : 0] cpu$trace_data_out_get;
-  wire [84 : 0] cpu$hart0_csr_mem_server_request_put;
-  wire [77 : 0] cpu$hart0_fpr_mem_server_request_put,
+  wire [76 : 0] cpu$hart0_csr_mem_server_request_put;
+  wire [69 : 0] cpu$hart0_fpr_mem_server_request_put,
 		cpu$hart0_gpr_mem_server_request_put;
+  wire [64 : 0] cpu$hart0_csr_mem_server_response_get,
+		cpu$hart0_gpr_mem_server_response_get;
   wire [63 : 0] cpu$dmem_master_araddr,
 		cpu$dmem_master_awaddr,
 		cpu$dmem_master_rdata,
 		cpu$dmem_master_wdata,
-		cpu$hart0_csr_mem_server_response_get,
-		cpu$hart0_gpr_mem_server_response_get,
 		cpu$imem_master_araddr,
 		cpu$imem_master_awaddr,
 		cpu$imem_master_rdata,
@@ -875,11 +875,12 @@ module mkCore(CLK,
        cpu$timer_interrupt_req_set_not_clear;
 
   // ports of submodule debug_module
-  wire [84 : 0] debug_module$hart0_csr_mem_client_request_get;
-  wire [77 : 0] debug_module$hart0_gpr_mem_client_request_get;
-  wire [63 : 0] debug_module$hart0_csr_mem_client_response_put,
-		debug_module$hart0_gpr_mem_client_response_put,
-		debug_module$master_araddr,
+  wire [76 : 0] debug_module$hart0_csr_mem_client_request_get;
+  wire [69 : 0] debug_module$hart0_gpr_mem_client_request_get;
+  wire [64 : 0] debug_module$hart0_csr_mem_client_response_put,
+		debug_module$hart0_fpr_mem_client_response_put,
+		debug_module$hart0_gpr_mem_client_response_put;
+  wire [63 : 0] debug_module$master_araddr,
 		debug_module$master_awaddr,
 		debug_module$master_rdata,
 		debug_module$master_wdata;
@@ -917,6 +918,8 @@ module mkCore(CLK,
        debug_module$EN_hart0_client_run_halt_response_put,
        debug_module$EN_hart0_csr_mem_client_request_get,
        debug_module$EN_hart0_csr_mem_client_response_put,
+       debug_module$EN_hart0_fpr_mem_client_request_get,
+       debug_module$EN_hart0_fpr_mem_client_response_put,
        debug_module$EN_hart0_get_other_req_get,
        debug_module$EN_hart0_get_reset_req_get,
        debug_module$EN_hart0_gpr_mem_client_request_get,
@@ -952,8 +955,8 @@ module mkCore(CLK,
 
   // ports of submodule dm_csr_tap
   wire [361 : 0] dm_csr_tap$trace_data_out_get;
-  wire [84 : 0] dm_csr_tap$client_request_get, dm_csr_tap$server_request_put;
-  wire [63 : 0] dm_csr_tap$client_response_put,
+  wire [76 : 0] dm_csr_tap$client_request_get, dm_csr_tap$server_request_put;
+  wire [64 : 0] dm_csr_tap$client_response_put,
 		dm_csr_tap$server_response_get;
   wire dm_csr_tap$EN_client_request_get,
        dm_csr_tap$EN_client_response_put,
@@ -968,9 +971,9 @@ module mkCore(CLK,
 
   // ports of submodule dm_gpr_tap_ifc
   wire [361 : 0] dm_gpr_tap_ifc$trace_data_out_get;
-  wire [77 : 0] dm_gpr_tap_ifc$client_request_get,
+  wire [69 : 0] dm_gpr_tap_ifc$client_request_get,
 		dm_gpr_tap_ifc$server_request_put;
-  wire [63 : 0] dm_gpr_tap_ifc$client_response_put,
+  wire [64 : 0] dm_gpr_tap_ifc$client_response_put,
 		dm_gpr_tap_ifc$server_response_get;
   wire dm_gpr_tap_ifc$EN_client_request_get,
        dm_gpr_tap_ifc$EN_client_response_put,
@@ -1617,12 +1620,12 @@ module mkCore(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h5134;
-  reg [31 : 0] v__h5340;
-  reg [31 : 0] v__h5640;
-  reg [31 : 0] v__h5128;
-  reg [31 : 0] v__h5334;
-  reg [31 : 0] v__h5634;
+  reg [31 : 0] v__h5151;
+  reg [31 : 0] v__h5357;
+  reg [31 : 0] v__h5657;
+  reg [31 : 0] v__h5145;
+  reg [31 : 0] v__h5351;
+  reg [31 : 0] v__h5651;
   // synopsys translate_on
 
   // remaining internal signals
@@ -2087,6 +2090,7 @@ module mkCore(CLK,
 			      .dmi_write_dm_word(debug_module$dmi_write_dm_word),
 			      .hart0_client_run_halt_response_put(debug_module$hart0_client_run_halt_response_put),
 			      .hart0_csr_mem_client_response_put(debug_module$hart0_csr_mem_client_response_put),
+			      .hart0_fpr_mem_client_response_put(debug_module$hart0_fpr_mem_client_response_put),
 			      .hart0_gpr_mem_client_response_put(debug_module$hart0_gpr_mem_client_response_put),
 			      .master_arready(debug_module$master_arready),
 			      .master_awready(debug_module$master_awready),
@@ -2108,6 +2112,8 @@ module mkCore(CLK,
 			      .EN_hart0_get_other_req_get(debug_module$EN_hart0_get_other_req_get),
 			      .EN_hart0_gpr_mem_client_request_get(debug_module$EN_hart0_gpr_mem_client_request_get),
 			      .EN_hart0_gpr_mem_client_response_put(debug_module$EN_hart0_gpr_mem_client_response_put),
+			      .EN_hart0_fpr_mem_client_request_get(debug_module$EN_hart0_fpr_mem_client_request_get),
+			      .EN_hart0_fpr_mem_client_response_put(debug_module$EN_hart0_fpr_mem_client_response_put),
 			      .EN_hart0_csr_mem_client_request_get(debug_module$EN_hart0_csr_mem_client_request_get),
 			      .EN_hart0_csr_mem_client_response_put(debug_module$EN_hart0_csr_mem_client_response_put),
 			      .EN_get_ndm_reset_req_get(debug_module$EN_get_ndm_reset_req_get),
@@ -2124,6 +2130,9 @@ module mkCore(CLK,
 			      .hart0_gpr_mem_client_request_get(debug_module$hart0_gpr_mem_client_request_get),
 			      .RDY_hart0_gpr_mem_client_request_get(debug_module$RDY_hart0_gpr_mem_client_request_get),
 			      .RDY_hart0_gpr_mem_client_response_put(debug_module$RDY_hart0_gpr_mem_client_response_put),
+			      .hart0_fpr_mem_client_request_get(),
+			      .RDY_hart0_fpr_mem_client_request_get(),
+			      .RDY_hart0_fpr_mem_client_response_put(),
 			      .hart0_csr_mem_client_request_get(debug_module$hart0_csr_mem_client_request_get),
 			      .RDY_hart0_csr_mem_client_request_get(debug_module$RDY_hart0_csr_mem_client_request_get),
 			      .RDY_hart0_csr_mem_client_response_put(debug_module$RDY_hart0_csr_mem_client_response_put),
@@ -2996,7 +3005,7 @@ module mkCore(CLK,
   assign cpu$dmem_master_wready = fabric_2x3$v_from_masters_0_wready ;
   assign cpu$hart0_csr_mem_server_request_put =
 	     dm_csr_tap$client_request_get ;
-  assign cpu$hart0_fpr_mem_server_request_put = 78'h0 ;
+  assign cpu$hart0_fpr_mem_server_request_put = 70'h0 ;
   assign cpu$hart0_gpr_mem_server_request_put =
 	     dm_gpr_tap_ifc$client_request_get ;
   assign cpu$hart0_put_other_req_put = debug_module$hart0_get_other_req_get ;
@@ -3054,6 +3063,7 @@ module mkCore(CLK,
 	     cpu$hart0_server_run_halt_response_get ;
   assign debug_module$hart0_csr_mem_client_response_put =
 	     dm_csr_tap$server_response_get ;
+  assign debug_module$hart0_fpr_mem_client_response_put = 65'h0 ;
   assign debug_module$hart0_gpr_mem_client_response_put =
 	     dm_gpr_tap_ifc$server_response_get ;
   assign debug_module$master_arready = dm_mem_tap$slave_arready ;
@@ -3082,6 +3092,8 @@ module mkCore(CLK,
 	     CAN_FIRE_RL_ClientServerRequest_1 ;
   assign debug_module$EN_hart0_gpr_mem_client_response_put =
 	     CAN_FIRE_RL_ClientServerResponse_1 ;
+  assign debug_module$EN_hart0_fpr_mem_client_request_get = 1'b0 ;
+  assign debug_module$EN_hart0_fpr_mem_client_response_put = 1'b0 ;
   assign debug_module$EN_hart0_csr_mem_client_request_get =
 	     CAN_FIRE_RL_ClientServerRequest_3 ;
   assign debug_module$EN_hart0_csr_mem_client_response_put =
@@ -3462,33 +3474,33 @@ module mkCore(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_from_soc_start)
 	begin
-	  v__h5134 = $stime;
+	  v__h5151 = $stime;
 	  #0;
 	end
-    v__h5128 = v__h5134 / 32'd10;
+    v__h5145 = v__h5151 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_from_soc_start)
-	$display("%0d: Core.rl_cpu_hart0_reset_from_soc_start", v__h5128);
+	$display("%0d: Core.rl_cpu_hart0_reset_from_soc_start", v__h5145);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_from_dm_start)
 	begin
-	  v__h5340 = $stime;
+	  v__h5357 = $stime;
 	  #0;
 	end
-    v__h5334 = v__h5340 / 32'd10;
+    v__h5351 = v__h5357 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_from_dm_start)
-	$display("%0d: Core.rl_cpu_hart0_reset_from_dm_start", v__h5334);
+	$display("%0d: Core.rl_cpu_hart0_reset_from_dm_start", v__h5351);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_complete)
 	begin
-	  v__h5640 = $stime;
+	  v__h5657 = $stime;
 	  #0;
 	end
-    v__h5634 = v__h5640 / 32'd10;
+    v__h5651 = v__h5657 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_complete)
-	$display("%0d: Core.rl_cpu_hart0_reset_complete", v__h5634);
+	$display("%0d: Core.rl_cpu_hart0_reset_complete", v__h5651);
   end
   // synopsys translate_on
 endmodule  // mkCore
