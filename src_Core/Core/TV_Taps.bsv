@@ -19,7 +19,6 @@ import FIFOF         :: *;
 import GetPut        :: *;
 import ClientServer  :: *;
 import Connectable   :: *;
-import Memory        :: *;
 
 // ----------------
 // BSV additional libs
@@ -30,8 +29,9 @@ import GetPut_Aux  :: *;
 // ================================================================
 // Project imports
 
-import ISA_Decls  :: *;
-import TV_Info    :: *;
+import ISA_Decls      :: *;
+import DM_CPU_Req_Rsp :: *;
+import TV_Info        :: *;
 
 import AXI4_Types   :: *;
 import Fabric_Defs  :: *;
@@ -115,21 +115,21 @@ endmodule: mkDM_Mem_Tap
 // DM-to-CPU GPR tap (for writes to GPRs)
 
 interface DM_GPR_Tap_IFC;
-   interface MemoryClient #(5, XLEN)  client;
-   interface MemoryServer #(5, XLEN)  server;
+   interface Client #(DM_CPU_Req #(5,  XLEN), DM_CPU_Rsp #(XLEN))  client;
+   interface Server #(DM_CPU_Req #(5,  XLEN), DM_CPU_Rsp #(XLEN))  server;
    interface Get #(Trace_Data)        trace_data_out;
 endinterface
 
 (* synthesize *)
 module mkDM_GPR_Tap (DM_GPR_Tap_IFC);
    // req from DM
-   FIFOF #(MemoryRequest #(5, XLEN)) f_req_in     <- mkFIFOF;
+   FIFOF #(DM_CPU_Req #(5,  XLEN)) f_req_in     <- mkFIFOF;
    // req to CPU
-   FIFOF #(MemoryRequest #(5, XLEN)) f_req_out    <- mkFIFOF;
+   FIFOF #(DM_CPU_Req #(5,  XLEN)) f_req_out    <- mkFIFOF;
    // resp CPU->DM
-   FIFOF #(MemoryResponse #(XLEN))   f_rsp        <- mkFIFOF;
+   FIFOF #(DM_CPU_Rsp #(XLEN))     f_rsp        <- mkFIFOF;
    // Tap to TV
-   FIFOF #(Trace_Data)               f_trace_data <- mkFIFOF;
+   FIFOF #(Trace_Data)             f_trace_data <- mkFIFOF;
 
    rule request;
       let req <- pop (f_req_in);
@@ -145,8 +145,8 @@ module mkDM_GPR_Tap (DM_GPR_Tap_IFC);
       end
    endrule
 
-   interface MemoryClient client = toGPClient (f_req_out, f_rsp);
-   interface MemoryServer server = toGPServer (f_req_in,  f_rsp);
+   interface Client client = toGPClient (f_req_out, f_rsp);
+   interface Server server = toGPServer (f_req_in,  f_rsp);
 
    interface Get trace_data_out = toGet (f_trace_data);
 endmodule: mkDM_GPR_Tap
@@ -157,21 +157,21 @@ endmodule: mkDM_GPR_Tap
 `ifdef ISA_F_OR_D
 
 interface DM_FPR_Tap_IFC;
-   interface MemoryClient #(5, FLEN)  client;
-   interface MemoryServer #(5, FLEN)  server;
-   interface Get #(Trace_Data)        trace_data_out;
+   interface Client #(DM_CPU_Req #(5,  XLEN), DM_CPU_Rsp #(XLEN)) client;
+   interface Server #(DM_CPU_Req #(5,  XLEN), DM_CPU_Rsp #(XLEN)) server;
+   interface Get #(Trace_Data) trace_data_out;
 endinterface
 
 (* synthesize *)
 module mkDM_FPR_Tap (DM_FPR_Tap_IFC);
    // req from DM
-   FIFOF #(MemoryRequest #(5, FLEN)) f_req_in     <- mkFIFOF;
+   FIFOF #(DM_CPU_Req #(5,  XLEN)) f_req_in     <- mkFIFOF;
    // req to CPU
-   FIFOF #(MemoryRequest #(5, FLEN)) f_req_out    <- mkFIFOF;
+   FIFOF #(DM_CPU_Req #(5,  XLEN)) f_req_out    <- mkFIFOF;
    // resp CPU->DM
-   FIFOF #(MemoryResponse #(FLEN))   f_rsp        <- mkFIFOF;
+   FIFOF #(DM_CPU_Rsp #(XLEN))     f_rsp        <- mkFIFOF;
    // Tap to TV
-   FIFOF #(Trace_Data)               f_trace_data <- mkFIFOF;
+   FIFOF #(Trace_Data)             f_trace_data <- mkFIFOF;
 
    rule request;
       let req <- pop (f_req_in);
@@ -187,8 +187,8 @@ module mkDM_FPR_Tap (DM_FPR_Tap_IFC);
       end
    endrule
 
-   interface MemoryClient client = toGPClient (f_req_out, f_rsp);
-   interface MemoryServer server = toGPServer (f_req_in,  f_rsp);
+   interface Client client = toGPClient (f_req_out, f_rsp);
+   interface Server server = toGPServer (f_req_in,  f_rsp);
 
    interface Get trace_data_out = toGet (f_trace_data);
 endmodule: mkDM_FPR_Tap
@@ -199,21 +199,21 @@ endmodule: mkDM_FPR_Tap
 // DM-to-CPU CSR tap (for writes to CSRs)
 
 interface DM_CSR_Tap_IFC;
-   interface MemoryClient #(12, XLEN)  client;
-   interface MemoryServer #(12, XLEN)  server;
-   interface Get #(Trace_Data)         trace_data_out;
+   interface Client #(DM_CPU_Req #(12,  XLEN), DM_CPU_Rsp #(XLEN)) client;
+   interface Server #(DM_CPU_Req #(12,  XLEN), DM_CPU_Rsp #(XLEN)) server;
+   interface Get #(Trace_Data)  trace_data_out;
 endinterface
 
 (* synthesize *)
 module mkDM_CSR_Tap (DM_CSR_Tap_IFC);
    // req from DM
-   FIFOF #(MemoryRequest #(12, XLEN)) f_req_in     <- mkFIFOF;
+   FIFOF #(DM_CPU_Req #(12,  XLEN)) f_req_in     <- mkFIFOF;
    // req to CPU
-   FIFOF #(MemoryRequest #(12, XLEN)) f_req_out    <- mkFIFOF;
+   FIFOF #(DM_CPU_Req #(12,  XLEN)) f_req_out    <- mkFIFOF;
    // resp CPU->DM
-   FIFOF #(MemoryResponse #(XLEN))    f_rsp        <- mkFIFOF;
+   FIFOF #(DM_CPU_Rsp #(XLEN))      f_rsp        <- mkFIFOF;
    // Tap to TV
-   FIFOF #(Trace_Data)                f_trace_data <- mkFIFOF;
+   FIFOF #(Trace_Data)              f_trace_data <- mkFIFOF;
 
    rule request;
       let req <- pop (f_req_in);
@@ -228,8 +228,8 @@ module mkDM_CSR_Tap (DM_CSR_Tap_IFC);
       end
    endrule
 
-   interface MemoryClient client = toGPClient (f_req_out, f_rsp);
-   interface MemoryServer server = toGPServer (f_req_in,  f_rsp);
+   interface Client client = toGPClient (f_req_out, f_rsp);
+   interface Server server = toGPServer (f_req_in,  f_rsp);
 
    interface Get trace_data_out = toGet (f_trace_data);
 endmodule: mkDM_CSR_Tap
