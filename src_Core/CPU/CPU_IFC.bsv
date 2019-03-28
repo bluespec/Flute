@@ -5,7 +5,6 @@ package CPU_IFC;
 // ================================================================
 // BSV library imports
 
-import Memory       :: *;
 import GetPut       :: *;
 import ClientServer :: *;
 

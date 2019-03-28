@@ -40,7 +40,9 @@ interface DM_Abstract_Commands_IFC;
    // ----------------
    // Facing CPU/hart
    interface Client #(DM_CPU_Req #(5,  XLEN), DM_CPU_Rsp #(XLEN)) hart0_gpr_mem_client;
+`ifdef ISA_F
    interface Client #(DM_CPU_Req #(5,  FLEN), DM_CPU_Rsp #(FLEN)) hart0_fpr_mem_client;
+`endif
    interface Client #(DM_CPU_Req #(12, XLEN), DM_CPU_Rsp #(XLEN)) hart0_csr_mem_client;
 endinterface
 
@@ -60,8 +62,10 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
    FIFOF #(DM_CPU_Rsp #(XLEN))     f_hart0_gpr_rsps <- mkFIFOF1;
 
    // FIFOs for request/response to access FPRs
+`ifdef ISA_F
    FIFOF #(DM_CPU_Req #(5,  FLEN)) f_hart0_fpr_reqs <- mkFIFOF1;
    FIFOF #(DM_CPU_Rsp #(FLEN))     f_hart0_fpr_rsps <- mkFIFOF1;
+`endif
 
    // FIFOs for request/response to access CSRs
    FIFOF #(DM_CPU_Req #(12, XLEN)) f_hart0_csr_reqs <- mkFIFOF1;
@@ -221,8 +225,12 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
    Bool is_gpr = (   (fromInteger (dm_command_access_reg_regno_gpr_0) <= rg_command_access_reg_regno)
 		  && (rg_command_access_reg_regno <= fromInteger (dm_command_access_reg_regno_gpr_1F)));
 
+`ifdef ISA_F
    Bool is_fpr = (   (fromInteger (dm_command_access_reg_regno_fpr_0) <= rg_command_access_reg_regno)
 		  && (rg_command_access_reg_regno <= fromInteger (dm_command_access_reg_regno_fpr_1F)));
+`else
+   Bool is_fpr = False;
+`endif
 
    Bit #(12) csr_addr = truncate (rg_command_access_reg_regno - fromInteger (dm_command_access_reg_regno_csr_0));
    Bit #(5)  gpr_addr = truncate (rg_command_access_reg_regno - fromInteger (dm_command_access_reg_regno_gpr_0));
@@ -374,6 +382,8 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
    // ----------------------------------------------------------------
    // Write FPR
 
+`ifdef ISA_F
+
    rule rl_fpr_write_start (   rg_abstractcs_busy
 			    && rg_start_reg_access
 			    && rg_command_access_reg_write
@@ -441,6 +451,8 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
       rg_abstractcs_cmderr <= (rsp.ok ? DM_ABSTRACTCS_CMDERR_NONE : DM_ABSTRACTCS_CMDERR_HALT_RESUME);
       rg_abstractcs_busy <= False;
    endrule
+
+`endif
 
    // ----------------------------------------------------------------
    // Read/Write unknown address
@@ -566,7 +578,9 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
    // ----------------
    // Facing CPU/hart
       interface Client hart0_gpr_mem_client = toGPClient (f_hart0_gpr_reqs, f_hart0_gpr_rsps);
+`ifdef ISA_F
       interface Client hart0_fpr_mem_client = toGPClient (f_hart0_fpr_reqs, f_hart0_fpr_rsps);
+`endif
       interface Client hart0_csr_mem_client = toGPClient (f_hart0_csr_reqs, f_hart0_csr_rsps);
 endmodule
 
