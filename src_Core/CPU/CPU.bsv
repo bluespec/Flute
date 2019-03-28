@@ -20,7 +20,6 @@ export mkCPU;
 // ================================================================
 // BSV library imports
 
-import Memory       :: *;
 import FIFOF        :: *;
 import SpecialFIFOs :: *;
 import GetPut       :: *;
@@ -73,7 +72,8 @@ import Near_Mem_TCM :: *;
 `endif
 
 `ifdef INCLUDE_GDB_CONTROL
-import Debug_Module :: *;
+import Debug_Module   :: *;
+import DM_CPU_Req_Rsp :: *;
 `endif
 
 // System address map and pc_reset value
@@ -235,18 +235,18 @@ module mkCPU (CPU_IFC);
    Reg #(Bit #(1))  rg_step_count <- mkReg (0);
 
    // Debugger GPR read/write request/response
-   FIFOF #(MemoryRequest  #(5,  XLEN)) f_gpr_reqs <- mkFIFOF1;
-   FIFOF #(MemoryResponse #(    XLEN)) f_gpr_rsps <- mkFIFOF1;
+   FIFOF #(DM_CPU_Req #(5,  XLEN)) f_gpr_reqs <- mkFIFOF1;
+   FIFOF #(DM_CPU_Rsp #(XLEN))     f_gpr_rsps <- mkFIFOF1;
 
 `ifdef ISA_F
    // Debugger FPR read/write request/response
-   FIFOF #(MemoryRequest  #(5,  FLEN)) f_fpr_reqs <- mkFIFOF1;
-   FIFOF #(MemoryResponse #(    FLEN)) f_fpr_rsps <- mkFIFOF1;
+   FIFOF #(DM_CPU_Req #(5,  FLEN)) f_fpr_reqs <- mkFIFOF1;
+   FIFOF #(DM_CPU_Rsp #(FLEN))     f_fpr_rsps <- mkFIFOF1;
 `endif
 
    // Debugger CSR read/write request/response
-   FIFOF #(MemoryRequest  #(12, XLEN)) f_csr_reqs <- mkFIFOF1;
-   FIFOF #(MemoryResponse #(    XLEN)) f_csr_rsps <- mkFIFOF1;
+   FIFOF #(DM_CPU_Req #(12, XLEN)) f_csr_reqs <- mkFIFOF1;
+   FIFOF #(DM_CPU_Rsp #(XLEN))     f_csr_rsps <- mkFIFOF1;
 
 `endif
 
@@ -1675,53 +1675,74 @@ module mkCPU (CPU_IFC);
    // Debug Module GPR read/write
 
    rule rl_debug_read_gpr ((rg_state == CPU_DEBUG_MODE) && (! f_gpr_reqs.first.write));
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_debug_read_gpr", mcycle);
-
       let req <- pop (f_gpr_reqs);
       Bit #(5) regname = req.address;
       let data = gpr_regfile.read_rs1_port2 (regname);
-      let rsp = MemoryResponse {data: data};
+      let rsp = DM_CPU_Rsp {ok: True, data: data};
       f_gpr_rsps.enq (rsp);
       if (cur_verbosity > 1)
-	 $display ("%0d: CPU.rl_debug_read_gpr: Read reg %0d => 0x%0h", mcycle, regname, data);
+	 $display ("%0d: CPU.rl_debug_read_gpr: reg %0d => 0x%0h",
+		   mcycle, regname, data);
    endrule
 
    rule rl_debug_write_gpr ((rg_state == CPU_DEBUG_MODE) && f_gpr_reqs.first.write);
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_debug_write_gpr", mcycle);
-
       let req <- pop (f_gpr_reqs);
       Bit #(5) regname = req.address;
       let data = req.data;
       gpr_regfile.write_rd (regname, data);
+
+      let rsp = DM_CPU_Rsp {ok: True, data: ?};
+      f_gpr_rsps.enq (rsp);
+
       if (cur_verbosity > 1)
-	 $display ("%0d: CPU.rl_debug_write_gpr: Write reg %0d => 0x%0h", mcycle, regname, data);
+	 $display ("%0d: CPU.rl_debug_write_gpr: reg %0d <= 0x%0h",
+		   mcycle, regname, data);
    endrule
 
-`ifdef ISA_F
+   rule rl_debug_gpr_access_busy (rg_state != CPU_DEBUG_MODE);
+      let req <- pop (f_gpr_reqs);
+      let rsp = DM_CPU_Rsp {ok: False, data: ?};
+      f_gpr_rsps.enq (rsp);
+
+      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_debug_gpr_access_busy", mcycle);
+   endrule
+
    // ----------------
    // Debug Module FPR read/write
 
+`ifdef ISA_F
    rule rl_debug_read_fpr ((rg_state == CPU_DEBUG_MODE) && (! f_fpr_reqs.first.write));
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_debug_read_fpr", mcycle);
-
       let req <- pop (f_fpr_reqs);
       Bit #(5) regname = req.address;
       let data = fpr_regfile.read_rs1_port2 (regname);
-      let rsp = MemoryResponse {data: data};
+      let rsp = DM_CPU_Rsp {ok: True, data: data};
       f_fpr_rsps.enq (rsp);
       if (cur_verbosity > 1)
-	 $display ("%0d: CPU.rl_debug_read_fpr: Read reg %0d => 0x%0h", mcycle, regname, data);
+	 $display ("%0d: CPU.rl_debug_read_fpr: reg %0d => 0x%0h",
+		   mcycle, regname, data);
    endrule
 
    rule rl_debug_write_fpr ((rg_state == CPU_DEBUG_MODE) && f_fpr_reqs.first.write);
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_debug_write_fpr", mcycle);
-
       let req <- pop (f_fpr_reqs);
       Bit #(5) regname = req.address;
       let data = req.data;
       fpr_regfile.write_rd (regname, data);
+
+      let rsp = DM_CPU_Rsp {ok: True, data: ?};
+      f_fpr_rsps.enq (rsp);
+
       if (cur_verbosity > 1)
-	 $display ("%0d: CPU.rl_debug_write_fpr: Write reg %0d => 0x%0h", mcycle, regname, data);
+	 $display ("%0d: CPU.rl_debug_write_fpr: reg %0d <= 0x%0h",
+		   mcycle, regname, data);
+   endrule
+
+   rule rl_debug_fpr_access_busy (rg_state != CPU_DEBUG_MODE);
+      let req <- pop (f_fpr_reqs);
+      let rsp = DM_CPU_Rsp {ok: False, data: ?};
+      f_fpr_rsps.enq (rsp);
+
+      if (cur_verbosity > 1)
+	 $display ("%0d:  CPU.rl_debug_fpr_access_busy", mcycle);
    endrule
 `endif
 
@@ -1729,27 +1750,38 @@ module mkCPU (CPU_IFC);
    // Debug Module CSR read/write
 
    rule rl_debug_read_csr ((rg_state == CPU_DEBUG_MODE) && (! f_csr_reqs.first.write));
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_debug_read_csr", mcycle);
-
       let req <- pop (f_csr_reqs);
       Bit #(12) csr_addr = req.address;
       let m_data = csr_regfile.read_csr_port2 (csr_addr);
       let data = fromMaybe (?, m_data);
-      let rsp = MemoryResponse {data: data};
+      let rsp = DM_CPU_Rsp {ok: True, data: data};
       f_csr_rsps.enq (rsp);
       if (cur_verbosity > 1)
-	 $display ("%0d: CPU.rl_debug_read_csr: Read csr %0d => 0x%0h", mcycle, csr_addr, data);
+	 $display ("%0d: CPU.rl_debug_read_csr: csr %0d => 0x%0h",
+		   mcycle, csr_addr, data);
    endrule
 
    rule rl_debug_write_csr ((rg_state == CPU_DEBUG_MODE) && f_csr_reqs.first.write);
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_debug_write_csr", mcycle);
-
       let req <- pop (f_csr_reqs);
       Bit #(12) csr_addr = req.address;
       let data = req.data;
       let new_csr_val <- csr_regfile.mav_csr_write (csr_addr, data);
+
+      let rsp = DM_CPU_Rsp {ok: True, data: ?};
+      f_csr_rsps.enq (rsp);
+
       if (cur_verbosity > 1)
-	 $display ("%0d: CPU.rl_debug_write_csr: Write csr 0x%0h 0x%0h => 0x%0h", mcycle, csr_addr, data, new_csr_val);
+	 $display ("%0d: CPU.rl_debug_write_csr: csr 0x%0h 0x%0h <= 0x%0h",
+		   mcycle, csr_addr, data, new_csr_val);
+   endrule
+
+   rule rl_debug_csr_access_busy (rg_state != CPU_DEBUG_MODE);
+      let req <- pop (f_csr_reqs);
+      let rsp = DM_CPU_Rsp {ok: False, data: ?};
+      f_csr_rsps.enq (rsp);
+
+      if (cur_verbosity > 1)
+	 $display ("%0d:  CPU.rl_debug_csr_access_busy", mcycle);
    endrule
 `endif
 
@@ -1817,15 +1849,15 @@ module mkCPU (CPU_IFC);
    endinterface
 
    // GPR access
-   interface MemoryServer  hart0_gpr_mem_server = toGPServer (f_gpr_reqs, f_gpr_rsps);
+   interface Server  hart0_gpr_mem_server = toGPServer (f_gpr_reqs, f_gpr_rsps);
 
 `ifdef ISA_F
    // FPR access
-   interface MemoryServer  hart0_fpr_mem_server = toGPServer (f_fpr_reqs, f_fpr_rsps);
+   interface Server  hart0_fpr_mem_server = toGPServer (f_fpr_reqs, f_fpr_rsps);
 `endif
 
    // CSR access
-   interface MemoryServer  hart0_csr_mem_server = toGPServer (f_csr_reqs, f_csr_rsps);
+   interface Server  hart0_csr_mem_server = toGPServer (f_csr_reqs, f_csr_rsps);
 `endif
 
 endmodule: mkCPU
