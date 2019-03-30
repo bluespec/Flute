@@ -16,10 +16,13 @@
 // RDY_hart0_client_run_halt_response_put  O     1 reg
 // hart0_get_other_req_get        O     4 reg
 // RDY_hart0_get_other_req_get    O     1 reg
-// hart0_gpr_mem_client_request_get  O    78 reg
+// hart0_gpr_mem_client_request_get  O    70 reg
 // RDY_hart0_gpr_mem_client_request_get  O     1 reg
 // RDY_hart0_gpr_mem_client_response_put  O     1 reg
-// hart0_csr_mem_client_request_get  O    85 reg
+// hart0_fpr_mem_client_request_get  O    70 reg
+// RDY_hart0_fpr_mem_client_request_get  O     1 reg
+// RDY_hart0_fpr_mem_client_response_put  O     1 reg
+// hart0_csr_mem_client_request_get  O    77 reg
 // RDY_hart0_csr_mem_client_request_get  O     1 reg
 // RDY_hart0_csr_mem_client_response_put  O     1 reg
 // RDY_get_ndm_reset_req_get      O     1 reg
@@ -58,8 +61,9 @@
 // dmi_write_dm_addr              I     7
 // dmi_write_dm_word              I    32
 // hart0_client_run_halt_response_put  I     1 reg
-// hart0_gpr_mem_client_response_put  I    64 reg
-// hart0_csr_mem_client_response_put  I    64 reg
+// hart0_gpr_mem_client_response_put  I    65 reg
+// hart0_fpr_mem_client_response_put  I    65 reg
+// hart0_csr_mem_client_response_put  I    65 reg
 // master_awready                 I     1
 // master_wready                  I     1
 // master_bvalid                  I     1
@@ -76,12 +80,14 @@
 // EN_hart0_get_reset_req_get     I     1
 // EN_hart0_client_run_halt_response_put  I     1
 // EN_hart0_gpr_mem_client_response_put  I     1
+// EN_hart0_fpr_mem_client_response_put  I     1
 // EN_hart0_csr_mem_client_response_put  I     1
 // EN_get_ndm_reset_req_get       I     1
 // EN_dmi_read_data               I     1
 // EN_hart0_client_run_halt_request_get  I     1
 // EN_hart0_get_other_req_get     I     1
 // EN_hart0_gpr_mem_client_request_get  I     1
+// EN_hart0_fpr_mem_client_request_get  I     1
 // EN_hart0_csr_mem_client_request_get  I     1
 //
 // Combinational paths from inputs to outputs:
@@ -147,6 +153,14 @@ module mkDebug_Module(CLK,
 		      hart0_gpr_mem_client_response_put,
 		      EN_hart0_gpr_mem_client_response_put,
 		      RDY_hart0_gpr_mem_client_response_put,
+
+		      EN_hart0_fpr_mem_client_request_get,
+		      hart0_fpr_mem_client_request_get,
+		      RDY_hart0_fpr_mem_client_request_get,
+
+		      hart0_fpr_mem_client_response_put,
+		      EN_hart0_fpr_mem_client_response_put,
+		      RDY_hart0_fpr_mem_client_response_put,
 
 		      EN_hart0_csr_mem_client_request_get,
 		      hart0_csr_mem_client_request_get,
@@ -272,21 +286,31 @@ module mkDebug_Module(CLK,
 
   // actionvalue method hart0_gpr_mem_client_request_get
   input  EN_hart0_gpr_mem_client_request_get;
-  output [77 : 0] hart0_gpr_mem_client_request_get;
+  output [69 : 0] hart0_gpr_mem_client_request_get;
   output RDY_hart0_gpr_mem_client_request_get;
 
   // action method hart0_gpr_mem_client_response_put
-  input  [63 : 0] hart0_gpr_mem_client_response_put;
+  input  [64 : 0] hart0_gpr_mem_client_response_put;
   input  EN_hart0_gpr_mem_client_response_put;
   output RDY_hart0_gpr_mem_client_response_put;
 
+  // actionvalue method hart0_fpr_mem_client_request_get
+  input  EN_hart0_fpr_mem_client_request_get;
+  output [69 : 0] hart0_fpr_mem_client_request_get;
+  output RDY_hart0_fpr_mem_client_request_get;
+
+  // action method hart0_fpr_mem_client_response_put
+  input  [64 : 0] hart0_fpr_mem_client_response_put;
+  input  EN_hart0_fpr_mem_client_response_put;
+  output RDY_hart0_fpr_mem_client_response_put;
+
   // actionvalue method hart0_csr_mem_client_request_get
   input  EN_hart0_csr_mem_client_request_get;
-  output [84 : 0] hart0_csr_mem_client_request_get;
+  output [76 : 0] hart0_csr_mem_client_request_get;
   output RDY_hart0_csr_mem_client_request_get;
 
   // action method hart0_csr_mem_client_response_put
-  input  [63 : 0] hart0_csr_mem_client_response_put;
+  input  [64 : 0] hart0_csr_mem_client_response_put;
   input  EN_hart0_csr_mem_client_response_put;
   output RDY_hart0_csr_mem_client_response_put;
 
@@ -410,8 +434,9 @@ module mkDebug_Module(CLK,
 
   // signals for module outputs
   reg [31 : 0] dmi_read_data;
-  wire [84 : 0] hart0_csr_mem_client_request_get;
-  wire [77 : 0] hart0_gpr_mem_client_request_get;
+  wire [76 : 0] hart0_csr_mem_client_request_get;
+  wire [69 : 0] hart0_fpr_mem_client_request_get,
+		hart0_gpr_mem_client_request_get;
   wire [63 : 0] master_araddr, master_awaddr, master_wdata;
   wire [7 : 0] master_arlen, master_awlen, master_wstrb;
   wire [3 : 0] hart0_get_other_req_get,
@@ -434,6 +459,8 @@ module mkDebug_Module(CLK,
        RDY_hart0_client_run_halt_response_put,
        RDY_hart0_csr_mem_client_request_get,
        RDY_hart0_csr_mem_client_response_put,
+       RDY_hart0_fpr_mem_client_request_get,
+       RDY_hart0_fpr_mem_client_response_put,
        RDY_hart0_get_other_req_get,
        RDY_hart0_get_reset_req_get,
        RDY_hart0_gpr_mem_client_request_get,
@@ -459,9 +486,11 @@ module mkDebug_Module(CLK,
   wire f_read_addr_rv$EN;
 
   // ports of submodule dm_abstract_commands
-  wire [84 : 0] dm_abstract_commands$hart0_csr_mem_client_request_get;
-  wire [77 : 0] dm_abstract_commands$hart0_gpr_mem_client_request_get;
-  wire [63 : 0] dm_abstract_commands$hart0_csr_mem_client_response_put,
+  wire [76 : 0] dm_abstract_commands$hart0_csr_mem_client_request_get;
+  wire [69 : 0] dm_abstract_commands$hart0_fpr_mem_client_request_get,
+		dm_abstract_commands$hart0_gpr_mem_client_request_get;
+  wire [64 : 0] dm_abstract_commands$hart0_csr_mem_client_response_put,
+		dm_abstract_commands$hart0_fpr_mem_client_response_put,
 		dm_abstract_commands$hart0_gpr_mem_client_response_put;
   wire [31 : 0] dm_abstract_commands$av_read,
 		dm_abstract_commands$write_dm_word;
@@ -470,12 +499,16 @@ module mkDebug_Module(CLK,
   wire dm_abstract_commands$EN_av_read,
        dm_abstract_commands$EN_hart0_csr_mem_client_request_get,
        dm_abstract_commands$EN_hart0_csr_mem_client_response_put,
+       dm_abstract_commands$EN_hart0_fpr_mem_client_request_get,
+       dm_abstract_commands$EN_hart0_fpr_mem_client_response_put,
        dm_abstract_commands$EN_hart0_gpr_mem_client_request_get,
        dm_abstract_commands$EN_hart0_gpr_mem_client_response_put,
        dm_abstract_commands$EN_reset,
        dm_abstract_commands$EN_write,
        dm_abstract_commands$RDY_hart0_csr_mem_client_request_get,
        dm_abstract_commands$RDY_hart0_csr_mem_client_response_put,
+       dm_abstract_commands$RDY_hart0_fpr_mem_client_request_get,
+       dm_abstract_commands$RDY_hart0_fpr_mem_client_response_put,
        dm_abstract_commands$RDY_hart0_gpr_mem_client_request_get,
        dm_abstract_commands$RDY_hart0_gpr_mem_client_response_put;
 
@@ -560,6 +593,8 @@ module mkDebug_Module(CLK,
        CAN_FIRE_hart0_client_run_halt_response_put,
        CAN_FIRE_hart0_csr_mem_client_request_get,
        CAN_FIRE_hart0_csr_mem_client_response_put,
+       CAN_FIRE_hart0_fpr_mem_client_request_get,
+       CAN_FIRE_hart0_fpr_mem_client_response_put,
        CAN_FIRE_hart0_get_other_req_get,
        CAN_FIRE_hart0_get_reset_req_get,
        CAN_FIRE_hart0_gpr_mem_client_request_get,
@@ -578,6 +613,8 @@ module mkDebug_Module(CLK,
        WILL_FIRE_hart0_client_run_halt_response_put,
        WILL_FIRE_hart0_csr_mem_client_request_get,
        WILL_FIRE_hart0_csr_mem_client_response_put,
+       WILL_FIRE_hart0_fpr_mem_client_request_get,
+       WILL_FIRE_hart0_fpr_mem_client_response_put,
        WILL_FIRE_hart0_get_other_req_get,
        WILL_FIRE_hart0_get_reset_req_get,
        WILL_FIRE_hart0_gpr_mem_client_request_get,
@@ -590,8 +627,8 @@ module mkDebug_Module(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h870;
-  reg [31 : 0] v__h864;
+  reg [31 : 0] v__h887;
+  reg [31 : 0] v__h881;
   // synopsys translate_on
 
   // action method dmi_read_addr
@@ -718,6 +755,24 @@ module mkDebug_Module(CLK,
 	     dm_abstract_commands$RDY_hart0_gpr_mem_client_response_put ;
   assign WILL_FIRE_hart0_gpr_mem_client_response_put =
 	     EN_hart0_gpr_mem_client_response_put ;
+
+  // actionvalue method hart0_fpr_mem_client_request_get
+  assign hart0_fpr_mem_client_request_get =
+	     dm_abstract_commands$hart0_fpr_mem_client_request_get ;
+  assign RDY_hart0_fpr_mem_client_request_get =
+	     dm_abstract_commands$RDY_hart0_fpr_mem_client_request_get ;
+  assign CAN_FIRE_hart0_fpr_mem_client_request_get =
+	     dm_abstract_commands$RDY_hart0_fpr_mem_client_request_get ;
+  assign WILL_FIRE_hart0_fpr_mem_client_request_get =
+	     EN_hart0_fpr_mem_client_request_get ;
+
+  // action method hart0_fpr_mem_client_response_put
+  assign RDY_hart0_fpr_mem_client_response_put =
+	     dm_abstract_commands$RDY_hart0_fpr_mem_client_response_put ;
+  assign CAN_FIRE_hart0_fpr_mem_client_response_put =
+	     dm_abstract_commands$RDY_hart0_fpr_mem_client_response_put ;
+  assign WILL_FIRE_hart0_fpr_mem_client_response_put =
+	     EN_hart0_fpr_mem_client_response_put ;
 
   // actionvalue method hart0_csr_mem_client_request_get
   assign hart0_csr_mem_client_request_get =
@@ -856,6 +911,7 @@ module mkDebug_Module(CLK,
 					      .RST_N(RST_N),
 					      .av_read_dm_addr(dm_abstract_commands$av_read_dm_addr),
 					      .hart0_csr_mem_client_response_put(dm_abstract_commands$hart0_csr_mem_client_response_put),
+					      .hart0_fpr_mem_client_response_put(dm_abstract_commands$hart0_fpr_mem_client_response_put),
 					      .hart0_gpr_mem_client_response_put(dm_abstract_commands$hart0_gpr_mem_client_response_put),
 					      .write_dm_addr(dm_abstract_commands$write_dm_addr),
 					      .write_dm_word(dm_abstract_commands$write_dm_word),
@@ -864,6 +920,8 @@ module mkDebug_Module(CLK,
 					      .EN_write(dm_abstract_commands$EN_write),
 					      .EN_hart0_gpr_mem_client_request_get(dm_abstract_commands$EN_hart0_gpr_mem_client_request_get),
 					      .EN_hart0_gpr_mem_client_response_put(dm_abstract_commands$EN_hart0_gpr_mem_client_response_put),
+					      .EN_hart0_fpr_mem_client_request_get(dm_abstract_commands$EN_hart0_fpr_mem_client_request_get),
+					      .EN_hart0_fpr_mem_client_response_put(dm_abstract_commands$EN_hart0_fpr_mem_client_response_put),
 					      .EN_hart0_csr_mem_client_request_get(dm_abstract_commands$EN_hart0_csr_mem_client_request_get),
 					      .EN_hart0_csr_mem_client_response_put(dm_abstract_commands$EN_hart0_csr_mem_client_response_put),
 					      .RDY_reset(),
@@ -873,6 +931,9 @@ module mkDebug_Module(CLK,
 					      .hart0_gpr_mem_client_request_get(dm_abstract_commands$hart0_gpr_mem_client_request_get),
 					      .RDY_hart0_gpr_mem_client_request_get(dm_abstract_commands$RDY_hart0_gpr_mem_client_request_get),
 					      .RDY_hart0_gpr_mem_client_response_put(dm_abstract_commands$RDY_hart0_gpr_mem_client_response_put),
+					      .hart0_fpr_mem_client_request_get(dm_abstract_commands$hart0_fpr_mem_client_request_get),
+					      .RDY_hart0_fpr_mem_client_request_get(dm_abstract_commands$RDY_hart0_fpr_mem_client_request_get),
+					      .RDY_hart0_fpr_mem_client_response_put(dm_abstract_commands$RDY_hart0_fpr_mem_client_response_put),
 					      .hart0_csr_mem_client_request_get(dm_abstract_commands$hart0_csr_mem_client_request_get),
 					      .RDY_hart0_csr_mem_client_request_get(dm_abstract_commands$RDY_hart0_csr_mem_client_request_get),
 					      .RDY_hart0_csr_mem_client_response_put(dm_abstract_commands$RDY_hart0_csr_mem_client_response_put));
@@ -982,6 +1043,8 @@ module mkDebug_Module(CLK,
 	     f_read_addr_rv$port1__read[6:0] ;
   assign dm_abstract_commands$hart0_csr_mem_client_response_put =
 	     hart0_csr_mem_client_response_put ;
+  assign dm_abstract_commands$hart0_fpr_mem_client_response_put =
+	     hart0_fpr_mem_client_response_put ;
   assign dm_abstract_commands$hart0_gpr_mem_client_response_put =
 	     hart0_gpr_mem_client_response_put ;
   assign dm_abstract_commands$write_dm_addr = dmi_write_dm_addr ;
@@ -1024,6 +1087,10 @@ module mkDebug_Module(CLK,
 	     EN_hart0_gpr_mem_client_request_get ;
   assign dm_abstract_commands$EN_hart0_gpr_mem_client_response_put =
 	     EN_hart0_gpr_mem_client_response_put ;
+  assign dm_abstract_commands$EN_hart0_fpr_mem_client_request_get =
+	     EN_hart0_fpr_mem_client_request_get ;
+  assign dm_abstract_commands$EN_hart0_fpr_mem_client_response_put =
+	     EN_hart0_fpr_mem_client_response_put ;
   assign dm_abstract_commands$EN_hart0_csr_mem_client_request_get =
 	     EN_hart0_csr_mem_client_request_get ;
   assign dm_abstract_commands$EN_hart0_csr_mem_client_response_put =
@@ -1141,12 +1208,12 @@ module mkDebug_Module(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset)
 	begin
-	  v__h870 = $stime;
+	  v__h887 = $stime;
 	  #0;
 	end
-    v__h864 = v__h870 / 32'd10;
+    v__h881 = v__h887 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_reset) $display("%0d: Debug_Module reset", v__h864);
+      if (WILL_FIRE_RL_rl_reset) $display("%0d: Debug_Module reset", v__h881);
   end
   // synopsys translate_on
 endmodule  // mkDebug_Module

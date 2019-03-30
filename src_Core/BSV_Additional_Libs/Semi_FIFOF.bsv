@@ -11,6 +11,8 @@ package Semi_FIFOF;
 
 import FIFOF       :: *;
 import Connectable :: *;
+import GetPut      :: *;
+import FIFOLevel   :: *;
 
 // ================================================================
 // Semi-FIFOF interfaces
@@ -27,22 +29,74 @@ interface FIFOF_O #(type t);
 endinterface
 
 // ================================================================
-// Converters from FIFOF
+// Converters to and from Semi-FIFOF interfaces
 
-function FIFOF_I #(t) to_FIFOF_I (FIFOF #(t) f);
-   return interface FIFOF_I;
-	     method enq (x) = f.enq (x);
-	     method notFull = f.notFull;
-	  endinterface;
-endfunction
+typeclass To_FIFOF_IO#(type tf, type t)
+   dependencies (tf determines t);
 
-function FIFOF_O #(t) to_FIFOF_O (FIFOF #(t) f);
-   return interface FIFOF_O;
-	     method first    = f.first;
-	     method deq      = f.deq;
-	     method notEmpty = f.notEmpty;
-	  endinterface;
-endfunction
+   function FIFOF_I #(t) to_FIFOF_I (tf f);
+   function FIFOF_O #(t) to_FIFOF_O (tf f);
+endtypeclass
+
+instance To_FIFOF_IO#(FIFOF#(t), t);
+   function FIFOF_I #(t) to_FIFOF_I (FIFOF #(t) f);
+      return interface FIFOF_I;
+		method enq (x) = f.enq (x);
+		method notFull = f.notFull;
+	     endinterface;
+   endfunction
+
+   function FIFOF_O #(t) to_FIFOF_O (FIFOF #(t) f);
+      return interface FIFOF_O;
+		method first    = f.first;
+		method deq      = f.deq;
+		method notEmpty = f.notEmpty;
+	     endinterface;
+   endfunction
+endinstance
+
+instance To_FIFOF_IO#(FIFOLevelIfc#(t,n), t);
+   function FIFOF_I #(t) to_FIFOF_I (FIFOLevelIfc #(t,n) f);
+      return interface FIFOF_I;
+		method enq (x) = f.enq (x);
+		method notFull = f.notFull;
+	     endinterface;
+   endfunction
+
+   function FIFOF_O #(t) to_FIFOF_O (FIFOLevelIfc #(t,n) f);
+      return interface FIFOF_O;
+		method first    = f.first;
+		method deq      = f.deq;
+		method notEmpty = f.notEmpty;
+	     endinterface;
+   endfunction
+endinstance
+
+// -----------------------------------------------------------
+// Converters to Get/Put interfaces
+
+instance ToGet#(FIFOF_O#(t), t);
+   function toGet(ff) = (
+      interface Get;
+	 method get();
+	    actionvalue
+	       ff.deq;
+	       return ff.first;
+	    endactionvalue
+	 endmethod
+      endinterface
+			 );
+endinstance
+
+instance ToPut#(FIFOF_I#(t), t);
+   function toPut(ff) = (
+      interface Put;
+	 method Action put(x);
+	    ff.enq(x);
+	 endmethod
+      endinterface
+			 );
+endinstance
 
 // ================================================================
 // Connections
@@ -131,6 +185,7 @@ FIFOF_O #(t) dummy_FIFOF_O = interface FIFOF_O;
 				   return False;
 				endmethod
 			     endinterface;
+
 
 // ================================================================
 

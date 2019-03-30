@@ -28,10 +28,12 @@ BSC_COMPILATION_FLAGS += \
 	-D ISA_I  -D ISA_M  -D ISA_A  -D ISA_C  \
 	-D ISA_F -D ISA_D -D ISA_FD_DIV  \
 	-D SHIFT_BARREL    \
-	-D MULT_SYNTH    \
+	-D MULT_SERIAL    \
 	-D Near_Mem_Caches    \
 	-D FABRIC64    \
 	-D INCLUDE_GDB_CONTROL \
+	-D INCLUDE_TANDEM_VERIF \
+	-D BRVF_TRACE \
 	-D XILINX_BSCAN  -D XILINX_XCVU9P  -D JTAG_TAP
 
 # ================================================================

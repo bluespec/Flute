@@ -9,7 +9,6 @@ package DM_Abstract_Commands;
 // ================================================================
 // BSV library imports
 
-import Memory       :: *;
 import FIFOF        :: *;
 import GetPut       :: *;
 import ClientServer :: *;
@@ -23,8 +22,9 @@ import Cur_Cycle  :: *;
 
 // ================================================================
 
-import ISA_Decls :: *;
-import DM_Common :: *;
+import ISA_Decls      :: *;
+import DM_Common      :: *;
+import DM_CPU_Req_Rsp :: *;
 
 // ================================================================
 // Interface
@@ -39,8 +39,11 @@ interface DM_Abstract_Commands_IFC;
 
    // ----------------
    // Facing CPU/hart
-   interface MemoryClient #(5,  XLEN) hart0_gpr_mem_client;
-   interface MemoryClient #(12, XLEN) hart0_csr_mem_client;
+   interface Client #(DM_CPU_Req #(5,  XLEN), DM_CPU_Rsp #(XLEN)) hart0_gpr_mem_client;
+`ifdef ISA_F
+   interface Client #(DM_CPU_Req #(5,  FLEN), DM_CPU_Rsp #(FLEN)) hart0_fpr_mem_client;
+`endif
+   interface Client #(DM_CPU_Req #(12, XLEN), DM_CPU_Rsp #(XLEN)) hart0_csr_mem_client;
 endinterface
 
 // ================================================================
@@ -55,12 +58,18 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
    Reg #(Bool) rg_start_reg_access <- mkReg (False);
 
    // FIFOs for request/response to access GPRs
-   FIFOF #(MemoryRequest  #(5,  XLEN)) f_hart0_gpr_reqs <- mkFIFOF1;
-   FIFOF #(MemoryResponse #(    XLEN)) f_hart0_gpr_rsps <- mkFIFOF1;
+   FIFOF #(DM_CPU_Req #(5,  XLEN)) f_hart0_gpr_reqs <- mkFIFOF1;
+   FIFOF #(DM_CPU_Rsp #(XLEN))     f_hart0_gpr_rsps <- mkFIFOF1;
+
+   // FIFOs for request/response to access FPRs
+`ifdef ISA_F
+   FIFOF #(DM_CPU_Req #(5,  FLEN)) f_hart0_fpr_reqs <- mkFIFOF1;
+   FIFOF #(DM_CPU_Rsp #(FLEN))     f_hart0_fpr_rsps <- mkFIFOF1;
+`endif
 
    // FIFOs for request/response to access CSRs
-   FIFOF #(MemoryRequest  #(12, XLEN)) f_hart0_csr_reqs <- mkFIFOF1;
-   FIFOF #(MemoryResponse #(    XLEN)) f_hart0_csr_rsps <- mkFIFOF1;
+   FIFOF #(DM_CPU_Req #(12, XLEN)) f_hart0_csr_reqs <- mkFIFOF1;
+   FIFOF #(DM_CPU_Rsp #(XLEN))     f_hart0_csr_rsps <- mkFIFOF1;
 
    // ----------------------------------------------------------------
    // rg_data0
@@ -95,17 +104,17 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
       action
 	 if (rg_abstractcs_busy) begin
 	    rg_abstractcs_cmderr <= DM_ABSTRACTCS_CMDERR_BUSY;
-	    $display ("(%0d): DM_Abstract_Commands.write: [abstractcs] <= 0x%08h: ERROR", cur_cycle, dm_word);
+	    $display ("%0d: DM_Abstract_Commands.write: [abstractcs] <= 0x%08h: ERROR", cur_cycle, dm_word);
 	    $display ("    DM is busy with a previous abstract command");
 	 end
 	 else if (fn_abstractcs_cmderr (dm_word) != DM_ABSTRACTCS_CMDERR_NONE) begin
 	    rg_abstractcs_cmderr <= DM_ABSTRACTCS_CMDERR_NONE;
 	    if (verbosity != 0)
-	       $display ("(%0d): DM_Abstract_Commands.write [abstractcs]: clearing cmderr", cur_cycle);
+	       $display ("%0d: DM_Abstract_Commands.write [abstractcs]: clearing cmderr", cur_cycle);
 	 end
 	 else begin
 	    if (verbosity != 0)
-	       $display ("(%0d): DM_Abstract_Commands.write [abstractcs]: cmderr unchanged", cur_cycle);
+	       $display ("%0d: DM_Abstract_Commands.write [abstractcs]: cmderr unchanged", cur_cycle);
 	 end
       endaction
    endfunction
@@ -139,20 +148,20 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 
 	 // Ignore if 'cmderr' is non-zero
 	 if (cmderr != DM_ABSTRACTCS_CMDERR_NONE) begin
-	    $display ("(%0d): DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR", cur_cycle, dm_word);
+	    $display ("%0d: DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR", cur_cycle, dm_word);
 	    $display ("    Ignoring since 'cmderr' is 0x%0h", cmderr);
 	 end
 	 else begin
 	    if (rg_abstractcs_busy) begin
 	       cmderr = DM_ABSTRACTCS_CMDERR_BUSY;
-	       $display ("(%0d): DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR", cur_cycle, dm_word);
+	       $display ("%0d: DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR", cur_cycle, dm_word);
 	       $display ("    DM is busy with a previous abstract command");
 	    end
 
 	    // Only 'Access Reg' cmdtype is supported
 	    else if (fn_command_cmdtype (dm_word) != DM_COMMAND_CMDTYPE_ACCESS_REG) begin
 	       cmderr = DM_ABSTRACTCS_CMDERR_NOT_SUPPORTED;
-	       $display ("(%0d): DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR", cur_cycle, dm_word);
+	       $display ("%0d: DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR", cur_cycle, dm_word);
 	       $display ("    ", fshow (fn_command_cmdtype (dm_word)), " not supported");
 	    end
 
@@ -160,7 +169,7 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 	    // Only lower 32-bit access is supported
 	    else if (size != DM_COMMAND_ACCESS_REG_SIZE_LOWER32) begin
 	       cmderr = DM_ABSTRACTCS_CMDERR_NOT_SUPPORTED;
-	       $display ("(%0d): DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR", cur_cycle, dm_word);
+	       $display ("%0d: DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR", cur_cycle, dm_word);
 	       $display ("    For DM_COMMAND_CMDTYPE_ACCESS_REG, ",
 			 fshow (fn_command_access_reg_size (dm_word)), " not supported in RV32 mode");
 	    end
@@ -170,7 +179,7 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 	    else if (size != DM_COMMAND_ACCESS_REG_SIZE_LOWER64)
 	       begin
 		  cmderr = DM_ABSTRACTCS_CMDERR_NOT_SUPPORTED;
-		  $display ("(%0d): DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR", cur_cycle, dm_word);
+		  $display ("%0d: DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR", cur_cycle, dm_word);
 		  $display ("    For DM_COMMAND_CMDTYPE_ACCESS_REG, ",
 			    fshow (fn_command_access_reg_size (dm_word)), " not supported in RV64 mode");
 	       end
@@ -179,14 +188,14 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 	    // 'postexec' is not supported
 	    else if (fn_command_access_reg_postexec (dm_word) == True) begin
 	       cmderr = DM_ABSTRACTCS_CMDERR_NOT_SUPPORTED;
-	       $display ("(%0d): DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR", cur_cycle, dm_word);
+	       $display ("%0d: DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR", cur_cycle, dm_word);
 	       $display ("    For DM_COMMAND_CMDTYPE_ACCESS_REG, postexec not supported");
 	    end
 
 	    // non-'transfer' is not supported
 	    else if (fn_command_access_reg_transfer (dm_word) == False) begin
 	       cmderr = DM_ABSTRACTCS_CMDERR_NOT_SUPPORTED;
-	       $display ("(%0d): DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR", cur_cycle, dm_word);
+	       $display ("%0d: DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR", cur_cycle, dm_word);
 	       $display ("    For DM_COMMAND_CMDTYPE_ACCESS_REG, no-transfer not supported");
 	    end
 
@@ -200,7 +209,7 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 	       rg_start_reg_access         <= True;
 	       cmderr = DM_ABSTRACTCS_CMDERR_NONE;
                if (verbosity != 0)
-                  $display ("(%0d): DM_Abstract_Commands.write: [command] <= 0x%08h: OKAY", cur_cycle, dm_word);
+                  $display ("%0d: DM_Abstract_Commands.write: [command] <= 0x%08h: OKAY", cur_cycle, dm_word);
 	    end
 	    rg_abstractcs_cmderr <= cmderr;
 	 end
@@ -208,7 +217,7 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
    endfunction
 
    // ----------------------------------------------------------------
-   // Start reads/writes
+   // Register reads and writes
 
    Bool is_csr = (   (fromInteger (dm_command_access_reg_regno_csr_0) <= rg_command_access_reg_regno)
 		  && (rg_command_access_reg_regno <= fromInteger (dm_command_access_reg_regno_csr_FFF)));
@@ -216,173 +225,263 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
    Bool is_gpr = (   (fromInteger (dm_command_access_reg_regno_gpr_0) <= rg_command_access_reg_regno)
 		  && (rg_command_access_reg_regno <= fromInteger (dm_command_access_reg_regno_gpr_1F)));
 
+`ifdef ISA_F
+   Bool is_fpr = (   (fromInteger (dm_command_access_reg_regno_fpr_0) <= rg_command_access_reg_regno)
+		  && (rg_command_access_reg_regno <= fromInteger (dm_command_access_reg_regno_fpr_1F)));
+`else
+   Bool is_fpr = False;
+`endif
+
    Bit #(12) csr_addr = truncate (rg_command_access_reg_regno - fromInteger (dm_command_access_reg_regno_csr_0));
    Bit #(5)  gpr_addr = truncate (rg_command_access_reg_regno - fromInteger (dm_command_access_reg_regno_gpr_0));
+   Bit #(5)  fpr_addr = truncate (rg_command_access_reg_regno - fromInteger (dm_command_access_reg_regno_fpr_0));
 
    // ----------------------------------------------------------------
-   // Read/Write CSR
+   // Write CSR
 
-   rule rl_start_write_csr (   rg_abstractcs_busy
+   rule rl_csr_write_start (   rg_abstractcs_busy
 			    && rg_start_reg_access
 			    && rg_command_access_reg_write
 			    && is_csr);
-      if (verbosity != 0)
+      let req = DM_CPU_Req {write:   True,
+			    address: csr_addr,
 `ifdef RV32
-	 $display ("(%0d): DM_Abstract_Commands.write [command]: write CSR [0x%0h] <= 0x%08h", cur_cycle,
-		   csr_addr, rg_data0);
+			    data:    rg_data0
 `endif
 `ifdef RV64
-	 $display ("(%0d): DM_Abstract_Commands.write [command]: write CSR [0x%0h] <= 0x%016h", cur_cycle,
-		   csr_addr, {rg_data1, rg_data0});
+			    data:    {rg_data1, rg_data0}
 `endif
-
-      let req = MemoryRequest {write: True, byteen: '1, address: csr_addr,
-`ifdef RV32
-			       data: rg_data0
-`endif
-`ifdef RV64
-			       data: {rg_data1, rg_data0}
-`endif
-			       };
+			    };
       f_hart0_csr_reqs.enq (req);
       rg_start_reg_access <= False;
-      rg_abstractcs_busy  <= False;
-   endrule
 
-   rule rl_start_read_csr (   rg_abstractcs_busy
-			   && rg_start_reg_access
-			   && (! rg_command_access_reg_write)
-			   && is_csr);
       if (verbosity != 0)
-	 $display ("(%0d): DM_Abstract_Commands.write [command]: read CSR [0x%0h]", cur_cycle, csr_addr);
-
-      let req = MemoryRequest {write: False, byteen: '1, address: csr_addr, data: ?};
-      f_hart0_csr_reqs.enq (req);
-      rg_start_reg_access <= False;
-   endrule
-
-   rule rl_finish_csr_read (rg_abstractcs_busy);
-      let rsp <- pop (f_hart0_csr_rsps);
-`ifdef RV32
-      rg_data0 <= rsp.data;
-`endif
-`ifdef RV64
-      rg_data0 <= truncate (rsp.data);
-      rg_data1 <= rsp.data[63:32];
-`endif
-      rg_abstractcs_cmderr <= DM_ABSTRACTCS_CMDERR_NONE;
-      if (verbosity != 0)
-`ifdef RV32
-	 $display ("(%0d): DM_Abstract_Commands: csr read data is 0x%08h", cur_cycle, rsp.data);
-`endif
-`ifdef RV64
-	 $display ("(%0d): DM_Abstract_Commands: csr read data is 0x%016h", cur_cycle, rsp.data);
-`endif
-
-      rg_abstractcs_busy <= False;
-   endrule
-
-   // ----------------------------------------------------------------
-   // Read/Write GPR
-
-   rule rl_start_write_gpr (   rg_abstractcs_busy
-			    && rg_start_reg_access
-			    && rg_command_access_reg_write
-			    && is_gpr);
-      if (verbosity != 0)
-`ifdef RV32
-	 $display ("(%0d): DM_Abstract_Commands.write [command]: write GPR [0x%0h] <= 0x%08h", cur_cycle,
-	    gpr_addr, rg_data0);
-`endif
-`ifdef RV64
-	 $display ("(%0d): DM_Abstract_Commands.write [command]: write GPR [0x%0h] <= 0x%016h", cur_cycle,
-	    gpr_addr, {rg_data1, rg_data0});
-`endif
-
-      let req = MemoryRequest {write: True,
-			       byteen: '1,
-			       address: gpr_addr,
-`ifdef RV32
-			       data: rg_data0
-`endif
-`ifdef RV64
-			       data: {rg_data1, rg_data0}
-`endif
-			       };
-
-      f_hart0_gpr_reqs.enq (req);
-      rg_start_reg_access <= False;
-      rg_abstractcs_busy  <= False;
-   endrule
-
-   rule rl_start_read_gpr (   rg_abstractcs_busy
-			   && rg_start_reg_access
-			   && (! rg_command_access_reg_write)
-			   && is_gpr);
-      if (verbosity != 0)
-	 $display ("(%0d): DM_Abstract_Commands.write [command]: read GPR [0x%0h]", cur_cycle, gpr_addr);
-
-      let req = MemoryRequest {
-	   write: False
-	 , byteen: '1
-	 , address: gpr_addr
-	 , data: ?
-      };
-      f_hart0_gpr_reqs.enq (req);
-      rg_start_reg_access <= False;
-   endrule
-
-   rule rl_finish_gpr_read (rg_abstractcs_busy);
-      let rsp <- pop (f_hart0_gpr_rsps);
-`ifdef RV32
-      rg_data0 <= rsp.data;
-`endif
-`ifdef RV64
-      rg_data0 <= truncate (rsp.data);
-      rg_data1 <= rsp.data[63:32];
-`endif
-      rg_abstractcs_cmderr <= DM_ABSTRACTCS_CMDERR_NONE;
-      if (verbosity != 0)
-`ifdef RV32
-	 $display ("(%0d): DM_Abstract_Commands: gpr read data is 0x%08h", cur_cycle, rsp.data);
-`endif
-`ifdef RV64
-	 $display ("(%0d): DM_Abstract_Commands: gpr read data is 0x%016h", cur_cycle, rsp.data);
-`endif
-      rg_abstractcs_busy <= False;
+	 $display ("%0d: DM_Abstract_Commands.rl_csr_write_start: ", cur_cycle, fshow (req));
    endrule
 
    // ----------------
-   // Read/Write unknown address
 
-   rule rl_start_write_unknown (   rg_abstractcs_busy
-				&& rg_start_reg_access
-				&& rg_command_access_reg_write
-				&& (! is_csr) && (! is_gpr));
+   rule rl_csr_write_finish (rg_abstractcs_busy
+			     && rg_command_access_reg_write
+			     && is_csr);
+      let rsp <- pop (f_hart0_csr_rsps);
       if (verbosity != 0)
-	 $display ("(%0d): DM_Abstract_Commands.write [command]: write unknown RISC-V regno [0x%0h] <= 0x%08h", cur_cycle,
-		   rg_command_access_reg_regno, rg_data0);
+	 $display ("%0d: DM_Abstract_Commands.rl_csr_write_finish: ", cur_cycle, fshow (rsp));
 
-      rg_abstractcs_cmderr <= DM_ABSTRACTCS_CMDERR_OTHER;
-      rg_start_reg_access  <= False;
-      rg_abstractcs_busy   <= False;
-   endrule
-
-   rule rl_start_read_unknown (   rg_abstractcs_busy
-			       && rg_start_reg_access
-			       && (! rg_command_access_reg_write)
-			       && (! is_csr) && (! is_gpr));
-      if (verbosity != 0)
-	 $display ("(%0d): DM_Abstract_Commands.write [command]: read unknown RISC-V regno [0x%0h] => ...", cur_cycle,
-		   rg_command_access_reg_regno);
-
-      rg_abstractcs_cmderr <= DM_ABSTRACTCS_CMDERR_OTHER;
-      rg_start_reg_access  <= False;
+      rg_abstractcs_cmderr <= (rsp.ok ? DM_ABSTRACTCS_CMDERR_NONE : DM_ABSTRACTCS_CMDERR_HALT_RESUME);
       rg_abstractcs_busy   <= False;
    endrule
 
    // ----------------------------------------------------------------
-   // Finish CSR and GPR reads
+   // Read CSR
+
+   rule rl_csr_read_start (   rg_abstractcs_busy
+			   && rg_start_reg_access
+			   && (! rg_command_access_reg_write)
+			   && is_csr);
+      Bit #(XLEN) data = ?;
+      let req = DM_CPU_Req {write: False, address: csr_addr, data: data};
+      f_hart0_csr_reqs.enq (req);
+      rg_start_reg_access <= False;
+
+      if (verbosity != 0)
+	 $display ("%0d: DM_Abstract_Commands.rl_csr_read_start: ", cur_cycle, fshow (req));
+   endrule
+
+   // ----------------
+
+   rule rl_csr_read_finish (   rg_abstractcs_busy
+			    && (! rg_command_access_reg_write)
+			    && is_csr);
+      let rsp <- pop (f_hart0_csr_rsps);
+      if (verbosity != 0)
+	 $display ("%0d: DM_Abstract_Commands.rl_csr_read_finish: ", cur_cycle, fshow (rsp));
+
+      rg_abstractcs_cmderr <= (rsp.ok ? DM_ABSTRACTCS_CMDERR_NONE : DM_ABSTRACTCS_CMDERR_HALT_RESUME);
+`ifdef RV32
+      rg_data0 <= rsp.data;
+`endif
+`ifdef RV64
+      rg_data0 <= truncate (rsp.data);
+      rg_data1 <= rsp.data[63:32];
+`endif
+      rg_abstractcs_busy <= False;
+   endrule
+
+   // ----------------------------------------------------------------
+   // Write GPR
+
+   rule rl_gpr_write_start (   rg_abstractcs_busy
+			    && rg_start_reg_access
+			    && rg_command_access_reg_write
+			    && is_gpr);
+      let req = DM_CPU_Req {write:   True,
+			    address: gpr_addr,
+`ifdef RV32
+			    data:    rg_data0
+`endif
+`ifdef RV64
+			    data:    {rg_data1, rg_data0}
+`endif
+			    };
+      f_hart0_gpr_reqs.enq (req);
+      rg_start_reg_access <= False;
+      if (verbosity != 0)
+	 $display ("%0d: DM_Abstract_Commands.rl_gpr_write_start: ", cur_cycle, fshow (req));
+   endrule
+
+   // ----------------
+
+   rule rl_gpr_write_finish (   rg_abstractcs_busy
+			     && rg_command_access_reg_write
+			     && is_gpr);
+      let rsp <- pop (f_hart0_gpr_rsps);
+      if (verbosity != 0)
+	 $display ("%0d: DM_Abstract_Commands.rl_gpr_write_finish: ", cur_cycle, fshow (rsp));
+
+      rg_abstractcs_cmderr <= (rsp.ok ? DM_ABSTRACTCS_CMDERR_NONE : DM_ABSTRACTCS_CMDERR_HALT_RESUME);
+      rg_abstractcs_busy   <= False;
+   endrule
+
+   // ----------------------------------------------------------------
+   // Read GPR
+
+   rule rl_gpr_read_start (   rg_abstractcs_busy
+			   && rg_start_reg_access
+			   && (! rg_command_access_reg_write)
+			   && is_gpr);
+      Bit #(XLEN) data = ?;
+      let req = DM_CPU_Req {write: False, address: gpr_addr, data: data };
+      f_hart0_gpr_reqs.enq (req);
+      rg_start_reg_access <= False;
+
+      if (verbosity != 0)
+	 $display ("%0d: DM_Abstract_Commands.rl_gpr_read_start: ", cur_cycle, fshow (req));
+   endrule
+
+   // ----------------
+
+   rule rl_gpr_read_finish (   rg_abstractcs_busy
+			    && (! rg_command_access_reg_write)
+			    && is_gpr);
+      let rsp <- pop (f_hart0_gpr_rsps);
+      if (verbosity != 0)
+	 $display ("%0d: DM_Abstract_Commands.rl_gpr_read_finish: ", cur_cycle, fshow (rsp));
+
+`ifdef RV32
+      rg_data0 <= rsp.data;
+`endif
+`ifdef RV64
+      rg_data0 <= truncate (rsp.data);
+      rg_data1 <= rsp.data[63:32];
+`endif
+      rg_abstractcs_cmderr <= (rsp.ok ? DM_ABSTRACTCS_CMDERR_NONE : DM_ABSTRACTCS_CMDERR_HALT_RESUME);
+      rg_abstractcs_busy <= False;
+   endrule
+
+   // ----------------------------------------------------------------
+   // Write FPR
+
+`ifdef ISA_F
+
+   rule rl_fpr_write_start (   rg_abstractcs_busy
+			    && rg_start_reg_access
+			    && rg_command_access_reg_write
+			    && is_fpr);
+      let req = DM_CPU_Req {write:   True,
+			    address: fpr_addr,
+`ifdef RV32
+			    data:    rg_data0
+`endif
+`ifdef RV64
+			    data:    {rg_data1, rg_data0}
+`endif
+			    };
+      f_hart0_fpr_reqs.enq (req);
+      rg_start_reg_access <= False;
+      if (verbosity != 0)
+	 $display ("%0d: DM_Abstract_Commands.rl_fpr_write_start: ", cur_cycle, fshow (req));
+   endrule
+
+   // ----------------
+
+   rule rl_fpr_write_finish (   rg_abstractcs_busy
+			     && rg_command_access_reg_write
+			     && is_fpr);
+      let rsp <- pop (f_hart0_fpr_rsps);
+      if (verbosity != 0)
+	 $display ("%0d: DM_Abstract_Commands.rl_fpr_write_finish: ", cur_cycle, fshow (rsp));
+
+      rg_abstractcs_cmderr <= (rsp.ok ? DM_ABSTRACTCS_CMDERR_NONE : DM_ABSTRACTCS_CMDERR_HALT_RESUME);
+      rg_abstractcs_busy   <= False;
+   endrule
+
+   // ----------------------------------------------------------------
+   // Read FPR
+
+   rule rl_fpr_read_start (   rg_abstractcs_busy
+			   && rg_start_reg_access
+			   && (! rg_command_access_reg_write)
+			   && is_fpr);
+      Bit #(XLEN) data = ?;
+      let req = DM_CPU_Req {write: False, address: fpr_addr, data: data };
+      f_hart0_fpr_reqs.enq (req);
+      rg_start_reg_access <= False;
+
+      if (verbosity != 0)
+	 $display ("%0d: DM_Abstract_Commands.rl_fpr_read_start: ", cur_cycle, fshow (req));
+   endrule
+
+   // ----------------
+
+   rule rl_fpr_read_finish (   rg_abstractcs_busy
+			    && (! rg_command_access_reg_write)
+			    && is_fpr);
+      let rsp <- pop (f_hart0_fpr_rsps);
+      if (verbosity != 0)
+	 $display ("%0d: DM_Abstract_Commands.rl_fpr_read_finish: ", cur_cycle, fshow (rsp));
+
+`ifdef RV32
+      rg_data0 <= rsp.data;
+`endif
+`ifdef RV64
+      rg_data0 <= truncate (rsp.data);
+      rg_data1 <= rsp.data[63:32];
+`endif
+      rg_abstractcs_cmderr <= (rsp.ok ? DM_ABSTRACTCS_CMDERR_NONE : DM_ABSTRACTCS_CMDERR_HALT_RESUME);
+      rg_abstractcs_busy <= False;
+   endrule
+
+`endif
+
+   // ----------------------------------------------------------------
+   // Read/Write unknown address
+
+   rule rl_unknown_write_start (   rg_abstractcs_busy
+				&& rg_start_reg_access
+				&& rg_command_access_reg_write
+				&& (! is_csr) && (! is_gpr) && (! is_fpr));
+      if (verbosity != 0)
+	 $display ("%0d: DM_Abstract_Commands.rl_unknown_write_start: unknown RISC-V regno [0x%0h] <= 0x%08h",
+		   cur_cycle, rg_command_access_reg_regno, rg_data0);
+
+      rg_abstractcs_cmderr <= DM_ABSTRACTCS_CMDERR_OTHER;
+      rg_start_reg_access  <= False;
+      rg_abstractcs_busy   <= False;
+   endrule
+
+   rule rl_unknown_read_start (   rg_abstractcs_busy
+			       && rg_start_reg_access
+			       && (! rg_command_access_reg_write)
+			       && (! is_csr) && (! is_gpr) && (! is_fpr));
+      if (verbosity != 0)
+	 $display ("%0d: DM_Abstract_Commands.rl_unknown_read_start: unknown RISC-V regno [0x%0h]",
+		   cur_cycle, rg_command_access_reg_regno);
+
+      rg_abstractcs_cmderr <= DM_ABSTRACTCS_CMDERR_OTHER;
+      rg_start_reg_access  <= False;
+      rg_abstractcs_busy   <= False;
+   endrule
 
    // ================================================================
    // INTERFACE
@@ -407,7 +506,7 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 `endif
 
       if (verbosity != 0)
-	 $display ("(%0d): DM_Abstract_Commands: reset", cur_cycle);
+	 $display ("%0d: DM_Abstract_Commands: reset", cur_cycle);
    endmethod
 
    // ----------------
@@ -428,7 +527,7 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 			      // dm_addr_progbuf0..15
 			   endcase;
 	 if (verbosity != 0)
-	    $display ("(%0d): DM_Abstract_Commands.av_read: [", cur_cycle, dm_addr_name, "] => 0x%08h", dm_word);
+	    $display ("%0d: DM_Abstract_Commands.av_read: [", cur_cycle, dm_addr_name, "] => 0x%08h", dm_word);
 	 return dm_word;
       endactionvalue
    endmethod
@@ -442,7 +541,7 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 
 	 else if (rg_abstractcs_cmderr != DM_ABSTRACTCS_CMDERR_NONE) begin
 	    if (verbosity != 0) begin
-	       $display ("(%0d): DM_Abstract_Commands.write: [", cur_cycle, dm_addr_name, "] <= 0x%08h: ERROR", dm_word);
+	       $display ("%0d: DM_Abstract_Commands.write: [", cur_cycle, dm_addr_name, "] <= 0x%08h: ERROR", dm_word);
 	       $display ("    Ignoring: previous cmderr ", fshow (rg_abstractcs_cmderr));
 	    end
 	 end
@@ -454,14 +553,14 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 	    rg_data0 <= dm_word;
 
 	    if (verbosity != 0)
-	       $display ("(%0d): DM_Abstract_Commands.write: [", cur_cycle, dm_addr_name, "] <= 0x%08h", dm_word);
+	       $display ("%0d: DM_Abstract_Commands.write: [", cur_cycle, dm_addr_name, "] <= 0x%08h", dm_word);
 	 end
 `ifdef RV64
 	 else if (dm_addr == dm_addr_data1) begin
 	    rg_data1 <= dm_word;
 
 	    if (verbosity != 0)
-	       $display ("(%0d): DM_Abstract_Commands.write: [", cur_cycle, dm_addr_name, "] <= 0x%08h", dm_word);
+	       $display ("%0d: DM_Abstract_Commands.write: [", cur_cycle, dm_addr_name, "] <= 0x%08h", dm_word);
 	 end
 `endif
 	 else begin
@@ -470,7 +569,7 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 	    // dm_addr_progbuf0..15
 	    rg_abstractcs_cmderr <= DM_ABSTRACTCS_CMDERR_NOT_SUPPORTED;
 
-	    $display ("(%0d): DM_Abstract_Commands.write: [", cur_cycle, dm_addr_name,
+	    $display ("%0d: DM_Abstract_Commands.write: [", cur_cycle, dm_addr_name,
 		      "] <= 0x%08h: ERROR: not supported", dm_word);
 	 end
       endaction
@@ -478,8 +577,11 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 
    // ----------------
    // Facing CPU/hart
-      interface MemoryClient hart0_gpr_mem_client = toGPClient (f_hart0_gpr_reqs, f_hart0_gpr_rsps);
-      interface MemoryClient hart0_csr_mem_client = toGPClient (f_hart0_csr_reqs, f_hart0_csr_rsps);
+      interface Client hart0_gpr_mem_client = toGPClient (f_hart0_gpr_reqs, f_hart0_gpr_rsps);
+`ifdef ISA_F
+      interface Client hart0_fpr_mem_client = toGPClient (f_hart0_fpr_reqs, f_hart0_fpr_rsps);
+`endif
+      interface Client hart0_csr_mem_client = toGPClient (f_hart0_csr_reqs, f_hart0_csr_rsps);
 endmodule
 
 // ================================================================

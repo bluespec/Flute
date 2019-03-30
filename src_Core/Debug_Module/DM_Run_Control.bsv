@@ -273,7 +273,7 @@ module mkDM_Run_Control (DM_Run_Control_IFC);
    method Action reset;
       f_ndm_reset_reqs.clear;
 
-      rg_hart0_running <= False;    // Must be same as initial state of CPU
+      rg_hart0_running <= True;    // Must be same as initial state of CPU
       f_hart0_reset_reqs.clear;
       f_hart0_run_halt_reqs.clear;
       f_hart0_run_halt_rsps.clear;

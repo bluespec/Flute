@@ -10,10 +10,13 @@
 // av_read                        O    32
 // RDY_av_read                    O     1 const
 // RDY_write                      O     1 const
-// hart0_gpr_mem_client_request_get  O    78 reg
+// hart0_gpr_mem_client_request_get  O    70 reg
 // RDY_hart0_gpr_mem_client_request_get  O     1 reg
 // RDY_hart0_gpr_mem_client_response_put  O     1 reg
-// hart0_csr_mem_client_request_get  O    85 reg
+// hart0_fpr_mem_client_request_get  O    70 reg
+// RDY_hart0_fpr_mem_client_request_get  O     1 reg
+// RDY_hart0_fpr_mem_client_response_put  O     1 reg
+// hart0_csr_mem_client_request_get  O    77 reg
 // RDY_hart0_csr_mem_client_request_get  O     1 reg
 // RDY_hart0_csr_mem_client_response_put  O     1 reg
 // CLK                            I     1 clock
@@ -21,14 +24,17 @@
 // av_read_dm_addr                I     7
 // write_dm_addr                  I     7
 // write_dm_word                  I    32
-// hart0_gpr_mem_client_response_put  I    64 reg
-// hart0_csr_mem_client_response_put  I    64 reg
+// hart0_gpr_mem_client_response_put  I    65 reg
+// hart0_fpr_mem_client_response_put  I    65 reg
+// hart0_csr_mem_client_response_put  I    65 reg
 // EN_reset                       I     1
 // EN_write                       I     1
 // EN_hart0_gpr_mem_client_response_put  I     1
+// EN_hart0_fpr_mem_client_response_put  I     1
 // EN_hart0_csr_mem_client_response_put  I     1
 // EN_av_read                     I     1 unused
 // EN_hart0_gpr_mem_client_request_get  I     1
+// EN_hart0_fpr_mem_client_request_get  I     1
 // EN_hart0_csr_mem_client_request_get  I     1
 //
 // Combinational paths from inputs to outputs:
@@ -73,6 +79,14 @@ module mkDM_Abstract_Commands(CLK,
 			      EN_hart0_gpr_mem_client_response_put,
 			      RDY_hart0_gpr_mem_client_response_put,
 
+			      EN_hart0_fpr_mem_client_request_get,
+			      hart0_fpr_mem_client_request_get,
+			      RDY_hart0_fpr_mem_client_request_get,
+
+			      hart0_fpr_mem_client_response_put,
+			      EN_hart0_fpr_mem_client_response_put,
+			      RDY_hart0_fpr_mem_client_response_put,
+
 			      EN_hart0_csr_mem_client_request_get,
 			      hart0_csr_mem_client_request_get,
 			      RDY_hart0_csr_mem_client_request_get,
@@ -101,31 +115,44 @@ module mkDM_Abstract_Commands(CLK,
 
   // actionvalue method hart0_gpr_mem_client_request_get
   input  EN_hart0_gpr_mem_client_request_get;
-  output [77 : 0] hart0_gpr_mem_client_request_get;
+  output [69 : 0] hart0_gpr_mem_client_request_get;
   output RDY_hart0_gpr_mem_client_request_get;
 
   // action method hart0_gpr_mem_client_response_put
-  input  [63 : 0] hart0_gpr_mem_client_response_put;
+  input  [64 : 0] hart0_gpr_mem_client_response_put;
   input  EN_hart0_gpr_mem_client_response_put;
   output RDY_hart0_gpr_mem_client_response_put;
 
+  // actionvalue method hart0_fpr_mem_client_request_get
+  input  EN_hart0_fpr_mem_client_request_get;
+  output [69 : 0] hart0_fpr_mem_client_request_get;
+  output RDY_hart0_fpr_mem_client_request_get;
+
+  // action method hart0_fpr_mem_client_response_put
+  input  [64 : 0] hart0_fpr_mem_client_response_put;
+  input  EN_hart0_fpr_mem_client_response_put;
+  output RDY_hart0_fpr_mem_client_response_put;
+
   // actionvalue method hart0_csr_mem_client_request_get
   input  EN_hart0_csr_mem_client_request_get;
-  output [84 : 0] hart0_csr_mem_client_request_get;
+  output [76 : 0] hart0_csr_mem_client_request_get;
   output RDY_hart0_csr_mem_client_request_get;
 
   // action method hart0_csr_mem_client_response_put
-  input  [63 : 0] hart0_csr_mem_client_response_put;
+  input  [64 : 0] hart0_csr_mem_client_response_put;
   input  EN_hart0_csr_mem_client_response_put;
   output RDY_hart0_csr_mem_client_response_put;
 
   // signals for module outputs
   reg [31 : 0] av_read;
-  wire [84 : 0] hart0_csr_mem_client_request_get;
-  wire [77 : 0] hart0_gpr_mem_client_request_get;
+  wire [76 : 0] hart0_csr_mem_client_request_get;
+  wire [69 : 0] hart0_fpr_mem_client_request_get,
+		hart0_gpr_mem_client_request_get;
   wire RDY_av_read,
        RDY_hart0_csr_mem_client_request_get,
        RDY_hart0_csr_mem_client_response_put,
+       RDY_hart0_fpr_mem_client_request_get,
+       RDY_hart0_fpr_mem_client_response_put,
        RDY_hart0_gpr_mem_client_request_get,
        RDY_hart0_gpr_mem_client_response_put,
        RDY_reset,
@@ -166,7 +193,7 @@ module mkDM_Abstract_Commands(CLK,
   wire rg_start_reg_access$EN;
 
   // ports of submodule f_hart0_csr_reqs
-  wire [84 : 0] f_hart0_csr_reqs$D_IN, f_hart0_csr_reqs$D_OUT;
+  wire [76 : 0] f_hart0_csr_reqs$D_IN, f_hart0_csr_reqs$D_OUT;
   wire f_hart0_csr_reqs$CLR,
        f_hart0_csr_reqs$DEQ,
        f_hart0_csr_reqs$EMPTY_N,
@@ -174,15 +201,31 @@ module mkDM_Abstract_Commands(CLK,
        f_hart0_csr_reqs$FULL_N;
 
   // ports of submodule f_hart0_csr_rsps
-  wire [63 : 0] f_hart0_csr_rsps$D_IN, f_hart0_csr_rsps$D_OUT;
+  wire [64 : 0] f_hart0_csr_rsps$D_IN, f_hart0_csr_rsps$D_OUT;
   wire f_hart0_csr_rsps$CLR,
        f_hart0_csr_rsps$DEQ,
        f_hart0_csr_rsps$EMPTY_N,
        f_hart0_csr_rsps$ENQ,
        f_hart0_csr_rsps$FULL_N;
 
+  // ports of submodule f_hart0_fpr_reqs
+  wire [69 : 0] f_hart0_fpr_reqs$D_IN, f_hart0_fpr_reqs$D_OUT;
+  wire f_hart0_fpr_reqs$CLR,
+       f_hart0_fpr_reqs$DEQ,
+       f_hart0_fpr_reqs$EMPTY_N,
+       f_hart0_fpr_reqs$ENQ,
+       f_hart0_fpr_reqs$FULL_N;
+
+  // ports of submodule f_hart0_fpr_rsps
+  wire [64 : 0] f_hart0_fpr_rsps$D_IN, f_hart0_fpr_rsps$D_OUT;
+  wire f_hart0_fpr_rsps$CLR,
+       f_hart0_fpr_rsps$DEQ,
+       f_hart0_fpr_rsps$EMPTY_N,
+       f_hart0_fpr_rsps$ENQ,
+       f_hart0_fpr_rsps$FULL_N;
+
   // ports of submodule f_hart0_gpr_reqs
-  wire [77 : 0] f_hart0_gpr_reqs$D_IN, f_hart0_gpr_reqs$D_OUT;
+  wire [69 : 0] f_hart0_gpr_reqs$D_IN, f_hart0_gpr_reqs$D_OUT;
   wire f_hart0_gpr_reqs$CLR,
        f_hart0_gpr_reqs$DEQ,
        f_hart0_gpr_reqs$EMPTY_N,
@@ -190,7 +233,7 @@ module mkDM_Abstract_Commands(CLK,
        f_hart0_gpr_reqs$FULL_N;
 
   // ports of submodule f_hart0_gpr_rsps
-  wire [63 : 0] f_hart0_gpr_rsps$D_IN, f_hart0_gpr_rsps$D_OUT;
+  wire [64 : 0] f_hart0_gpr_rsps$D_IN, f_hart0_gpr_rsps$D_OUT;
   wire f_hart0_gpr_rsps$CLR,
        f_hart0_gpr_rsps$DEQ,
        f_hart0_gpr_rsps$EMPTY_N,
@@ -198,83 +241,108 @@ module mkDM_Abstract_Commands(CLK,
        f_hart0_gpr_rsps$FULL_N;
 
   // rule scheduling signals
-  wire CAN_FIRE_RL_rl_finish_csr_read,
-       CAN_FIRE_RL_rl_finish_gpr_read,
-       CAN_FIRE_RL_rl_start_read_csr,
-       CAN_FIRE_RL_rl_start_read_gpr,
-       CAN_FIRE_RL_rl_start_read_unknown,
-       CAN_FIRE_RL_rl_start_write_csr,
-       CAN_FIRE_RL_rl_start_write_gpr,
-       CAN_FIRE_RL_rl_start_write_unknown,
+  wire CAN_FIRE_RL_rl_csr_read_finish,
+       CAN_FIRE_RL_rl_csr_read_start,
+       CAN_FIRE_RL_rl_csr_write_finish,
+       CAN_FIRE_RL_rl_csr_write_start,
+       CAN_FIRE_RL_rl_fpr_read_finish,
+       CAN_FIRE_RL_rl_fpr_read_start,
+       CAN_FIRE_RL_rl_fpr_write_finish,
+       CAN_FIRE_RL_rl_fpr_write_start,
+       CAN_FIRE_RL_rl_gpr_read_finish,
+       CAN_FIRE_RL_rl_gpr_read_start,
+       CAN_FIRE_RL_rl_gpr_write_finish,
+       CAN_FIRE_RL_rl_gpr_write_start,
+       CAN_FIRE_RL_rl_unknown_read_start,
+       CAN_FIRE_RL_rl_unknown_write_start,
        CAN_FIRE_av_read,
        CAN_FIRE_hart0_csr_mem_client_request_get,
        CAN_FIRE_hart0_csr_mem_client_response_put,
+       CAN_FIRE_hart0_fpr_mem_client_request_get,
+       CAN_FIRE_hart0_fpr_mem_client_response_put,
        CAN_FIRE_hart0_gpr_mem_client_request_get,
        CAN_FIRE_hart0_gpr_mem_client_response_put,
        CAN_FIRE_reset,
        CAN_FIRE_write,
-       WILL_FIRE_RL_rl_finish_csr_read,
-       WILL_FIRE_RL_rl_finish_gpr_read,
-       WILL_FIRE_RL_rl_start_read_csr,
-       WILL_FIRE_RL_rl_start_read_gpr,
-       WILL_FIRE_RL_rl_start_read_unknown,
-       WILL_FIRE_RL_rl_start_write_csr,
-       WILL_FIRE_RL_rl_start_write_gpr,
-       WILL_FIRE_RL_rl_start_write_unknown,
+       WILL_FIRE_RL_rl_csr_read_finish,
+       WILL_FIRE_RL_rl_csr_read_start,
+       WILL_FIRE_RL_rl_csr_write_finish,
+       WILL_FIRE_RL_rl_csr_write_start,
+       WILL_FIRE_RL_rl_fpr_read_finish,
+       WILL_FIRE_RL_rl_fpr_read_start,
+       WILL_FIRE_RL_rl_fpr_write_finish,
+       WILL_FIRE_RL_rl_fpr_write_start,
+       WILL_FIRE_RL_rl_gpr_read_finish,
+       WILL_FIRE_RL_rl_gpr_read_start,
+       WILL_FIRE_RL_rl_gpr_write_finish,
+       WILL_FIRE_RL_rl_gpr_write_start,
+       WILL_FIRE_RL_rl_unknown_read_start,
+       WILL_FIRE_RL_rl_unknown_write_start,
        WILL_FIRE_av_read,
        WILL_FIRE_hart0_csr_mem_client_request_get,
        WILL_FIRE_hart0_csr_mem_client_response_put,
+       WILL_FIRE_hart0_fpr_mem_client_request_get,
+       WILL_FIRE_hart0_fpr_mem_client_response_put,
        WILL_FIRE_hart0_gpr_mem_client_request_get,
        WILL_FIRE_hart0_gpr_mem_client_response_put,
        WILL_FIRE_reset,
        WILL_FIRE_write;
 
   // inputs to muxes for submodule ports
-  reg [2 : 0] MUX_rg_abstractcs_cmderr$write_1__VAL_6;
-  wire [84 : 0] MUX_f_hart0_csr_reqs$enq_1__VAL_1,
+  reg [2 : 0] MUX_rg_abstractcs_cmderr$write_1__VAL_5;
+  wire [76 : 0] MUX_f_hart0_csr_reqs$enq_1__VAL_1,
 		MUX_f_hart0_csr_reqs$enq_1__VAL_2;
-  wire [77 : 0] MUX_f_hart0_gpr_reqs$enq_1__VAL_1,
+  wire [69 : 0] MUX_f_hart0_fpr_reqs$enq_1__VAL_1,
+		MUX_f_hart0_fpr_reqs$enq_1__VAL_2,
+		MUX_f_hart0_gpr_reqs$enq_1__VAL_1,
 		MUX_f_hart0_gpr_reqs$enq_1__VAL_2;
-  wire MUX_rg_abstractcs_busy$write_1__SEL_6,
-       MUX_rg_abstractcs_cmderr$write_1__SEL_6,
-       MUX_rg_data0$write_1__SEL_4,
-       MUX_rg_data1$write_1__SEL_4;
+  wire [2 : 0] MUX_rg_abstractcs_cmderr$write_1__VAL_4,
+	       MUX_rg_abstractcs_cmderr$write_1__VAL_7,
+	       MUX_rg_abstractcs_cmderr$write_1__VAL_9;
+  wire MUX_rg_abstractcs_busy$write_1__SEL_5,
+       MUX_rg_abstractcs_cmderr$write_1__SEL_5,
+       MUX_rg_data0$write_1__SEL_3,
+       MUX_rg_data1$write_1__SEL_3;
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h2047;
-  reg [31 : 0] v__h2286;
-  reg [31 : 0] v__h2411;
-  reg [31 : 0] v__h2738;
-  reg [31 : 0] v__h2855;
-  reg [31 : 0] v__h2568;
-  reg [31 : 0] v__h3346;
-  reg [31 : 0] v__h2041;
-  reg [31 : 0] v__h2280;
-  reg [31 : 0] v__h2405;
-  reg [31 : 0] v__h2562;
-  reg [31 : 0] v__h2732;
-  reg [31 : 0] v__h2849;
-  reg [31 : 0] v__h3340;
+  reg [31 : 0] v__h2815;
+  reg [31 : 0] v__h3054;
+  reg [31 : 0] v__h3179;
+  reg [31 : 0] v__h3506;
+  reg [31 : 0] v__h3623;
+  reg [31 : 0] v__h3336;
+  reg [31 : 0] v__h4114;
+  reg [31 : 0] v__h2809;
+  reg [31 : 0] v__h3048;
+  reg [31 : 0] v__h3173;
+  reg [31 : 0] v__h3330;
+  reg [31 : 0] v__h3500;
+  reg [31 : 0] v__h3617;
+  reg [31 : 0] v__h4108;
   // synopsys translate_on
 
   // remaining internal signals
-  wire [63 : 0] req_data__h702;
-  wire [31 : 0] virt_rg_abstractcs__h529, virt_rg_command__h593;
-  wire [15 : 0] regno__h1871;
-  wire [12 : 0] x__h1085;
-  wire rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d31,
-       rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d36,
-       rg_abstractcs_cmderr_2_EQ_0_8_AND_write_dm_add_ETC___d103,
-       rg_abstractcs_cmderr_2_EQ_0_8_AND_write_dm_add_ETC___d135,
-       rg_command_access_reg_regno_ULE_0x101F___d29,
+  wire [63 : 0] req_data__h860;
+  wire [31 : 0] virt_rg_abstractcs__h706, virt_rg_command__h770;
+  wire [15 : 0] regno__h2639;
+  wire [12 : 0] x__h1321, x__h1746;
+  wire rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d38,
+       rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d49,
+       rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d61,
+       rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d72,
+       rg_abstractcs_cmderr_1_EQ_0_07_AND_write_dm_ad_ETC___d142,
+       rg_abstractcs_cmderr_1_EQ_0_07_AND_write_dm_ad_ETC___d174,
+       rg_command_access_reg_regno_ULE_0x101F___d36,
+       rg_command_access_reg_regno_ULE_0x103F___d59,
        rg_command_access_reg_regno_ULE_0xFFF___d8,
-       rg_command_access_reg_regno_ULT_0x1000___d27,
-       write_dm_addr_EQ_0x16_1_AND_rg_abstractcs_busy_ETC___d78,
-       write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d110,
-       write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d119,
-       write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d128,
-       write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d182;
+       rg_command_access_reg_regno_ULT_0x1000___d34,
+       rg_command_access_reg_regno_ULT_0x1020___d57,
+       write_dm_addr_EQ_0x16_00_AND_rg_abstractcs_bus_ETC___d117,
+       write_dm_addr_EQ_0x17_08_AND_NOT_rg_abstractcs_ETC___d149,
+       write_dm_addr_EQ_0x17_08_AND_NOT_rg_abstractcs_ETC___d158,
+       write_dm_addr_EQ_0x17_08_AND_NOT_rg_abstractcs_ETC___d167,
+       write_dm_addr_EQ_0x17_08_AND_NOT_rg_abstractcs_ETC___d221;
 
   // action method reset
   assign RDY_reset = 1'd1 ;
@@ -284,12 +352,12 @@ module mkDM_Abstract_Commands(CLK,
   // actionvalue method av_read
   always@(av_read_dm_addr or
 	  rg_data1 or
-	  rg_data0 or virt_rg_abstractcs__h529 or virt_rg_command__h593)
+	  rg_data0 or virt_rg_abstractcs__h706 or virt_rg_command__h770)
   begin
     case (av_read_dm_addr)
       7'h04: av_read = rg_data0;
-      7'h16: av_read = virt_rg_abstractcs__h529;
-      7'h17: av_read = virt_rg_command__h593;
+      7'h16: av_read = virt_rg_abstractcs__h706;
+      7'h17: av_read = virt_rg_command__h770;
       default: av_read = rg_data1;
     endcase
   end
@@ -317,6 +385,21 @@ module mkDM_Abstract_Commands(CLK,
   assign WILL_FIRE_hart0_gpr_mem_client_response_put =
 	     EN_hart0_gpr_mem_client_response_put ;
 
+  // actionvalue method hart0_fpr_mem_client_request_get
+  assign hart0_fpr_mem_client_request_get = f_hart0_fpr_reqs$D_OUT ;
+  assign RDY_hart0_fpr_mem_client_request_get = f_hart0_fpr_reqs$EMPTY_N ;
+  assign CAN_FIRE_hart0_fpr_mem_client_request_get =
+	     f_hart0_fpr_reqs$EMPTY_N ;
+  assign WILL_FIRE_hart0_fpr_mem_client_request_get =
+	     EN_hart0_fpr_mem_client_request_get ;
+
+  // action method hart0_fpr_mem_client_response_put
+  assign RDY_hart0_fpr_mem_client_response_put = f_hart0_fpr_rsps$FULL_N ;
+  assign CAN_FIRE_hart0_fpr_mem_client_response_put =
+	     f_hart0_fpr_rsps$FULL_N ;
+  assign WILL_FIRE_hart0_fpr_mem_client_response_put =
+	     EN_hart0_fpr_mem_client_response_put ;
+
   // actionvalue method hart0_csr_mem_client_request_get
   assign hart0_csr_mem_client_request_get = f_hart0_csr_reqs$D_OUT ;
   assign RDY_hart0_csr_mem_client_request_get = f_hart0_csr_reqs$EMPTY_N ;
@@ -333,7 +416,7 @@ module mkDM_Abstract_Commands(CLK,
 	     EN_hart0_csr_mem_client_response_put ;
 
   // submodule f_hart0_csr_reqs
-  FIFO1 #(.width(32'd85), .guarded(32'd1)) f_hart0_csr_reqs(.RST(RST_N),
+  FIFO1 #(.width(32'd77), .guarded(32'd1)) f_hart0_csr_reqs(.RST(RST_N),
 							    .CLK(CLK),
 							    .D_IN(f_hart0_csr_reqs$D_IN),
 							    .ENQ(f_hart0_csr_reqs$ENQ),
@@ -344,7 +427,7 @@ module mkDM_Abstract_Commands(CLK,
 							    .EMPTY_N(f_hart0_csr_reqs$EMPTY_N));
 
   // submodule f_hart0_csr_rsps
-  FIFO1 #(.width(32'd64), .guarded(32'd1)) f_hart0_csr_rsps(.RST(RST_N),
+  FIFO1 #(.width(32'd65), .guarded(32'd1)) f_hart0_csr_rsps(.RST(RST_N),
 							    .CLK(CLK),
 							    .D_IN(f_hart0_csr_rsps$D_IN),
 							    .ENQ(f_hart0_csr_rsps$ENQ),
@@ -354,8 +437,30 @@ module mkDM_Abstract_Commands(CLK,
 							    .FULL_N(f_hart0_csr_rsps$FULL_N),
 							    .EMPTY_N(f_hart0_csr_rsps$EMPTY_N));
 
+  // submodule f_hart0_fpr_reqs
+  FIFO1 #(.width(32'd70), .guarded(32'd1)) f_hart0_fpr_reqs(.RST(RST_N),
+							    .CLK(CLK),
+							    .D_IN(f_hart0_fpr_reqs$D_IN),
+							    .ENQ(f_hart0_fpr_reqs$ENQ),
+							    .DEQ(f_hart0_fpr_reqs$DEQ),
+							    .CLR(f_hart0_fpr_reqs$CLR),
+							    .D_OUT(f_hart0_fpr_reqs$D_OUT),
+							    .FULL_N(f_hart0_fpr_reqs$FULL_N),
+							    .EMPTY_N(f_hart0_fpr_reqs$EMPTY_N));
+
+  // submodule f_hart0_fpr_rsps
+  FIFO1 #(.width(32'd65), .guarded(32'd1)) f_hart0_fpr_rsps(.RST(RST_N),
+							    .CLK(CLK),
+							    .D_IN(f_hart0_fpr_rsps$D_IN),
+							    .ENQ(f_hart0_fpr_rsps$ENQ),
+							    .DEQ(f_hart0_fpr_rsps$DEQ),
+							    .CLR(f_hart0_fpr_rsps$CLR),
+							    .D_OUT(f_hart0_fpr_rsps$D_OUT),
+							    .FULL_N(f_hart0_fpr_rsps$FULL_N),
+							    .EMPTY_N(f_hart0_fpr_rsps$EMPTY_N));
+
   // submodule f_hart0_gpr_reqs
-  FIFO1 #(.width(32'd78), .guarded(32'd1)) f_hart0_gpr_reqs(.RST(RST_N),
+  FIFO1 #(.width(32'd70), .guarded(32'd1)) f_hart0_gpr_reqs(.RST(RST_N),
 							    .CLK(CLK),
 							    .D_IN(f_hart0_gpr_reqs$D_IN),
 							    .ENQ(f_hart0_gpr_reqs$ENQ),
@@ -366,7 +471,7 @@ module mkDM_Abstract_Commands(CLK,
 							    .EMPTY_N(f_hart0_gpr_reqs$EMPTY_N));
 
   // submodule f_hart0_gpr_rsps
-  FIFO1 #(.width(32'd64), .guarded(32'd1)) f_hart0_gpr_rsps(.RST(RST_N),
+  FIFO1 #(.width(32'd65), .guarded(32'd1)) f_hart0_gpr_rsps(.RST(RST_N),
 							    .CLK(CLK),
 							    .D_IN(f_hart0_gpr_rsps$D_IN),
 							    .ENQ(f_hart0_gpr_rsps$ENQ),
@@ -376,361 +481,491 @@ module mkDM_Abstract_Commands(CLK,
 							    .FULL_N(f_hart0_gpr_rsps$FULL_N),
 							    .EMPTY_N(f_hart0_gpr_rsps$EMPTY_N));
 
-  // rule RL_rl_start_write_csr
-  assign CAN_FIRE_RL_rl_start_write_csr =
+  // rule RL_rl_csr_write_start
+  assign CAN_FIRE_RL_rl_csr_write_start =
 	     f_hart0_csr_reqs$FULL_N && rg_abstractcs_busy &&
 	     rg_start_reg_access &&
 	     rg_command_access_reg_write &&
 	     rg_command_access_reg_regno_ULE_0xFFF___d8 ;
-  assign WILL_FIRE_RL_rl_start_write_csr =
-	     CAN_FIRE_RL_rl_start_write_csr && !EN_write ;
+  assign WILL_FIRE_RL_rl_csr_write_start = CAN_FIRE_RL_rl_csr_write_start ;
 
-  // rule RL_rl_start_read_csr
-  assign CAN_FIRE_RL_rl_start_read_csr =
+  // rule RL_rl_csr_write_finish
+  assign CAN_FIRE_RL_rl_csr_write_finish =
+	     f_hart0_csr_rsps$EMPTY_N && rg_abstractcs_busy &&
+	     rg_command_access_reg_write &&
+	     rg_command_access_reg_regno_ULE_0xFFF___d8 ;
+  assign WILL_FIRE_RL_rl_csr_write_finish =
+	     CAN_FIRE_RL_rl_csr_write_finish && !EN_write ;
+
+  // rule RL_rl_csr_read_start
+  assign CAN_FIRE_RL_rl_csr_read_start =
 	     f_hart0_csr_reqs$FULL_N && rg_abstractcs_busy &&
 	     rg_start_reg_access &&
 	     !rg_command_access_reg_write &&
 	     rg_command_access_reg_regno_ULE_0xFFF___d8 ;
-  assign WILL_FIRE_RL_rl_start_read_csr = CAN_FIRE_RL_rl_start_read_csr ;
+  assign WILL_FIRE_RL_rl_csr_read_start = CAN_FIRE_RL_rl_csr_read_start ;
 
-  // rule RL_rl_start_write_gpr
-  assign CAN_FIRE_RL_rl_start_write_gpr =
+  // rule RL_rl_csr_read_finish
+  assign CAN_FIRE_RL_rl_csr_read_finish =
+	     f_hart0_csr_rsps$EMPTY_N && rg_abstractcs_busy &&
+	     !rg_command_access_reg_write &&
+	     rg_command_access_reg_regno_ULE_0xFFF___d8 ;
+  assign WILL_FIRE_RL_rl_csr_read_finish =
+	     CAN_FIRE_RL_rl_csr_read_finish && !EN_write ;
+
+  // rule RL_rl_gpr_write_start
+  assign CAN_FIRE_RL_rl_gpr_write_start =
 	     f_hart0_gpr_reqs$FULL_N &&
-	     rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d31 ;
-  assign WILL_FIRE_RL_rl_start_write_gpr =
-	     CAN_FIRE_RL_rl_start_write_gpr &&
-	     !WILL_FIRE_RL_rl_finish_csr_read &&
-	     !EN_write ;
+	     rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d38 ;
+  assign WILL_FIRE_RL_rl_gpr_write_start = CAN_FIRE_RL_rl_gpr_write_start ;
 
-  // rule RL_rl_start_read_gpr
-  assign CAN_FIRE_RL_rl_start_read_gpr =
+  // rule RL_rl_gpr_write_finish
+  assign CAN_FIRE_RL_rl_gpr_write_finish =
+	     f_hart0_gpr_rsps$EMPTY_N && rg_abstractcs_busy &&
+	     rg_command_access_reg_write &&
+	     !rg_command_access_reg_regno_ULT_0x1000___d34 &&
+	     rg_command_access_reg_regno_ULE_0x101F___d36 ;
+  assign WILL_FIRE_RL_rl_gpr_write_finish =
+	     CAN_FIRE_RL_rl_gpr_write_finish && !EN_write ;
+
+  // rule RL_rl_gpr_read_start
+  assign CAN_FIRE_RL_rl_gpr_read_start =
 	     f_hart0_gpr_reqs$FULL_N &&
-	     rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d36 ;
-  assign WILL_FIRE_RL_rl_start_read_gpr = CAN_FIRE_RL_rl_start_read_gpr ;
+	     rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d49 ;
+  assign WILL_FIRE_RL_rl_gpr_read_start = CAN_FIRE_RL_rl_gpr_read_start ;
 
-  // rule RL_rl_finish_csr_read
-  assign CAN_FIRE_RL_rl_finish_csr_read =
-	     f_hart0_csr_rsps$EMPTY_N && rg_abstractcs_busy ;
-  assign WILL_FIRE_RL_rl_finish_csr_read =
-	     CAN_FIRE_RL_rl_finish_csr_read &&
-	     !WILL_FIRE_RL_rl_start_write_csr &&
-	     !EN_write ;
+  // rule RL_rl_gpr_read_finish
+  assign CAN_FIRE_RL_rl_gpr_read_finish =
+	     f_hart0_gpr_rsps$EMPTY_N && rg_abstractcs_busy &&
+	     !rg_command_access_reg_write &&
+	     !rg_command_access_reg_regno_ULT_0x1000___d34 &&
+	     rg_command_access_reg_regno_ULE_0x101F___d36 ;
+  assign WILL_FIRE_RL_rl_gpr_read_finish =
+	     CAN_FIRE_RL_rl_gpr_read_finish && !EN_write ;
 
-  // rule RL_rl_finish_gpr_read
-  assign CAN_FIRE_RL_rl_finish_gpr_read =
-	     f_hart0_gpr_rsps$EMPTY_N && rg_abstractcs_busy ;
-  assign WILL_FIRE_RL_rl_finish_gpr_read =
-	     CAN_FIRE_RL_rl_finish_gpr_read &&
-	     !WILL_FIRE_RL_rl_start_write_gpr &&
-	     !WILL_FIRE_RL_rl_finish_csr_read &&
-	     !WILL_FIRE_RL_rl_start_write_csr &&
-	     !EN_write ;
+  // rule RL_rl_fpr_write_start
+  assign CAN_FIRE_RL_rl_fpr_write_start =
+	     f_hart0_fpr_reqs$FULL_N &&
+	     rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d61 ;
+  assign WILL_FIRE_RL_rl_fpr_write_start = CAN_FIRE_RL_rl_fpr_write_start ;
 
-  // rule RL_rl_start_write_unknown
-  assign CAN_FIRE_RL_rl_start_write_unknown =
+  // rule RL_rl_fpr_write_finish
+  assign CAN_FIRE_RL_rl_fpr_write_finish =
+	     f_hart0_fpr_rsps$EMPTY_N && rg_abstractcs_busy &&
+	     rg_command_access_reg_write &&
+	     !rg_command_access_reg_regno_ULT_0x1020___d57 &&
+	     rg_command_access_reg_regno_ULE_0x103F___d59 ;
+  assign WILL_FIRE_RL_rl_fpr_write_finish =
+	     CAN_FIRE_RL_rl_fpr_write_finish && !EN_write ;
+
+  // rule RL_rl_fpr_read_start
+  assign CAN_FIRE_RL_rl_fpr_read_start =
+	     f_hart0_fpr_reqs$FULL_N &&
+	     rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d72 ;
+  assign WILL_FIRE_RL_rl_fpr_read_start = CAN_FIRE_RL_rl_fpr_read_start ;
+
+  // rule RL_rl_fpr_read_finish
+  assign CAN_FIRE_RL_rl_fpr_read_finish =
+	     f_hart0_fpr_rsps$EMPTY_N && rg_abstractcs_busy &&
+	     !rg_command_access_reg_write &&
+	     !rg_command_access_reg_regno_ULT_0x1020___d57 &&
+	     rg_command_access_reg_regno_ULE_0x103F___d59 ;
+  assign WILL_FIRE_RL_rl_fpr_read_finish =
+	     CAN_FIRE_RL_rl_fpr_read_finish && !EN_write ;
+
+  // rule RL_rl_unknown_write_start
+  assign CAN_FIRE_RL_rl_unknown_write_start =
 	     rg_abstractcs_busy && rg_start_reg_access &&
 	     rg_command_access_reg_write &&
 	     !rg_command_access_reg_regno_ULE_0xFFF___d8 &&
-	     (rg_command_access_reg_regno_ULT_0x1000___d27 ||
-	      !rg_command_access_reg_regno_ULE_0x101F___d29) ;
-  assign WILL_FIRE_RL_rl_start_write_unknown =
-	     CAN_FIRE_RL_rl_start_write_unknown &&
-	     !WILL_FIRE_RL_rl_finish_gpr_read &&
-	     !WILL_FIRE_RL_rl_finish_csr_read &&
-	     !EN_write ;
+	     (rg_command_access_reg_regno_ULT_0x1000___d34 ||
+	      !rg_command_access_reg_regno_ULE_0x101F___d36) &&
+	     (rg_command_access_reg_regno_ULT_0x1020___d57 ||
+	      !rg_command_access_reg_regno_ULE_0x103F___d59) ;
+  assign WILL_FIRE_RL_rl_unknown_write_start =
+	     CAN_FIRE_RL_rl_unknown_write_start && !EN_write ;
 
-  // rule RL_rl_start_read_unknown
-  assign CAN_FIRE_RL_rl_start_read_unknown =
+  // rule RL_rl_unknown_read_start
+  assign CAN_FIRE_RL_rl_unknown_read_start =
 	     rg_abstractcs_busy && rg_start_reg_access &&
 	     !rg_command_access_reg_write &&
 	     !rg_command_access_reg_regno_ULE_0xFFF___d8 &&
-	     (rg_command_access_reg_regno_ULT_0x1000___d27 ||
-	      !rg_command_access_reg_regno_ULE_0x101F___d29) ;
-  assign WILL_FIRE_RL_rl_start_read_unknown =
-	     CAN_FIRE_RL_rl_start_read_unknown &&
-	     !WILL_FIRE_RL_rl_finish_gpr_read &&
-	     !WILL_FIRE_RL_rl_finish_csr_read &&
-	     !EN_write ;
+	     (rg_command_access_reg_regno_ULT_0x1000___d34 ||
+	      !rg_command_access_reg_regno_ULE_0x101F___d36) &&
+	     (rg_command_access_reg_regno_ULT_0x1020___d57 ||
+	      !rg_command_access_reg_regno_ULE_0x103F___d59) ;
+  assign WILL_FIRE_RL_rl_unknown_read_start =
+	     CAN_FIRE_RL_rl_unknown_read_start && !EN_write ;
 
   // inputs to muxes for submodule ports
-  assign MUX_rg_abstractcs_busy$write_1__SEL_6 =
+  assign MUX_rg_abstractcs_busy$write_1__SEL_5 =
 	     EN_write && rg_abstractcs_cmderr == 3'd0 &&
-	     write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d119 ;
-  assign MUX_rg_abstractcs_cmderr$write_1__SEL_6 =
+	     write_dm_addr_EQ_0x17_08_AND_NOT_rg_abstractcs_ETC___d158 ;
+  assign MUX_rg_abstractcs_cmderr$write_1__SEL_5 =
 	     EN_write &&
-	     write_dm_addr_EQ_0x16_1_AND_rg_abstractcs_busy_ETC___d78 ;
-  assign MUX_rg_data0$write_1__SEL_4 =
+	     write_dm_addr_EQ_0x16_00_AND_rg_abstractcs_bus_ETC___d117 ;
+  assign MUX_rg_data0$write_1__SEL_3 =
 	     EN_write && rg_abstractcs_cmderr == 3'd0 &&
 	     write_dm_addr == 7'h04 ;
-  assign MUX_rg_data1$write_1__SEL_4 =
+  assign MUX_rg_data1$write_1__SEL_3 =
 	     EN_write && rg_abstractcs_cmderr == 3'd0 &&
 	     write_dm_addr == 7'h05 ;
   assign MUX_f_hart0_csr_reqs$enq_1__VAL_1 =
-	     { 9'd511, rg_command_access_reg_regno[11:0], req_data__h702 } ;
+	     { 1'd1, rg_command_access_reg_regno[11:0], req_data__h860 } ;
   assign MUX_f_hart0_csr_reqs$enq_1__VAL_2 =
-	     { 9'd255,
+	     { 1'd0,
 	       rg_command_access_reg_regno[11:0],
 	       64'hAAAAAAAAAAAAAAAA } ;
+  assign MUX_f_hart0_fpr_reqs$enq_1__VAL_1 =
+	     { 1'd1, x__h1746[4:0], req_data__h860 } ;
+  assign MUX_f_hart0_fpr_reqs$enq_1__VAL_2 =
+	     { 1'd0, x__h1746[4:0], 64'hAAAAAAAAAAAAAAAA } ;
   assign MUX_f_hart0_gpr_reqs$enq_1__VAL_1 =
-	     { 9'd511, x__h1085[4:0], req_data__h702 } ;
+	     { 1'd1, x__h1321[4:0], req_data__h860 } ;
   assign MUX_f_hart0_gpr_reqs$enq_1__VAL_2 =
-	     { 9'd255, x__h1085[4:0], 64'hAAAAAAAAAAAAAAAA } ;
+	     { 1'd0, x__h1321[4:0], 64'hAAAAAAAAAAAAAAAA } ;
+  assign MUX_rg_abstractcs_cmderr$write_1__VAL_4 =
+	     f_hart0_fpr_rsps$D_OUT[64] ? 3'd0 : 3'd4 ;
   always@(write_dm_addr or rg_abstractcs_busy or write_dm_word)
   begin
     case (write_dm_addr)
       7'h16:
-	  MUX_rg_abstractcs_cmderr$write_1__VAL_6 =
+	  MUX_rg_abstractcs_cmderr$write_1__VAL_5 =
 	      rg_abstractcs_busy ? 3'd1 : 3'd0;
       7'h17:
-	  MUX_rg_abstractcs_cmderr$write_1__VAL_6 =
+	  MUX_rg_abstractcs_cmderr$write_1__VAL_5 =
 	      rg_abstractcs_busy ?
 		3'd1 :
 		((write_dm_word[24] || write_dm_word[22:20] != 3'd3 ||
 		  write_dm_word[18]) ?
 		   3'd2 :
 		   (write_dm_word[17] ? 3'd0 : 3'd2));
-      default: MUX_rg_abstractcs_cmderr$write_1__VAL_6 = 3'd2;
+      default: MUX_rg_abstractcs_cmderr$write_1__VAL_5 = 3'd2;
     endcase
   end
+  assign MUX_rg_abstractcs_cmderr$write_1__VAL_7 =
+	     f_hart0_gpr_rsps$D_OUT[64] ? 3'd0 : 3'd4 ;
+  assign MUX_rg_abstractcs_cmderr$write_1__VAL_9 =
+	     f_hart0_csr_rsps$D_OUT[64] ? 3'd0 : 3'd4 ;
 
   // register rg_abstractcs_busy
   always@(EN_reset or
-	  WILL_FIRE_RL_rl_start_read_unknown or
-	  WILL_FIRE_RL_rl_start_write_unknown or
-	  WILL_FIRE_RL_rl_finish_gpr_read or
-	  WILL_FIRE_RL_rl_finish_csr_read or
-	  MUX_rg_abstractcs_busy$write_1__SEL_6 or
-	  WILL_FIRE_RL_rl_start_write_gpr or WILL_FIRE_RL_rl_start_write_csr)
+	  WILL_FIRE_RL_rl_unknown_read_start or
+	  WILL_FIRE_RL_rl_unknown_write_start or
+	  WILL_FIRE_RL_rl_fpr_read_finish or
+	  MUX_rg_abstractcs_busy$write_1__SEL_5 or
+	  WILL_FIRE_RL_rl_fpr_write_finish or
+	  WILL_FIRE_RL_rl_gpr_read_finish or
+	  WILL_FIRE_RL_rl_gpr_write_finish or
+	  WILL_FIRE_RL_rl_csr_read_finish or WILL_FIRE_RL_rl_csr_write_finish)
   case (1'b1)
-    EN_reset || WILL_FIRE_RL_rl_start_read_unknown ||
-    WILL_FIRE_RL_rl_start_write_unknown ||
-    WILL_FIRE_RL_rl_finish_gpr_read ||
-    WILL_FIRE_RL_rl_finish_csr_read:
+    EN_reset || WILL_FIRE_RL_rl_unknown_read_start ||
+    WILL_FIRE_RL_rl_unknown_write_start ||
+    WILL_FIRE_RL_rl_fpr_read_finish:
 	rg_abstractcs_busy$D_IN = 1'd0;
-    MUX_rg_abstractcs_busy$write_1__SEL_6: rg_abstractcs_busy$D_IN = 1'd1;
-    WILL_FIRE_RL_rl_start_write_gpr || WILL_FIRE_RL_rl_start_write_csr:
+    MUX_rg_abstractcs_busy$write_1__SEL_5: rg_abstractcs_busy$D_IN = 1'd1;
+    WILL_FIRE_RL_rl_fpr_write_finish || WILL_FIRE_RL_rl_gpr_read_finish ||
+    WILL_FIRE_RL_rl_gpr_write_finish ||
+    WILL_FIRE_RL_rl_csr_read_finish ||
+    WILL_FIRE_RL_rl_csr_write_finish:
 	rg_abstractcs_busy$D_IN = 1'd0;
     default: rg_abstractcs_busy$D_IN = 1'b0 /* unspecified value */ ;
   endcase
   assign rg_abstractcs_busy$EN =
 	     EN_write && rg_abstractcs_cmderr == 3'd0 &&
-	     write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d119 ||
-	     WILL_FIRE_RL_rl_start_read_unknown ||
-	     WILL_FIRE_RL_rl_start_write_unknown ||
-	     WILL_FIRE_RL_rl_finish_gpr_read ||
-	     WILL_FIRE_RL_rl_start_write_gpr ||
-	     WILL_FIRE_RL_rl_finish_csr_read ||
-	     WILL_FIRE_RL_rl_start_write_csr ||
+	     write_dm_addr_EQ_0x17_08_AND_NOT_rg_abstractcs_ETC___d158 ||
+	     WILL_FIRE_RL_rl_unknown_read_start ||
+	     WILL_FIRE_RL_rl_unknown_write_start ||
+	     WILL_FIRE_RL_rl_fpr_read_finish ||
+	     WILL_FIRE_RL_rl_fpr_write_finish ||
+	     WILL_FIRE_RL_rl_gpr_read_finish ||
+	     WILL_FIRE_RL_rl_gpr_write_finish ||
+	     WILL_FIRE_RL_rl_csr_read_finish ||
+	     WILL_FIRE_RL_rl_csr_write_finish ||
 	     EN_reset ;
 
   // register rg_abstractcs_cmderr
   always@(EN_reset or
-	  WILL_FIRE_RL_rl_start_read_unknown or
-	  WILL_FIRE_RL_rl_start_write_unknown or
-	  WILL_FIRE_RL_rl_finish_gpr_read or
-	  WILL_FIRE_RL_rl_finish_csr_read or
-	  MUX_rg_abstractcs_cmderr$write_1__SEL_6 or
-	  MUX_rg_abstractcs_cmderr$write_1__VAL_6)
+	  WILL_FIRE_RL_rl_unknown_read_start or
+	  WILL_FIRE_RL_rl_unknown_write_start or
+	  WILL_FIRE_RL_rl_fpr_read_finish or
+	  MUX_rg_abstractcs_cmderr$write_1__VAL_4 or
+	  MUX_rg_abstractcs_cmderr$write_1__SEL_5 or
+	  MUX_rg_abstractcs_cmderr$write_1__VAL_5 or
+	  WILL_FIRE_RL_rl_fpr_write_finish or
+	  WILL_FIRE_RL_rl_gpr_read_finish or
+	  MUX_rg_abstractcs_cmderr$write_1__VAL_7 or
+	  WILL_FIRE_RL_rl_gpr_write_finish or
+	  WILL_FIRE_RL_rl_csr_read_finish or
+	  MUX_rg_abstractcs_cmderr$write_1__VAL_9 or
+	  WILL_FIRE_RL_rl_csr_write_finish)
   case (1'b1)
     EN_reset: rg_abstractcs_cmderr$D_IN = 3'd0;
-    WILL_FIRE_RL_rl_start_read_unknown || WILL_FIRE_RL_rl_start_write_unknown:
+    WILL_FIRE_RL_rl_unknown_read_start || WILL_FIRE_RL_rl_unknown_write_start:
 	rg_abstractcs_cmderr$D_IN = 3'd7;
-    WILL_FIRE_RL_rl_finish_gpr_read || WILL_FIRE_RL_rl_finish_csr_read:
-	rg_abstractcs_cmderr$D_IN = 3'd0;
-    MUX_rg_abstractcs_cmderr$write_1__SEL_6:
-	rg_abstractcs_cmderr$D_IN = MUX_rg_abstractcs_cmderr$write_1__VAL_6;
+    WILL_FIRE_RL_rl_fpr_read_finish:
+	rg_abstractcs_cmderr$D_IN = MUX_rg_abstractcs_cmderr$write_1__VAL_4;
+    MUX_rg_abstractcs_cmderr$write_1__SEL_5:
+	rg_abstractcs_cmderr$D_IN = MUX_rg_abstractcs_cmderr$write_1__VAL_5;
+    WILL_FIRE_RL_rl_fpr_write_finish:
+	rg_abstractcs_cmderr$D_IN = MUX_rg_abstractcs_cmderr$write_1__VAL_4;
+    WILL_FIRE_RL_rl_gpr_read_finish:
+	rg_abstractcs_cmderr$D_IN = MUX_rg_abstractcs_cmderr$write_1__VAL_7;
+    WILL_FIRE_RL_rl_gpr_write_finish:
+	rg_abstractcs_cmderr$D_IN = MUX_rg_abstractcs_cmderr$write_1__VAL_7;
+    WILL_FIRE_RL_rl_csr_read_finish:
+	rg_abstractcs_cmderr$D_IN = MUX_rg_abstractcs_cmderr$write_1__VAL_9;
+    WILL_FIRE_RL_rl_csr_write_finish:
+	rg_abstractcs_cmderr$D_IN = MUX_rg_abstractcs_cmderr$write_1__VAL_9;
     default: rg_abstractcs_cmderr$D_IN = 3'b010 /* unspecified value */ ;
   endcase
   assign rg_abstractcs_cmderr$EN =
 	     EN_write &&
-	     write_dm_addr_EQ_0x16_1_AND_rg_abstractcs_busy_ETC___d78 ||
-	     WILL_FIRE_RL_rl_finish_gpr_read ||
-	     WILL_FIRE_RL_rl_finish_csr_read ||
+	     write_dm_addr_EQ_0x16_00_AND_rg_abstractcs_bus_ETC___d117 ||
+	     WILL_FIRE_RL_rl_gpr_read_finish ||
+	     WILL_FIRE_RL_rl_gpr_write_finish ||
+	     WILL_FIRE_RL_rl_csr_read_finish ||
+	     WILL_FIRE_RL_rl_csr_write_finish ||
+	     WILL_FIRE_RL_rl_fpr_read_finish ||
+	     WILL_FIRE_RL_rl_fpr_write_finish ||
 	     EN_reset ||
-	     WILL_FIRE_RL_rl_start_read_unknown ||
-	     WILL_FIRE_RL_rl_start_write_unknown ;
+	     WILL_FIRE_RL_rl_unknown_read_start ||
+	     WILL_FIRE_RL_rl_unknown_write_start ;
 
   // register rg_command_access_reg_regno
   assign rg_command_access_reg_regno$D_IN =
 	     EN_reset ? 13'h1000 : write_dm_word[12:0] ;
   assign rg_command_access_reg_regno$EN =
 	     EN_write && rg_abstractcs_cmderr == 3'd0 &&
-	     write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d119 ||
+	     write_dm_addr_EQ_0x17_08_AND_NOT_rg_abstractcs_ETC___d158 ||
 	     EN_reset ;
 
   // register rg_command_access_reg_write
   assign rg_command_access_reg_write$D_IN = !EN_reset && write_dm_word[16] ;
   assign rg_command_access_reg_write$EN =
 	     EN_write && rg_abstractcs_cmderr == 3'd0 &&
-	     write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d119 ||
+	     write_dm_addr_EQ_0x17_08_AND_NOT_rg_abstractcs_ETC___d158 ||
 	     EN_reset ;
 
   // register rg_data0
   always@(EN_reset or
-	  WILL_FIRE_RL_rl_finish_gpr_read or
+	  WILL_FIRE_RL_rl_fpr_read_finish or
+	  f_hart0_fpr_rsps$D_OUT or
+	  MUX_rg_data0$write_1__SEL_3 or
+	  write_dm_word or
+	  WILL_FIRE_RL_rl_gpr_read_finish or
 	  f_hart0_gpr_rsps$D_OUT or
-	  WILL_FIRE_RL_rl_finish_csr_read or
-	  f_hart0_csr_rsps$D_OUT or
-	  MUX_rg_data0$write_1__SEL_4 or write_dm_word)
+	  WILL_FIRE_RL_rl_csr_read_finish or f_hart0_csr_rsps$D_OUT)
   case (1'b1)
     EN_reset: rg_data0$D_IN = 32'd0;
-    WILL_FIRE_RL_rl_finish_gpr_read:
+    WILL_FIRE_RL_rl_fpr_read_finish:
+	rg_data0$D_IN = f_hart0_fpr_rsps$D_OUT[31:0];
+    MUX_rg_data0$write_1__SEL_3: rg_data0$D_IN = write_dm_word;
+    WILL_FIRE_RL_rl_gpr_read_finish:
 	rg_data0$D_IN = f_hart0_gpr_rsps$D_OUT[31:0];
-    WILL_FIRE_RL_rl_finish_csr_read:
+    WILL_FIRE_RL_rl_csr_read_finish:
 	rg_data0$D_IN = f_hart0_csr_rsps$D_OUT[31:0];
-    MUX_rg_data0$write_1__SEL_4: rg_data0$D_IN = write_dm_word;
     default: rg_data0$D_IN = 32'hAAAAAAAA /* unspecified value */ ;
   endcase
   assign rg_data0$EN =
 	     EN_write && rg_abstractcs_cmderr == 3'd0 &&
 	     write_dm_addr == 7'h04 ||
-	     WILL_FIRE_RL_rl_finish_csr_read ||
-	     WILL_FIRE_RL_rl_finish_gpr_read ||
+	     WILL_FIRE_RL_rl_csr_read_finish ||
+	     WILL_FIRE_RL_rl_gpr_read_finish ||
+	     WILL_FIRE_RL_rl_fpr_read_finish ||
 	     EN_reset ;
 
   // register rg_data1
   always@(EN_reset or
-	  WILL_FIRE_RL_rl_finish_gpr_read or
+	  WILL_FIRE_RL_rl_fpr_read_finish or
+	  f_hart0_fpr_rsps$D_OUT or
+	  MUX_rg_data1$write_1__SEL_3 or
+	  write_dm_word or
+	  WILL_FIRE_RL_rl_gpr_read_finish or
 	  f_hart0_gpr_rsps$D_OUT or
-	  WILL_FIRE_RL_rl_finish_csr_read or
-	  f_hart0_csr_rsps$D_OUT or
-	  MUX_rg_data1$write_1__SEL_4 or write_dm_word)
+	  WILL_FIRE_RL_rl_csr_read_finish or f_hart0_csr_rsps$D_OUT)
   case (1'b1)
     EN_reset: rg_data1$D_IN = 32'd0;
-    WILL_FIRE_RL_rl_finish_gpr_read:
+    WILL_FIRE_RL_rl_fpr_read_finish:
+	rg_data1$D_IN = f_hart0_fpr_rsps$D_OUT[63:32];
+    MUX_rg_data1$write_1__SEL_3: rg_data1$D_IN = write_dm_word;
+    WILL_FIRE_RL_rl_gpr_read_finish:
 	rg_data1$D_IN = f_hart0_gpr_rsps$D_OUT[63:32];
-    WILL_FIRE_RL_rl_finish_csr_read:
+    WILL_FIRE_RL_rl_csr_read_finish:
 	rg_data1$D_IN = f_hart0_csr_rsps$D_OUT[63:32];
-    MUX_rg_data1$write_1__SEL_4: rg_data1$D_IN = write_dm_word;
     default: rg_data1$D_IN = 32'hAAAAAAAA /* unspecified value */ ;
   endcase
   assign rg_data1$EN =
 	     EN_write && rg_abstractcs_cmderr == 3'd0 &&
 	     write_dm_addr == 7'h05 ||
-	     WILL_FIRE_RL_rl_finish_csr_read ||
-	     WILL_FIRE_RL_rl_finish_gpr_read ||
+	     WILL_FIRE_RL_rl_csr_read_finish ||
+	     WILL_FIRE_RL_rl_gpr_read_finish ||
+	     WILL_FIRE_RL_rl_fpr_read_finish ||
 	     EN_reset ;
 
   // register rg_start_reg_access
   always@(EN_reset or
-	  WILL_FIRE_RL_rl_start_read_unknown or
-	  WILL_FIRE_RL_rl_start_write_unknown or
-	  MUX_rg_abstractcs_busy$write_1__SEL_6 or
-	  WILL_FIRE_RL_rl_start_read_gpr or
-	  WILL_FIRE_RL_rl_start_write_gpr or
-	  WILL_FIRE_RL_rl_start_read_csr or WILL_FIRE_RL_rl_start_write_csr)
+	  WILL_FIRE_RL_rl_unknown_read_start or
+	  WILL_FIRE_RL_rl_unknown_write_start or
+	  MUX_rg_abstractcs_busy$write_1__SEL_5 or
+	  WILL_FIRE_RL_rl_fpr_read_start or
+	  WILL_FIRE_RL_rl_fpr_write_start or
+	  WILL_FIRE_RL_rl_gpr_read_start or
+	  WILL_FIRE_RL_rl_gpr_write_start or
+	  WILL_FIRE_RL_rl_csr_read_start or WILL_FIRE_RL_rl_csr_write_start)
   case (1'b1)
-    EN_reset || WILL_FIRE_RL_rl_start_read_unknown ||
-    WILL_FIRE_RL_rl_start_write_unknown:
+    EN_reset || WILL_FIRE_RL_rl_unknown_read_start ||
+    WILL_FIRE_RL_rl_unknown_write_start:
 	rg_start_reg_access$D_IN = 1'd0;
-    MUX_rg_abstractcs_busy$write_1__SEL_6: rg_start_reg_access$D_IN = 1'd1;
-    WILL_FIRE_RL_rl_start_read_gpr || WILL_FIRE_RL_rl_start_write_gpr ||
-    WILL_FIRE_RL_rl_start_read_csr ||
-    WILL_FIRE_RL_rl_start_write_csr:
+    MUX_rg_abstractcs_busy$write_1__SEL_5: rg_start_reg_access$D_IN = 1'd1;
+    WILL_FIRE_RL_rl_fpr_read_start || WILL_FIRE_RL_rl_fpr_write_start ||
+    WILL_FIRE_RL_rl_gpr_read_start ||
+    WILL_FIRE_RL_rl_gpr_write_start ||
+    WILL_FIRE_RL_rl_csr_read_start ||
+    WILL_FIRE_RL_rl_csr_write_start:
 	rg_start_reg_access$D_IN = 1'd0;
     default: rg_start_reg_access$D_IN = 1'b0 /* unspecified value */ ;
   endcase
   assign rg_start_reg_access$EN =
 	     EN_write && rg_abstractcs_cmderr == 3'd0 &&
-	     write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d119 ||
-	     WILL_FIRE_RL_rl_start_read_unknown ||
-	     WILL_FIRE_RL_rl_start_write_unknown ||
-	     WILL_FIRE_RL_rl_start_read_gpr ||
-	     WILL_FIRE_RL_rl_start_write_gpr ||
-	     WILL_FIRE_RL_rl_start_read_csr ||
-	     WILL_FIRE_RL_rl_start_write_csr ||
+	     write_dm_addr_EQ_0x17_08_AND_NOT_rg_abstractcs_ETC___d158 ||
+	     WILL_FIRE_RL_rl_unknown_read_start ||
+	     WILL_FIRE_RL_rl_unknown_write_start ||
+	     WILL_FIRE_RL_rl_fpr_read_start ||
+	     WILL_FIRE_RL_rl_fpr_write_start ||
+	     WILL_FIRE_RL_rl_gpr_read_start ||
+	     WILL_FIRE_RL_rl_gpr_write_start ||
+	     WILL_FIRE_RL_rl_csr_read_start ||
+	     WILL_FIRE_RL_rl_csr_write_start ||
 	     EN_reset ;
 
   // submodule f_hart0_csr_reqs
   assign f_hart0_csr_reqs$D_IN =
-	     WILL_FIRE_RL_rl_start_write_csr ?
+	     WILL_FIRE_RL_rl_csr_write_start ?
 	       MUX_f_hart0_csr_reqs$enq_1__VAL_1 :
 	       MUX_f_hart0_csr_reqs$enq_1__VAL_2 ;
   assign f_hart0_csr_reqs$ENQ =
-	     WILL_FIRE_RL_rl_start_write_csr ||
-	     WILL_FIRE_RL_rl_start_read_csr ;
+	     WILL_FIRE_RL_rl_csr_write_start ||
+	     WILL_FIRE_RL_rl_csr_read_start ;
   assign f_hart0_csr_reqs$DEQ = EN_hart0_csr_mem_client_request_get ;
   assign f_hart0_csr_reqs$CLR = EN_reset ;
 
   // submodule f_hart0_csr_rsps
   assign f_hart0_csr_rsps$D_IN = hart0_csr_mem_client_response_put ;
   assign f_hart0_csr_rsps$ENQ = EN_hart0_csr_mem_client_response_put ;
-  assign f_hart0_csr_rsps$DEQ = WILL_FIRE_RL_rl_finish_csr_read ;
+  assign f_hart0_csr_rsps$DEQ =
+	     WILL_FIRE_RL_rl_csr_read_finish ||
+	     WILL_FIRE_RL_rl_csr_write_finish ;
   assign f_hart0_csr_rsps$CLR = EN_reset ;
+
+  // submodule f_hart0_fpr_reqs
+  assign f_hart0_fpr_reqs$D_IN =
+	     WILL_FIRE_RL_rl_fpr_write_start ?
+	       MUX_f_hart0_fpr_reqs$enq_1__VAL_1 :
+	       MUX_f_hart0_fpr_reqs$enq_1__VAL_2 ;
+  assign f_hart0_fpr_reqs$ENQ =
+	     WILL_FIRE_RL_rl_fpr_write_start ||
+	     WILL_FIRE_RL_rl_fpr_read_start ;
+  assign f_hart0_fpr_reqs$DEQ = EN_hart0_fpr_mem_client_request_get ;
+  assign f_hart0_fpr_reqs$CLR = 1'b0 ;
+
+  // submodule f_hart0_fpr_rsps
+  assign f_hart0_fpr_rsps$D_IN = hart0_fpr_mem_client_response_put ;
+  assign f_hart0_fpr_rsps$ENQ = EN_hart0_fpr_mem_client_response_put ;
+  assign f_hart0_fpr_rsps$DEQ =
+	     WILL_FIRE_RL_rl_fpr_read_finish ||
+	     WILL_FIRE_RL_rl_fpr_write_finish ;
+  assign f_hart0_fpr_rsps$CLR = 1'b0 ;
 
   // submodule f_hart0_gpr_reqs
   assign f_hart0_gpr_reqs$D_IN =
-	     WILL_FIRE_RL_rl_start_write_gpr ?
+	     WILL_FIRE_RL_rl_gpr_write_start ?
 	       MUX_f_hart0_gpr_reqs$enq_1__VAL_1 :
 	       MUX_f_hart0_gpr_reqs$enq_1__VAL_2 ;
   assign f_hart0_gpr_reqs$ENQ =
-	     WILL_FIRE_RL_rl_start_write_gpr ||
-	     WILL_FIRE_RL_rl_start_read_gpr ;
+	     WILL_FIRE_RL_rl_gpr_write_start ||
+	     WILL_FIRE_RL_rl_gpr_read_start ;
   assign f_hart0_gpr_reqs$DEQ = EN_hart0_gpr_mem_client_request_get ;
   assign f_hart0_gpr_reqs$CLR = EN_reset ;
 
   // submodule f_hart0_gpr_rsps
   assign f_hart0_gpr_rsps$D_IN = hart0_gpr_mem_client_response_put ;
   assign f_hart0_gpr_rsps$ENQ = EN_hart0_gpr_mem_client_response_put ;
-  assign f_hart0_gpr_rsps$DEQ = WILL_FIRE_RL_rl_finish_gpr_read ;
+  assign f_hart0_gpr_rsps$DEQ =
+	     WILL_FIRE_RL_rl_gpr_read_finish ||
+	     WILL_FIRE_RL_rl_gpr_write_finish ;
   assign f_hart0_gpr_rsps$CLR = EN_reset ;
 
   // remaining internal signals
-  assign regno__h1871 = { 3'd0, rg_command_access_reg_regno } ;
-  assign req_data__h702 = { rg_data1, rg_data0 } ;
-  assign rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d31 =
+  assign regno__h2639 = { 3'd0, rg_command_access_reg_regno } ;
+  assign req_data__h860 = { rg_data1, rg_data0 } ;
+  assign rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d38 =
 	     rg_abstractcs_busy && rg_start_reg_access &&
 	     rg_command_access_reg_write &&
-	     !rg_command_access_reg_regno_ULT_0x1000___d27 &&
-	     rg_command_access_reg_regno_ULE_0x101F___d29 ;
-  assign rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d36 =
+	     !rg_command_access_reg_regno_ULT_0x1000___d34 &&
+	     rg_command_access_reg_regno_ULE_0x101F___d36 ;
+  assign rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d49 =
 	     rg_abstractcs_busy && rg_start_reg_access &&
 	     !rg_command_access_reg_write &&
-	     !rg_command_access_reg_regno_ULT_0x1000___d27 &&
-	     rg_command_access_reg_regno_ULE_0x101F___d29 ;
-  assign rg_abstractcs_cmderr_2_EQ_0_8_AND_write_dm_add_ETC___d103 =
+	     !rg_command_access_reg_regno_ULT_0x1000___d34 &&
+	     rg_command_access_reg_regno_ULE_0x101F___d36 ;
+  assign rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d61 =
+	     rg_abstractcs_busy && rg_start_reg_access &&
+	     rg_command_access_reg_write &&
+	     !rg_command_access_reg_regno_ULT_0x1020___d57 &&
+	     rg_command_access_reg_regno_ULE_0x103F___d59 ;
+  assign rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d72 =
+	     rg_abstractcs_busy && rg_start_reg_access &&
+	     !rg_command_access_reg_write &&
+	     !rg_command_access_reg_regno_ULT_0x1020___d57 &&
+	     rg_command_access_reg_regno_ULE_0x103F___d59 ;
+  assign rg_abstractcs_cmderr_1_EQ_0_07_AND_write_dm_ad_ETC___d142 =
 	     rg_abstractcs_cmderr == 3'd0 && write_dm_addr == 7'h17 &&
 	     !rg_abstractcs_busy &&
 	     write_dm_word[24] ;
-  assign rg_abstractcs_cmderr_2_EQ_0_8_AND_write_dm_add_ETC___d135 =
+  assign rg_abstractcs_cmderr_1_EQ_0_07_AND_write_dm_ad_ETC___d174 =
 	     rg_abstractcs_cmderr == 3'd0 && write_dm_addr == 7'h17 &&
 	     !rg_abstractcs_busy &&
 	     !write_dm_word[24] &&
 	     write_dm_word[22:20] != 3'd3 ;
-  assign rg_command_access_reg_regno_ULE_0x101F___d29 =
+  assign rg_command_access_reg_regno_ULE_0x101F___d36 =
 	     rg_command_access_reg_regno <= 13'h101F ;
+  assign rg_command_access_reg_regno_ULE_0x103F___d59 =
+	     rg_command_access_reg_regno <= 13'h103F ;
   assign rg_command_access_reg_regno_ULE_0xFFF___d8 =
 	     rg_command_access_reg_regno <= 13'h0FFF ;
-  assign rg_command_access_reg_regno_ULT_0x1000___d27 =
+  assign rg_command_access_reg_regno_ULT_0x1000___d34 =
 	     rg_command_access_reg_regno < 13'h1000 ;
-  assign virt_rg_abstractcs__h529 =
+  assign rg_command_access_reg_regno_ULT_0x1020___d57 =
+	     rg_command_access_reg_regno < 13'h1020 ;
+  assign virt_rg_abstractcs__h706 =
 	     { 19'd0, rg_abstractcs_busy, 1'b0, rg_abstractcs_cmderr, 8'd0 } ;
-  assign virt_rg_command__h593 =
-	     { 15'd17, rg_command_access_reg_write, regno__h1871 } ;
-  assign write_dm_addr_EQ_0x16_1_AND_rg_abstractcs_busy_ETC___d78 =
+  assign virt_rg_command__h770 =
+	     { 15'd17, rg_command_access_reg_write, regno__h2639 } ;
+  assign write_dm_addr_EQ_0x16_00_AND_rg_abstractcs_bus_ETC___d117 =
 	     write_dm_addr == 7'h16 &&
 	     (rg_abstractcs_busy || write_dm_word[10:8] != 3'd0) ||
 	     write_dm_addr != 7'h16 && rg_abstractcs_cmderr == 3'd0 &&
 	     write_dm_addr != 7'h04 &&
 	     write_dm_addr != 7'h05 ;
-  assign write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d110 =
+  assign write_dm_addr_EQ_0x17_08_AND_NOT_rg_abstractcs_ETC___d149 =
 	     write_dm_addr == 7'h17 && !rg_abstractcs_busy &&
 	     !write_dm_word[24] &&
 	     write_dm_word[22:20] == 3'd3 &&
 	     write_dm_word[18] ;
-  assign write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d119 =
+  assign write_dm_addr_EQ_0x17_08_AND_NOT_rg_abstractcs_ETC___d158 =
 	     write_dm_addr == 7'h17 && !rg_abstractcs_busy &&
 	     !write_dm_word[24] &&
 	     write_dm_word[22:20] == 3'd3 &&
 	     !write_dm_word[18] &&
 	     write_dm_word[17] ;
-  assign write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d128 =
+  assign write_dm_addr_EQ_0x17_08_AND_NOT_rg_abstractcs_ETC___d167 =
 	     write_dm_addr == 7'h17 && !rg_abstractcs_busy &&
 	     !write_dm_word[24] &&
 	     write_dm_word[22:20] == 3'd3 &&
 	     !write_dm_word[18] &&
 	     !write_dm_word[17] ;
-  assign write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d182 =
+  assign write_dm_addr_EQ_0x17_08_AND_NOT_rg_abstractcs_ETC___d221 =
 	     write_dm_addr == 7'h17 && !rg_abstractcs_busy &&
 	     !write_dm_word[24] &&
 	     write_dm_word[22:20] != 3'd3 &&
@@ -740,7 +975,8 @@ module mkDM_Abstract_Commands(CLK,
 	     write_dm_word[22:20] != 3'd4 &&
 	     write_dm_word[22:20] != 3'd5 &&
 	     write_dm_word[22:20] != 3'd6 ;
-  assign x__h1085 = rg_command_access_reg_regno - 13'h1000 ;
+  assign x__h1321 = rg_command_access_reg_regno - 13'h1000 ;
+  assign x__h1746 = rg_command_access_reg_regno - 13'h1020 ;
 
   // handling of inlined registers
 
@@ -795,14 +1031,14 @@ module mkDM_Abstract_Commands(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr == 7'h16 && rg_abstractcs_busy)
 	begin
-	  v__h2047 = $stime;
+	  v__h2815 = $stime;
 	  #0;
 	end
-    v__h2041 = v__h2047 / 32'd10;
+    v__h2809 = v__h2815 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr == 7'h16 && rg_abstractcs_busy)
-	$display("(%0d): DM_Abstract_Commands.write: [abstractcs] <= 0x%08h: ERROR",
-		 v__h2041,
+	$display("%0d: DM_Abstract_Commands.write: [abstractcs] <= 0x%08h: ERROR",
+		 v__h2809,
 		 write_dm_word);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr == 7'h16 && rg_abstractcs_busy)
@@ -812,16 +1048,16 @@ module mkDM_Abstract_Commands(CLK,
 	  write_dm_addr == 7'h17 &&
 	  rg_abstractcs_busy)
 	begin
-	  v__h2286 = $stime;
+	  v__h3054 = $stime;
 	  #0;
 	end
-    v__h2280 = v__h2286 / 32'd10;
+    v__h3048 = v__h3054 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
 	  write_dm_addr == 7'h17 &&
 	  rg_abstractcs_busy)
-	$display("(%0d): DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR",
-		 v__h2280,
+	$display("%0d: DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR",
+		 v__h3048,
 		 write_dm_word);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
@@ -830,83 +1066,83 @@ module mkDM_Abstract_Commands(CLK,
 	$display("    DM is busy with a previous abstract command");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write &&
-	  rg_abstractcs_cmderr_2_EQ_0_8_AND_write_dm_add_ETC___d103)
+	  rg_abstractcs_cmderr_1_EQ_0_07_AND_write_dm_ad_ETC___d142)
 	begin
-	  v__h2411 = $stime;
+	  v__h3179 = $stime;
 	  #0;
 	end
-    v__h2405 = v__h2411 / 32'd10;
+    v__h3173 = v__h3179 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write &&
-	  rg_abstractcs_cmderr_2_EQ_0_8_AND_write_dm_add_ETC___d103)
-	$display("(%0d): DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR",
-		 v__h2405,
+	  rg_abstractcs_cmderr_1_EQ_0_07_AND_write_dm_ad_ETC___d142)
+	$display("%0d: DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR",
+		 v__h3173,
 		 write_dm_word);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write &&
-	  rg_abstractcs_cmderr_2_EQ_0_8_AND_write_dm_add_ETC___d103)
+	  rg_abstractcs_cmderr_1_EQ_0_07_AND_write_dm_ad_ETC___d142)
 	$write("    ");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write &&
-	  rg_abstractcs_cmderr_2_EQ_0_8_AND_write_dm_add_ETC___d103)
+	  rg_abstractcs_cmderr_1_EQ_0_07_AND_write_dm_ad_ETC___d142)
 	$write("DM_COMMAND_CMDTYPE_QUICK_ACCESS");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write &&
-	  rg_abstractcs_cmderr_2_EQ_0_8_AND_write_dm_add_ETC___d103)
+	  rg_abstractcs_cmderr_1_EQ_0_07_AND_write_dm_ad_ETC___d142)
 	$write(" not supported", "\n");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
-	  write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d110)
+	  write_dm_addr_EQ_0x17_08_AND_NOT_rg_abstractcs_ETC___d149)
 	begin
-	  v__h2738 = $stime;
+	  v__h3506 = $stime;
 	  #0;
 	end
-    v__h2732 = v__h2738 / 32'd10;
+    v__h3500 = v__h3506 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
-	  write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d110)
-	$display("(%0d): DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR",
-		 v__h2732,
+	  write_dm_addr_EQ_0x17_08_AND_NOT_rg_abstractcs_ETC___d149)
+	$display("%0d: DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR",
+		 v__h3500,
 		 write_dm_word);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
-	  write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d110)
+	  write_dm_addr_EQ_0x17_08_AND_NOT_rg_abstractcs_ETC___d149)
 	$display("    For DM_COMMAND_CMDTYPE_ACCESS_REG, postexec not supported");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
-	  write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d128)
+	  write_dm_addr_EQ_0x17_08_AND_NOT_rg_abstractcs_ETC___d167)
 	begin
-	  v__h2855 = $stime;
+	  v__h3623 = $stime;
 	  #0;
 	end
-    v__h2849 = v__h2855 / 32'd10;
+    v__h3617 = v__h3623 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
-	  write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d128)
-	$display("(%0d): DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR",
-		 v__h2849,
+	  write_dm_addr_EQ_0x17_08_AND_NOT_rg_abstractcs_ETC___d167)
+	$display("%0d: DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR",
+		 v__h3617,
 		 write_dm_word);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
-	  write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d128)
+	  write_dm_addr_EQ_0x17_08_AND_NOT_rg_abstractcs_ETC___d167)
 	$display("    For DM_COMMAND_CMDTYPE_ACCESS_REG, no-transfer not supported");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write &&
-	  rg_abstractcs_cmderr_2_EQ_0_8_AND_write_dm_add_ETC___d135)
+	  rg_abstractcs_cmderr_1_EQ_0_07_AND_write_dm_ad_ETC___d174)
 	begin
-	  v__h2568 = $stime;
+	  v__h3336 = $stime;
 	  #0;
 	end
-    v__h2562 = v__h2568 / 32'd10;
+    v__h3330 = v__h3336 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write &&
-	  rg_abstractcs_cmderr_2_EQ_0_8_AND_write_dm_add_ETC___d135)
-	$display("(%0d): DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR",
-		 v__h2562,
+	  rg_abstractcs_cmderr_1_EQ_0_07_AND_write_dm_ad_ETC___d174)
+	$display("%0d: DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR",
+		 v__h3330,
 		 write_dm_word);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write &&
-	  rg_abstractcs_cmderr_2_EQ_0_8_AND_write_dm_add_ETC___d135)
+	  rg_abstractcs_cmderr_1_EQ_0_07_AND_write_dm_ad_ETC___d174)
 	$write("    For DM_COMMAND_CMDTYPE_ACCESS_REG, ");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
@@ -952,11 +1188,11 @@ module mkDM_Abstract_Commands(CLK,
 	$write("DM_COMMAND_ACCESS_REG_SIZE_UNDEF6");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
-	  write_dm_addr_EQ_0x17_9_AND_NOT_rg_abstractcs__ETC___d182)
+	  write_dm_addr_EQ_0x17_08_AND_NOT_rg_abstractcs_ETC___d221)
 	$write("DM_COMMAND_ACCESS_REG_SIZE_UNDEF7");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write &&
-	  rg_abstractcs_cmderr_2_EQ_0_8_AND_write_dm_add_ETC___d135)
+	  rg_abstractcs_cmderr_1_EQ_0_07_AND_write_dm_ad_ETC___d174)
 	$write(" not supported in RV64 mode", "\n");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr != 7'h16 &&
@@ -965,17 +1201,17 @@ module mkDM_Abstract_Commands(CLK,
 	  write_dm_addr != 7'h04 &&
 	  write_dm_addr != 7'h05)
 	begin
-	  v__h3346 = $stime;
+	  v__h4114 = $stime;
 	  #0;
 	end
-    v__h3340 = v__h3346 / 32'd10;
+    v__h4108 = v__h4114 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr != 7'h16 &&
 	  rg_abstractcs_cmderr == 3'd0 &&
 	  write_dm_addr != 7'h17 &&
 	  write_dm_addr != 7'h04 &&
 	  write_dm_addr != 7'h05)
-	$write("(%0d): DM_Abstract_Commands.write: [", v__h3340);
+	$write("%0d: DM_Abstract_Commands.write: [", v__h4108);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 && write_dm_addr == 7'h10)
 	$write("dm_addr_dmcontrol");

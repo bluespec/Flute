@@ -64,6 +64,11 @@
 // master1_arqos                  O     4 reg
 // master1_arregion               O     4 reg
 // master1_rready                 O     1 reg
+// tv_verifier_info_tx_tvalid     O     1 reg
+// tv_verifier_info_tx_tdata      O   608 reg
+// tv_verifier_info_tx_tstrb      O    76 reg
+// tv_verifier_info_tx_tkeep      O    76 reg
+// tv_verifier_info_tx_tlast      O     1 reg
 // jtag_tdo                       O     1
 // CLK_jtag_tclk_out              O     1 clock
 // CLK_GATE_jtag_tclk_out         O     1 const
@@ -92,6 +97,7 @@
 // master1_rresp                  I     2 reg
 // master1_rlast                  I     1 reg
 // cpu_external_interrupt_req     I    16
+// tv_verifier_info_tx_tready     I     1
 // jtag_tdi                       I     1
 // jtag_tms                       I     1
 // jtag_tclk                      I     1
@@ -267,6 +273,18 @@ module mkP2_Core(CLK,
 		 master1_rready,
 
 		 cpu_external_interrupt_req,
+
+		 tv_verifier_info_tx_tvalid,
+
+		 tv_verifier_info_tx_tdata,
+
+		 tv_verifier_info_tx_tstrb,
+
+		 tv_verifier_info_tx_tkeep,
+
+		 tv_verifier_info_tx_tlast,
+
+		 tv_verifier_info_tx_tready,
 
 		 jtag_tdi,
 
@@ -512,6 +530,30 @@ module mkP2_Core(CLK,
   // action method interrupt_reqs
   input  [15 : 0] cpu_external_interrupt_req;
 
+  // value method tv_verifier_info_tx_m_tvalid
+  output tv_verifier_info_tx_tvalid;
+
+  // value method tv_verifier_info_tx_m_tid
+
+  // value method tv_verifier_info_tx_m_tdata
+  output [607 : 0] tv_verifier_info_tx_tdata;
+
+  // value method tv_verifier_info_tx_m_tstrb
+  output [75 : 0] tv_verifier_info_tx_tstrb;
+
+  // value method tv_verifier_info_tx_m_tkeep
+  output [75 : 0] tv_verifier_info_tx_tkeep;
+
+  // value method tv_verifier_info_tx_m_tlast
+  output tv_verifier_info_tx_tlast;
+
+  // value method tv_verifier_info_tx_m_tdest
+
+  // value method tv_verifier_info_tx_m_tuser
+
+  // action method tv_verifier_info_tx_m_tready
+  input  tv_verifier_info_tx_tready;
+
   // action method jtag_tdi
   input  jtag_tdi;
 
@@ -529,6 +571,8 @@ module mkP2_Core(CLK,
   output CLK_GATE_jtag_tclk_out;
 
   // signals for module outputs
+  wire [607 : 0] tv_verifier_info_tx_tdata;
+  wire [75 : 0] tv_verifier_info_tx_tkeep, tv_verifier_info_tx_tstrb;
   wire [63 : 0] master0_araddr,
 		master0_awaddr,
 		master0_wdata,
@@ -589,11 +633,13 @@ module mkP2_Core(CLK,
        master1_bready,
        master1_rready,
        master1_wlast,
-       master1_wvalid;
+       master1_wvalid,
+       tv_verifier_info_tx_tlast,
+       tv_verifier_info_tx_tvalid;
 
   // inlined wires
   wire [40 : 0] bus_dmi_req_data_wire$wget;
-  wire bus_dmi_rsp_fifof_enqueueing$whas;
+  wire bus_dmi_rsp_fifof_x_wire$whas;
 
   // register bus_dmi_rsp_fifof_cntr_r
   reg [1 : 0] bus_dmi_rsp_fifof_cntr_r;
@@ -623,6 +669,7 @@ module mkP2_Core(CLK,
        bus_dmi_req_fifof$FULL_N;
 
   // ports of submodule core
+  wire [607 : 0] core$tv_verifier_info_get_get;
   wire [63 : 0] core$cpu_dmem_master_araddr,
 		core$cpu_dmem_master_awaddr,
 		core$cpu_dmem_master_rdata,
@@ -686,12 +733,14 @@ module mkP2_Core(CLK,
        core$EN_dm_dmi_write,
        core$EN_dm_ndm_reset_req_get_get,
        core$EN_set_verbosity,
+       core$EN_tv_verifier_info_get_get,
        core$RDY_cpu_reset_server_request_put,
        core$RDY_cpu_reset_server_response_get,
        core$RDY_dm_dmi_read_addr,
        core$RDY_dm_dmi_read_data,
        core$RDY_dm_dmi_write,
        core$RDY_dm_ndm_reset_req_get_get,
+       core$RDY_tv_verifier_info_get_get,
        core$core_external_interrupt_sources_0_m_interrupt_req_set_not_clear,
        core$core_external_interrupt_sources_10_m_interrupt_req_set_not_clear,
        core$core_external_interrupt_sources_11_m_interrupt_req_set_not_clear,
@@ -751,12 +800,22 @@ module mkP2_Core(CLK,
        jtagtap$jtag_tdo,
        jtagtap$jtag_tms;
 
+  // ports of submodule tv_xactor
+  wire [607 : 0] tv_xactor$axi_out_tdata, tv_xactor$tv_in_put;
+  wire [75 : 0] tv_xactor$axi_out_tkeep, tv_xactor$axi_out_tstrb;
+  wire tv_xactor$EN_tv_in_put,
+       tv_xactor$RDY_tv_in_put,
+       tv_xactor$axi_out_tlast,
+       tv_xactor$axi_out_tready,
+       tv_xactor$axi_out_tvalid;
+
   // rule scheduling signals
   wire CAN_FIRE_RL_bus_dmi_req_do_enq,
        CAN_FIRE_RL_bus_dmi_rsp_do_deq,
        CAN_FIRE_RL_bus_dmi_rsp_fifof_both,
        CAN_FIRE_RL_bus_dmi_rsp_fifof_decCtr,
        CAN_FIRE_RL_bus_dmi_rsp_fifof_incCtr,
+       CAN_FIRE_RL_mkConnectionGetPut,
        CAN_FIRE_RL_mkConnectionVtoAf,
        CAN_FIRE_RL_mkConnectionVtoAf_1,
        CAN_FIRE_RL_mkConnectionVtoAf_2,
@@ -787,11 +846,13 @@ module mkP2_Core(CLK,
        CAN_FIRE_master1_m_bvalid,
        CAN_FIRE_master1_m_rvalid,
        CAN_FIRE_master1_m_wready,
+       CAN_FIRE_tv_verifier_info_tx_m_tready,
        WILL_FIRE_RL_bus_dmi_req_do_enq,
        WILL_FIRE_RL_bus_dmi_rsp_do_deq,
        WILL_FIRE_RL_bus_dmi_rsp_fifof_both,
        WILL_FIRE_RL_bus_dmi_rsp_fifof_decCtr,
        WILL_FIRE_RL_bus_dmi_rsp_fifof_incCtr,
+       WILL_FIRE_RL_mkConnectionGetPut,
        WILL_FIRE_RL_mkConnectionVtoAf,
        WILL_FIRE_RL_mkConnectionVtoAf_1,
        WILL_FIRE_RL_mkConnectionVtoAf_2,
@@ -821,7 +882,8 @@ module mkP2_Core(CLK,
        WILL_FIRE_master1_m_awready,
        WILL_FIRE_master1_m_bvalid,
        WILL_FIRE_master1_m_rvalid,
-       WILL_FIRE_master1_m_wready;
+       WILL_FIRE_master1_m_wready,
+       WILL_FIRE_tv_verifier_info_tx_m_tready;
 
   // inputs to muxes for submodule ports
   wire [33 : 0] MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1,
@@ -1064,6 +1126,25 @@ module mkP2_Core(CLK,
   assign CAN_FIRE_interrupt_reqs = 1'd1 ;
   assign WILL_FIRE_interrupt_reqs = 1'd1 ;
 
+  // value method tv_verifier_info_tx_m_tvalid
+  assign tv_verifier_info_tx_tvalid = tv_xactor$axi_out_tvalid ;
+
+  // value method tv_verifier_info_tx_m_tdata
+  assign tv_verifier_info_tx_tdata = tv_xactor$axi_out_tdata ;
+
+  // value method tv_verifier_info_tx_m_tstrb
+  assign tv_verifier_info_tx_tstrb = tv_xactor$axi_out_tstrb ;
+
+  // value method tv_verifier_info_tx_m_tkeep
+  assign tv_verifier_info_tx_tkeep = tv_xactor$axi_out_tkeep ;
+
+  // value method tv_verifier_info_tx_m_tlast
+  assign tv_verifier_info_tx_tlast = tv_xactor$axi_out_tlast ;
+
+  // action method tv_verifier_info_tx_m_tready
+  assign CAN_FIRE_tv_verifier_info_tx_m_tready = 1'd1 ;
+  assign WILL_FIRE_tv_verifier_info_tx_m_tready = 1'd1 ;
+
   // action method jtag_tdi
   assign CAN_FIRE_jtag_tdi = 1'd1 ;
   assign WILL_FIRE_jtag_tdi = 1'd1 ;
@@ -1139,6 +1220,7 @@ module mkP2_Core(CLK,
 	      .EN_set_verbosity(core$EN_set_verbosity),
 	      .EN_cpu_reset_server_request_put(core$EN_cpu_reset_server_request_put),
 	      .EN_cpu_reset_server_response_get(core$EN_cpu_reset_server_response_get),
+	      .EN_tv_verifier_info_get_get(core$EN_tv_verifier_info_get_get),
 	      .EN_dm_dmi_read_addr(core$EN_dm_dmi_read_addr),
 	      .EN_dm_dmi_read_data(core$EN_dm_dmi_read_data),
 	      .EN_dm_dmi_write(core$EN_dm_dmi_write),
@@ -1204,6 +1286,8 @@ module mkP2_Core(CLK,
 	      .cpu_dmem_master_arqos(core$cpu_dmem_master_arqos),
 	      .cpu_dmem_master_arregion(core$cpu_dmem_master_arregion),
 	      .cpu_dmem_master_rready(core$cpu_dmem_master_rready),
+	      .tv_verifier_info_get_get(core$tv_verifier_info_get_get),
+	      .RDY_tv_verifier_info_get_get(core$RDY_tv_verifier_info_get_get),
 	      .RDY_dm_dmi_read_addr(core$RDY_dm_dmi_read_addr),
 	      .dm_dmi_read_data(core$dm_dmi_read_data),
 	      .RDY_dm_dmi_read_data(core$RDY_dm_dmi_read_data),
@@ -1228,6 +1312,19 @@ module mkP2_Core(CLK,
 		    .dmi_rsp_ready(jtagtap$dmi_rsp_ready),
 		    .CLK_jtag_tclk_out(jtagtap$CLK_jtag_tclk_out),
 		    .CLK_GATE_jtag_tclk_out());
+
+  // submodule tv_xactor
+  mkTV_Xactor tv_xactor(.CLK(CLK),
+			.RST_N(RST_N),
+			.axi_out_tready(tv_xactor$axi_out_tready),
+			.tv_in_put(tv_xactor$tv_in_put),
+			.EN_tv_in_put(tv_xactor$EN_tv_in_put),
+			.RDY_tv_in_put(tv_xactor$RDY_tv_in_put),
+			.axi_out_tvalid(tv_xactor$axi_out_tvalid),
+			.axi_out_tdata(tv_xactor$axi_out_tdata),
+			.axi_out_tstrb(tv_xactor$axi_out_tstrb),
+			.axi_out_tkeep(tv_xactor$axi_out_tkeep),
+			.axi_out_tlast(tv_xactor$axi_out_tlast));
 
   // rule RL_rl_once
   assign CAN_FIRE_RL_rl_once =
@@ -1301,6 +1398,11 @@ module mkP2_Core(CLK,
   assign WILL_FIRE_RL_rl_dmi_rsp_cpu =
 	     CAN_FIRE_RL_rl_dmi_rsp_cpu && !WILL_FIRE_RL_rl_dmi_req_cpu ;
 
+  // rule RL_mkConnectionGetPut
+  assign CAN_FIRE_RL_mkConnectionGetPut =
+	     core$RDY_tv_verifier_info_get_get && tv_xactor$RDY_tv_in_put ;
+  assign WILL_FIRE_RL_mkConnectionGetPut = CAN_FIRE_RL_mkConnectionGetPut ;
+
   // rule RL_bus_dmi_req_do_enq
   assign CAN_FIRE_RL_bus_dmi_req_do_enq =
 	     bus_dmi_req_fifof$FULL_N && jtagtap$dmi_req_valid ;
@@ -1313,8 +1415,7 @@ module mkP2_Core(CLK,
 
   // rule RL_bus_dmi_rsp_fifof_incCtr
   assign CAN_FIRE_RL_bus_dmi_rsp_fifof_incCtr =
-	     bus_dmi_rsp_fifof_enqueueing$whas &&
-	     bus_dmi_rsp_fifof_enqueueing$whas &&
+	     bus_dmi_rsp_fifof_x_wire$whas && bus_dmi_rsp_fifof_x_wire$whas &&
 	     !CAN_FIRE_RL_bus_dmi_rsp_do_deq ;
   assign WILL_FIRE_RL_bus_dmi_rsp_fifof_incCtr =
 	     CAN_FIRE_RL_bus_dmi_rsp_fifof_incCtr ;
@@ -1322,15 +1423,15 @@ module mkP2_Core(CLK,
   // rule RL_bus_dmi_rsp_fifof_decCtr
   assign CAN_FIRE_RL_bus_dmi_rsp_fifof_decCtr =
 	     CAN_FIRE_RL_bus_dmi_rsp_do_deq &&
-	     !bus_dmi_rsp_fifof_enqueueing$whas ;
+	     !bus_dmi_rsp_fifof_x_wire$whas ;
   assign WILL_FIRE_RL_bus_dmi_rsp_fifof_decCtr =
 	     CAN_FIRE_RL_bus_dmi_rsp_fifof_decCtr ;
 
   // rule RL_bus_dmi_rsp_fifof_both
   assign CAN_FIRE_RL_bus_dmi_rsp_fifof_both =
-	     bus_dmi_rsp_fifof_enqueueing$whas &&
+	     bus_dmi_rsp_fifof_x_wire$whas &&
 	     CAN_FIRE_RL_bus_dmi_rsp_do_deq &&
-	     bus_dmi_rsp_fifof_enqueueing$whas ;
+	     bus_dmi_rsp_fifof_x_wire$whas ;
   assign WILL_FIRE_RL_bus_dmi_rsp_fifof_both =
 	     CAN_FIRE_RL_bus_dmi_rsp_fifof_both ;
 
@@ -1369,7 +1470,7 @@ module mkP2_Core(CLK,
 	     { core$dm_dmi_read_data, 2'd0 } ;
 
   // inlined wires
-  assign bus_dmi_rsp_fifof_enqueueing$whas =
+  assign bus_dmi_rsp_fifof_x_wire$whas =
 	     WILL_FIRE_RL_rl_dmi_req_cpu &&
 	     bus_dmi_req_fifof$D_OUT[1:0] != 2'd1 ||
 	     WILL_FIRE_RL_rl_dmi_rsp_cpu ;
@@ -1513,6 +1614,7 @@ module mkP2_Core(CLK,
   assign core$EN_cpu_reset_server_request_put = CAN_FIRE_RL_rl_once ;
   assign core$EN_cpu_reset_server_response_get =
 	     core$RDY_cpu_reset_server_response_get ;
+  assign core$EN_tv_verifier_info_get_get = CAN_FIRE_RL_mkConnectionGetPut ;
   assign core$EN_dm_dmi_read_addr =
 	     WILL_FIRE_RL_rl_dmi_req_cpu &&
 	     bus_dmi_req_fifof$D_OUT[1:0] == 2'd1 ;
@@ -1530,6 +1632,11 @@ module mkP2_Core(CLK,
   assign jtagtap$jtag_tclk = jtag_tclk ;
   assign jtagtap$jtag_tdi = jtag_tdi ;
   assign jtagtap$jtag_tms = jtag_tms ;
+
+  // submodule tv_xactor
+  assign tv_xactor$axi_out_tready = tv_verifier_info_tx_tready ;
+  assign tv_xactor$tv_in_put = core$tv_verifier_info_get_get ;
+  assign tv_xactor$EN_tv_in_put = CAN_FIRE_RL_mkConnectionGetPut ;
 
   // remaining internal signals
   assign IF_bus_dmi_req_fifof_first__7_BITS_1_TO_0_8_EQ_ETC___d78 =
