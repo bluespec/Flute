@@ -177,6 +177,7 @@ module mkDM_Run_Control (DM_Run_Control_IFC);
 	    $display ("DM_Run_Control.write: dmcontrol 0x%08h: ndmreset=1: resetting platform",
 		      dm_word);
 	    f_ndm_reset_reqs.enq (?);
+	    rg_hart0_running <= True;    // Must be same as run/halt state of CPU after hart_reset!
 
 	    // Error-checking
 	    if (hartreset) begin
@@ -197,6 +198,7 @@ module mkDM_Run_Control (DM_Run_Control_IFC);
 		  $display ("DM_Run_Control.write: dmcontrol 0x%08h: hartreset=1: resetting hart",
 			    dm_word);
 	       f_hart0_reset_reqs.enq (?);
+	       rg_hart0_running <= True;    // Must be same as run/halt state of CPU after hart_reset!
 	    end
 	    else begin
 	       // Deassert hart reset
@@ -273,7 +275,7 @@ module mkDM_Run_Control (DM_Run_Control_IFC);
    method Action reset;
       f_ndm_reset_reqs.clear;
 
-      rg_hart0_running <= True;    // Must be same as initial state of CPU
+      rg_hart0_running <= True;    // Must be same as run/halt state of CPU after hart_reset!
       f_hart0_reset_reqs.clear;
       f_hart0_run_halt_reqs.clear;
       f_hart0_run_halt_rsps.clear;

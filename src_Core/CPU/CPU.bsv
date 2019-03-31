@@ -372,9 +372,6 @@ module mkCPU (CPU_IFC);
 
 	 rg_start_CPI_cycles <= mcycle;
 	 rg_start_CPI_instrs <= minstret;
-
-	 if (cur_verbosity != 0)
-	    $display ("    fa_restart: RUNNING with PC = 0x%0h", resume_pc);
       endaction
    endfunction
 
@@ -495,8 +492,7 @@ module mkCPU (CPU_IFC);
 
       f_reset_rsps.enq (?);
 
-      if (cur_verbosity != 0)
-	 $display ("%0d: CPU.reset_complete", mcycle);
+      $display ("%0d: CPU.reset_complete", mcycle);
 
 `ifdef INCLUDE_GDB_CONTROL
       // TODO: 'resethaltreq' is new Debug-Module functionality, to be implemented.
@@ -507,13 +503,15 @@ module mkCPU (CPU_IFC);
 	 csr_regfile.write_dpc (dpc);
 	 rg_state <= CPU_DEBUG_MODE;
 
-	 if (cur_verbosity != 0)
-	    $display ("    CPU entering DEBUG_MODE");
+	 $display ("    CPU entering DEBUG_MODE");
       end
-      else
+      else begin
 	 fa_restart (dpc);
+	 $display ("    CPU restart at PC = 0x%0h", dpc);
+      end
 `else
       fa_restart (dpc);
+      $display ("    CPU restart at PC = 0x%0h", dpc);
 `endif
    endrule: rl_reset_complete
 
@@ -823,7 +821,7 @@ module mkCPU (CPU_IFC);
 			  && (stage1.out.ostatus == OSTATUS_NONPIPE)
 			  && (stage1.out.control == CONTROL_CSRR_W));
 
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_stage1_CSRR_W", mcycle);
+      if (cur_verbosity > 1) $display ("%0d: CPU.rl_stage1_CSRR_W", mcycle);
 
       let instr    = stage1.out.data_to_stage2.instr;
       let csr_addr = instr_csr    (instr);
@@ -910,7 +908,7 @@ module mkCPU (CPU_IFC);
 			       && (stage1.out.ostatus == OSTATUS_NONPIPE)
 			       && (stage1.out.control == CONTROL_CSRR_S_or_C));
 
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_stage1_CSRR_S_or_C", mcycle);
+      if (cur_verbosity > 1) $display ("%0d: CPU.rl_stage1_CSRR_S_or_C", mcycle);
 
       let instr    = stage1.out.data_to_stage2.instr;
       let csr_addr = instr_csr    (instr);
@@ -1037,7 +1035,7 @@ module mkCPU (CPU_IFC);
 			    || (stage1.out.control == CONTROL_SRET)
 			    || (stage1.out.control == CONTROL_URET))
 			&& (stageF.out.ostatus != OSTATUS_BUSY));
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_stage1_xRET", mcycle);
+      if (cur_verbosity > 1) $display ("%0d: CPU.rl_stage1_xRET", mcycle);
 
       // Return-from-exception actions on CSRs
       Priv_Mode from_priv = ((stage1.out.control == CONTROL_MRET) ?
@@ -1087,7 +1085,7 @@ module mkCPU (CPU_IFC);
 			   && (stage1.out.ostatus == OSTATUS_NONPIPE)
 			   && (stage1.out.control == CONTROL_FENCE_I)
 			   && (stageF.out.ostatus != OSTATUS_BUSY));
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_stage1_FENCE_I", mcycle);
+      if (cur_verbosity > 1) $display ("%0d: CPU.rl_stage1_FENCE_I", mcycle);
 
       // Save stage1.out.next_pc since it will be destroyed by FENCE.I op
       rg_next_pc <= stage1.out.next_pc;
@@ -1113,7 +1111,7 @@ module mkCPU (CPU_IFC);
    // Finish FENCE.I
 
    rule rl_finish_FENCE_I (rg_state == CPU_FENCE_I);
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_finish_FENCE_I", mcycle);
+      if (cur_verbosity > 1) $display ("%0d: CPU.rl_finish_FENCE_I", mcycle);
 
       // Await mem system FENCE.I completion
       let dummy <- near_mem.server_fence_i.response.get;
@@ -1155,7 +1153,7 @@ module mkCPU (CPU_IFC);
 			 && (stage1.out.ostatus == OSTATUS_NONPIPE)
 			 && (stage1.out.control == CONTROL_FENCE)
 			 && (stageF.out.ostatus != OSTATUS_BUSY));
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_stage1_FENCE", mcycle);
+      if (cur_verbosity > 1) $display ("%0d: CPU.rl_stage1_FENCE", mcycle);
 
       rg_next_pc <= stage1.out.next_pc;
       near_mem.server_fence.request.put (?);
@@ -1180,7 +1178,7 @@ module mkCPU (CPU_IFC);
    // Finish FENCE
 
    rule rl_finish_FENCE (rg_state == CPU_FENCE);
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_finish_FENCE", mcycle);
+      if (cur_verbosity > 1) $display ("%0d: CPU.rl_finish_FENCE", mcycle);
 
       // Await mem system FENCE completion
       let dummy <- near_mem.server_fence.response.get;
@@ -1227,7 +1225,7 @@ module mkCPU (CPU_IFC);
 			      && (stage1.out.ostatus == OSTATUS_NONPIPE)
 			      && (stage1.out.control == CONTROL_SFENCE_VMA)
 			      && (stageF.out.ostatus != OSTATUS_BUSY));
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_stage1_SFENCE_VMA", mcycle);
+      if (cur_verbosity > 1) $display ("%0d: CPU.rl_stage1_SFENCE_VMA", mcycle);
 
       rg_next_pc <= stage1.out.next_pc;
       // Tell Near_Mem to do its SFENCE_VMA
@@ -1253,7 +1251,7 @@ module mkCPU (CPU_IFC);
    // Finish SFENCE.VMA
 
    rule rl_finish_SFENCE_VMA (rg_state == CPU_SFENCE_VMA);
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_finish_SFENCE_VMA", mcycle);
+      if (cur_verbosity > 1) $display ("%0d: CPU.rl_finish_SFENCE_VMA", mcycle);
 
       // Note: Await mem system SFENCE.VMA completion, if SFENCE.VMA becomes split-phase
 
@@ -1293,7 +1291,7 @@ module mkCPU (CPU_IFC);
 		       && (stage1.out.ostatus == OSTATUS_NONPIPE)
 		       && (stage1.out.control == CONTROL_WFI)
 		       && (stageF.out.ostatus != OSTATUS_BUSY));
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_stage1_WFI", mcycle);
+      if (cur_verbosity > 1) $display ("%0d: CPU.rl_stage1_WFI", mcycle);
 
       rg_next_pc <= stage1.out.next_pc;
       rg_state   <= CPU_WFI_PAUSED;
@@ -1318,7 +1316,7 @@ module mkCPU (CPU_IFC);
    rule rl_WFI_resume (   (rg_state == CPU_WFI_PAUSED)
 		       && csr_regfile.wfi_resume
 		       && (stageF.out.ostatus != OSTATUS_BUSY));
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_WFI_resume", mcycle);
+      if (cur_verbosity > 1) $display ("%0d: CPU.rl_WFI_resume", mcycle);
 
       // MSTATUS.MXR and SSTATUS.SUM for initiating FETCH
       Bit #(1) mstatus_MXR = mstatus [19];
@@ -1352,7 +1350,7 @@ module mkCPU (CPU_IFC);
    // ----------------
    rule rl_reset_from_WFI (   (rg_state == CPU_WFI_PAUSED)
 			   && f_reset_reqs.notEmpty);
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_reset_from_WFI", mcycle);
+      if (cur_verbosity > 1) $display ("%0d: CPU.rl_reset_from_WFI", mcycle);
 
       rg_state <= CPU_RESET1;
    endrule: rl_reset_from_WFI
@@ -1376,7 +1374,7 @@ module mkCPU (CPU_IFC);
 				&& (stage1.out.control == CONTROL_TRAP)
 				&& (! break_into_Debug_Mode)))
 			&& (stageF.out.ostatus != OSTATUS_BUSY));
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_stage1_trap", mcycle);
+      if (cur_verbosity > 1) $display ("%0d: CPU.rl_stage1_trap", mcycle);
 
       let epc      = stage1.out.trap_info.epc;
       let exc_code = stage1.out.trap_info.exc_code;
@@ -1481,7 +1479,7 @@ module mkCPU (CPU_IFC);
 				     && (stage1.out.control == CONTROL_TRAP)
 				     && (stageF.out.ostatus != OSTATUS_BUSY)
 				     && break_into_Debug_Mode);
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_trap_BREAK_to_Debug_Mode", mcycle);
+      if (cur_verbosity > 1) $display ("%0d: CPU.rl_trap_BREAK_to_Debug_Mode", mcycle);
 
       let pc    = stage1.out.data_to_stage2.pc;
       let instr = stage1.out.data_to_stage2.instr;
@@ -1512,13 +1510,10 @@ module mkCPU (CPU_IFC);
    endrule
 
    // ----------------
-   // Reset while in Debug Mode
+   // Reset from Debug Module
 
-   rule rl_reset_from_Debug_Mode (   (rg_state == CPU_DEBUG_MODE)
-				  && f_reset_reqs.notEmpty);
-      if (cur_verbosity > 1)
-	 $display ("%0d:  CPU.rl_reset_from_Debug_Mode", mcycle);
-
+   rule rl_reset_from_Debug_Module (f_reset_reqs.notEmpty && (rg_state != CPU_RESET1));
+      $display ("%0d: CPU.rl_reset_from_Debug_Module", mcycle);
       rg_state <= CPU_RESET1;
    endrule
 `endif
@@ -1533,7 +1528,7 @@ module mkCPU (CPU_IFC);
 			     &&& (rg_state == CPU_RUNNING)
 			     &&& stage1_take_interrupt
 			     &&& (stageF.out.ostatus != OSTATUS_BUSY));
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_stage1_interrupt", mcycle);
+      if (cur_verbosity > 1) $display ("%0d: CPU.rl_stage1_interrupt", mcycle);
 
       let epc   = stage1.out.data_to_stage2.pc;
       let instr = stage1.out.data_to_stage2.instr;
@@ -1586,7 +1581,7 @@ module mkCPU (CPU_IFC);
    rule rl_stage1_stop (   (rg_state== CPU_RUNNING)
 			&& stage1_stop
 			&& (stageF.out.ostatus != OSTATUS_BUSY));
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_stage1_stop", mcycle);
+      if (cur_verbosity > 1) $display ("%0d: CPU.rl_stage1_stop", mcycle);
 
       let pc    = stage1.out.data_to_stage2.pc;    // We'll retry this instruction on 'continue'
       let instr = stage1.out.data_to_stage2.instr;
@@ -1627,13 +1622,14 @@ module mkCPU (CPU_IFC);
 
 `ifdef INCLUDE_GDB_CONTROL
    rule rl_debug_run ((f_run_halt_reqs.first == True) && (rg_state == CPU_DEBUG_MODE));
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_debug_run", mcycle);
+      if (cur_verbosity > 1) $display ("%0d: CPU.rl_debug_run", mcycle);
 
       f_run_halt_reqs.deq;
 
       // Debugger 'resume' request (e.g., GDB 'continue' command)
       let dpc = csr_regfile.read_dpc;
       fa_restart (dpc);
+      $display ("%0d: CPU.rl_debug_run: restart at PC = 0x%0h", mcycle, dpc);
 
       // Notify debugger that we've started running
       f_run_halt_rsps.enq (True);
@@ -1644,7 +1640,7 @@ module mkCPU (CPU_IFC);
 
    (* descending_urgency = "rl_debug_run_ignore, rl_pipe" *)
    rule rl_debug_run_ignore ((f_run_halt_reqs.first == True) && fn_is_running (rg_state));
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_debug_run_ignore", mcycle);
+      if (cur_verbosity > 1) $display ("%0d: CPU.rl_debug_run_ignore", mcycle);
 
       f_run_halt_reqs.deq;
       $display ("%0d: CPU.debug_run_ignore: ignoring 'run' command (CPU is not in Debug Mode)", mcycle);
@@ -1652,7 +1648,7 @@ module mkCPU (CPU_IFC);
 
    (* descending_urgency = "rl_debug_halt, rl_pipe" *)
    rule rl_debug_halt ((f_run_halt_reqs.first == False) && fn_is_running (rg_state));
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_debug_halt", mcycle);
+      if (cur_verbosity > 1) $display ("%0d: CPU.rl_debug_halt", mcycle);
 
       f_run_halt_reqs.deq;
 
@@ -1663,7 +1659,7 @@ module mkCPU (CPU_IFC);
    endrule
 
    rule rl_debug_halt_ignore ((f_run_halt_reqs.first == False) && (! fn_is_running (rg_state)));
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_debug_halt_ignore", mcycle);
+      if (cur_verbosity > 1) $display ("%0d: CPU.rl_debug_halt_ignore", mcycle);
 
       f_run_halt_reqs.deq;
 
@@ -1704,7 +1700,7 @@ module mkCPU (CPU_IFC);
       let rsp = DM_CPU_Rsp {ok: False, data: ?};
       f_gpr_rsps.enq (rsp);
 
-      if (cur_verbosity > 1) $display ("%0d:  CPU.rl_debug_gpr_access_busy", mcycle);
+      if (cur_verbosity > 1) $display ("%0d: CPU.rl_debug_gpr_access_busy", mcycle);
    endrule
 
    // ----------------
@@ -1742,7 +1738,7 @@ module mkCPU (CPU_IFC);
       f_fpr_rsps.enq (rsp);
 
       if (cur_verbosity > 1)
-	 $display ("%0d:  CPU.rl_debug_fpr_access_busy", mcycle);
+	 $display ("%0d: CPU.rl_debug_fpr_access_busy", mcycle);
    endrule
 `endif
 
@@ -1781,7 +1777,7 @@ module mkCPU (CPU_IFC);
       f_csr_rsps.enq (rsp);
 
       if (cur_verbosity > 1)
-	 $display ("%0d:  CPU.rl_debug_csr_access_busy", mcycle);
+	 $display ("%0d: CPU.rl_debug_csr_access_busy", mcycle);
    endrule
 `endif
 
