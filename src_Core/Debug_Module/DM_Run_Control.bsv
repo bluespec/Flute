@@ -225,7 +225,7 @@ module mkDM_Run_Control (DM_Run_Control_IFC);
 		  $display ("DM_Run_Control.write: hart0 resume request");
 	       end
 	       // Halt hart(s)
-	       else if (haltreq && !rg_dmcontrol_haltreq) begin
+	       else if (haltreq && rg_hart0_running) begin
 		  f_hart0_run_halt_reqs.enq (False);
 		  $display ("DM_Run_Control.write: hart0 halt request");
 	       end
