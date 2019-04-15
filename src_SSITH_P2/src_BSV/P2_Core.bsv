@@ -112,6 +112,12 @@ module mkP2_Core (P2_Core_IFC);
       core.set_verbosity (?, ?);
    endrule
 
+   // Tie-offs
+   rule rl_always (True);
+      // Non-maskable interrupt request.
+      core.nmi_req (False);
+   endrule
+
    // ================================================================
    // Reset on startup, and also on NDM reset from Debug Module
    // (NDM reset from Debug Module = reset all except Debug Module)

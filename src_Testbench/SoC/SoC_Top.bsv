@@ -187,6 +187,9 @@ module mkSoC_Top (SoC_Top_IFC);
       for (Integer j = 1; j < valueOf (N_External_Interrupt_Sources); j = j + 1)
 	 core.core_external_interrupt_sources [j].m_interrupt_req (False);
 
+      // Non-maskable interrupt request. [Tie-off; TODO: connect to genuine sources]
+      core.nmi_req (False);
+
       /* For debugging only
       if ((! rg_intr_prev) && intr)
 	 $display ("SoC_Top: intr posedge");

@@ -211,7 +211,8 @@ module mkCPU (CPU_IFC);
    // ----------------
    // Interrupt pending based on current priv, mstatus.ie, mie and mip registers
 
-   Bool interrupt_pending = isValid (csr_regfile.interrupt_pending (rg_cur_priv));
+   Bool interrupt_pending = (   isValid (csr_regfile.interrupt_pending (rg_cur_priv))
+			     || csr_regfile.nmi_pending);
 
    // ----------------
    // Reset requests and responses
@@ -759,6 +760,7 @@ module mkCPU (CPU_IFC);
       // Take trap, save trap information for next phase
       let trap_info <- csr_regfile.csr_trap_actions (rg_cur_priv,    // from priv
 						     epc,
+						     False,          // non-maskable interrupt
 						     False,          // interrupt_req
 						     exc_code,
 						     tval);
@@ -1384,6 +1386,7 @@ module mkCPU (CPU_IFC);
       // Take trap, save trap information for next phase
       let trap_info <- csr_regfile.csr_trap_actions (rg_cur_priv, // from priv
 						     epc,
+						     False,       // non-maskable interrupt
 						     False,       // interrupt_req
 						     exc_code,
 						     tval);
@@ -1524,19 +1527,26 @@ module mkCPU (CPU_IFC);
    // and Stage2 and Stage3 have drained,
    // encapsulated in condition 'stage1_take_interrupt'
 
-   rule rl_stage1_interrupt (csr_regfile.interrupt_pending (rg_cur_priv) matches tagged Valid .exc_code
-			     &&& (rg_state == CPU_RUNNING)
-			     &&& stage1_take_interrupt
-			     &&& (stageF.out.ostatus != OSTATUS_BUSY));
+   rule rl_stage1_interrupt (interrupt_pending
+			     && (rg_state == CPU_RUNNING)
+			     && stage1_take_interrupt
+			     && (stageF.out.ostatus != OSTATUS_BUSY));
       if (cur_verbosity > 1) $display ("%0d: CPU.rl_stage1_interrupt", mcycle);
 
-      let epc   = stage1.out.data_to_stage2.pc;
       let instr = stage1.out.data_to_stage2.instr;
+
+      WordXL   epc      = stage1.out.data_to_stage2.pc;
+      Exc_Code exc_code = 0;    // "Unknown cause" for NMI
+
+      if (csr_regfile.interrupt_pending (rg_cur_priv) matches tagged Valid .ec
+	  &&& (! csr_regfile.nmi_pending))
+	 exc_code = ec;
 
       // Take trap
       let trap_info <- csr_regfile.csr_trap_actions (rg_cur_priv,    // from priv
 						     epc,
-						     True,           // interrupt_req,
+						     csr_regfile.nmi_pending,        // non-maskable interrupt
+						     (! csr_regfile.nmi_pending),    // interrupt_req,
 						     exc_code,
 						     0);             // tval
       let next_pc       = trap_info.pc;
@@ -1813,8 +1823,9 @@ module mkCPU (CPU_IFC);
    // ----------------
    // Non-maskable interrupt
 
-   // TODO: fixup: NMIs should send CPU to an NMI vector (TBD in SoC_Map)
-   method Action  non_maskable_interrupt_req (Bool set_not_clear) = noAction;
+   method Action  nmi_req (x);
+      csr_regfile.nmi_req (x);
+   endmethod
 
    // ----------------
    // For tracing

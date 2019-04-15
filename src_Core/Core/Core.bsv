@@ -338,13 +338,6 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
       // $display ("%0d: Core.rl_relay_external_interrupts: relaying: %d", cur_cycle, pack (x));
    endrule
 
-   // TODO: fixup.  Need to combine NMIs from multiple sources (cache, fabric, devices, ...)
-   rule rl_relay_non_maskable_interrupt;
-      cpu.non_maskable_interrupt_req (False);
-
-      // $display ("%0d: Core.rl_relay_non_maskable_interrupts: relaying: %d", cur_cycle, pack (x));
-   endrule
-
    // ================================================================
    // INTERFACE
 
@@ -373,6 +366,13 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
    // External interrupt sources
 
    interface core_external_interrupt_sources = plic.v_sources;
+
+   // ----------------------------------------------------------------
+   // Non-maskable interrupt request
+
+   method Action nmi_req (Bool set_not_clear);
+      cpu.nmi_req (set_not_clear);
+   endmethod
 
    // ----------------------------------------------------------------
    // Optional TV interface
