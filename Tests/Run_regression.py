@@ -5,7 +5,7 @@
 
 usage_line = (
     "  Usage:\n"
-    "    $ <this_prog>    <simulation_executable>  <repo_dir>  <logs_dir>  <arch>  <opt verbosity>\n"
+    "    $ <this_prog>    <simulation_executable>  <repo_dir>  <logs_dir>  <arch>  <opt verbosity>  <opt parallelism>\n"
     "\n"
     "  Runs the RISC-V <simulation_executable>\n"
     "  on ISA tests: ELF files taken from <repo-dir>/isa and its sub-directories.\n"
@@ -18,8 +18,14 @@ usage_line = (
     "      v1:    Print instruction trace during simulation\n"
     "      v2:    Print pipeline stage state during simulation\n"
     "\n"
+    "  If <opt parallelism> is given, it must be an integer\n"
+    "      Specifies the number of parallel processes used\n"
+    "        (creates temporary separate working directories worker_0, worker_1, ...)\n"
+    "      By default uses 1/2 the CPUs listed in /proc/cpuinfo.\n"
+    "      In any case, limits it to 8.\n"
+    "\n"
     "  Example:\n"
-    "      $ <this_prog>  .exe_HW_sim  ~somebody/GitHub/Piccolo  ./Logs  RV32IMU  v1\n"
+    "      $ <this_prog>  .exe_HW_sim  ~somebody/GitHub/Piccolo  ./Logs  RV32IMU  v1 4\n"
     "    will run the verilator simulation executable on the following RISC-V ISA tests:\n"
     "            ~somebody/GitHub/Tests/isa/rv32ui-p*\n"
     "            ~somebody/GitHub/Tests/isa/rv32mi-p*\n"
@@ -28,6 +34,8 @@ usage_line = (
     "    and will leave a transcript of each test's simulation output in files like\n"
     "            ./Logs/rv32ui-p-add.log\n"
     "    Each log will contain an instruction trace (because of the 'v1' arg).\n"
+    "    It will use 4 processes in parallel to run the regressions.\n"
+    "        (creating temporary working directories worker_0, ..., worker_4)\n"
 )
 
 import sys
@@ -35,10 +43,14 @@ import os
 import stat
 import subprocess
 
-# ================================================================
+import multiprocessing
 
-num_executed = 0
-num_passed   = 0
+# ================================================================
+# DEBUGGING ONLY: This exclude list allows skipping some specific test
+
+exclude_list = []
+
+n_workers_max = 8
 
 # ================================================================
 
@@ -102,12 +114,26 @@ def main (argv = None):
 
     # Optional verbosity
     verbosity = 0
-    for arg in argv [5:]:
-         if arg == "v1":
+    j = 5
+    if len (argv) >= 6:
+        if argv [5] == "v1":
             verbosity = 1
-         elif arg == "v2":
+            j = 6
+        elif argv [5] == "v2":
             verbosity = 2
+            j = 6
     args_dict ['verbosity'] = verbosity
+
+    # Optional parallelism; limit it to 8
+    if len (argv [j:]) != 0 and isdecimal (argv [j]):
+        n_workers = int (argv [j])
+    else:
+        n_workers = multiprocessing.cpu_count () // 2
+    n_workers = min (n_workers_max, n_workers)
+    sys.stdout.write ("Using {0} worker processes\n".format (n_workers))
+
+    # End of command-line arg processing
+    # ================================================================
 
     # elf_to_hex executable
     elf_to_hex_exe = os.path.join (repo, "Tests", "elf_to_hex", "elf_to_hex")
@@ -124,14 +150,72 @@ def main (argv = None):
     for key in iter (args_dict):
         sys.stdout.write ("    {0:<16}: {1}\n".format (key, args_dict [key]))
 
-    # Perform the recursive traversal
-    max_level = 20
-    traverse (max_level, 0, args_dict)
+    def fn_filter_regular_file (level, filename):
+        (dirname, basename) = os.path.split (filename)
+        # Ignore filename if has any extension (heuristic that it's not an ELF file)
+        if "." in basename: return False
+
+        # TEMPORARY FILTER WHILE DEBUGGING:
+        if basename in exclude_list:
+            sys.stdout.write ("WARNING: TEMPORARY FILTER IN EFFECT; REMOVE AFTER DEBUGGING\n")
+            sys.stdout.write ("    This test is in exclude_list: {0}\n".format (basename))
+            return False
+
+        # Ignore filename if does not match test_families
+        for x in args_dict ['test_families']:
+            if basename.find (x) != -1: return True
+        return False
+
+    def fn_filter_dir (level, filename):
+        return True
+
+    # Traverse the elfs_path and collect filenames of relevant isa tests
+    filenames = traverse (fn_filter_dir, fn_filter_regular_file, 0, elfs_path)
+    n_tests   = len (filenames)
+    sys.stdout.write ("{0} relevant isa tests found under {1}\n".format (n_tests, elfs_path))
+    if n_tests == 0:
+        return 0
+    args_dict ['filenames'] = filenames
+    args_dict ['n_tests']   = n_tests
+
+    # Create a shared counter to index into the list of filenames
+    index = multiprocessing.Value ('L', 0)    # Unsigned long (4 bytes)
+    args_dict ['index'] = index
+
+    # Create a shared array for each worker's (n_executed, n_passed) results
+    results = multiprocessing.Array ('L', [ 0 for j in range (2 * n_workers) ])
+    args_dict ['results'] = results
+
+    # Create n workers
+    sys.stdout.write ("Creating {0} workers (sub-processes)\n".format (n_workers))
+    workers        = [multiprocessing.Process (target = do_worker,
+                                               args = (w, args_dict))
+                      for w in range (n_workers)]
+
+    # Start the workers
+    for worker in workers: worker.start ()
+
+    # Wait for all workers to finish
+    for worker in workers: worker.join ()
+
+    # Collect all results
+    num_executed = 0
+    num_passed   = 0
+    with results.get_lock ():
+        for w in range (n_workers):
+            n_e = results [2 * w]
+            n_p = results [2 * w + 1]
+            sys.stdout.write ("Worker {0} executed {1} tests, of which {2} passed\n"
+                              .format (w, n_e, n_p))
+            num_executed = num_executed + n_e
+            num_passed   = num_passed   + n_p
 
     # Write final statistics
-    sys.stdout.write ("Executed: {0} tests\n".format (num_executed))
-    sys.stdout.write ("PASS:     {0} tests\n".format (num_passed))
-
+    sys.stdout.write ("Total tests: {0} tests\n".format (n_tests))
+    sys.stdout.write ("Executed:    {0} tests\n".format (num_executed))
+    sys.stdout.write ("PASS:        {0} tests\n".format (num_passed))
+    sys.stdout.write ("FAIL:        {0} tests\n".format (num_executed - num_passed))
+    return 0
 
 # ================================================================
 # Extract the architecture string (e.g., RV64AIMSU) from the string s
@@ -206,74 +290,88 @@ def select_test_families (arch):
     return families
 
 # ================================================================
-# Recursively traverse the dir tree below elf_path and process each file
+# Recursively traverse the dir tree below path and collect filenames
+# that pass the given filter functions
 
-def traverse (max_level, level, args_dict):
-    elfs_path = args_dict ['elfs_path']
-    st = os.stat (elfs_path)
+def traverse (fn_filter_dir, fn_filter_regular_file, level, path):
+    st = os.stat (path)
     is_dir = stat.S_ISDIR (st.st_mode)
     is_regular = stat.S_ISREG (st.st_mode)
-    do_foreachfile_function (level, is_dir, is_regular, args_dict)
-    if is_dir and level < max_level:
-        for entry in os.listdir (elfs_path):
-            elfs_path1 = os.path.join (elfs_path, entry)
-            args_dict1 = args_dict.copy ()
-            args_dict1 ['elfs_path'] = elfs_path1
-            traverse (max_level, level + 1, args_dict1)
-    return 0
 
-# ================================================================
-# This function is applied to every path in the
-# recursive traversal
+    if is_dir and fn_filter_dir (level, path):
+        files = []
+        for entry in os.listdir (path):
+            path1 = os.path.join (path, entry)
+            files.extend (traverse (fn_filter_dir, fn_filter_regular_file, level + 1, path1))
+        return files
 
-def do_foreachfile_function (level, is_dir, is_regular, args_dict):
-    prefix = ""
-    for j in range (level): prefix = "  " + prefix
-    elfs_path = args_dict ['elfs_path']
+    elif is_regular and fn_filter_regular_file (level, path):
+        return [path]
 
-    # directories
-    if is_dir:
-        print ("%s%d dir %s" % (prefix, level, elfs_path))
-
-    # regular files
-    elif is_regular:
-        dirname  = os.path.dirname (elfs_path)
-        basename = os.path.basename (elfs_path)
-        # print ("%s%d %s" % (prefix, level, elfs_path))
-        do_regular_file_function (level, dirname, basename, args_dict)
-
-    # other files
     else:
-        print ("%s%d Unknown file type: %s" % (prefix, level, os.path.basename (elfs_path)))
+        return []
 
 # ================================================================
 # For each ELF file, execute it in the RISC-V simulator
 
-def do_regular_file_function (level, dirname, basename, args_dict):
-    global num_executed
-    global num_passed
-
-    full_filename = os.path.join (dirname, basename)
-
-    # Ignore filename if has any extension (heuristic that it's not an ELF file)
-    if "." in basename: return
-
-    # Ignore filename if does not match test_families
-    ignore = True
-    for x in args_dict ['test_families']:
-        if basename.find (x) != -1: ignore = False
-    if ignore:
-        # print ("Ignoring file: " + full_filename)
+def do_worker (worker_num, args_dict):
+    tmpdir = "./worker_" + "{0}".format (worker_num)
+    if not os.path.exists (tmpdir):
+        os.mkdir (tmpdir)
+    elif not os.path.isdir (tmpdir):
+        sys.stdout.write ("ERROR: Worker {0}: {1} exists but is not a dir".format (worker_num, tmpdir))
         return
 
-    # TEMPORARY FILTER WHILE DEBUGGING:
-    # if basename.find ("rv64ui-v-add") == -1: return
-    # sys.stdout.write ("WARNING: TEMPORARY FILTER IN EFFECT; REMOVE AFTER DEBUGGING\n")
+    os.chdir (tmpdir)
+    sys.stdout.write ("Worker {0} using dir: {1}\n".format (worker_num, tmpdir))
 
-    # For debugging only
-    # prefix = ""
-    # for j in range (level): prefix = "  " + prefix
-    # sys.stdout.write ("{0}{1} ACTION:    {2}\n".format (prefix, level, full_filename))
+    n_tests   = args_dict ['n_tests']
+    filenames = args_dict ['filenames']
+    index     = args_dict ['index']
+    results   = args_dict ['results']
+
+    num_executed = 0
+    num_passed   = 0
+
+    while True:
+        # Get a unique index into the filenames, and get the filename
+        with index.get_lock():
+            my_index    = index.value
+            index.value = my_index + 1
+        if my_index >= n_tests:
+            # All done
+            with results.get_lock():
+                results [2 * worker_num]     = num_executed
+                results [2 * worker_num + 1] = num_passed
+            return
+        filename = filenames [my_index]
+
+        (message, passed) = do_isa_test (args_dict, filename)
+        num_executed = num_executed + 1
+
+        if passed:
+            num_passed = num_passed + 1
+            pass_fail = "PASS"
+        else:
+            pass_fail = "FAIL"
+
+        message = message + ("Worker {0}: Test: {1} {2} [So far: total {3}, executed {4}, PASS {5}, FAIL {6}]\n"
+                             .format (worker_num,
+                                      os.path.basename (filename),
+                                      pass_fail,
+                                      n_tests,
+                                      num_executed,
+                                      num_passed,
+                                      num_executed - num_passed))
+        sys.stdout.write (message)
+
+# ================================================================
+# For each ELF file, execute it in the RISC-V simulator
+
+def do_isa_test (args_dict, full_filename):
+    message = ""
+
+    (dirname, basename) = os.path.split (full_filename)
 
     # Construct the commands for sub-process execution
     command1 = [args_dict ['elf_to_hex_exe'], full_filename, "Mem.hex"]
@@ -282,32 +380,24 @@ def do_regular_file_function (level, dirname, basename, args_dict):
     if (args_dict ['verbosity'] == 1): command2.append ("+v1")
     elif (args_dict ['verbosity'] == 2): command2.append ("+v2")
 
-    num_executed = num_executed + 1
-    sys.stdout.write ("Test {0}: {1}\n".format (num_executed, basename))
-
-    sys.stdout.write ("    Exec:")
+    message = message + "    Exec:"
     for x in command1:
-        sys.stdout.write (" {0}".format (x))
-    sys.stdout.write ("\n")
+        message = message + (" {0}".format (x))
+    message = message + "\n"
 
-    sys.stdout.write ("    Exec:")
+    message = message + ("    Exec:")
     for x in command2:
-        sys.stdout.write (" {0}".format (x))
-    sys.stdout.write ("\n")
+        message = message + (" {0}".format (x))
+    message = message + ("\n")
 
     # Run command as a sub-process
     completed_process1 = run_command (command1)
     completed_process2 = run_command (command2)
     passed = completed_process2.stdout.find ("PASS") != -1
-    if passed:
-        sys.stdout.write ("    PASS")
-        num_passed = num_passed + 1
-    else:
-        sys.stdout.write ("    FAIL")
 
     # Save stdouts in log file
     log_filename = os.path.join (args_dict ['logs_path'], basename + ".log")
-    sys.stdout.write ("    Writing log: {0}\n".format (log_filename))
+    message = message + ("    Writing log: {0}\n".format (log_filename))
 
     fd = open (log_filename, 'w')
     fd.write (completed_process1.stdout)
@@ -318,9 +408,9 @@ def do_regular_file_function (level, dirname, basename, args_dict):
     if os.path.exists ("./trace_out.dat"):
         trace_filename = os.path.join (args_dict ['logs_path'], basename + ".trace_data")
         os.rename ("./trace_out.dat", trace_filename)
-        sys.stdout.write ("    Trace output saved in: {0}\n".format (trace_filename))
+        message = message + ("    Trace output saved in: {0}\n".format (trace_filename))
 
-    return
+    return (message, passed)
 
 # ================================================================
 # This is a wrapper around 'subprocess.run' because of an annoying
