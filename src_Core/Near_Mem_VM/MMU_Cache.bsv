@@ -541,8 +541,9 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
    Reg #(CSet_in_Cache)  rg_cset_in_cache   <- mkReg (0);
 
    // These regs are used in the cache refill loop for ram_Word64_Set
-   Reg #(Bool)                rg_requesting_cline    <- mkReg (False);
-   Reg #(Fabric_Addr)         rg_req_byte_in_cline   <- mkRegU;
+   // TODO: DELETE after testing bursts
+   // DELETE: Reg #(Bool)                rg_requesting_cline    <- mkReg (False);
+   // DELETE: Reg #(Fabric_Addr)         rg_req_byte_in_cline   <- mkRegU;
    Reg #(Word64_Set_in_Cache) rg_word64_set_in_cache <- mkRegU;
    Reg #(Bool)                rg_error_during_refill <- mkRegU;
    // In 32b fabrics, these hold the lower word32 while we're fetching the upper word32 of a word64
@@ -675,6 +676,35 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
       endaction
    endfunction
 
+   // Send a read-burst request into the fabric to get a cache line.
+   // 'addr' is already aligned to a cache-line.
+   function Action fa_fabric_send_read_burst_req (Fabric_Addr  addr);
+      action
+	 AXI4_Size size = ((bytes_per_fabric_data == 4) ? axsize_4 : axsize_8);
+	 // Note: AXI4 codes a burst length of 'n' as 'n-1'
+	 AXI4_Len  len  = fromInteger ((bytes_per_cline / bytes_per_fabric_data) - 1);
+
+	 let mem_req_rd_addr = AXI4_Rd_Addr {arid:     fabric_default_id,
+					     araddr:   addr,
+					     arlen:    len,
+					     arsize:   size,
+					     arburst:  axburst_incr,
+					     arlock:   fabric_default_lock,
+					     arcache:  fabric_default_arcache,
+					     arprot:   fabric_default_prot,
+					     arqos:    fabric_default_qos,
+					     arregion: fabric_default_region,
+					     aruser:   fabric_default_user};
+
+	 master_xactor.i_rd_addr.enq (mem_req_rd_addr);
+
+	 // Debugging
+	 if (cfg_verbosity > 1) begin
+	    $display ("    To fabric: ", fshow (mem_req_rd_addr));
+	 end
+      endaction
+   endfunction
+
    // Send a write-request into the fabric
    function Action fa_fabric_send_write_req (Bit #(3)  f3, PA  pa, Bit #(64)  st_val);
       action
@@ -754,7 +784,7 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
    rule rl_start_reset ((f_reset_reqs.notEmpty) && (rg_state != MODULE_RESETTING));
       rg_state             <= MODULE_RESETTING;
       rg_cset_in_cache     <= 0;
-      rg_requesting_cline  <= False;
+      // rg_requesting_cline  <= False;    TODO: DELETE after testing bursts
       rg_lower_word32_full <= False;
 
       // Flush the TLB
@@ -1398,15 +1428,14 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
       if (cfg_verbosity > 1)
 	 $display ("%0d: %s.rl_start_cache_refill: ", cur_cycle, d_or_i);
 
-      // Send request into fabric for first fabric-word of cache line
+      // Send burst request into fabric for full cache line
       PA             cline_addr        = fn_align_Addr_to_CLine (rg_pa);
       Fabric_Addr    cline_fabric_addr = fn_PA_to_Fabric_Addr (cline_addr);
-      AXI4_Size      axi4_size         = ((bytes_per_fabric_data == 4) ? axsize_4 : axsize_8);
-      fa_fabric_send_read_req (cline_fabric_addr, axi4_size);
+      fa_fabric_send_read_burst_req (cline_fabric_addr);
 
-      rg_requesting_cline  <= True;
-      rg_req_byte_in_cline <= ((valueOf (Wd_Data) == 32) ? 4 : 8);
-      rg_lower_word32_full <= False;
+      // TODO: DELETE after testing bursts
+      // DELETE rg_requesting_cline  <= True;
+      // DELETE rg_req_byte_in_cline <= ((valueOf (Wd_Data) == 32) ? 4 : 8);
 
       // Pick a victim 'way'
       // TODO: prioritize picking an EMPTY slot over a CLEAN slot
@@ -1433,6 +1462,7 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
       ram_word64_set.b.put (bram_cmd_read, word64_set_in_cache, ?);
 
       // Enter cache refill loop, awaiting refill responses from mem
+      rg_lower_word32_full   <= False;
       rg_error_during_refill <= False;
       rg_state               <= CACHE_REFILL;
 
@@ -1440,6 +1470,7 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
 	 $display ("    Victim way %0d; => CACHE_REFILL", new_victim_way);
    endrule: rl_start_cache_refill
 
+   /* TODO: Remove; this was used before support for read-bursts
    // Loop that issues requests for subsequent fabric-words in cline refill
    rule rl_cache_refill_req_loop (rg_requesting_cline);
       if (cfg_verbosity > 2)
@@ -1457,6 +1488,7 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
       rg_requesting_cline  <= (rg_req_byte_in_cline != last_byte_offset_in_cline);
       rg_req_byte_in_cline <= rg_req_byte_in_cline + fromInteger (bytes_per_fabric_data);
    endrule
+   */
 
    // ----------------------------------------------------------------
    // TODO (possibly): we complete a cache refill (in rl_cache_refill_loop) and

@@ -125,7 +125,7 @@ def main (argv = None):
     args_dict ['verbosity'] = verbosity
 
     # Optional parallelism; limit it to 8
-    if len (argv [j:]) != 0 and isdecimal (argv [j]):
+    if len (argv [j:]) != 0 and argv [j].isdecimal():
         n_workers = int (argv [j])
     else:
         n_workers = multiprocessing.cpu_count () // 2

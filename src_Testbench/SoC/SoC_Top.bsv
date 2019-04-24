@@ -32,8 +32,9 @@ import GetPut_Aux  :: *;
 // Project imports
 
 // Main fabric
-import AXI4_Types  :: *;
-import AXI4_Fabric :: *;
+import AXI4_Types     :: *;
+import AXI4_Fabric    :: *;
+import AXI4_Deburster :: *;
 
 import Fabric_Defs :: *;
 import SoC_Map     :: *;
@@ -120,9 +121,19 @@ module mkSoC_Top (SoC_Top_IFC);
 
    // SoC Boot ROM
    Boot_ROM_IFC  boot_rom <- mkBoot_ROM;
+   // AXI4 Deburster in front of Boot_ROM
+   AXI4_Deburster_IFC #(Wd_Id,
+			Wd_Addr,
+			Wd_Data,
+			Wd_User) boot_rom_axi4_deburster <- mkAXI4_Deburster;
 
    // SoC Memory
    Mem_Controller_IFC  mem0_controller <- mkMem_Controller;
+   // AXI4 Deburster in front of SoC Memory
+   AXI4_Deburster_IFC #(Wd_Id,
+			Wd_Addr,
+			Wd_Data,
+			Wd_User) mem0_controller_axi4_deburster <- mkAXI4_Deburster;
 
    // SoC IPs
    UART_IFC   uart0  <- mkUART;
@@ -152,10 +163,12 @@ module mkSoC_Top (SoC_Top_IFC);
    // Note: see 'SoC_Map' for 'slave_num' definitions
 
    // Fabric to Boot ROM
-   mkConnection (fabric.v_to_slaves [boot_rom_slave_num],        boot_rom.slave);
+   mkConnection (fabric.v_to_slaves [boot_rom_slave_num], boot_rom_axi4_deburster.from_master);
+   mkConnection (boot_rom_axi4_deburster.to_slave,        boot_rom.slave);
 
-   // Fabric to Mem Controller
-   mkConnection (fabric.v_to_slaves [mem0_controller_slave_num], mem0_controller.slave);
+   // Fabric to Deburster to Mem Controller
+   mkConnection (fabric.v_to_slaves [mem0_controller_slave_num], mem0_controller_axi4_deburster.from_master);
+   mkConnection (mem0_controller_axi4_deburster.to_slave,        mem0_controller.slave);
 
    // Fabric to UART0
    mkConnection (fabric.v_to_slaves [uart0_slave_num],           uart0.slave);
