@@ -391,6 +391,8 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
       rg_mideleg    <= 0;
 `endif
       rg_mcounteren <= mcounteren_reset_value;
+
+      rg_tselect    <= 0;
       rg_tdata1     <= 0;    // ISA test rv64mi-p-breakpoint assumes reset value 0.
 
       rw_minstret.wset (0);
@@ -892,11 +894,16 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 				    end
 `endif
 	       csr_addr_tselect:   begin
-				      result      = wordxl;
+				      // Until we implement trigger functionality,
+				      // return tselect always contains 0
+				      result      = 0;    // wordxl
 				      rg_tselect <= result;
 				   end
 	       csr_addr_tdata1:    begin
-				      result     = wordxl;
+				      // Until we implement trigger functionality,
+				      // force 'type' field ([xlen-1:xlen-4]) to zero
+				      // meaning: 'There is no trigger at this tselect'
+				      result     = (wordxl & ('1 >> 4));
 				      rg_tdata1 <= result;
 				   end
 	       csr_addr_tdata2:    begin
