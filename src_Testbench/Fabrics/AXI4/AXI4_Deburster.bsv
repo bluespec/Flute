@@ -68,7 +68,23 @@ module mkAXI4_Deburster (AXI4_Deburster_IFC #(wd_id, wd_addr, wd_data, wd_user))
    // (0 => start of burst)
    Reg #(AXI4_Len) rg_w_beat_count <- mkReg (0);
 
-   // On a read-transaction, records (arlen) for slave
+   // On a write-transaction, records awlen for slave
+   // Size of FIFO should cover slave latency
+   FIFOF #(AXI4_Len)  f_w_awlen <- mkSizedFIFOF (4);
+
+   // On a write-transaction, this register is the B-channel burst beat count
+   // which is the number of individual (non-burst) responses from the
+   // slave to be combined into a single burst response to the master.
+   // (0 => ready for next burst)
+   Reg #(AXI4_Len) rg_b_beat_count <- mkReg (0);
+
+   // On a burst write-transaction, all the individual slave responses
+   // may not have the same 'resp' on the B channel. This register
+   // remembers the first 'non-okay' resp (if any), to be returned to
+   // the master in the burst response.
+   Reg #(AXI4_Resp) rg_b_resp <- mkReg (axi4_resp_okay);
+
+   // On a read-transaction, records arlen for slave
    // Size of FIFO should cover slave latency
    FIFOF #(AXI4_Len)  f_r_arlen <- mkSizedFIFOF (4);
 
@@ -103,11 +119,14 @@ module mkAXI4_Deburster (AXI4_Deburster_IFC #(wd_id, wd_addr, wd_data, wd_user))
       xactor_from_master.reset;
       xactor_to_slave.reset;
 
+      f_w_awlen.clear;
       rg_w_beat_count <= 0;
+      rg_b_beat_count <= 0;
+      rg_b_resp       <= axi4_resp_okay;
 
       f_r_arlen.clear;
       rg_ar_beat_count <= 0;
-      rg_r_beat_count <= 0;
+      rg_r_beat_count  <= 0;
 
       rg_reset <= False;
    endrule
@@ -125,7 +144,7 @@ module mkAXI4_Deburster (AXI4_Deburster_IFC #(wd_id, wd_addr, wd_data, wd_user))
       // Construct output AW item
       let a_out = a_in;
       a_out.awaddr  = fv_addr_for_beat (a_in.awaddr, a_in.awsize, a_in.awburst, rg_w_beat_count);
-      a_out.awlen   = 1;
+      a_out.awlen   = 0;
       a_out.awburst = axburst_fixed; // Not necessary when awlen=1, but slave may be finicky
 
       // Set WLAST to true since this is always last beat of outgoing xaction (awlen=1)
@@ -137,6 +156,11 @@ module mkAXI4_Deburster (AXI4_Deburster_IFC #(wd_id, wd_addr, wd_data, wd_user))
       xactor_to_slave.i_wr_data.enq (d_out);
 
       xactor_from_master.o_wr_data.deq;
+
+      // Remember burst length so that individual responses from slave
+     // can be combined into a single burst response to the master.
+      if (rg_w_beat_count == 0)
+	 f_w_awlen.enq (a_in.awlen);
 
       if (rg_w_beat_count < a_in.awlen)
 	 rg_w_beat_count <= rg_w_beat_count + 1;
@@ -161,24 +185,55 @@ module mkAXI4_Deburster (AXI4_Deburster_IFC #(wd_id, wd_addr, wd_data, wd_user))
 	 if (rg_w_beat_count == 0)
 	    $display ("    a_in : ", fshow (a_in));
 	 if ((rg_w_beat_count == 0) || (cfg_verbosity > 1)) begin
-	    $display ("    a_out: ", fshow (a_out));
 	    $display ("    d_in : ", fshow (d_in));
+	    $display ("    a_out: ", fshow (a_out));
 	    $display ("    d_out: ", fshow (d_out));
 	 end
       end
    endrule: rl_wr_xaction_master_to_slave
 
    // ----------------
-   // Wr responses (B channel): just pass it through
+   // Wr responses (B channel): consume responses from slave until the
+   // last response for a burst, then respond to master.  Remember if
+   // any of them was not an 'okay' response.
 
    rule rl_wr_resp_slave_to_master;
-      AXI4_Wr_Resp #(wd_id, wd_user) b <- pop_o (xactor_to_slave.o_wr_resp);
+      AXI4_Wr_Resp #(wd_id, wd_user) b_in <- pop_o (xactor_to_slave.o_wr_resp);
 
-      xactor_from_master.i_wr_resp.enq (b);
+      if (rg_b_beat_count < f_w_awlen.first) begin
+	 // Remember first non-okay response (if any) of a burst in rg_b_resp
+	 if ((rg_b_resp == axi4_resp_okay) && (b_in.bresp != axi4_resp_okay))
+	    rg_b_resp <= b_in.bresp;
 
-      if (cfg_verbosity > 1) begin
-	 $display ("%0d: %m::AXI4_Deburster.rl_wr_resp_slave_to_master: m <- s", cur_cycle);
-	 $display ("    b: ", fshow (b));
+	 // not last beat of burst
+	 rg_b_beat_count <= rg_b_beat_count + 1;
+
+	 if (cfg_verbosity > 1) begin
+	    $display ("%0d: %m::AXI4_Deburster.rl_wr_resp_slave_to_master: m <- s, beat %0d",
+		      cur_cycle, rg_b_beat_count);
+	    $display ("    Consuming and discarding beat %0d", rg_b_beat_count);
+	    $display ("    ", fshow (b_in));
+	 end
+      end
+      else begin
+	 // Last beat of burst
+	 let b_out = b_in;
+	 if (rg_b_resp != axi4_resp_okay)
+	    b_out.bresp = rg_b_resp;
+	 xactor_from_master.i_wr_resp.enq (b_out);
+
+	 f_w_awlen.deq;
+
+	 // Get ready for next burst
+	 rg_b_beat_count <= 0;
+	 rg_b_resp       <= axi4_resp_okay;
+
+	 if (cfg_verbosity > 1) begin
+	    $display ("%0d: %m::AXI4_Deburster.rl_wr_resp_slave_to_master: m <- s, beat %0d",
+		      cur_cycle, rg_b_beat_count);
+	    $display ("    b_in: ",  fshow (b_in));
+	    $display ("    b_out: ", fshow (b_out));
+	 end
       end
    endrule
  
@@ -191,7 +246,7 @@ module mkAXI4_Deburster (AXI4_Deburster_IFC #(wd_id, wd_addr, wd_data, wd_user))
       // Compute forwarded request for each beat, and send
       let a_out = a_in;
       a_out.araddr  = fv_addr_for_beat (a_in.araddr, a_in.arsize, a_in.arburst, rg_ar_beat_count);
-      a_out.arlen   = 1;
+      a_out.arlen   = 0;
       a_out.arburst = axburst_fixed; // Not necessary when arlen=1, but slave may be finicky
       xactor_to_slave.i_rd_addr.enq (a_out);
 
