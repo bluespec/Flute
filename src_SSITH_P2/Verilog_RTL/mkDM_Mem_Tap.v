@@ -598,6 +598,7 @@ module mkDM_Mem_Tap(CLK,
 
   // remaining internal signals
   wire [63 : 0] stval___1__h1527, x__h1522, y_avValue_fst__h1438;
+  wire slave_xactor_f_wr_data_i_notEmpty_AND_master_x_ETC___d8;
 
   // action method slave_m_awvalid
   assign CAN_FIRE_slave_m_awvalid = 1'd1 ;
@@ -893,10 +894,7 @@ module mkDM_Mem_Tap(CLK,
   // rule RL_write_reqs
   assign CAN_FIRE_RL_write_reqs =
 	     slave_xactor_f_wr_addr$EMPTY_N &&
-	     slave_xactor_f_wr_data$EMPTY_N &&
-	     master_xactor_f_wr_addr$FULL_N &&
-	     master_xactor_f_wr_data$FULL_N &&
-	     f_trace_data$FULL_N ;
+	     slave_xactor_f_wr_data_i_notEmpty_AND_master_x_ETC___d8 ;
   assign WILL_FIRE_RL_write_reqs = CAN_FIRE_RL_write_reqs ;
 
   // rule RL_rl_connect
@@ -923,7 +921,9 @@ module mkDM_Mem_Tap(CLK,
 	       x__h1522,
 	       slave_xactor_f_wr_addr$D_OUT[92:29],
 	       64'hAAAAAAAAAAAAAAAA } ;
-  assign f_trace_data$ENQ = CAN_FIRE_RL_write_reqs ;
+  assign f_trace_data$ENQ =
+	     slave_xactor_f_wr_addr$EMPTY_N &&
+	     slave_xactor_f_wr_data_i_notEmpty_AND_master_x_ETC___d8 ;
   assign f_trace_data$DEQ = EN_trace_data_out_get ;
   assign f_trace_data$CLR = 1'b0 ;
 
@@ -977,12 +977,16 @@ module mkDM_Mem_Tap(CLK,
 	       slave_arregion } ;
   assign slave_xactor_f_rd_addr$ENQ =
 	     slave_arvalid && slave_xactor_f_rd_addr$FULL_N ;
-  assign slave_xactor_f_rd_addr$DEQ = CAN_FIRE_RL_rl_connect ;
+  assign slave_xactor_f_rd_addr$DEQ =
+	     master_xactor_f_rd_addr$FULL_N &&
+	     slave_xactor_f_rd_addr$EMPTY_N ;
   assign slave_xactor_f_rd_addr$CLR = 1'b0 ;
 
   // submodule slave_xactor_f_rd_data
   assign slave_xactor_f_rd_data$D_IN = master_xactor_f_rd_data$D_OUT ;
-  assign slave_xactor_f_rd_data$ENQ = CAN_FIRE_RL_rl_connect_2 ;
+  assign slave_xactor_f_rd_data$ENQ =
+	     slave_xactor_f_rd_data$FULL_N &&
+	     master_xactor_f_rd_data$EMPTY_N ;
   assign slave_xactor_f_rd_data$DEQ =
 	     slave_rready && slave_xactor_f_rd_data$EMPTY_N ;
   assign slave_xactor_f_rd_data$CLR = 1'b0 ;
@@ -1001,7 +1005,9 @@ module mkDM_Mem_Tap(CLK,
 	       slave_awregion } ;
   assign slave_xactor_f_wr_addr$ENQ =
 	     slave_awvalid && slave_xactor_f_wr_addr$FULL_N ;
-  assign slave_xactor_f_wr_addr$DEQ = CAN_FIRE_RL_write_reqs ;
+  assign slave_xactor_f_wr_addr$DEQ =
+	     slave_xactor_f_wr_addr$EMPTY_N &&
+	     slave_xactor_f_wr_data_i_notEmpty_AND_master_x_ETC___d8 ;
   assign slave_xactor_f_wr_addr$CLR = 1'b0 ;
 
   // submodule slave_xactor_f_wr_data
@@ -1009,17 +1015,26 @@ module mkDM_Mem_Tap(CLK,
 	     { slave_wid, slave_wdata, slave_wstrb, slave_wlast } ;
   assign slave_xactor_f_wr_data$ENQ =
 	     slave_wvalid && slave_xactor_f_wr_data$FULL_N ;
-  assign slave_xactor_f_wr_data$DEQ = CAN_FIRE_RL_write_reqs ;
+  assign slave_xactor_f_wr_data$DEQ =
+	     slave_xactor_f_wr_addr$EMPTY_N &&
+	     slave_xactor_f_wr_data_i_notEmpty_AND_master_x_ETC___d8 ;
   assign slave_xactor_f_wr_data$CLR = 1'b0 ;
 
   // submodule slave_xactor_f_wr_resp
   assign slave_xactor_f_wr_resp$D_IN = master_xactor_f_wr_resp$D_OUT ;
-  assign slave_xactor_f_wr_resp$ENQ = CAN_FIRE_RL_rl_connect_1 ;
+  assign slave_xactor_f_wr_resp$ENQ =
+	     slave_xactor_f_wr_resp$FULL_N &&
+	     master_xactor_f_wr_resp$EMPTY_N ;
   assign slave_xactor_f_wr_resp$DEQ =
 	     slave_bready && slave_xactor_f_wr_resp$EMPTY_N ;
   assign slave_xactor_f_wr_resp$CLR = 1'b0 ;
 
   // remaining internal signals
+  assign slave_xactor_f_wr_data_i_notEmpty_AND_master_x_ETC___d8 =
+	     slave_xactor_f_wr_data$EMPTY_N &&
+	     master_xactor_f_wr_addr$FULL_N &&
+	     master_xactor_f_wr_data$FULL_N &&
+	     f_trace_data$FULL_N ;
   assign stval___1__h1527 = { 32'd0, slave_xactor_f_wr_data$D_OUT[40:9] } ;
   assign x__h1522 =
 	     (slave_xactor_f_wr_data$D_OUT[8:1] == 8'h0F) ?

@@ -509,7 +509,7 @@ module mkMMU_Cache(CLK,
 
   // register master_xactor_rg_rd_addr
   reg [96 : 0] master_xactor_rg_rd_addr;
-  reg [96 : 0] master_xactor_rg_rd_addr$D_IN;
+  wire [96 : 0] master_xactor_rg_rd_addr$D_IN;
   wire master_xactor_rg_rd_addr$EN;
 
   // register master_xactor_rg_rd_data
@@ -599,16 +599,6 @@ module mkMMU_Cache(CLK,
   wire [63 : 0] rg_pte_pa$D_IN;
   wire rg_pte_pa$EN;
 
-  // register rg_req_byte_in_cline
-  reg [63 : 0] rg_req_byte_in_cline;
-  wire [63 : 0] rg_req_byte_in_cline$D_IN;
-  wire rg_req_byte_in_cline$EN;
-
-  // register rg_requesting_cline
-  reg rg_requesting_cline;
-  reg rg_requesting_cline$D_IN;
-  wire rg_requesting_cline$EN;
-
   // register rg_st_amo_val
   reg [63 : 0] rg_st_amo_val;
   wire [63 : 0] rg_st_amo_val$D_IN;
@@ -670,7 +660,6 @@ module mkMMU_Cache(CLK,
 
   // rule scheduling signals
   wire CAN_FIRE_RL_rl_ST_AMO_response,
-       CAN_FIRE_RL_rl_cache_refill_req_loop,
        CAN_FIRE_RL_rl_cache_refill_rsps_loop,
        CAN_FIRE_RL_rl_discard_write_rsp,
        CAN_FIRE_RL_rl_drive_exception_rsp,
@@ -700,7 +689,6 @@ module mkMMU_Cache(CLK,
        CAN_FIRE_set_verbosity,
        CAN_FIRE_tlb_flush,
        WILL_FIRE_RL_rl_ST_AMO_response,
-       WILL_FIRE_RL_rl_cache_refill_req_loop,
        WILL_FIRE_RL_rl_cache_refill_rsps_loop,
        WILL_FIRE_RL_rl_discard_write_rsp,
        WILL_FIRE_RL_rl_drive_exception_rsp,
@@ -733,7 +721,6 @@ module mkMMU_Cache(CLK,
   // inputs to muxes for submodule ports
   wire [96 : 0] MUX_master_xactor_rg_rd_addr$write_1__VAL_1,
 		MUX_master_xactor_rg_rd_addr$write_1__VAL_2,
-		MUX_master_xactor_rg_rd_addr$write_1__VAL_3,
 		MUX_master_xactor_rg_wr_addr$write_1__VAL_1,
 		MUX_master_xactor_rg_wr_addr$write_1__VAL_2;
   wire [76 : 0] MUX_master_xactor_rg_wr_data$write_1__VAL_1,
@@ -741,8 +728,7 @@ module mkMMU_Cache(CLK,
 		MUX_master_xactor_rg_wr_data$write_1__VAL_3;
   wire [63 : 0] MUX_dw_output_ld_val$wset_1__VAL_3,
 		MUX_ram_word64_set$a_put_3__VAL_2,
-		MUX_rg_ld_val$write_1__VAL_2,
-		MUX_rg_req_byte_in_cline$write_1__VAL_1;
+		MUX_rg_ld_val$write_1__VAL_2;
   wire [52 : 0] MUX_ram_state_and_ctag_cset$a_put_3__VAL_1;
   wire [8 : 0] MUX_ram_word64_set$b_put_2__VAL_2,
 	       MUX_ram_word64_set$b_put_2__VAL_4;
@@ -753,12 +739,12 @@ module mkMMU_Cache(CLK,
 	       MUX_rg_state$write_1__VAL_9;
   wire [3 : 0] MUX_ctr_wr_rsps_pending_crg$port0__write_1__VAL_1,
 	       MUX_rg_exc_code$write_1__VAL_1;
-  wire MUX_ctr_wr_rsps_pending_crg$port0__write_1__SEL_2,
+  wire MUX_ctr_wr_rsps_pending_crg$port0__write_1__SEL_1,
+       MUX_ctr_wr_rsps_pending_crg$port0__write_1__SEL_2,
        MUX_dw_output_ld_val$wset_1__SEL_1,
        MUX_dw_output_ld_val$wset_1__SEL_3,
        MUX_dw_output_ld_val$wset_1__SEL_4,
        MUX_master_xactor_rg_rd_addr$write_1__SEL_1,
-       MUX_master_xactor_rg_wr_addr$write_1__SEL_1,
        MUX_ram_state_and_ctag_cset$b_put_1__SEL_1,
        MUX_ram_word64_set$a_put_1__SEL_1,
        MUX_ram_word64_set$b_put_1__SEL_2,
@@ -776,87 +762,85 @@ module mkMMU_Cache(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h3817;
-  reg [31 : 0] v__h3918;
-  reg [31 : 0] v__h25786;
-  reg [31 : 0] v__h26684;
-  reg [31 : 0] v__h3454;
-  reg [31 : 0] v__h21882;
-  reg [31 : 0] v__h4371;
-  reg [31 : 0] v__h12839;
-  reg [31 : 0] v__h17155;
-  reg [31 : 0] v__h16483;
-  reg [31 : 0] v__h20621;
-  reg [31 : 0] v__h22253;
-  reg [31 : 0] v__h22494;
-  reg [31 : 0] v__h24472;
-  reg [31 : 0] v__h25574;
-  reg [31 : 0] v__h25681;
-  reg [31 : 0] v__h25866;
-  reg [31 : 0] v__h26388;
-  reg [31 : 0] v__h26802;
-  reg [31 : 0] v__h27120;
-  reg [31 : 0] v__h27295;
-  reg [31 : 0] v__h29908;
-  reg [31 : 0] v__h30160;
-  reg [31 : 0] v__h27391;
-  reg [31 : 0] v__h21066;
-  reg [31 : 0] v__h24098;
-  reg [31 : 0] v__h31130;
-  reg [31 : 0] v__h30780;
-  reg [31 : 0] v__h30741;
-  reg [31 : 0] v__h3448;
-  reg [31 : 0] v__h3811;
-  reg [31 : 0] v__h3912;
-  reg [31 : 0] v__h4365;
-  reg [31 : 0] v__h12833;
-  reg [31 : 0] v__h16477;
-  reg [31 : 0] v__h17149;
-  reg [31 : 0] v__h20615;
-  reg [31 : 0] v__h21060;
-  reg [31 : 0] v__h21876;
-  reg [31 : 0] v__h22247;
-  reg [31 : 0] v__h22488;
-  reg [31 : 0] v__h24092;
-  reg [31 : 0] v__h24466;
-  reg [31 : 0] v__h25568;
-  reg [31 : 0] v__h25675;
-  reg [31 : 0] v__h25780;
-  reg [31 : 0] v__h25860;
-  reg [31 : 0] v__h26382;
-  reg [31 : 0] v__h26678;
-  reg [31 : 0] v__h26796;
-  reg [31 : 0] v__h27114;
-  reg [31 : 0] v__h27289;
-  reg [31 : 0] v__h27385;
-  reg [31 : 0] v__h29902;
-  reg [31 : 0] v__h30154;
-  reg [31 : 0] v__h30735;
-  reg [31 : 0] v__h30774;
-  reg [31 : 0] v__h31124;
+  reg [31 : 0] v__h3732;
+  reg [31 : 0] v__h3833;
+  reg [31 : 0] v__h25363;
+  reg [31 : 0] v__h26261;
+  reg [31 : 0] v__h3369;
+  reg [31 : 0] v__h4286;
+  reg [31 : 0] v__h12754;
+  reg [31 : 0] v__h17070;
+  reg [31 : 0] v__h16398;
+  reg [31 : 0] v__h20536;
+  reg [31 : 0] v__h21830;
+  reg [31 : 0] v__h22071;
+  reg [31 : 0] v__h24049;
+  reg [31 : 0] v__h25151;
+  reg [31 : 0] v__h25258;
+  reg [31 : 0] v__h25443;
+  reg [31 : 0] v__h25965;
+  reg [31 : 0] v__h26379;
+  reg [31 : 0] v__h26697;
+  reg [31 : 0] v__h26872;
+  reg [31 : 0] v__h29485;
+  reg [31 : 0] v__h29737;
+  reg [31 : 0] v__h26968;
+  reg [31 : 0] v__h20981;
+  reg [31 : 0] v__h23675;
+  reg [31 : 0] v__h30707;
+  reg [31 : 0] v__h30357;
+  reg [31 : 0] v__h30318;
+  reg [31 : 0] v__h26962;
+  reg [31 : 0] v__h3363;
+  reg [31 : 0] v__h3726;
+  reg [31 : 0] v__h3827;
+  reg [31 : 0] v__h4280;
+  reg [31 : 0] v__h12748;
+  reg [31 : 0] v__h16392;
+  reg [31 : 0] v__h17064;
+  reg [31 : 0] v__h20530;
+  reg [31 : 0] v__h20975;
+  reg [31 : 0] v__h21824;
+  reg [31 : 0] v__h22065;
+  reg [31 : 0] v__h23669;
+  reg [31 : 0] v__h24043;
+  reg [31 : 0] v__h25145;
+  reg [31 : 0] v__h25252;
+  reg [31 : 0] v__h25357;
+  reg [31 : 0] v__h25437;
+  reg [31 : 0] v__h25959;
+  reg [31 : 0] v__h26255;
+  reg [31 : 0] v__h26373;
+  reg [31 : 0] v__h26691;
+  reg [31 : 0] v__h26866;
+  reg [31 : 0] v__h29479;
+  reg [31 : 0] v__h29731;
+  reg [31 : 0] v__h30312;
+  reg [31 : 0] v__h30351;
+  reg [31 : 0] v__h30701;
   // synopsys translate_on
 
   // remaining internal signals
   reg [63 : 0] CASE_rg_addr_BITS_2_TO_0_0x0_ram_word64_setDO_ETC__q32,
 	       CASE_rg_addr_BITS_2_TO_0_0x0_ram_word64_setDO_ETC__q51,
-	       CASE_rg_addr_BITS_2_TO_0_0x0_result2660_0x4_re_ETC__q29,
-	       CASE_rg_addr_BITS_2_TO_0_0x0_result5352_0x4_re_ETC__q33,
-	       CASE_rg_addr_BITS_2_TO_0_0x0_result5417_0x4_re_ETC__q34,
-	       CASE_rg_addr_BITS_2_TO_0_0x0_result9510_0x4_re_ETC__q49,
+	       CASE_rg_addr_BITS_2_TO_0_0x0_result2575_0x4_re_ETC__q29,
+	       CASE_rg_addr_BITS_2_TO_0_0x0_result4929_0x4_re_ETC__q33,
+	       CASE_rg_addr_BITS_2_TO_0_0x0_result4994_0x4_re_ETC__q34,
+	       CASE_rg_addr_BITS_2_TO_0_0x0_result9085_0x4_re_ETC__q49,
 	       IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d221,
 	       IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d243,
 	       IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d255,
-	       IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d656,
-	       IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d676,
-	       IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d779,
+	       IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d646,
+	       IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d666,
+	       IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d769,
+	       IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d789,
 	       IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d799,
-	       IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d809,
 	       IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d204,
 	       IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d234,
-	       IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d640,
-	       IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d668,
-	       IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d763,
-	       IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d791,
+	       IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d630,
+	       IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d658,
+	       IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d753,
+	       IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d781,
 	       IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_ram__ETC___d342,
 	       IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_ram__ETC___d351,
 	       IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_ram__ETC___d416,
@@ -864,172 +848,171 @@ module mkMMU_Cache(CLK,
 	       IF_rg_f3_38_EQ_0b0_39_THEN_IF_rg_addr_0_BITS_2_ETC___d360,
 	       IF_rg_f3_38_EQ_0b0_39_THEN_IF_rg_addr_0_BITS_2_ETC___d434,
 	       IF_rg_f3_38_EQ_0b10_44_THEN_SEXT_IF_rg_f3_38_E_ETC___d302,
-	       _theResult_____2__h17714,
-	       _theResult_____2__h27715,
-	       ld_val__h24581,
-	       mem_req_wr_data_wdata__h16925,
-	       mem_req_wr_data_wdata__h20422,
-	       mem_req_wr_data_wdata__h26189,
-	       mem_req_wr_data_wdata__h27693,
-	       new_ld_val__h27421,
-	       new_value__h15574,
-	       new_value__h5547,
-	       w1__h17706,
-	       w1__h27703,
-	       w1__h27707;
-  reg [7 : 0] mem_req_wr_data_wstrb__h20423, mem_req_wr_data_wstrb__h27694;
-  reg [2 : 0] value__h27006, value__h30032;
+	       _theResult_____2__h17629,
+	       _theResult_____2__h27290,
+	       ld_val__h24158,
+	       mem_req_wr_data_wdata__h16835,
+	       mem_req_wr_data_wdata__h20332,
+	       mem_req_wr_data_wdata__h25761,
+	       mem_req_wr_data_wdata__h27265,
+	       new_ld_val__h26998,
+	       new_value__h15489,
+	       new_value__h5462,
+	       w1__h17621,
+	       w1__h27278,
+	       w1__h27282;
+  reg [7 : 0] mem_req_wr_data_wstrb__h20333, mem_req_wr_data_wstrb__h27266;
+  reg [2 : 0] value__h26583, value__h29609;
   wire [63 : 0] IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_1_EL_ETC___d271,
-		IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_IF_r_ETC___d810,
+		IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_IF_r_ETC___d800,
 		IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_ram__ETC___d257,
 		IF_rg_f3_38_EQ_0b10_44_THEN_SEXT_rg_st_amo_val_ETC___d366,
 		IF_rg_op_4_EQ_1_2_OR_rg_op_4_EQ_2_6_AND_rg_amo_ETC___d466,
-		_theResult___fst__h16827,
-		_theResult___fst__h20354,
-		_theResult___fst__h26121,
-		_theResult___fst__h27625,
-		cline_addr__h21934,
-		cline_fabric_addr__h21935,
-		new_st_val__h17436,
-		new_st_val__h17718,
-		new_st_val__h17809,
-		new_st_val__h18789,
-		new_st_val__h18793,
-		new_st_val__h18797,
-		new_st_val__h18801,
-		new_st_val__h18806,
-		new_st_val__h18812,
-		new_st_val__h18817,
-		new_st_val__h27719,
-		new_st_val__h27810,
-		new_st_val__h29670,
-		new_st_val__h29674,
-		new_st_val__h29678,
-		new_st_val__h29682,
-		new_st_val__h29687,
-		new_st_val__h29693,
-		new_st_val__h29698,
-		result__h11956,
-		result__h11984,
-		result__h12012,
-		result__h12040,
-		result__h12068,
-		result__h12096,
-		result__h12124,
-		result__h12169,
-		result__h12197,
-		result__h12225,
-		result__h12253,
-		result__h12281,
-		result__h12309,
-		result__h12337,
-		result__h12365,
-		result__h12410,
-		result__h12438,
-		result__h12466,
-		result__h12494,
-		result__h12535,
-		result__h12563,
-		result__h12591,
-		result__h12619,
-		result__h12660,
-		result__h12688,
-		result__h12727,
-		result__h12755,
-		result__h24641,
-		result__h24671,
-		result__h24698,
-		result__h24725,
-		result__h24752,
-		result__h24779,
-		result__h24806,
-		result__h24833,
-		result__h24877,
-		result__h24904,
-		result__h24931,
-		result__h24958,
-		result__h24985,
-		result__h25012,
-		result__h25039,
-		result__h25066,
-		result__h25110,
-		result__h25137,
-		result__h25164,
-		result__h25191,
-		result__h25231,
-		result__h25258,
-		result__h25285,
-		result__h25312,
-		result__h25352,
-		result__h25379,
-		result__h25417,
-		result__h25444,
-		result__h27898,
-		result__h28806,
-		result__h28834,
-		result__h28862,
-		result__h28890,
-		result__h28918,
-		result__h28946,
-		result__h28974,
-		result__h29019,
-		result__h29047,
-		result__h29075,
-		result__h29103,
-		result__h29131,
-		result__h29159,
-		result__h29187,
-		result__h29215,
-		result__h29260,
-		result__h29288,
-		result__h29316,
-		result__h29344,
-		result__h29385,
-		result__h29413,
-		result__h29441,
-		result__h29469,
-		result__h29510,
-		result__h29538,
-		result__h29577,
-		result__h29605,
-		result__h5600,
-		st_val__h27433,
-		w1___1__h17777,
-		w1___1__h27778,
-		w2___1__h27779,
-		w2__h27709,
-		word64__h5366,
-		x__h13226,
-		y__h5636;
-  wire [31 : 0] ld_val4581_BITS_31_TO_0__q37,
-		ld_val4581_BITS_63_TO_32__q44,
+		_theResult___snd_fst__h16843,
+		_theResult___snd_fst__h20340,
+		_theResult___snd_fst__h25769,
+		_theResult___snd_fst__h27273,
+		cline_fabric_addr__h21034,
+		new_st_val__h17351,
+		new_st_val__h17633,
+		new_st_val__h17724,
+		new_st_val__h18704,
+		new_st_val__h18708,
+		new_st_val__h18712,
+		new_st_val__h18716,
+		new_st_val__h18721,
+		new_st_val__h18727,
+		new_st_val__h18732,
+		new_st_val__h27294,
+		new_st_val__h27385,
+		new_st_val__h29245,
+		new_st_val__h29249,
+		new_st_val__h29253,
+		new_st_val__h29257,
+		new_st_val__h29262,
+		new_st_val__h29268,
+		new_st_val__h29273,
+		result__h11871,
+		result__h11899,
+		result__h11927,
+		result__h11955,
+		result__h11983,
+		result__h12011,
+		result__h12039,
+		result__h12084,
+		result__h12112,
+		result__h12140,
+		result__h12168,
+		result__h12196,
+		result__h12224,
+		result__h12252,
+		result__h12280,
+		result__h12325,
+		result__h12353,
+		result__h12381,
+		result__h12409,
+		result__h12450,
+		result__h12478,
+		result__h12506,
+		result__h12534,
+		result__h12575,
+		result__h12603,
+		result__h12642,
+		result__h12670,
+		result__h24218,
+		result__h24248,
+		result__h24275,
+		result__h24302,
+		result__h24329,
+		result__h24356,
+		result__h24383,
+		result__h24410,
+		result__h24454,
+		result__h24481,
+		result__h24508,
+		result__h24535,
+		result__h24562,
+		result__h24589,
+		result__h24616,
+		result__h24643,
+		result__h24687,
+		result__h24714,
+		result__h24741,
+		result__h24768,
+		result__h24808,
+		result__h24835,
+		result__h24862,
+		result__h24889,
+		result__h24929,
+		result__h24956,
+		result__h24994,
+		result__h25021,
+		result__h27473,
+		result__h28381,
+		result__h28409,
+		result__h28437,
+		result__h28465,
+		result__h28493,
+		result__h28521,
+		result__h28549,
+		result__h28594,
+		result__h28622,
+		result__h28650,
+		result__h28678,
+		result__h28706,
+		result__h28734,
+		result__h28762,
+		result__h28790,
+		result__h28835,
+		result__h28863,
+		result__h28891,
+		result__h28919,
+		result__h28960,
+		result__h28988,
+		result__h29016,
+		result__h29044,
+		result__h29085,
+		result__h29113,
+		result__h29152,
+		result__h29180,
+		result__h5515,
+		st_val__h27010,
+		w1___1__h17692,
+		w1___1__h27353,
+		w2___1__h27354,
+		w2__h27284,
+		word64__h5281,
+		x__h13141,
+		y__h5551;
+  wire [31 : 0] ld_val4158_BITS_31_TO_0__q37,
+		ld_val4158_BITS_63_TO_32__q44,
 		master_xactor_rg_rd_data_BITS_34_TO_3__q3,
 		master_xactor_rg_rd_data_BITS_66_TO_35__q10,
-		new_value547_BITS_31_TO_0__q30,
+		new_value462_BITS_31_TO_0__q30,
 		rg_st_amo_val_BITS_31_TO_0__q31,
-		w17703_BITS_31_TO_0__q50,
-		word64366_BITS_31_TO_0__q17,
-		word64366_BITS_63_TO_32__q24;
-  wire [15 : 0] ld_val4581_BITS_15_TO_0__q36,
-		ld_val4581_BITS_31_TO_16__q40,
-		ld_val4581_BITS_47_TO_32__q43,
-		ld_val4581_BITS_63_TO_48__q47,
+		w17278_BITS_31_TO_0__q50,
+		word64281_BITS_31_TO_0__q17,
+		word64281_BITS_63_TO_32__q24;
+  wire [15 : 0] ld_val4158_BITS_15_TO_0__q36,
+		ld_val4158_BITS_31_TO_16__q40,
+		ld_val4158_BITS_47_TO_32__q43,
+		ld_val4158_BITS_63_TO_48__q47,
 		master_xactor_rg_rd_data_BITS_18_TO_3__q2,
 		master_xactor_rg_rd_data_BITS_34_TO_19__q6,
 		master_xactor_rg_rd_data_BITS_50_TO_35__q9,
 		master_xactor_rg_rd_data_BITS_66_TO_51__q13,
-		word64366_BITS_15_TO_0__q16,
-		word64366_BITS_31_TO_16__q20,
-		word64366_BITS_47_TO_32__q23,
-		word64366_BITS_63_TO_48__q27;
-  wire [7 : 0] ld_val4581_BITS_15_TO_8__q38,
-	       ld_val4581_BITS_23_TO_16__q39,
-	       ld_val4581_BITS_31_TO_24__q41,
-	       ld_val4581_BITS_39_TO_32__q42,
-	       ld_val4581_BITS_47_TO_40__q45,
-	       ld_val4581_BITS_55_TO_48__q46,
-	       ld_val4581_BITS_63_TO_56__q48,
-	       ld_val4581_BITS_7_TO_0__q35,
+		word64281_BITS_15_TO_0__q16,
+		word64281_BITS_31_TO_16__q20,
+		word64281_BITS_47_TO_32__q23,
+		word64281_BITS_63_TO_48__q27;
+  wire [7 : 0] ld_val4158_BITS_15_TO_8__q38,
+	       ld_val4158_BITS_23_TO_16__q39,
+	       ld_val4158_BITS_31_TO_24__q41,
+	       ld_val4158_BITS_39_TO_32__q42,
+	       ld_val4158_BITS_47_TO_40__q45,
+	       ld_val4158_BITS_55_TO_48__q46,
+	       ld_val4158_BITS_63_TO_56__q48,
+	       ld_val4158_BITS_7_TO_0__q35,
 	       master_xactor_rg_rd_data_BITS_10_TO_3__q1,
 	       master_xactor_rg_rd_data_BITS_18_TO_11__q4,
 	       master_xactor_rg_rd_data_BITS_26_TO_19__q5,
@@ -1038,27 +1021,27 @@ module mkMMU_Cache(CLK,
 	       master_xactor_rg_rd_data_BITS_50_TO_43__q11,
 	       master_xactor_rg_rd_data_BITS_58_TO_51__q12,
 	       master_xactor_rg_rd_data_BITS_66_TO_59__q14,
-	       strobe64__h20353,
-	       strobe64__h20356,
-	       strobe64__h20359,
-	       strobe64__h27624,
-	       strobe64__h27627,
-	       strobe64__h27630,
-	       word64366_BITS_15_TO_8__q18,
-	       word64366_BITS_23_TO_16__q19,
-	       word64366_BITS_31_TO_24__q21,
-	       word64366_BITS_39_TO_32__q22,
-	       word64366_BITS_47_TO_40__q25,
-	       word64366_BITS_55_TO_48__q26,
-	       word64366_BITS_63_TO_56__q28,
-	       word64366_BITS_7_TO_0__q15;
-  wire [5 : 0] shift_bits__h20218, shift_bits__h27489;
+	       strobe64__h20266,
+	       strobe64__h20268,
+	       strobe64__h20270,
+	       strobe64__h27199,
+	       strobe64__h27201,
+	       strobe64__h27203,
+	       word64281_BITS_15_TO_8__q18,
+	       word64281_BITS_23_TO_16__q19,
+	       word64281_BITS_31_TO_24__q21,
+	       word64281_BITS_39_TO_32__q22,
+	       word64281_BITS_47_TO_40__q25,
+	       word64281_BITS_55_TO_48__q26,
+	       word64281_BITS_63_TO_56__q28,
+	       word64281_BITS_7_TO_0__q15;
+  wire [5 : 0] shift_bits__h20133, shift_bits__h27066;
   wire [4 : 0] IF_rg_op_4_EQ_0_5_OR_rg_op_4_EQ_2_6_AND_rg_amo_ETC___d110,
 	       IF_rg_op_4_EQ_1_2_OR_rg_op_4_EQ_2_6_AND_rg_amo_ETC___d109;
-  wire [3 : 0] access_exc_code__h2987, b__h21020;
+  wire [3 : 0] access_exc_code__h2925, b__h20935;
   wire IF_rg_op_4_EQ_1_2_OR_rg_op_4_EQ_2_6_AND_rg_amo_ETC___d78,
        NOT_cfg_verbosity_read__0_ULE_1_1___d12,
-       NOT_cfg_verbosity_read__0_ULE_2_53___d554,
+       NOT_cfg_verbosity_read__0_ULE_2_54___d555,
        NOT_dmem_not_imem_13_OR_soc_map_m_is_mem_addr__ETC___d298,
        NOT_dmem_not_imem_13_OR_soc_map_m_is_mem_addr__ETC___d309,
        NOT_dmem_not_imem_13_OR_soc_map_m_is_mem_addr__ETC___d443,
@@ -1070,7 +1053,7 @@ module mkMMU_Cache(CLK,
        NOT_dmem_not_imem_13_OR_soc_map_m_is_mem_addr__ETC___d532,
        NOT_dmem_not_imem_13_OR_soc_map_m_is_mem_addr__ETC___d534,
        NOT_ram_state_and_ctag_cset_b_read__9_BIT_52_0_ETC___d119,
-       NOT_req_f3_BITS_1_TO_0_00_EQ_0b0_01_02_AND_NOT_ETC___d921,
+       NOT_req_f3_BITS_1_TO_0_90_EQ_0b0_91_92_AND_NOT_ETC___d911,
        NOT_rg_op_4_EQ_0_5_2_AND_NOT_rg_op_4_EQ_2_6_3__ETC___d105,
        NOT_rg_op_4_EQ_0_5_2_AND_NOT_rg_op_4_EQ_2_6_3__ETC___d446,
        NOT_rg_op_4_EQ_0_5_2_AND_NOT_rg_op_4_EQ_2_6_3__ETC___d494,
@@ -1090,11 +1073,11 @@ module mkMMU_Cache(CLK,
        NOT_rg_op_4_EQ_2_6_3_OR_NOT_rg_amo_funct7_7_BI_ETC___d500,
        NOT_rg_op_4_EQ_2_6_3_OR_NOT_rg_amo_funct7_7_BI_ETC___d505,
        dmem_not_imem_AND_NOT_soc_map_m_is_mem_addr_rg_ETC___d80,
-       lrsc_result__h13216,
-       master_xactor_crg_rd_data_full_port1__read__63_ETC___d733,
+       lrsc_result__h13131,
+       master_xactor_crg_rd_data_full_port1__read__51_ETC___d723,
        ram_state_and_ctag_cset_b_read__9_BITS_51_TO_0_ETC___d74,
        ram_state_and_ctag_cset_b_read__9_BIT_52_0_AND_ETC___d120,
-       req_f3_BITS_1_TO_0_00_EQ_0b0_01_OR_req_f3_BITS_ETC___d930,
+       req_f3_BITS_1_TO_0_90_EQ_0b0_91_OR_req_f3_BITS_ETC___d920,
        rg_addr_0_EQ_rg_lrsc_pa_8___d117,
        rg_amo_funct7_7_BITS_6_TO_2_8_EQ_0b10_9_AND_NO_ETC___d292,
        rg_lrsc_pa_8_EQ_rg_addr_0___d59,
@@ -1110,7 +1093,7 @@ module mkMMU_Cache(CLK,
        rg_op_4_EQ_1_2_OR_rg_op_4_EQ_2_6_AND_rg_amo_fu_ETC___d444,
        rg_op_4_EQ_2_6_AND_rg_amo_funct7_7_BITS_6_TO_2_ETC___d513,
        rg_op_4_EQ_2_6_AND_rg_amo_funct7_7_BITS_6_TO_2_ETC___d68,
-       rg_state_EQ_13_00_AND_rg_op_4_EQ_0_5_OR_rg_op__ETC___d602,
+       rg_state_EQ_13_90_AND_rg_op_4_EQ_0_5_OR_rg_op__ETC___d592,
        rg_state_EQ_3_1_AND_NOT_rg_op_4_EQ_0_5_2_AND_N_ETC___d90;
 
   // action method set_verbosity
@@ -1142,17 +1125,17 @@ module mkMMU_Cache(CLK,
 
   // value method word64
   always@(MUX_dw_output_ld_val$wset_1__SEL_1 or
-	  ld_val__h24581 or
-	  MUX_master_xactor_rg_wr_addr$write_1__SEL_1 or
-	  new_ld_val__h27421 or
+	  ld_val__h24158 or
+	  MUX_ctr_wr_rsps_pending_crg$port0__write_1__SEL_1 or
+	  new_ld_val__h26998 or
 	  MUX_dw_output_ld_val$wset_1__SEL_3 or
 	  MUX_dw_output_ld_val$wset_1__VAL_3 or
 	  MUX_dw_output_ld_val$wset_1__SEL_4 or rg_ld_val)
   begin
     case (1'b1) // synopsys parallel_case
-      MUX_dw_output_ld_val$wset_1__SEL_1: word64 = ld_val__h24581;
-      MUX_master_xactor_rg_wr_addr$write_1__SEL_1:
-	  word64 = new_ld_val__h27421;
+      MUX_dw_output_ld_val$wset_1__SEL_1: word64 = ld_val__h24158;
+      MUX_ctr_wr_rsps_pending_crg$port0__write_1__SEL_1:
+	  word64 = new_ld_val__h26998;
       MUX_dw_output_ld_val$wset_1__SEL_3:
 	  word64 = MUX_dw_output_ld_val$wset_1__VAL_3;
       MUX_dw_output_ld_val$wset_1__SEL_4: word64 = rg_ld_val;
@@ -1428,14 +1411,6 @@ module mkMMU_Cache(CLK,
 	     f_reset_reqs$EMPTY_N && rg_state != 5'd1 ;
   assign WILL_FIRE_RL_rl_start_reset = CAN_FIRE_RL_rl_start_reset ;
 
-  // rule RL_rl_cache_refill_req_loop
-  assign CAN_FIRE_RL_rl_cache_refill_req_loop =
-	     !master_xactor_crg_rd_addr_full$port2__read &&
-	     rg_requesting_cline ;
-  assign WILL_FIRE_RL_rl_cache_refill_req_loop =
-	     CAN_FIRE_RL_rl_cache_refill_req_loop &&
-	     !WILL_FIRE_RL_rl_start_reset ;
-
   // rule RL_rl_probe_and_immed_rsp
   assign CAN_FIRE_RL_rl_probe_and_immed_rsp =
 	     dmem_not_imem_AND_NOT_soc_map_m_is_mem_addr_rg_ETC___d80 &&
@@ -1475,13 +1450,11 @@ module mkMMU_Cache(CLK,
 	     rg_amo_funct7[6:2] != 5'b00010 &&
 	     rg_amo_funct7[6:2] != 5'b00011 ;
   assign WILL_FIRE_RL_rl_io_AMO_op_req =
-	     CAN_FIRE_RL_rl_io_AMO_op_req &&
-	     !WILL_FIRE_RL_rl_cache_refill_req_loop &&
-	     !WILL_FIRE_RL_rl_start_reset ;
+	     CAN_FIRE_RL_rl_io_AMO_op_req && !WILL_FIRE_RL_rl_start_reset ;
 
   // rule RL_rl_io_AMO_read_rsp
   assign CAN_FIRE_RL_rl_io_AMO_read_rsp =
-	     master_xactor_crg_rd_data_full_port1__read__63_ETC___d733 &&
+	     master_xactor_crg_rd_data_full_port1__read__51_ETC___d723 &&
 	     rg_state == 5'd16 ;
   assign WILL_FIRE_RL_rl_io_AMO_read_rsp =
 	     CAN_FIRE_RL_rl_io_AMO_read_rsp && !WILL_FIRE_RL_rl_start_reset ;
@@ -1490,23 +1463,26 @@ module mkMMU_Cache(CLK,
   assign CAN_FIRE_RL_rl_start_cache_refill =
 	     !master_xactor_crg_rd_addr_full$port2__read &&
 	     rg_state == 5'd9 &&
-	     b__h21020 == 4'd0 ;
+	     b__h20935 == 4'd0 ;
   assign WILL_FIRE_RL_rl_start_cache_refill = MUX_rg_state$write_1__SEL_3 ;
 
   // rule RL_rl_io_read_req
   assign CAN_FIRE_RL_rl_io_read_req =
 	     !master_xactor_crg_rd_addr_full$port2__read &&
-	     rg_state_EQ_13_00_AND_rg_op_4_EQ_0_5_OR_rg_op__ETC___d602 ;
+	     rg_state_EQ_13_90_AND_rg_op_4_EQ_0_5_OR_rg_op__ETC___d592 ;
   assign WILL_FIRE_RL_rl_io_read_req = MUX_rg_state$write_1__SEL_2 ;
 
   // rule RL_rl_discard_write_rsp
   assign CAN_FIRE_RL_rl_discard_write_rsp =
-	     b__h21020 != 4'd0 && master_xactor_crg_wr_resp_full$port1__read ;
+	     b__h20935 != 4'd0 && master_xactor_crg_wr_resp_full$port1__read ;
   assign WILL_FIRE_RL_rl_discard_write_rsp =
 	     CAN_FIRE_RL_rl_discard_write_rsp &&
 	     !WILL_FIRE_RL_rl_start_reset ;
 
   // inputs to muxes for submodule ports
+  assign MUX_ctr_wr_rsps_pending_crg$port0__write_1__SEL_1 =
+	     WILL_FIRE_RL_rl_io_AMO_read_rsp &&
+	     master_xactor_rg_rd_data[2:1] == 2'b0 ;
   assign MUX_ctr_wr_rsps_pending_crg$port0__write_1__SEL_2 =
 	     WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	     (!dmem_not_imem || soc_map$m_is_mem_addr) &&
@@ -1523,12 +1499,9 @@ module mkMMU_Cache(CLK,
 	     WILL_FIRE_RL_rl_ST_AMO_response ;
   assign MUX_master_xactor_rg_rd_addr$write_1__SEL_1 =
 	     WILL_FIRE_RL_rl_io_AMO_op_req || WILL_FIRE_RL_rl_io_read_req ;
-  assign MUX_master_xactor_rg_wr_addr$write_1__SEL_1 =
-	     WILL_FIRE_RL_rl_io_AMO_read_rsp &&
-	     master_xactor_rg_rd_data[2:1] == 2'b0 ;
   assign MUX_ram_state_and_ctag_cset$b_put_1__SEL_1 =
 	     EN_req &&
-	     req_f3_BITS_1_TO_0_00_EQ_0b0_01_OR_req_f3_BITS_ETC___d930 ;
+	     req_f3_BITS_1_TO_0_90_EQ_0b0_91_OR_req_f3_BITS_ETC___d920 ;
   assign MUX_ram_word64_set$a_put_1__SEL_1 =
 	     WILL_FIRE_RL_rl_cache_refill_rsps_loop &&
 	     master_xactor_rg_rd_data[2:1] == 2'b0 ;
@@ -1540,7 +1513,7 @@ module mkMMU_Cache(CLK,
 	     master_xactor_rg_rd_data[2:1] != 2'b0 ;
   assign MUX_rg_exc_code$write_1__SEL_1 =
 	     EN_req &&
-	     NOT_req_f3_BITS_1_TO_0_00_EQ_0b0_01_02_AND_NOT_ETC___d921 ;
+	     NOT_req_f3_BITS_1_TO_0_90_EQ_0b0_91_92_AND_NOT_ETC___d911 ;
   assign MUX_rg_exc_code$write_1__SEL_2 =
 	     WILL_FIRE_RL_rl_io_AMO_read_rsp &&
 	     master_xactor_rg_rd_data[2:1] != 2'b0 ;
@@ -1555,12 +1528,9 @@ module mkMMU_Cache(CLK,
 	     (!dmem_not_imem || soc_map$m_is_mem_addr) &&
 	     rg_op_4_EQ_0_5_OR_rg_op_4_EQ_2_6_AND_rg_amo_fu_ETC___d131 ;
   assign MUX_rg_state$write_1__SEL_2 =
-	     CAN_FIRE_RL_rl_io_read_req &&
-	     !WILL_FIRE_RL_rl_cache_refill_req_loop &&
-	     !WILL_FIRE_RL_rl_start_reset ;
+	     CAN_FIRE_RL_rl_io_read_req && !WILL_FIRE_RL_rl_start_reset ;
   assign MUX_rg_state$write_1__SEL_3 =
 	     CAN_FIRE_RL_rl_start_cache_refill &&
-	     !WILL_FIRE_RL_rl_cache_refill_req_loop &&
 	     !WILL_FIRE_RL_rl_start_reset &&
 	     !EN_req ;
   assign MUX_rg_state$write_1__SEL_8 =
@@ -1578,32 +1548,30 @@ module mkMMU_Cache(CLK,
   assign MUX_dw_output_ld_val$wset_1__VAL_3 =
 	     (rg_op == 2'd0 ||
 	      rg_op == 2'd2 && rg_amo_funct7[6:2] == 5'b00010) ?
-	       new_value__h5547 :
-	       new_value__h15574 ;
+	       new_value__h5462 :
+	       new_value__h15489 ;
   assign MUX_master_xactor_rg_rd_addr$write_1__VAL_1 =
-	     { 4'd0, rg_pa, 8'd0, value__h27006, 18'd65536 } ;
+	     { 4'd0, rg_pa, 8'd0, value__h26583, 18'd65536 } ;
   assign MUX_master_xactor_rg_rd_addr$write_1__VAL_2 =
-	     { 4'd0, cline_addr__h21934, 29'd851968 } ;
-  assign MUX_master_xactor_rg_rd_addr$write_1__VAL_3 =
-	     { 4'd0, cline_fabric_addr__h21935, 29'd851968 } ;
+	     { 4'd0, cline_fabric_addr__h21034, 29'd15532032 } ;
   assign MUX_master_xactor_rg_wr_addr$write_1__VAL_1 =
-	     { 4'd0, rg_pa, 8'd0, value__h30032, 18'd65536 } ;
+	     { 4'd0, rg_pa, 8'd0, value__h29609, 18'd65536 } ;
   assign MUX_master_xactor_rg_wr_addr$write_1__VAL_2 =
-	     { 4'd0, rg_addr, 8'd0, value__h30032, 18'd65536 } ;
+	     { 4'd0, rg_addr, 8'd0, value__h29609, 18'd65536 } ;
   assign MUX_master_xactor_rg_wr_data$write_1__VAL_1 =
 	     { 4'd0,
-	       mem_req_wr_data_wdata__h27693,
-	       mem_req_wr_data_wstrb__h27694,
+	       mem_req_wr_data_wdata__h27265,
+	       mem_req_wr_data_wstrb__h27266,
 	       1'd1 } ;
   assign MUX_master_xactor_rg_wr_data$write_1__VAL_2 =
 	     { 4'd0,
 	       IF_rg_op_4_EQ_1_2_OR_rg_op_4_EQ_2_6_AND_rg_amo_ETC___d466,
-	       mem_req_wr_data_wstrb__h20423,
+	       mem_req_wr_data_wstrb__h20333,
 	       1'd1 } ;
   assign MUX_master_xactor_rg_wr_data$write_1__VAL_3 =
 	     { 4'd0,
-	       mem_req_wr_data_wdata__h26189,
-	       mem_req_wr_data_wstrb__h27694,
+	       mem_req_wr_data_wdata__h25761,
+	       mem_req_wr_data_wstrb__h27266,
 	       1'd1 } ;
   assign MUX_ram_state_and_ctag_cset$a_put_3__VAL_1 = { 1'd1, rg_pa[63:12] } ;
   assign MUX_ram_word64_set$a_put_3__VAL_2 =
@@ -1618,12 +1586,10 @@ module mkMMU_Cache(CLK,
   assign MUX_rg_ld_val$write_1__VAL_2 =
 	     (rg_op == 2'd1 ||
 	      rg_op == 2'd2 && rg_amo_funct7[6:2] == 5'b00011) ?
-	       x__h13226 :
+	       x__h13141 :
 	       IF_rg_f3_38_EQ_0b10_44_THEN_SEXT_IF_rg_f3_38_E_ETC___d302 ;
-  assign MUX_rg_req_byte_in_cline$write_1__VAL_1 =
-	     rg_req_byte_in_cline + 64'd8 ;
   assign MUX_rg_state$write_1__VAL_1 =
-	     NOT_req_f3_BITS_1_TO_0_00_EQ_0b0_01_02_AND_NOT_ETC___d921 ?
+	     NOT_req_f3_BITS_1_TO_0_90_EQ_0b0_91_92_AND_NOT_ETC___d911 ?
 	       5'd4 :
 	       5'd3 ;
   assign MUX_rg_state$write_1__VAL_4 =
@@ -1719,7 +1685,6 @@ module mkMMU_Cache(CLK,
 	     master_xactor_crg_rd_addr_full$port1__read ;
   assign master_xactor_crg_rd_addr_full$EN_port2__write =
 	     WILL_FIRE_RL_rl_io_AMO_op_req || WILL_FIRE_RL_rl_io_read_req ||
-	     WILL_FIRE_RL_rl_cache_refill_req_loop ||
 	     WILL_FIRE_RL_rl_start_cache_refill ;
   assign master_xactor_crg_rd_addr_full$port3__read =
 	     master_xactor_crg_rd_addr_full$EN_port2__write ||
@@ -1748,13 +1713,13 @@ module mkMMU_Cache(CLK,
 	     (!dmem_not_imem || soc_map$m_is_mem_addr) &&
 	     NOT_rg_op_4_EQ_0_5_2_AND_NOT_rg_op_4_EQ_2_6_3__ETC___d446 ||
 	     WILL_FIRE_RL_rl_io_write_req ;
-  always@(MUX_master_xactor_rg_wr_addr$write_1__SEL_1 or
+  always@(MUX_ctr_wr_rsps_pending_crg$port0__write_1__SEL_1 or
 	  MUX_ctr_wr_rsps_pending_crg$port0__write_1__VAL_1 or
 	  MUX_ctr_wr_rsps_pending_crg$port0__write_1__SEL_2 or
 	  WILL_FIRE_RL_rl_io_write_req)
   begin
     case (1'b1) // synopsys parallel_case
-      MUX_master_xactor_rg_wr_addr$write_1__SEL_1:
+      MUX_ctr_wr_rsps_pending_crg$port0__write_1__SEL_1:
 	  ctr_wr_rsps_pending_crg$port0__write_1 =
 	      MUX_ctr_wr_rsps_pending_crg$port0__write_1__VAL_1;
       MUX_ctr_wr_rsps_pending_crg$port0__write_1__SEL_2:
@@ -1767,11 +1732,11 @@ module mkMMU_Cache(CLK,
 		   4'b1010 /* unspecified value */ ;
     endcase
   end
-  assign ctr_wr_rsps_pending_crg$port1__write_1 = b__h21020 - 4'd1 ;
+  assign ctr_wr_rsps_pending_crg$port1__write_1 = b__h20935 - 4'd1 ;
   assign ctr_wr_rsps_pending_crg$port2__read =
 	     WILL_FIRE_RL_rl_discard_write_rsp ?
 	       ctr_wr_rsps_pending_crg$port1__write_1 :
-	       b__h21020 ;
+	       b__h20935 ;
   assign ctr_wr_rsps_pending_crg$EN_port2__write =
 	     WILL_FIRE_RL_rl_start_reset && !f_reset_reqs$D_OUT ;
   assign ctr_wr_rsps_pending_crg$port3__read =
@@ -1826,31 +1791,13 @@ module mkMMU_Cache(CLK,
   assign master_xactor_crg_wr_resp_full$EN = 1'b1 ;
 
   // register master_xactor_rg_rd_addr
-  always@(MUX_master_xactor_rg_rd_addr$write_1__SEL_1 or
-	  MUX_master_xactor_rg_rd_addr$write_1__VAL_1 or
-	  WILL_FIRE_RL_rl_start_cache_refill or
-	  MUX_master_xactor_rg_rd_addr$write_1__VAL_2 or
-	  WILL_FIRE_RL_rl_cache_refill_req_loop or
-	  MUX_master_xactor_rg_rd_addr$write_1__VAL_3)
-  begin
-    case (1'b1) // synopsys parallel_case
-      MUX_master_xactor_rg_rd_addr$write_1__SEL_1:
-	  master_xactor_rg_rd_addr$D_IN =
-	      MUX_master_xactor_rg_rd_addr$write_1__VAL_1;
-      WILL_FIRE_RL_rl_start_cache_refill:
-	  master_xactor_rg_rd_addr$D_IN =
-	      MUX_master_xactor_rg_rd_addr$write_1__VAL_2;
-      WILL_FIRE_RL_rl_cache_refill_req_loop:
-	  master_xactor_rg_rd_addr$D_IN =
-	      MUX_master_xactor_rg_rd_addr$write_1__VAL_3;
-      default: master_xactor_rg_rd_addr$D_IN =
-		   97'h0AAAAAAAAAAAAAAAAAAAAAAAA /* unspecified value */ ;
-    endcase
-  end
+  assign master_xactor_rg_rd_addr$D_IN =
+	     MUX_master_xactor_rg_rd_addr$write_1__SEL_1 ?
+	       MUX_master_xactor_rg_rd_addr$write_1__VAL_1 :
+	       MUX_master_xactor_rg_rd_addr$write_1__VAL_2 ;
   assign master_xactor_rg_rd_addr$EN =
 	     WILL_FIRE_RL_rl_io_AMO_op_req || WILL_FIRE_RL_rl_io_read_req ||
-	     WILL_FIRE_RL_rl_start_cache_refill ||
-	     WILL_FIRE_RL_rl_cache_refill_req_loop ;
+	     WILL_FIRE_RL_rl_start_cache_refill ;
 
   // register master_xactor_rg_rd_data
   assign master_xactor_rg_rd_data$D_IN =
@@ -1861,14 +1808,14 @@ module mkMMU_Cache(CLK,
   assign master_xactor_rg_rd_data$EN = 1'd1 ;
 
   // register master_xactor_rg_wr_addr
-  always@(MUX_master_xactor_rg_wr_addr$write_1__SEL_1 or
+  always@(MUX_ctr_wr_rsps_pending_crg$port0__write_1__SEL_1 or
 	  MUX_master_xactor_rg_wr_addr$write_1__VAL_1 or
 	  MUX_ctr_wr_rsps_pending_crg$port0__write_1__SEL_2 or
 	  MUX_master_xactor_rg_wr_addr$write_1__VAL_2 or
 	  WILL_FIRE_RL_rl_io_write_req)
   begin
     case (1'b1) // synopsys parallel_case
-      MUX_master_xactor_rg_wr_addr$write_1__SEL_1:
+      MUX_ctr_wr_rsps_pending_crg$port0__write_1__SEL_1:
 	  master_xactor_rg_wr_addr$D_IN =
 	      MUX_master_xactor_rg_wr_addr$write_1__VAL_1;
       MUX_ctr_wr_rsps_pending_crg$port0__write_1__SEL_2:
@@ -1890,7 +1837,7 @@ module mkMMU_Cache(CLK,
 	     WILL_FIRE_RL_rl_io_write_req ;
 
   // register master_xactor_rg_wr_data
-  always@(MUX_master_xactor_rg_wr_addr$write_1__SEL_1 or
+  always@(MUX_ctr_wr_rsps_pending_crg$port0__write_1__SEL_1 or
 	  MUX_master_xactor_rg_wr_data$write_1__VAL_1 or
 	  MUX_ctr_wr_rsps_pending_crg$port0__write_1__SEL_2 or
 	  MUX_master_xactor_rg_wr_data$write_1__VAL_2 or
@@ -1898,7 +1845,7 @@ module mkMMU_Cache(CLK,
 	  MUX_master_xactor_rg_wr_data$write_1__VAL_3)
   begin
     case (1'b1) // synopsys parallel_case
-      MUX_master_xactor_rg_wr_addr$write_1__SEL_1:
+      MUX_ctr_wr_rsps_pending_crg$port0__write_1__SEL_1:
 	  master_xactor_rg_wr_data$D_IN =
 	      MUX_master_xactor_rg_wr_data$write_1__VAL_1;
       MUX_ctr_wr_rsps_pending_crg$port0__write_1__SEL_2:
@@ -1955,14 +1902,14 @@ module mkMMU_Cache(CLK,
 	  MUX_rg_exc_code$write_1__VAL_1 or
 	  MUX_rg_exc_code$write_1__SEL_2 or
 	  MUX_rg_exc_code$write_1__SEL_3 or
-	  MUX_rg_error_during_refill$write_1__SEL_1 or access_exc_code__h2987)
+	  MUX_rg_error_during_refill$write_1__SEL_1 or access_exc_code__h2925)
   case (1'b1)
     MUX_rg_exc_code$write_1__SEL_1:
 	rg_exc_code$D_IN = MUX_rg_exc_code$write_1__VAL_1;
     MUX_rg_exc_code$write_1__SEL_2: rg_exc_code$D_IN = 4'd7;
     MUX_rg_exc_code$write_1__SEL_3: rg_exc_code$D_IN = 4'd5;
     MUX_rg_error_during_refill$write_1__SEL_1:
-	rg_exc_code$D_IN = access_exc_code__h2987;
+	rg_exc_code$D_IN = access_exc_code__h2925;
     default: rg_exc_code$D_IN = 4'b1010 /* unspecified value */ ;
   endcase
   assign rg_exc_code$EN =
@@ -1973,26 +1920,26 @@ module mkMMU_Cache(CLK,
 	     WILL_FIRE_RL_rl_io_AMO_read_rsp &&
 	     master_xactor_rg_rd_data[2:1] != 2'b0 ||
 	     EN_req &&
-	     NOT_req_f3_BITS_1_TO_0_00_EQ_0b0_01_02_AND_NOT_ETC___d921 ;
+	     NOT_req_f3_BITS_1_TO_0_90_EQ_0b0_91_92_AND_NOT_ETC___d911 ;
 
   // register rg_f3
   assign rg_f3$D_IN = req_f3 ;
   assign rg_f3$EN = EN_req ;
 
   // register rg_ld_val
-  always@(MUX_master_xactor_rg_wr_addr$write_1__SEL_1 or
-	  new_ld_val__h27421 or
+  always@(MUX_ctr_wr_rsps_pending_crg$port0__write_1__SEL_1 or
+	  new_ld_val__h26998 or
 	  MUX_rg_ld_val$write_1__SEL_2 or
 	  MUX_rg_ld_val$write_1__VAL_2 or
 	  WILL_FIRE_RL_rl_io_read_rsp or
-	  ld_val__h24581 or WILL_FIRE_RL_rl_io_AMO_SC_req)
+	  ld_val__h24158 or WILL_FIRE_RL_rl_io_AMO_SC_req)
   begin
     case (1'b1) // synopsys parallel_case
-      MUX_master_xactor_rg_wr_addr$write_1__SEL_1:
-	  rg_ld_val$D_IN = new_ld_val__h27421;
+      MUX_ctr_wr_rsps_pending_crg$port0__write_1__SEL_1:
+	  rg_ld_val$D_IN = new_ld_val__h26998;
       MUX_rg_ld_val$write_1__SEL_2:
 	  rg_ld_val$D_IN = MUX_rg_ld_val$write_1__VAL_2;
-      WILL_FIRE_RL_rl_io_read_rsp: rg_ld_val$D_IN = ld_val__h24581;
+      WILL_FIRE_RL_rl_io_read_rsp: rg_ld_val$D_IN = ld_val__h24158;
       WILL_FIRE_RL_rl_io_AMO_SC_req: rg_ld_val$D_IN = 64'd1;
       default: rg_ld_val$D_IN = 64'hAAAAAAAAAAAAAAAA /* unspecified value */ ;
     endcase
@@ -2049,35 +1996,8 @@ module mkMMU_Cache(CLK,
   assign rg_pte_pa$D_IN = 64'h0 ;
   assign rg_pte_pa$EN = 1'b0 ;
 
-  // register rg_req_byte_in_cline
-  assign rg_req_byte_in_cline$D_IN =
-	     WILL_FIRE_RL_rl_cache_refill_req_loop ?
-	       MUX_rg_req_byte_in_cline$write_1__VAL_1 :
-	       64'd8 ;
-  assign rg_req_byte_in_cline$EN =
-	     WILL_FIRE_RL_rl_cache_refill_req_loop ||
-	     WILL_FIRE_RL_rl_start_cache_refill ;
-
-  // register rg_requesting_cline
-  always@(WILL_FIRE_RL_rl_cache_refill_req_loop or
-	  rg_req_byte_in_cline or
-	  WILL_FIRE_RL_rl_start_reset or WILL_FIRE_RL_rl_start_cache_refill)
-  begin
-    case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_rl_cache_refill_req_loop:
-	  rg_requesting_cline$D_IN = rg_req_byte_in_cline != 64'd56;
-      WILL_FIRE_RL_rl_start_reset: rg_requesting_cline$D_IN = 1'd0;
-      WILL_FIRE_RL_rl_start_cache_refill: rg_requesting_cline$D_IN = 1'd1;
-      default: rg_requesting_cline$D_IN = 1'b0 /* unspecified value */ ;
-    endcase
-  end
-  assign rg_requesting_cline$EN =
-	     WILL_FIRE_RL_rl_cache_refill_req_loop ||
-	     WILL_FIRE_RL_rl_start_reset ||
-	     WILL_FIRE_RL_rl_start_cache_refill ;
-
   // register rg_st_amo_val
-  assign rg_st_amo_val$D_IN = EN_req ? req_st_value : new_st_val__h17436 ;
+  assign rg_st_amo_val$D_IN = EN_req ? req_st_value : new_st_val__h17351 ;
   assign rg_st_amo_val$EN =
 	     WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	     NOT_dmem_not_imem_13_OR_soc_map_m_is_mem_addr__ETC___d534 ||
@@ -2182,7 +2102,7 @@ module mkMMU_Cache(CLK,
 	     WILL_FIRE_RL_rl_start_cache_refill || WILL_FIRE_RL_rl_reset ;
   assign ram_state_and_ctag_cset$ENB =
 	     EN_req &&
-	     req_f3_BITS_1_TO_0_00_EQ_0b0_01_OR_req_f3_BITS_ETC___d930 ||
+	     req_f3_BITS_1_TO_0_90_EQ_0b0_91_OR_req_f3_BITS_ETC___d920 ||
 	     WILL_FIRE_RL_rl_rereq ;
 
   // submodule ram_word64_set
@@ -2240,7 +2160,7 @@ module mkMMU_Cache(CLK,
 	     NOT_dmem_not_imem_13_OR_soc_map_m_is_mem_addr__ETC___d309 ;
   assign ram_word64_set$ENB =
 	     EN_req &&
-	     req_f3_BITS_1_TO_0_00_EQ_0b0_01_OR_req_f3_BITS_ETC___d930 ||
+	     req_f3_BITS_1_TO_0_90_EQ_0b0_91_OR_req_f3_BITS_ETC___d920 ||
 	     WILL_FIRE_RL_rl_cache_refill_rsps_loop &&
 	     rg_word64_set_in_cache[2:0] != 3'd7 ||
 	     WILL_FIRE_RL_rl_rereq ||
@@ -2254,10 +2174,10 @@ module mkMMU_Cache(CLK,
   // remaining internal signals
   assign IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_1_EL_ETC___d271 =
 	     (rg_addr[2:0] == 3'h0) ? 64'd1 : 64'd0 ;
-  assign IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_IF_r_ETC___d810 =
-	     (rg_addr[2:0] == 3'h0) ? ld_val__h24581 : 64'd0 ;
+  assign IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_IF_r_ETC___d800 =
+	     (rg_addr[2:0] == 3'h0) ? ld_val__h24158 : 64'd0 ;
   assign IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_ram__ETC___d257 =
-	     (rg_addr[2:0] == 3'h0) ? word64__h5366 : 64'd0 ;
+	     (rg_addr[2:0] == 3'h0) ? word64__h5281 : 64'd0 ;
   assign IF_rg_f3_38_EQ_0b10_44_THEN_SEXT_rg_st_amo_val_ETC___d366 =
 	     (rg_f3 == 3'b010) ?
 	       { {32{rg_st_amo_val_BITS_31_TO_0__q31[31]}},
@@ -2279,8 +2199,8 @@ module mkMMU_Cache(CLK,
   assign IF_rg_op_4_EQ_1_2_OR_rg_op_4_EQ_2_6_AND_rg_amo_ETC___d466 =
 	     (rg_op == 2'd1 ||
 	      rg_op == 2'd2 && rg_amo_funct7[6:2] == 5'b00011) ?
-	       mem_req_wr_data_wdata__h16925 :
-	       mem_req_wr_data_wdata__h20422 ;
+	       mem_req_wr_data_wdata__h16835 :
+	       mem_req_wr_data_wdata__h20332 ;
   assign IF_rg_op_4_EQ_1_2_OR_rg_op_4_EQ_2_6_AND_rg_amo_ETC___d78 =
 	     (rg_op == 2'd1 ||
 	      rg_op == 2'd2 && rg_amo_funct7[6:2] == 5'b00011) ?
@@ -2290,7 +2210,7 @@ module mkMMU_Cache(CLK,
 	       !master_xactor_crg_wr_addr_full$port2__read &&
 	       !master_xactor_crg_wr_data_full$port2__read ;
   assign NOT_cfg_verbosity_read__0_ULE_1_1___d12 = cfg_verbosity > 4'd1 ;
-  assign NOT_cfg_verbosity_read__0_ULE_2_53___d554 = cfg_verbosity > 4'd2 ;
+  assign NOT_cfg_verbosity_read__0_ULE_2_54___d555 = cfg_verbosity > 4'd2 ;
   assign NOT_dmem_not_imem_13_OR_soc_map_m_is_mem_addr__ETC___d298 =
 	     (!dmem_not_imem || soc_map$m_is_mem_addr) && rg_op != 2'd0 &&
 	     (rg_op != 2'd2 || rg_amo_funct7[6:2] != 5'b00010) &&
@@ -2339,7 +2259,7 @@ module mkMMU_Cache(CLK,
 	     rg_op == 2'd2 &&
 	     rg_amo_funct7[6:2] == 5'b00010 &&
 	     rg_addr_0_EQ_rg_lrsc_pa_8___d117 ;
-  assign NOT_req_f3_BITS_1_TO_0_00_EQ_0b0_01_02_AND_NOT_ETC___d921 =
+  assign NOT_req_f3_BITS_1_TO_0_90_EQ_0b0_91_92_AND_NOT_ETC___d911 =
 	     req_f3[1:0] != 2'b0 && (req_f3[1:0] != 2'b01 || req_addr[0]) &&
 	     (req_f3[1:0] != 2'b10 || req_addr[1:0] != 2'b0) &&
 	     (req_f3[1:0] != 2'b11 || req_addr[2:0] != 3'b0) ;
@@ -2438,45 +2358,44 @@ module mkMMU_Cache(CLK,
 	     (rg_op != 2'd2 || rg_amo_funct7[6:2] != 5'b00011 ||
 	      rg_lrsc_valid && rg_lrsc_pa_8_EQ_rg_addr_0___d59) &&
 	     ctr_wr_rsps_pending_crg == 4'd15 ;
-  assign _theResult___fst__h16827 = rg_st_amo_val << shift_bits__h20218 ;
-  assign _theResult___fst__h20354 = new_st_val__h17436 << shift_bits__h20218 ;
-  assign _theResult___fst__h26121 = rg_st_amo_val << shift_bits__h27489 ;
-  assign _theResult___fst__h27625 = st_val__h27433 << shift_bits__h27489 ;
-  assign access_exc_code__h2987 =
+  assign _theResult___snd_fst__h16843 = rg_st_amo_val << shift_bits__h20133 ;
+  assign _theResult___snd_fst__h20340 =
+	     new_st_val__h17351 << shift_bits__h20133 ;
+  assign _theResult___snd_fst__h25769 = rg_st_amo_val << shift_bits__h27066 ;
+  assign _theResult___snd_fst__h27273 = st_val__h27010 << shift_bits__h27066 ;
+  assign access_exc_code__h2925 =
 	     dmem_not_imem ?
 	       ((rg_op == 2'd0 ||
 		 rg_op == 2'd2 && rg_amo_funct7[6:2] == 5'b00010) ?
 		  4'd5 :
 		  4'd7) :
 	       4'd1 ;
-  assign b__h21020 =
+  assign b__h20935 =
 	     ctr_wr_rsps_pending_crg$EN_port0__write ?
 	       ctr_wr_rsps_pending_crg$port0__write_1 :
 	       ctr_wr_rsps_pending_crg ;
-  assign cline_addr__h21934 = { rg_pa[63:6], 6'd0 } ;
-  assign cline_fabric_addr__h21935 =
-	     cline_addr__h21934 | rg_req_byte_in_cline ;
+  assign cline_fabric_addr__h21034 = { rg_pa[63:6], 6'd0 } ;
   assign dmem_not_imem_AND_NOT_soc_map_m_is_mem_addr_rg_ETC___d80 =
 	     dmem_not_imem && !soc_map$m_is_mem_addr || rg_op == 2'd0 ||
 	     rg_op == 2'd2 && rg_amo_funct7[6:2] == 5'b00010 ||
 	     IF_rg_op_4_EQ_1_2_OR_rg_op_4_EQ_2_6_AND_rg_amo_ETC___d78 ;
-  assign ld_val4581_BITS_15_TO_0__q36 = ld_val__h24581[15:0] ;
-  assign ld_val4581_BITS_15_TO_8__q38 = ld_val__h24581[15:8] ;
-  assign ld_val4581_BITS_23_TO_16__q39 = ld_val__h24581[23:16] ;
-  assign ld_val4581_BITS_31_TO_0__q37 = ld_val__h24581[31:0] ;
-  assign ld_val4581_BITS_31_TO_16__q40 = ld_val__h24581[31:16] ;
-  assign ld_val4581_BITS_31_TO_24__q41 = ld_val__h24581[31:24] ;
-  assign ld_val4581_BITS_39_TO_32__q42 = ld_val__h24581[39:32] ;
-  assign ld_val4581_BITS_47_TO_32__q43 = ld_val__h24581[47:32] ;
-  assign ld_val4581_BITS_47_TO_40__q45 = ld_val__h24581[47:40] ;
-  assign ld_val4581_BITS_55_TO_48__q46 = ld_val__h24581[55:48] ;
-  assign ld_val4581_BITS_63_TO_32__q44 = ld_val__h24581[63:32] ;
-  assign ld_val4581_BITS_63_TO_48__q47 = ld_val__h24581[63:48] ;
-  assign ld_val4581_BITS_63_TO_56__q48 = ld_val__h24581[63:56] ;
-  assign ld_val4581_BITS_7_TO_0__q35 = ld_val__h24581[7:0] ;
-  assign lrsc_result__h13216 =
+  assign ld_val4158_BITS_15_TO_0__q36 = ld_val__h24158[15:0] ;
+  assign ld_val4158_BITS_15_TO_8__q38 = ld_val__h24158[15:8] ;
+  assign ld_val4158_BITS_23_TO_16__q39 = ld_val__h24158[23:16] ;
+  assign ld_val4158_BITS_31_TO_0__q37 = ld_val__h24158[31:0] ;
+  assign ld_val4158_BITS_31_TO_16__q40 = ld_val__h24158[31:16] ;
+  assign ld_val4158_BITS_31_TO_24__q41 = ld_val__h24158[31:24] ;
+  assign ld_val4158_BITS_39_TO_32__q42 = ld_val__h24158[39:32] ;
+  assign ld_val4158_BITS_47_TO_32__q43 = ld_val__h24158[47:32] ;
+  assign ld_val4158_BITS_47_TO_40__q45 = ld_val__h24158[47:40] ;
+  assign ld_val4158_BITS_55_TO_48__q46 = ld_val__h24158[55:48] ;
+  assign ld_val4158_BITS_63_TO_32__q44 = ld_val__h24158[63:32] ;
+  assign ld_val4158_BITS_63_TO_48__q47 = ld_val__h24158[63:48] ;
+  assign ld_val4158_BITS_63_TO_56__q48 = ld_val__h24158[63:56] ;
+  assign ld_val4158_BITS_7_TO_0__q35 = ld_val__h24158[7:0] ;
+  assign lrsc_result__h13131 =
 	     !rg_lrsc_valid || !rg_lrsc_pa_8_EQ_rg_addr_0___d59 ;
-  assign master_xactor_crg_rd_data_full_port1__read__63_ETC___d733 =
+  assign master_xactor_crg_rd_data_full_port1__read__51_ETC___d723 =
 	     master_xactor_crg_rd_data_full$port1__read &&
 	     (master_xactor_rg_rd_data[2:1] != 2'b0 ||
 	      !master_xactor_crg_wr_addr_full$port2__read &&
@@ -2509,59 +2428,59 @@ module mkMMU_Cache(CLK,
 	     master_xactor_rg_rd_data[66:51] ;
   assign master_xactor_rg_rd_data_BITS_66_TO_59__q14 =
 	     master_xactor_rg_rd_data[66:59] ;
-  assign new_st_val__h17436 =
+  assign new_st_val__h17351 =
 	     (rg_f3 == 3'b010) ?
-	       new_st_val__h17718 :
-	       _theResult_____2__h17714 ;
-  assign new_st_val__h17718 = { 32'd0, _theResult_____2__h17714[31:0] } ;
-  assign new_st_val__h17809 =
+	       new_st_val__h17633 :
+	       _theResult_____2__h17629 ;
+  assign new_st_val__h17633 = { 32'd0, _theResult_____2__h17629[31:0] } ;
+  assign new_st_val__h17724 =
 	     IF_rg_f3_38_EQ_0b10_44_THEN_SEXT_IF_rg_f3_38_E_ETC___d302 +
 	     IF_rg_f3_38_EQ_0b10_44_THEN_SEXT_rg_st_amo_val_ETC___d366 ;
-  assign new_st_val__h18789 = w1__h17706 ^ w2__h27709 ;
-  assign new_st_val__h18793 = w1__h17706 & w2__h27709 ;
-  assign new_st_val__h18797 = w1__h17706 | w2__h27709 ;
-  assign new_st_val__h18801 =
-	     (w1__h17706 < w2__h27709) ? w1__h17706 : w2__h27709 ;
-  assign new_st_val__h18806 =
-	     (w1__h17706 <= w2__h27709) ? w2__h27709 : w1__h17706 ;
-  assign new_st_val__h18812 =
+  assign new_st_val__h18704 = w1__h17621 ^ w2__h27284 ;
+  assign new_st_val__h18708 = w1__h17621 & w2__h27284 ;
+  assign new_st_val__h18712 = w1__h17621 | w2__h27284 ;
+  assign new_st_val__h18716 =
+	     (w1__h17621 < w2__h27284) ? w1__h17621 : w2__h27284 ;
+  assign new_st_val__h18721 =
+	     (w1__h17621 <= w2__h27284) ? w2__h27284 : w1__h17621 ;
+  assign new_st_val__h18727 =
 	     ((IF_rg_f3_38_EQ_0b10_44_THEN_SEXT_IF_rg_f3_38_E_ETC___d302 ^
 	       64'h8000000000000000) <
 	      (IF_rg_f3_38_EQ_0b10_44_THEN_SEXT_rg_st_amo_val_ETC___d366 ^
 	       64'h8000000000000000)) ?
-	       w1__h17706 :
-	       w2__h27709 ;
-  assign new_st_val__h18817 =
+	       w1__h17621 :
+	       w2__h27284 ;
+  assign new_st_val__h18732 =
 	     ((IF_rg_f3_38_EQ_0b10_44_THEN_SEXT_IF_rg_f3_38_E_ETC___d302 ^
 	       64'h8000000000000000) <=
 	      (IF_rg_f3_38_EQ_0b10_44_THEN_SEXT_rg_st_amo_val_ETC___d366 ^
 	       64'h8000000000000000)) ?
-	       w2__h27709 :
-	       w1__h17706 ;
-  assign new_st_val__h27719 = { 32'd0, _theResult_____2__h27715[31:0] } ;
-  assign new_st_val__h27810 =
-	     new_ld_val__h27421 +
+	       w2__h27284 :
+	       w1__h17621 ;
+  assign new_st_val__h27294 = { 32'd0, _theResult_____2__h27290[31:0] } ;
+  assign new_st_val__h27385 =
+	     new_ld_val__h26998 +
 	     IF_rg_f3_38_EQ_0b10_44_THEN_SEXT_rg_st_amo_val_ETC___d366 ;
-  assign new_st_val__h29670 = w1__h27707 ^ w2__h27709 ;
-  assign new_st_val__h29674 = w1__h27707 & w2__h27709 ;
-  assign new_st_val__h29678 = w1__h27707 | w2__h27709 ;
-  assign new_st_val__h29682 =
-	     (w1__h27707 < w2__h27709) ? w1__h27707 : w2__h27709 ;
-  assign new_st_val__h29687 =
-	     (w1__h27707 <= w2__h27709) ? w2__h27709 : w1__h27707 ;
-  assign new_st_val__h29693 =
-	     ((new_ld_val__h27421 ^ 64'h8000000000000000) <
+  assign new_st_val__h29245 = w1__h27282 ^ w2__h27284 ;
+  assign new_st_val__h29249 = w1__h27282 & w2__h27284 ;
+  assign new_st_val__h29253 = w1__h27282 | w2__h27284 ;
+  assign new_st_val__h29257 =
+	     (w1__h27282 < w2__h27284) ? w1__h27282 : w2__h27284 ;
+  assign new_st_val__h29262 =
+	     (w1__h27282 <= w2__h27284) ? w2__h27284 : w1__h27282 ;
+  assign new_st_val__h29268 =
+	     ((new_ld_val__h26998 ^ 64'h8000000000000000) <
 	      (IF_rg_f3_38_EQ_0b10_44_THEN_SEXT_rg_st_amo_val_ETC___d366 ^
 	       64'h8000000000000000)) ?
-	       w1__h27707 :
-	       w2__h27709 ;
-  assign new_st_val__h29698 =
-	     ((new_ld_val__h27421 ^ 64'h8000000000000000) <=
+	       w1__h27282 :
+	       w2__h27284 ;
+  assign new_st_val__h29273 =
+	     ((new_ld_val__h26998 ^ 64'h8000000000000000) <=
 	      (IF_rg_f3_38_EQ_0b10_44_THEN_SEXT_rg_st_amo_val_ETC___d366 ^
 	       64'h8000000000000000)) ?
-	       w2__h27709 :
-	       w1__h27707 ;
-  assign new_value547_BITS_31_TO_0__q30 = new_value__h5547[31:0] ;
+	       w2__h27284 :
+	       w1__h27282 ;
+  assign new_value462_BITS_31_TO_0__q30 = new_value__h5462[31:0] ;
   assign ram_state_and_ctag_cset_b_read__9_BITS_51_TO_0_ETC___d74 =
 	     ram_state_and_ctag_cset$DOB[51:0] == rg_addr[63:12] ;
   assign ram_state_and_ctag_cset_b_read__9_BIT_52_0_AND_ETC___d120 =
@@ -2570,178 +2489,178 @@ module mkMMU_Cache(CLK,
 	     rg_op == 2'd2 &&
 	     rg_amo_funct7[6:2] == 5'b00010 ||
 	     NOT_ram_state_and_ctag_cset_b_read__9_BIT_52_0_ETC___d119 ;
-  assign req_f3_BITS_1_TO_0_00_EQ_0b0_01_OR_req_f3_BITS_ETC___d930 =
+  assign req_f3_BITS_1_TO_0_90_EQ_0b0_91_OR_req_f3_BITS_ETC___d920 =
 	     req_f3[1:0] == 2'b0 || req_f3[1:0] == 2'b01 && !req_addr[0] ||
 	     req_f3[1:0] == 2'b10 && req_addr[1:0] == 2'b0 ||
 	     req_f3[1:0] == 2'b11 && req_addr[2:0] == 3'b0 ;
-  assign result__h11956 =
-	     { {56{word64366_BITS_15_TO_8__q18[7]}},
-	       word64366_BITS_15_TO_8__q18 } ;
-  assign result__h11984 =
-	     { {56{word64366_BITS_23_TO_16__q19[7]}},
-	       word64366_BITS_23_TO_16__q19 } ;
-  assign result__h12012 =
-	     { {56{word64366_BITS_31_TO_24__q21[7]}},
-	       word64366_BITS_31_TO_24__q21 } ;
-  assign result__h12040 =
-	     { {56{word64366_BITS_39_TO_32__q22[7]}},
-	       word64366_BITS_39_TO_32__q22 } ;
-  assign result__h12068 =
-	     { {56{word64366_BITS_47_TO_40__q25[7]}},
-	       word64366_BITS_47_TO_40__q25 } ;
-  assign result__h12096 =
-	     { {56{word64366_BITS_55_TO_48__q26[7]}},
-	       word64366_BITS_55_TO_48__q26 } ;
-  assign result__h12124 =
-	     { {56{word64366_BITS_63_TO_56__q28[7]}},
-	       word64366_BITS_63_TO_56__q28 } ;
-  assign result__h12169 = { 56'd0, word64__h5366[7:0] } ;
-  assign result__h12197 = { 56'd0, word64__h5366[15:8] } ;
-  assign result__h12225 = { 56'd0, word64__h5366[23:16] } ;
-  assign result__h12253 = { 56'd0, word64__h5366[31:24] } ;
-  assign result__h12281 = { 56'd0, word64__h5366[39:32] } ;
-  assign result__h12309 = { 56'd0, word64__h5366[47:40] } ;
-  assign result__h12337 = { 56'd0, word64__h5366[55:48] } ;
-  assign result__h12365 = { 56'd0, word64__h5366[63:56] } ;
-  assign result__h12410 =
-	     { {48{word64366_BITS_15_TO_0__q16[15]}},
-	       word64366_BITS_15_TO_0__q16 } ;
-  assign result__h12438 =
-	     { {48{word64366_BITS_31_TO_16__q20[15]}},
-	       word64366_BITS_31_TO_16__q20 } ;
-  assign result__h12466 =
-	     { {48{word64366_BITS_47_TO_32__q23[15]}},
-	       word64366_BITS_47_TO_32__q23 } ;
-  assign result__h12494 =
-	     { {48{word64366_BITS_63_TO_48__q27[15]}},
-	       word64366_BITS_63_TO_48__q27 } ;
-  assign result__h12535 = { 48'd0, word64__h5366[15:0] } ;
-  assign result__h12563 = { 48'd0, word64__h5366[31:16] } ;
-  assign result__h12591 = { 48'd0, word64__h5366[47:32] } ;
-  assign result__h12619 = { 48'd0, word64__h5366[63:48] } ;
-  assign result__h12660 =
-	     { {32{word64366_BITS_31_TO_0__q17[31]}},
-	       word64366_BITS_31_TO_0__q17 } ;
-  assign result__h12688 =
-	     { {32{word64366_BITS_63_TO_32__q24[31]}},
-	       word64366_BITS_63_TO_32__q24 } ;
-  assign result__h12727 = { 32'd0, word64__h5366[31:0] } ;
-  assign result__h12755 = { 32'd0, word64__h5366[63:32] } ;
-  assign result__h24641 =
+  assign result__h11871 =
+	     { {56{word64281_BITS_15_TO_8__q18[7]}},
+	       word64281_BITS_15_TO_8__q18 } ;
+  assign result__h11899 =
+	     { {56{word64281_BITS_23_TO_16__q19[7]}},
+	       word64281_BITS_23_TO_16__q19 } ;
+  assign result__h11927 =
+	     { {56{word64281_BITS_31_TO_24__q21[7]}},
+	       word64281_BITS_31_TO_24__q21 } ;
+  assign result__h11955 =
+	     { {56{word64281_BITS_39_TO_32__q22[7]}},
+	       word64281_BITS_39_TO_32__q22 } ;
+  assign result__h11983 =
+	     { {56{word64281_BITS_47_TO_40__q25[7]}},
+	       word64281_BITS_47_TO_40__q25 } ;
+  assign result__h12011 =
+	     { {56{word64281_BITS_55_TO_48__q26[7]}},
+	       word64281_BITS_55_TO_48__q26 } ;
+  assign result__h12039 =
+	     { {56{word64281_BITS_63_TO_56__q28[7]}},
+	       word64281_BITS_63_TO_56__q28 } ;
+  assign result__h12084 = { 56'd0, word64__h5281[7:0] } ;
+  assign result__h12112 = { 56'd0, word64__h5281[15:8] } ;
+  assign result__h12140 = { 56'd0, word64__h5281[23:16] } ;
+  assign result__h12168 = { 56'd0, word64__h5281[31:24] } ;
+  assign result__h12196 = { 56'd0, word64__h5281[39:32] } ;
+  assign result__h12224 = { 56'd0, word64__h5281[47:40] } ;
+  assign result__h12252 = { 56'd0, word64__h5281[55:48] } ;
+  assign result__h12280 = { 56'd0, word64__h5281[63:56] } ;
+  assign result__h12325 =
+	     { {48{word64281_BITS_15_TO_0__q16[15]}},
+	       word64281_BITS_15_TO_0__q16 } ;
+  assign result__h12353 =
+	     { {48{word64281_BITS_31_TO_16__q20[15]}},
+	       word64281_BITS_31_TO_16__q20 } ;
+  assign result__h12381 =
+	     { {48{word64281_BITS_47_TO_32__q23[15]}},
+	       word64281_BITS_47_TO_32__q23 } ;
+  assign result__h12409 =
+	     { {48{word64281_BITS_63_TO_48__q27[15]}},
+	       word64281_BITS_63_TO_48__q27 } ;
+  assign result__h12450 = { 48'd0, word64__h5281[15:0] } ;
+  assign result__h12478 = { 48'd0, word64__h5281[31:16] } ;
+  assign result__h12506 = { 48'd0, word64__h5281[47:32] } ;
+  assign result__h12534 = { 48'd0, word64__h5281[63:48] } ;
+  assign result__h12575 =
+	     { {32{word64281_BITS_31_TO_0__q17[31]}},
+	       word64281_BITS_31_TO_0__q17 } ;
+  assign result__h12603 =
+	     { {32{word64281_BITS_63_TO_32__q24[31]}},
+	       word64281_BITS_63_TO_32__q24 } ;
+  assign result__h12642 = { 32'd0, word64__h5281[31:0] } ;
+  assign result__h12670 = { 32'd0, word64__h5281[63:32] } ;
+  assign result__h24218 =
 	     { {56{master_xactor_rg_rd_data_BITS_10_TO_3__q1[7]}},
 	       master_xactor_rg_rd_data_BITS_10_TO_3__q1 } ;
-  assign result__h24671 =
+  assign result__h24248 =
 	     { {56{master_xactor_rg_rd_data_BITS_18_TO_11__q4[7]}},
 	       master_xactor_rg_rd_data_BITS_18_TO_11__q4 } ;
-  assign result__h24698 =
+  assign result__h24275 =
 	     { {56{master_xactor_rg_rd_data_BITS_26_TO_19__q5[7]}},
 	       master_xactor_rg_rd_data_BITS_26_TO_19__q5 } ;
-  assign result__h24725 =
+  assign result__h24302 =
 	     { {56{master_xactor_rg_rd_data_BITS_34_TO_27__q7[7]}},
 	       master_xactor_rg_rd_data_BITS_34_TO_27__q7 } ;
-  assign result__h24752 =
+  assign result__h24329 =
 	     { {56{master_xactor_rg_rd_data_BITS_42_TO_35__q8[7]}},
 	       master_xactor_rg_rd_data_BITS_42_TO_35__q8 } ;
-  assign result__h24779 =
+  assign result__h24356 =
 	     { {56{master_xactor_rg_rd_data_BITS_50_TO_43__q11[7]}},
 	       master_xactor_rg_rd_data_BITS_50_TO_43__q11 } ;
-  assign result__h24806 =
+  assign result__h24383 =
 	     { {56{master_xactor_rg_rd_data_BITS_58_TO_51__q12[7]}},
 	       master_xactor_rg_rd_data_BITS_58_TO_51__q12 } ;
-  assign result__h24833 =
+  assign result__h24410 =
 	     { {56{master_xactor_rg_rd_data_BITS_66_TO_59__q14[7]}},
 	       master_xactor_rg_rd_data_BITS_66_TO_59__q14 } ;
-  assign result__h24877 = { 56'd0, master_xactor_rg_rd_data[10:3] } ;
-  assign result__h24904 = { 56'd0, master_xactor_rg_rd_data[18:11] } ;
-  assign result__h24931 = { 56'd0, master_xactor_rg_rd_data[26:19] } ;
-  assign result__h24958 = { 56'd0, master_xactor_rg_rd_data[34:27] } ;
-  assign result__h24985 = { 56'd0, master_xactor_rg_rd_data[42:35] } ;
-  assign result__h25012 = { 56'd0, master_xactor_rg_rd_data[50:43] } ;
-  assign result__h25039 = { 56'd0, master_xactor_rg_rd_data[58:51] } ;
-  assign result__h25066 = { 56'd0, master_xactor_rg_rd_data[66:59] } ;
-  assign result__h25110 =
+  assign result__h24454 = { 56'd0, master_xactor_rg_rd_data[10:3] } ;
+  assign result__h24481 = { 56'd0, master_xactor_rg_rd_data[18:11] } ;
+  assign result__h24508 = { 56'd0, master_xactor_rg_rd_data[26:19] } ;
+  assign result__h24535 = { 56'd0, master_xactor_rg_rd_data[34:27] } ;
+  assign result__h24562 = { 56'd0, master_xactor_rg_rd_data[42:35] } ;
+  assign result__h24589 = { 56'd0, master_xactor_rg_rd_data[50:43] } ;
+  assign result__h24616 = { 56'd0, master_xactor_rg_rd_data[58:51] } ;
+  assign result__h24643 = { 56'd0, master_xactor_rg_rd_data[66:59] } ;
+  assign result__h24687 =
 	     { {48{master_xactor_rg_rd_data_BITS_18_TO_3__q2[15]}},
 	       master_xactor_rg_rd_data_BITS_18_TO_3__q2 } ;
-  assign result__h25137 =
+  assign result__h24714 =
 	     { {48{master_xactor_rg_rd_data_BITS_34_TO_19__q6[15]}},
 	       master_xactor_rg_rd_data_BITS_34_TO_19__q6 } ;
-  assign result__h25164 =
+  assign result__h24741 =
 	     { {48{master_xactor_rg_rd_data_BITS_50_TO_35__q9[15]}},
 	       master_xactor_rg_rd_data_BITS_50_TO_35__q9 } ;
-  assign result__h25191 =
+  assign result__h24768 =
 	     { {48{master_xactor_rg_rd_data_BITS_66_TO_51__q13[15]}},
 	       master_xactor_rg_rd_data_BITS_66_TO_51__q13 } ;
-  assign result__h25231 = { 48'd0, master_xactor_rg_rd_data[18:3] } ;
-  assign result__h25258 = { 48'd0, master_xactor_rg_rd_data[34:19] } ;
-  assign result__h25285 = { 48'd0, master_xactor_rg_rd_data[50:35] } ;
-  assign result__h25312 = { 48'd0, master_xactor_rg_rd_data[66:51] } ;
-  assign result__h25352 =
+  assign result__h24808 = { 48'd0, master_xactor_rg_rd_data[18:3] } ;
+  assign result__h24835 = { 48'd0, master_xactor_rg_rd_data[34:19] } ;
+  assign result__h24862 = { 48'd0, master_xactor_rg_rd_data[50:35] } ;
+  assign result__h24889 = { 48'd0, master_xactor_rg_rd_data[66:51] } ;
+  assign result__h24929 =
 	     { {32{master_xactor_rg_rd_data_BITS_34_TO_3__q3[31]}},
 	       master_xactor_rg_rd_data_BITS_34_TO_3__q3 } ;
-  assign result__h25379 =
+  assign result__h24956 =
 	     { {32{master_xactor_rg_rd_data_BITS_66_TO_35__q10[31]}},
 	       master_xactor_rg_rd_data_BITS_66_TO_35__q10 } ;
-  assign result__h25417 = { 32'd0, master_xactor_rg_rd_data[34:3] } ;
-  assign result__h25444 = { 32'd0, master_xactor_rg_rd_data[66:35] } ;
-  assign result__h27898 =
-	     { {56{ld_val4581_BITS_7_TO_0__q35[7]}},
-	       ld_val4581_BITS_7_TO_0__q35 } ;
-  assign result__h28806 =
-	     { {56{ld_val4581_BITS_15_TO_8__q38[7]}},
-	       ld_val4581_BITS_15_TO_8__q38 } ;
-  assign result__h28834 =
-	     { {56{ld_val4581_BITS_23_TO_16__q39[7]}},
-	       ld_val4581_BITS_23_TO_16__q39 } ;
-  assign result__h28862 =
-	     { {56{ld_val4581_BITS_31_TO_24__q41[7]}},
-	       ld_val4581_BITS_31_TO_24__q41 } ;
-  assign result__h28890 =
-	     { {56{ld_val4581_BITS_39_TO_32__q42[7]}},
-	       ld_val4581_BITS_39_TO_32__q42 } ;
-  assign result__h28918 =
-	     { {56{ld_val4581_BITS_47_TO_40__q45[7]}},
-	       ld_val4581_BITS_47_TO_40__q45 } ;
-  assign result__h28946 =
-	     { {56{ld_val4581_BITS_55_TO_48__q46[7]}},
-	       ld_val4581_BITS_55_TO_48__q46 } ;
-  assign result__h28974 =
-	     { {56{ld_val4581_BITS_63_TO_56__q48[7]}},
-	       ld_val4581_BITS_63_TO_56__q48 } ;
-  assign result__h29019 = { 56'd0, ld_val__h24581[7:0] } ;
-  assign result__h29047 = { 56'd0, ld_val__h24581[15:8] } ;
-  assign result__h29075 = { 56'd0, ld_val__h24581[23:16] } ;
-  assign result__h29103 = { 56'd0, ld_val__h24581[31:24] } ;
-  assign result__h29131 = { 56'd0, ld_val__h24581[39:32] } ;
-  assign result__h29159 = { 56'd0, ld_val__h24581[47:40] } ;
-  assign result__h29187 = { 56'd0, ld_val__h24581[55:48] } ;
-  assign result__h29215 = { 56'd0, ld_val__h24581[63:56] } ;
-  assign result__h29260 =
-	     { {48{ld_val4581_BITS_15_TO_0__q36[15]}},
-	       ld_val4581_BITS_15_TO_0__q36 } ;
-  assign result__h29288 =
-	     { {48{ld_val4581_BITS_31_TO_16__q40[15]}},
-	       ld_val4581_BITS_31_TO_16__q40 } ;
-  assign result__h29316 =
-	     { {48{ld_val4581_BITS_47_TO_32__q43[15]}},
-	       ld_val4581_BITS_47_TO_32__q43 } ;
-  assign result__h29344 =
-	     { {48{ld_val4581_BITS_63_TO_48__q47[15]}},
-	       ld_val4581_BITS_63_TO_48__q47 } ;
-  assign result__h29385 = { 48'd0, ld_val__h24581[15:0] } ;
-  assign result__h29413 = { 48'd0, ld_val__h24581[31:16] } ;
-  assign result__h29441 = { 48'd0, ld_val__h24581[47:32] } ;
-  assign result__h29469 = { 48'd0, ld_val__h24581[63:48] } ;
-  assign result__h29510 =
-	     { {32{ld_val4581_BITS_31_TO_0__q37[31]}},
-	       ld_val4581_BITS_31_TO_0__q37 } ;
-  assign result__h29538 =
-	     { {32{ld_val4581_BITS_63_TO_32__q44[31]}},
-	       ld_val4581_BITS_63_TO_32__q44 } ;
-  assign result__h29577 = { 32'd0, ld_val__h24581[31:0] } ;
-  assign result__h29605 = { 32'd0, ld_val__h24581[63:32] } ;
-  assign result__h5600 =
-	     { {56{word64366_BITS_7_TO_0__q15[7]}},
-	       word64366_BITS_7_TO_0__q15 } ;
+  assign result__h24994 = { 32'd0, master_xactor_rg_rd_data[34:3] } ;
+  assign result__h25021 = { 32'd0, master_xactor_rg_rd_data[66:35] } ;
+  assign result__h27473 =
+	     { {56{ld_val4158_BITS_7_TO_0__q35[7]}},
+	       ld_val4158_BITS_7_TO_0__q35 } ;
+  assign result__h28381 =
+	     { {56{ld_val4158_BITS_15_TO_8__q38[7]}},
+	       ld_val4158_BITS_15_TO_8__q38 } ;
+  assign result__h28409 =
+	     { {56{ld_val4158_BITS_23_TO_16__q39[7]}},
+	       ld_val4158_BITS_23_TO_16__q39 } ;
+  assign result__h28437 =
+	     { {56{ld_val4158_BITS_31_TO_24__q41[7]}},
+	       ld_val4158_BITS_31_TO_24__q41 } ;
+  assign result__h28465 =
+	     { {56{ld_val4158_BITS_39_TO_32__q42[7]}},
+	       ld_val4158_BITS_39_TO_32__q42 } ;
+  assign result__h28493 =
+	     { {56{ld_val4158_BITS_47_TO_40__q45[7]}},
+	       ld_val4158_BITS_47_TO_40__q45 } ;
+  assign result__h28521 =
+	     { {56{ld_val4158_BITS_55_TO_48__q46[7]}},
+	       ld_val4158_BITS_55_TO_48__q46 } ;
+  assign result__h28549 =
+	     { {56{ld_val4158_BITS_63_TO_56__q48[7]}},
+	       ld_val4158_BITS_63_TO_56__q48 } ;
+  assign result__h28594 = { 56'd0, ld_val__h24158[7:0] } ;
+  assign result__h28622 = { 56'd0, ld_val__h24158[15:8] } ;
+  assign result__h28650 = { 56'd0, ld_val__h24158[23:16] } ;
+  assign result__h28678 = { 56'd0, ld_val__h24158[31:24] } ;
+  assign result__h28706 = { 56'd0, ld_val__h24158[39:32] } ;
+  assign result__h28734 = { 56'd0, ld_val__h24158[47:40] } ;
+  assign result__h28762 = { 56'd0, ld_val__h24158[55:48] } ;
+  assign result__h28790 = { 56'd0, ld_val__h24158[63:56] } ;
+  assign result__h28835 =
+	     { {48{ld_val4158_BITS_15_TO_0__q36[15]}},
+	       ld_val4158_BITS_15_TO_0__q36 } ;
+  assign result__h28863 =
+	     { {48{ld_val4158_BITS_31_TO_16__q40[15]}},
+	       ld_val4158_BITS_31_TO_16__q40 } ;
+  assign result__h28891 =
+	     { {48{ld_val4158_BITS_47_TO_32__q43[15]}},
+	       ld_val4158_BITS_47_TO_32__q43 } ;
+  assign result__h28919 =
+	     { {48{ld_val4158_BITS_63_TO_48__q47[15]}},
+	       ld_val4158_BITS_63_TO_48__q47 } ;
+  assign result__h28960 = { 48'd0, ld_val__h24158[15:0] } ;
+  assign result__h28988 = { 48'd0, ld_val__h24158[31:16] } ;
+  assign result__h29016 = { 48'd0, ld_val__h24158[47:32] } ;
+  assign result__h29044 = { 48'd0, ld_val__h24158[63:48] } ;
+  assign result__h29085 =
+	     { {32{ld_val4158_BITS_31_TO_0__q37[31]}},
+	       ld_val4158_BITS_31_TO_0__q37 } ;
+  assign result__h29113 =
+	     { {32{ld_val4158_BITS_63_TO_32__q44[31]}},
+	       ld_val4158_BITS_63_TO_32__q44 } ;
+  assign result__h29152 = { 32'd0, ld_val__h24158[31:0] } ;
+  assign result__h29180 = { 32'd0, ld_val__h24158[63:32] } ;
+  assign result__h5515 =
+	     { {56{word64281_BITS_7_TO_0__q15[7]}},
+	       word64281_BITS_7_TO_0__q15 } ;
   assign rg_addr_0_EQ_rg_lrsc_pa_8___d117 = rg_addr == rg_lrsc_pa ;
   assign rg_amo_funct7_7_BITS_6_TO_2_8_EQ_0b10_9_AND_NO_ETC___d292 =
 	     rg_amo_funct7[6:2] == 5'b00010 &&
@@ -2770,7 +2689,7 @@ module mkMMU_Cache(CLK,
   assign rg_op_4_EQ_0_5_OR_rg_op_4_EQ_2_6_AND_rg_amo_fu_ETC___d136 =
 	     rg_op_4_EQ_0_5_OR_rg_op_4_EQ_2_6_AND_rg_amo_fu_ETC___d133 ||
 	     rg_op == 2'd2 && rg_amo_funct7[6:2] == 5'b00011 &&
-	     lrsc_result__h13216 ;
+	     lrsc_result__h13131 ;
   assign rg_op_4_EQ_0_5_OR_rg_op_4_EQ_2_6_AND_rg_amo_fu_ETC___d275 =
 	     (rg_op == 2'd0 ||
 	      rg_op == 2'd2 && rg_amo_funct7[6:2] == 5'b00010) &&
@@ -2804,254 +2723,254 @@ module mkMMU_Cache(CLK,
 	      rg_lrsc_valid && rg_lrsc_pa_8_EQ_rg_addr_0___d59) ;
   assign rg_op_4_EQ_2_6_AND_rg_amo_funct7_7_BITS_6_TO_2_ETC___d513 =
 	     rg_op == 2'd2 && rg_amo_funct7[6:2] == 5'b00011 &&
-	     lrsc_result__h13216 &&
+	     lrsc_result__h13131 &&
 	     NOT_cfg_verbosity_read__0_ULE_1_1___d12 ;
   assign rg_op_4_EQ_2_6_AND_rg_amo_funct7_7_BITS_6_TO_2_ETC___d68 =
 	     rg_op == 2'd2 && rg_amo_funct7[6:2] == 5'b00011 &&
-	     lrsc_result__h13216 ||
+	     lrsc_result__h13131 ||
 	     !master_xactor_crg_wr_addr_full$port2__read &&
 	     !master_xactor_crg_wr_data_full$port2__read ;
   assign rg_st_amo_val_BITS_31_TO_0__q31 = rg_st_amo_val[31:0] ;
-  assign rg_state_EQ_13_00_AND_rg_op_4_EQ_0_5_OR_rg_op__ETC___d602 =
+  assign rg_state_EQ_13_90_AND_rg_op_4_EQ_0_5_OR_rg_op__ETC___d592 =
 	     rg_state == 5'd13 &&
 	     (rg_op == 2'd0 ||
 	      rg_op == 2'd2 && rg_amo_funct7[6:2] == 5'b00010) &&
-	     b__h21020 == 4'd0 ;
+	     b__h20935 == 4'd0 ;
   assign rg_state_EQ_3_1_AND_NOT_rg_op_4_EQ_0_5_2_AND_N_ETC___d90 =
 	     rg_state == 5'd3 &&
 	     (rg_op != 2'd0 &&
 	      (rg_op != 2'd2 || rg_amo_funct7[6:2] != 5'b00010) ||
 	      crg_sb_to_load_delay$port0__write_1 == 11'd0) ;
-  assign shift_bits__h20218 = { rg_addr[2:0], 3'b0 } ;
-  assign shift_bits__h27489 = { rg_pa[2:0], 3'b0 } ;
-  assign st_val__h27433 =
+  assign shift_bits__h20133 = { rg_addr[2:0], 3'b0 } ;
+  assign shift_bits__h27066 = { rg_pa[2:0], 3'b0 } ;
+  assign st_val__h27010 =
 	     (rg_f3 == 3'b010) ?
-	       new_st_val__h27719 :
-	       _theResult_____2__h27715 ;
-  assign strobe64__h20353 = 8'b00000001 << rg_addr[2:0] ;
-  assign strobe64__h20356 = 8'b00000011 << rg_addr[2:0] ;
-  assign strobe64__h20359 = 8'b00001111 << rg_addr[2:0] ;
-  assign strobe64__h27624 = 8'b00000001 << rg_pa[2:0] ;
-  assign strobe64__h27627 = 8'b00000011 << rg_pa[2:0] ;
-  assign strobe64__h27630 = 8'b00001111 << rg_pa[2:0] ;
-  assign w17703_BITS_31_TO_0__q50 = w1__h27703[31:0] ;
-  assign w1___1__h17777 = { 32'd0, new_value__h5547[31:0] } ;
-  assign w1___1__h27778 = { 32'd0, w1__h27703[31:0] } ;
-  assign w2___1__h27779 = { 32'd0, rg_st_amo_val[31:0] } ;
-  assign w2__h27709 = (rg_f3 == 3'b010) ? w2___1__h27779 : rg_st_amo_val ;
-  assign word64366_BITS_15_TO_0__q16 = word64__h5366[15:0] ;
-  assign word64366_BITS_15_TO_8__q18 = word64__h5366[15:8] ;
-  assign word64366_BITS_23_TO_16__q19 = word64__h5366[23:16] ;
-  assign word64366_BITS_31_TO_0__q17 = word64__h5366[31:0] ;
-  assign word64366_BITS_31_TO_16__q20 = word64__h5366[31:16] ;
-  assign word64366_BITS_31_TO_24__q21 = word64__h5366[31:24] ;
-  assign word64366_BITS_39_TO_32__q22 = word64__h5366[39:32] ;
-  assign word64366_BITS_47_TO_32__q23 = word64__h5366[47:32] ;
-  assign word64366_BITS_47_TO_40__q25 = word64__h5366[47:40] ;
-  assign word64366_BITS_55_TO_48__q26 = word64__h5366[55:48] ;
-  assign word64366_BITS_63_TO_32__q24 = word64__h5366[63:32] ;
-  assign word64366_BITS_63_TO_48__q27 = word64__h5366[63:48] ;
-  assign word64366_BITS_63_TO_56__q28 = word64__h5366[63:56] ;
-  assign word64366_BITS_7_TO_0__q15 = word64__h5366[7:0] ;
-  assign word64__h5366 = ram_word64_set$DOB & y__h5636 ;
-  assign x__h13226 = { 63'd0, lrsc_result__h13216 } ;
-  assign y__h5636 =
+	       new_st_val__h27294 :
+	       _theResult_____2__h27290 ;
+  assign strobe64__h20266 = 8'b00000001 << rg_addr[2:0] ;
+  assign strobe64__h20268 = 8'b00000011 << rg_addr[2:0] ;
+  assign strobe64__h20270 = 8'b00001111 << rg_addr[2:0] ;
+  assign strobe64__h27199 = 8'b00000001 << rg_pa[2:0] ;
+  assign strobe64__h27201 = 8'b00000011 << rg_pa[2:0] ;
+  assign strobe64__h27203 = 8'b00001111 << rg_pa[2:0] ;
+  assign w17278_BITS_31_TO_0__q50 = w1__h27278[31:0] ;
+  assign w1___1__h17692 = { 32'd0, new_value__h5462[31:0] } ;
+  assign w1___1__h27353 = { 32'd0, w1__h27278[31:0] } ;
+  assign w2___1__h27354 = { 32'd0, rg_st_amo_val[31:0] } ;
+  assign w2__h27284 = (rg_f3 == 3'b010) ? w2___1__h27354 : rg_st_amo_val ;
+  assign word64281_BITS_15_TO_0__q16 = word64__h5281[15:0] ;
+  assign word64281_BITS_15_TO_8__q18 = word64__h5281[15:8] ;
+  assign word64281_BITS_23_TO_16__q19 = word64__h5281[23:16] ;
+  assign word64281_BITS_31_TO_0__q17 = word64__h5281[31:0] ;
+  assign word64281_BITS_31_TO_16__q20 = word64__h5281[31:16] ;
+  assign word64281_BITS_31_TO_24__q21 = word64__h5281[31:24] ;
+  assign word64281_BITS_39_TO_32__q22 = word64__h5281[39:32] ;
+  assign word64281_BITS_47_TO_32__q23 = word64__h5281[47:32] ;
+  assign word64281_BITS_47_TO_40__q25 = word64__h5281[47:40] ;
+  assign word64281_BITS_55_TO_48__q26 = word64__h5281[55:48] ;
+  assign word64281_BITS_63_TO_32__q24 = word64__h5281[63:32] ;
+  assign word64281_BITS_63_TO_48__q27 = word64__h5281[63:48] ;
+  assign word64281_BITS_63_TO_56__q28 = word64__h5281[63:56] ;
+  assign word64281_BITS_7_TO_0__q15 = word64__h5281[7:0] ;
+  assign word64__h5281 = ram_word64_set$DOB & y__h5551 ;
+  assign x__h13141 = { 63'd0, lrsc_result__h13131 } ;
+  assign y__h5551 =
 	     {64{ram_state_and_ctag_cset$DOB[52] &&
 		 ram_state_and_ctag_cset_b_read__9_BITS_51_TO_0_ETC___d74}} ;
   always@(rg_f3)
   begin
     case (rg_f3[1:0])
-      2'b0: value__h27006 = 3'b0;
-      2'b01: value__h27006 = 3'b001;
-      2'b10: value__h27006 = 3'b010;
-      2'd3: value__h27006 = 3'b011;
+      2'b0: value__h26583 = 3'b0;
+      2'b01: value__h26583 = 3'b001;
+      2'b10: value__h26583 = 3'b010;
+      2'd3: value__h26583 = 3'b011;
     endcase
   end
   always@(rg_f3)
   begin
     case (rg_f3[1:0])
-      2'b0: value__h30032 = 3'b0;
-      2'b01: value__h30032 = 3'b001;
-      2'b10: value__h30032 = 3'b010;
-      2'b11: value__h30032 = 3'b011;
+      2'b0: value__h29609 = 3'b0;
+      2'b01: value__h29609 = 3'b001;
+      2'b10: value__h29609 = 3'b010;
+      2'b11: value__h29609 = 3'b011;
     endcase
   end
-  always@(rg_f3 or strobe64__h27624 or strobe64__h27627 or strobe64__h27630)
+  always@(rg_f3 or strobe64__h20266 or strobe64__h20268 or strobe64__h20270)
   begin
     case (rg_f3[1:0])
-      2'b0: mem_req_wr_data_wstrb__h27694 = strobe64__h27624;
-      2'b01: mem_req_wr_data_wstrb__h27694 = strobe64__h27627;
-      2'b10: mem_req_wr_data_wstrb__h27694 = strobe64__h27630;
-      2'b11: mem_req_wr_data_wstrb__h27694 = 8'b11111111;
+      2'b0: mem_req_wr_data_wstrb__h20333 = strobe64__h20266;
+      2'b01: mem_req_wr_data_wstrb__h20333 = strobe64__h20268;
+      2'b10: mem_req_wr_data_wstrb__h20333 = strobe64__h20270;
+      2'b11: mem_req_wr_data_wstrb__h20333 = 8'b11111111;
     endcase
   end
-  always@(rg_f3 or strobe64__h20353 or strobe64__h20356 or strobe64__h20359)
+  always@(rg_f3 or strobe64__h27199 or strobe64__h27201 or strobe64__h27203)
   begin
     case (rg_f3[1:0])
-      2'b0: mem_req_wr_data_wstrb__h20423 = strobe64__h20353;
-      2'b01: mem_req_wr_data_wstrb__h20423 = strobe64__h20356;
-      2'b10: mem_req_wr_data_wstrb__h20423 = strobe64__h20359;
-      2'b11: mem_req_wr_data_wstrb__h20423 = 8'b11111111;
+      2'b0: mem_req_wr_data_wstrb__h27266 = strobe64__h27199;
+      2'b01: mem_req_wr_data_wstrb__h27266 = strobe64__h27201;
+      2'b10: mem_req_wr_data_wstrb__h27266 = strobe64__h27203;
+      2'b11: mem_req_wr_data_wstrb__h27266 = 8'b11111111;
     endcase
   end
-  always@(rg_f3 or rg_st_amo_val or _theResult___fst__h16827)
-  begin
-    case (rg_f3[1:0])
-      2'b0, 2'b01, 2'b10:
-	  mem_req_wr_data_wdata__h16925 = _theResult___fst__h16827;
-      2'd3: mem_req_wr_data_wdata__h16925 = rg_st_amo_val;
-    endcase
-  end
-  always@(rg_f3 or rg_st_amo_val or _theResult___fst__h26121)
+  always@(rg_f3 or rg_st_amo_val or _theResult___snd_fst__h16843)
   begin
     case (rg_f3[1:0])
       2'b0, 2'b01, 2'b10:
-	  mem_req_wr_data_wdata__h26189 = _theResult___fst__h26121;
-      2'd3: mem_req_wr_data_wdata__h26189 = rg_st_amo_val;
+	  mem_req_wr_data_wdata__h16835 = _theResult___snd_fst__h16843;
+      2'd3: mem_req_wr_data_wdata__h16835 = rg_st_amo_val;
     endcase
   end
-  always@(rg_addr or
-	  result__h12169 or
-	  result__h12197 or
-	  result__h12225 or
-	  result__h12253 or
-	  result__h12281 or
-	  result__h12309 or result__h12337 or result__h12365)
+  always@(rg_f3 or rg_st_amo_val or _theResult___snd_fst__h25769)
   begin
-    case (rg_addr[2:0])
-      3'h0:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d221 =
-	      result__h12169;
-      3'h1:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d221 =
-	      result__h12197;
-      3'h2:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d221 =
-	      result__h12225;
-      3'h3:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d221 =
-	      result__h12253;
-      3'h4:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d221 =
-	      result__h12281;
-      3'h5:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d221 =
-	      result__h12309;
-      3'h6:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d221 =
-	      result__h12337;
-      3'h7:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d221 =
-	      result__h12365;
+    case (rg_f3[1:0])
+      2'b0, 2'b01, 2'b10:
+	  mem_req_wr_data_wdata__h25761 = _theResult___snd_fst__h25769;
+      2'd3: mem_req_wr_data_wdata__h25761 = rg_st_amo_val;
     endcase
   end
   always@(rg_addr or
-	  result__h5600 or
-	  result__h11956 or
-	  result__h11984 or
-	  result__h12012 or
-	  result__h12040 or
-	  result__h12068 or result__h12096 or result__h12124)
+	  result__h5515 or
+	  result__h11871 or
+	  result__h11899 or
+	  result__h11927 or
+	  result__h11955 or
+	  result__h11983 or result__h12011 or result__h12039)
   begin
     case (rg_addr[2:0])
       3'h0:
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d204 =
-	      result__h5600;
+	      result__h5515;
       3'h1:
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d204 =
-	      result__h11956;
+	      result__h11871;
       3'h2:
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d204 =
-	      result__h11984;
+	      result__h11899;
       3'h3:
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d204 =
-	      result__h12012;
+	      result__h11927;
       3'h4:
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d204 =
-	      result__h12040;
+	      result__h11955;
       3'h5:
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d204 =
-	      result__h12068;
+	      result__h11983;
       3'h6:
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d204 =
-	      result__h12096;
+	      result__h12011;
       3'h7:
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d204 =
-	      result__h12124;
+	      result__h12039;
     endcase
   end
   always@(rg_addr or
-	  result__h12410 or
-	  result__h12438 or result__h12466 or result__h12494)
+	  result__h12084 or
+	  result__h12112 or
+	  result__h12140 or
+	  result__h12168 or
+	  result__h12196 or
+	  result__h12224 or result__h12252 or result__h12280)
   begin
     case (rg_addr[2:0])
       3'h0:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d234 =
-	      result__h12410;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d221 =
+	      result__h12084;
+      3'h1:
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d221 =
+	      result__h12112;
       3'h2:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d234 =
-	      result__h12438;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d221 =
+	      result__h12140;
+      3'h3:
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d221 =
+	      result__h12168;
       3'h4:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d234 =
-	      result__h12466;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d221 =
+	      result__h12196;
+      3'h5:
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d221 =
+	      result__h12224;
       3'h6:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d234 =
-	      result__h12494;
-      default: IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d234 =
-		   64'd0;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d221 =
+	      result__h12252;
+      3'h7:
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d221 =
+	      result__h12280;
     endcase
   end
   always@(rg_addr or
-	  result__h12535 or
-	  result__h12563 or result__h12591 or result__h12619)
+	  result__h12450 or
+	  result__h12478 or result__h12506 or result__h12534)
   begin
     case (rg_addr[2:0])
       3'h0:
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d243 =
-	      result__h12535;
+	      result__h12450;
       3'h2:
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d243 =
-	      result__h12563;
+	      result__h12478;
       3'h4:
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d243 =
-	      result__h12591;
+	      result__h12506;
       3'h6:
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d243 =
-	      result__h12619;
+	      result__h12534;
       default: IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d243 =
 		   64'd0;
     endcase
   end
-  always@(rg_addr or result__h12727 or result__h12755)
+  always@(rg_addr or
+	  result__h12325 or
+	  result__h12353 or result__h12381 or result__h12409)
+  begin
+    case (rg_addr[2:0])
+      3'h0:
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d234 =
+	      result__h12325;
+      3'h2:
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d234 =
+	      result__h12353;
+      3'h4:
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d234 =
+	      result__h12381;
+      3'h6:
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d234 =
+	      result__h12409;
+      default: IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d234 =
+		   64'd0;
+    endcase
+  end
+  always@(rg_addr or result__h12642 or result__h12670)
   begin
     case (rg_addr[2:0])
       3'h0:
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d255 =
-	      result__h12727;
+	      result__h12642;
       3'h4:
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d255 =
-	      result__h12755;
+	      result__h12670;
       default: IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d255 =
 		   64'd0;
     endcase
   end
-  always@(rg_addr or result__h12660 or result__h12688)
+  always@(rg_addr or result__h12575 or result__h12603)
   begin
     case (rg_addr[2:0])
       3'h0:
-	  CASE_rg_addr_BITS_2_TO_0_0x0_result2660_0x4_re_ETC__q29 =
-	      result__h12660;
+	  CASE_rg_addr_BITS_2_TO_0_0x0_result2575_0x4_re_ETC__q29 =
+	      result__h12575;
       3'h4:
-	  CASE_rg_addr_BITS_2_TO_0_0x0_result2660_0x4_re_ETC__q29 =
-	      result__h12688;
-      default: CASE_rg_addr_BITS_2_TO_0_0x0_result2660_0x4_re_ETC__q29 =
+	  CASE_rg_addr_BITS_2_TO_0_0x0_result2575_0x4_re_ETC__q29 =
+	      result__h12603;
+      default: CASE_rg_addr_BITS_2_TO_0_0x0_result2575_0x4_re_ETC__q29 =
 		   64'd0;
     endcase
   end
   always@(rg_f3 or
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d204 or
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d234 or
-	  CASE_rg_addr_BITS_2_TO_0_0x0_result2660_0x4_re_ETC__q29 or
+	  CASE_rg_addr_BITS_2_TO_0_0x0_result2575_0x4_re_ETC__q29 or
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_ram__ETC___d257 or
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d221 or
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d243 or
@@ -3059,33 +2978,33 @@ module mkMMU_Cache(CLK,
   begin
     case (rg_f3)
       3'b0:
-	  new_value__h5547 =
+	  new_value__h5462 =
 	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d204;
       3'b001:
-	  new_value__h5547 =
+	  new_value__h5462 =
 	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d234;
       3'b010:
-	  new_value__h5547 =
-	      CASE_rg_addr_BITS_2_TO_0_0x0_result2660_0x4_re_ETC__q29;
+	  new_value__h5462 =
+	      CASE_rg_addr_BITS_2_TO_0_0x0_result2575_0x4_re_ETC__q29;
       3'b011:
-	  new_value__h5547 =
+	  new_value__h5462 =
 	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_ram__ETC___d257;
       3'b100:
-	  new_value__h5547 =
+	  new_value__h5462 =
 	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d221;
       3'b101:
-	  new_value__h5547 =
+	  new_value__h5462 =
 	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d243;
       3'b110:
-	  new_value__h5547 =
+	  new_value__h5462 =
 	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d255;
-      3'd7: new_value__h5547 = 64'd0;
+      3'd7: new_value__h5462 = 64'd0;
     endcase
   end
   always@(rg_f3 or
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d204 or
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d234 or
-	  w1___1__h17777 or
+	  w1___1__h17692 or
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_ram__ETC___d257 or
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d221 or
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d243 or
@@ -3093,25 +3012,25 @@ module mkMMU_Cache(CLK,
   begin
     case (rg_f3)
       3'b0:
-	  w1__h17706 =
+	  w1__h17621 =
 	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d204;
       3'b001:
-	  w1__h17706 =
+	  w1__h17621 =
 	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d234;
-      3'b010: w1__h17706 = w1___1__h17777;
+      3'b010: w1__h17621 = w1___1__h17692;
       3'b011:
-	  w1__h17706 =
+	  w1__h17621 =
 	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_ram__ETC___d257;
       3'b100:
-	  w1__h17706 =
+	  w1__h17621 =
 	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d221;
       3'b101:
-	  w1__h17706 =
+	  w1__h17621 =
 	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d243;
       3'b110:
-	  w1__h17706 =
+	  w1__h17621 =
 	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d255;
-      3'd7: w1__h17706 = 64'd0;
+      3'd7: w1__h17621 = 64'd0;
     endcase
   end
   always@(rg_addr or ram_word64_set$DOB or rg_st_amo_val)
@@ -3181,7 +3100,7 @@ module mkMMU_Cache(CLK,
   always@(rg_f3 or
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d204 or
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d234 or
-	  new_value547_BITS_31_TO_0__q30 or
+	  new_value462_BITS_31_TO_0__q30 or
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_ram__ETC___d257 or
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d221 or
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d243 or
@@ -3196,8 +3115,8 @@ module mkMMU_Cache(CLK,
 	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d234;
       3'b010:
 	  IF_rg_f3_38_EQ_0b10_44_THEN_SEXT_IF_rg_f3_38_E_ETC___d302 =
-	      { {32{new_value547_BITS_31_TO_0__q30[31]}},
-		new_value547_BITS_31_TO_0__q30 };
+	      { {32{new_value462_BITS_31_TO_0__q30[31]}},
+		new_value462_BITS_31_TO_0__q30 };
       3'b011:
 	  IF_rg_f3_38_EQ_0b10_44_THEN_SEXT_IF_rg_f3_38_E_ETC___d302 =
 	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_ram__ETC___d257;
@@ -3214,96 +3133,96 @@ module mkMMU_Cache(CLK,
     endcase
   end
   always@(rg_amo_funct7 or
-	  new_st_val__h18817 or
-	  new_st_val__h17809 or
-	  w2__h27709 or
-	  new_st_val__h18789 or
-	  new_st_val__h18797 or
-	  new_st_val__h18793 or
-	  new_st_val__h18812 or new_st_val__h18801 or new_st_val__h18806)
+	  new_st_val__h18732 or
+	  new_st_val__h17724 or
+	  w2__h27284 or
+	  new_st_val__h18704 or
+	  new_st_val__h18712 or
+	  new_st_val__h18708 or
+	  new_st_val__h18727 or new_st_val__h18716 or new_st_val__h18721)
   begin
     case (rg_amo_funct7[6:2])
-      5'b0: _theResult_____2__h17714 = new_st_val__h17809;
-      5'b00001: _theResult_____2__h17714 = w2__h27709;
-      5'b00100: _theResult_____2__h17714 = new_st_val__h18789;
-      5'b01000: _theResult_____2__h17714 = new_st_val__h18797;
-      5'b01100: _theResult_____2__h17714 = new_st_val__h18793;
-      5'b10000: _theResult_____2__h17714 = new_st_val__h18812;
-      5'b11000: _theResult_____2__h17714 = new_st_val__h18801;
-      5'b11100: _theResult_____2__h17714 = new_st_val__h18806;
-      default: _theResult_____2__h17714 = new_st_val__h18817;
+      5'b0: _theResult_____2__h17629 = new_st_val__h17724;
+      5'b00001: _theResult_____2__h17629 = w2__h27284;
+      5'b00100: _theResult_____2__h17629 = new_st_val__h18704;
+      5'b01000: _theResult_____2__h17629 = new_st_val__h18712;
+      5'b01100: _theResult_____2__h17629 = new_st_val__h18708;
+      5'b10000: _theResult_____2__h17629 = new_st_val__h18727;
+      5'b11000: _theResult_____2__h17629 = new_st_val__h18716;
+      5'b11100: _theResult_____2__h17629 = new_st_val__h18721;
+      default: _theResult_____2__h17629 = new_st_val__h18732;
     endcase
   end
-  always@(rg_f3 or new_st_val__h17436 or _theResult___fst__h20354)
+  always@(rg_f3 or new_st_val__h17351 or _theResult___snd_fst__h20340)
   begin
     case (rg_f3[1:0])
       2'b0, 2'b01, 2'b10:
-	  mem_req_wr_data_wdata__h20422 = _theResult___fst__h20354;
-      2'd3: mem_req_wr_data_wdata__h20422 = new_st_val__h17436;
+	  mem_req_wr_data_wdata__h20332 = _theResult___snd_fst__h20340;
+      2'd3: mem_req_wr_data_wdata__h20332 = new_st_val__h17351;
     endcase
   end
-  always@(rg_addr or ram_word64_set$DOB or new_st_val__h17436)
+  always@(rg_addr or ram_word64_set$DOB or new_st_val__h17351)
   begin
     case (rg_addr[2:0])
       3'h0:
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_ram__ETC___d425 =
-	      { ram_word64_set$DOB[63:16], new_st_val__h17436[15:0] };
+	      { ram_word64_set$DOB[63:16], new_st_val__h17351[15:0] };
       3'h2:
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_ram__ETC___d425 =
 	      { ram_word64_set$DOB[63:32],
-		new_st_val__h17436[15:0],
+		new_st_val__h17351[15:0],
 		ram_word64_set$DOB[15:0] };
       3'h4:
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_ram__ETC___d425 =
 	      { ram_word64_set$DOB[63:48],
-		new_st_val__h17436[15:0],
+		new_st_val__h17351[15:0],
 		ram_word64_set$DOB[31:0] };
       3'h6:
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_ram__ETC___d425 =
-	      { new_st_val__h17436[15:0], ram_word64_set$DOB[47:0] };
+	      { new_st_val__h17351[15:0], ram_word64_set$DOB[47:0] };
       default: IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_ram__ETC___d425 =
 		   ram_word64_set$DOB;
     endcase
   end
-  always@(rg_addr or ram_word64_set$DOB or new_st_val__h17436)
+  always@(rg_addr or ram_word64_set$DOB or new_st_val__h17351)
   begin
     case (rg_addr[2:0])
       3'h0:
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_ram__ETC___d416 =
-	      { ram_word64_set$DOB[63:8], new_st_val__h17436[7:0] };
+	      { ram_word64_set$DOB[63:8], new_st_val__h17351[7:0] };
       3'h1:
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_ram__ETC___d416 =
 	      { ram_word64_set$DOB[63:16],
-		new_st_val__h17436[7:0],
+		new_st_val__h17351[7:0],
 		ram_word64_set$DOB[7:0] };
       3'h2:
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_ram__ETC___d416 =
 	      { ram_word64_set$DOB[63:24],
-		new_st_val__h17436[7:0],
+		new_st_val__h17351[7:0],
 		ram_word64_set$DOB[15:0] };
       3'h3:
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_ram__ETC___d416 =
 	      { ram_word64_set$DOB[63:32],
-		new_st_val__h17436[7:0],
+		new_st_val__h17351[7:0],
 		ram_word64_set$DOB[23:0] };
       3'h4:
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_ram__ETC___d416 =
 	      { ram_word64_set$DOB[63:40],
-		new_st_val__h17436[7:0],
+		new_st_val__h17351[7:0],
 		ram_word64_set$DOB[31:0] };
       3'h5:
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_ram__ETC___d416 =
 	      { ram_word64_set$DOB[63:48],
-		new_st_val__h17436[7:0],
+		new_st_val__h17351[7:0],
 		ram_word64_set$DOB[39:0] };
       3'h6:
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_ram__ETC___d416 =
 	      { ram_word64_set$DOB[63:56],
-		new_st_val__h17436[7:0],
+		new_st_val__h17351[7:0],
 		ram_word64_set$DOB[47:0] };
       3'h7:
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_ram__ETC___d416 =
-	      { new_st_val__h17436[7:0], ram_word64_set$DOB[55:0] };
+	      { new_st_val__h17351[7:0], ram_word64_set$DOB[55:0] };
     endcase
   end
   always@(rg_addr or ram_word64_set$DOB or rg_st_amo_val)
@@ -3344,455 +3263,455 @@ module mkMMU_Cache(CLK,
     endcase
   end
   always@(rg_addr or
-	  result__h25231 or
-	  result__h25258 or result__h25285 or result__h25312)
+	  result__h24808 or
+	  result__h24835 or result__h24862 or result__h24889)
   begin
     case (rg_addr[2:0])
       3'h0:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d676 =
-	      result__h25231;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d666 =
+	      result__h24808;
       3'h2:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d676 =
-	      result__h25258;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d666 =
+	      result__h24835;
       3'h4:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d676 =
-	      result__h25285;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d666 =
+	      result__h24862;
       3'h6:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d676 =
-	      result__h25312;
-      default: IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d676 =
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d666 =
+	      result__h24889;
+      default: IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d666 =
 		   64'd0;
     endcase
   end
   always@(rg_addr or
-	  result__h25110 or
-	  result__h25137 or result__h25164 or result__h25191)
+	  result__h24687 or
+	  result__h24714 or result__h24741 or result__h24768)
   begin
     case (rg_addr[2:0])
       3'h0:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d668 =
-	      result__h25110;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d658 =
+	      result__h24687;
       3'h2:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d668 =
-	      result__h25137;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d658 =
+	      result__h24714;
       3'h4:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d668 =
-	      result__h25164;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d658 =
+	      result__h24741;
       3'h6:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d668 =
-	      result__h25191;
-      default: IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d668 =
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d658 =
+	      result__h24768;
+      default: IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d658 =
 		   64'd0;
     endcase
   end
   always@(rg_addr or
-	  result__h24641 or
-	  result__h24671 or
-	  result__h24698 or
-	  result__h24725 or
-	  result__h24752 or
-	  result__h24779 or result__h24806 or result__h24833)
+	  result__h24454 or
+	  result__h24481 or
+	  result__h24508 or
+	  result__h24535 or
+	  result__h24562 or
+	  result__h24589 or result__h24616 or result__h24643)
   begin
     case (rg_addr[2:0])
       3'h0:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d640 =
-	      result__h24641;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d646 =
+	      result__h24454;
       3'h1:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d640 =
-	      result__h24671;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d646 =
+	      result__h24481;
       3'h2:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d640 =
-	      result__h24698;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d646 =
+	      result__h24508;
       3'h3:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d640 =
-	      result__h24725;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d646 =
+	      result__h24535;
       3'h4:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d640 =
-	      result__h24752;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d646 =
+	      result__h24562;
       3'h5:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d640 =
-	      result__h24779;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d646 =
+	      result__h24589;
       3'h6:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d640 =
-	      result__h24806;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d646 =
+	      result__h24616;
       3'h7:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d640 =
-	      result__h24833;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d646 =
+	      result__h24643;
     endcase
   end
   always@(rg_addr or
-	  result__h24877 or
-	  result__h24904 or
-	  result__h24931 or
-	  result__h24958 or
-	  result__h24985 or
-	  result__h25012 or result__h25039 or result__h25066)
+	  result__h24218 or
+	  result__h24248 or
+	  result__h24275 or
+	  result__h24302 or
+	  result__h24329 or
+	  result__h24356 or result__h24383 or result__h24410)
   begin
     case (rg_addr[2:0])
       3'h0:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d656 =
-	      result__h24877;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d630 =
+	      result__h24218;
       3'h1:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d656 =
-	      result__h24904;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d630 =
+	      result__h24248;
       3'h2:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d656 =
-	      result__h24931;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d630 =
+	      result__h24275;
       3'h3:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d656 =
-	      result__h24958;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d630 =
+	      result__h24302;
       3'h4:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d656 =
-	      result__h24985;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d630 =
+	      result__h24329;
       3'h5:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d656 =
-	      result__h25012;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d630 =
+	      result__h24356;
       3'h6:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d656 =
-	      result__h25039;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d630 =
+	      result__h24383;
       3'h7:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d656 =
-	      result__h25066;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d630 =
+	      result__h24410;
     endcase
   end
-  always@(rg_addr or result__h25352 or result__h25379)
+  always@(rg_addr or result__h24929 or result__h24956)
   begin
     case (rg_addr[2:0])
       3'h0:
-	  CASE_rg_addr_BITS_2_TO_0_0x0_result5352_0x4_re_ETC__q33 =
-	      result__h25352;
+	  CASE_rg_addr_BITS_2_TO_0_0x0_result4929_0x4_re_ETC__q33 =
+	      result__h24929;
       3'h4:
-	  CASE_rg_addr_BITS_2_TO_0_0x0_result5352_0x4_re_ETC__q33 =
-	      result__h25379;
-      default: CASE_rg_addr_BITS_2_TO_0_0x0_result5352_0x4_re_ETC__q33 =
+	  CASE_rg_addr_BITS_2_TO_0_0x0_result4929_0x4_re_ETC__q33 =
+	      result__h24956;
+      default: CASE_rg_addr_BITS_2_TO_0_0x0_result4929_0x4_re_ETC__q33 =
 		   64'd0;
     endcase
   end
-  always@(rg_addr or result__h25417 or result__h25444)
+  always@(rg_addr or result__h24994 or result__h25021)
   begin
     case (rg_addr[2:0])
       3'h0:
-	  CASE_rg_addr_BITS_2_TO_0_0x0_result5417_0x4_re_ETC__q34 =
-	      result__h25417;
+	  CASE_rg_addr_BITS_2_TO_0_0x0_result4994_0x4_re_ETC__q34 =
+	      result__h24994;
       3'h4:
-	  CASE_rg_addr_BITS_2_TO_0_0x0_result5417_0x4_re_ETC__q34 =
-	      result__h25444;
-      default: CASE_rg_addr_BITS_2_TO_0_0x0_result5417_0x4_re_ETC__q34 =
+	  CASE_rg_addr_BITS_2_TO_0_0x0_result4994_0x4_re_ETC__q34 =
+	      result__h25021;
+      default: CASE_rg_addr_BITS_2_TO_0_0x0_result4994_0x4_re_ETC__q34 =
 		   64'd0;
     endcase
   end
   always@(rg_f3 or
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d640 or
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d668 or
-	  CASE_rg_addr_BITS_2_TO_0_0x0_result5352_0x4_re_ETC__q33 or
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d630 or
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d658 or
+	  CASE_rg_addr_BITS_2_TO_0_0x0_result4929_0x4_re_ETC__q33 or
 	  rg_addr or
 	  master_xactor_rg_rd_data or
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d656 or
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d676 or
-	  CASE_rg_addr_BITS_2_TO_0_0x0_result5417_0x4_re_ETC__q34)
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d646 or
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d666 or
+	  CASE_rg_addr_BITS_2_TO_0_0x0_result4994_0x4_re_ETC__q34)
   begin
     case (rg_f3)
       3'b0:
-	  ld_val__h24581 =
-	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d640;
+	  ld_val__h24158 =
+	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d630;
       3'b001:
-	  ld_val__h24581 =
-	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d668;
+	  ld_val__h24158 =
+	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d658;
       3'b010:
-	  ld_val__h24581 =
-	      CASE_rg_addr_BITS_2_TO_0_0x0_result5352_0x4_re_ETC__q33;
+	  ld_val__h24158 =
+	      CASE_rg_addr_BITS_2_TO_0_0x0_result4929_0x4_re_ETC__q33;
       3'b011:
-	  ld_val__h24581 =
+	  ld_val__h24158 =
 	      (rg_addr[2:0] == 3'h0) ? master_xactor_rg_rd_data[66:3] : 64'd0;
       3'b100:
-	  ld_val__h24581 =
-	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d656;
+	  ld_val__h24158 =
+	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d646;
       3'b101:
-	  ld_val__h24581 =
-	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d676;
+	  ld_val__h24158 =
+	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d666;
       3'b110:
-	  ld_val__h24581 =
-	      CASE_rg_addr_BITS_2_TO_0_0x0_result5417_0x4_re_ETC__q34;
-      3'd7: ld_val__h24581 = 64'd0;
-    endcase
-  end
-  always@(rg_addr or result__h29577 or result__h29605)
-  begin
-    case (rg_addr[2:0])
-      3'h0:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d809 =
-	      result__h29577;
-      3'h4:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d809 =
-	      result__h29605;
-      default: IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d809 =
-		   64'd0;
+	  ld_val__h24158 =
+	      CASE_rg_addr_BITS_2_TO_0_0x0_result4994_0x4_re_ETC__q34;
+      3'd7: ld_val__h24158 = 64'd0;
     endcase
   end
   always@(rg_addr or
-	  result__h29385 or
-	  result__h29413 or result__h29441 or result__h29469)
+	  result__h28960 or
+	  result__h28988 or result__h29016 or result__h29044)
+  begin
+    case (rg_addr[2:0])
+      3'h0:
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d789 =
+	      result__h28960;
+      3'h2:
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d789 =
+	      result__h28988;
+      3'h4:
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d789 =
+	      result__h29016;
+      3'h6:
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d789 =
+	      result__h29044;
+      default: IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d789 =
+		   64'd0;
+    endcase
+  end
+  always@(rg_addr or result__h29152 or result__h29180)
   begin
     case (rg_addr[2:0])
       3'h0:
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d799 =
-	      result__h29385;
-      3'h2:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d799 =
-	      result__h29413;
+	      result__h29152;
       3'h4:
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d799 =
-	      result__h29441;
-      3'h6:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d799 =
-	      result__h29469;
+	      result__h29180;
       default: IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d799 =
 		   64'd0;
     endcase
   end
   always@(rg_addr or
-	  result__h29260 or
-	  result__h29288 or result__h29316 or result__h29344)
+	  result__h28835 or
+	  result__h28863 or result__h28891 or result__h28919)
   begin
     case (rg_addr[2:0])
       3'h0:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d791 =
-	      result__h29260;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d781 =
+	      result__h28835;
       3'h2:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d791 =
-	      result__h29288;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d781 =
+	      result__h28863;
       3'h4:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d791 =
-	      result__h29316;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d781 =
+	      result__h28891;
       3'h6:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d791 =
-	      result__h29344;
-      default: IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d791 =
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d781 =
+	      result__h28919;
+      default: IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d781 =
 		   64'd0;
     endcase
   end
   always@(rg_addr or
-	  result__h29019 or
-	  result__h29047 or
-	  result__h29075 or
-	  result__h29103 or
-	  result__h29131 or
-	  result__h29159 or result__h29187 or result__h29215)
+	  result__h28594 or
+	  result__h28622 or
+	  result__h28650 or
+	  result__h28678 or
+	  result__h28706 or
+	  result__h28734 or result__h28762 or result__h28790)
   begin
     case (rg_addr[2:0])
       3'h0:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d779 =
-	      result__h29019;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d769 =
+	      result__h28594;
       3'h1:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d779 =
-	      result__h29047;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d769 =
+	      result__h28622;
       3'h2:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d779 =
-	      result__h29075;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d769 =
+	      result__h28650;
       3'h3:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d779 =
-	      result__h29103;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d769 =
+	      result__h28678;
       3'h4:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d779 =
-	      result__h29131;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d769 =
+	      result__h28706;
       3'h5:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d779 =
-	      result__h29159;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d769 =
+	      result__h28734;
       3'h6:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d779 =
-	      result__h29187;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d769 =
+	      result__h28762;
       3'h7:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d779 =
-	      result__h29215;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d769 =
+	      result__h28790;
     endcase
   end
   always@(rg_addr or
-	  result__h27898 or
-	  result__h28806 or
-	  result__h28834 or
-	  result__h28862 or
-	  result__h28890 or
-	  result__h28918 or result__h28946 or result__h28974)
+	  result__h27473 or
+	  result__h28381 or
+	  result__h28409 or
+	  result__h28437 or
+	  result__h28465 or
+	  result__h28493 or result__h28521 or result__h28549)
   begin
     case (rg_addr[2:0])
       3'h0:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d763 =
-	      result__h27898;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d753 =
+	      result__h27473;
       3'h1:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d763 =
-	      result__h28806;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d753 =
+	      result__h28381;
       3'h2:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d763 =
-	      result__h28834;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d753 =
+	      result__h28409;
       3'h3:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d763 =
-	      result__h28862;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d753 =
+	      result__h28437;
       3'h4:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d763 =
-	      result__h28890;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d753 =
+	      result__h28465;
       3'h5:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d763 =
-	      result__h28918;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d753 =
+	      result__h28493;
       3'h6:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d763 =
-	      result__h28946;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d753 =
+	      result__h28521;
       3'h7:
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d763 =
-	      result__h28974;
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d753 =
+	      result__h28549;
     endcase
   end
-  always@(rg_addr or result__h29510 or result__h29538)
+  always@(rg_addr or result__h29085 or result__h29113)
   begin
     case (rg_addr[2:0])
       3'h0:
-	  CASE_rg_addr_BITS_2_TO_0_0x0_result9510_0x4_re_ETC__q49 =
-	      result__h29510;
+	  CASE_rg_addr_BITS_2_TO_0_0x0_result9085_0x4_re_ETC__q49 =
+	      result__h29085;
       3'h4:
-	  CASE_rg_addr_BITS_2_TO_0_0x0_result9510_0x4_re_ETC__q49 =
-	      result__h29538;
-      default: CASE_rg_addr_BITS_2_TO_0_0x0_result9510_0x4_re_ETC__q49 =
+	  CASE_rg_addr_BITS_2_TO_0_0x0_result9085_0x4_re_ETC__q49 =
+	      result__h29113;
+      default: CASE_rg_addr_BITS_2_TO_0_0x0_result9085_0x4_re_ETC__q49 =
 		   64'd0;
     endcase
   end
   always@(rg_f3 or
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d763 or
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d791 or
-	  CASE_rg_addr_BITS_2_TO_0_0x0_result9510_0x4_re_ETC__q49 or
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_IF_r_ETC___d810 or
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d779 or
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d799 or
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d809)
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d753 or
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d781 or
+	  CASE_rg_addr_BITS_2_TO_0_0x0_result9085_0x4_re_ETC__q49 or
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_IF_r_ETC___d800 or
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d769 or
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d789 or
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d799)
   begin
     case (rg_f3)
       3'b0:
-	  w1__h27703 =
-	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d763;
+	  w1__h27278 =
+	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d753;
       3'b001:
-	  w1__h27703 =
-	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d791;
+	  w1__h27278 =
+	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d781;
       3'b010:
-	  w1__h27703 =
-	      CASE_rg_addr_BITS_2_TO_0_0x0_result9510_0x4_re_ETC__q49;
+	  w1__h27278 =
+	      CASE_rg_addr_BITS_2_TO_0_0x0_result9085_0x4_re_ETC__q49;
       3'b011:
-	  w1__h27703 =
-	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_IF_r_ETC___d810;
+	  w1__h27278 =
+	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_IF_r_ETC___d800;
       3'b100:
-	  w1__h27703 =
-	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d779;
+	  w1__h27278 =
+	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d769;
       3'b101:
-	  w1__h27703 =
-	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d799;
+	  w1__h27278 =
+	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d789;
       3'b110:
-	  w1__h27703 =
-	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d809;
-      3'd7: w1__h27703 = 64'd0;
+	  w1__h27278 =
+	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d799;
+      3'd7: w1__h27278 = 64'd0;
     endcase
   end
   always@(rg_f3 or
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d763 or
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d791 or
-	  w1___1__h27778 or
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_IF_r_ETC___d810 or
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d779 or
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d799 or
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d809)
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d753 or
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d781 or
+	  w1___1__h27353 or
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_IF_r_ETC___d800 or
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d769 or
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d789 or
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d799)
   begin
     case (rg_f3)
       3'b0:
-	  w1__h27707 =
-	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d763;
+	  w1__h27282 =
+	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d753;
       3'b001:
-	  w1__h27707 =
-	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d791;
-      3'b010: w1__h27707 = w1___1__h27778;
+	  w1__h27282 =
+	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d781;
+      3'b010: w1__h27282 = w1___1__h27353;
       3'b011:
-	  w1__h27707 =
-	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_IF_r_ETC___d810;
+	  w1__h27282 =
+	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_IF_r_ETC___d800;
       3'b100:
-	  w1__h27707 =
-	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d779;
+	  w1__h27282 =
+	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d769;
       3'b101:
-	  w1__h27707 =
-	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d799;
+	  w1__h27282 =
+	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d789;
       3'b110:
-	  w1__h27707 =
-	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d809;
-      3'd7: w1__h27707 = 64'd0;
+	  w1__h27282 =
+	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d799;
+      3'd7: w1__h27282 = 64'd0;
     endcase
   end
   always@(rg_f3 or
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d763 or
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d791 or
-	  w17703_BITS_31_TO_0__q50 or
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_IF_r_ETC___d810 or
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d779 or
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d799 or
-	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d809)
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d753 or
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d781 or
+	  w17278_BITS_31_TO_0__q50 or
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_IF_r_ETC___d800 or
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d769 or
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d789 or
+	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d799)
   begin
     case (rg_f3)
       3'b0:
-	  new_ld_val__h27421 =
-	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d763;
+	  new_ld_val__h26998 =
+	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d753;
       3'b001:
-	  new_ld_val__h27421 =
-	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d791;
+	  new_ld_val__h26998 =
+	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_SEXT_ETC___d781;
       3'b010:
-	  new_ld_val__h27421 =
-	      { {32{w17703_BITS_31_TO_0__q50[31]}},
-		w17703_BITS_31_TO_0__q50 };
+	  new_ld_val__h26998 =
+	      { {32{w17278_BITS_31_TO_0__q50[31]}},
+		w17278_BITS_31_TO_0__q50 };
       3'b011:
-	  new_ld_val__h27421 =
-	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_IF_r_ETC___d810;
+	  new_ld_val__h26998 =
+	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_IF_r_ETC___d800;
       3'b100:
-	  new_ld_val__h27421 =
-	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d779;
+	  new_ld_val__h26998 =
+	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d769;
       3'b101:
-	  new_ld_val__h27421 =
-	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d799;
+	  new_ld_val__h26998 =
+	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d789;
       3'b110:
-	  new_ld_val__h27421 =
-	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d809;
-      3'd7: new_ld_val__h27421 = 64'd0;
+	  new_ld_val__h26998 =
+	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_0_CO_ETC___d799;
+      3'd7: new_ld_val__h26998 = 64'd0;
     endcase
   end
   always@(rg_amo_funct7 or
-	  new_st_val__h29698 or
-	  new_st_val__h27810 or
-	  w2__h27709 or
-	  new_st_val__h29670 or
-	  new_st_val__h29678 or
-	  new_st_val__h29674 or
-	  new_st_val__h29693 or new_st_val__h29682 or new_st_val__h29687)
+	  new_st_val__h29273 or
+	  new_st_val__h27385 or
+	  w2__h27284 or
+	  new_st_val__h29245 or
+	  new_st_val__h29253 or
+	  new_st_val__h29249 or
+	  new_st_val__h29268 or new_st_val__h29257 or new_st_val__h29262)
   begin
     case (rg_amo_funct7[6:2])
-      5'b0: _theResult_____2__h27715 = new_st_val__h27810;
-      5'b00001: _theResult_____2__h27715 = w2__h27709;
-      5'b00100: _theResult_____2__h27715 = new_st_val__h29670;
-      5'b01000: _theResult_____2__h27715 = new_st_val__h29678;
-      5'b01100: _theResult_____2__h27715 = new_st_val__h29674;
-      5'b10000: _theResult_____2__h27715 = new_st_val__h29693;
-      5'b11000: _theResult_____2__h27715 = new_st_val__h29682;
-      5'b11100: _theResult_____2__h27715 = new_st_val__h29687;
-      default: _theResult_____2__h27715 = new_st_val__h29698;
+      5'b0: _theResult_____2__h27290 = new_st_val__h27385;
+      5'b00001: _theResult_____2__h27290 = w2__h27284;
+      5'b00100: _theResult_____2__h27290 = new_st_val__h29245;
+      5'b01000: _theResult_____2__h27290 = new_st_val__h29253;
+      5'b01100: _theResult_____2__h27290 = new_st_val__h29249;
+      5'b10000: _theResult_____2__h27290 = new_st_val__h29268;
+      5'b11000: _theResult_____2__h27290 = new_st_val__h29257;
+      5'b11100: _theResult_____2__h27290 = new_st_val__h29262;
+      default: _theResult_____2__h27290 = new_st_val__h29273;
     endcase
   end
-  always@(rg_f3 or st_val__h27433 or _theResult___fst__h27625)
+  always@(rg_f3 or st_val__h27010 or _theResult___snd_fst__h27273)
   begin
     case (rg_f3[1:0])
       2'b0, 2'b01, 2'b10:
-	  mem_req_wr_data_wdata__h27693 = _theResult___fst__h27625;
-      2'd3: mem_req_wr_data_wdata__h27693 = st_val__h27433;
+	  mem_req_wr_data_wdata__h27265 = _theResult___snd_fst__h27273;
+      2'd3: mem_req_wr_data_wdata__h27265 = st_val__h27010;
     endcase
   end
-  always@(rg_addr or ram_word64_set$DOB or new_st_val__h17436)
+  always@(rg_addr or ram_word64_set$DOB or new_st_val__h17351)
   begin
     case (rg_addr[2:0])
       3'h0:
 	  CASE_rg_addr_BITS_2_TO_0_0x0_ram_word64_setDO_ETC__q51 =
-	      { ram_word64_set$DOB[63:32], new_st_val__h17436[31:0] };
+	      { ram_word64_set$DOB[63:32], new_st_val__h17351[31:0] };
       3'h4:
 	  CASE_rg_addr_BITS_2_TO_0_0x0_ram_word64_setDO_ETC__q51 =
-	      { new_st_val__h17436[31:0], ram_word64_set$DOB[31:0] };
+	      { new_st_val__h17351[31:0], ram_word64_set$DOB[31:0] };
       default: CASE_rg_addr_BITS_2_TO_0_0x0_ram_word64_setDO_ETC__q51 =
 		   ram_word64_set$DOB;
     endcase
@@ -3802,7 +3721,7 @@ module mkMMU_Cache(CLK,
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_ram__ETC___d416 or
 	  IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_ram__ETC___d425 or
 	  CASE_rg_addr_BITS_2_TO_0_0x0_ram_word64_setDO_ETC__q51 or
-	  new_st_val__h17436)
+	  new_st_val__h17351)
   begin
     case (rg_f3)
       3'b0:
@@ -3816,7 +3735,7 @@ module mkMMU_Cache(CLK,
 	      CASE_rg_addr_BITS_2_TO_0_0x0_ram_word64_setDO_ETC__q51;
       3'b011:
 	  IF_rg_f3_38_EQ_0b0_39_THEN_IF_rg_addr_0_BITS_2_ETC___d434 =
-	      new_st_val__h17436;
+	      new_st_val__h17351;
       default: IF_rg_f3_38_EQ_0b0_39_THEN_IF_rg_addr_0_BITS_2_ETC___d434 =
 		   ram_word64_set$DOB;
     endcase
@@ -3825,9 +3744,9 @@ module mkMMU_Cache(CLK,
   begin
     case (rg_f3)
       3'b0, 3'b001, 3'b010, 3'b011, 3'b100, 3'b101, 3'b110:
-	  new_value__h15574 =
+	  new_value__h15489 =
 	      IF_rg_addr_0_BITS_2_TO_0_6_EQ_0x0_40_THEN_1_EL_ETC___d271;
-      3'd7: new_value__h15574 = 64'd0;
+      3'd7: new_value__h15489 = 64'd0;
     endcase
   end
 
@@ -3848,7 +3767,6 @@ module mkMMU_Cache(CLK,
 	rg_cset_in_cache <= `BSV_ASSIGNMENT_DELAY 6'd0;
 	rg_lower_word32_full <= `BSV_ASSIGNMENT_DELAY 1'd0;
 	rg_lrsc_valid <= `BSV_ASSIGNMENT_DELAY 1'd0;
-	rg_requesting_cline <= `BSV_ASSIGNMENT_DELAY 1'd0;
 	rg_state <= `BSV_ASSIGNMENT_DELAY 5'd0;
       end
     else
@@ -3883,9 +3801,6 @@ module mkMMU_Cache(CLK,
 	      rg_lower_word32_full$D_IN;
 	if (rg_lrsc_valid$EN)
 	  rg_lrsc_valid <= `BSV_ASSIGNMENT_DELAY rg_lrsc_valid$D_IN;
-	if (rg_requesting_cline$EN)
-	  rg_requesting_cline <= `BSV_ASSIGNMENT_DELAY
-	      rg_requesting_cline$D_IN;
 	if (rg_state$EN) rg_state <= `BSV_ASSIGNMENT_DELAY rg_state$D_IN;
       end
     if (master_xactor_rg_rd_addr$EN)
@@ -3918,8 +3833,6 @@ module mkMMU_Cache(CLK,
     if (rg_op$EN) rg_op <= `BSV_ASSIGNMENT_DELAY rg_op$D_IN;
     if (rg_pa$EN) rg_pa <= `BSV_ASSIGNMENT_DELAY rg_pa$D_IN;
     if (rg_pte_pa$EN) rg_pte_pa <= `BSV_ASSIGNMENT_DELAY rg_pte_pa$D_IN;
-    if (rg_req_byte_in_cline$EN)
-      rg_req_byte_in_cline <= `BSV_ASSIGNMENT_DELAY rg_req_byte_in_cline$D_IN;
     if (rg_st_amo_val$EN)
       rg_st_amo_val <= `BSV_ASSIGNMENT_DELAY rg_st_amo_val$D_IN;
     if (rg_word64_set_in_cache$EN)
@@ -3959,8 +3872,6 @@ module mkMMU_Cache(CLK,
     rg_op = 2'h2;
     rg_pa = 64'hAAAAAAAAAAAAAAAA;
     rg_pte_pa = 64'hAAAAAAAAAAAAAAAA;
-    rg_req_byte_in_cline = 64'hAAAAAAAAAAAAAAAA;
-    rg_requesting_cline = 1'h0;
     rg_st_amo_val = 64'hAAAAAAAAAAAAAAAA;
     rg_state = 5'h0A;
     rg_word64_set_in_cache = 9'h0AA;
@@ -3979,23 +3890,23 @@ module mkMMU_Cache(CLK,
 	  cfg_verbosity != 4'd0 &&
 	  !f_reset_reqs$D_OUT)
 	begin
-	  v__h3817 = $stime;
+	  v__h3732 = $stime;
 	  #0;
 	end
-    v__h3811 = v__h3817 / 32'd10;
+    v__h3726 = v__h3732 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset && rg_cset_in_cache == 6'd63 &&
 	  cfg_verbosity != 4'd0 &&
 	  !f_reset_reqs$D_OUT)
 	if (dmem_not_imem)
 	  $display("%0d: %s.rl_reset: %0d sets x %0d ways: all tag states reset to CTAG_EMPTY",
-		   v__h3811,
+		   v__h3726,
 		   "D_MMU_Cache",
 		   $signed(32'd64),
 		   $signed(32'd1));
 	else
 	  $display("%0d: %s.rl_reset: %0d sets x %0d ways: all tag states reset to CTAG_EMPTY",
-		   v__h3811,
+		   v__h3726,
 		   "I_MMU_Cache",
 		   $signed(32'd64),
 		   $signed(32'd1));
@@ -4004,18 +3915,18 @@ module mkMMU_Cache(CLK,
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12 &&
 	  f_reset_reqs$D_OUT)
 	begin
-	  v__h3918 = $stime;
+	  v__h3833 = $stime;
 	  #0;
 	end
-    v__h3912 = v__h3918 / 32'd10;
+    v__h3827 = v__h3833 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset && rg_cset_in_cache == 6'd63 &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12 &&
 	  f_reset_reqs$D_OUT)
 	if (dmem_not_imem)
-	  $display("%0d: %s.rl_reset: Flushed", v__h3912, "D_MMU_Cache");
+	  $display("%0d: %s.rl_reset: Flushed", v__h3827, "D_MMU_Cache");
 	else
-	  $display("%0d: %s.rl_reset: Flushed", v__h3912, "I_MMU_Cache");
+	  $display("%0d: %s.rl_reset: Flushed", v__h3827, "I_MMU_Cache");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_rereq && NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	$display("    fa_req_ram_B tagCSet [0x%0x] word64_set [0x%0d]",
@@ -4025,22 +3936,22 @@ module mkMMU_Cache(CLK,
       if (WILL_FIRE_RL_rl_maintain_io_read_rsp &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	begin
-	  v__h25786 = $stime;
+	  v__h25363 = $stime;
 	  #0;
 	end
-    v__h25780 = v__h25786 / 32'd10;
+    v__h25357 = v__h25363 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_maintain_io_read_rsp &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	if (dmem_not_imem)
 	  $display("%0d: %s.drive_IO_read_rsp: addr 0x%0h ld_val 0x%0h",
-		   v__h25780,
+		   v__h25357,
 		   "D_MMU_Cache",
 		   rg_addr,
 		   rg_ld_val);
 	else
 	  $display("%0d: %s.drive_IO_read_rsp: addr 0x%0h ld_val 0x%0h",
-		   v__h25780,
+		   v__h25357,
 		   "I_MMU_Cache",
 		   rg_addr,
 		   rg_ld_val);
@@ -4048,16 +3959,16 @@ module mkMMU_Cache(CLK,
       if (WILL_FIRE_RL_rl_io_AMO_SC_req &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	begin
-	  v__h26684 = $stime;
+	  v__h26261 = $stime;
 	  #0;
 	end
-    v__h26678 = v__h26684 / 32'd10;
+    v__h26255 = v__h26261 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_AMO_SC_req &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	if (dmem_not_imem)
 	  $display("%0d: %s: rl_io_AMO_SC_req; f3 0x%0h  vaddr %0h  paddr %0h  word64 0x%0h",
-		   v__h26678,
+		   v__h26255,
 		   "D_MMU_Cache",
 		   rg_f3,
 		   rg_addr,
@@ -4065,7 +3976,7 @@ module mkMMU_Cache(CLK,
 		   rg_st_amo_val);
 	else
 	  $display("%0d: %s: rl_io_AMO_SC_req; f3 0x%0h  vaddr %0h  paddr %0h  word64 0x%0h",
-		   v__h26678,
+		   v__h26255,
 		   "I_MMU_Cache",
 		   rg_f3,
 		   rg_addr,
@@ -4083,151 +3994,36 @@ module mkMMU_Cache(CLK,
       if (WILL_FIRE_RL_rl_start_reset &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	begin
-	  v__h3454 = $stime;
+	  v__h3369 = $stime;
 	  #0;
 	end
-    v__h3448 = v__h3454 / 32'd10;
+    v__h3363 = v__h3369 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_start_reset &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	if (dmem_not_imem)
-	  $display("%0d: %s.rl_start_reset", v__h3448, "D_MMU_Cache");
+	  $display("%0d: %s.rl_start_reset", v__h3363, "D_MMU_Cache");
 	else
-	  $display("%0d: %s.rl_start_reset", v__h3448, "I_MMU_Cache");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cache_refill_req_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_2_53___d554)
-	begin
-	  v__h21882 = $stime;
-	  #0;
-	end
-    v__h21876 = v__h21882 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cache_refill_req_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_2_53___d554)
-	if (dmem_not_imem)
-	  $display("%0d: %s.rl_cache_refill_req_loop",
-		   v__h21876,
-		   "D_MMU_Cache");
-	else
-	  $display("%0d: %s.rl_cache_refill_req_loop",
-		   v__h21876,
-		   "I_MMU_Cache");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cache_refill_req_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write("            To fabric: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cache_refill_req_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write("AXI4_Rd_Addr { ", "arid: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cache_refill_req_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write("'h%h", 4'd0);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cache_refill_req_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write(", ", "araddr: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cache_refill_req_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write("'h%h", cline_fabric_addr__h21935);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cache_refill_req_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write(", ", "arlen: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cache_refill_req_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write("'h%h", 8'd0);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cache_refill_req_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write(", ", "arsize: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cache_refill_req_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write("'h%h", 3'b011);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cache_refill_req_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write(", ", "arburst: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cache_refill_req_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write("'h%h", 2'b01);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cache_refill_req_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write(", ", "arlock: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cache_refill_req_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write("'h%h", 1'b0);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cache_refill_req_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write(", ", "arcache: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cache_refill_req_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write("'h%h", 4'b0);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cache_refill_req_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write(", ", "arprot: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cache_refill_req_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write("'h%h", 3'd0);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cache_refill_req_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write(", ", "arqos: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cache_refill_req_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write("'h%h", 4'd0);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cache_refill_req_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write(", ", "arregion: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cache_refill_req_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write("'h%h", 4'd0);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cache_refill_req_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write(", ", "aruser: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cache_refill_req_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write("'h%h", 1'h0, " }");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cache_refill_req_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write("\n");
+	  $display("%0d: %s.rl_start_reset", v__h3363, "I_MMU_Cache");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	begin
-	  v__h4371 = $stime;
+	  v__h4286 = $stime;
 	  #0;
 	end
-    v__h4365 = v__h4371 / 32'd10;
+    v__h4280 = v__h4286 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	if (dmem_not_imem)
 	  $display("%0d: %s: rl_probe_and_immed_rsp; eaddr %0h",
-		   v__h4365,
+		   v__h4280,
 		   "D_MMU_Cache",
 		   rg_addr);
 	else
 	  $display("%0d: %s: rl_probe_and_immed_rsp; eaddr %0h",
-		   v__h4365,
+		   v__h4280,
 		   "I_MMU_Cache",
 		   rg_addr);
     if (RST_N != `BSV_RESET_VALUE)
@@ -4330,27 +4126,27 @@ module mkMMU_Cache(CLK,
 	  (!dmem_not_imem || soc_map$m_is_mem_addr) &&
 	  rg_op_4_EQ_0_5_OR_rg_op_4_EQ_2_6_AND_rg_amo_fu_ETC___d275)
 	begin
-	  v__h12839 = $stime;
+	  v__h12754 = $stime;
 	  #0;
 	end
-    v__h12833 = v__h12839 / 32'd10;
+    v__h12748 = v__h12754 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	  (!dmem_not_imem || soc_map$m_is_mem_addr) &&
 	  rg_op_4_EQ_0_5_OR_rg_op_4_EQ_2_6_AND_rg_amo_fu_ETC___d275)
 	if (dmem_not_imem)
 	  $display("%0d: %s.drive_mem_rsp: addr 0x%0h ld_val 0x%0h st_amo_val 0x%0h",
-		   v__h12833,
+		   v__h12748,
 		   "D_MMU_Cache",
 		   rg_addr,
-		   word64__h5366,
+		   word64__h5281,
 		   64'd0);
 	else
 	  $display("%0d: %s.drive_mem_rsp: addr 0x%0h ld_val 0x%0h st_amo_val 0x%0h",
-		   v__h12833,
+		   v__h12748,
 		   "I_MMU_Cache",
 		   rg_addr,
-		   word64__h5366,
+		   word64__h5281,
 		   64'd0);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_probe_and_immed_rsp &&
@@ -4367,7 +4163,7 @@ module mkMMU_Cache(CLK,
 	  rg_op_4_EQ_0_5_OR_rg_op_4_EQ_2_6_AND_rg_amo_fu_ETC___d275)
 	$display("        Read-hit: addr 0x%0h word64 0x%0h",
 		 rg_addr,
-		 word64__h5366);
+		 word64__h5281);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	  (!dmem_not_imem || soc_map$m_is_mem_addr) &&
@@ -4406,7 +4202,7 @@ module mkMMU_Cache(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	  NOT_dmem_not_imem_13_OR_soc_map_m_is_mem_addr__ETC___d491)
-	$display("        AMO SC result = %0d", lrsc_result__h13216);
+	$display("        AMO SC result = %0d", lrsc_result__h13131);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	  (!dmem_not_imem || soc_map$m_is_mem_addr) &&
@@ -4460,15 +4256,15 @@ module mkMMU_Cache(CLK,
 	  (!dmem_not_imem || soc_map$m_is_mem_addr) &&
 	  NOT_rg_op_4_EQ_0_5_2_AND_NOT_rg_op_4_EQ_2_6_3__ETC___d507)
 	begin
-	  v__h17155 = $stime;
+	  v__h17070 = $stime;
 	  #0;
 	end
-    v__h17149 = v__h17155 / 32'd10;
+    v__h17064 = v__h17070 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	  (!dmem_not_imem || soc_map$m_is_mem_addr) &&
 	  NOT_rg_op_4_EQ_0_5_2_AND_NOT_rg_op_4_EQ_2_6_3__ETC___d507)
-	$display("%0d: ERROR: CreditCounter: overflow", v__h17149);
+	$display("%0d: ERROR: CreditCounter: overflow", v__h17064);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	  (!dmem_not_imem || soc_map$m_is_mem_addr) &&
@@ -4518,7 +4314,7 @@ module mkMMU_Cache(CLK,
       if (WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	  (!dmem_not_imem || soc_map$m_is_mem_addr) &&
 	  NOT_rg_op_4_EQ_0_5_2_AND_NOT_rg_op_4_EQ_2_6_3__ETC___d502)
-	$write("'h%h", value__h30032);
+	$write("'h%h", value__h29609);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	  (!dmem_not_imem || soc_map$m_is_mem_addr) &&
@@ -4618,7 +4414,7 @@ module mkMMU_Cache(CLK,
       if (WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	  (!dmem_not_imem || soc_map$m_is_mem_addr) &&
 	  NOT_rg_op_4_EQ_0_5_2_AND_NOT_rg_op_4_EQ_2_6_3__ETC___d502)
-	$write("'h%h", mem_req_wr_data_wdata__h16925);
+	$write("'h%h", mem_req_wr_data_wdata__h16835);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	  (!dmem_not_imem || soc_map$m_is_mem_addr) &&
@@ -4628,7 +4424,7 @@ module mkMMU_Cache(CLK,
       if (WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	  (!dmem_not_imem || soc_map$m_is_mem_addr) &&
 	  NOT_rg_op_4_EQ_0_5_2_AND_NOT_rg_op_4_EQ_2_6_3__ETC___d502)
-	$write("'h%h", mem_req_wr_data_wstrb__h20423);
+	$write("'h%h", mem_req_wr_data_wstrb__h20333);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	  (!dmem_not_imem || soc_map$m_is_mem_addr) &&
@@ -4664,24 +4460,24 @@ module mkMMU_Cache(CLK,
 	  (!dmem_not_imem || soc_map$m_is_mem_addr) &&
 	  rg_op_4_EQ_2_6_AND_rg_amo_funct7_7_BITS_6_TO_2_ETC___d513)
 	begin
-	  v__h16483 = $stime;
+	  v__h16398 = $stime;
 	  #0;
 	end
-    v__h16477 = v__h16483 / 32'd10;
+    v__h16392 = v__h16398 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	  (!dmem_not_imem || soc_map$m_is_mem_addr) &&
 	  rg_op_4_EQ_2_6_AND_rg_amo_funct7_7_BITS_6_TO_2_ETC___d513)
 	if (dmem_not_imem)
 	  $display("%0d: %s.drive_mem_rsp: addr 0x%0h ld_val 0x%0h st_amo_val 0x%0h",
-		   v__h16477,
+		   v__h16392,
 		   "D_MMU_Cache",
 		   rg_addr,
 		   64'd1,
 		   64'd0);
 	else
 	  $display("%0d: %s.drive_mem_rsp: addr 0x%0h ld_val 0x%0h st_amo_val 0x%0h",
-		   v__h16477,
+		   v__h16392,
 		   "I_MMU_Cache",
 		   rg_addr,
 		   64'd1,
@@ -4711,15 +4507,15 @@ module mkMMU_Cache(CLK,
       if (WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	  NOT_dmem_not_imem_13_OR_soc_map_m_is_mem_addr__ETC___d522)
 	$display("          Cache word64 0x%0h, load-result 0x%0h",
-		 word64__h5366,
-		 word64__h5366);
+		 word64__h5281,
+		 word64__h5281);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	  NOT_dmem_not_imem_13_OR_soc_map_m_is_mem_addr__ETC___d522)
 	$display("          0x%0h  op  0x%0h -> 0x%0h",
-		 word64__h5366,
-		 word64__h5366,
-		 new_st_val__h17436);
+		 word64__h5281,
+		 word64__h5281,
+		 new_st_val__h17351);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	  NOT_dmem_not_imem_13_OR_soc_map_m_is_mem_addr__ETC___d522)
@@ -4743,14 +4539,14 @@ module mkMMU_Cache(CLK,
       if (WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	  NOT_dmem_not_imem_13_OR_soc_map_m_is_mem_addr__ETC___d526)
 	begin
-	  v__h20621 = $stime;
+	  v__h20536 = $stime;
 	  #0;
 	end
-    v__h20615 = v__h20621 / 32'd10;
+    v__h20530 = v__h20536 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	  NOT_dmem_not_imem_13_OR_soc_map_m_is_mem_addr__ETC___d526)
-	$display("%0d: ERROR: CreditCounter: overflow", v__h20615);
+	$display("%0d: ERROR: CreditCounter: overflow", v__h20530);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	  NOT_dmem_not_imem_13_OR_soc_map_m_is_mem_addr__ETC___d526)
@@ -4790,7 +4586,7 @@ module mkMMU_Cache(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	  NOT_dmem_not_imem_13_OR_soc_map_m_is_mem_addr__ETC___d522)
-	$write("'h%h", value__h30032);
+	$write("'h%h", value__h29609);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	  NOT_dmem_not_imem_13_OR_soc_map_m_is_mem_addr__ETC___d522)
@@ -4870,7 +4666,7 @@ module mkMMU_Cache(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	  NOT_dmem_not_imem_13_OR_soc_map_m_is_mem_addr__ETC___d522)
-	$write("'h%h", mem_req_wr_data_wdata__h20422);
+	$write("'h%h", mem_req_wr_data_wdata__h20332);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	  NOT_dmem_not_imem_13_OR_soc_map_m_is_mem_addr__ETC___d522)
@@ -4878,7 +4674,7 @@ module mkMMU_Cache(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	  NOT_dmem_not_imem_13_OR_soc_map_m_is_mem_addr__ETC___d522)
-	$write("'h%h", mem_req_wr_data_wstrb__h20423);
+	$write("'h%h", mem_req_wr_data_wstrb__h20333);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_probe_and_immed_rsp &&
 	  NOT_dmem_not_imem_13_OR_soc_map_m_is_mem_addr__ETC___d522)
@@ -4906,100 +4702,100 @@ module mkMMU_Cache(CLK,
 		 rg_addr);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cache_refill_rsps_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_2_53___d554)
+	  NOT_cfg_verbosity_read__0_ULE_2_54___d555)
 	begin
-	  v__h22253 = $stime;
+	  v__h21830 = $stime;
 	  #0;
 	end
-    v__h22247 = v__h22253 / 32'd10;
+    v__h21824 = v__h21830 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cache_refill_rsps_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_2_53___d554)
+	  NOT_cfg_verbosity_read__0_ULE_2_54___d555)
 	if (dmem_not_imem)
 	  $display("%0d: %s.rl_cache_refill_rsps_loop:",
-		   v__h22247,
+		   v__h21824,
 		   "D_MMU_Cache");
 	else
 	  $display("%0d: %s.rl_cache_refill_rsps_loop:",
-		   v__h22247,
+		   v__h21824,
 		   "I_MMU_Cache");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cache_refill_rsps_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_2_53___d554)
+	  NOT_cfg_verbosity_read__0_ULE_2_54___d555)
 	$write("        ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cache_refill_rsps_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_2_53___d554)
+	  NOT_cfg_verbosity_read__0_ULE_2_54___d555)
 	$write("AXI4_Rd_Data { ", "rid: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cache_refill_rsps_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_2_53___d554)
+	  NOT_cfg_verbosity_read__0_ULE_2_54___d555)
 	$write("'h%h", master_xactor_rg_rd_data[70:67]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cache_refill_rsps_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_2_53___d554)
+	  NOT_cfg_verbosity_read__0_ULE_2_54___d555)
 	$write(", ", "rdata: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cache_refill_rsps_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_2_53___d554)
+	  NOT_cfg_verbosity_read__0_ULE_2_54___d555)
 	$write("'h%h", master_xactor_rg_rd_data[66:3]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cache_refill_rsps_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_2_53___d554)
+	  NOT_cfg_verbosity_read__0_ULE_2_54___d555)
 	$write(", ", "rresp: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cache_refill_rsps_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_2_53___d554)
+	  NOT_cfg_verbosity_read__0_ULE_2_54___d555)
 	$write("'h%h", master_xactor_rg_rd_data[2:1]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cache_refill_rsps_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_2_53___d554)
+	  NOT_cfg_verbosity_read__0_ULE_2_54___d555)
 	$write(", ", "rlast: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cache_refill_rsps_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_2_53___d554 &&
+	  NOT_cfg_verbosity_read__0_ULE_2_54___d555 &&
 	  master_xactor_rg_rd_data[0])
 	$write("True");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cache_refill_rsps_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_2_53___d554 &&
+	  NOT_cfg_verbosity_read__0_ULE_2_54___d555 &&
 	  !master_xactor_rg_rd_data[0])
 	$write("False");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cache_refill_rsps_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_2_53___d554)
+	  NOT_cfg_verbosity_read__0_ULE_2_54___d555)
 	$write(", ", "ruser: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cache_refill_rsps_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_2_53___d554)
+	  NOT_cfg_verbosity_read__0_ULE_2_54___d555)
 	$write("'h%h", 1'd0, " }");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cache_refill_rsps_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_2_53___d554)
+	  NOT_cfg_verbosity_read__0_ULE_2_54___d555)
 	$write("\n");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cache_refill_rsps_loop &&
 	  master_xactor_rg_rd_data[2:1] != 2'b0 &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	begin
-	  v__h22494 = $stime;
+	  v__h22071 = $stime;
 	  #0;
 	end
-    v__h22488 = v__h22494 / 32'd10;
+    v__h22065 = v__h22071 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cache_refill_rsps_loop &&
 	  master_xactor_rg_rd_data[2:1] != 2'b0 &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	if (dmem_not_imem)
 	  $display("%0d: %s.rl_cache_refill_rsps_loop: FABRIC_RSP_ERR: raising access exception %0d",
-		   v__h22488,
+		   v__h22065,
 		   "D_MMU_Cache",
-		   access_exc_code__h2987);
+		   access_exc_code__h2925);
 	else
 	  $display("%0d: %s.rl_cache_refill_rsps_loop: FABRIC_RSP_ERR: raising access exception %0d",
-		   v__h22488,
+		   v__h22065,
 		   "I_MMU_Cache",
-		   access_exc_code__h2987);
+		   access_exc_code__h2925);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cache_refill_rsps_loop &&
 	  rg_word64_set_in_cache[2:0] == 3'd7 &&
@@ -5015,58 +4811,58 @@ module mkMMU_Cache(CLK,
 	$display("    => CACHE_REREQ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cache_refill_rsps_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_2_53___d554)
+	  NOT_cfg_verbosity_read__0_ULE_2_54___d555)
 	$display("        Updating Cache word64_set 0x%0h, word64_in_cline %0d) old => new",
 		 rg_word64_set_in_cache,
 		 rg_word64_set_in_cache[2:0]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cache_refill_rsps_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_2_53___d554)
+	  NOT_cfg_verbosity_read__0_ULE_2_54___d555)
 	$write("        CSet 0x%0x, Word64 0x%0x: ",
 	       rg_addr[11:6],
 	       rg_word64_set_in_cache[2:0]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cache_refill_rsps_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_2_53___d554)
+	  NOT_cfg_verbosity_read__0_ULE_2_54___d555)
 	$write(" 0x%0x", ram_word64_set$DOB);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cache_refill_rsps_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_2_53___d554)
+	  NOT_cfg_verbosity_read__0_ULE_2_54___d555)
 	$write("\n");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cache_refill_rsps_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_2_53___d554)
+	  NOT_cfg_verbosity_read__0_ULE_2_54___d555)
 	$write("        CSet 0x%0x, Word64 0x%0x: ",
 	       rg_addr[11:6],
 	       rg_word64_set_in_cache[2:0]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cache_refill_rsps_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_2_53___d554)
+	  NOT_cfg_verbosity_read__0_ULE_2_54___d555)
 	$write(" 0x%0x", master_xactor_rg_rd_data[66:3]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cache_refill_rsps_loop &&
-	  NOT_cfg_verbosity_read__0_ULE_2_53___d554)
+	  NOT_cfg_verbosity_read__0_ULE_2_54___d555)
 	$write("\n");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_read_rsp &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	begin
-	  v__h24472 = $stime;
+	  v__h24049 = $stime;
 	  #0;
 	end
-    v__h24466 = v__h24472 / 32'd10;
+    v__h24043 = v__h24049 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_read_rsp &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	if (dmem_not_imem)
 	  $display("%0d: %s.rl_io_read_rsp: vaddr 0x%0h  paddr 0x%0h",
-		   v__h24466,
+		   v__h24043,
 		   "D_MMU_Cache",
 		   rg_addr,
 		   rg_pa);
 	else
 	  $display("%0d: %s.rl_io_read_rsp: vaddr 0x%0h  paddr 0x%0h",
-		   v__h24466,
+		   v__h24043,
 		   "I_MMU_Cache",
 		   rg_addr,
 		   rg_pa);
@@ -5129,61 +4925,61 @@ module mkMMU_Cache(CLK,
 	  master_xactor_rg_rd_data[2:1] == 2'b0 &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	begin
-	  v__h25574 = $stime;
+	  v__h25151 = $stime;
 	  #0;
 	end
-    v__h25568 = v__h25574 / 32'd10;
+    v__h25145 = v__h25151 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_read_rsp &&
 	  master_xactor_rg_rd_data[2:1] == 2'b0 &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	if (dmem_not_imem)
 	  $display("%0d: %s.drive_IO_read_rsp: addr 0x%0h ld_val 0x%0h",
-		   v__h25568,
+		   v__h25145,
 		   "D_MMU_Cache",
 		   rg_addr,
-		   ld_val__h24581);
+		   ld_val__h24158);
 	else
 	  $display("%0d: %s.drive_IO_read_rsp: addr 0x%0h ld_val 0x%0h",
-		   v__h25568,
+		   v__h25145,
 		   "I_MMU_Cache",
 		   rg_addr,
-		   ld_val__h24581);
+		   ld_val__h24158);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_read_rsp &&
 	  master_xactor_rg_rd_data[2:1] != 2'b0 &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	begin
-	  v__h25681 = $stime;
+	  v__h25258 = $stime;
 	  #0;
 	end
-    v__h25675 = v__h25681 / 32'd10;
+    v__h25252 = v__h25258 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_read_rsp &&
 	  master_xactor_rg_rd_data[2:1] != 2'b0 &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	if (dmem_not_imem)
 	  $display("%0d: %s.rl_io_read_rsp: FABRIC_RSP_ERR: raising trap LOAD_ACCESS_FAULT",
-		   v__h25675,
+		   v__h25252,
 		   "D_MMU_Cache");
 	else
 	  $display("%0d: %s.rl_io_read_rsp: FABRIC_RSP_ERR: raising trap LOAD_ACCESS_FAULT",
-		   v__h25675,
+		   v__h25252,
 		   "I_MMU_Cache");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_write_req &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	begin
-	  v__h25866 = $stime;
+	  v__h25443 = $stime;
 	  #0;
 	end
-    v__h25860 = v__h25866 / 32'd10;
+    v__h25437 = v__h25443 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_write_req &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	if (dmem_not_imem)
 	  $display("%0d: %s: rl_io_write_req; f3 0x%0h  vaddr %0h  paddr %0h  word64 0x%0h",
-		   v__h25860,
+		   v__h25437,
 		   "D_MMU_Cache",
 		   rg_f3,
 		   rg_addr,
@@ -5191,7 +4987,7 @@ module mkMMU_Cache(CLK,
 		   rg_st_amo_val);
 	else
 	  $display("%0d: %s: rl_io_write_req; f3 0x%0h  vaddr %0h  paddr %0h  word64 0x%0h",
-		   v__h25860,
+		   v__h25437,
 		   "I_MMU_Cache",
 		   rg_f3,
 		   rg_addr,
@@ -5200,13 +4996,13 @@ module mkMMU_Cache(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_write_req && ctr_wr_rsps_pending_crg == 4'd15)
 	begin
-	  v__h26388 = $stime;
+	  v__h25965 = $stime;
 	  #0;
 	end
-    v__h26382 = v__h26388 / 32'd10;
+    v__h25959 = v__h25965 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_write_req && ctr_wr_rsps_pending_crg == 4'd15)
-	$display("%0d: ERROR: CreditCounter: overflow", v__h26382);
+	$display("%0d: ERROR: CreditCounter: overflow", v__h25959);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_write_req && ctr_wr_rsps_pending_crg == 4'd15)
 	$finish(32'd1);
@@ -5245,7 +5041,7 @@ module mkMMU_Cache(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_write_req &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write("'h%h", value__h30032);
+	$write("'h%h", value__h29609);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_write_req &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
@@ -5325,7 +5121,7 @@ module mkMMU_Cache(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_write_req &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write("'h%h", mem_req_wr_data_wdata__h26189);
+	$write("'h%h", mem_req_wr_data_wdata__h25761);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_write_req &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
@@ -5333,7 +5129,7 @@ module mkMMU_Cache(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_write_req &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write("'h%h", mem_req_wr_data_wstrb__h27694);
+	$write("'h%h", mem_req_wr_data_wstrb__h27266);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_write_req &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
@@ -5362,23 +5158,23 @@ module mkMMU_Cache(CLK,
       if (WILL_FIRE_RL_rl_io_AMO_op_req &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	begin
-	  v__h26802 = $stime;
+	  v__h26379 = $stime;
 	  #0;
 	end
-    v__h26796 = v__h26802 / 32'd10;
+    v__h26373 = v__h26379 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_AMO_op_req &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	if (dmem_not_imem)
 	  $display("%0d: %s.rl_io_AMO_op_req; f3 0x%0h vaddr %0h  paddr %0h",
-		   v__h26796,
+		   v__h26373,
 		   "D_MMU_Cache",
 		   rg_f3,
 		   rg_addr,
 		   rg_pa);
 	else
 	  $display("%0d: %s.rl_io_AMO_op_req; f3 0x%0h vaddr %0h  paddr %0h",
-		   v__h26796,
+		   v__h26373,
 		   "I_MMU_Cache",
 		   rg_f3,
 		   rg_addr,
@@ -5418,7 +5214,7 @@ module mkMMU_Cache(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_AMO_op_req &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write("'h%h", value__h27006);
+	$write("'h%h", value__h26583);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_AMO_op_req &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
@@ -5483,22 +5279,22 @@ module mkMMU_Cache(CLK,
       if (WILL_FIRE_RL_rl_io_AMO_read_rsp &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	begin
-	  v__h27120 = $stime;
+	  v__h26697 = $stime;
 	  #0;
 	end
-    v__h27114 = v__h27120 / 32'd10;
+    v__h26691 = v__h26697 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_AMO_read_rsp &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	if (dmem_not_imem)
 	  $display("%0d: %s.rl_io_AMO_read_rsp: vaddr 0x%0h  paddr 0x%0h",
-		   v__h27114,
+		   v__h26691,
 		   "D_MMU_Cache",
 		   rg_addr,
 		   rg_pa);
 	else
 	  $display("%0d: %s.rl_io_AMO_read_rsp: vaddr 0x%0h  paddr 0x%0h",
-		   v__h27114,
+		   v__h26691,
 		   "I_MMU_Cache",
 		   rg_addr,
 		   rg_pa);
@@ -5561,17 +5357,17 @@ module mkMMU_Cache(CLK,
 	  master_xactor_rg_rd_data[2:1] == 2'b0 &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	begin
-	  v__h27295 = $stime;
+	  v__h26872 = $stime;
 	  #0;
 	end
-    v__h27289 = v__h27295 / 32'd10;
+    v__h26866 = v__h26872 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_AMO_read_rsp &&
 	  master_xactor_rg_rd_data[2:1] == 2'b0 &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	if (dmem_not_imem)
 	  $display("%0d: %s: rl_io_AMO_read_rsp; f3 0x%0h  vaddr %0h  paddr %0h  word64 0x%0h",
-		   v__h27289,
+		   v__h26866,
 		   "D_MMU_Cache",
 		   rg_f3,
 		   rg_addr,
@@ -5579,7 +5375,7 @@ module mkMMU_Cache(CLK,
 		   rg_st_amo_val);
 	else
 	  $display("%0d: %s: rl_io_AMO_read_rsp; f3 0x%0h  vaddr %0h  paddr %0h  word64 0x%0h",
-		   v__h27289,
+		   v__h26866,
 		   "I_MMU_Cache",
 		   rg_f3,
 		   rg_addr,
@@ -5590,15 +5386,15 @@ module mkMMU_Cache(CLK,
 	  master_xactor_rg_rd_data[2:1] == 2'b0 &&
 	  ctr_wr_rsps_pending_crg == 4'd15)
 	begin
-	  v__h29908 = $stime;
+	  v__h29485 = $stime;
 	  #0;
 	end
-    v__h29902 = v__h29908 / 32'd10;
+    v__h29479 = v__h29485 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_AMO_read_rsp &&
 	  master_xactor_rg_rd_data[2:1] == 2'b0 &&
 	  ctr_wr_rsps_pending_crg == 4'd15)
-	$display("%0d: ERROR: CreditCounter: overflow", v__h29902);
+	$display("%0d: ERROR: CreditCounter: overflow", v__h29479);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_AMO_read_rsp &&
 	  master_xactor_rg_rd_data[2:1] == 2'b0 &&
@@ -5648,7 +5444,7 @@ module mkMMU_Cache(CLK,
       if (WILL_FIRE_RL_rl_io_AMO_read_rsp &&
 	  master_xactor_rg_rd_data[2:1] == 2'b0 &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write("'h%h", value__h30032);
+	$write("'h%h", value__h29609);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_AMO_read_rsp &&
 	  master_xactor_rg_rd_data[2:1] == 2'b0 &&
@@ -5748,7 +5544,7 @@ module mkMMU_Cache(CLK,
       if (WILL_FIRE_RL_rl_io_AMO_read_rsp &&
 	  master_xactor_rg_rd_data[2:1] == 2'b0 &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write("'h%h", mem_req_wr_data_wdata__h27693);
+	$write("'h%h", mem_req_wr_data_wdata__h27265);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_AMO_read_rsp &&
 	  master_xactor_rg_rd_data[2:1] == 2'b0 &&
@@ -5758,7 +5554,7 @@ module mkMMU_Cache(CLK,
       if (WILL_FIRE_RL_rl_io_AMO_read_rsp &&
 	  master_xactor_rg_rd_data[2:1] == 2'b0 &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write("'h%h", mem_req_wr_data_wstrb__h27694);
+	$write("'h%h", mem_req_wr_data_wstrb__h27266);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_AMO_read_rsp &&
 	  master_xactor_rg_rd_data[2:1] == 2'b0 &&
@@ -5789,26 +5585,26 @@ module mkMMU_Cache(CLK,
 	  master_xactor_rg_rd_data[2:1] == 2'b0 &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	begin
-	  v__h30160 = $stime;
+	  v__h29737 = $stime;
 	  #0;
 	end
-    v__h30154 = v__h30160 / 32'd10;
+    v__h29731 = v__h29737 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_AMO_read_rsp &&
 	  master_xactor_rg_rd_data[2:1] == 2'b0 &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	if (dmem_not_imem)
 	  $display("%0d: %s.drive_IO_read_rsp: addr 0x%0h ld_val 0x%0h",
-		   v__h30154,
+		   v__h29731,
 		   "D_MMU_Cache",
 		   rg_addr,
-		   new_ld_val__h27421);
+		   new_ld_val__h26998);
 	else
 	  $display("%0d: %s.drive_IO_read_rsp: addr 0x%0h ld_val 0x%0h",
-		   v__h30154,
+		   v__h29731,
 		   "I_MMU_Cache",
 		   rg_addr,
-		   new_ld_val__h27421);
+		   new_ld_val__h26998);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_AMO_read_rsp &&
 	  master_xactor_rg_rd_data[2:1] == 2'b0 &&
@@ -5819,45 +5615,45 @@ module mkMMU_Cache(CLK,
 	  master_xactor_rg_rd_data[2:1] != 2'b0 &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	begin
-	  v__h27391 = $stime;
+	  v__h26968 = $stime;
 	  #0;
 	end
-    v__h27385 = v__h27391 / 32'd10;
+    v__h26962 = v__h26968 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_AMO_read_rsp &&
 	  master_xactor_rg_rd_data[2:1] != 2'b0 &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	if (dmem_not_imem)
 	  $display("%0d: %s.rl_io_AMO_read_rsp: FABRIC_RSP_ERR: raising trap STORE_AMO_ACCESS_FAULT",
-		   v__h27385,
+		   v__h26962,
 		   "D_MMU_Cache");
 	else
 	  $display("%0d: %s.rl_io_AMO_read_rsp: FABRIC_RSP_ERR: raising trap STORE_AMO_ACCESS_FAULT",
-		   v__h27385,
+		   v__h26962,
 		   "I_MMU_Cache");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_start_cache_refill &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	begin
-	  v__h21066 = $stime;
+	  v__h20981 = $stime;
 	  #0;
 	end
-    v__h21060 = v__h21066 / 32'd10;
+    v__h20975 = v__h20981 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_start_cache_refill &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	if (dmem_not_imem)
 	  $display("%0d: %s.rl_start_cache_refill: ",
-		   v__h21060,
+		   v__h20975,
 		   "D_MMU_Cache");
 	else
 	  $display("%0d: %s.rl_start_cache_refill: ",
-		   v__h21060,
+		   v__h20975,
 		   "I_MMU_Cache");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_start_cache_refill &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write("            To fabric: ");
+	$write("    To fabric: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_start_cache_refill &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
@@ -5873,7 +5669,7 @@ module mkMMU_Cache(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_start_cache_refill &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write("'h%h", cline_addr__h21934);
+	$write("'h%h", cline_fabric_addr__h21034);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_start_cache_refill &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
@@ -5881,7 +5677,7 @@ module mkMMU_Cache(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_start_cache_refill &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write("'h%h", 8'd0);
+	$write("'h%h", 8'd7);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_start_cache_refill &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
@@ -5958,23 +5754,23 @@ module mkMMU_Cache(CLK,
       if (WILL_FIRE_RL_rl_io_read_req &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	begin
-	  v__h24098 = $stime;
+	  v__h23675 = $stime;
 	  #0;
 	end
-    v__h24092 = v__h24098 / 32'd10;
+    v__h23669 = v__h23675 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_read_req &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	if (dmem_not_imem)
 	  $display("%0d: %s.rl_io_read_req; f3 0x%0h vaddr %0h  paddr %0h",
-		   v__h24092,
+		   v__h23669,
 		   "D_MMU_Cache",
 		   rg_f3,
 		   rg_addr,
 		   rg_pa);
 	else
 	  $display("%0d: %s.rl_io_read_req; f3 0x%0h vaddr %0h  paddr %0h",
-		   v__h24092,
+		   v__h23669,
 		   "I_MMU_Cache",
 		   rg_f3,
 		   rg_addr,
@@ -6014,7 +5810,7 @@ module mkMMU_Cache(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_read_req &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
-	$write("'h%h", value__h27006);
+	$write("'h%h", value__h26583);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_io_read_req &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
@@ -6078,16 +5874,16 @@ module mkMMU_Cache(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_req && NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	begin
-	  v__h31130 = $stime;
+	  v__h30707 = $stime;
 	  #0;
 	end
-    v__h31124 = v__h31130 / 32'd10;
+    v__h30701 = v__h30707 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_req && NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	if (dmem_not_imem)
-	  $write("%0d: %s.req: op:", v__h31124, "D_MMU_Cache");
+	  $write("%0d: %s.req: op:", v__h30701, "D_MMU_Cache");
 	else
-	  $write("%0d: %s.req: op:", v__h31124, "I_MMU_Cache");
+	  $write("%0d: %s.req: op:", v__h30701, "I_MMU_Cache");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_req && NOT_cfg_verbosity_read__0_ULE_1_1___d12 && req_op == 2'd0)
 	$write("CACHE_LD");
@@ -6135,7 +5931,7 @@ module mkMMU_Cache(CLK,
 	$display("    amo_funct7 = 0x%0h", req_amo_funct7);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_req &&
-	  req_f3_BITS_1_TO_0_00_EQ_0b0_01_OR_req_f3_BITS_ETC___d930 &&
+	  req_f3_BITS_1_TO_0_90_EQ_0b0_91_OR_req_f3_BITS_ETC___d920 &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	$display("    fa_req_ram_B tagCSet [0x%0x] word64_set [0x%0d]",
 		 req_addr[11:6],
@@ -6145,24 +5941,24 @@ module mkMMU_Cache(CLK,
 	  master_xactor_rg_wr_resp[1:0] == 2'b0 &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	begin
-	  v__h30780 = $stime;
+	  v__h30357 = $stime;
 	  #0;
 	end
-    v__h30774 = v__h30780 / 32'd10;
+    v__h30351 = v__h30357 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_discard_write_rsp &&
 	  master_xactor_rg_wr_resp[1:0] == 2'b0 &&
 	  NOT_cfg_verbosity_read__0_ULE_1_1___d12)
 	if (dmem_not_imem)
 	  $write("%0d: %s.rl_discard_write_rsp: pending %0d ",
-		 v__h30774,
+		 v__h30351,
 		 "D_MMU_Cache",
-		 $unsigned(b__h21020));
+		 $unsigned(b__h20935));
 	else
 	  $write("%0d: %s.rl_discard_write_rsp: pending %0d ",
-		 v__h30774,
+		 v__h30351,
 		 "I_MMU_Cache",
-		 $unsigned(b__h21020));
+		 $unsigned(b__h20935));
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_discard_write_rsp &&
 	  master_xactor_rg_wr_resp[1:0] == 2'b0 &&
@@ -6202,20 +5998,20 @@ module mkMMU_Cache(CLK,
       if (WILL_FIRE_RL_rl_discard_write_rsp &&
 	  master_xactor_rg_wr_resp[1:0] != 2'b0)
 	begin
-	  v__h30741 = $stime;
+	  v__h30318 = $stime;
 	  #0;
 	end
-    v__h30735 = v__h30741 / 32'd10;
+    v__h30312 = v__h30318 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_discard_write_rsp &&
 	  master_xactor_rg_wr_resp[1:0] != 2'b0)
 	if (dmem_not_imem)
 	  $display("%0d: %s.rl_discard_write_rsp: fabric response error: exit",
-		   v__h30735,
+		   v__h30312,
 		   "D_MMU_Cache");
 	else
 	  $display("%0d: %s.rl_discard_write_rsp: fabric response error: exit",
-		   v__h30735,
+		   v__h30312,
 		   "I_MMU_Cache");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_discard_write_rsp &&

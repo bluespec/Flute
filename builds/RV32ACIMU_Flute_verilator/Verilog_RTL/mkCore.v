@@ -109,6 +109,7 @@
 // core_external_interrupt_sources_13_m_interrupt_req_set_not_clear  I     1
 // core_external_interrupt_sources_14_m_interrupt_req_set_not_clear  I     1
 // core_external_interrupt_sources_15_m_interrupt_req_set_not_clear  I     1
+// nmi_req_set_not_clear          I     1
 // EN_set_verbosity               I     1
 // EN_cpu_reset_server_request_put  I     1
 // EN_cpu_reset_server_response_get  I     1
@@ -324,7 +325,9 @@ module mkCore(CLK,
 
 	      core_external_interrupt_sources_14_m_interrupt_req_set_not_clear,
 
-	      core_external_interrupt_sources_15_m_interrupt_req_set_not_clear);
+	      core_external_interrupt_sources_15_m_interrupt_req_set_not_clear,
+
+	      nmi_req_set_not_clear);
   input  CLK;
   input  RST_N;
 
@@ -618,6 +621,9 @@ module mkCore(CLK,
   // action method core_external_interrupt_sources_15_m_interrupt_req
   input  core_external_interrupt_sources_15_m_interrupt_req_set_not_clear;
 
+  // action method nmi_req
+  input  nmi_req_set_not_clear;
+
   // signals for module outputs
   wire [63 : 0] cpu_dmem_master_araddr,
 		cpu_dmem_master_awaddr,
@@ -770,7 +776,7 @@ module mkCore(CLK,
        cpu$imem_master_wready,
        cpu$imem_master_wvalid,
        cpu$m_external_interrupt_req_set_not_clear,
-       cpu$non_maskable_interrupt_req_set_not_clear,
+       cpu$nmi_req_set_not_clear,
        cpu$s_external_interrupt_req_set_not_clear,
        cpu$software_interrupt_req_set_not_clear,
        cpu$timer_interrupt_req_set_not_clear;
@@ -1130,7 +1136,6 @@ module mkCore(CLK,
        CAN_FIRE_RL_rl_rd_data_channel_2,
        CAN_FIRE_RL_rl_rd_data_channel_3,
        CAN_FIRE_RL_rl_relay_external_interrupts,
-       CAN_FIRE_RL_rl_relay_non_maskable_interrupt,
        CAN_FIRE_RL_rl_relay_sw_interrupts,
        CAN_FIRE_RL_rl_relay_timer_interrupts,
        CAN_FIRE_RL_rl_wr_addr_channel,
@@ -1173,6 +1178,7 @@ module mkCore(CLK,
        CAN_FIRE_cpu_imem_master_m_wready,
        CAN_FIRE_cpu_reset_server_request_put,
        CAN_FIRE_cpu_reset_server_response_get,
+       CAN_FIRE_nmi_req,
        CAN_FIRE_set_verbosity,
        WILL_FIRE_RL_rl_cpu_hart0_reset_complete,
        WILL_FIRE_RL_rl_cpu_hart0_reset_from_soc_start,
@@ -1185,7 +1191,6 @@ module mkCore(CLK,
        WILL_FIRE_RL_rl_rd_data_channel_2,
        WILL_FIRE_RL_rl_rd_data_channel_3,
        WILL_FIRE_RL_rl_relay_external_interrupts,
-       WILL_FIRE_RL_rl_relay_non_maskable_interrupt,
        WILL_FIRE_RL_rl_relay_sw_interrupts,
        WILL_FIRE_RL_rl_relay_timer_interrupts,
        WILL_FIRE_RL_rl_wr_addr_channel,
@@ -1228,6 +1233,7 @@ module mkCore(CLK,
        WILL_FIRE_cpu_imem_master_m_wready,
        WILL_FIRE_cpu_reset_server_request_put,
        WILL_FIRE_cpu_reset_server_response_get,
+       WILL_FIRE_nmi_req,
        WILL_FIRE_set_verbosity;
 
   // declarations used by system tasks
@@ -1536,6 +1542,10 @@ module mkCore(CLK,
   assign CAN_FIRE_core_external_interrupt_sources_15_m_interrupt_req = 1'd1 ;
   assign WILL_FIRE_core_external_interrupt_sources_15_m_interrupt_req = 1'd1 ;
 
+  // action method nmi_req
+  assign CAN_FIRE_nmi_req = 1'd1 ;
+  assign WILL_FIRE_nmi_req = 1'd1 ;
+
   // submodule cpu
   mkCPU cpu(.CLK(CLK),
 	    .RST_N(RST_N),
@@ -1562,7 +1572,7 @@ module mkCore(CLK,
 	    .imem_master_rvalid(cpu$imem_master_rvalid),
 	    .imem_master_wready(cpu$imem_master_wready),
 	    .m_external_interrupt_req_set_not_clear(cpu$m_external_interrupt_req_set_not_clear),
-	    .non_maskable_interrupt_req_set_not_clear(cpu$non_maskable_interrupt_req_set_not_clear),
+	    .nmi_req_set_not_clear(cpu$nmi_req_set_not_clear),
 	    .s_external_interrupt_req_set_not_clear(cpu$s_external_interrupt_req_set_not_clear),
 	    .set_verbosity_logdelay(cpu$set_verbosity_logdelay),
 	    .set_verbosity_verbosity(cpu$set_verbosity_verbosity),
@@ -2032,13 +2042,13 @@ module mkCore(CLK,
   assign CAN_FIRE_RL_rl_wr_data_channel = 1'd1 ;
   assign WILL_FIRE_RL_rl_wr_data_channel = 1'd1 ;
 
-  // rule RL_rl_rd_addr_channel
-  assign CAN_FIRE_RL_rl_rd_addr_channel = 1'd1 ;
-  assign WILL_FIRE_RL_rl_rd_addr_channel = 1'd1 ;
-
   // rule RL_rl_wr_response_channel
   assign CAN_FIRE_RL_rl_wr_response_channel = 1'd1 ;
   assign WILL_FIRE_RL_rl_wr_response_channel = 1'd1 ;
+
+  // rule RL_rl_rd_addr_channel
+  assign CAN_FIRE_RL_rl_rd_addr_channel = 1'd1 ;
+  assign WILL_FIRE_RL_rl_rd_addr_channel = 1'd1 ;
 
   // rule RL_rl_rd_data_channel
   assign CAN_FIRE_RL_rl_rd_data_channel = 1'd1 ;
@@ -2136,10 +2146,6 @@ module mkCore(CLK,
   assign WILL_FIRE_RL_rl_cpu_hart0_reset_complete =
 	     CAN_FIRE_RL_rl_cpu_hart0_reset_complete ;
 
-  // rule RL_rl_relay_non_maskable_interrupt
-  assign CAN_FIRE_RL_rl_relay_non_maskable_interrupt = 1'd1 ;
-  assign WILL_FIRE_RL_rl_relay_non_maskable_interrupt = 1'd1 ;
-
   // submodule cpu
   assign cpu$dmem_master_arready = fabric_2x3$v_from_masters_0_arready ;
   assign cpu$dmem_master_awready = fabric_2x3$v_from_masters_0_awready ;
@@ -2164,7 +2170,7 @@ module mkCore(CLK,
   assign cpu$imem_master_rvalid = cpu_imem_master_rvalid ;
   assign cpu$imem_master_wready = cpu_imem_master_wready ;
   assign cpu$m_external_interrupt_req_set_not_clear = plic$v_targets_0_m_eip ;
-  assign cpu$non_maskable_interrupt_req_set_not_clear = 1'd0 ;
+  assign cpu$nmi_req_set_not_clear = nmi_req_set_not_clear ;
   assign cpu$s_external_interrupt_req_set_not_clear = plic$v_targets_1_m_eip ;
   assign cpu$set_verbosity_logdelay = set_verbosity_logdelay ;
   assign cpu$set_verbosity_verbosity = set_verbosity_verbosity ;
