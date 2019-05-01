@@ -22,6 +22,27 @@ extern "C" {
 // ****************************************************************
 // ****************************************************************
 
+// Functions to measure simulation speed
+
+// ================================================================
+// c_start_timing()
+// Start the timing interval; argument is current cycle number.
+
+extern
+void c_start_timing (uint64_t  cycle_num);
+
+// ================================================================
+// c_end_timing()
+// End the timing interval; argument is current cycle number,
+// and print delta cycles, delta time and simulation speed.
+
+extern
+void c_end_timing (uint64_t  cycle_num);
+
+// ****************************************************************
+// ****************************************************************
+// ****************************************************************
+
 // Functions for console I/O
 
 // ================================================================

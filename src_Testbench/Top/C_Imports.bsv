@@ -22,6 +22,27 @@ import Vector :: *;
 // ****************************************************************
 // ****************************************************************
 
+// Functions to measure simulation speed
+
+// ================================================================
+// c_start_timing()
+// Start the timing interval; argument is current cycle number.
+
+import "BDPI"
+function Action c_start_timing (Bit #(64)  cycle_num);
+
+// ================================================================
+// c_end_timing()
+// End the timing interval; argument is current cycle number,
+// and print delta cycles, delta time and simulation speed.
+
+import "BDPI"
+function Action c_end_timing (Bit #(64)  cycle_num);
+
+// ****************************************************************
+// ****************************************************************
+// ****************************************************************
+
 // Functions for console I/O
 
 // ================================================================

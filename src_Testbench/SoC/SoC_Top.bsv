@@ -97,6 +97,10 @@ interface SoC_Top_IFC;
    interface Get #(Bit #(8)) get_to_console;
    interface Put #(Bit #(8)) put_from_console;
 
+   // Catch-all status; return-value can identify the origin (0 = none)
+   (* always_ready *)
+   method Bit #(8) status;
+
    // For ISA tests: watch memory writes to <tohost> addr
    method Action set_watch_tohost (Bool  watch_tohost, Fabric_Addr  tohost_addr);
 endinterface
@@ -358,6 +362,11 @@ module mkSoC_Top (SoC_Top_IFC);
    // UART to external console
    interface get_to_console   = uart0.get_to_console;
    interface put_from_console = uart0.put_from_console;
+
+   // Catch-all status; return-value can identify the origin (0 = none)
+   method Bit #(8) status;
+      return mem0_controller.status;
+   endmethod
 
    // For ISA tests: watch memory writes to <tohost> addr
    method Action set_watch_tohost (Bool  watch_tohost, Fabric_Addr  tohost_addr);
