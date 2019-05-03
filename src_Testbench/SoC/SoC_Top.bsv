@@ -129,7 +129,7 @@ module mkSoC_Top (SoC_Top_IFC);
    AXI4_Deburster_IFC #(Wd_Id,
 			Wd_Addr,
 			Wd_Data,
-			Wd_User) boot_rom_axi4_deburster <- mkAXI4_Deburster;
+			Wd_User)  boot_rom_axi4_deburster <- mkAXI4_Deburster_A;
 
    // SoC Memory
    Mem_Controller_IFC  mem0_controller <- mkMem_Controller;
@@ -137,7 +137,7 @@ module mkSoC_Top (SoC_Top_IFC);
    AXI4_Deburster_IFC #(Wd_Id,
 			Wd_Addr,
 			Wd_Data,
-			Wd_User) mem0_controller_axi4_deburster <- mkAXI4_Deburster;
+			Wd_User)  mem0_controller_axi4_deburster <- mkAXI4_Deburster_A;
 
    // SoC IPs
    UART_IFC   uart0  <- mkUART;
@@ -342,8 +342,8 @@ module mkSoC_Top (SoC_Top_IFC);
    // ================================================================
    // INTERFACE
 
-   method Action  set_verbosity (Bit #(4)  verbosity, Bit #(64)  logdelay);
-      core.set_verbosity (verbosity, logdelay);
+   method Action  set_verbosity (Bit #(4)  verbosity1, Bit #(64)  logdelay);
+      core.set_verbosity (verbosity1, logdelay);
    endmethod
 
    // To external controller (E.g., GDB)
@@ -373,6 +373,18 @@ module mkSoC_Top (SoC_Top_IFC);
       mem0_controller.set_watch_tohost (watch_tohost, tohost_addr);
    endmethod
 endmodule: mkSoC_Top
+
+// ================================================================
+// Specialization of parameterized AXI4 Deburster for this SoC.
+
+(* synthesize *)
+module mkAXI4_Deburster_A (AXI4_Deburster_IFC #(Wd_Id,
+						Wd_Addr,
+						Wd_Data,
+						Wd_User));
+   let m <- mkAXI4_Deburster;
+   return m;
+endmodule
 
 // ================================================================
 
