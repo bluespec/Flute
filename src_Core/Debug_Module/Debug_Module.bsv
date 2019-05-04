@@ -127,7 +127,7 @@ endinterface
 module mkDebug_Module (Debug_Module_IFC);
 
    // Local verbosity: 0 = quiet; 1 = print DMI transactions
-   Integer verbosity = 1;
+   Integer verbosity = 0;
 
    // The three parts
    DM_Run_Control_IFC        dm_run_control       <- mkDM_Run_Control;
