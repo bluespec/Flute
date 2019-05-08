@@ -1648,12 +1648,16 @@ module mkCPU (CPU_IFC);
 	 $display ("%0d: CPU.rl_debug_run: 'run' from dpc 0x%0h", mcycle, dpc);
    endrule
 
-   (* descending_urgency = "rl_debug_run_ignore, rl_pipe" *)
-   rule rl_debug_run_ignore ((f_run_halt_reqs.first == True) && fn_is_running (rg_state));
-      if (cur_verbosity > 1) $display ("%0d: CPU.rl_debug_run_ignore", mcycle);
+   (* descending_urgency = "rl_debug_run_redundant, rl_pipe" *)
+   rule rl_debug_run_redundant ((f_run_halt_reqs.first == True) && fn_is_running (rg_state));
+      if (cur_verbosity > 1) $display ("%0d: CPU.rl_debug_run_redundant", mcycle);
 
       f_run_halt_reqs.deq;
-      $display ("%0d: CPU.debug_run_ignore: ignoring 'run' command (CPU is not in Debug Mode)", mcycle);
+
+      // Notify debugger that we're running
+      f_run_halt_rsps.enq (True);
+
+      $display ("%0d: CPU.debug_run_redundant: CPU already running.", mcycle);
    endrule
 
    (* descending_urgency = "rl_debug_halt, rl_pipe" *)
@@ -1668,12 +1672,15 @@ module mkCPU (CPU_IFC);
 	 $display ("%0d: CPU.rl_debug_halt", mcycle);
    endrule
 
-   rule rl_debug_halt_ignore ((f_run_halt_reqs.first == False) && (! fn_is_running (rg_state)));
-      if (cur_verbosity > 1) $display ("%0d: CPU.rl_debug_halt_ignore", mcycle);
+   rule rl_debug_halt_redundant ((f_run_halt_reqs.first == False) && (! fn_is_running (rg_state)));
+      if (cur_verbosity > 1) $display ("%0d: CPU.rl_debug_halt_redundant", mcycle);
 
       f_run_halt_reqs.deq;
 
-      $display ("%0d: CPU.rl_debug_halt_ignore: ignoring 'halt' (CPU already halted)", mcycle);
+      // Notify debugger that we've 'halted'
+      f_run_halt_rsps.enq (False);
+
+      $display ("%0d: CPU.rl_debug_halt_redundant: CPU already halted.", mcycle);
       $display ("    state = ", fshow (rg_state));
    endrule
 
