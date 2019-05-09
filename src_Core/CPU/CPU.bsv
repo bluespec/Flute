@@ -1502,11 +1502,16 @@ module mkCPU (CPU_IFC);
       f_run_halt_rsps.enq (False);
    endrule: rl_trap_BREAK_to_Debug_Mode
 
+   // ----------------
    // Handle the flush responses from the caches when the flush was initiated
    // on entering CPU_GDB_PAUSING state
+
    rule rl_BREAK_cache_flush_finish (rg_state == CPU_GDB_PAUSING);
       let ack <- near_mem.server_fence_i.response.get;
       rg_state <= CPU_DEBUG_MODE;
+
+      // Notify debugger that we've halted
+      f_run_halt_rsps.enq (False);
 
       if (cur_verbosity > 1)
 	 $display ("%0d: CPU.rl_BREAK_cache_flush_finish", mcycle);
@@ -1611,9 +1616,6 @@ module mkCPU (CPU_IFC);
       rg_state      <= CPU_GDB_PAUSING;
       rg_stop_req   <= False;
       rg_step_count <= 0;
-
-      // Notify debugger that we've halted
-      f_run_halt_rsps.enq (False);
 
       // Flush both caches -- using the same interface as that used by FENCE_I
       near_mem.server_fence_i.request.put (?);
