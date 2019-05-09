@@ -89,15 +89,18 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
    Reg #(Bool)                 rg_abstractcs_busy   <- mkRegU;
    Reg #(DM_abstractcs_cmderr) rg_abstractcs_cmderr <- mkRegU;
 
-   Bit #(5) abstractcs_progsize  = 0;
-   Bit #(5) abstractcs_datacount = 0;
+   // Size of program buffer, in 32b words
+   Bit #(5) abstractcs_progbufsize = 0;
+   // Number of data registers implemented (rg_data0, rg_data1)
+   Bit #(4) abstractcs_datacount = ((xlen == 32) ? 1 : 2);
+
    DM_Word virt_rg_abstractcs = {3'b0,
-				 abstractcs_progsize,
+				 abstractcs_progbufsize,
 				 11'b0,
 				 pack (rg_abstractcs_busy),
 				 1'b0,
 				 pack (rg_abstractcs_cmderr),
-				 3'b0,
+				 4'b0,
 				 abstractcs_datacount};
 
    function Action fa_rg_abstractcs_write (DM_Word dm_word);
