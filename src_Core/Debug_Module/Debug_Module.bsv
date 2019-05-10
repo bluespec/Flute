@@ -115,7 +115,7 @@ interface Debug_Module_IFC;
    // Facing Platform
 
    // Non-Debug-Module Reset (reset all except DM)
-   interface Get #(Token) get_ndm_reset_req;
+   interface Client #(Token, Token) ndm_reset_client;
 
    // Read/Write RISC-V memory
    interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) master;
@@ -301,7 +301,7 @@ module mkDebug_Module (Debug_Module_IFC);
    // Facing Platform
 
    // Non-Debug-Module Reset (reset all except DM)
-   interface Get get_ndm_reset_req = dm_run_control.get_ndm_reset_req;
+   interface Client ndm_reset_client = dm_run_control.ndm_reset_client;
 
    // Read/Write RISC-V memory
    interface AXI4_Master_IFC master = dm_system_bus.master;

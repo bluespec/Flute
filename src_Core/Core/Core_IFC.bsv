@@ -94,7 +94,7 @@ interface Core_IFC #(numeric type t_n_interrupt_sources);
    // Facing Platform
    // Non-Debug-Module Reset (reset all except DM)
 
-   interface Get #(Bit #(0)) dm_ndm_reset_req_get;
+   interface Client #(Bit #(0), Bit #(0)) ndm_reset_client;
 `endif
 endinterface
 

@@ -399,7 +399,7 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
    // Facing Platform
 
    // Non-Debug-Module Reset (reset all except DM)
-   interface Get  dm_ndm_reset_req_get = debug_module.get_ndm_reset_req;
+   interface Client ndm_reset_client = debug_module.ndm_reset_client;
 `endif
 
 endmodule: mkCore
