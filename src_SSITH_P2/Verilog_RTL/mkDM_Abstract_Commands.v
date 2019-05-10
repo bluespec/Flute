@@ -306,26 +306,26 @@ module mkDM_Abstract_Commands(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h2815;
-  reg [31 : 0] v__h3054;
-  reg [31 : 0] v__h3179;
-  reg [31 : 0] v__h3506;
-  reg [31 : 0] v__h3623;
-  reg [31 : 0] v__h3336;
-  reg [31 : 0] v__h4114;
-  reg [31 : 0] v__h2809;
-  reg [31 : 0] v__h3048;
-  reg [31 : 0] v__h3173;
-  reg [31 : 0] v__h3330;
-  reg [31 : 0] v__h3500;
-  reg [31 : 0] v__h3617;
-  reg [31 : 0] v__h4108;
+  reg [31 : 0] v__h2817;
+  reg [31 : 0] v__h3056;
+  reg [31 : 0] v__h3181;
+  reg [31 : 0] v__h3508;
+  reg [31 : 0] v__h3625;
+  reg [31 : 0] v__h3338;
+  reg [31 : 0] v__h4116;
+  reg [31 : 0] v__h2811;
+  reg [31 : 0] v__h3050;
+  reg [31 : 0] v__h3175;
+  reg [31 : 0] v__h3332;
+  reg [31 : 0] v__h3502;
+  reg [31 : 0] v__h3619;
+  reg [31 : 0] v__h4110;
   // synopsys translate_on
 
   // remaining internal signals
   wire [63 : 0] req_data__h860;
   wire [31 : 0] virt_rg_abstractcs__h706, virt_rg_command__h770;
-  wire [15 : 0] regno__h2639;
+  wire [15 : 0] regno__h2641;
   wire [12 : 0] x__h1321, x__h1746;
   wire rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d38,
        rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d49,
@@ -897,7 +897,7 @@ module mkDM_Abstract_Commands(CLK,
   assign f_hart0_gpr_rsps$CLR = EN_reset ;
 
   // remaining internal signals
-  assign regno__h2639 = { 3'd0, rg_command_access_reg_regno } ;
+  assign regno__h2641 = { 3'd0, rg_command_access_reg_regno } ;
   assign req_data__h860 = { rg_data1, rg_data0 } ;
   assign rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d38 =
 	     rg_abstractcs_busy && rg_start_reg_access &&
@@ -939,9 +939,9 @@ module mkDM_Abstract_Commands(CLK,
   assign rg_command_access_reg_regno_ULT_0x1020___d57 =
 	     rg_command_access_reg_regno < 13'h1020 ;
   assign virt_rg_abstractcs__h706 =
-	     { 19'd0, rg_abstractcs_busy, 1'b0, rg_abstractcs_cmderr, 8'd0 } ;
+	     { 19'd0, rg_abstractcs_busy, 1'b0, rg_abstractcs_cmderr, 8'd2 } ;
   assign virt_rg_command__h770 =
-	     { 15'd17, rg_command_access_reg_write, regno__h2639 } ;
+	     { 15'd17, rg_command_access_reg_write, regno__h2641 } ;
   assign write_dm_addr_EQ_0x16_00_AND_rg_abstractcs_bus_ETC___d117 =
 	     write_dm_addr == 7'h16 &&
 	     (rg_abstractcs_busy || write_dm_word[10:8] != 3'd0) ||
@@ -1031,14 +1031,14 @@ module mkDM_Abstract_Commands(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr == 7'h16 && rg_abstractcs_busy)
 	begin
-	  v__h2815 = $stime;
+	  v__h2817 = $stime;
 	  #0;
 	end
-    v__h2809 = v__h2815 / 32'd10;
+    v__h2811 = v__h2817 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr == 7'h16 && rg_abstractcs_busy)
 	$display("%0d: DM_Abstract_Commands.write: [abstractcs] <= 0x%08h: ERROR",
-		 v__h2809,
+		 v__h2811,
 		 write_dm_word);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr == 7'h16 && rg_abstractcs_busy)
@@ -1048,16 +1048,16 @@ module mkDM_Abstract_Commands(CLK,
 	  write_dm_addr == 7'h17 &&
 	  rg_abstractcs_busy)
 	begin
-	  v__h3054 = $stime;
+	  v__h3056 = $stime;
 	  #0;
 	end
-    v__h3048 = v__h3054 / 32'd10;
+    v__h3050 = v__h3056 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
 	  write_dm_addr == 7'h17 &&
 	  rg_abstractcs_busy)
 	$display("%0d: DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR",
-		 v__h3048,
+		 v__h3050,
 		 write_dm_word);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
@@ -1068,15 +1068,15 @@ module mkDM_Abstract_Commands(CLK,
       if (EN_write &&
 	  rg_abstractcs_cmderr_1_EQ_0_07_AND_write_dm_ad_ETC___d142)
 	begin
-	  v__h3179 = $stime;
+	  v__h3181 = $stime;
 	  #0;
 	end
-    v__h3173 = v__h3179 / 32'd10;
+    v__h3175 = v__h3181 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write &&
 	  rg_abstractcs_cmderr_1_EQ_0_07_AND_write_dm_ad_ETC___d142)
 	$display("%0d: DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR",
-		 v__h3173,
+		 v__h3175,
 		 write_dm_word);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write &&
@@ -1094,15 +1094,15 @@ module mkDM_Abstract_Commands(CLK,
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
 	  write_dm_addr_EQ_0x17_08_AND_NOT_rg_abstractcs_ETC___d149)
 	begin
-	  v__h3506 = $stime;
+	  v__h3508 = $stime;
 	  #0;
 	end
-    v__h3500 = v__h3506 / 32'd10;
+    v__h3502 = v__h3508 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
 	  write_dm_addr_EQ_0x17_08_AND_NOT_rg_abstractcs_ETC___d149)
 	$display("%0d: DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR",
-		 v__h3500,
+		 v__h3502,
 		 write_dm_word);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
@@ -1112,15 +1112,15 @@ module mkDM_Abstract_Commands(CLK,
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
 	  write_dm_addr_EQ_0x17_08_AND_NOT_rg_abstractcs_ETC___d167)
 	begin
-	  v__h3623 = $stime;
+	  v__h3625 = $stime;
 	  #0;
 	end
-    v__h3617 = v__h3623 / 32'd10;
+    v__h3619 = v__h3625 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
 	  write_dm_addr_EQ_0x17_08_AND_NOT_rg_abstractcs_ETC___d167)
 	$display("%0d: DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR",
-		 v__h3617,
+		 v__h3619,
 		 write_dm_word);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 &&
@@ -1130,15 +1130,15 @@ module mkDM_Abstract_Commands(CLK,
       if (EN_write &&
 	  rg_abstractcs_cmderr_1_EQ_0_07_AND_write_dm_ad_ETC___d174)
 	begin
-	  v__h3336 = $stime;
+	  v__h3338 = $stime;
 	  #0;
 	end
-    v__h3330 = v__h3336 / 32'd10;
+    v__h3332 = v__h3338 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write &&
 	  rg_abstractcs_cmderr_1_EQ_0_07_AND_write_dm_ad_ETC___d174)
 	$display("%0d: DM_Abstract_Commands.write: [command] <= 0x%08h: ERROR",
-		 v__h3330,
+		 v__h3332,
 		 write_dm_word);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write &&
@@ -1201,17 +1201,17 @@ module mkDM_Abstract_Commands(CLK,
 	  write_dm_addr != 7'h04 &&
 	  write_dm_addr != 7'h05)
 	begin
-	  v__h4114 = $stime;
+	  v__h4116 = $stime;
 	  #0;
 	end
-    v__h4108 = v__h4114 / 32'd10;
+    v__h4110 = v__h4116 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr != 7'h16 &&
 	  rg_abstractcs_cmderr == 3'd0 &&
 	  write_dm_addr != 7'h17 &&
 	  write_dm_addr != 7'h04 &&
 	  write_dm_addr != 7'h05)
-	$write("%0d: DM_Abstract_Commands.write: [", v__h4108);
+	$write("%0d: DM_Abstract_Commands.write: [", v__h4110);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && rg_abstractcs_cmderr == 3'd0 && write_dm_addr == 7'h10)
 	$write("dm_addr_dmcontrol");

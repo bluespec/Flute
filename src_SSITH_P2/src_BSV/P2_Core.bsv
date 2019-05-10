@@ -122,7 +122,8 @@ module mkP2_Core (P2_Core_IFC);
    // Reset on startup, and also on NDM reset from Debug Module
    // (NDM reset from Debug Module = reset all except Debug Module)
 
-   Reg #(Bool) rg_once <- mkReg (False);
+   Reg #(Bool) rg_once      <- mkReg (False);
+   Reg #(Bool) rg_ndm_reset <- mkReg (False);
 
    rule rl_once (! rg_once);
       core.cpu_reset_server.request.put (?);
@@ -131,10 +132,24 @@ module mkP2_Core (P2_Core_IFC);
 
    rule rl_reset_response;
       let tmp <- core.cpu_reset_server.response.get;
+
+`ifdef INCLUDE_GDB_CONTROL
+      // Respond to Debug module if this is an ndm-reset
+      if (rg_ndm_reset)
+	 core.ndm_reset_client.response.put (?);
+      rg_ndm_reset <= False;
+`endif
    endrule
 
+   // ----------------
+   // Also do a reset if requested from Debug Module (NDM = Non-Debug-Module reset)
+
    rule rl_ndmreset (rg_once);
-      let tmp <- core.dm_ndm_reset_req_get.get;
+`ifdef INCLUDE_GDB_CONTROL
+      let tmp <- core.ndm_reset_client.request.get;
+      rg_ndm_reset <= True;
+`endif
+
       rg_once <= False;
    endrule
 
