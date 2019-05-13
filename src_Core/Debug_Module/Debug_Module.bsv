@@ -96,7 +96,7 @@ interface Debug_Module_IFC;
    // This section replicated for additional harts.
 
    // Reset and run-control
-   interface Get #(Token)         hart0_get_reset_req;
+   interface Client #(Bool, Bool) hart0_reset_client;
    interface Client #(Bool, Bool) hart0_client_run_halt;
    interface Get #(Bit #(4))      hart0_get_other_req;
 
@@ -115,7 +115,8 @@ interface Debug_Module_IFC;
    // Facing Platform
 
    // Non-Debug-Module Reset (reset all except DM)
-   interface Client #(Token, Token) ndm_reset_client;
+   // Bool indicates 'running' hart state.
+   interface Client #(Bool, Bool) ndm_reset_client;
 
    // Read/Write RISC-V memory
    interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) master;
@@ -282,7 +283,7 @@ module mkDebug_Module (Debug_Module_IFC);
    // Facing CPU/hart0
 
    // Reset and run-control
-   interface Get    hart0_get_reset_req   = dm_run_control.hart0_get_reset_req;
+   interface Client hart0_reset_client    = dm_run_control.hart0_reset_client;
    interface Client hart0_client_run_halt = dm_run_control.hart0_client_run_halt;
    interface Get    hart0_get_other_req   = dm_run_control.hart0_get_other_req;
 

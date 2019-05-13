@@ -68,12 +68,6 @@ import Debug_Module     :: *;
 `endif
 
 // ================================================================
-// Local types and constants
-
-typedef enum {SOC_START, SOC_RESETTING, SOC_IDLE} SoC_State
-deriving (Bits, Eq, FShow);
-
-// ================================================================
 // The outermost interface of the SoC
 
 interface SoC_Top_IFC;
@@ -104,6 +98,17 @@ interface SoC_Top_IFC;
    // For ISA tests: watch memory writes to <tohost> addr
    method Action set_watch_tohost (Bool  watch_tohost, Fabric_Addr  tohost_addr);
 endinterface
+
+// ================================================================
+// Local types and constants
+
+typedef enum {SOC_START,
+	      SOC_RESETTING,
+`ifdef INCLUDE_GDB_CONTROL
+	      SOC_RESETTING_NDM,
+`endif
+	      SOC_IDLE} SoC_State
+deriving (Bits, Eq, FShow);
 
 // ================================================================
 // The module
@@ -218,26 +223,99 @@ module mkSoC_Top (SoC_Top_IFC);
    endrule
 
    // ================================================================
-   // RESET BEHAVIOR WITHOUT DEBUG MODULE
+   // SOFT RESET
 
-   rule rl_reset_start_2 (rg_state == SOC_START);
-      core.cpu_reset_server.request.put (?);
-      mem0_controller.server_reset.request.put (?);
-      uart0.server_reset.request.put (?);
+   function Action fa_reset_start_actions (Bool running);
+      action
+	 core.cpu_reset_server.request.put (running);
+	 mem0_controller.server_reset.request.put (?);
+	 uart0.server_reset.request.put (?);
+	 fabric.reset;
+      endaction
+   endfunction
 
-      fabric.reset;
+   function Action fa_reset_complete_actions ();
+      action
+	 let cpu_rsp             <- core.cpu_reset_server.response.get;
+	 let mem0_controller_rsp <- mem0_controller.server_reset.response.get;
+	 let uart0_rsp           <- uart0.server_reset.response.get;
 
+	 // Initialize address maps of slave IPs
+	 boot_rom.set_addr_map (soc_map.m_boot_rom_addr_base,
+				soc_map.m_boot_rom_addr_lim);
+
+	 mem0_controller.set_addr_map (soc_map.m_mem0_controller_addr_base,
+				       soc_map.m_mem0_controller_addr_lim);
+
+	 uart0.set_addr_map (soc_map.m_uart0_addr_base, soc_map.m_uart0_addr_lim);
+
+	 if (verbosity != 0) begin
+	    $display ("  SoC address map:");
+	    $display ("  Boot ROM:        0x%0h .. 0x%0h",
+		      soc_map.m_boot_rom_addr_base,
+		      soc_map.m_boot_rom_addr_lim);
+	    $display ("  Mem0 Controller: 0x%0h .. 0x%0h",
+		      soc_map.m_mem0_controller_addr_base,
+		      soc_map.m_mem0_controller_addr_lim);
+	    $display ("  UART0:           0x%0h .. 0x%0h",
+		      soc_map.m_uart0_addr_base,
+		      soc_map.m_uart0_addr_lim);
+	 end
+      endaction
+   endfunction
+
+   // ----------------
+   // Initial reset
+
+   rule rl_reset_start_initial (rg_state == SOC_START);
+      Bool running = True;
+      fa_reset_start_actions (running);
       rg_state <= SOC_RESETTING;
 
       $display ("%0d: SoC_Top. Reset start ...", cur_cycle);
    endrule
+
+   rule rl_reset_complete_initial (rg_state == SOC_RESETTING);
+      fa_reset_complete_actions;
+      rg_state <= SOC_IDLE;
+
+      $display ("%0d: SoC_Top. Reset complete ...", cur_cycle);
+   endrule
+
+   // ----------------
+   // NDM (non-debug-module) reset (requested from Debug Module)
+
+`ifdef INCLUDE_GDB_CONTROL
+   Reg #(Bool) rg_running <- mkRegU;
+
+   rule rl_ndm_reset_start (rg_state == SOC_IDLE);
+      let running <- core.ndm_reset_client.request.get;
+      rg_running <= running;
+
+      fa_reset_start_actions (running);
+      rg_state <= SOC_RESETTING_NDM;
+
+      $display ("%0d: SoC_Top.rl_ndm_reset_start (non-debug-module) running = ...",
+		cur_cycle, fshow (running));
+   endrule
+
+   rule rl_ndm_reset_complete (rg_state == SOC_RESETTING_NDM);
+      fa_reset_complete_actions;
+      rg_state <= SOC_IDLE;
+
+      core.ndm_reset_client.response.put (rg_running);
+
+      $display ("%0d: SoC_Top.rl_ndm_reset_complete (non-debug-module) running = ",
+		cur_cycle, fshow (rg_running));
+   endrule
+`endif
 
    // ================================================================
    // BEHAVIOR WITH DEBUG MODULE
 
 `ifdef INCLUDE_GDB_CONTROL
    // ----------------------------------------------------------------
-   // External debug requests and responses
+   // External debug requests and responses (e.g., GDB)
 
    FIFOF #(Control_Req) f_external_control_reqs <- mkFIFOF;
    FIFOF #(Control_Rsp) f_external_control_rsps <- mkFIFOF;
@@ -283,63 +361,7 @@ module mkSoC_Top (SoC_Top_IFC);
       $display ("%0d: SoC_Top.rl_handle_external_req_err: unknown req.op", cur_cycle);
       $display ("    ", fshow (req));
    endrule
-
-   // ----------------------------------------------------------------
-   // NDM reset (all except Debug Module) request from debug module
-
-   rule rl_reset_start (rg_state != SOC_RESETTING);
-      let req <- core.ndm_reset_client.request.get;
-
-      core.cpu_reset_server.request.put (?);
-      mem0_controller.server_reset.request.put (?);
-      uart0.server_reset.request.put (?);
-
-      fabric.reset;
-
-      rg_state <= SOC_RESETTING;
-
-      $display ("%0d: SoC_Top.rl_reset_start (Debug Module NDM reset, all except debug module) ...",
-		cur_cycle);
-   endrule
 `endif
-
-   rule rl_reset_complete (rg_state == SOC_RESETTING);
-      let cpu_rsp             <- core.cpu_reset_server.response.get;
-      let mem0_controller_rsp <- mem0_controller.server_reset.response.get;
-      let uart0_rsp           <- uart0.server_reset.response.get;
-
-      // Initialize address maps of slave IPs
-      boot_rom.set_addr_map (soc_map.m_boot_rom_addr_base,
-			     soc_map.m_boot_rom_addr_lim);
-
-      mem0_controller.set_addr_map (soc_map.m_mem0_controller_addr_base,
-				    soc_map.m_mem0_controller_addr_lim);
-
-      uart0.set_addr_map (soc_map.m_uart0_addr_base, soc_map.m_uart0_addr_lim);
-
-      rg_state <= SOC_IDLE;
-
-`ifdef INCLUDE_GDB_CONTROL
-      core.ndm_reset_client.response.put (?);
-
-      $display ("%0d: SoC_Top: NDM reset complete (all except debug module)", cur_cycle);
-`else
-      $display ("%0d: SoC_Top. Reset complete ...", cur_cycle);
-`endif
-
-      if (verbosity != 0) begin
-	 $display ("  SoC address map:");
-	 $display ("  Boot ROM:        0x%0h .. 0x%0h",
-		   soc_map.m_boot_rom_addr_base,
-		   soc_map.m_boot_rom_addr_lim);
-	 $display ("  Mem0 Controller: 0x%0h .. 0x%0h",
-		   soc_map.m_mem0_controller_addr_base,
-		   soc_map.m_mem0_controller_addr_lim);
-	 $display ("  UART0:           0x%0h .. 0x%0h",
-		   soc_map.m_uart0_addr_base,
-		   soc_map.m_uart0_addr_lim);
-      end
-   endrule
 
    // ================================================================
    // INTERFACE

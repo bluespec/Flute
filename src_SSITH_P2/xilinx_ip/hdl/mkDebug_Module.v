@@ -10,7 +10,9 @@
 // dmi_read_data                  O    32
 // RDY_dmi_read_data              O     1
 // RDY_dmi_write                  O     1
-// RDY_hart0_get_reset_req_get    O     1 reg
+// hart0_reset_client_request_get  O     1 reg
+// RDY_hart0_reset_client_request_get  O     1 reg
+// RDY_hart0_reset_client_response_put  O     1 reg
 // hart0_client_run_halt_request_get  O     1 reg
 // RDY_hart0_client_run_halt_request_get  O     1 reg
 // RDY_hart0_client_run_halt_response_put  O     1 reg
@@ -25,6 +27,7 @@
 // hart0_csr_mem_client_request_get  O    77 reg
 // RDY_hart0_csr_mem_client_request_get  O     1 reg
 // RDY_hart0_csr_mem_client_response_put  O     1 reg
+// ndm_reset_client_request_get   O     1 reg
 // RDY_ndm_reset_client_request_get  O     1 reg
 // RDY_ndm_reset_client_response_put  O     1 reg
 // master_awvalid                 O     1
@@ -61,10 +64,12 @@
 // dmi_read_addr_dm_addr          I     7
 // dmi_write_dm_addr              I     7
 // dmi_write_dm_word              I    32
+// hart0_reset_client_response_put  I     1 reg
 // hart0_client_run_halt_response_put  I     1 reg
 // hart0_gpr_mem_client_response_put  I    65 reg
 // hart0_fpr_mem_client_response_put  I    65 reg
 // hart0_csr_mem_client_response_put  I    65 reg
+// ndm_reset_client_response_put  I     1 reg
 // master_awready                 I     1
 // master_wready                  I     1
 // master_bvalid                  I     1
@@ -78,19 +83,20 @@
 // master_rlast                   I     1 reg
 // EN_dmi_read_addr               I     1
 // EN_dmi_write                   I     1
-// EN_hart0_get_reset_req_get     I     1
+// EN_hart0_reset_client_response_put  I     1
 // EN_hart0_client_run_halt_response_put  I     1
 // EN_hart0_gpr_mem_client_response_put  I     1
 // EN_hart0_fpr_mem_client_response_put  I     1
 // EN_hart0_csr_mem_client_response_put  I     1
-// EN_ndm_reset_client_request_get  I     1
 // EN_ndm_reset_client_response_put  I     1
 // EN_dmi_read_data               I     1
+// EN_hart0_reset_client_request_get  I     1
 // EN_hart0_client_run_halt_request_get  I     1
 // EN_hart0_get_other_req_get     I     1
 // EN_hart0_gpr_mem_client_request_get  I     1
 // EN_hart0_fpr_mem_client_request_get  I     1
 // EN_hart0_csr_mem_client_request_get  I     1
+// EN_ndm_reset_client_request_get  I     1
 //
 // Combinational paths from inputs to outputs:
 //   (dmi_read_addr_dm_addr,
@@ -133,8 +139,13 @@ module mkDebug_Module(CLK,
 		      EN_dmi_write,
 		      RDY_dmi_write,
 
-		      EN_hart0_get_reset_req_get,
-		      RDY_hart0_get_reset_req_get,
+		      EN_hart0_reset_client_request_get,
+		      hart0_reset_client_request_get,
+		      RDY_hart0_reset_client_request_get,
+
+		      hart0_reset_client_response_put,
+		      EN_hart0_reset_client_response_put,
+		      RDY_hart0_reset_client_response_put,
 
 		      EN_hart0_client_run_halt_request_get,
 		      hart0_client_run_halt_request_get,
@@ -173,8 +184,10 @@ module mkDebug_Module(CLK,
 		      RDY_hart0_csr_mem_client_response_put,
 
 		      EN_ndm_reset_client_request_get,
+		      ndm_reset_client_request_get,
 		      RDY_ndm_reset_client_request_get,
 
+		      ndm_reset_client_response_put,
 		      EN_ndm_reset_client_response_put,
 		      RDY_ndm_reset_client_response_put,
 
@@ -270,9 +283,15 @@ module mkDebug_Module(CLK,
   input  EN_dmi_write;
   output RDY_dmi_write;
 
-  // action method hart0_get_reset_req_get
-  input  EN_hart0_get_reset_req_get;
-  output RDY_hart0_get_reset_req_get;
+  // actionvalue method hart0_reset_client_request_get
+  input  EN_hart0_reset_client_request_get;
+  output hart0_reset_client_request_get;
+  output RDY_hart0_reset_client_request_get;
+
+  // action method hart0_reset_client_response_put
+  input  hart0_reset_client_response_put;
+  input  EN_hart0_reset_client_response_put;
+  output RDY_hart0_reset_client_response_put;
 
   // actionvalue method hart0_client_run_halt_request_get
   input  EN_hart0_client_run_halt_request_get;
@@ -319,11 +338,13 @@ module mkDebug_Module(CLK,
   input  EN_hart0_csr_mem_client_response_put;
   output RDY_hart0_csr_mem_client_response_put;
 
-  // action method ndm_reset_client_request_get
+  // actionvalue method ndm_reset_client_request_get
   input  EN_ndm_reset_client_request_get;
+  output ndm_reset_client_request_get;
   output RDY_ndm_reset_client_request_get;
 
   // action method ndm_reset_client_response_put
+  input  ndm_reset_client_response_put;
   input  EN_ndm_reset_client_response_put;
   output RDY_ndm_reset_client_response_put;
 
@@ -470,12 +491,14 @@ module mkDebug_Module(CLK,
        RDY_hart0_fpr_mem_client_request_get,
        RDY_hart0_fpr_mem_client_response_put,
        RDY_hart0_get_other_req_get,
-       RDY_hart0_get_reset_req_get,
        RDY_hart0_gpr_mem_client_request_get,
        RDY_hart0_gpr_mem_client_response_put,
+       RDY_hart0_reset_client_request_get,
+       RDY_hart0_reset_client_response_put,
        RDY_ndm_reset_client_request_get,
        RDY_ndm_reset_client_response_put,
        hart0_client_run_halt_request_get,
+       hart0_reset_client_request_get,
        master_arlock,
        master_arvalid,
        master_awlock,
@@ -483,7 +506,8 @@ module mkDebug_Module(CLK,
        master_bready,
        master_rready,
        master_wlast,
-       master_wvalid;
+       master_wvalid,
+       ndm_reset_client_request_get;
 
   // inlined wires
   wire [7 : 0] f_read_addr_rv$port0__write_1,
@@ -530,7 +554,8 @@ module mkDebug_Module(CLK,
        dm_run_control$EN_hart0_client_run_halt_request_get,
        dm_run_control$EN_hart0_client_run_halt_response_put,
        dm_run_control$EN_hart0_get_other_req_get,
-       dm_run_control$EN_hart0_get_reset_req_get,
+       dm_run_control$EN_hart0_reset_client_request_get,
+       dm_run_control$EN_hart0_reset_client_response_put,
        dm_run_control$EN_ndm_reset_client_request_get,
        dm_run_control$EN_ndm_reset_client_response_put,
        dm_run_control$EN_reset,
@@ -538,13 +563,18 @@ module mkDebug_Module(CLK,
        dm_run_control$RDY_hart0_client_run_halt_request_get,
        dm_run_control$RDY_hart0_client_run_halt_response_put,
        dm_run_control$RDY_hart0_get_other_req_get,
-       dm_run_control$RDY_hart0_get_reset_req_get,
+       dm_run_control$RDY_hart0_reset_client_request_get,
+       dm_run_control$RDY_hart0_reset_client_response_put,
        dm_run_control$RDY_ndm_reset_client_request_get,
        dm_run_control$RDY_ndm_reset_client_response_put,
        dm_run_control$RDY_write,
        dm_run_control$dmactive,
        dm_run_control$hart0_client_run_halt_request_get,
-       dm_run_control$hart0_client_run_halt_response_put;
+       dm_run_control$hart0_client_run_halt_response_put,
+       dm_run_control$hart0_reset_client_request_get,
+       dm_run_control$hart0_reset_client_response_put,
+       dm_run_control$ndm_reset_client_request_get,
+       dm_run_control$ndm_reset_client_response_put;
 
   // ports of submodule dm_system_bus
   wire [63 : 0] dm_system_bus$master_araddr,
@@ -607,9 +637,10 @@ module mkDebug_Module(CLK,
        CAN_FIRE_hart0_fpr_mem_client_request_get,
        CAN_FIRE_hart0_fpr_mem_client_response_put,
        CAN_FIRE_hart0_get_other_req_get,
-       CAN_FIRE_hart0_get_reset_req_get,
        CAN_FIRE_hart0_gpr_mem_client_request_get,
        CAN_FIRE_hart0_gpr_mem_client_response_put,
+       CAN_FIRE_hart0_reset_client_request_get,
+       CAN_FIRE_hart0_reset_client_response_put,
        CAN_FIRE_master_m_arready,
        CAN_FIRE_master_m_awready,
        CAN_FIRE_master_m_bvalid,
@@ -628,9 +659,10 @@ module mkDebug_Module(CLK,
        WILL_FIRE_hart0_fpr_mem_client_request_get,
        WILL_FIRE_hart0_fpr_mem_client_response_put,
        WILL_FIRE_hart0_get_other_req_get,
-       WILL_FIRE_hart0_get_reset_req_get,
        WILL_FIRE_hart0_gpr_mem_client_request_get,
        WILL_FIRE_hart0_gpr_mem_client_response_put,
+       WILL_FIRE_hart0_reset_client_request_get,
+       WILL_FIRE_hart0_reset_client_response_put,
        WILL_FIRE_master_m_arready,
        WILL_FIRE_master_m_awready,
        WILL_FIRE_master_m_bvalid,
@@ -641,8 +673,8 @@ module mkDebug_Module(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h895;
-  reg [31 : 0] v__h889;
+  reg [31 : 0] v__h919;
+  reg [31 : 0] v__h913;
   // synopsys translate_on
 
   // action method dmi_read_addr
@@ -719,12 +751,23 @@ module mkDebug_Module(CLK,
 	     dm_run_control$RDY_write && dm_system_bus$RDY_write ;
   assign WILL_FIRE_dmi_write = EN_dmi_write ;
 
-  // action method hart0_get_reset_req_get
-  assign RDY_hart0_get_reset_req_get =
-	     dm_run_control$RDY_hart0_get_reset_req_get ;
-  assign CAN_FIRE_hart0_get_reset_req_get =
-	     dm_run_control$RDY_hart0_get_reset_req_get ;
-  assign WILL_FIRE_hart0_get_reset_req_get = EN_hart0_get_reset_req_get ;
+  // actionvalue method hart0_reset_client_request_get
+  assign hart0_reset_client_request_get =
+	     dm_run_control$hart0_reset_client_request_get ;
+  assign RDY_hart0_reset_client_request_get =
+	     dm_run_control$RDY_hart0_reset_client_request_get ;
+  assign CAN_FIRE_hart0_reset_client_request_get =
+	     dm_run_control$RDY_hart0_reset_client_request_get ;
+  assign WILL_FIRE_hart0_reset_client_request_get =
+	     EN_hart0_reset_client_request_get ;
+
+  // action method hart0_reset_client_response_put
+  assign RDY_hart0_reset_client_response_put =
+	     dm_run_control$RDY_hart0_reset_client_response_put ;
+  assign CAN_FIRE_hart0_reset_client_response_put =
+	     dm_run_control$RDY_hart0_reset_client_response_put ;
+  assign WILL_FIRE_hart0_reset_client_response_put =
+	     EN_hart0_reset_client_response_put ;
 
   // actionvalue method hart0_client_run_halt_request_get
   assign hart0_client_run_halt_request_get =
@@ -806,7 +849,9 @@ module mkDebug_Module(CLK,
   assign WILL_FIRE_hart0_csr_mem_client_response_put =
 	     EN_hart0_csr_mem_client_response_put ;
 
-  // action method ndm_reset_client_request_get
+  // actionvalue method ndm_reset_client_request_get
+  assign ndm_reset_client_request_get =
+	     dm_run_control$ndm_reset_client_request_get ;
   assign RDY_ndm_reset_client_request_get =
 	     dm_run_control$RDY_ndm_reset_client_request_get ;
   assign CAN_FIRE_ndm_reset_client_request_get =
@@ -966,12 +1011,15 @@ module mkDebug_Module(CLK,
 				  .RST_N(RST_N),
 				  .av_read_dm_addr(dm_run_control$av_read_dm_addr),
 				  .hart0_client_run_halt_response_put(dm_run_control$hart0_client_run_halt_response_put),
+				  .hart0_reset_client_response_put(dm_run_control$hart0_reset_client_response_put),
+				  .ndm_reset_client_response_put(dm_run_control$ndm_reset_client_response_put),
 				  .write_dm_addr(dm_run_control$write_dm_addr),
 				  .write_dm_word(dm_run_control$write_dm_word),
 				  .EN_reset(dm_run_control$EN_reset),
 				  .EN_av_read(dm_run_control$EN_av_read),
 				  .EN_write(dm_run_control$EN_write),
-				  .EN_hart0_get_reset_req_get(dm_run_control$EN_hart0_get_reset_req_get),
+				  .EN_hart0_reset_client_request_get(dm_run_control$EN_hart0_reset_client_request_get),
+				  .EN_hart0_reset_client_response_put(dm_run_control$EN_hart0_reset_client_response_put),
 				  .EN_hart0_client_run_halt_request_get(dm_run_control$EN_hart0_client_run_halt_request_get),
 				  .EN_hart0_client_run_halt_response_put(dm_run_control$EN_hart0_client_run_halt_response_put),
 				  .EN_hart0_get_other_req_get(dm_run_control$EN_hart0_get_other_req_get),
@@ -983,12 +1031,15 @@ module mkDebug_Module(CLK,
 				  .av_read(dm_run_control$av_read),
 				  .RDY_av_read(),
 				  .RDY_write(dm_run_control$RDY_write),
-				  .RDY_hart0_get_reset_req_get(dm_run_control$RDY_hart0_get_reset_req_get),
+				  .hart0_reset_client_request_get(dm_run_control$hart0_reset_client_request_get),
+				  .RDY_hart0_reset_client_request_get(dm_run_control$RDY_hart0_reset_client_request_get),
+				  .RDY_hart0_reset_client_response_put(dm_run_control$RDY_hart0_reset_client_response_put),
 				  .hart0_client_run_halt_request_get(dm_run_control$hart0_client_run_halt_request_get),
 				  .RDY_hart0_client_run_halt_request_get(dm_run_control$RDY_hart0_client_run_halt_request_get),
 				  .RDY_hart0_client_run_halt_response_put(dm_run_control$RDY_hart0_client_run_halt_response_put),
 				  .hart0_get_other_req_get(dm_run_control$hart0_get_other_req_get),
 				  .RDY_hart0_get_other_req_get(dm_run_control$RDY_hart0_get_other_req_get),
+				  .ndm_reset_client_request_get(dm_run_control$ndm_reset_client_request_get),
 				  .RDY_ndm_reset_client_request_get(dm_run_control$RDY_ndm_reset_client_request_get),
 				  .RDY_ndm_reset_client_response_put(dm_run_control$RDY_ndm_reset_client_response_put));
 
@@ -1125,6 +1176,10 @@ module mkDebug_Module(CLK,
   assign dm_run_control$av_read_dm_addr = f_read_addr_rv$port1__read[6:0] ;
   assign dm_run_control$hart0_client_run_halt_response_put =
 	     hart0_client_run_halt_response_put ;
+  assign dm_run_control$hart0_reset_client_response_put =
+	     hart0_reset_client_response_put ;
+  assign dm_run_control$ndm_reset_client_response_put =
+	     ndm_reset_client_response_put ;
   assign dm_run_control$write_dm_addr = dmi_write_dm_addr ;
   assign dm_run_control$write_dm_word = dmi_write_dm_word ;
   assign dm_run_control$EN_reset = WILL_FIRE_RL_rl_reset ;
@@ -1153,8 +1208,10 @@ module mkDebug_Module(CLK,
 	      dmi_write_dm_addr == 7'h40 ||
 	      dmi_write_dm_addr == 7'h5F ||
 	      dmi_write_dm_addr == 7'h60) ;
-  assign dm_run_control$EN_hart0_get_reset_req_get =
-	     EN_hart0_get_reset_req_get ;
+  assign dm_run_control$EN_hart0_reset_client_request_get =
+	     EN_hart0_reset_client_request_get ;
+  assign dm_run_control$EN_hart0_reset_client_response_put =
+	     EN_hart0_reset_client_response_put ;
   assign dm_run_control$EN_hart0_client_run_halt_request_get =
 	     EN_hart0_client_run_halt_request_get ;
   assign dm_run_control$EN_hart0_client_run_halt_response_put =
@@ -1236,12 +1293,12 @@ module mkDebug_Module(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset)
 	begin
-	  v__h895 = $stime;
+	  v__h919 = $stime;
 	  #0;
 	end
-    v__h889 = v__h895 / 32'd10;
+    v__h913 = v__h919 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_reset) $display("%0d: Debug_Module reset", v__h889);
+      if (WILL_FIRE_RL_rl_reset) $display("%0d: Debug_Module reset", v__h913);
   end
   // synopsys translate_on
 endmodule  // mkDebug_Module
