@@ -16,6 +16,7 @@ import ClientServer :: *;
 // ----------------
 // Other library imports
 
+import Cur_Cycle  :: *;
 import GetPut_Aux :: *;
 
 // ================================================================
@@ -170,17 +171,17 @@ module mkDM_Run_Control (DM_Run_Control_IFC);
 	 // Debug Module reset
 	 if (! dmactive) begin
 	    // Reset the DM module itself
-	    $display ("DM_Run_Control: dmcontrol_write 0x%08h (dmactive=0): resetting Debug Module",
-		      dm_word);
+	    $display ("%0d: %m.dmcontrol_write 0x%08h (dmactive=0): resetting Debug Module",
+		      cur_cycle, dm_word);
 
 	    // Error-checking
 	    if (ndmreset) begin
-	       $display ("WARNING: DM_Run_Control: dmcontrol_write 0x%08h:", dm_word);
+	       $display ("    WARNING: DM_Run_Control: dmcontrol_write 0x%08h:", dm_word);
 	       $display ("    [1] (ndmreset) and [0] (dmactive) both asserted");
 	       $display ("    dmactive has priority; ignoring ndmreset");
 	    end
 	    if (hartreset) begin
-	       $display ("WARNING: DM_Run_Control: dmcontrol_write 0x%08h:", dm_word);
+	       $display ("    WARNING: DM_Run_Control: dmcontrol_write 0x%08h:", dm_word);
 	       $display ("    [29] (hartreset) and [0] (dmactive) both asserted");
 	       $display ("    dmactive has priority; ignoring hartreset");
 	    end
@@ -191,28 +192,36 @@ module mkDM_Run_Control (DM_Run_Control_IFC);
 
 	 // Ignore if NDM reset is in progress
 	 else if (rg_dmstatus_allunavail) begin
-	    $display ("DM_Run_Control: dmcontrol_write 0x%0h: ndm reset in progress; ignoring this write",
-		      dm_word);
+	    $display ("%0d: %m.dmcontrol_write 0x%0h: ndm reset in progress; ignoring this write",
+		      cur_cycle, dm_word);
 	 end
 
-	 // Non-Debug-Module reset (platform reset) on negedge of ndm_reset bit
+	 // Non-Debug-Module reset (platform reset) posedge: ignore
+	 else if ((! rg_dmcontrol_ndmreset) && ndmreset) begin
+	    if (verbosity != 0)
+	       $display ("%0d: %m.dmcontrol_write 0x%08h: ndmreset: 0->1: ignoring",
+			 cur_cycle, dm_word);
+	 end
+
+	 // Non-Debug-Module reset (platform reset) negedge: do it
 	 else if (rg_dmcontrol_ndmreset && (! ndmreset)) begin
 	    Bool running = (! haltreq);
+	    if (verbosity != 0) begin
+	       $display ("%0d: %m.dmcontrol_write 0x%08h: ndmreset: 1->0: resetting platform",
+			 cur_cycle, dm_word);
+	       $display ("    Requested 'running' state = ", fshow (running));
+	    end
+
 	    f_ndm_reset_reqs.enq (running);
 	    rg_dmstatus_allunavail <= True;
 
 	    // Error-checking
 	    if (hartreset) begin
-	       $display ("DM_Run_Control: dmcontrol_write 0x%08h:", dm_word);
+	       $display ("    WARNING: %m.dmcontrol_write 0x%08h:", dm_word);
 	       $display ("    Both ndmreset [1] and hartreset [29] are asserted");
 	       $display ("    ndmreset has priority; ignoring hartreset");
 	    end
 
-	    if (verbosity != 0) begin
-	       $display ("DM_Run_Control: dmcontrol_write 0x%08h: ndmreset: 1->0: resetting platform",
-			 dm_word);
-	       $display ("    Requested 'running' state = ", fshow (running));
-	    end
 	 end
 
 	 // Hart reset
@@ -223,8 +232,8 @@ module mkDM_Run_Control (DM_Run_Control_IFC);
 
 	    // Deassert platform reset
 	    if (verbosity != 0) begin
-	       $display ("DM_Run_Control: dmcontrol_write 0x%08h: hartreset=1: resetting hart",
-			 dm_word);
+	       $display ("%0d: %m.dmcontrol_write 0x%08h: hartreset=1: resetting hart",
+			 cur_cycle, dm_word);
 	       $display ("    Requested 'running' state = ", fshow (running));
 	    end
 	 end
@@ -233,31 +242,32 @@ module mkDM_Run_Control (DM_Run_Control_IFC);
 	 else begin
 	    // Deassert hart reset
 	    if ((verbosity != 0) && rg_dmcontrol_hartreset)
-	       $display ("DM_Run_Control: dmcontrol_write 0x%08h: clearing hartreset", dm_word);
+	       $display ("%0d: %m.dmcontrol_write 0x%08h: clearing hartreset",
+			 cur_cycle, dm_word);
 
 	    if (hasel)
-	       $display ("ERROR: DM_Run_Control: dmcontrol_write 0x%08h: hasel is not supported",
-			 dm_word);
+	       $display ("%0d:ERROR: %m.dmcontrol_write 0x%08h: hasel is not supported",
+			 cur_cycle, dm_word);
 
 	    if (hartsel != 0)
-	       $display ("ERROR: DM_Run_Control: dmcontrol_write 0x%08h: hartsel 0x%0h not supported",
-			 dm_word, hartsel);
+	       $display ("%0d:ERROR: %m.dmcontrol_write 0x%08h: hartsel 0x%0h not supported",
+			 cur_cycle, dm_word, hartsel);
 
 	    if (haltreq && resumereq) begin
-	       $display ("ERROR: DM_Run_Control: dmcontrol_write 0x%08h: haltreq=1 and resumereq=1",
-			 dm_word);
+	       $display ("%0d:ERROR: %m.dmcontrol_write 0x%08h: haltreq=1 and resumereq=1",
+			 cur_cycle, dm_word);
 	       $display ("    This behavior is 'undefined' in the spec; ignoring");
 	    end
 	    // Resume hart(s) if not running
 	    else if (resumereq && (! rg_hart0_running)) begin
 	       f_hart0_run_halt_reqs.enq (True);
 	       rg_dmstatus_allresumeack <= False;
-	       $display ("DM_Run_Control.write: hart0 resume request");
+	       $display ("%0d: %m.dmcontrol_write: hart0 resume request", cur_cycle);
 	    end
 	    // Halt hart(s)
 	    else if (haltreq && rg_hart0_running) begin
 	       f_hart0_run_halt_reqs.enq (False);
-	       $display ("DM_Run_Control.write: hart0 halt request");
+	       $display ("%0d: %m.dmcontrol_write: hart0 halt request", cur_cycle);
 	    end
 	 end
       endaction
@@ -286,7 +296,9 @@ module mkDM_Run_Control (DM_Run_Control_IFC);
       Bool running <- pop (f_hart0_reset_rsps);
       rg_hart0_hasreset <= False;
       rg_hart0_running   <= running;
-      $display ("DM_Run_Control: hart0 reset complete; hart running = ", fshow (running));
+
+      if (verbosity != 0)
+	 $display ("%0d: %m.rl_hart0_reset_rdp: hart running = ", cur_cycle, fshow (running));
    endrule
 
    // Response from system for NDM reset
@@ -294,16 +306,20 @@ module mkDM_Run_Control (DM_Run_Control_IFC);
       Bool running <- pop (f_ndm_reset_rsps);
       rg_hart0_running       <= running;
       rg_dmstatus_allunavail <= False;
-      $display ("DM_Run_Control: NDM reset complete; hart running = ", fshow (running));
+
+      if (verbosity != 0)
+	 $display ("%0d: %m.rl_ndm_reset_rsp: hart running = ", cur_cycle, fshow (running));
    endrule
 
    // Response from system for run/halt request
    rule rl_hart0_run_rsp (! f_ndm_reset_rsps.notEmpty);
       let running <- pop (f_hart0_run_halt_rsps);
       rg_hart0_running <= running;
-      $display ("DM_Run_Control.rl_hart0_run_rsp; 'running' = ", fshow (running));
       if (running)
 	 rg_dmstatus_allresumeack <= True;
+
+      if (verbosity != 0)
+	 $display ("%0d: %m.rl_hart0_run_rsp: 'running' = ", cur_cycle, fshow (running));
    endrule
 
    // ----------------------------------------------------------------
@@ -336,7 +352,7 @@ module mkDM_Run_Control (DM_Run_Control_IFC);
       rg_verbosity <= 0;
 
       if (verbosity != 0)
-	 $display ("DM_Run_Control: reset");
+	 $display ("%0d: %m.reset", cur_cycle);
    endmethod
 
    // ----------------
@@ -353,7 +369,7 @@ module mkDM_Run_Control (DM_Run_Control_IFC);
 			   endcase;
 
 	 if (verbosity != 0)
-	    $display ("DM_Run_Control.av_read: [", fshow_dm_addr (dm_addr), "] => 0x%08h", dm_word);
+	    $display ("%0d: %m.av_read: [", cur_cycle, fshow_dm_addr (dm_addr), "] => 0x%08h", dm_word);
 
 	 return dm_word;
       endactionvalue
@@ -362,7 +378,7 @@ module mkDM_Run_Control (DM_Run_Control_IFC);
    method Action write (DM_Addr dm_addr, DM_Word dm_word);
       action
 	 if (verbosity != 0)
-	    $display ("DM_Run_Control.write: [", fshow_dm_addr (dm_addr), "] <= 0x%08h", dm_word);
+	    $display ("%0d: %m.write: [", cur_cycle, fshow_dm_addr (dm_addr), "] <= 0x%08h", dm_word);
 
 	 case (dm_addr)
 	    dm_addr_dmcontrol: fa_rg_dmcontrol_write (dm_word);

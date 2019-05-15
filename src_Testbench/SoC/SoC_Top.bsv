@@ -265,25 +265,26 @@ module mkSoC_Top (SoC_Top_IFC);
    endfunction
 
    // ----------------
-   // Initial reset
+   // Initial reset; CPU comes up running.
 
    rule rl_reset_start_initial (rg_state == SOC_START);
       Bool running = True;
       fa_reset_start_actions (running);
       rg_state <= SOC_RESETTING;
 
-      $display ("%0d: SoC_Top. Reset start ...", cur_cycle);
+      $display ("%0d:%m.rl_reset_start_initial ...", cur_cycle);
    endrule
 
    rule rl_reset_complete_initial (rg_state == SOC_RESETTING);
       fa_reset_complete_actions;
       rg_state <= SOC_IDLE;
 
-      $display ("%0d: SoC_Top. Reset complete ...", cur_cycle);
+      $display ("%0d:%m.rl_reset_complete_initial", cur_cycle);
    endrule
 
    // ----------------
    // NDM (non-debug-module) reset (requested from Debug Module)
+   // Request argument indicates if CPU comes up running or halted
 
 `ifdef INCLUDE_GDB_CONTROL
    Reg #(Bool) rg_running <- mkRegU;
@@ -295,7 +296,7 @@ module mkSoC_Top (SoC_Top_IFC);
       fa_reset_start_actions (running);
       rg_state <= SOC_RESETTING_NDM;
 
-      $display ("%0d: SoC_Top.rl_ndm_reset_start (non-debug-module) running = ...",
+      $display ("%0d:%m.rl_ndm_reset_start (non-debug-module) running = ",
 		cur_cycle, fshow (running));
    endrule
 
@@ -305,7 +306,7 @@ module mkSoC_Top (SoC_Top_IFC);
 
       core.ndm_reset_client.response.put (rg_running);
 
-      $display ("%0d: SoC_Top.rl_ndm_reset_complete (non-debug-module) running = ",
+      $display ("%0d:%m.rl_ndm_reset_complete (non-debug-module) running = ",
 		cur_cycle, fshow (rg_running));
    endrule
 `endif
@@ -326,7 +327,7 @@ module mkSoC_Top (SoC_Top_IFC);
       f_external_control_reqs.deq;
       core.dm_dmi.read_addr (truncate (req.arg1));
       if (verbosity != 0) begin
-	 $display ("%0d: SoC_Top.rl_handle_external_req_read_request", cur_cycle);
+	 $display ("%0d:%m.rl_handle_external_req_read_request", cur_cycle);
          $display ("    ", fshow (req));
       end
    endrule
@@ -336,7 +337,7 @@ module mkSoC_Top (SoC_Top_IFC);
       let rsp = Control_Rsp {status: external_control_rsp_status_ok, result: signExtend (x)};
       f_external_control_rsps.enq (rsp);
       if (verbosity != 0) begin
-	 $display ("%0d: SoC_Top.rl_handle_external_req_read_response", cur_cycle);
+	 $display ("%0d:%m.rl_handle_external_req_read_response", cur_cycle);
          $display ("    ", fshow (rsp));
       end
    endrule
@@ -347,7 +348,7 @@ module mkSoC_Top (SoC_Top_IFC);
       // let rsp = Control_Rsp {status: external_control_rsp_status_ok, result: 0};
       // f_external_control_rsps.enq (rsp);
       if (verbosity != 0) begin
-         $display ("%0d: SoC_Top.rl_handle_external_req_write", cur_cycle);
+         $display ("%0d:%m.rl_handle_external_req_write", cur_cycle);
          $display ("    ", fshow (req));
       end
    endrule
@@ -358,7 +359,7 @@ module mkSoC_Top (SoC_Top_IFC);
       let rsp = Control_Rsp {status: external_control_rsp_status_err, result: 0};
       f_external_control_rsps.enq (rsp);
 
-      $display ("%0d: SoC_Top.rl_handle_external_req_err: unknown req.op", cur_cycle);
+      $display ("%0d:%m.rl_handle_external_req_err: unknown req.op", cur_cycle);
       $display ("    ", fshow (req));
    endrule
 `endif
