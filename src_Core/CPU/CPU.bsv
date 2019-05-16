@@ -91,7 +91,8 @@ typedef enum {CPU_RESET1,
 	      CPU_DEBUG_MODE,       // Stopped (normally for debugger)
 	      CPU_RUNNING,          // Normal operation
 	      CPU_TRAP,
-	      CPU_SPLIT_FETCH,      // To initiate IFetch after traps/interrupts/RET
+	      CPU_START_TRAP_HANDLER,
+	      CPU_CSRRx_TRAP,
 	      CPU_CSRRX_RESTART,    // Restart pipe after a CSRRX instruction
 	      CPU_FENCE_I,          // While waiting for FENCE.I to complete in Near_Mem
 	      CPU_FENCE,            // While waiting for FENCE to complete in Near_Mem
@@ -160,6 +161,13 @@ module mkCPU (CPU_IFC);
    Reg #(CPU_State)  rg_state    <- mkReg (CPU_RESET1);
    Reg #(Priv_Mode)  rg_cur_priv <- mkReg (m_Priv_Mode);
    Reg #(Epoch)      rg_epoch    <- mkRegU;
+
+   // These regs save info on a trap in Stage1 or Stage2
+   Reg #(Trap_Info)  rg_trap_info       <- mkRegU;
+   Reg #(Instr)      rg_trap_instr      <- mkRegU;
+`ifdef INCLUDE_TANDEM_VERIF
+   Reg #(Trace_Data) rg_trap_trace_data <- mkRegU;
+`endif
 
    // Save next_pc across split-phase FENCE.I and other split-phase ops. This
    // register is also used for initiating fetches on a trap or external
@@ -757,10 +765,24 @@ module mkCPU (CPU_IFC);
       if (cur_verbosity > 1)
 	 $display ("%0d: CPU.rl_stage2_nonpipe", mcycle);
 
-      let epc      = stage2.out.trap_info.epc;
-      let exc_code = stage2.out.trap_info.exc_code;
-      let tval     = stage2.out.trap_info.tval;
-      let instr    = stage2.out.data_to_stage3.instr;
+      // Just save relevant info and handle in next clock
+      rg_trap_info       <= stage2.out.trap_info;
+      rg_trap_instr      <= stage2.out.data_to_stage3.instr;
+`ifdef INCLUDE_TANDEM_VERIF
+      rg_trap_trace_data <= stage2.out.trace_data;
+`endif
+
+      rg_state           <= CPU_TRAP;
+   endrule: rl_stage2_nonpipe
+
+   // ================================================================
+   // Trap
+
+   rule rl_trap (rg_state == CPU_TRAP);
+      let epc      = rg_trap_info.epc;
+      let exc_code = rg_trap_info.exc_code;
+      let tval     = rg_trap_info.tval;
+      let instr    = rg_trap_instr;
 
       // Take trap, save trap information for next phase
       let trap_info <- csr_regfile.csr_trap_actions (rg_cur_priv,    // from priv
@@ -787,7 +809,7 @@ module mkCPU (CPU_IFC);
       rg_sstatus_SUM <= 0;
 `endif
 
-      rg_state    <= CPU_SPLIT_FETCH;
+      rg_state <= CPU_START_TRAP_HANDLER;
 
       stage1.set_full (False);
       stage2.set_full (False);
@@ -797,7 +819,7 @@ module mkCPU (CPU_IFC);
 
 `ifdef INCLUDE_TANDEM_VERIF
       // Trace Data
-      let trace_data = stage2.out.trace_data;
+      let trace_data = rg_trap_trace_data;
       trace_data.op = TRACE_TRAP;
       trace_data.pc = next_pc;
       // trace_data.instr_sz    should already be set
@@ -816,7 +838,7 @@ module mkCPU (CPU_IFC);
       if (cur_verbosity != 0)
 	 $display ("    mcause:0x%0h  epc 0x%0h  tval:0x%0h  new pc 0x%0h, new mstatus 0x%0h",
 		   mcause, epc, tval, next_pc, new_mstatus);
-   endrule : rl_stage2_nonpipe
+   endrule: rl_trap
 
    // ================================================================
    // Stage1: nonpipe special: CSRRW and CSRRWI
@@ -852,7 +874,7 @@ module mkCPU (CPU_IFC);
       Bool permitted = csr_regfile.access_permitted_1 (rg_cur_priv, csr_addr, read_not_write);
 
       if (! permitted) begin
-	 rg_state <= CPU_TRAP;
+	 rg_state <= CPU_CSRRx_TRAP;
 
 	 // Debug
 	 fa_emit_instr_trace (minstret, stage1.out.data_to_stage2.pc, instr, rg_cur_priv);
@@ -938,7 +960,7 @@ module mkCPU (CPU_IFC);
       Bool permitted = csr_regfile.access_permitted_2 (rg_cur_priv, csr_addr, read_not_write);
 
       if (! permitted) begin
-	 rg_state <= CPU_TRAP;
+	 rg_state <= CPU_CSRRx_TRAP;
 
 	 // Debug
 	 fa_emit_instr_trace (minstret, stage1.out.data_to_stage2.pc, instr, rg_cur_priv);
@@ -1061,7 +1083,7 @@ module mkCPU (CPU_IFC);
       rg_sstatus_SUM <= 0;
 `endif
 
-      rg_state    <= CPU_SPLIT_FETCH;
+      rg_state <= CPU_START_TRAP_HANDLER;    // TODO: bad naming; this is not starting the trap handler
 
       stageD.set_full (False);
       stage1.set_full (False);    fa_step_check;
@@ -1375,7 +1397,7 @@ module mkCPU (CPU_IFC);
    Bool break_into_Debug_Mode = False;
 `endif
 
-   rule rl_stage1_trap (   (   (rg_state == CPU_TRAP)
+   rule rl_stage1_trap (   (   (rg_state == CPU_CSRRx_TRAP)
 			    || (   (rg_state == CPU_RUNNING)
 				&& (! halting)
 				&& (stage3.out.ostatus == OSTATUS_EMPTY)
@@ -1416,7 +1438,7 @@ module mkCPU (CPU_IFC);
       rg_sstatus_SUM <= 0;
 `endif
 
-      rg_state <= CPU_SPLIT_FETCH;
+      rg_state <= CPU_START_TRAP_HANDLER;
       
       stageD.set_full (False);
       stage1.set_full (False);    fa_step_check;
@@ -1462,7 +1484,7 @@ module mkCPU (CPU_IFC);
    // external interrupt and RET rules. Separated to break long timing
    // paths from stage2 and stage3 status to IFetch
 
-   rule rl_trap_fetch (rg_state == CPU_SPLIT_FETCH);
+   rule rl_trap_fetch (rg_state == CPU_START_TRAP_HANDLER);
       let new_epoch <- fav_update_epoch;
       let m_old_pc   = tagged Invalid;
       fa_start_ifetch (new_epoch,
@@ -1576,7 +1598,7 @@ module mkCPU (CPU_IFC);
       rg_sstatus_SUM <= new_mstatus [18];
       rg_mstatus_MXR <= new_mstatus [19];
 
-      rg_state <= CPU_SPLIT_FETCH;
+      rg_state <= CPU_START_TRAP_HANDLER;
 
       stage1.set_full (False);
 
