@@ -119,6 +119,20 @@ AXI4_Resp  axi4_resp_slverr = 2'b_10;
 AXI4_Resp  axi4_resp_decerr = 2'b_11;
 
 // ================================================================
+// Function to check address-alignment
+
+function Bool fn_addr_is_aligned (AXI4_Size size, Bit #(wd_addr) addr);
+   return (    (size == axsize_1)
+	   || ((size == axsize_2)   && (addr [0]   == 1'b0))
+	   || ((size == axsize_4)   && (addr [1:0] == 2'b0))
+	   || ((size == axsize_8)   && (addr [2:0] == 3'b0))
+	   || ((size == axsize_16)  && (addr [3:0] == 4'b0))
+	   || ((size == axsize_32)  && (addr [4:0] == 5'b0))
+	   || ((size == axsize_64)  && (addr [5:0] == 6'b0))
+	   || ((size == axsize_128) && (addr [6:0] == 7'b0)));
+endfunction
+
+// ================================================================
 // These are the signal-level interfaces for an AXI4 master.
 // The (*..*) attributes ensure that when bsc compiles this to Verilog,
 // we get exactly the signals specified in the ARM spec.
