@@ -62,7 +62,7 @@ module mkAXI4_Fabric #(function Tuple2 #(Bool, Bit #(TLog #(tn_num_slaves)))
    Integer num_masters = valueOf (tn_num_masters);
    Integer num_slaves  = valueOf (tn_num_slaves);
 
-   // 0, 1: quiet; 2: verbose
+   // 0: quiet; 1: show transactions
    Reg #(Bit #(4)) cfg_verbosity  <- mkConfigReg (0);
 
    Reg #(Bool) rg_reset <- mkReg (True);
@@ -132,7 +132,7 @@ module mkAXI4_Fabric #(function Tuple2 #(Bool, Bit #(TLog #(tn_num_slaves)))
    // RESET
 
    rule rl_reset (rg_reset);
-      $display ("%0d: %m::AXI4_Fabric.rl_reset", cur_cycle);
+      $display ("%0d: %m.rl_reset", cur_cycle);
       for (Integer mi = 0; mi < num_masters; mi = mi + 1) begin
 	 xactors_from_masters [mi].reset;
 
@@ -209,8 +209,8 @@ module mkAXI4_Fabric #(function Tuple2 #(Bool, Bit #(TLog #(tn_num_slaves)))
 	    v_f_wr_mis        [sj].enq (fromInteger (mi));
 	    v_f_wr_sjs        [mi].enq (fromInteger (sj));
 
-	    if (cfg_verbosity > 1) begin
-	       $display ("%0d: %m::AXI4_Fabric.rl_wr_xaction_master_to_slave: m%0d -> s%0d",
+	    if (cfg_verbosity > 0) begin
+	       $display ("%0d: %m.rl_wr_xaction_master_to_slave: m%0d -> s%0d",
 			 cur_cycle, mi, sj);
 	       $display ("    ", fshow (a));
 	    end
@@ -229,8 +229,8 @@ module mkAXI4_Fabric #(function Tuple2 #(Bool, Bit #(TLog #(tn_num_slaves)))
 	    // Enqueue a task for the W channel (must consume the write-data burst)
 	    v_f_wd_tasks      [mi].enq (tuple2 (fromInteger (num_slaves), a.awlen));
 
-	    if (cfg_verbosity > 1) begin
-	       $display ("%0d: %m::AXI4_Fabric.rl_wr_xaction_no_such_slave: m%0d -> ?",
+	    if (cfg_verbosity > 0) begin
+	       $display ("%0d: %m.rl_wr_xaction_no_such_slave: m%0d -> ?",
 			 cur_cycle, mi);
 	       $display ("        ", fshow (a));
 	    end
@@ -258,7 +258,7 @@ module mkAXI4_Fabric #(function Tuple2 #(Bool, Bit #(TLog #(tn_num_slaves)))
 	    // Final beat must have WLAST = 1
 	    // Rely on slave (which should also see this error) to return error response
 	    if (! (d.wlast)) begin
-	       $display ("%0d: ERROR: %m::AXI4_Fabric.rl_wr_xaction_master_to_slave_data: m%0d -> s%0d",
+	       $display ("%0d: %m.rl_wr_xaction_master_to_slave_data: ERROR: m%0d -> s%0d",
 			 cur_cycle, mi, sj);
 	       $display ("    WLAST not set on final data beat (awlen = %0d)", awlen);
 	       $display ("    ", fshow (d));
@@ -281,8 +281,8 @@ module mkAXI4_Fabric #(function Tuple2 #(Bool, Bit #(TLog #(tn_num_slaves)))
 
 	    xactors_from_masters [mi].i_wr_resp.enq (b);
 
-	    if (cfg_verbosity > 1) begin
-	       $display ("%0d: %m::AXI4_Fabric.rl_wr_resp_slave_to_master: m%0d <- s%0d",
+	    if (cfg_verbosity > 0) begin
+	       $display ("%0d: %m.rl_wr_resp_slave_to_master: m%0d <- s%0d",
 			 cur_cycle, mi, sj);
 	       $display ("        ", fshow (b));
 	    end
@@ -306,8 +306,8 @@ module mkAXI4_Fabric #(function Tuple2 #(Bool, Bit #(TLog #(tn_num_slaves)))
 
 	 xactors_from_masters [mi].i_wr_resp.enq (b);
 
-	 if (cfg_verbosity > 1) begin
-	    $display ("%0d: %m::AXI4_Fabric.rl_wr_resp_err_to_master: m%0d <- err", cur_cycle, mi);
+	 if (cfg_verbosity > 0) begin
+	    $display ("%0d: %m.rl_wr_resp_err_to_master: m%0d <- err", cur_cycle, mi);
 	    $display ("        ", fshow (b));
 	 end
       endrule
@@ -327,8 +327,8 @@ module mkAXI4_Fabric #(function Tuple2 #(Bool, Bit #(TLog #(tn_num_slaves)))
 	    v_f_rd_mis [sj].enq (tuple2 (fromInteger (mi), a.arlen));
 	    v_f_rd_sjs [mi].enq (fromInteger (sj));
 
-	    if (cfg_verbosity > 1) begin
-	       $display ("%0d: %m::AXI4_Fabric.rl_rd_xaction_master_to_slave: m%0d -> s%0d",
+	    if (cfg_verbosity > 0) begin
+	       $display ("%0d: %m.rl_rd_xaction_master_to_slave: m%0d -> s%0d",
 			 cur_cycle, mi, sj);
 	       $display ("        ", fshow (a));
 	    end
@@ -342,8 +342,8 @@ module mkAXI4_Fabric #(function Tuple2 #(Bool, Bit #(TLog #(tn_num_slaves)))
 	    v_f_rd_sjs      [mi].enq (fromInteger (num_slaves));
 	    v_f_rd_err_info [mi].enq (tuple3 (a.arlen, a.arid, a.aruser));
 
-	    if (cfg_verbosity > 1) begin
-	       $display ("%0d: %m::AXI4_Fabric.rl_rd_xaction_no_such_slave: m%0d -> ?",
+	    if (cfg_verbosity > 0) begin
+	       $display ("%0d: %m.rl_rd_xaction_no_such_slave: m%0d -> ?",
 			 cur_cycle, mi);
 	       $display ("        ", fshow (a));
 	    end
@@ -371,7 +371,7 @@ module mkAXI4_Fabric #(function Tuple2 #(Bool, Bit #(TLog #(tn_num_slaves)))
 	       // If not, and if RRESP is OK, set RRESP to AXI4_RESP_SLVERR
 	       if ((r.rresp == axi4_resp_okay) && (! (r.rlast))) begin
 		  r.rresp = axi4_resp_slverr;
-		  $display ("%0d: ERROR: %m::AXI4_Fabric.rl_rd_resp_slave_to_master: m%0d <- s%0d",
+		  $display ("%0d: %m.rl_rd_resp_slave_to_master: ERROR: m%0d <- s%0d",
 			    cur_cycle, mi, sj);
 		  $display ("    RLAST not set on final data beat (arlen = %0d)", arlen);
 		  $display ("    ", fshow (r));
@@ -382,8 +382,8 @@ module mkAXI4_Fabric #(function Tuple2 #(Bool, Bit #(TLog #(tn_num_slaves)))
 
 	    xactors_from_masters [mi].i_rd_data.enq (r);
 
-	    if (cfg_verbosity > 1) begin
-	       $display ("%0d: %m::AXI4_Fabric.rl_rd_resp_slave_to_master: m%0d <- s%0d",
+	    if (cfg_verbosity > 0) begin
+	       $display ("%0d: %m.rl_rd_resp_slave_to_master: m%0d <- s%0d",
 			 cur_cycle, mi, sj);
 	       $display ("    r: ", fshow (r));
 	    end
@@ -416,8 +416,8 @@ module mkAXI4_Fabric #(function Tuple2 #(Bool, Bit #(TLog #(tn_num_slaves)))
 	 else
 	    v_rg_r_err_beat_count [mi] <= v_rg_r_err_beat_count [mi] + 1;
 
-	 if (cfg_verbosity > 1) begin
-	    $display ("%0d: %m::AXI4_Fabric.rl_rd_resp_err_to_master: m%0d <- err",
+	 if (cfg_verbosity > 0) begin
+	    $display ("%0d: %m.rl_rd_resp_err_to_master: m%0d <- err",
 		      cur_cycle, mi);
 	    $display ("    r: ", fshow (r));
 	 end
