@@ -121,7 +121,7 @@ AXI4_Resp  axi4_resp_decerr = 2'b_11;
 // ================================================================
 // Function to check address-alignment
 
-function Bool fn_addr_is_aligned (AXI4_Size size, Bit #(wd_addr) addr);
+function Bool fn_addr_is_aligned (Bit #(wd_addr) addr, AXI4_Size size);
    return (    (size == axsize_1)
 	   || ((size == axsize_2)   && (addr [0]   == 1'b0))
 	   || ((size == axsize_4)   && (addr [1:0] == 2'b0))
@@ -656,6 +656,88 @@ typedef struct {
 		    numeric type wd_data,
 		    numeric type wd_user)
 deriving (Bits, FShow);
+
+// ================================================================
+// The following are specialized 'fshow' functions for AXI4 bus
+// payloads: the most common fields, and more compact.
+
+function Fmt fshow_AXI4_Size (AXI4_Size  size);
+   Fmt result = ?;
+   if      (size == axsize_1)   result = $format ("sz1");
+   else if (size == axsize_2)   result = $format ("sz2");
+   else if (size == axsize_4)   result = $format ("sz4");
+   else if (size == axsize_8)   result = $format ("sz8");
+   else if (size == axsize_16)  result = $format ("sz16");
+   else if (size == axsize_32)  result = $format ("sz32");
+   else if (size == axsize_64)  result = $format ("sz64");
+   else if (size == axsize_128) result = $format ("sz128");
+   return result;
+endfunction
+
+function Fmt fshow_AXI4_Burst (AXI4_Burst  burst);
+   Fmt result = ?;
+   if      (burst == axburst_fixed)  result = $format ("fixed");
+   else if (burst == axburst_incr)   result = $format ("incr");
+   else if (burst == axburst_wrap)   result = $format ("wrap");
+   else                              result = $format ("burst:%0d", burst);
+   return result;
+endfunction
+
+function Fmt fshow_AXI4_Resp (AXI4_Resp  resp);
+   Fmt result = ?;
+   if      (resp == axi4_resp_okay)    result = $format ("okay");
+   else if (resp == axi4_resp_exokay)  result = $format ("exokay");
+   else if (resp == axi4_resp_slverr)  result = $format ("slverr");
+   else if (resp == axi4_resp_decerr)  result = $format ("decerr");
+   return result;
+endfunction
+
+// ----------------
+
+function Fmt fshow_Wr_Addr (AXI4_Wr_Addr #(wd_id, wd_addr, wd_user) x);
+   Fmt result = ($format ("{awaddr:%0h,", x.awaddr)
+		 + $format ("awlen:%0d", x.awlen)
+		 + $format (",")
+		 + fshow_AXI4_Size (x.awsize)
+		 + $format (",")
+		 + fshow_AXI4_Burst (x.awburst)
+		 + $format ("}"));
+   return result;
+endfunction
+
+function Fmt fshow_Wr_Data (AXI4_Wr_Data #(wd_id, wd_data, wd_user) x);
+   let result = ($format ("{wdata:%0h,wstrb:%0h", x.wdata, x.wstrb)
+		 + (x.wlast ? $format (",wlast") : $format (",.."))
+		 + $format ("}"));
+   return result;
+endfunction
+
+function Fmt fshow_Wr_Resp (AXI4_Wr_Resp #(wd_id, wd_user) x);
+   Fmt result = ($format ("{bresp:")
+		 + fshow_AXI4_Resp (x.bresp)
+		 + $format ("}"));
+   return result;
+endfunction
+
+function Fmt fshow_Rd_Addr (AXI4_Rd_Addr #(wd_id, wd_addr, wd_user) x);
+   Fmt result = ($format ("{araddr:%0h", x.araddr)
+		 + $format (",arlen:%0d", x.arlen)
+		 + $format (",")
+		 + fshow_AXI4_Size (x.arsize)
+		 + $format (",")
+		 + fshow_AXI4_Burst (x.arburst)
+		 + $format ("}"));
+   return result;
+endfunction
+
+function Fmt fshow_Rd_Data (AXI4_Rd_Data #(wd_id, wd_data, wd_user) x);
+   Fmt result = ($format ("{rresp:")
+		 + fshow_AXI4_Resp (x.rresp)
+		 + $format (",rdata:%0h", x.rdata)
+		 + (x.rlast ? $format (",rlast") : $format (",.."))
+		 + $format ("}"));
+   return result;
+endfunction
 
 // ================================================================
 // AXI4 buffer

@@ -18,7 +18,7 @@ Verilog_RTL:
 .PHONY: compile
 compile:  build_dir  Verilog_RTL
 	@echo  "INFO: Verilog RTL generation ..."
-	bsc -u -elab -verilog  $(RTL_GEN_DIRS)  $(BSC_COMPILATION_FLAGS)  $(BSC_PATH)  $(TOPFILE)
+	bsc -u -elab -verilog  $(RTL_GEN_DIRS)  $(BSC_COMPILATION_FLAGS)  -p $(BSC_PATH)  $(TOPFILE)
 	@echo  "INFO: Verilog RTL generation finished"
 
 # ================================================================
