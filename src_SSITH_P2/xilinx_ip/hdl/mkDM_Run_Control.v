@@ -319,17 +319,37 @@ module mkDM_Run_Control(CLK,
        MUX_rg_hart0_hasreset$write_1__SEL_3,
        MUX_rg_verbosity$write_1__SEL_2;
 
+  // declarations used by system tasks
+  // synopsys translate_off
+  reg [31 : 0] v__h2183;
+  reg [31 : 0] v__h2726;
+  reg [31 : 0] v__h2832;
+  reg [31 : 0] v__h2947;
+  reg [31 : 0] v__h3067;
+  reg [31 : 0] v__h3107;
+  reg [31 : 0] v__h2144;
+  reg [31 : 0] v__h2138;
+  reg [31 : 0] v__h2177;
+  reg [31 : 0] v__h2720;
+  reg [31 : 0] v__h2826;
+  reg [31 : 0] v__h2941;
+  reg [31 : 0] v__h3061;
+  reg [31 : 0] v__h3101;
+  // synopsys translate_on
+
   // remaining internal signals
   wire [31 : 0] haltsum__h699,
 		virt_rg_dmcontrol__h930,
 		virt_rg_dmstatus__h805;
-  wire NOT_rg_dmcontrol_ndmreset_6_7_OR_write_dm_word_ETC___d92,
-       NOT_rg_dmstatus_allunavail_2_6_AND_NOT_rg_dmco_ETC___d82,
-       write_dm_addr_EQ_0x10_9_AND_write_dm_word_BIT__ETC___d101,
-       write_dm_addr_EQ_0x10_9_AND_write_dm_word_BIT__ETC___d107,
-       write_dm_addr_EQ_0x10_9_AND_write_dm_word_BIT__ETC___d51,
-       write_dm_word_BIT_0_3_AND_NOT_rg_dmstatus_allu_ETC___d55,
-       write_dm_word_BIT_0_3_AND_NOT_rg_dmstatus_allu_ETC___d61;
+  wire NOT_rg_dmcontrol_ndmreset_3_7_OR_write_dm_word_ETC___d102,
+       NOT_rg_dmstatus_allunavail_9_5_AND_rg_dmcontro_ETC___d111,
+       NOT_rg_dmstatus_allunavail_9_5_AND_rg_dmcontro_ETC___d120,
+       NOT_rg_dmstatus_allunavail_9_5_AND_rg_dmcontro_ETC___d61,
+       NOT_rg_dmstatus_allunavail_9_5_AND_rg_dmcontro_ETC___d69,
+       NOT_rg_dmstatus_allunavail_9_5_AND_rg_dmcontro_ETC___d80,
+       NOT_rg_dmstatus_allunavail_9_5_AND_rg_dmcontro_ETC___d90,
+       write_dm_addr_EQ_0x10_6_AND_write_dm_word_BIT__ETC___d50,
+       write_dm_word_BIT_0_0_AND_NOT_rg_dmstatus_allu_ETC___d54;
 
   // value method dmactive
   assign dmactive = rg_dmcontrol_dmactive ;
@@ -510,14 +530,14 @@ module mkDM_Run_Control(CLK,
   assign MUX_rg_dmstatus_allresumeack$write_1__SEL_2 =
 	     WILL_FIRE_RL_rl_hart0_run_rsp && f_hart0_run_halt_rsps$D_OUT ;
   assign MUX_rg_dmstatus_allresumeack$write_1__SEL_3 =
-	     EN_write &&
-	     write_dm_addr_EQ_0x10_9_AND_write_dm_word_BIT__ETC___d101 ;
+	     EN_write && write_dm_addr == 7'h10 && write_dm_word[0] &&
+	     NOT_rg_dmstatus_allunavail_9_5_AND_rg_dmcontro_ETC___d111 ;
   assign MUX_rg_dmstatus_allunavail$write_1__SEL_3 =
 	     EN_write &&
-	     write_dm_addr_EQ_0x10_9_AND_write_dm_word_BIT__ETC___d51 ;
+	     write_dm_addr_EQ_0x10_6_AND_write_dm_word_BIT__ETC___d50 ;
   assign MUX_rg_hart0_hasreset$write_1__SEL_3 =
-	     EN_write && write_dm_addr == 7'h10 &&
-	     write_dm_word_BIT_0_3_AND_NOT_rg_dmstatus_allu_ETC___d61 ;
+	     EN_write && write_dm_addr == 7'h10 && write_dm_word[0] &&
+	     NOT_rg_dmstatus_allunavail_9_5_AND_rg_dmcontro_ETC___d61 ;
   assign MUX_rg_verbosity$write_1__SEL_2 =
 	     EN_write && write_dm_addr == 7'h60 ;
 
@@ -555,8 +575,8 @@ module mkDM_Run_Control(CLK,
   endcase
   assign rg_dmstatus_allresumeack$EN =
 	     WILL_FIRE_RL_rl_hart0_run_rsp && f_hart0_run_halt_rsps$D_OUT ||
-	     EN_write &&
-	     write_dm_addr_EQ_0x10_9_AND_write_dm_word_BIT__ETC___d101 ||
+	     EN_write && write_dm_addr == 7'h10 && write_dm_word[0] &&
+	     NOT_rg_dmstatus_allunavail_9_5_AND_rg_dmcontro_ETC___d111 ||
 	     EN_reset ;
 
   // register rg_dmstatus_allunavail
@@ -564,15 +584,15 @@ module mkDM_Run_Control(CLK,
 	     !EN_reset && !f_ndm_reset_rsps$EMPTY_N ;
   assign rg_dmstatus_allunavail$EN =
 	     EN_write &&
-	     write_dm_addr_EQ_0x10_9_AND_write_dm_word_BIT__ETC___d51 ||
+	     write_dm_addr_EQ_0x10_6_AND_write_dm_word_BIT__ETC___d50 ||
 	     f_ndm_reset_rsps$EMPTY_N ||
 	     EN_reset ;
 
   // register rg_hart0_hasreset
   assign rg_hart0_hasreset$D_IN = !EN_reset && !f_hart0_reset_rsps$EMPTY_N ;
   assign rg_hart0_hasreset$EN =
-	     EN_write && write_dm_addr == 7'h10 &&
-	     write_dm_word_BIT_0_3_AND_NOT_rg_dmstatus_allu_ETC___d61 ||
+	     EN_write && write_dm_addr == 7'h10 && write_dm_word[0] &&
+	     NOT_rg_dmstatus_allunavail_9_5_AND_rg_dmcontro_ETC___d61 ||
 	     f_hart0_reset_rsps$EMPTY_N ||
 	     EN_reset ;
 
@@ -593,8 +613,8 @@ module mkDM_Run_Control(CLK,
     default: rg_hart0_running$D_IN = 1'b0 /* unspecified value */ ;
   endcase
   assign rg_hart0_running$EN =
-	     f_ndm_reset_rsps$EMPTY_N || f_hart0_reset_rsps$EMPTY_N ||
-	     WILL_FIRE_RL_rl_hart0_run_rsp ||
+	     WILL_FIRE_RL_rl_hart0_run_rsp || f_hart0_reset_rsps$EMPTY_N ||
+	     f_ndm_reset_rsps$EMPTY_N ||
 	     EN_reset ;
 
   // register rg_verbosity
@@ -624,7 +644,8 @@ module mkDM_Run_Control(CLK,
   assign f_hart0_run_halt_reqs$ENQ =
 	     EN_write && write_dm_addr == 7'h10 && write_dm_word[0] &&
 	     !rg_dmstatus_allunavail &&
-	     NOT_rg_dmcontrol_ndmreset_6_7_OR_write_dm_word_ETC___d92 ;
+	     (rg_dmcontrol_ndmreset || !write_dm_word[1]) &&
+	     NOT_rg_dmcontrol_ndmreset_3_7_OR_write_dm_word_ETC___d102 ;
   assign f_hart0_run_halt_reqs$DEQ = EN_hart0_client_run_halt_request_get ;
   assign f_hart0_run_halt_reqs$CLR = EN_reset ;
 
@@ -647,14 +668,48 @@ module mkDM_Run_Control(CLK,
   assign f_ndm_reset_rsps$CLR = EN_reset ;
 
   // remaining internal signals
-  assign NOT_rg_dmcontrol_ndmreset_6_7_OR_write_dm_word_ETC___d92 =
+  assign NOT_rg_dmcontrol_ndmreset_3_7_OR_write_dm_word_ETC___d102 =
 	     (!rg_dmcontrol_ndmreset || write_dm_word[1]) &&
 	     !write_dm_word[29] &&
 	     (!write_dm_word[31] || !write_dm_word[30]) &&
 	     (write_dm_word[30] && !rg_hart0_running ||
 	      write_dm_word[31] && rg_hart0_running) ;
-  assign NOT_rg_dmstatus_allunavail_2_6_AND_NOT_rg_dmco_ETC___d82 =
+  assign NOT_rg_dmstatus_allunavail_9_5_AND_rg_dmcontro_ETC___d111 =
 	     !rg_dmstatus_allunavail &&
+	     (rg_dmcontrol_ndmreset || !write_dm_word[1]) &&
+	     (!rg_dmcontrol_ndmreset || write_dm_word[1]) &&
+	     !write_dm_word[29] &&
+	     !write_dm_word[31] &&
+	     write_dm_word[30] &&
+	     !rg_hart0_running ;
+  assign NOT_rg_dmstatus_allunavail_9_5_AND_rg_dmcontro_ETC___d120 =
+	     !rg_dmstatus_allunavail &&
+	     (rg_dmcontrol_ndmreset || !write_dm_word[1]) &&
+	     (!rg_dmcontrol_ndmreset || write_dm_word[1]) &&
+	     !write_dm_word[29] &&
+	     !write_dm_word[30] &&
+	     write_dm_word[31] &&
+	     rg_hart0_running ;
+  assign NOT_rg_dmstatus_allunavail_9_5_AND_rg_dmcontro_ETC___d61 =
+	     !rg_dmstatus_allunavail &&
+	     (rg_dmcontrol_ndmreset || !write_dm_word[1]) &&
+	     (!rg_dmcontrol_ndmreset || write_dm_word[1]) &&
+	     write_dm_word[29] ;
+  assign NOT_rg_dmstatus_allunavail_9_5_AND_rg_dmcontro_ETC___d69 =
+	     !rg_dmstatus_allunavail &&
+	     (rg_dmcontrol_ndmreset || !write_dm_word[1]) &&
+	     (!rg_dmcontrol_ndmreset || write_dm_word[1]) &&
+	     !write_dm_word[29] &&
+	     write_dm_word[26] ;
+  assign NOT_rg_dmstatus_allunavail_9_5_AND_rg_dmcontro_ETC___d80 =
+	     !rg_dmstatus_allunavail &&
+	     (rg_dmcontrol_ndmreset || !write_dm_word[1]) &&
+	     (!rg_dmcontrol_ndmreset || write_dm_word[1]) &&
+	     !write_dm_word[29] &&
+	     write_dm_word[25:16] != 10'd0 ;
+  assign NOT_rg_dmstatus_allunavail_9_5_AND_rg_dmcontro_ETC___d90 =
+	     !rg_dmstatus_allunavail &&
+	     (rg_dmcontrol_ndmreset || !write_dm_word[1]) &&
 	     (!rg_dmcontrol_ndmreset || write_dm_word[1]) &&
 	     !write_dm_word[29] &&
 	     write_dm_word[31] &&
@@ -680,35 +735,15 @@ module mkDM_Run_Control(CLK,
 	       !rg_hart0_running,
 	       !rg_hart0_running,
 	       8'd130 } ;
-  assign write_dm_addr_EQ_0x10_9_AND_write_dm_word_BIT__ETC___d101 =
-	     write_dm_addr == 7'h10 && write_dm_word[0] &&
-	     !rg_dmstatus_allunavail &&
-	     (!rg_dmcontrol_ndmreset || write_dm_word[1]) &&
-	     !write_dm_word[29] &&
-	     !write_dm_word[31] &&
-	     write_dm_word[30] &&
-	     !rg_hart0_running ;
-  assign write_dm_addr_EQ_0x10_9_AND_write_dm_word_BIT__ETC___d107 =
-	     write_dm_addr == 7'h10 && write_dm_word[0] &&
-	     !rg_dmstatus_allunavail &&
-	     (!rg_dmcontrol_ndmreset || write_dm_word[1]) &&
-	     !write_dm_word[29] &&
-	     !write_dm_word[30] &&
-	     write_dm_word[31] &&
-	     rg_hart0_running ;
-  assign write_dm_addr_EQ_0x10_9_AND_write_dm_word_BIT__ETC___d51 =
+  assign write_dm_addr_EQ_0x10_6_AND_write_dm_word_BIT__ETC___d50 =
 	     write_dm_addr == 7'h10 && write_dm_word[0] &&
 	     !rg_dmstatus_allunavail &&
 	     rg_dmcontrol_ndmreset &&
 	     !write_dm_word[1] ;
-  assign write_dm_word_BIT_0_3_AND_NOT_rg_dmstatus_allu_ETC___d55 =
+  assign write_dm_word_BIT_0_0_AND_NOT_rg_dmstatus_allu_ETC___d54 =
 	     write_dm_word[0] && !rg_dmstatus_allunavail &&
 	     rg_dmcontrol_ndmreset &&
 	     !write_dm_word[1] &&
-	     write_dm_word[29] ;
-  assign write_dm_word_BIT_0_3_AND_NOT_rg_dmstatus_allu_ETC___d61 =
-	     write_dm_word[0] && !rg_dmstatus_allunavail &&
-	     (!rg_dmcontrol_ndmreset || write_dm_word[1]) &&
 	     write_dm_word[29] ;
 
   // handling of inlined registers
@@ -775,62 +810,116 @@ module mkDM_Run_Control(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr == 7'h10 && write_dm_word[0] &&
 	  rg_dmstatus_allunavail)
-	$display("DM_Run_Control: dmcontrol_write 0x%0h: ndm reset in progress; ignoring this write",
+	begin
+	  v__h2183 = $stime;
+	  #0;
+	end
+    v__h2177 = v__h2183 / 32'd10;
+    if (RST_N != `BSV_RESET_VALUE)
+      if (EN_write && write_dm_addr == 7'h10 && write_dm_word[0] &&
+	  rg_dmstatus_allunavail)
+	$display("%0d: %m.dmcontrol_write 0x%0h: ndm reset in progress; ignoring this write",
+		 v__h2177,
 		 write_dm_word);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr == 7'h10 &&
-	  write_dm_word_BIT_0_3_AND_NOT_rg_dmstatus_allu_ETC___d55)
-	$display("DM_Run_Control: dmcontrol_write 0x%08h:", write_dm_word);
+	  write_dm_word_BIT_0_0_AND_NOT_rg_dmstatus_allu_ETC___d54)
+	$display("    WARNING: %m.dmcontrol_write 0x%08h:", write_dm_word);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr == 7'h10 &&
-	  write_dm_word_BIT_0_3_AND_NOT_rg_dmstatus_allu_ETC___d55)
+	  write_dm_word_BIT_0_0_AND_NOT_rg_dmstatus_allu_ETC___d54)
 	$display("    Both ndmreset [1] and hartreset [29] are asserted");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr == 7'h10 &&
-	  write_dm_word_BIT_0_3_AND_NOT_rg_dmstatus_allu_ETC___d55)
+	  write_dm_word_BIT_0_0_AND_NOT_rg_dmstatus_allu_ETC___d54)
 	$display("    ndmreset has priority; ignoring hartreset");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr == 7'h10 && write_dm_word[0] &&
-	  !rg_dmstatus_allunavail &&
-	  (!rg_dmcontrol_ndmreset || write_dm_word[1]) &&
-	  !write_dm_word[29] &&
-	  write_dm_word[26])
-	$display("ERROR: DM_Run_Control: dmcontrol_write 0x%08h: hasel is not supported",
+	  NOT_rg_dmstatus_allunavail_9_5_AND_rg_dmcontro_ETC___d69)
+	begin
+	  v__h2726 = $stime;
+	  #0;
+	end
+    v__h2720 = v__h2726 / 32'd10;
+    if (RST_N != `BSV_RESET_VALUE)
+      if (EN_write && write_dm_addr == 7'h10 && write_dm_word[0] &&
+	  NOT_rg_dmstatus_allunavail_9_5_AND_rg_dmcontro_ETC___d69)
+	$display("%0d:ERROR: %m.dmcontrol_write 0x%08h: hasel is not supported",
+		 v__h2720,
 		 write_dm_word);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr == 7'h10 && write_dm_word[0] &&
-	  !rg_dmstatus_allunavail &&
-	  (!rg_dmcontrol_ndmreset || write_dm_word[1]) &&
-	  !write_dm_word[29] &&
-	  write_dm_word[25:16] != 10'd0)
-	$display("ERROR: DM_Run_Control: dmcontrol_write 0x%08h: hartsel 0x%0h not supported",
+	  NOT_rg_dmstatus_allunavail_9_5_AND_rg_dmcontro_ETC___d80)
+	begin
+	  v__h2832 = $stime;
+	  #0;
+	end
+    v__h2826 = v__h2832 / 32'd10;
+    if (RST_N != `BSV_RESET_VALUE)
+      if (EN_write && write_dm_addr == 7'h10 && write_dm_word[0] &&
+	  NOT_rg_dmstatus_allunavail_9_5_AND_rg_dmcontro_ETC___d80)
+	$display("%0d:ERROR: %m.dmcontrol_write 0x%08h: hartsel 0x%0h not supported",
+		 v__h2826,
 		 write_dm_word,
 		 write_dm_word[25:16]);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr == 7'h10 && write_dm_word[0] &&
-	  NOT_rg_dmstatus_allunavail_2_6_AND_NOT_rg_dmco_ETC___d82)
-	$display("ERROR: DM_Run_Control: dmcontrol_write 0x%08h: haltreq=1 and resumereq=1",
+	  NOT_rg_dmstatus_allunavail_9_5_AND_rg_dmcontro_ETC___d90)
+	begin
+	  v__h2947 = $stime;
+	  #0;
+	end
+    v__h2941 = v__h2947 / 32'd10;
+    if (RST_N != `BSV_RESET_VALUE)
+      if (EN_write && write_dm_addr == 7'h10 && write_dm_word[0] &&
+	  NOT_rg_dmstatus_allunavail_9_5_AND_rg_dmcontro_ETC___d90)
+	$display("%0d:ERROR: %m.dmcontrol_write 0x%08h: haltreq=1 and resumereq=1",
+		 v__h2941,
 		 write_dm_word);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr == 7'h10 && write_dm_word[0] &&
-	  NOT_rg_dmstatus_allunavail_2_6_AND_NOT_rg_dmco_ETC___d82)
+	  NOT_rg_dmstatus_allunavail_9_5_AND_rg_dmcontro_ETC___d90)
 	$display("    This behavior is 'undefined' in the spec; ignoring");
     if (RST_N != `BSV_RESET_VALUE)
-      if (EN_write &&
-	  write_dm_addr_EQ_0x10_9_AND_write_dm_word_BIT__ETC___d101)
-	$display("DM_Run_Control.write: hart0 resume request");
+      if (EN_write && write_dm_addr == 7'h10 && write_dm_word[0] &&
+	  NOT_rg_dmstatus_allunavail_9_5_AND_rg_dmcontro_ETC___d111)
+	begin
+	  v__h3067 = $stime;
+	  #0;
+	end
+    v__h3061 = v__h3067 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
-      if (EN_write &&
-	  write_dm_addr_EQ_0x10_9_AND_write_dm_word_BIT__ETC___d107)
-	$display("DM_Run_Control.write: hart0 halt request");
+      if (EN_write && write_dm_addr == 7'h10 && write_dm_word[0] &&
+	  NOT_rg_dmstatus_allunavail_9_5_AND_rg_dmcontro_ETC___d111)
+	$display("%0d: %m.dmcontrol_write: hart0 resume request", v__h3061);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (EN_write && write_dm_addr == 7'h10 && write_dm_word[0] &&
+	  NOT_rg_dmstatus_allunavail_9_5_AND_rg_dmcontro_ETC___d120)
+	begin
+	  v__h3107 = $stime;
+	  #0;
+	end
+    v__h3101 = v__h3107 / 32'd10;
+    if (RST_N != `BSV_RESET_VALUE)
+      if (EN_write && write_dm_addr == 7'h10 && write_dm_word[0] &&
+	  NOT_rg_dmstatus_allunavail_9_5_AND_rg_dmcontro_ETC___d120)
+	$display("%0d: %m.dmcontrol_write: hart0 halt request", v__h3101);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr == 7'h10 && !write_dm_word[0])
-	$display("DM_Run_Control: dmcontrol_write 0x%08h (dmactive=0): resetting Debug Module",
+	begin
+	  v__h2144 = $stime;
+	  #0;
+	end
+    v__h2138 = v__h2144 / 32'd10;
+    if (RST_N != `BSV_RESET_VALUE)
+      if (EN_write && write_dm_addr == 7'h10 && !write_dm_word[0])
+	$display("%0d: %m.dmcontrol_write 0x%08h (dmactive=0): resetting Debug Module",
+		 v__h2138,
 		 write_dm_word);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr == 7'h10 && !write_dm_word[0] &&
 	  write_dm_word[1])
-	$display("WARNING: DM_Run_Control: dmcontrol_write 0x%08h:",
+	$display("    WARNING: DM_Run_Control: dmcontrol_write 0x%08h:",
 		 write_dm_word);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr == 7'h10 && !write_dm_word[0] &&
@@ -843,7 +932,7 @@ module mkDM_Run_Control(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr == 7'h10 && !write_dm_word[0] &&
 	  write_dm_word[29])
-	$display("WARNING: DM_Run_Control: dmcontrol_write 0x%08h:",
+	$display("    WARNING: DM_Run_Control: dmcontrol_write 0x%08h:",
 		 write_dm_word);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr == 7'h10 && !write_dm_word[0] &&
@@ -853,37 +942,6 @@ module mkDM_Run_Control(CLK,
       if (EN_write && write_dm_addr == 7'h10 && !write_dm_word[0] &&
 	  write_dm_word[29])
 	$display("    dmactive has priority; ignoring hartreset");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (f_hart0_reset_rsps$EMPTY_N)
-	$write("DM_Run_Control: hart0 reset complete; hart running = ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (f_hart0_reset_rsps$EMPTY_N && f_hart0_reset_rsps$D_OUT)
-	$write("True");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (f_hart0_reset_rsps$EMPTY_N && !f_hart0_reset_rsps$D_OUT)
-	$write("False");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (f_hart0_reset_rsps$EMPTY_N) $write("\n");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (f_ndm_reset_rsps$EMPTY_N)
-	$write("DM_Run_Control: NDM reset complete; hart running = ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (f_ndm_reset_rsps$EMPTY_N && f_ndm_reset_rsps$D_OUT) $write("True");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (f_ndm_reset_rsps$EMPTY_N && !f_ndm_reset_rsps$D_OUT)
-	$write("False");
-    if (RST_N != `BSV_RESET_VALUE) if (f_ndm_reset_rsps$EMPTY_N) $write("\n");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_hart0_run_rsp)
-	$write("DM_Run_Control.rl_hart0_run_rsp; 'running' = ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_hart0_run_rsp && f_hart0_run_halt_rsps$D_OUT)
-	$write("True");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_hart0_run_rsp && !f_hart0_run_halt_rsps$D_OUT)
-	$write("False");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_hart0_run_rsp) $write("\n");
   end
   // synopsys translate_on
 endmodule  // mkDM_Run_Control
