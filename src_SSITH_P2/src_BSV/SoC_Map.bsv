@@ -158,7 +158,7 @@ module mkSoC_Map (SoC_Map_IFC);
    // Flash Mem
 
    Fabric_Addr flash_mem_addr_base = 'h_4000_0000;
-   Fabric_Addr flash_mem_addr_size = 'h_0001_0000;    // 64K
+   Fabric_Addr flash_mem_addr_size = 'h_0800_0000;    // 128M
    Fabric_Addr flash_mem_addr_lim  = flash_mem_addr_base + flash_mem_addr_size;
 
    function Bool fn_is_flash_mem_addr (Fabric_Addr addr);
