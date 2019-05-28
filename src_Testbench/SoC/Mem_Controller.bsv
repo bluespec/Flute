@@ -47,7 +47,9 @@ Bits_per_Raw_Mem_Word,
 Raw_Mem_Word,
 
 Mem_Controller_IFC (..),
-mkMem_Controller;
+mkMem_Controller,
+
+status_mem_controller_terminated;
 
 // ================================================================
 // BSV library imports
@@ -174,6 +176,11 @@ typedef enum {STATE_POWER_ON_RESET,
 deriving (Bits, Eq, FShow);
 
 // ================================================================
+// Catch-all status
+
+Integer status_mem_controller_terminated = 1;
+
+// ================================================================
 // Interface
 
 interface Mem_Controller_IFC;
@@ -188,6 +195,10 @@ interface Mem_Controller_IFC;
 
    // To raw memory (outside the SoC)
    interface MemoryClient #(Bits_per_Raw_Mem_Addr, Bits_per_Raw_Mem_Word)  to_raw_mem;
+
+   // Catch-all status; return-value can identify the origin (0 = none)
+   (* always_ready *)
+   method Bit #(8) status;
 
    // For ISA tests: watch memory writes to <tohost> addr
    method Action set_watch_tohost (Bool watch_tohost, Fabric_Addr tohost_addr);
@@ -263,6 +274,9 @@ module mkMem_Controller (Mem_Controller_IFC);
    Reg #(Bool)        rg_watch_tohost <- mkReg (False);
    Reg #(Fabric_Addr) rg_tohost_addr  <- mkReg ('h_8000_1000);
 
+   // Catch-all status
+   Reg #(Bit #(8)) rg_status <- mkReg (0);
+
    // ================================================================
    // BEHAVIOR
 
@@ -274,6 +288,7 @@ module mkMem_Controller (Mem_Controller_IFC);
 	 slave_xactor.reset;
 	 f_raw_mem_reqs.clear;
 	 f_raw_mem_rsps.clear;
+	 rg_status <= 0;
       endaction
    endfunction
 
@@ -535,7 +550,7 @@ module mkMem_Controller (Mem_Controller_IFC);
 	       $display ("PASS");
 	    else
 	       $display ("FAIL %0d", exit_value);
-	    $finish (truncate (exit_value));
+	    rg_status <= fromInteger (status_mem_controller_terminated);
 	 end
    endrule
 
@@ -641,6 +656,11 @@ module mkMem_Controller (Mem_Controller_IFC);
 
    // To raw memory (outside the SoC)
    interface  to_raw_mem = toGPClient (f_raw_mem_reqs, f_raw_mem_rsps);
+
+   // Catch-all status; return-value can identify the origin (0 = none)
+   method Bit #(8) status;
+      return rg_status;
+   endmethod
 
    // For ISA tests: watch memory writes to <tohost> addr
    method Action set_watch_tohost (Bool watch_tohost, Fabric_Addr tohost_addr);

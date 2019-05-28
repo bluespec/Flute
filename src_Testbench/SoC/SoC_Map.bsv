@@ -29,11 +29,13 @@ export  SoC_Map_IFC (..), mkSoC_Map;
 export  Num_Masters;
 export  imem_master_num;
 export  dmem_master_num;
+export  accel0_master_num;
 
 export  Num_Slaves;
 export  boot_rom_slave_num;
 export  mem0_controller_slave_num;
 export  uart0_slave_num;
+export  accel0_slave_num;
 
 export  N_External_Interrupt_Sources;
 export  n_external_interrupt_sources;
@@ -65,6 +67,12 @@ interface SoC_Map_IFC;
    (* always_ready *)   method  Fabric_Addr  m_uart0_addr_size;
    (* always_ready *)   method  Fabric_Addr  m_uart0_addr_lim;
 
+`ifdef INCLUDE_ACCEL0
+   (* always_ready *)   method  Fabric_Addr  m_accel0_addr_base;
+   (* always_ready *)   method  Fabric_Addr  m_accel0_addr_size;
+   (* always_ready *)   method  Fabric_Addr  m_accel0_addr_lim;
+`endif
+
    (* always_ready *)   method  Fabric_Addr  m_boot_rom_addr_base;
    (* always_ready *)   method  Fabric_Addr  m_boot_rom_addr_size;
    (* always_ready *)   method  Fabric_Addr  m_boot_rom_addr_lim;
@@ -88,6 +96,8 @@ interface SoC_Map_IFC;
 
    (* always_ready *)   method  Bit #(64)  m_pc_reset_value;
    (* always_ready *)   method  Bit #(64)  m_mtvec_reset_value;
+
+   // Non-maskable interrupt vector
    (* always_ready *)   method  Bit #(64)  m_nmivec_reset_value;
 endinterface
 
@@ -128,6 +138,19 @@ module mkSoC_Map (SoC_Map_IFC);
    function Bool fn_is_uart0_addr (Fabric_Addr addr);
       return ((uart0_addr_base <= addr) && (addr < uart0_addr_lim));
    endfunction
+
+   // ----------------------------------------------------------------
+   // ACCEL 0
+
+`ifdef INCLUDE_ACCEL0
+   Fabric_Addr accel0_addr_base = 'hC000_2000;
+   Fabric_Addr accel0_addr_size = 'h0000_1000;    // 4K
+   Fabric_Addr accel0_addr_lim  = accel0_addr_base + accel0_addr_size;
+
+   function Bool fn_is_accel0_addr (Fabric_Addr addr);
+      return ((accel0_addr_base <= addr) && (addr < accel0_addr_lim));
+   endfunction
+`endif
 
    // ----------------------------------------------------------------
    // Boot ROM
@@ -194,6 +217,9 @@ module mkSoC_Map (SoC_Map_IFC);
       return (   fn_is_near_mem_io_addr (addr)
 	      || fn_is_plic_addr (addr)
 	      || fn_is_uart0_addr  (addr)
+`ifdef INCLUDE_ACCEL0
+	      || fn_is_accel0_addr  (addr)
+`endif
 	      );
    endfunction
 
@@ -202,6 +228,8 @@ module mkSoC_Map (SoC_Map_IFC);
 
    Bit #(64) pc_reset_value     = boot_rom_addr_base;
    Bit #(64) mtvec_reset_value  = 'h1000;    // TODO
+
+   // Non-maskable interrupt vector
    Bit #(64) nmivec_reset_value = ?;         // TODO
 
    // ================================================================
@@ -218,6 +246,12 @@ module mkSoC_Map (SoC_Map_IFC);
    method  Fabric_Addr  m_uart0_addr_base = uart0_addr_base;
    method  Fabric_Addr  m_uart0_addr_size = uart0_addr_size;
    method  Fabric_Addr  m_uart0_addr_lim  = uart0_addr_lim;
+
+`ifdef INCLUDE_ACCEL0
+   method  Fabric_Addr  m_accel0_addr_base = accel0_addr_base;
+   method  Fabric_Addr  m_accel0_addr_size = accel0_addr_size;
+   method  Fabric_Addr  m_accel0_addr_lim  = accel0_addr_lim;
+`endif
 
    method  Fabric_Addr  m_boot_rom_addr_base = boot_rom_addr_base;
    method  Fabric_Addr  m_boot_rom_addr_size = boot_rom_addr_size;
@@ -239,25 +273,46 @@ module mkSoC_Map (SoC_Map_IFC);
 
    method  Bit #(64)  m_pc_reset_value     = pc_reset_value;
    method  Bit #(64)  m_mtvec_reset_value  = mtvec_reset_value;
+
+   // Non-maskable interrupt vector
    method  Bit #(64)  m_nmivec_reset_value = nmivec_reset_value;
 endmodule
 
 // ================================================================
 // Count and master-numbers of masters in the fabric.
 
+Integer imem_master_num   = 0;
+Integer dmem_master_num   = 1;
+Integer accel0_master_num = 2;
+
+`ifdef INCLUDE_ACCEL0
+
+typedef 3 Num_Masters;
+
+`else
+
 typedef 2 Num_Masters;
 
-Integer imem_master_num = 0;
-Integer dmem_master_num = 1;
+`endif
 
 // ================================================================
 // Count and slave-numbers of slaves in the fabric.
 
+`ifdef INCLUDE_ACCEL0
+
+typedef 4 Num_Slaves;
+
+`else
+
 typedef 3 Num_Slaves;
+
+`endif
+
 
 Integer boot_rom_slave_num        = 0;
 Integer mem0_controller_slave_num = 1;
 Integer uart0_slave_num           = 2;
+Integer accel0_slave_num          = 3;
 
 // ================================================================
 // Interrupt request numbers (== index in to vector of

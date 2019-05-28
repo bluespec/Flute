@@ -29,7 +29,7 @@ import TV_Info         :: *;
 
 interface CPU_IFC;
    // Reset
-   interface Server #(Token, Token)  hart0_server_reset;
+   interface Server #(Bool, Bool)  hart0_server_reset;
 
    // ----------------
    // SoC fabric connections
@@ -62,7 +62,7 @@ interface CPU_IFC;
    // Non-maskable interrupt
 
    (* always_ready, always_enabled *)
-   method Action  non_maskable_interrupt_req (Bool set_not_clear);
+   method Action  nmi_req (Bool set_not_clear);
 
    // ----------------
    // Set core's verbosity

@@ -23,6 +23,7 @@
 // to_raw_mem_request_get         O   353
 // RDY_to_raw_mem_request_get     O     1
 // RDY_to_raw_mem_response_put    O     1
+// status                         O     8 reg
 // RDY_set_watch_tohost           O     1 const
 // CLK                            I     1 clock
 // RST_N                          I     1 reset
@@ -162,6 +163,8 @@ module mkMem_Controller(CLK,
 			EN_to_raw_mem_response_put,
 			RDY_to_raw_mem_response_put,
 
+			status,
+
 			set_watch_tohost_watch_tohost,
 			set_watch_tohost_tohost_addr,
 			EN_set_watch_tohost,
@@ -269,6 +272,9 @@ module mkMem_Controller(CLK,
   input  EN_to_raw_mem_response_put;
   output RDY_to_raw_mem_response_put;
 
+  // value method status
+  output [7 : 0] status;
+
   // action method set_watch_tohost
   input  set_watch_tohost_watch_tohost;
   input  [63 : 0] set_watch_tohost_tohost_addr;
@@ -278,6 +284,7 @@ module mkMem_Controller(CLK,
   // signals for module outputs
   wire [352 : 0] to_raw_mem_request_get;
   wire [63 : 0] slave_rdata;
+  wire [7 : 0] status;
   wire [3 : 0] slave_bid, slave_rid;
   wire [1 : 0] slave_bresp, slave_rresp;
   wire RDY_server_reset_request_put,
@@ -357,6 +364,11 @@ module mkMem_Controller(CLK,
   reg [1 : 0] rg_state;
   reg [1 : 0] rg_state$D_IN;
   wire rg_state$EN;
+
+  // register rg_status
+  reg [7 : 0] rg_status;
+  wire [7 : 0] rg_status$D_IN;
+  wire rg_status$EN;
 
   // register rg_tohost_addr
   reg [63 : 0] rg_tohost_addr;
@@ -487,48 +499,48 @@ module mkMem_Controller(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h2462;
-  reg [31 : 0] v__h3405;
-  reg [31 : 0] v__h3898;
-  reg [31 : 0] v__h4367;
-  reg [31 : 0] v__h4630;
-  reg [31 : 0] v__h5349;
-  reg [31 : 0] v__h7546;
-  reg [31 : 0] v__h7747;
-  reg [31 : 0] v__h8264;
-  reg [31 : 0] v__h9048;
-  reg [31 : 0] v__h9641;
-  reg [31 : 0] v__h2777;
-  reg [31 : 0] v__h3117;
-  reg [31 : 0] v__h1706;
-  reg [31 : 0] v__h2028;
-  reg [31 : 0] v__h1700;
-  reg [31 : 0] v__h2022;
-  reg [31 : 0] v__h2456;
-  reg [31 : 0] v__h2771;
-  reg [31 : 0] v__h3111;
-  reg [31 : 0] v__h3399;
-  reg [31 : 0] v__h3892;
-  reg [31 : 0] v__h4361;
-  reg [31 : 0] v__h4624;
-  reg [31 : 0] v__h5343;
-  reg [31 : 0] v__h7540;
-  reg [31 : 0] v__h7741;
-  reg [31 : 0] v__h8258;
-  reg [31 : 0] v__h9042;
-  reg [31 : 0] v__h9635;
+  reg [31 : 0] v__h2538;
+  reg [31 : 0] v__h3481;
+  reg [31 : 0] v__h3974;
+  reg [31 : 0] v__h4443;
+  reg [31 : 0] v__h4706;
+  reg [31 : 0] v__h5425;
+  reg [31 : 0] v__h7622;
+  reg [31 : 0] v__h7823;
+  reg [31 : 0] v__h8335;
+  reg [31 : 0] v__h9119;
+  reg [31 : 0] v__h9714;
+  reg [31 : 0] v__h2853;
+  reg [31 : 0] v__h3193;
+  reg [31 : 0] v__h1743;
+  reg [31 : 0] v__h2088;
+  reg [31 : 0] v__h1737;
+  reg [31 : 0] v__h2082;
+  reg [31 : 0] v__h2532;
+  reg [31 : 0] v__h2847;
+  reg [31 : 0] v__h3187;
+  reg [31 : 0] v__h3475;
+  reg [31 : 0] v__h3968;
+  reg [31 : 0] v__h4437;
+  reg [31 : 0] v__h4700;
+  reg [31 : 0] v__h5419;
+  reg [31 : 0] v__h7616;
+  reg [31 : 0] v__h7817;
+  reg [31 : 0] v__h8329;
+  reg [31 : 0] v__h9113;
+  reg [31 : 0] v__h9708;
   // synopsys translate_on
 
   // remaining internal signals
-  reg [63 : 0] rdata__h4992, word64_old__h5786;
-  wire [63 : 0] exit_value__h7784,
+  reg [63 : 0] rdata__h5068, word64_old__h5862;
+  wire [63 : 0] exit_value__h7860,
 		f_reqs_rv_BITS_164_TO_101_MINUS_rg_addr_base__q1,
-		mask__h5791,
-		req_raw_mem_addr__h3238,
-		updated_word64__h5792,
-		x__h6165,
-		y__h6166,
-		y__h6167;
+		mask__h5867,
+		req_raw_mem_addr__h3314,
+		updated_word64__h5868,
+		x__h6241,
+		y__h6242,
+		y__h6243;
   wire [7 : 0] SEXT_f_reqs_rv_port0__read__3_BIT_64_14___d215,
 	       SEXT_f_reqs_rv_port0__read__3_BIT_65_11___d212,
 	       SEXT_f_reqs_rv_port0__read__3_BIT_66_07___d208,
@@ -537,15 +549,15 @@ module mkMem_Controller(CLK,
 	       SEXT_f_reqs_rv_port0__read__3_BIT_69_97___d198,
 	       SEXT_f_reqs_rv_port0__read__3_BIT_70_93___d194,
 	       SEXT_f_reqs_rv_port0__read__3_BIT_71_90___d191;
-  wire [4 : 0] n__h4991;
+  wire [4 : 0] n__h5067;
   wire NOT_cfg_verbosity_read_ULE_1___d5,
        NOT_cfg_verbosity_read_ULE_2_2___d33,
-       NOT_f_reqs_rv_port0__read__3_BITS_92_TO_90_7_E_ETC___d281,
+       NOT_f_reqs_rv_port0__read__3_BITS_92_TO_90_7_E_ETC___d279,
        f_reqs_rv_port0__read__3_BITS_164_TO_101_25_UL_ETC___d128,
        f_reqs_rv_port0__read__3_BITS_92_TO_90_7_EQ_0b_ETC___d123,
        rg_addr_base_24_ULE_f_reqs_rv_port0__read__3_B_ETC___d126,
        rg_cached_raw_mem_addr_1_EQ_0_CONCAT_f_reqs_rv_ETC___d135,
-       rg_state_EQ_3_3_AND_NOT_f_reqs_rv_port0__read__ETC___d286,
+       rg_state_EQ_3_3_AND_NOT_f_reqs_rv_port0__read__ETC___d284,
        rg_state_EQ_3_3_AND_f_reqs_rv_port0__read__3_B_ETC___d131,
        rg_watch_tohost_37_AND_f_reqs_rv_port0__read___ETC___d243;
 
@@ -628,6 +640,9 @@ module mkMem_Controller(CLK,
   assign CAN_FIRE_to_raw_mem_response_put =
 	     !f_raw_mem_rsps_rv$port1__read[256] ;
   assign WILL_FIRE_to_raw_mem_response_put = EN_to_raw_mem_response_put ;
+
+  // value method status
+  assign status = rg_status ;
 
   // action method set_watch_tohost
   assign RDY_set_watch_tohost = 1'd1 ;
@@ -763,7 +778,7 @@ module mkMem_Controller(CLK,
   // rule RL_rl_invalid_rd_address
   assign CAN_FIRE_RL_rl_invalid_rd_address =
 	     f_reqs_rv[170] && slave_xactor_f_rd_data$FULL_N &&
-	     rg_state_EQ_3_3_AND_NOT_f_reqs_rv_port0__read__ETC___d286 &&
+	     rg_state_EQ_3_3_AND_NOT_f_reqs_rv_port0__read__ETC___d284 &&
 	     !f_reqs_rv[169] ;
   assign WILL_FIRE_RL_rl_invalid_rd_address =
 	     CAN_FIRE_RL_rl_invalid_rd_address ;
@@ -771,7 +786,7 @@ module mkMem_Controller(CLK,
   // rule RL_rl_invalid_wr_address
   assign CAN_FIRE_RL_rl_invalid_wr_address =
 	     f_reqs_rv[170] && slave_xactor_f_wr_resp$FULL_N &&
-	     rg_state_EQ_3_3_AND_NOT_f_reqs_rv_port0__read__ETC___d286 &&
+	     rg_state_EQ_3_3_AND_NOT_f_reqs_rv_port0__read__ETC___d284 &&
 	     f_reqs_rv[169] ;
   assign WILL_FIRE_RL_rl_invalid_wr_address =
 	     CAN_FIRE_RL_rl_invalid_wr_address ;
@@ -813,7 +828,7 @@ module mkMem_Controller(CLK,
 	       rg_cached_raw_mem_word } ;
   assign MUX_f_raw_mem_reqs_rv$port1__write_1__VAL_3 =
 	     { 34'h2FFFFFFFF,
-	       req_raw_mem_addr__h3238,
+	       req_raw_mem_addr__h3314,
 	       256'hAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA } ;
   assign MUX_f_reqs_rv$port1__write_1__VAL_1 =
 	     { 2'd2, slave_xactor_f_rd_addr$D_OUT, 72'hAAAAAAAAAAAAAAAAAA } ;
@@ -824,19 +839,19 @@ module mkMem_Controller(CLK,
 	       slave_xactor_f_wr_data$D_OUT[72:9] } ;
   assign MUX_rg_cached_raw_mem_word$write_1__VAL_1 =
 	     { (f_reqs_rv[105:104] == 2'd3) ?
-		 updated_word64__h5792 :
+		 updated_word64__h5868 :
 		 rg_cached_raw_mem_word[255:192],
 	       (f_reqs_rv[105:104] == 2'd2) ?
-		 updated_word64__h5792 :
+		 updated_word64__h5868 :
 		 rg_cached_raw_mem_word[191:128],
 	       (f_reqs_rv[105:104] == 2'd1) ?
-		 updated_word64__h5792 :
+		 updated_word64__h5868 :
 		 rg_cached_raw_mem_word[127:64],
 	       (f_reqs_rv[105:104] == 2'd0) ?
-		 updated_word64__h5792 :
+		 updated_word64__h5868 :
 		 rg_cached_raw_mem_word[63:0] } ;
   assign MUX_slave_xactor_f_rd_data$enq_1__VAL_1 =
-	     { f_reqs_rv[168:165], rdata__h4992, 3'd1 } ;
+	     { f_reqs_rv[168:165], rdata__h5068, 3'd1 } ;
   assign MUX_slave_xactor_f_rd_data$enq_1__VAL_2 =
 	     { f_reqs_rv[168:101], 3'd5 } ;
   assign MUX_slave_xactor_f_wr_resp$enq_1__VAL_1 =
@@ -950,7 +965,7 @@ module mkMem_Controller(CLK,
   // register rg_cached_raw_mem_addr
   assign rg_cached_raw_mem_addr$D_IN =
 	     WILL_FIRE_RL_rl_miss_clean_req ?
-	       req_raw_mem_addr__h3238 :
+	       req_raw_mem_addr__h3314 :
 	       64'd0 ;
   assign rg_cached_raw_mem_addr$EN = MUX_rg_state$write_1__SEL_2 ;
 
@@ -979,6 +994,18 @@ module mkMem_Controller(CLK,
 	     WILL_FIRE_RL_rl_miss_clean_req ||
 	     WILL_FIRE_RL_rl_reset_reload_cache ||
 	     WILL_FIRE_RL_rl_reload ;
+
+  // register rg_status
+  assign rg_status$D_IN =
+	     (WILL_FIRE_RL_rl_external_reset ||
+	      WILL_FIRE_RL_rl_power_on_reset) ?
+	       8'd0 :
+	       8'd1 ;
+  assign rg_status$EN =
+	     WILL_FIRE_RL_rl_process_wr_req &&
+	     rg_watch_tohost_37_AND_f_reqs_rv_port0__read___ETC___d243 ||
+	     WILL_FIRE_RL_rl_external_reset ||
+	     WILL_FIRE_RL_rl_power_on_reset ;
 
   // register rg_tohost_addr
   assign rg_tohost_addr$D_IN = set_watch_tohost_tohost_addr ;
@@ -1067,7 +1094,7 @@ module mkMem_Controller(CLK,
   // remaining internal signals
   assign NOT_cfg_verbosity_read_ULE_1___d5 = cfg_verbosity > 4'd1 ;
   assign NOT_cfg_verbosity_read_ULE_2_2___d33 = cfg_verbosity > 4'd2 ;
-  assign NOT_f_reqs_rv_port0__read__3_BITS_92_TO_90_7_E_ETC___d281 =
+  assign NOT_f_reqs_rv_port0__read__3_BITS_92_TO_90_7_E_ETC___d279 =
 	     f_reqs_rv[92:90] != 3'b0 &&
 	     (f_reqs_rv[92:90] != 3'b001 || f_reqs_rv[101]) &&
 	     (f_reqs_rv[92:90] != 3'b010 || f_reqs_rv[102:101] != 2'h0) &&
@@ -1084,7 +1111,7 @@ module mkMem_Controller(CLK,
   assign SEXT_f_reqs_rv_port0__read__3_BIT_69_97___d198 = {8{f_reqs_rv[69]}} ;
   assign SEXT_f_reqs_rv_port0__read__3_BIT_70_93___d194 = {8{f_reqs_rv[70]}} ;
   assign SEXT_f_reqs_rv_port0__read__3_BIT_71_90___d191 = {8{f_reqs_rv[71]}} ;
-  assign exit_value__h7784 = { 1'd0, f_reqs_rv[63:1] } ;
+  assign exit_value__h7860 = { 1'd0, f_reqs_rv[63:1] } ;
   assign f_reqs_rv_BITS_164_TO_101_MINUS_rg_addr_base__q1 =
 	     f_reqs_rv[164:101] - rg_addr_base ;
   assign f_reqs_rv_port0__read__3_BITS_164_TO_101_25_UL_ETC___d128 =
@@ -1098,7 +1125,7 @@ module mkMem_Controller(CLK,
 	     f_reqs_rv[92:90] == 3'b101 && f_reqs_rv[105:101] == 5'h0 ||
 	     f_reqs_rv[92:90] == 3'b110 && f_reqs_rv[106:101] == 6'h0 ||
 	     f_reqs_rv[92:90] == 3'b111 && f_reqs_rv[107:101] == 7'h0 ;
-  assign mask__h5791 =
+  assign mask__h5867 =
 	     { SEXT_f_reqs_rv_port0__read__3_BIT_71_90___d191,
 	       SEXT_f_reqs_rv_port0__read__3_BIT_70_93___d194,
 	       SEXT_f_reqs_rv_port0__read__3_BIT_69_97___d198,
@@ -1107,17 +1134,17 @@ module mkMem_Controller(CLK,
 	       SEXT_f_reqs_rv_port0__read__3_BIT_66_07___d208,
 	       SEXT_f_reqs_rv_port0__read__3_BIT_65_11___d212,
 	       SEXT_f_reqs_rv_port0__read__3_BIT_64_14___d215 } ;
-  assign n__h4991 = { 3'd0, f_reqs_rv[105:104] } ;
-  assign req_raw_mem_addr__h3238 =
+  assign n__h5067 = { 3'd0, f_reqs_rv[105:104] } ;
+  assign req_raw_mem_addr__h3314 =
 	     { 5'd0,
 	       f_reqs_rv_BITS_164_TO_101_MINUS_rg_addr_base__q1[63:5] } ;
   assign rg_addr_base_24_ULE_f_reqs_rv_port0__read__3_B_ETC___d126 =
 	     rg_addr_base <= f_reqs_rv[164:101] ;
   assign rg_cached_raw_mem_addr_1_EQ_0_CONCAT_f_reqs_rv_ETC___d135 =
-	     rg_cached_raw_mem_addr == req_raw_mem_addr__h3238 ;
-  assign rg_state_EQ_3_3_AND_NOT_f_reqs_rv_port0__read__ETC___d286 =
+	     rg_cached_raw_mem_addr == req_raw_mem_addr__h3314 ;
+  assign rg_state_EQ_3_3_AND_NOT_f_reqs_rv_port0__read__ETC___d284 =
 	     rg_state == 2'd3 &&
-	     (NOT_f_reqs_rv_port0__read__3_BITS_92_TO_90_7_E_ETC___d281 ||
+	     (NOT_f_reqs_rv_port0__read__3_BITS_92_TO_90_7_E_ETC___d279 ||
 	      !rg_addr_base_24_ULE_f_reqs_rv_port0__read__3_B_ETC___d126 ||
 	      !f_reqs_rv_port0__read__3_BITS_164_TO_101_25_UL_ETC___d128) ;
   assign rg_state_EQ_3_3_AND_f_reqs_rv_port0__read__3_B_ETC___d131 =
@@ -1128,10 +1155,10 @@ module mkMem_Controller(CLK,
   assign rg_watch_tohost_37_AND_f_reqs_rv_port0__read___ETC___d243 =
 	     rg_watch_tohost && f_reqs_rv[164:101] == rg_tohost_addr &&
 	     f_reqs_rv[63:0] != 64'd0 ;
-  assign updated_word64__h5792 = x__h6165 | y__h6166 ;
-  assign x__h6165 = word64_old__h5786 & y__h6167 ;
-  assign y__h6166 = f_reqs_rv[63:0] & mask__h5791 ;
-  assign y__h6167 =
+  assign updated_word64__h5868 = x__h6241 | y__h6242 ;
+  assign x__h6241 = word64_old__h5862 & y__h6243 ;
+  assign y__h6242 = f_reqs_rv[63:0] & mask__h5867 ;
+  assign y__h6243 =
 	     { ~SEXT_f_reqs_rv_port0__read__3_BIT_71_90___d191,
 	       ~SEXT_f_reqs_rv_port0__read__3_BIT_70_93___d194,
 	       ~SEXT_f_reqs_rv_port0__read__3_BIT_69_97___d198,
@@ -1143,20 +1170,20 @@ module mkMem_Controller(CLK,
   always@(f_reqs_rv or rg_cached_raw_mem_word)
   begin
     case (f_reqs_rv[105:104])
-      2'd0: word64_old__h5786 = rg_cached_raw_mem_word[63:0];
-      2'd1: word64_old__h5786 = rg_cached_raw_mem_word[127:64];
-      2'd2: word64_old__h5786 = rg_cached_raw_mem_word[191:128];
-      2'd3: word64_old__h5786 = rg_cached_raw_mem_word[255:192];
+      2'd0: word64_old__h5862 = rg_cached_raw_mem_word[63:0];
+      2'd1: word64_old__h5862 = rg_cached_raw_mem_word[127:64];
+      2'd2: word64_old__h5862 = rg_cached_raw_mem_word[191:128];
+      2'd3: word64_old__h5862 = rg_cached_raw_mem_word[255:192];
     endcase
   end
-  always@(n__h4991 or rg_cached_raw_mem_word)
+  always@(n__h5067 or rg_cached_raw_mem_word)
   begin
-    case (n__h4991)
-      5'd0: rdata__h4992 = rg_cached_raw_mem_word[63:0];
-      5'd1: rdata__h4992 = rg_cached_raw_mem_word[127:64];
-      5'd2: rdata__h4992 = rg_cached_raw_mem_word[191:128];
-      5'd3: rdata__h4992 = rg_cached_raw_mem_word[255:192];
-      default: rdata__h4992 = 64'hAAAAAAAAAAAAAAAA /* unspecified value */ ;
+    case (n__h5067)
+      5'd0: rdata__h5068 = rg_cached_raw_mem_word[63:0];
+      5'd1: rdata__h5068 = rg_cached_raw_mem_word[127:64];
+      5'd2: rdata__h5068 = rg_cached_raw_mem_word[191:128];
+      5'd3: rdata__h5068 = rg_cached_raw_mem_word[255:192];
+      default: rdata__h5068 = 64'hAAAAAAAAAAAAAAAA /* unspecified value */ ;
     endcase
   end
 
@@ -1174,6 +1201,7 @@ module mkMem_Controller(CLK,
 	f_reqs_rv <= `BSV_ASSIGNMENT_DELAY
 	    171'h2AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA;
 	rg_state <= `BSV_ASSIGNMENT_DELAY 2'd0;
+	rg_status <= `BSV_ASSIGNMENT_DELAY 8'd0;
 	rg_tohost_addr <= `BSV_ASSIGNMENT_DELAY 64'h0000000080001000;
 	rg_watch_tohost <= `BSV_ASSIGNMENT_DELAY 1'd0;
       end
@@ -1187,6 +1215,7 @@ module mkMem_Controller(CLK,
 	  f_raw_mem_rsps_rv <= `BSV_ASSIGNMENT_DELAY f_raw_mem_rsps_rv$D_IN;
 	if (f_reqs_rv$EN) f_reqs_rv <= `BSV_ASSIGNMENT_DELAY f_reqs_rv$D_IN;
 	if (rg_state$EN) rg_state <= `BSV_ASSIGNMENT_DELAY rg_state$D_IN;
+	if (rg_status$EN) rg_status <= `BSV_ASSIGNMENT_DELAY rg_status$D_IN;
 	if (rg_tohost_addr$EN)
 	  rg_tohost_addr <= `BSV_ASSIGNMENT_DELAY rg_tohost_addr$D_IN;
 	if (rg_watch_tohost$EN)
@@ -1223,6 +1252,7 @@ module mkMem_Controller(CLK,
     rg_cached_raw_mem_word =
 	256'hAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA;
     rg_state = 2'h2;
+    rg_status = 8'hAA;
     rg_tohost_addr = 64'hAAAAAAAAAAAAAAAA;
     rg_watch_tohost = 1'h0;
   end
@@ -1239,68 +1269,68 @@ module mkMem_Controller(CLK,
       if (WILL_FIRE_RL_rl_reset_reload_cache &&
 	  NOT_cfg_verbosity_read_ULE_1___d5)
 	begin
-	  v__h2462 = $stime;
+	  v__h2538 = $stime;
 	  #0;
 	end
-    v__h2456 = v__h2462 / 32'd10;
+    v__h2532 = v__h2538 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset_reload_cache &&
 	  NOT_cfg_verbosity_read_ULE_1___d5)
 	$display("%0d: Mem_Controller.rl_reset_reload_cache => STATE_RELOADING",
-		 v__h2456);
+		 v__h2532);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_writeback_dirty_idle &&
 	  NOT_cfg_verbosity_read_ULE_2_2___d33)
 	begin
-	  v__h3405 = $stime;
+	  v__h3481 = $stime;
 	  #0;
 	end
-    v__h3399 = v__h3405 / 32'd10;
+    v__h3475 = v__h3481 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_writeback_dirty_idle &&
 	  NOT_cfg_verbosity_read_ULE_2_2___d33)
 	$display("%0d: Mem_Controller.rl_writeback_dirty_idle to raw addr 0x%0h",
-		 v__h3399,
+		 v__h3475,
 		 rg_cached_raw_mem_addr);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_writeback_dirty &&
 	  NOT_cfg_verbosity_read_ULE_2_2___d33)
 	begin
-	  v__h3898 = $stime;
+	  v__h3974 = $stime;
 	  #0;
 	end
-    v__h3892 = v__h3898 / 32'd10;
+    v__h3968 = v__h3974 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_writeback_dirty &&
 	  NOT_cfg_verbosity_read_ULE_2_2___d33)
 	$display("%0d: Mem_Controller.rl_writeback_dirty to raw addr 0x%0h",
-		 v__h3892,
+		 v__h3968,
 		 rg_cached_raw_mem_addr);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_miss_clean_req &&
 	  NOT_cfg_verbosity_read_ULE_2_2___d33)
 	begin
-	  v__h4367 = $stime;
+	  v__h4443 = $stime;
 	  #0;
 	end
-    v__h4361 = v__h4367 / 32'd10;
+    v__h4437 = v__h4443 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_miss_clean_req &&
 	  NOT_cfg_verbosity_read_ULE_2_2___d33)
 	$display("%0d: Mem_Controller.rl_miss_clean_req: read raw addr 0x%0h",
-		 v__h4361,
-		 req_raw_mem_addr__h3238);
+		 v__h4437,
+		 req_raw_mem_addr__h3314);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reload && NOT_cfg_verbosity_read_ULE_2_2___d33)
 	begin
-	  v__h4630 = $stime;
+	  v__h4706 = $stime;
 	  #0;
 	end
-    v__h4624 = v__h4630 / 32'd10;
+    v__h4700 = v__h4706 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reload && NOT_cfg_verbosity_read_ULE_2_2___d33)
 	$display("%0d: Mem_Controller.rl_reload: raw addr 0x%0h",
-		 v__h4624,
+		 v__h4700,
 		 rg_cached_raw_mem_addr);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reload && NOT_cfg_verbosity_read_ULE_2_2___d33)
@@ -1314,13 +1344,13 @@ module mkMem_Controller(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req && NOT_cfg_verbosity_read_ULE_1___d5)
 	begin
-	  v__h5349 = $stime;
+	  v__h5425 = $stime;
 	  #0;
 	end
-    v__h5343 = v__h5349 / 32'd10;
+    v__h5419 = v__h5425 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req && NOT_cfg_verbosity_read_ULE_1___d5)
-	$display("%0d: Mem_Controller.rl_process_rd_req: ", v__h5343);
+	$display("%0d: Mem_Controller.rl_process_rd_req: ", v__h5419);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req && NOT_cfg_verbosity_read_ULE_1___d5)
 	$write("        ");
@@ -1425,7 +1455,7 @@ module mkMem_Controller(CLK,
 	$write(", ", "rdata: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req && NOT_cfg_verbosity_read_ULE_1___d5)
-	$write("'h%h", rdata__h4992);
+	$write("'h%h", rdata__h5068);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req && NOT_cfg_verbosity_read_ULE_1___d5)
 	$write(", ", "rresp: ");
@@ -1450,13 +1480,13 @@ module mkMem_Controller(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req && NOT_cfg_verbosity_read_ULE_1___d5)
 	begin
-	  v__h7546 = $stime;
+	  v__h7622 = $stime;
 	  #0;
 	end
-    v__h7540 = v__h7546 / 32'd10;
+    v__h7616 = v__h7622 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req && NOT_cfg_verbosity_read_ULE_1___d5)
-	$display("%0d: Mem_Controller.rl_process_wr_req: ", v__h7540);
+	$display("%0d: Mem_Controller.rl_process_wr_req: ", v__h7616);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req && NOT_cfg_verbosity_read_ULE_1___d5)
 	$write("        ");
@@ -1575,15 +1605,15 @@ module mkMem_Controller(CLK,
       if (WILL_FIRE_RL_rl_process_wr_req &&
 	  rg_watch_tohost_37_AND_f_reqs_rv_port0__read___ETC___d243)
 	begin
-	  v__h7747 = $stime;
+	  v__h7823 = $stime;
 	  #0;
 	end
-    v__h7741 = v__h7747 / 32'd10;
+    v__h7817 = v__h7823 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req &&
 	  rg_watch_tohost_37_AND_f_reqs_rv_port0__read___ETC___d243)
 	$display("%0d: Mem_Controller.rl_process_wr_req: addr 0x%0h (<tohost>) data 0x%0h",
-		 v__h7741,
+		 v__h7817,
 		 f_reqs_rv[164:101],
 		 f_reqs_rv[63:0]);
     if (RST_N != `BSV_RESET_VALUE)
@@ -1595,24 +1625,20 @@ module mkMem_Controller(CLK,
       if (WILL_FIRE_RL_rl_process_wr_req &&
 	  rg_watch_tohost_37_AND_f_reqs_rv_port0__read___ETC___d243 &&
 	  f_reqs_rv[63:1] != 63'd0)
-	$display("FAIL %0d", exit_value__h7784);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_process_wr_req &&
-	  rg_watch_tohost_37_AND_f_reqs_rv_port0__read___ETC___d243)
-	$finish({ 30'd0, f_reqs_rv[2:1] });
+	$display("FAIL %0d", exit_value__h7860);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_invalid_rd_address)
 	begin
-	  v__h8264 = $stime;
+	  v__h8335 = $stime;
 	  #0;
 	end
-    v__h8258 = v__h8264 / 32'd10;
+    v__h8329 = v__h8335 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_invalid_rd_address)
-	$write("%0d: ERROR: Mem_Controller:", v__h8258);
+	$write("%0d: ERROR: Mem_Controller:", v__h8329);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_invalid_rd_address &&
-	  NOT_f_reqs_rv_port0__read__3_BITS_92_TO_90_7_E_ETC___d281)
+	  NOT_f_reqs_rv_port0__read__3_BITS_92_TO_90_7_E_ETC___d279)
 	$display(" read-addr is misaligned");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_invalid_rd_address &&
@@ -1724,16 +1750,16 @@ module mkMem_Controller(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_invalid_wr_address)
 	begin
-	  v__h9048 = $stime;
+	  v__h9119 = $stime;
 	  #0;
 	end
-    v__h9042 = v__h9048 / 32'd10;
+    v__h9113 = v__h9119 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_invalid_wr_address)
-	$write("%0d: ERROR: Mem_Controller:", v__h9042);
+	$write("%0d: ERROR: Mem_Controller:", v__h9113);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_invalid_wr_address &&
-	  NOT_f_reqs_rv_port0__read__3_BITS_92_TO_90_7_E_ETC___d281)
+	  NOT_f_reqs_rv_port0__read__3_BITS_92_TO_90_7_E_ETC___d279)
 	$display(" write-addr is misaligned");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_invalid_wr_address &&
@@ -1836,28 +1862,28 @@ module mkMem_Controller(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_set_addr_map)
 	begin
-	  v__h9641 = $stime;
+	  v__h9714 = $stime;
 	  #0;
 	end
-    v__h9635 = v__h9641 / 32'd10;
+    v__h9708 = v__h9714 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_set_addr_map)
 	$display("%0d: Mem_Controller.set_addr_map: addr_base 0x%0h addr_lim 0x%0h",
-		 v__h9635,
+		 v__h9708,
 		 set_addr_map_addr_base,
 		 set_addr_map_addr_lim);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_merge_rd_req &&
 	  NOT_cfg_verbosity_read_ULE_2_2___d33)
 	begin
-	  v__h2777 = $stime;
+	  v__h2853 = $stime;
 	  #0;
 	end
-    v__h2771 = v__h2777 / 32'd10;
+    v__h2847 = v__h2853 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_merge_rd_req &&
 	  NOT_cfg_verbosity_read_ULE_2_2___d33)
-	$display("%0d: Mem_Controller.rl_merge_rd_req", v__h2771);
+	$display("%0d: Mem_Controller.rl_merge_rd_req", v__h2847);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_merge_rd_req &&
 	  NOT_cfg_verbosity_read_ULE_2_2___d33)
@@ -1958,14 +1984,14 @@ module mkMem_Controller(CLK,
       if (WILL_FIRE_RL_rl_merge_wr_req &&
 	  NOT_cfg_verbosity_read_ULE_2_2___d33)
 	begin
-	  v__h3117 = $stime;
+	  v__h3193 = $stime;
 	  #0;
 	end
-    v__h3111 = v__h3117 / 32'd10;
+    v__h3187 = v__h3193 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_merge_wr_req &&
 	  NOT_cfg_verbosity_read_ULE_2_2___d33)
-	$display("%0d: Mem_Controller.rl_merge_wr_req", v__h3111);
+	$display("%0d: Mem_Controller.rl_merge_wr_req", v__h3187);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_merge_wr_req &&
 	  NOT_cfg_verbosity_read_ULE_2_2___d33)
@@ -2119,24 +2145,24 @@ module mkMem_Controller(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_power_on_reset && NOT_cfg_verbosity_read_ULE_1___d5)
 	begin
-	  v__h1706 = $stime;
+	  v__h1743 = $stime;
 	  #0;
 	end
-    v__h1700 = v__h1706 / 32'd10;
+    v__h1737 = v__h1743 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_power_on_reset && NOT_cfg_verbosity_read_ULE_1___d5)
-	$display("%0d: Mem_Controller.rl_power_on_reset", v__h1700);
+	$display("%0d: Mem_Controller.rl_power_on_reset", v__h1737);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_external_reset && NOT_cfg_verbosity_read_ULE_1___d5)
 	begin
-	  v__h2028 = $stime;
+	  v__h2088 = $stime;
 	  #0;
 	end
-    v__h2022 = v__h2028 / 32'd10;
+    v__h2082 = v__h2088 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_external_reset && NOT_cfg_verbosity_read_ULE_1___d5)
 	$display("%0d: Mem_Controller.rl_external_reset => STATE_RESET_RELOAD_CACHE",
-		 v__h2022);
+		 v__h2082);
   end
   // synopsys translate_on
 endmodule  // mkMem_Controller

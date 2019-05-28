@@ -6,6 +6,27 @@
 // ****************************************************************
 // ****************************************************************
 
+// Functions to measure simulation speed
+
+// ================================================================
+// c_start_timing()
+// Start the timing interval; argument is current cycle number.
+
+import "DPI-C"
+function void c_start_timing (longint unsigned  cycle_num);
+
+// ================================================================
+// c_end_timing()
+// End the timing interval; argument is current cycle number,
+// and print delta cycles, delta time and simulation speed.
+
+import "DPI-C"
+function void c_end_timing (longint unsigned  cycle_num);
+
+// ****************************************************************
+// ****************************************************************
+// ****************************************************************
+
 // Functions for console I/O
 
 // ================================================================

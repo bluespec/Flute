@@ -87,11 +87,12 @@ typedef enum {CPU_RESET1,
 
 `ifdef INCLUDE_GDB_CONTROL
 	      CPU_GDB_PAUSING,      // On GDB breakpoint, while waiting for fence completion
-	      CPU_DEBUG_MODE,       // Stopped for debugger
 `endif
+	      CPU_DEBUG_MODE,       // Stopped (normally for debugger)
 	      CPU_RUNNING,          // Normal operation
 	      CPU_TRAP,
-	      CPU_SPLIT_FETCH,      // To initiate IFetch after traps/interrupts/RET
+	      CPU_START_TRAP_HANDLER,
+	      CPU_CSRRx_TRAP,
 	      CPU_CSRRX_RESTART,    // Restart pipe after a CSRRX instruction
 	      CPU_FENCE_I,          // While waiting for FENCE.I to complete in Near_Mem
 	      CPU_FENCE,            // While waiting for FENCE to complete in Near_Mem
@@ -161,6 +162,13 @@ module mkCPU (CPU_IFC);
    Reg #(Priv_Mode)  rg_cur_priv <- mkReg (m_Priv_Mode);
    Reg #(Epoch)      rg_epoch    <- mkRegU;
 
+   // These regs save info on a trap in Stage1 or Stage2
+   Reg #(Trap_Info)  rg_trap_info       <- mkRegU;
+   Reg #(Instr)      rg_trap_instr      <- mkRegU;
+`ifdef INCLUDE_TANDEM_VERIF
+   Reg #(Trace_Data) rg_trap_trace_data <- mkRegU;
+`endif
+
    // Save next_pc across split-phase FENCE.I and other split-phase ops. This
    // register is also used for initiating fetches on a trap or external
    // interrupt
@@ -211,13 +219,14 @@ module mkCPU (CPU_IFC);
    // ----------------
    // Interrupt pending based on current priv, mstatus.ie, mie and mip registers
 
-   Bool interrupt_pending = isValid (csr_regfile.interrupt_pending (rg_cur_priv));
+   Bool interrupt_pending = (   isValid (csr_regfile.interrupt_pending (rg_cur_priv))
+			     || csr_regfile.nmi_pending);
 
    // ----------------
    // Reset requests and responses
 
-   FIFOF #(Token)  f_reset_reqs <- mkFIFOF;
-   FIFOF #(Token)  f_reset_rsps <- mkFIFOF;
+   FIFOF #(Bool)  f_reset_reqs <- mkFIFOF;
+   FIFOF #(Bool)  f_reset_rsps <- mkFIFOF;
 
    // ----------------
    // Communication to/from External debug module
@@ -427,8 +436,11 @@ module mkCPU (CPU_IFC);
    // ================================================================
    // Reset
 
+   Reg #(Bool) rg_run_on_reset <- mkReg (False);
+
    rule rl_reset_start (rg_state == CPU_RESET1);
-      let req <- pop (f_reset_reqs);
+      let run_on_reset <- pop (f_reset_reqs);
+      rg_run_on_reset <= run_on_reset;
 
       $display ("================================================================");
       $write   ("CPU: Bluespec  RISC-V  Flute  v3.0");
@@ -474,6 +486,14 @@ module mkCPU (CPU_IFC);
 
    // ----------------
 
+`ifdef ISA_C
+   // TODO: analyze this carefully; added to resolve a blockage.
+   // imem_rl_fetch_next_32b is in CPU_Fetch_C.bsv, and calls imem32.req (near_mem.imem_req).
+   // fa_restart calls stageF.enq which also calls imem.req which calls imem32.req.
+   // But cond_i32_odd_fetch_next should make these rules mutually exclusive; why doesn't bsc realize this?
+   (* descending_urgency = "imem_rl_fetch_next_32b, rl_reset_complete" *)
+`endif
+
    rule rl_reset_complete (rg_state == CPU_RESET2);
       let ack_gpr <- gpr_regfile.server_reset.response.get;
 `ifdef ISA_F
@@ -490,29 +510,20 @@ module mkCPU (CPU_IFC);
 
       WordXL dpc = truncate (soc_map.m_pc_reset_value);
 
-      f_reset_rsps.enq (?);
+      f_reset_rsps.enq (rg_run_on_reset);
 
-      $display ("%0d: CPU.reset_complete", mcycle);
-
-`ifdef INCLUDE_GDB_CONTROL
-      // TODO: 'resethaltreq' is new Debug-Module functionality, to be implemented.
-      // Until then, we come out of reset running.
-      Bit #(1) resethaltreq = 0;
-      if (resethaltreq == 1'b1) begin
-	 csr_regfile.write_dcsr_cause_priv (DCSR_CAUSE_HALTREQ, m_Priv_Mode);
-	 csr_regfile.write_dpc (dpc);
-	 rg_state <= CPU_DEBUG_MODE;
-
-	 $display ("    CPU entering DEBUG_MODE");
+      if (rg_run_on_reset) begin
+	 fa_restart (dpc);
+	 $display ("%0d: CPU.rl_reset_complete: restart at PC = 0x%0h", mcycle, dpc);
       end
       else begin
-	 fa_restart (dpc);
-	 $display ("    CPU restart at PC = 0x%0h", dpc);
-      end
-`else
-      fa_restart (dpc);
-      $display ("    CPU restart at PC = 0x%0h", dpc);
+	 rg_state <= CPU_DEBUG_MODE;
+`ifdef INCLUDE_GDB_CONTROL
+	 csr_regfile.write_dcsr_cause_priv (DCSR_CAUSE_HALTREQ, m_Priv_Mode);
+	 csr_regfile.write_dpc (dpc);
 `endif
+	 $display ("%0d: CPU.rl_reset_complete: entering DEBUG_MODE", mcycle);
+      end
    endrule: rl_reset_complete
 
    // ================================================================
@@ -610,6 +621,9 @@ module mkCPU (CPU_IFC);
 
 `ifdef ISA_C
    // TODO: analyze this carefully; added to resolve a blockage
+   // imem_rl_fetch_next_32b is in CPU_Fetch_C.bsv, and calls imem32.req (near_mem.imem_req).
+   // fa_restart calls stageF.enq which also calls imem.req which calls imem32.req.
+   // But cond_i32_odd_fetch_next should make these rules mutually exclusive; why doesn't bsc realize this?
    (* descending_urgency = "imem_rl_fetch_next_32b, rl_pipe" *)
 `endif
 
@@ -751,14 +765,29 @@ module mkCPU (CPU_IFC);
       if (cur_verbosity > 1)
 	 $display ("%0d: CPU.rl_stage2_nonpipe", mcycle);
 
-      let epc      = stage2.out.trap_info.epc;
-      let exc_code = stage2.out.trap_info.exc_code;
-      let tval     = stage2.out.trap_info.tval;
-      let instr    = stage2.out.data_to_stage3.instr;
+      // Just save relevant info and handle in next clock
+      rg_trap_info       <= stage2.out.trap_info;
+      rg_trap_instr      <= stage2.out.data_to_stage3.instr;
+`ifdef INCLUDE_TANDEM_VERIF
+      rg_trap_trace_data <= stage2.out.trace_data;
+`endif
+
+      rg_state           <= CPU_TRAP;
+   endrule: rl_stage2_nonpipe
+
+   // ================================================================
+   // Trap
+
+   rule rl_trap (rg_state == CPU_TRAP);
+      let epc      = rg_trap_info.epc;
+      let exc_code = rg_trap_info.exc_code;
+      let tval     = rg_trap_info.tval;
+      let instr    = rg_trap_instr;
 
       // Take trap, save trap information for next phase
       let trap_info <- csr_regfile.csr_trap_actions (rg_cur_priv,    // from priv
 						     epc,
+						     False,          // non-maskable interrupt
 						     False,          // interrupt_req
 						     exc_code,
 						     tval);
@@ -780,7 +809,7 @@ module mkCPU (CPU_IFC);
       rg_sstatus_SUM <= 0;
 `endif
 
-      rg_state    <= CPU_SPLIT_FETCH;
+      rg_state <= CPU_START_TRAP_HANDLER;
 
       stage1.set_full (False);
       stage2.set_full (False);
@@ -790,7 +819,7 @@ module mkCPU (CPU_IFC);
 
 `ifdef INCLUDE_TANDEM_VERIF
       // Trace Data
-      let trace_data = stage2.out.trace_data;
+      let trace_data = rg_trap_trace_data;
       trace_data.op = TRACE_TRAP;
       trace_data.pc = next_pc;
       // trace_data.instr_sz    should already be set
@@ -809,7 +838,7 @@ module mkCPU (CPU_IFC);
       if (cur_verbosity != 0)
 	 $display ("    mcause:0x%0h  epc 0x%0h  tval:0x%0h  new pc 0x%0h, new mstatus 0x%0h",
 		   mcause, epc, tval, next_pc, new_mstatus);
-   endrule : rl_stage2_nonpipe
+   endrule: rl_trap
 
    // ================================================================
    // Stage1: nonpipe special: CSRRW and CSRRWI
@@ -845,7 +874,7 @@ module mkCPU (CPU_IFC);
       Bool permitted = csr_regfile.access_permitted_1 (rg_cur_priv, csr_addr, read_not_write);
 
       if (! permitted) begin
-	 rg_state <= CPU_TRAP;
+	 rg_state <= CPU_CSRRx_TRAP;
 
 	 // Debug
 	 fa_emit_instr_trace (minstret, stage1.out.data_to_stage2.pc, instr, rg_cur_priv);
@@ -931,7 +960,7 @@ module mkCPU (CPU_IFC);
       Bool permitted = csr_regfile.access_permitted_2 (rg_cur_priv, csr_addr, read_not_write);
 
       if (! permitted) begin
-	 rg_state <= CPU_TRAP;
+	 rg_state <= CPU_CSRRx_TRAP;
 
 	 // Debug
 	 fa_emit_instr_trace (minstret, stage1.out.data_to_stage2.pc, instr, rg_cur_priv);
@@ -1054,7 +1083,7 @@ module mkCPU (CPU_IFC);
       rg_sstatus_SUM <= 0;
 `endif
 
-      rg_state    <= CPU_SPLIT_FETCH;
+      rg_state <= CPU_START_TRAP_HANDLER;    // TODO: bad naming; this is not starting the trap handler
 
       stageD.set_full (False);
       stage1.set_full (False);    fa_step_check;
@@ -1215,6 +1244,9 @@ module mkCPU (CPU_IFC);
 
 `ifdef ISA_C
    // TODO: analyze this carefully; added to resolve a blockage
+   // imem_rl_fetch_next_32b is in CPU_Fetch_C.bsv, and calls imem32.req (near_mem.imem_req).
+   // fa_restart calls stageF.enq which also calls imem.req which calls imem32.req.
+   // But cond_i32_odd_fetch_next should make these rules mutually exclusive; why doesn't bsc realize this?
    (* descending_urgency = "imem_rl_fetch_next_32b, rl_stage1_SFENCE_VMA" *)
 `endif
 
@@ -1365,7 +1397,7 @@ module mkCPU (CPU_IFC);
    Bool break_into_Debug_Mode = False;
 `endif
 
-   rule rl_stage1_trap (   (   (rg_state == CPU_TRAP)
+   rule rl_stage1_trap (   (   (rg_state == CPU_CSRRx_TRAP)
 			    || (   (rg_state == CPU_RUNNING)
 				&& (! halting)
 				&& (stage3.out.ostatus == OSTATUS_EMPTY)
@@ -1384,6 +1416,7 @@ module mkCPU (CPU_IFC);
       // Take trap, save trap information for next phase
       let trap_info <- csr_regfile.csr_trap_actions (rg_cur_priv, // from priv
 						     epc,
+						     False,       // non-maskable interrupt
 						     False,       // interrupt_req
 						     exc_code,
 						     tval);
@@ -1405,7 +1438,7 @@ module mkCPU (CPU_IFC);
       rg_sstatus_SUM <= 0;
 `endif
 
-      rg_state <= CPU_SPLIT_FETCH;
+      rg_state <= CPU_START_TRAP_HANDLER;
       
       stageD.set_full (False);
       stage1.set_full (False);    fa_step_check;
@@ -1451,7 +1484,7 @@ module mkCPU (CPU_IFC);
    // external interrupt and RET rules. Separated to break long timing
    // paths from stage2 and stage3 status to IFetch
 
-   rule rl_trap_fetch (rg_state == CPU_SPLIT_FETCH);
+   rule rl_trap_fetch (rg_state == CPU_START_TRAP_HANDLER);
       let new_epoch <- fav_update_epoch;
       let m_old_pc   = tagged Invalid;
       fa_start_ifetch (new_epoch,
@@ -1499,11 +1532,16 @@ module mkCPU (CPU_IFC);
       f_run_halt_rsps.enq (False);
    endrule: rl_trap_BREAK_to_Debug_Mode
 
+   // ----------------
    // Handle the flush responses from the caches when the flush was initiated
    // on entering CPU_GDB_PAUSING state
+
    rule rl_BREAK_cache_flush_finish (rg_state == CPU_GDB_PAUSING);
       let ack <- near_mem.server_fence_i.response.get;
       rg_state <= CPU_DEBUG_MODE;
+
+      // Notify debugger that we've halted
+      f_run_halt_rsps.enq (False);
 
       if (cur_verbosity > 1)
 	 $display ("%0d: CPU.rl_BREAK_cache_flush_finish", mcycle);
@@ -1524,19 +1562,26 @@ module mkCPU (CPU_IFC);
    // and Stage2 and Stage3 have drained,
    // encapsulated in condition 'stage1_take_interrupt'
 
-   rule rl_stage1_interrupt (csr_regfile.interrupt_pending (rg_cur_priv) matches tagged Valid .exc_code
-			     &&& (rg_state == CPU_RUNNING)
-			     &&& stage1_take_interrupt
-			     &&& (stageF.out.ostatus != OSTATUS_BUSY));
+   rule rl_stage1_interrupt (interrupt_pending
+			     && (rg_state == CPU_RUNNING)
+			     && stage1_take_interrupt
+			     && (stageF.out.ostatus != OSTATUS_BUSY));
       if (cur_verbosity > 1) $display ("%0d: CPU.rl_stage1_interrupt", mcycle);
 
-      let epc   = stage1.out.data_to_stage2.pc;
       let instr = stage1.out.data_to_stage2.instr;
+
+      WordXL   epc      = stage1.out.data_to_stage2.pc;
+      Exc_Code exc_code = 0;    // "Unknown cause" for NMI
+
+      if (csr_regfile.interrupt_pending (rg_cur_priv) matches tagged Valid .ec
+	  &&& (! csr_regfile.nmi_pending))
+	 exc_code = ec;
 
       // Take trap
       let trap_info <- csr_regfile.csr_trap_actions (rg_cur_priv,    // from priv
 						     epc,
-						     True,           // interrupt_req,
+						     csr_regfile.nmi_pending,        // non-maskable interrupt
+						     (! csr_regfile.nmi_pending),    // interrupt_req,
 						     exc_code,
 						     0);             // tval
       let next_pc       = trap_info.pc;
@@ -1553,7 +1598,7 @@ module mkCPU (CPU_IFC);
       rg_sstatus_SUM <= new_mstatus [18];
       rg_mstatus_MXR <= new_mstatus [19];
 
-      rg_state <= CPU_SPLIT_FETCH;
+      rg_state <= CPU_START_TRAP_HANDLER;
 
       stage1.set_full (False);
 
@@ -1602,9 +1647,6 @@ module mkCPU (CPU_IFC);
       rg_stop_req   <= False;
       rg_step_count <= 0;
 
-      // Notify debugger that we've halted
-      f_run_halt_rsps.enq (False);
-
       // Flush both caches -- using the same interface as that used by FENCE_I
       near_mem.server_fence_i.request.put (?);
 
@@ -1638,12 +1680,16 @@ module mkCPU (CPU_IFC);
 	 $display ("%0d: CPU.rl_debug_run: 'run' from dpc 0x%0h", mcycle, dpc);
    endrule
 
-   (* descending_urgency = "rl_debug_run_ignore, rl_pipe" *)
-   rule rl_debug_run_ignore ((f_run_halt_reqs.first == True) && fn_is_running (rg_state));
-      if (cur_verbosity > 1) $display ("%0d: CPU.rl_debug_run_ignore", mcycle);
+   (* descending_urgency = "rl_debug_run_redundant, rl_pipe" *)
+   rule rl_debug_run_redundant ((f_run_halt_reqs.first == True) && fn_is_running (rg_state));
+      if (cur_verbosity > 1) $display ("%0d: CPU.rl_debug_run_redundant", mcycle);
 
       f_run_halt_reqs.deq;
-      $display ("%0d: CPU.debug_run_ignore: ignoring 'run' command (CPU is not in Debug Mode)", mcycle);
+
+      // Notify debugger that we're running
+      f_run_halt_rsps.enq (True);
+
+      $display ("%0d: CPU.debug_run_redundant: CPU already running.", mcycle);
    endrule
 
    (* descending_urgency = "rl_debug_halt, rl_pipe" *)
@@ -1658,12 +1704,15 @@ module mkCPU (CPU_IFC);
 	 $display ("%0d: CPU.rl_debug_halt", mcycle);
    endrule
 
-   rule rl_debug_halt_ignore ((f_run_halt_reqs.first == False) && (! fn_is_running (rg_state)));
-      if (cur_verbosity > 1) $display ("%0d: CPU.rl_debug_halt_ignore", mcycle);
+   rule rl_debug_halt_redundant ((f_run_halt_reqs.first == False) && (! fn_is_running (rg_state)));
+      if (cur_verbosity > 1) $display ("%0d: CPU.rl_debug_halt_redundant", mcycle);
 
       f_run_halt_reqs.deq;
 
-      $display ("%0d: CPU.rl_debug_halt_ignore: ignoring 'halt' (CPU already halted)", mcycle);
+      // Notify debugger that we've 'halted'
+      f_run_halt_rsps.enq (False);
+
+      $display ("%0d: CPU.rl_debug_halt_redundant: CPU already halted.", mcycle);
       $display ("    state = ", fshow (rg_state));
    endrule
 
@@ -1813,8 +1862,9 @@ module mkCPU (CPU_IFC);
    // ----------------
    // Non-maskable interrupt
 
-   // TODO: fixup: NMIs should send CPU to an NMI vector (TBD in SoC_Map)
-   method Action  non_maskable_interrupt_req (Bool set_not_clear) = noAction;
+   method Action  nmi_req (x);
+      csr_regfile.nmi_req (x);
+   endmethod
 
    // ----------------
    // For tracing

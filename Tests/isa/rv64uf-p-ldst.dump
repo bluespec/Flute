@@ -39,94 +39,92 @@ Disassembly of section .text.init:
     8000005c:	30529073          	csrw	mtvec,t0
     80000060:	18005073          	csrwi	satp,0
     80000064:	00000297          	auipc	t0,0x0
-    80000068:	01c28293          	addi	t0,t0,28 # 80000080 <reset_vector+0x34>
+    80000068:	02428293          	addi	t0,t0,36 # 80000088 <reset_vector+0x3c>
     8000006c:	30529073          	csrw	mtvec,t0
-    80000070:	fff00293          	li	t0,-1
-    80000074:	3b029073          	csrw	pmpaddr0,t0
-    80000078:	01f00293          	li	t0,31
-    8000007c:	3a029073          	csrw	pmpcfg0,t0
-    80000080:	00000297          	auipc	t0,0x0
-    80000084:	01828293          	addi	t0,t0,24 # 80000098 <reset_vector+0x4c>
-    80000088:	30529073          	csrw	mtvec,t0
-    8000008c:	30205073          	csrwi	medeleg,0
-    80000090:	30305073          	csrwi	mideleg,0
-    80000094:	30405073          	csrwi	mie,0
-    80000098:	00000193          	li	gp,0
-    8000009c:	00000297          	auipc	t0,0x0
-    800000a0:	f6828293          	addi	t0,t0,-152 # 80000004 <trap_vector>
-    800000a4:	30529073          	csrw	mtvec,t0
-    800000a8:	00100513          	li	a0,1
-    800000ac:	01f51513          	slli	a0,a0,0x1f
-    800000b0:	00055863          	bgez	a0,800000c0 <reset_vector+0x74>
-    800000b4:	0ff0000f          	fence
-    800000b8:	00100193          	li	gp,1
-    800000bc:	00000073          	ecall
-    800000c0:	80000297          	auipc	t0,0x80000
-    800000c4:	f4028293          	addi	t0,t0,-192 # 0 <_start-0x80000000>
-    800000c8:	00028e63          	beqz	t0,800000e4 <reset_vector+0x98>
-    800000cc:	10529073          	csrw	stvec,t0
-    800000d0:	0000b2b7          	lui	t0,0xb
-    800000d4:	1092829b          	addiw	t0,t0,265
-    800000d8:	30229073          	csrw	medeleg,t0
-    800000dc:	30202373          	csrr	t1,medeleg
-    800000e0:	f4629ee3          	bne	t0,t1,8000003c <handle_exception>
-    800000e4:	30005073          	csrwi	mstatus,0
-    800000e8:	00002537          	lui	a0,0x2
-    800000ec:	30052073          	csrs	mstatus,a0
-    800000f0:	00305073          	csrwi	fcsr,0
-    800000f4:	00000297          	auipc	t0,0x0
-    800000f8:	01428293          	addi	t0,t0,20 # 80000108 <test_2>
-    800000fc:	34129073          	csrw	mepc,t0
-    80000100:	f1402573          	csrr	a0,mhartid
-    80000104:	30200073          	mret
+    80000070:	0010029b          	addiw	t0,zero,1
+    80000074:	03529293          	slli	t0,t0,0x35
+    80000078:	fff28293          	addi	t0,t0,-1
+    8000007c:	3b029073          	csrw	pmpaddr0,t0
+    80000080:	01f00293          	li	t0,31
+    80000084:	3a029073          	csrw	pmpcfg0,t0
+    80000088:	00000297          	auipc	t0,0x0
+    8000008c:	01828293          	addi	t0,t0,24 # 800000a0 <reset_vector+0x54>
+    80000090:	30529073          	csrw	mtvec,t0
+    80000094:	30205073          	csrwi	medeleg,0
+    80000098:	30305073          	csrwi	mideleg,0
+    8000009c:	30405073          	csrwi	mie,0
+    800000a0:	00000193          	li	gp,0
+    800000a4:	00000297          	auipc	t0,0x0
+    800000a8:	f6028293          	addi	t0,t0,-160 # 80000004 <trap_vector>
+    800000ac:	30529073          	csrw	mtvec,t0
+    800000b0:	00100513          	li	a0,1
+    800000b4:	01f51513          	slli	a0,a0,0x1f
+    800000b8:	00055863          	bgez	a0,800000c8 <reset_vector+0x7c>
+    800000bc:	0ff0000f          	fence
+    800000c0:	00100193          	li	gp,1
+    800000c4:	00000073          	ecall
+    800000c8:	80000297          	auipc	t0,0x80000
+    800000cc:	f3828293          	addi	t0,t0,-200 # 0 <_start-0x80000000>
+    800000d0:	00028e63          	beqz	t0,800000ec <reset_vector+0xa0>
+    800000d4:	10529073          	csrw	stvec,t0
+    800000d8:	0000b2b7          	lui	t0,0xb
+    800000dc:	1092829b          	addiw	t0,t0,265
+    800000e0:	30229073          	csrw	medeleg,t0
+    800000e4:	30202373          	csrr	t1,medeleg
+    800000e8:	f4629ae3          	bne	t0,t1,8000003c <handle_exception>
+    800000ec:	30005073          	csrwi	mstatus,0
+    800000f0:	00002537          	lui	a0,0x2
+    800000f4:	30052073          	csrs	mstatus,a0
+    800000f8:	00305073          	csrwi	fcsr,0
+    800000fc:	00000297          	auipc	t0,0x0
+    80000100:	01428293          	addi	t0,t0,20 # 80000110 <test_2>
+    80000104:	34129073          	csrw	mepc,t0
+    80000108:	f1402573          	csrr	a0,mhartid
+    8000010c:	30200073          	mret
 
-0000000080000108 <test_2>:
-    80000108:	00002597          	auipc	a1,0x2
-    8000010c:	ef858593          	addi	a1,a1,-264 # 80002000 <begin_signature>
-    80000110:	0045a087          	flw	ft1,4(a1)
-    80000114:	0015aa27          	fsw	ft1,20(a1)
-    80000118:	0105b503          	ld	a0,16(a1)
-    8000011c:	00100e9b          	addiw	t4,zero,1
-    80000120:	021e9e93          	slli	t4,t4,0x21
-    80000124:	007e8e93          	addi	t4,t4,7
-    80000128:	00fe9e93          	slli	t4,t4,0xf
-    8000012c:	ab7e8e93          	addi	t4,t4,-1353
-    80000130:	00ee9e93          	slli	t4,t4,0xe
-    80000134:	eefe8e93          	addi	t4,t4,-273
-    80000138:	00200193          	li	gp,2
-    8000013c:	03d51c63          	bne	a0,t4,80000174 <fail>
+0000000080000110 <test_2>:
+    80000110:	00002597          	auipc	a1,0x2
+    80000114:	ef058593          	addi	a1,a1,-272 # 80002000 <begin_signature>
+    80000118:	0045a087          	flw	ft1,4(a1)
+    8000011c:	0015aa27          	fsw	ft1,20(a1)
+    80000120:	0105b503          	ld	a0,16(a1)
+    80000124:	00100e9b          	addiw	t4,zero,1
+    80000128:	021e9e93          	slli	t4,t4,0x21
+    8000012c:	007e8e93          	addi	t4,t4,7
+    80000130:	00fe9e93          	slli	t4,t4,0xf
+    80000134:	ab7e8e93          	addi	t4,t4,-1353
+    80000138:	00ee9e93          	slli	t4,t4,0xe
+    8000013c:	eefe8e93          	addi	t4,t4,-273
+    80000140:	00200193          	li	gp,2
+    80000144:	03d51c63          	bne	a0,t4,8000017c <fail>
 
-0000000080000140 <test_3>:
-    80000140:	00002597          	auipc	a1,0x2
-    80000144:	ec058593          	addi	a1,a1,-320 # 80002000 <begin_signature>
-    80000148:	0005a087          	flw	ft1,0(a1)
-    8000014c:	0015ac27          	fsw	ft1,24(a1)
-    80000150:	0185b503          	ld	a0,24(a1)
-    80000154:	01338eb7          	lui	t4,0x1338
-    80000158:	d01e8e9b          	addiw	t4,t4,-767
-    8000015c:	00de9e93          	slli	t4,t4,0xd
-    80000160:	b7fe8e93          	addi	t4,t4,-1153 # 1337b7f <_start-0x7ecc8481>
-    80000164:	017e9e93          	slli	t4,t4,0x17
-    80000168:	00300193          	li	gp,3
-    8000016c:	01d51463          	bne	a0,t4,80000174 <fail>
-    80000170:	00301c63          	bne	zero,gp,80000188 <pass>
+0000000080000148 <test_3>:
+    80000148:	00002597          	auipc	a1,0x2
+    8000014c:	eb858593          	addi	a1,a1,-328 # 80002000 <begin_signature>
+    80000150:	0005a087          	flw	ft1,0(a1)
+    80000154:	0015ac27          	fsw	ft1,24(a1)
+    80000158:	0185b503          	ld	a0,24(a1)
+    8000015c:	01338eb7          	lui	t4,0x1338
+    80000160:	d01e8e9b          	addiw	t4,t4,-767
+    80000164:	00de9e93          	slli	t4,t4,0xd
+    80000168:	b7fe8e93          	addi	t4,t4,-1153 # 1337b7f <_start-0x7ecc8481>
+    8000016c:	017e9e93          	slli	t4,t4,0x17
+    80000170:	00300193          	li	gp,3
+    80000174:	01d51463          	bne	a0,t4,8000017c <fail>
+    80000178:	00301c63          	bne	zero,gp,80000190 <pass>
 
-0000000080000174 <fail>:
-    80000174:	0ff0000f          	fence
-    80000178:	00018063          	beqz	gp,80000178 <fail+0x4>
-    8000017c:	00119193          	slli	gp,gp,0x1
-    80000180:	0011e193          	ori	gp,gp,1
-    80000184:	00000073          	ecall
+000000008000017c <fail>:
+    8000017c:	0ff0000f          	fence
+    80000180:	00018063          	beqz	gp,80000180 <fail+0x4>
+    80000184:	00119193          	slli	gp,gp,0x1
+    80000188:	0011e193          	ori	gp,gp,1
+    8000018c:	00000073          	ecall
 
-0000000080000188 <pass>:
-    80000188:	0ff0000f          	fence
-    8000018c:	00100193          	li	gp,1
-    80000190:	00000073          	ecall
-    80000194:	c0001073          	unimp
-    80000198:	0000                	unimp
-    8000019a:	0000                	unimp
-    8000019c:	0000                	unimp
-    8000019e:	0000                	unimp
+0000000080000190 <pass>:
+    80000190:	0ff0000f          	fence
+    80000194:	00100193          	li	gp,1
+    80000198:	00000073          	ecall
+    8000019c:	c0001073          	unimp
     800001a0:	0000                	unimp
     800001a2:	0000                	unimp
     800001a4:	0000                	unimp

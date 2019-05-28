@@ -102,7 +102,8 @@ interface CSR_RegFile_IFC;
    method ActionValue #(Trap_Info)
           csr_trap_actions (Priv_Mode  from_priv,
 			    Word       pc,
-			    Bool       interrupt,
+			    Bool       nmi,          // non-maskable interrupt
+			    Bool       interrupt,    // other interrupt
 			    Exc_Code   exc_code,
 			    Word       xtval);
 
@@ -139,7 +140,9 @@ interface CSR_RegFile_IFC;
    (* always_ready *)
    method WordXL csr_mip_read;
 
+   // ----------------
    // Interrupts
+
    (* always_ready, always_enabled *)
    method Action m_external_interrupt_req (Bool set_not_clear);
 
@@ -158,6 +161,15 @@ interface CSR_RegFile_IFC;
    // WFI ignores mstatus ies and ideleg regs
    (* always_ready *)
    method Bool wfi_resume;
+
+   // ----------------
+   // Non-maskable interrupts
+
+   (* always_ready, always_enabled *)
+   method Action nmi_req (Bool set_not_clear);
+
+   (* always_ready *)
+   method Bool nmi_pending;
 
    // ----------------
    // Methods when Debug Module is present
@@ -344,6 +356,10 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
    Reg #(WordXL)    rg_dscratch0 <- mkRegU;
    Reg #(WordXL)    rg_dscratch1 <- mkRegU;
 
+   // Non-maskable interrupt
+   Reg #(Bool)    rg_nmi <- mkReg (False);
+   Reg #(WordXL)  rg_nmi_vector <- mkRegU;
+
    // ----------------------------------------------------------------
    // Reset.
    // Initialize some CSRs.
@@ -375,6 +391,8 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
       rg_mideleg    <= 0;
 `endif
       rg_mcounteren <= mcounteren_reset_value;
+
+      rg_tselect    <= 0;
       rg_tdata1     <= 0;    // ISA test rv64mi-p-breakpoint assumes reset value 0.
 
       rw_minstret.wset (0);
@@ -393,11 +411,15 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 			      3'h0,    // [8:7]    cause    // WARNING: 0 is non-standard
 			      1'h0,    // [5]      reserved
 			      1'h1,    // [4]      mprven
-			      1'h0,    // [3]      nmip
+			      1'h0,    // [3]      nmip    // non-maskable interrupt pending
 			      1'h0,    // [2]      step
 			      2'h3}    // [1:0]    prv (machine mode)
 			     );
 `endif
+
+      // Non-maskable interrupts
+      rg_nmi        <= False;
+      rg_nmi_vector <= truncate (soc_map.m_nmivec_reset_value);
 
       rg_state <= RF_RUNNING;
    endrule
@@ -675,7 +697,13 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 	    csr_addr_tdata3:   m_csr_value = tagged Valid rg_tdata3;
 
 `ifdef INCLUDE_GDB_CONTROL
-	    csr_addr_dcsr:       m_csr_value = tagged Valid zeroExtend (rg_dcsr);
+	    csr_addr_dcsr:       begin
+				    Bit #(32) dcsr_nmip_mask = 'b_1000;
+				    Bit #(32) dcsr = (rg_nmi
+						      ? (rg_dcsr | dcsr_nmip_mask)
+						      : (rg_dcsr & (~ dcsr_nmip_mask)));
+				    m_csr_value = tagged Valid zeroExtend (dcsr);
+				 end
 	    csr_addr_dpc:        m_csr_value = tagged Valid rg_dpc;
 	    csr_addr_dscratch0:  m_csr_value = tagged Valid rg_dscratch0;
 	    csr_addr_dscratch1:  m_csr_value = tagged Valid rg_dscratch1;
@@ -686,7 +714,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
       end
 
       return m_csr_value;
-   endfunction
+   endfunction: fv_csr_read
 
    // ----------------------------------------------------------------
    // CSR writes
@@ -866,11 +894,16 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 				    end
 `endif
 	       csr_addr_tselect:   begin
-				      result      = wordxl;
+				      // Until we implement trigger functionality,
+				      // return tselect always contains 0
+				      result      = 0;    // wordxl
 				      rg_tselect <= result;
 				   end
 	       csr_addr_tdata1:    begin
-				      result     = wordxl;
+				      // Until we implement trigger functionality,
+				      // force 'type' field ([xlen-1:xlen-4]) to zero
+				      // meaning: 'There is no trigger at this tselect'
+				      result     = (wordxl & ('1 >> 4));
 				      rg_tdata1 <= result;
 				   end
 	       csr_addr_tdata2:    begin
@@ -921,7 +954,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 
 	 return result;
       endactionvalue
-   endfunction
+   endfunction: fav_csr_write
 
    // Access permission
    function Bool fv_access_permitted (Priv_Mode  priv, CSR_Addr  csr_addr,  Bool read_not_write);
@@ -939,7 +972,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
       Bool rw_ok = (read_not_write || (csr_addr [11:10] != 2'b11));
 
       return (exists && priv_ok && (! tvm_fault) && rw_ok);
-   endfunction
+   endfunction: fv_access_permitted
 
    // ================================================================
    // For debugging
@@ -1066,7 +1099,8 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
    method ActionValue #(Trap_Info)
           csr_trap_actions (Priv_Mode  from_priv,
 			    WordXL     pc,
-			    Bool       interrupt,
+			    Bool       nmi,          // non-maskable interrupt
+			    Bool       interrupt,    // other interrupt
 			    Exc_Code   exc_code,
 			    WordXL     xtval);
 
@@ -1084,22 +1118,33 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 			    rg_mtvec, rg_mepc, rg_mtval);
       end
 
-      let new_priv    = fv_new_priv_on_exception (misa,
-						  from_priv,
-						  interrupt,
-						  exc_code,
-						  rg_medeleg,
-						  rg_mideleg,
-						  sedeleg,
-						  sideleg);
+      let new_priv    = (nmi
+			 ? m_Priv_Mode
+			 : fv_new_priv_on_exception (misa,
+						     from_priv,
+						     interrupt,
+						     exc_code,
+						     rg_medeleg,
+						     rg_mideleg,
+						     sedeleg,
+						     sideleg));
       let new_mstatus  = fv_new_mstatus_on_exception (csr_mstatus.fv_read, from_priv, new_priv);
       let new_status  <- csr_mstatus.fav_write (misa, new_mstatus);
 
-      let  xcause      = MCause {interrupt: pack (interrupt), exc_code: exc_code};
+      let  xcause      = (nmi
+			  ? MCause {interrupt: 0, exc_code: 0 }
+			  : MCause {interrupt: pack (interrupt), exc_code: exc_code});
       let  is_vectored = (rg_mtvec.mode == VECTORED);
       Addr exc_pc      = (extend (rg_mtvec.base)) << 2;
 
-      if (new_priv == m_Priv_Mode) begin
+      if (nmi) begin
+	 rg_mepc    <= pc;
+	 rg_mcause  <= xcause;
+	 rg_mtval   <= xtval;
+	 exc_pc      = rg_nmi_vector;
+	 is_vectored = False;
+      end
+      else if (new_priv == m_Priv_Mode) begin
 	 rg_mepc    <= pc;
 	 rg_mcause  <= xcause;
 	 rg_mtval   <= xtval;
@@ -1117,7 +1162,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 `endif
       // TODO: if (new_priv == u_Priv_Mode)
 
-      // Compute the exception PC based on the xTVEC mode bits
+      // Adjust the exception PC if xTVEC mode bits so indicate
       Addr vector_offset = (extend (exc_code)) << 2;
       if (interrupt && is_vectored)
 	 exc_pc = exc_pc + vector_offset;
@@ -1236,6 +1281,17 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
       WordXL mip = csr_mip.fv_read;
       WordXL mie = csr_mie.fv_read;
       return ((mip & mie) != 0);
+   endmethod
+
+   // ----------------
+   // Non-maskable interrupts
+
+   method Action nmi_req (Bool set_not_clear);
+      rg_nmi <= set_not_clear;
+   endmethod
+
+   method Bool nmi_pending;
+      return rg_nmi;
    endmethod
 
    // ----------------

@@ -32,8 +32,9 @@ import GetPut_Aux  :: *;
 // Project imports
 
 // Main fabric
-import AXI4_Types  :: *;
-import AXI4_Fabric :: *;
+import AXI4_Types     :: *;
+import AXI4_Fabric    :: *;
+import AXI4_Deburster :: *;
 
 import Fabric_Defs :: *;
 import SoC_Map     :: *;
@@ -54,7 +55,8 @@ import Camera_Model   :: *;
 `endif
 
 `ifdef INCLUDE_ACCEL0
-import Accel_AES      :: *;
+import AXI4_Accel_IFC :: *;
+import AXI4_Accel     :: *;
 `endif
 
 `ifdef INCLUDE_TANDEM_VERIF
@@ -65,12 +67,6 @@ import TV_Info :: *;
 import External_Control :: *;    // Control requests/responses from HSFE
 import Debug_Module     :: *;
 `endif
-
-// ================================================================
-// Local types and constants
-
-typedef enum {SOC_START, SOC_RESETTING, SOC_IDLE} SoC_State
-deriving (Bits, Eq, FShow);
 
 // ================================================================
 // The outermost interface of the SoC
@@ -96,9 +92,24 @@ interface SoC_Top_IFC;
    interface Get #(Bit #(8)) get_to_console;
    interface Put #(Bit #(8)) put_from_console;
 
+   // Catch-all status; return-value can identify the origin (0 = none)
+   (* always_ready *)
+   method Bit #(8) status;
+
    // For ISA tests: watch memory writes to <tohost> addr
    method Action set_watch_tohost (Bool  watch_tohost, Fabric_Addr  tohost_addr);
 endinterface
+
+// ================================================================
+// Local types and constants
+
+typedef enum {SOC_START,
+	      SOC_RESETTING,
+`ifdef INCLUDE_GDB_CONTROL
+	      SOC_RESETTING_NDM,
+`endif
+	      SOC_IDLE} SoC_State
+deriving (Bits, Eq, FShow);
 
 // ================================================================
 // The module
@@ -120,16 +131,26 @@ module mkSoC_Top (SoC_Top_IFC);
 
    // SoC Boot ROM
    Boot_ROM_IFC  boot_rom <- mkBoot_ROM;
+   // AXI4 Deburster in front of Boot_ROM
+   AXI4_Deburster_IFC #(Wd_Id,
+			Wd_Addr,
+			Wd_Data,
+			Wd_User)  boot_rom_axi4_deburster <- mkAXI4_Deburster_A;
 
    // SoC Memory
    Mem_Controller_IFC  mem0_controller <- mkMem_Controller;
+   // AXI4 Deburster in front of SoC Memory
+   AXI4_Deburster_IFC #(Wd_Id,
+			Wd_Addr,
+			Wd_Data,
+			Wd_User)  mem0_controller_axi4_deburster <- mkAXI4_Deburster_A;
 
    // SoC IPs
    UART_IFC   uart0  <- mkUART;
 
 `ifdef INCLUDE_ACCEL0
    // Accel0 master to fabric
-   Accel_AES_IFC  accel_aes0 <- mkAccel_AES;
+   AXI4_Accel_IFC  accel0 <- mkAXI4_Accel;
 `endif
 
    // ----------------
@@ -144,7 +165,7 @@ module mkSoC_Top (SoC_Top_IFC);
 
 `ifdef INCLUDE_ACCEL0
    // accel_aes0 to fabric
-   mkConnection (accel_aes0.master,  fabric.v_from_masters [accel0_master_num]);
+   mkConnection (accel0.master,  fabric.v_from_masters [accel0_master_num]);
 `endif
 
    // ----------------
@@ -152,17 +173,19 @@ module mkSoC_Top (SoC_Top_IFC);
    // Note: see 'SoC_Map' for 'slave_num' definitions
 
    // Fabric to Boot ROM
-   mkConnection (fabric.v_to_slaves [boot_rom_slave_num],        boot_rom.slave);
+   mkConnection (fabric.v_to_slaves [boot_rom_slave_num], boot_rom_axi4_deburster.from_master);
+   mkConnection (boot_rom_axi4_deburster.to_slave,        boot_rom.slave);
 
-   // Fabric to Mem Controller
-   mkConnection (fabric.v_to_slaves [mem0_controller_slave_num], mem0_controller.slave);
+   // Fabric to Deburster to Mem Controller
+   mkConnection (fabric.v_to_slaves [mem0_controller_slave_num], mem0_controller_axi4_deburster.from_master);
+   mkConnection (mem0_controller_axi4_deburster.to_slave,        mem0_controller.slave);
 
    // Fabric to UART0
-   mkConnection (fabric.v_to_slaves [uart0_slave_num],           uart0.slave);
+   mkConnection (fabric.v_to_slaves [uart0_slave_num],  uart0.slave);
 
 `ifdef INCLUDE_ACCEL0
-   // Fabric to accel_aes0
-   mkConnection (fabric.v_to_slaves [accel0_slave_num],          accel_aes0.slave);
+   // Fabric to accel0
+   mkConnection (fabric.v_to_slaves [accel0_slave_num], accel0.slave);
 `endif
 
 `ifdef HTIF_MEMORY
@@ -187,6 +210,9 @@ module mkSoC_Top (SoC_Top_IFC);
       for (Integer j = 1; j < valueOf (N_External_Interrupt_Sources); j = j + 1)
 	 core.core_external_interrupt_sources [j].m_interrupt_req (False);
 
+      // Non-maskable interrupt request. [Tie-off; TODO: connect to genuine sources]
+      core.nmi_req (False);
+
       /* For debugging only
       if ((! rg_intr_prev) && intr)
 	 $display ("SoC_Top: intr posedge");
@@ -198,26 +224,106 @@ module mkSoC_Top (SoC_Top_IFC);
    endrule
 
    // ================================================================
-   // RESET BEHAVIOR WITHOUT DEBUG MODULE
+   // SOFT RESET
 
-   rule rl_reset_start_2 (rg_state == SOC_START);
-      core.cpu_reset_server.request.put (?);
-      mem0_controller.server_reset.request.put (?);
-      uart0.server_reset.request.put (?);
+   function Action fa_reset_start_actions (Bool running);
+      action
+	 core.cpu_reset_server.request.put (running);
+	 mem0_controller.server_reset.request.put (?);
+	 uart0.server_reset.request.put (?);
+	 fabric.reset;
+      endaction
+   endfunction
 
-      fabric.reset;
+   function Action fa_reset_complete_actions ();
+      action
+	 let cpu_rsp             <- core.cpu_reset_server.response.get;
+	 let mem0_controller_rsp <- mem0_controller.server_reset.response.get;
+	 let uart0_rsp           <- uart0.server_reset.response.get;
 
+	 // Initialize address maps of slave IPs
+	 boot_rom.set_addr_map (soc_map.m_boot_rom_addr_base,
+				soc_map.m_boot_rom_addr_lim);
+
+	 mem0_controller.set_addr_map (soc_map.m_mem0_controller_addr_base,
+				       soc_map.m_mem0_controller_addr_lim);
+
+	 uart0.set_addr_map (soc_map.m_uart0_addr_base, soc_map.m_uart0_addr_lim);
+
+`ifdef INCLUDE_ACCEL0
+	 accel0.init (fabric_default_id,
+		      soc_map.m_accel0_addr_base,
+		      soc_map.m_accel0_addr_lim);
+`endif
+
+	 if (verbosity != 0) begin
+	    $display ("  SoC address map:");
+	    $display ("  Boot ROM:        0x%0h .. 0x%0h",
+		      soc_map.m_boot_rom_addr_base,
+		      soc_map.m_boot_rom_addr_lim);
+	    $display ("  Mem0 Controller: 0x%0h .. 0x%0h",
+		      soc_map.m_mem0_controller_addr_base,
+		      soc_map.m_mem0_controller_addr_lim);
+	    $display ("  UART0:           0x%0h .. 0x%0h",
+		      soc_map.m_uart0_addr_base,
+		      soc_map.m_uart0_addr_lim);
+	 end
+      endaction
+   endfunction
+
+   // ----------------
+   // Initial reset; CPU comes up running.
+
+   rule rl_reset_start_initial (rg_state == SOC_START);
+      Bool running = True;
+      fa_reset_start_actions (running);
       rg_state <= SOC_RESETTING;
 
-      $display ("%0d: SoC_Top. Reset start ...", cur_cycle);
+      $display ("%0d:%m.rl_reset_start_initial ...", cur_cycle);
    endrule
+
+   rule rl_reset_complete_initial (rg_state == SOC_RESETTING);
+      fa_reset_complete_actions;
+      rg_state <= SOC_IDLE;
+
+      $display ("%0d:%m.rl_reset_complete_initial", cur_cycle);
+   endrule
+
+   // ----------------
+   // NDM (non-debug-module) reset (requested from Debug Module)
+   // Request argument indicates if CPU comes up running or halted
+
+`ifdef INCLUDE_GDB_CONTROL
+   Reg #(Bool) rg_running <- mkRegU;
+
+   rule rl_ndm_reset_start (rg_state == SOC_IDLE);
+      let running <- core.ndm_reset_client.request.get;
+      rg_running <= running;
+
+      fa_reset_start_actions (running);
+      rg_state <= SOC_RESETTING_NDM;
+
+      $display ("%0d:%m.rl_ndm_reset_start (non-debug-module) running = ",
+		cur_cycle, fshow (running));
+   endrule
+
+   rule rl_ndm_reset_complete (rg_state == SOC_RESETTING_NDM);
+      fa_reset_complete_actions;
+      rg_state <= SOC_IDLE;
+
+      core.ndm_reset_client.response.put (rg_running);
+
+      $display ("%0d:%m.rl_ndm_reset_complete (non-debug-module) running = ",
+		cur_cycle, fshow (rg_running));
+   endrule
+`endif
 
    // ================================================================
    // BEHAVIOR WITH DEBUG MODULE
 
 `ifdef INCLUDE_GDB_CONTROL
    // ----------------------------------------------------------------
-   // External debug requests and responses
+   // External debug requests and responses (e.g., GDB)
 
    FIFOF #(Control_Req) f_external_control_reqs <- mkFIFOF;
    FIFOF #(Control_Rsp) f_external_control_rsps <- mkFIFOF;
@@ -228,7 +334,7 @@ module mkSoC_Top (SoC_Top_IFC);
       f_external_control_reqs.deq;
       core.dm_dmi.read_addr (truncate (req.arg1));
       if (verbosity != 0) begin
-	 $display ("%0d: SoC_Top.rl_handle_external_req_read_request", cur_cycle);
+	 $display ("%0d:%m.rl_handle_external_req_read_request", cur_cycle);
          $display ("    ", fshow (req));
       end
    endrule
@@ -238,7 +344,7 @@ module mkSoC_Top (SoC_Top_IFC);
       let rsp = Control_Rsp {status: external_control_rsp_status_ok, result: signExtend (x)};
       f_external_control_rsps.enq (rsp);
       if (verbosity != 0) begin
-	 $display ("%0d: SoC_Top.rl_handle_external_req_read_response", cur_cycle);
+	 $display ("%0d:%m.rl_handle_external_req_read_response", cur_cycle);
          $display ("    ", fshow (rsp));
       end
    endrule
@@ -249,7 +355,7 @@ module mkSoC_Top (SoC_Top_IFC);
       // let rsp = Control_Rsp {status: external_control_rsp_status_ok, result: 0};
       // f_external_control_rsps.enq (rsp);
       if (verbosity != 0) begin
-         $display ("%0d: SoC_Top.rl_handle_external_req_write", cur_cycle);
+         $display ("%0d:%m.rl_handle_external_req_write", cur_cycle);
          $display ("    ", fshow (req));
       end
    endrule
@@ -260,70 +366,16 @@ module mkSoC_Top (SoC_Top_IFC);
       let rsp = Control_Rsp {status: external_control_rsp_status_err, result: 0};
       f_external_control_rsps.enq (rsp);
 
-      $display ("%0d: SoC_Top.rl_handle_external_req_err: unknown req.op", cur_cycle);
+      $display ("%0d:%m.rl_handle_external_req_err: unknown req.op", cur_cycle);
       $display ("    ", fshow (req));
    endrule
-
-   // ----------------------------------------------------------------
-   // NDM reset (all except Debug Module) request from debug module
-
-   rule rl_reset_start (rg_state != SOC_RESETTING);
-      let req <- core.dm_ndm_reset_req_get.get;
-
-      core.cpu_reset_server.request.put (?);
-      mem0_controller.server_reset.request.put (?);
-      uart0.server_reset.request.put (?);
-
-      fabric.reset;
-
-      rg_state <= SOC_RESETTING;
-
-      $display ("%0d: SoC_Top.rl_reset_start (Debug Module NDM reset, all except debug module) ...",
-		cur_cycle);
-   endrule
 `endif
-
-   rule rl_reset_complete (rg_state == SOC_RESETTING);
-      let cpu_rsp             <- core.cpu_reset_server.response.get;
-      let mem0_controller_rsp <- mem0_controller.server_reset.response.get;
-      let uart0_rsp           <- uart0.server_reset.response.get;
-
-      // Initialize address maps of slave IPs
-      boot_rom.set_addr_map (soc_map.m_boot_rom_addr_base,
-			     soc_map.m_boot_rom_addr_lim);
-
-      mem0_controller.set_addr_map (soc_map.m_mem0_controller_addr_base,
-				    soc_map.m_mem0_controller_addr_lim);
-
-      uart0.set_addr_map (soc_map.m_uart0_addr_base, soc_map.m_uart0_addr_lim);
-
-      rg_state <= SOC_IDLE;
-
-`ifdef INCLUDE_GDB_CONTROL
-      $display ("%0d: SoC_Top: NDM reset complete (all except debug module)", cur_cycle);
-`else
-      $display ("%0d: SoC_Top. Reset complete ...", cur_cycle);
-`endif
-
-      if (verbosity != 0) begin
-	 $display ("  SoC address map:");
-	 $display ("  Boot ROM:        0x%0h .. 0x%0h",
-		   soc_map.m_boot_rom_addr_base,
-		   soc_map.m_boot_rom_addr_lim);
-	 $display ("  Mem0 Controller: 0x%0h .. 0x%0h",
-		   soc_map.m_mem0_controller_addr_base,
-		   soc_map.m_mem0_controller_addr_lim);
-	 $display ("  UART0:           0x%0h .. 0x%0h",
-		   soc_map.m_uart0_addr_base,
-		   soc_map.m_uart0_addr_lim);
-      end
-   endrule
 
    // ================================================================
    // INTERFACE
 
-   method Action  set_verbosity (Bit #(4)  verbosity, Bit #(64)  logdelay);
-      core.set_verbosity (verbosity, logdelay);
+   method Action  set_verbosity (Bit #(4)  verbosity1, Bit #(64)  logdelay);
+      core.set_verbosity (verbosity1, logdelay);
    endmethod
 
    // To external controller (E.g., GDB)
@@ -343,11 +395,28 @@ module mkSoC_Top (SoC_Top_IFC);
    interface get_to_console   = uart0.get_to_console;
    interface put_from_console = uart0.put_from_console;
 
+   // Catch-all status; return-value can identify the origin (0 = none)
+   method Bit #(8) status;
+      return mem0_controller.status;
+   endmethod
+
    // For ISA tests: watch memory writes to <tohost> addr
    method Action set_watch_tohost (Bool  watch_tohost, Fabric_Addr  tohost_addr);
       mem0_controller.set_watch_tohost (watch_tohost, tohost_addr);
    endmethod
 endmodule: mkSoC_Top
+
+// ================================================================
+// Specialization of parameterized AXI4 Deburster for this SoC.
+
+(* synthesize *)
+module mkAXI4_Deburster_A (AXI4_Deburster_IFC #(Wd_Id,
+						Wd_Addr,
+						Wd_Data,
+						Wd_User));
+   let m <- mkAXI4_Deburster;
+   return m;
+endmodule
 
 // ================================================================
 

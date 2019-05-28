@@ -96,7 +96,7 @@ interface Debug_Module_IFC;
    // This section replicated for additional harts.
 
    // Reset and run-control
-   interface Get #(Token)         hart0_get_reset_req;
+   interface Client #(Bool, Bool) hart0_reset_client;
    interface Client #(Bool, Bool) hart0_client_run_halt;
    interface Get #(Bit #(4))      hart0_get_other_req;
 
@@ -115,7 +115,8 @@ interface Debug_Module_IFC;
    // Facing Platform
 
    // Non-Debug-Module Reset (reset all except DM)
-   interface Get #(Token) get_ndm_reset_req;
+   // Bool indicates 'running' hart state.
+   interface Client #(Bool, Bool) ndm_reset_client;
 
    // Read/Write RISC-V memory
    interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) master;
@@ -125,6 +126,9 @@ endinterface
 
 (* synthesize *)
 module mkDebug_Module (Debug_Module_IFC);
+
+   // Local verbosity: 0 = quiet; 1 = print DMI transactions
+   Integer verbosity = 0;
 
    // The three parts
    DM_Run_Control_IFC        dm_run_control       <- mkDM_Run_Control;
@@ -152,6 +156,9 @@ module mkDebug_Module (Debug_Module_IFC);
    interface DMI dmi;
       method Action read_addr  (DM_Addr dm_addr);
 	 f_read_addr.enq(dm_addr);
+
+	 if (verbosity != 0)
+	    $display ("%0d: %m.DMI read: dm_addr 0x%0h", cur_cycle, dm_addr);
       endmethod
 
       method ActionValue #(DM_Word) read_data;
@@ -209,6 +216,10 @@ module mkDebug_Module (Debug_Module_IFC);
 	    dm_word = 0;
 	 end
 
+	 if (verbosity != 0)
+	    $display ("%0d: %m.DMI read response: dm_addr 0x%0h, dm_word 0x%0h",
+		      cur_cycle, dm_addr, dm_word);
+
 	 return dm_word;
       endmethod
 
@@ -261,6 +272,10 @@ module mkDebug_Module (Debug_Module_IFC);
 	    // TODO: set error status?
 	    noAction;
 	 end
+
+	 if (verbosity != 0)
+	    $display ("%0d: %m.DMI write: dm_addr 0x%0h, dm_word 0x%0h",
+		      cur_cycle, dm_addr, dm_word);
       endmethod
    endinterface
 
@@ -268,7 +283,7 @@ module mkDebug_Module (Debug_Module_IFC);
    // Facing CPU/hart0
 
    // Reset and run-control
-   interface Get    hart0_get_reset_req   = dm_run_control.hart0_get_reset_req;
+   interface Client hart0_reset_client    = dm_run_control.hart0_reset_client;
    interface Client hart0_client_run_halt = dm_run_control.hart0_client_run_halt;
    interface Get    hart0_get_other_req   = dm_run_control.hart0_get_other_req;
 
@@ -287,7 +302,7 @@ module mkDebug_Module (Debug_Module_IFC);
    // Facing Platform
 
    // Non-Debug-Module Reset (reset all except DM)
-   interface Get get_ndm_reset_req = dm_run_control.get_ndm_reset_req;
+   interface Client ndm_reset_client = dm_run_control.ndm_reset_client;
 
    // Read/Write RISC-V memory
    interface AXI4_Master_IFC master = dm_system_bus.master;

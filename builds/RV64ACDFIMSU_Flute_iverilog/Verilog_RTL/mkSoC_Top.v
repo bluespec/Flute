@@ -119,6 +119,66 @@ module mkSoC_Top(CLK,
        RDY_to_raw_mem_request_get,
        RDY_to_raw_mem_response_put;
 
+  // register boot_rom_axi4_deburster_rg_ar_beat_count
+  reg [7 : 0] boot_rom_axi4_deburster_rg_ar_beat_count;
+  wire [7 : 0] boot_rom_axi4_deburster_rg_ar_beat_count$D_IN;
+  wire boot_rom_axi4_deburster_rg_ar_beat_count$EN;
+
+  // register boot_rom_axi4_deburster_rg_b_beat_count
+  reg [7 : 0] boot_rom_axi4_deburster_rg_b_beat_count;
+  wire [7 : 0] boot_rom_axi4_deburster_rg_b_beat_count$D_IN;
+  wire boot_rom_axi4_deburster_rg_b_beat_count$EN;
+
+  // register boot_rom_axi4_deburster_rg_b_resp
+  reg [1 : 0] boot_rom_axi4_deburster_rg_b_resp;
+  wire [1 : 0] boot_rom_axi4_deburster_rg_b_resp$D_IN;
+  wire boot_rom_axi4_deburster_rg_b_resp$EN;
+
+  // register boot_rom_axi4_deburster_rg_r_beat_count
+  reg [7 : 0] boot_rom_axi4_deburster_rg_r_beat_count;
+  wire [7 : 0] boot_rom_axi4_deburster_rg_r_beat_count$D_IN;
+  wire boot_rom_axi4_deburster_rg_r_beat_count$EN;
+
+  // register boot_rom_axi4_deburster_rg_reset
+  reg boot_rom_axi4_deburster_rg_reset;
+  wire boot_rom_axi4_deburster_rg_reset$D_IN,
+       boot_rom_axi4_deburster_rg_reset$EN;
+
+  // register boot_rom_axi4_deburster_rg_w_beat_count
+  reg [7 : 0] boot_rom_axi4_deburster_rg_w_beat_count;
+  wire [7 : 0] boot_rom_axi4_deburster_rg_w_beat_count$D_IN;
+  wire boot_rom_axi4_deburster_rg_w_beat_count$EN;
+
+  // register mem0_controller_axi4_deburster_rg_ar_beat_count
+  reg [7 : 0] mem0_controller_axi4_deburster_rg_ar_beat_count;
+  wire [7 : 0] mem0_controller_axi4_deburster_rg_ar_beat_count$D_IN;
+  wire mem0_controller_axi4_deburster_rg_ar_beat_count$EN;
+
+  // register mem0_controller_axi4_deburster_rg_b_beat_count
+  reg [7 : 0] mem0_controller_axi4_deburster_rg_b_beat_count;
+  wire [7 : 0] mem0_controller_axi4_deburster_rg_b_beat_count$D_IN;
+  wire mem0_controller_axi4_deburster_rg_b_beat_count$EN;
+
+  // register mem0_controller_axi4_deburster_rg_b_resp
+  reg [1 : 0] mem0_controller_axi4_deburster_rg_b_resp;
+  wire [1 : 0] mem0_controller_axi4_deburster_rg_b_resp$D_IN;
+  wire mem0_controller_axi4_deburster_rg_b_resp$EN;
+
+  // register mem0_controller_axi4_deburster_rg_r_beat_count
+  reg [7 : 0] mem0_controller_axi4_deburster_rg_r_beat_count;
+  wire [7 : 0] mem0_controller_axi4_deburster_rg_r_beat_count$D_IN;
+  wire mem0_controller_axi4_deburster_rg_r_beat_count$EN;
+
+  // register mem0_controller_axi4_deburster_rg_reset
+  reg mem0_controller_axi4_deburster_rg_reset;
+  wire mem0_controller_axi4_deburster_rg_reset$D_IN,
+       mem0_controller_axi4_deburster_rg_reset$EN;
+
+  // register mem0_controller_axi4_deburster_rg_w_beat_count
+  reg [7 : 0] mem0_controller_axi4_deburster_rg_w_beat_count;
+  wire [7 : 0] mem0_controller_axi4_deburster_rg_w_beat_count$D_IN;
+  wire mem0_controller_axi4_deburster_rg_w_beat_count$EN;
+
   // register rg_state
   reg [1 : 0] rg_state;
   wire [1 : 0] rg_state$D_IN;
@@ -169,6 +229,114 @@ module mkSoC_Top(CLK,
        boot_rom$slave_wready,
        boot_rom$slave_wvalid;
 
+  // ports of submodule boot_rom_axi4_deburster_f_r_arlen
+  wire [7 : 0] boot_rom_axi4_deburster_f_r_arlen$D_IN,
+	       boot_rom_axi4_deburster_f_r_arlen$D_OUT;
+  wire boot_rom_axi4_deburster_f_r_arlen$CLR,
+       boot_rom_axi4_deburster_f_r_arlen$DEQ,
+       boot_rom_axi4_deburster_f_r_arlen$EMPTY_N,
+       boot_rom_axi4_deburster_f_r_arlen$ENQ,
+       boot_rom_axi4_deburster_f_r_arlen$FULL_N;
+
+  // ports of submodule boot_rom_axi4_deburster_f_w_awlen
+  wire [7 : 0] boot_rom_axi4_deburster_f_w_awlen$D_IN,
+	       boot_rom_axi4_deburster_f_w_awlen$D_OUT;
+  wire boot_rom_axi4_deburster_f_w_awlen$CLR,
+       boot_rom_axi4_deburster_f_w_awlen$DEQ,
+       boot_rom_axi4_deburster_f_w_awlen$EMPTY_N,
+       boot_rom_axi4_deburster_f_w_awlen$ENQ,
+       boot_rom_axi4_deburster_f_w_awlen$FULL_N;
+
+  // ports of submodule boot_rom_axi4_deburster_xactor_from_master_f_rd_addr
+  wire [96 : 0] boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$D_IN,
+		boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$D_OUT;
+  wire boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$CLR,
+       boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$DEQ,
+       boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$EMPTY_N,
+       boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$ENQ,
+       boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$FULL_N;
+
+  // ports of submodule boot_rom_axi4_deburster_xactor_from_master_f_rd_data
+  wire [70 : 0] boot_rom_axi4_deburster_xactor_from_master_f_rd_data$D_IN,
+		boot_rom_axi4_deburster_xactor_from_master_f_rd_data$D_OUT;
+  wire boot_rom_axi4_deburster_xactor_from_master_f_rd_data$CLR,
+       boot_rom_axi4_deburster_xactor_from_master_f_rd_data$DEQ,
+       boot_rom_axi4_deburster_xactor_from_master_f_rd_data$EMPTY_N,
+       boot_rom_axi4_deburster_xactor_from_master_f_rd_data$ENQ,
+       boot_rom_axi4_deburster_xactor_from_master_f_rd_data$FULL_N;
+
+  // ports of submodule boot_rom_axi4_deburster_xactor_from_master_f_wr_addr
+  wire [96 : 0] boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$D_IN,
+		boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$D_OUT;
+  wire boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$CLR,
+       boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$DEQ,
+       boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$EMPTY_N,
+       boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$ENQ,
+       boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$FULL_N;
+
+  // ports of submodule boot_rom_axi4_deburster_xactor_from_master_f_wr_data
+  wire [76 : 0] boot_rom_axi4_deburster_xactor_from_master_f_wr_data$D_IN,
+		boot_rom_axi4_deburster_xactor_from_master_f_wr_data$D_OUT;
+  wire boot_rom_axi4_deburster_xactor_from_master_f_wr_data$CLR,
+       boot_rom_axi4_deburster_xactor_from_master_f_wr_data$DEQ,
+       boot_rom_axi4_deburster_xactor_from_master_f_wr_data$EMPTY_N,
+       boot_rom_axi4_deburster_xactor_from_master_f_wr_data$ENQ,
+       boot_rom_axi4_deburster_xactor_from_master_f_wr_data$FULL_N;
+
+  // ports of submodule boot_rom_axi4_deburster_xactor_from_master_f_wr_resp
+  wire [5 : 0] boot_rom_axi4_deburster_xactor_from_master_f_wr_resp$D_IN,
+	       boot_rom_axi4_deburster_xactor_from_master_f_wr_resp$D_OUT;
+  wire boot_rom_axi4_deburster_xactor_from_master_f_wr_resp$CLR,
+       boot_rom_axi4_deburster_xactor_from_master_f_wr_resp$DEQ,
+       boot_rom_axi4_deburster_xactor_from_master_f_wr_resp$EMPTY_N,
+       boot_rom_axi4_deburster_xactor_from_master_f_wr_resp$ENQ,
+       boot_rom_axi4_deburster_xactor_from_master_f_wr_resp$FULL_N;
+
+  // ports of submodule boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr
+  wire [96 : 0] boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$D_IN,
+		boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$D_OUT;
+  wire boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$CLR,
+       boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$DEQ,
+       boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$EMPTY_N,
+       boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$ENQ,
+       boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$FULL_N;
+
+  // ports of submodule boot_rom_axi4_deburster_xactor_to_slave_f_rd_data
+  wire [70 : 0] boot_rom_axi4_deburster_xactor_to_slave_f_rd_data$D_IN,
+		boot_rom_axi4_deburster_xactor_to_slave_f_rd_data$D_OUT;
+  wire boot_rom_axi4_deburster_xactor_to_slave_f_rd_data$CLR,
+       boot_rom_axi4_deburster_xactor_to_slave_f_rd_data$DEQ,
+       boot_rom_axi4_deburster_xactor_to_slave_f_rd_data$EMPTY_N,
+       boot_rom_axi4_deburster_xactor_to_slave_f_rd_data$ENQ,
+       boot_rom_axi4_deburster_xactor_to_slave_f_rd_data$FULL_N;
+
+  // ports of submodule boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr
+  wire [96 : 0] boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$D_IN,
+		boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$D_OUT;
+  wire boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$CLR,
+       boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$DEQ,
+       boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$EMPTY_N,
+       boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$ENQ,
+       boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$FULL_N;
+
+  // ports of submodule boot_rom_axi4_deburster_xactor_to_slave_f_wr_data
+  wire [76 : 0] boot_rom_axi4_deburster_xactor_to_slave_f_wr_data$D_IN,
+		boot_rom_axi4_deburster_xactor_to_slave_f_wr_data$D_OUT;
+  wire boot_rom_axi4_deburster_xactor_to_slave_f_wr_data$CLR,
+       boot_rom_axi4_deburster_xactor_to_slave_f_wr_data$DEQ,
+       boot_rom_axi4_deburster_xactor_to_slave_f_wr_data$EMPTY_N,
+       boot_rom_axi4_deburster_xactor_to_slave_f_wr_data$ENQ,
+       boot_rom_axi4_deburster_xactor_to_slave_f_wr_data$FULL_N;
+
+  // ports of submodule boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp
+  wire [5 : 0] boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp$D_IN,
+	       boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp$D_OUT;
+  wire boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp$CLR,
+       boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp$DEQ,
+       boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp$EMPTY_N,
+       boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp$ENQ,
+       boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp$FULL_N;
+
   // ports of submodule core
   wire [63 : 0] core$cpu_dmem_master_araddr,
 		core$cpu_dmem_master_awaddr,
@@ -178,20 +346,13 @@ module mkSoC_Top(CLK,
 		core$cpu_imem_master_awaddr,
 		core$cpu_imem_master_rdata,
 		core$cpu_imem_master_wdata,
-		core$cpu_slave_araddr,
-		core$cpu_slave_awaddr,
-		core$cpu_slave_rdata,
-		core$cpu_slave_wdata,
 		core$set_verbosity_logdelay;
   wire [7 : 0] core$cpu_dmem_master_arlen,
 	       core$cpu_dmem_master_awlen,
 	       core$cpu_dmem_master_wstrb,
 	       core$cpu_imem_master_arlen,
 	       core$cpu_imem_master_awlen,
-	       core$cpu_imem_master_wstrb,
-	       core$cpu_slave_arlen,
-	       core$cpu_slave_awlen,
-	       core$cpu_slave_wstrb;
+	       core$cpu_imem_master_wstrb;
   wire [3 : 0] core$cpu_dmem_master_arcache,
 	       core$cpu_dmem_master_arid,
 	       core$cpu_dmem_master_arqos,
@@ -214,17 +375,6 @@ module mkSoC_Top(CLK,
 	       core$cpu_imem_master_bid,
 	       core$cpu_imem_master_rid,
 	       core$cpu_imem_master_wid,
-	       core$cpu_slave_arcache,
-	       core$cpu_slave_arid,
-	       core$cpu_slave_arqos,
-	       core$cpu_slave_arregion,
-	       core$cpu_slave_awcache,
-	       core$cpu_slave_awid,
-	       core$cpu_slave_awqos,
-	       core$cpu_slave_awregion,
-	       core$cpu_slave_bid,
-	       core$cpu_slave_rid,
-	       core$cpu_slave_wid,
 	       core$set_verbosity_verbosity;
   wire [2 : 0] core$cpu_dmem_master_arprot,
 	       core$cpu_dmem_master_arsize,
@@ -233,11 +383,7 @@ module mkSoC_Top(CLK,
 	       core$cpu_imem_master_arprot,
 	       core$cpu_imem_master_arsize,
 	       core$cpu_imem_master_awprot,
-	       core$cpu_imem_master_awsize,
-	       core$cpu_slave_arprot,
-	       core$cpu_slave_arsize,
-	       core$cpu_slave_awprot,
-	       core$cpu_slave_awsize;
+	       core$cpu_imem_master_awsize;
   wire [1 : 0] core$cpu_dmem_master_arburst,
 	       core$cpu_dmem_master_awburst,
 	       core$cpu_dmem_master_bresp,
@@ -245,16 +391,28 @@ module mkSoC_Top(CLK,
 	       core$cpu_imem_master_arburst,
 	       core$cpu_imem_master_awburst,
 	       core$cpu_imem_master_bresp,
-	       core$cpu_imem_master_rresp,
-	       core$cpu_slave_arburst,
-	       core$cpu_slave_awburst,
-	       core$cpu_slave_bresp,
-	       core$cpu_slave_rresp;
+	       core$cpu_imem_master_rresp;
   wire core$EN_cpu_reset_server_request_put,
        core$EN_cpu_reset_server_response_get,
        core$EN_set_verbosity,
        core$RDY_cpu_reset_server_request_put,
        core$RDY_cpu_reset_server_response_get,
+       core$core_external_interrupt_sources_0_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_10_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_11_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_12_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_13_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_14_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_15_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_1_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_2_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_3_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_4_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_5_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_6_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_7_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_8_m_interrupt_req_set_not_clear,
+       core$core_external_interrupt_sources_9_m_interrupt_req_set_not_clear,
        core$cpu_dmem_master_arlock,
        core$cpu_dmem_master_arready,
        core$cpu_dmem_master_arvalid,
@@ -269,7 +427,6 @@ module mkSoC_Top(CLK,
        core$cpu_dmem_master_wlast,
        core$cpu_dmem_master_wready,
        core$cpu_dmem_master_wvalid,
-       core$cpu_external_interrupt_req_set_not_clear,
        core$cpu_imem_master_arlock,
        core$cpu_imem_master_arready,
        core$cpu_imem_master_arvalid,
@@ -284,33 +441,17 @@ module mkSoC_Top(CLK,
        core$cpu_imem_master_wlast,
        core$cpu_imem_master_wready,
        core$cpu_imem_master_wvalid,
-       core$cpu_slave_arlock,
-       core$cpu_slave_arready,
-       core$cpu_slave_arvalid,
-       core$cpu_slave_awlock,
-       core$cpu_slave_awready,
-       core$cpu_slave_awvalid,
-       core$cpu_slave_bready,
-       core$cpu_slave_bvalid,
-       core$cpu_slave_rlast,
-       core$cpu_slave_rready,
-       core$cpu_slave_rvalid,
-       core$cpu_slave_wlast,
-       core$cpu_slave_wready,
-       core$cpu_slave_wvalid;
+       core$nmi_req_set_not_clear;
 
   // ports of submodule fabric
   wire [63 : 0] fabric$v_from_masters_0_araddr,
 		fabric$v_from_masters_0_awaddr,
+		fabric$v_from_masters_0_rdata,
 		fabric$v_from_masters_0_wdata,
 		fabric$v_from_masters_1_araddr,
 		fabric$v_from_masters_1_awaddr,
 		fabric$v_from_masters_1_rdata,
 		fabric$v_from_masters_1_wdata,
-		fabric$v_from_masters_2_araddr,
-		fabric$v_from_masters_2_awaddr,
-		fabric$v_from_masters_2_rdata,
-		fabric$v_from_masters_2_wdata,
 		fabric$v_to_slaves_0_araddr,
 		fabric$v_to_slaves_0_awaddr,
 		fabric$v_to_slaves_0_rdata,
@@ -322,20 +463,13 @@ module mkSoC_Top(CLK,
 		fabric$v_to_slaves_2_araddr,
 		fabric$v_to_slaves_2_awaddr,
 		fabric$v_to_slaves_2_rdata,
-		fabric$v_to_slaves_2_wdata,
-		fabric$v_to_slaves_3_araddr,
-		fabric$v_to_slaves_3_awaddr,
-		fabric$v_to_slaves_3_rdata,
-		fabric$v_to_slaves_3_wdata;
+		fabric$v_to_slaves_2_wdata;
   wire [7 : 0] fabric$v_from_masters_0_arlen,
 	       fabric$v_from_masters_0_awlen,
 	       fabric$v_from_masters_0_wstrb,
 	       fabric$v_from_masters_1_arlen,
 	       fabric$v_from_masters_1_awlen,
 	       fabric$v_from_masters_1_wstrb,
-	       fabric$v_from_masters_2_arlen,
-	       fabric$v_from_masters_2_awlen,
-	       fabric$v_from_masters_2_wstrb,
 	       fabric$v_to_slaves_0_arlen,
 	       fabric$v_to_slaves_0_awlen,
 	       fabric$v_to_slaves_0_wstrb,
@@ -344,10 +478,7 @@ module mkSoC_Top(CLK,
 	       fabric$v_to_slaves_1_wstrb,
 	       fabric$v_to_slaves_2_arlen,
 	       fabric$v_to_slaves_2_awlen,
-	       fabric$v_to_slaves_2_wstrb,
-	       fabric$v_to_slaves_3_arlen,
-	       fabric$v_to_slaves_3_awlen,
-	       fabric$v_to_slaves_3_wstrb;
+	       fabric$v_to_slaves_2_wstrb;
   wire [3 : 0] fabric$set_verbosity_verbosity,
 	       fabric$v_from_masters_0_arcache,
 	       fabric$v_from_masters_0_arid,
@@ -357,6 +488,8 @@ module mkSoC_Top(CLK,
 	       fabric$v_from_masters_0_awid,
 	       fabric$v_from_masters_0_awqos,
 	       fabric$v_from_masters_0_awregion,
+	       fabric$v_from_masters_0_bid,
+	       fabric$v_from_masters_0_rid,
 	       fabric$v_from_masters_0_wid,
 	       fabric$v_from_masters_1_arcache,
 	       fabric$v_from_masters_1_arid,
@@ -369,17 +502,6 @@ module mkSoC_Top(CLK,
 	       fabric$v_from_masters_1_bid,
 	       fabric$v_from_masters_1_rid,
 	       fabric$v_from_masters_1_wid,
-	       fabric$v_from_masters_2_arcache,
-	       fabric$v_from_masters_2_arid,
-	       fabric$v_from_masters_2_arqos,
-	       fabric$v_from_masters_2_arregion,
-	       fabric$v_from_masters_2_awcache,
-	       fabric$v_from_masters_2_awid,
-	       fabric$v_from_masters_2_awqos,
-	       fabric$v_from_masters_2_awregion,
-	       fabric$v_from_masters_2_bid,
-	       fabric$v_from_masters_2_rid,
-	       fabric$v_from_masters_2_wid,
 	       fabric$v_to_slaves_0_arcache,
 	       fabric$v_to_slaves_0_arid,
 	       fabric$v_to_slaves_0_arqos,
@@ -412,18 +534,7 @@ module mkSoC_Top(CLK,
 	       fabric$v_to_slaves_2_awregion,
 	       fabric$v_to_slaves_2_bid,
 	       fabric$v_to_slaves_2_rid,
-	       fabric$v_to_slaves_2_wid,
-	       fabric$v_to_slaves_3_arcache,
-	       fabric$v_to_slaves_3_arid,
-	       fabric$v_to_slaves_3_arqos,
-	       fabric$v_to_slaves_3_arregion,
-	       fabric$v_to_slaves_3_awcache,
-	       fabric$v_to_slaves_3_awid,
-	       fabric$v_to_slaves_3_awqos,
-	       fabric$v_to_slaves_3_awregion,
-	       fabric$v_to_slaves_3_bid,
-	       fabric$v_to_slaves_3_rid,
-	       fabric$v_to_slaves_3_wid;
+	       fabric$v_to_slaves_2_wid;
   wire [2 : 0] fabric$v_from_masters_0_arprot,
 	       fabric$v_from_masters_0_arsize,
 	       fabric$v_from_masters_0_awprot,
@@ -432,10 +543,6 @@ module mkSoC_Top(CLK,
 	       fabric$v_from_masters_1_arsize,
 	       fabric$v_from_masters_1_awprot,
 	       fabric$v_from_masters_1_awsize,
-	       fabric$v_from_masters_2_arprot,
-	       fabric$v_from_masters_2_arsize,
-	       fabric$v_from_masters_2_awprot,
-	       fabric$v_from_masters_2_awsize,
 	       fabric$v_to_slaves_0_arprot,
 	       fabric$v_to_slaves_0_arsize,
 	       fabric$v_to_slaves_0_awprot,
@@ -447,21 +554,15 @@ module mkSoC_Top(CLK,
 	       fabric$v_to_slaves_2_arprot,
 	       fabric$v_to_slaves_2_arsize,
 	       fabric$v_to_slaves_2_awprot,
-	       fabric$v_to_slaves_2_awsize,
-	       fabric$v_to_slaves_3_arprot,
-	       fabric$v_to_slaves_3_arsize,
-	       fabric$v_to_slaves_3_awprot,
-	       fabric$v_to_slaves_3_awsize;
+	       fabric$v_to_slaves_2_awsize;
   wire [1 : 0] fabric$v_from_masters_0_arburst,
 	       fabric$v_from_masters_0_awburst,
+	       fabric$v_from_masters_0_bresp,
+	       fabric$v_from_masters_0_rresp,
 	       fabric$v_from_masters_1_arburst,
 	       fabric$v_from_masters_1_awburst,
 	       fabric$v_from_masters_1_bresp,
 	       fabric$v_from_masters_1_rresp,
-	       fabric$v_from_masters_2_arburst,
-	       fabric$v_from_masters_2_awburst,
-	       fabric$v_from_masters_2_bresp,
-	       fabric$v_from_masters_2_rresp,
 	       fabric$v_to_slaves_0_arburst,
 	       fabric$v_to_slaves_0_awburst,
 	       fabric$v_to_slaves_0_bresp,
@@ -473,21 +574,23 @@ module mkSoC_Top(CLK,
 	       fabric$v_to_slaves_2_arburst,
 	       fabric$v_to_slaves_2_awburst,
 	       fabric$v_to_slaves_2_bresp,
-	       fabric$v_to_slaves_2_rresp,
-	       fabric$v_to_slaves_3_arburst,
-	       fabric$v_to_slaves_3_awburst,
-	       fabric$v_to_slaves_3_bresp,
-	       fabric$v_to_slaves_3_rresp;
+	       fabric$v_to_slaves_2_rresp;
   wire fabric$EN_reset,
        fabric$EN_set_verbosity,
        fabric$RDY_reset,
        fabric$v_from_masters_0_arlock,
+       fabric$v_from_masters_0_arready,
        fabric$v_from_masters_0_arvalid,
        fabric$v_from_masters_0_awlock,
+       fabric$v_from_masters_0_awready,
        fabric$v_from_masters_0_awvalid,
        fabric$v_from_masters_0_bready,
+       fabric$v_from_masters_0_bvalid,
+       fabric$v_from_masters_0_rlast,
        fabric$v_from_masters_0_rready,
+       fabric$v_from_masters_0_rvalid,
        fabric$v_from_masters_0_wlast,
+       fabric$v_from_masters_0_wready,
        fabric$v_from_masters_0_wvalid,
        fabric$v_from_masters_1_arlock,
        fabric$v_from_masters_1_arready,
@@ -503,20 +606,6 @@ module mkSoC_Top(CLK,
        fabric$v_from_masters_1_wlast,
        fabric$v_from_masters_1_wready,
        fabric$v_from_masters_1_wvalid,
-       fabric$v_from_masters_2_arlock,
-       fabric$v_from_masters_2_arready,
-       fabric$v_from_masters_2_arvalid,
-       fabric$v_from_masters_2_awlock,
-       fabric$v_from_masters_2_awready,
-       fabric$v_from_masters_2_awvalid,
-       fabric$v_from_masters_2_bready,
-       fabric$v_from_masters_2_bvalid,
-       fabric$v_from_masters_2_rlast,
-       fabric$v_from_masters_2_rready,
-       fabric$v_from_masters_2_rvalid,
-       fabric$v_from_masters_2_wlast,
-       fabric$v_from_masters_2_wready,
-       fabric$v_from_masters_2_wvalid,
        fabric$v_to_slaves_0_arlock,
        fabric$v_to_slaves_0_arready,
        fabric$v_to_slaves_0_arvalid,
@@ -558,21 +647,7 @@ module mkSoC_Top(CLK,
        fabric$v_to_slaves_2_rvalid,
        fabric$v_to_slaves_2_wlast,
        fabric$v_to_slaves_2_wready,
-       fabric$v_to_slaves_2_wvalid,
-       fabric$v_to_slaves_3_arlock,
-       fabric$v_to_slaves_3_arready,
-       fabric$v_to_slaves_3_arvalid,
-       fabric$v_to_slaves_3_awlock,
-       fabric$v_to_slaves_3_awready,
-       fabric$v_to_slaves_3_awvalid,
-       fabric$v_to_slaves_3_bready,
-       fabric$v_to_slaves_3_bvalid,
-       fabric$v_to_slaves_3_rlast,
-       fabric$v_to_slaves_3_rready,
-       fabric$v_to_slaves_3_rvalid,
-       fabric$v_to_slaves_3_wlast,
-       fabric$v_to_slaves_3_wready,
-       fabric$v_to_slaves_3_wvalid;
+       fabric$v_to_slaves_2_wvalid;
 
   // ports of submodule mem0_controller
   wire [352 : 0] mem0_controller$to_raw_mem_request_get;
@@ -632,6 +707,114 @@ module mkSoC_Top(CLK,
        mem0_controller$slave_wlast,
        mem0_controller$slave_wready,
        mem0_controller$slave_wvalid;
+
+  // ports of submodule mem0_controller_axi4_deburster_f_r_arlen
+  wire [7 : 0] mem0_controller_axi4_deburster_f_r_arlen$D_IN,
+	       mem0_controller_axi4_deburster_f_r_arlen$D_OUT;
+  wire mem0_controller_axi4_deburster_f_r_arlen$CLR,
+       mem0_controller_axi4_deburster_f_r_arlen$DEQ,
+       mem0_controller_axi4_deburster_f_r_arlen$EMPTY_N,
+       mem0_controller_axi4_deburster_f_r_arlen$ENQ,
+       mem0_controller_axi4_deburster_f_r_arlen$FULL_N;
+
+  // ports of submodule mem0_controller_axi4_deburster_f_w_awlen
+  wire [7 : 0] mem0_controller_axi4_deburster_f_w_awlen$D_IN,
+	       mem0_controller_axi4_deburster_f_w_awlen$D_OUT;
+  wire mem0_controller_axi4_deburster_f_w_awlen$CLR,
+       mem0_controller_axi4_deburster_f_w_awlen$DEQ,
+       mem0_controller_axi4_deburster_f_w_awlen$EMPTY_N,
+       mem0_controller_axi4_deburster_f_w_awlen$ENQ,
+       mem0_controller_axi4_deburster_f_w_awlen$FULL_N;
+
+  // ports of submodule mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr
+  wire [96 : 0] mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$D_IN,
+		mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$D_OUT;
+  wire mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$CLR,
+       mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$DEQ,
+       mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$EMPTY_N,
+       mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$ENQ,
+       mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$FULL_N;
+
+  // ports of submodule mem0_controller_axi4_deburster_xactor_from_master_f_rd_data
+  wire [70 : 0] mem0_controller_axi4_deburster_xactor_from_master_f_rd_data$D_IN,
+		mem0_controller_axi4_deburster_xactor_from_master_f_rd_data$D_OUT;
+  wire mem0_controller_axi4_deburster_xactor_from_master_f_rd_data$CLR,
+       mem0_controller_axi4_deburster_xactor_from_master_f_rd_data$DEQ,
+       mem0_controller_axi4_deburster_xactor_from_master_f_rd_data$EMPTY_N,
+       mem0_controller_axi4_deburster_xactor_from_master_f_rd_data$ENQ,
+       mem0_controller_axi4_deburster_xactor_from_master_f_rd_data$FULL_N;
+
+  // ports of submodule mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr
+  wire [96 : 0] mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$D_IN,
+		mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$D_OUT;
+  wire mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$CLR,
+       mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$DEQ,
+       mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$EMPTY_N,
+       mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$ENQ,
+       mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$FULL_N;
+
+  // ports of submodule mem0_controller_axi4_deburster_xactor_from_master_f_wr_data
+  wire [76 : 0] mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$D_IN,
+		mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$D_OUT;
+  wire mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$CLR,
+       mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$DEQ,
+       mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$EMPTY_N,
+       mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$ENQ,
+       mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$FULL_N;
+
+  // ports of submodule mem0_controller_axi4_deburster_xactor_from_master_f_wr_resp
+  wire [5 : 0] mem0_controller_axi4_deburster_xactor_from_master_f_wr_resp$D_IN,
+	       mem0_controller_axi4_deburster_xactor_from_master_f_wr_resp$D_OUT;
+  wire mem0_controller_axi4_deburster_xactor_from_master_f_wr_resp$CLR,
+       mem0_controller_axi4_deburster_xactor_from_master_f_wr_resp$DEQ,
+       mem0_controller_axi4_deburster_xactor_from_master_f_wr_resp$EMPTY_N,
+       mem0_controller_axi4_deburster_xactor_from_master_f_wr_resp$ENQ,
+       mem0_controller_axi4_deburster_xactor_from_master_f_wr_resp$FULL_N;
+
+  // ports of submodule mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr
+  wire [96 : 0] mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$D_IN,
+		mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$D_OUT;
+  wire mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$CLR,
+       mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$DEQ,
+       mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$EMPTY_N,
+       mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$ENQ,
+       mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$FULL_N;
+
+  // ports of submodule mem0_controller_axi4_deburster_xactor_to_slave_f_rd_data
+  wire [70 : 0] mem0_controller_axi4_deburster_xactor_to_slave_f_rd_data$D_IN,
+		mem0_controller_axi4_deburster_xactor_to_slave_f_rd_data$D_OUT;
+  wire mem0_controller_axi4_deburster_xactor_to_slave_f_rd_data$CLR,
+       mem0_controller_axi4_deburster_xactor_to_slave_f_rd_data$DEQ,
+       mem0_controller_axi4_deburster_xactor_to_slave_f_rd_data$EMPTY_N,
+       mem0_controller_axi4_deburster_xactor_to_slave_f_rd_data$ENQ,
+       mem0_controller_axi4_deburster_xactor_to_slave_f_rd_data$FULL_N;
+
+  // ports of submodule mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr
+  wire [96 : 0] mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$D_IN,
+		mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$D_OUT;
+  wire mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$CLR,
+       mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$DEQ,
+       mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$EMPTY_N,
+       mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$ENQ,
+       mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$FULL_N;
+
+  // ports of submodule mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data
+  wire [76 : 0] mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data$D_IN,
+		mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data$D_OUT;
+  wire mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data$CLR,
+       mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data$DEQ,
+       mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data$EMPTY_N,
+       mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data$ENQ,
+       mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data$FULL_N;
+
+  // ports of submodule mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp
+  wire [5 : 0] mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp$D_IN,
+	       mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp$D_OUT;
+  wire mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp$CLR,
+       mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp$DEQ,
+       mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp$EMPTY_N,
+       mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp$ENQ,
+       mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp$FULL_N;
 
   // ports of submodule soc_map
   wire [63 : 0] soc_map$m_boot_rom_addr_base,
@@ -701,7 +884,17 @@ module mkSoC_Top(CLK,
        uart0$slave_wvalid;
 
   // rule scheduling signals
-  wire CAN_FIRE_RL_rl_connect_external_interrupt_request,
+  wire CAN_FIRE_RL_boot_rom_axi4_deburster_rl_rd_resp_slave_to_master,
+       CAN_FIRE_RL_boot_rom_axi4_deburster_rl_rd_xaction_master_to_slave,
+       CAN_FIRE_RL_boot_rom_axi4_deburster_rl_reset,
+       CAN_FIRE_RL_boot_rom_axi4_deburster_rl_wr_resp_slave_to_master,
+       CAN_FIRE_RL_boot_rom_axi4_deburster_rl_wr_xaction_master_to_slave,
+       CAN_FIRE_RL_mem0_controller_axi4_deburster_rl_rd_resp_slave_to_master,
+       CAN_FIRE_RL_mem0_controller_axi4_deburster_rl_rd_xaction_master_to_slave,
+       CAN_FIRE_RL_mem0_controller_axi4_deburster_rl_reset,
+       CAN_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_resp_slave_to_master,
+       CAN_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_xaction_master_to_slave,
+       CAN_FIRE_RL_rl_connect_external_interrupt_requests,
        CAN_FIRE_RL_rl_rd_addr_channel,
        CAN_FIRE_RL_rl_rd_addr_channel_1,
        CAN_FIRE_RL_rl_rd_addr_channel_2,
@@ -745,7 +938,17 @@ module mkSoC_Top(CLK,
        CAN_FIRE_set_watch_tohost,
        CAN_FIRE_to_raw_mem_request_get,
        CAN_FIRE_to_raw_mem_response_put,
-       WILL_FIRE_RL_rl_connect_external_interrupt_request,
+       WILL_FIRE_RL_boot_rom_axi4_deburster_rl_rd_resp_slave_to_master,
+       WILL_FIRE_RL_boot_rom_axi4_deburster_rl_rd_xaction_master_to_slave,
+       WILL_FIRE_RL_boot_rom_axi4_deburster_rl_reset,
+       WILL_FIRE_RL_boot_rom_axi4_deburster_rl_wr_resp_slave_to_master,
+       WILL_FIRE_RL_boot_rom_axi4_deburster_rl_wr_xaction_master_to_slave,
+       WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_rd_resp_slave_to_master,
+       WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_rd_xaction_master_to_slave,
+       WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_reset,
+       WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_resp_slave_to_master,
+       WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_xaction_master_to_slave,
+       WILL_FIRE_RL_rl_connect_external_interrupt_requests,
        WILL_FIRE_RL_rl_rd_addr_channel,
        WILL_FIRE_RL_rl_rd_addr_channel_1,
        WILL_FIRE_RL_rl_rd_addr_channel_2,
@@ -791,15 +994,62 @@ module mkSoC_Top(CLK,
        WILL_FIRE_to_raw_mem_response_put;
 
   // inputs to muxes for submodule ports
-  wire MUX_rg_state$write_1__SEL_1, MUX_rg_state$write_1__SEL_2;
+  wire [7 : 0] MUX_boot_rom_axi4_deburster_rg_ar_beat_count$write_1__VAL_2,
+	       MUX_boot_rom_axi4_deburster_rg_b_beat_count$write_1__VAL_2,
+	       MUX_boot_rom_axi4_deburster_rg_r_beat_count$write_1__VAL_2,
+	       MUX_boot_rom_axi4_deburster_rg_w_beat_count$write_1__VAL_2,
+	       MUX_mem0_controller_axi4_deburster_rg_ar_beat_count$write_1__VAL_2,
+	       MUX_mem0_controller_axi4_deburster_rg_b_beat_count$write_1__VAL_2,
+	       MUX_mem0_controller_axi4_deburster_rg_r_beat_count$write_1__VAL_2,
+	       MUX_mem0_controller_axi4_deburster_rg_w_beat_count$write_1__VAL_2;
+  wire [1 : 0] MUX_boot_rom_axi4_deburster_rg_b_resp$write_1__VAL_2,
+	       MUX_mem0_controller_axi4_deburster_rg_b_resp$write_1__VAL_2;
+  wire MUX_boot_rom_axi4_deburster_rg_b_resp$write_1__SEL_2,
+       MUX_mem0_controller_axi4_deburster_rg_b_resp$write_1__SEL_2,
+       MUX_rg_state$write_1__SEL_1,
+       MUX_rg_state$write_1__SEL_2;
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h9497;
-  reg [31 : 0] v__h9757;
-  reg [31 : 0] v__h9491;
-  reg [31 : 0] v__h9751;
+  reg [31 : 0] v__h16993;
+  reg [31 : 0] v__h17253;
+  reg [31 : 0] v__h5854;
+  reg [31 : 0] v__h4870;
+  reg [31 : 0] v__h9815;
+  reg [31 : 0] v__h8834;
+  reg [31 : 0] v__h4864;
+  reg [31 : 0] v__h5848;
+  reg [31 : 0] v__h8828;
+  reg [31 : 0] v__h9809;
+  reg [31 : 0] v__h16987;
+  reg [31 : 0] v__h17247;
   // synopsys translate_on
+
+  // remaining internal signals
+  wire [63 : 0] a_out_araddr__h10329,
+		a_out_araddr__h6368,
+		a_out_awaddr__h5375,
+		a_out_awaddr__h9336,
+		addr___1__h10414,
+		addr___1__h5460,
+		addr___1__h6453,
+		addr___1__h9421;
+  wire [7 : 0] x__h10183,
+	       x__h10575,
+	       x__h10773,
+	       x__h5729,
+	       x__h6222,
+	       x__h6614,
+	       x__h6812,
+	       x__h9690;
+  wire boot_rom_axi4_deburster_rg_ar_beat_count_3_ULT_ETC___d95,
+       boot_rom_axi4_deburster_rg_b_beat_count_9_ULT__ETC___d51,
+       boot_rom_axi4_deburster_rg_r_beat_count_04_ULT_ETC___d106,
+       boot_rom_axi4_deburster_rg_w_beat_count_ULT_bo_ETC___d35,
+       mem0_controller_axi4_deburster_rg_ar_beat_coun_ETC___d207,
+       mem0_controller_axi4_deburster_rg_b_beat_count_ETC___d163,
+       mem0_controller_axi4_deburster_rg_r_beat_count_ETC___d218,
+       mem0_controller_axi4_deburster_rg_w_beat_count_ETC___d147;
 
   // action method set_verbosity
   assign RDY_set_verbosity = 1'd1 ;
@@ -885,9 +1135,173 @@ module mkSoC_Top(CLK,
 		      .slave_rresp(boot_rom$slave_rresp),
 		      .slave_rlast(boot_rom$slave_rlast));
 
+  // submodule boot_rom_axi4_deburster_f_r_arlen
+  SizedFIFO #(.p1width(32'd8),
+	      .p2depth(32'd4),
+	      .p3cntr_width(32'd2),
+	      .guarded(32'd1)) boot_rom_axi4_deburster_f_r_arlen(.RST(RST_N),
+								 .CLK(CLK),
+								 .D_IN(boot_rom_axi4_deburster_f_r_arlen$D_IN),
+								 .ENQ(boot_rom_axi4_deburster_f_r_arlen$ENQ),
+								 .DEQ(boot_rom_axi4_deburster_f_r_arlen$DEQ),
+								 .CLR(boot_rom_axi4_deburster_f_r_arlen$CLR),
+								 .D_OUT(boot_rom_axi4_deburster_f_r_arlen$D_OUT),
+								 .FULL_N(boot_rom_axi4_deburster_f_r_arlen$FULL_N),
+								 .EMPTY_N(boot_rom_axi4_deburster_f_r_arlen$EMPTY_N));
+
+  // submodule boot_rom_axi4_deburster_f_w_awlen
+  SizedFIFO #(.p1width(32'd8),
+	      .p2depth(32'd4),
+	      .p3cntr_width(32'd2),
+	      .guarded(32'd1)) boot_rom_axi4_deburster_f_w_awlen(.RST(RST_N),
+								 .CLK(CLK),
+								 .D_IN(boot_rom_axi4_deburster_f_w_awlen$D_IN),
+								 .ENQ(boot_rom_axi4_deburster_f_w_awlen$ENQ),
+								 .DEQ(boot_rom_axi4_deburster_f_w_awlen$DEQ),
+								 .CLR(boot_rom_axi4_deburster_f_w_awlen$CLR),
+								 .D_OUT(boot_rom_axi4_deburster_f_w_awlen$D_OUT),
+								 .FULL_N(boot_rom_axi4_deburster_f_w_awlen$FULL_N),
+								 .EMPTY_N(boot_rom_axi4_deburster_f_w_awlen$EMPTY_N));
+
+  // submodule boot_rom_axi4_deburster_xactor_from_master_f_rd_addr
+  FIFO2 #(.width(32'd97),
+	  .guarded(32'd1)) boot_rom_axi4_deburster_xactor_from_master_f_rd_addr(.RST(RST_N),
+										.CLK(CLK),
+										.D_IN(boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$D_IN),
+										.ENQ(boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$ENQ),
+										.DEQ(boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$DEQ),
+										.CLR(boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$CLR),
+										.D_OUT(boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$D_OUT),
+										.FULL_N(boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$FULL_N),
+										.EMPTY_N(boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$EMPTY_N));
+
+  // submodule boot_rom_axi4_deburster_xactor_from_master_f_rd_data
+  FIFO2 #(.width(32'd71),
+	  .guarded(32'd1)) boot_rom_axi4_deburster_xactor_from_master_f_rd_data(.RST(RST_N),
+										.CLK(CLK),
+										.D_IN(boot_rom_axi4_deburster_xactor_from_master_f_rd_data$D_IN),
+										.ENQ(boot_rom_axi4_deburster_xactor_from_master_f_rd_data$ENQ),
+										.DEQ(boot_rom_axi4_deburster_xactor_from_master_f_rd_data$DEQ),
+										.CLR(boot_rom_axi4_deburster_xactor_from_master_f_rd_data$CLR),
+										.D_OUT(boot_rom_axi4_deburster_xactor_from_master_f_rd_data$D_OUT),
+										.FULL_N(boot_rom_axi4_deburster_xactor_from_master_f_rd_data$FULL_N),
+										.EMPTY_N(boot_rom_axi4_deburster_xactor_from_master_f_rd_data$EMPTY_N));
+
+  // submodule boot_rom_axi4_deburster_xactor_from_master_f_wr_addr
+  FIFO2 #(.width(32'd97),
+	  .guarded(32'd1)) boot_rom_axi4_deburster_xactor_from_master_f_wr_addr(.RST(RST_N),
+										.CLK(CLK),
+										.D_IN(boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$D_IN),
+										.ENQ(boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$ENQ),
+										.DEQ(boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$DEQ),
+										.CLR(boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$CLR),
+										.D_OUT(boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$D_OUT),
+										.FULL_N(boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$FULL_N),
+										.EMPTY_N(boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$EMPTY_N));
+
+  // submodule boot_rom_axi4_deburster_xactor_from_master_f_wr_data
+  FIFO2 #(.width(32'd77),
+	  .guarded(32'd1)) boot_rom_axi4_deburster_xactor_from_master_f_wr_data(.RST(RST_N),
+										.CLK(CLK),
+										.D_IN(boot_rom_axi4_deburster_xactor_from_master_f_wr_data$D_IN),
+										.ENQ(boot_rom_axi4_deburster_xactor_from_master_f_wr_data$ENQ),
+										.DEQ(boot_rom_axi4_deburster_xactor_from_master_f_wr_data$DEQ),
+										.CLR(boot_rom_axi4_deburster_xactor_from_master_f_wr_data$CLR),
+										.D_OUT(boot_rom_axi4_deburster_xactor_from_master_f_wr_data$D_OUT),
+										.FULL_N(boot_rom_axi4_deburster_xactor_from_master_f_wr_data$FULL_N),
+										.EMPTY_N(boot_rom_axi4_deburster_xactor_from_master_f_wr_data$EMPTY_N));
+
+  // submodule boot_rom_axi4_deburster_xactor_from_master_f_wr_resp
+  FIFO2 #(.width(32'd6),
+	  .guarded(32'd1)) boot_rom_axi4_deburster_xactor_from_master_f_wr_resp(.RST(RST_N),
+										.CLK(CLK),
+										.D_IN(boot_rom_axi4_deburster_xactor_from_master_f_wr_resp$D_IN),
+										.ENQ(boot_rom_axi4_deburster_xactor_from_master_f_wr_resp$ENQ),
+										.DEQ(boot_rom_axi4_deburster_xactor_from_master_f_wr_resp$DEQ),
+										.CLR(boot_rom_axi4_deburster_xactor_from_master_f_wr_resp$CLR),
+										.D_OUT(boot_rom_axi4_deburster_xactor_from_master_f_wr_resp$D_OUT),
+										.FULL_N(boot_rom_axi4_deburster_xactor_from_master_f_wr_resp$FULL_N),
+										.EMPTY_N(boot_rom_axi4_deburster_xactor_from_master_f_wr_resp$EMPTY_N));
+
+  // submodule boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr
+  FIFO2 #(.width(32'd97),
+	  .guarded(32'd1)) boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr(.RST(RST_N),
+									     .CLK(CLK),
+									     .D_IN(boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$D_IN),
+									     .ENQ(boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$ENQ),
+									     .DEQ(boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$DEQ),
+									     .CLR(boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$CLR),
+									     .D_OUT(boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$D_OUT),
+									     .FULL_N(boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$FULL_N),
+									     .EMPTY_N(boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$EMPTY_N));
+
+  // submodule boot_rom_axi4_deburster_xactor_to_slave_f_rd_data
+  FIFO2 #(.width(32'd71),
+	  .guarded(32'd1)) boot_rom_axi4_deburster_xactor_to_slave_f_rd_data(.RST(RST_N),
+									     .CLK(CLK),
+									     .D_IN(boot_rom_axi4_deburster_xactor_to_slave_f_rd_data$D_IN),
+									     .ENQ(boot_rom_axi4_deburster_xactor_to_slave_f_rd_data$ENQ),
+									     .DEQ(boot_rom_axi4_deburster_xactor_to_slave_f_rd_data$DEQ),
+									     .CLR(boot_rom_axi4_deburster_xactor_to_slave_f_rd_data$CLR),
+									     .D_OUT(boot_rom_axi4_deburster_xactor_to_slave_f_rd_data$D_OUT),
+									     .FULL_N(boot_rom_axi4_deburster_xactor_to_slave_f_rd_data$FULL_N),
+									     .EMPTY_N(boot_rom_axi4_deburster_xactor_to_slave_f_rd_data$EMPTY_N));
+
+  // submodule boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr
+  FIFO2 #(.width(32'd97),
+	  .guarded(32'd1)) boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr(.RST(RST_N),
+									     .CLK(CLK),
+									     .D_IN(boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$D_IN),
+									     .ENQ(boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$ENQ),
+									     .DEQ(boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$DEQ),
+									     .CLR(boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$CLR),
+									     .D_OUT(boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$D_OUT),
+									     .FULL_N(boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$FULL_N),
+									     .EMPTY_N(boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$EMPTY_N));
+
+  // submodule boot_rom_axi4_deburster_xactor_to_slave_f_wr_data
+  FIFO2 #(.width(32'd77),
+	  .guarded(32'd1)) boot_rom_axi4_deburster_xactor_to_slave_f_wr_data(.RST(RST_N),
+									     .CLK(CLK),
+									     .D_IN(boot_rom_axi4_deburster_xactor_to_slave_f_wr_data$D_IN),
+									     .ENQ(boot_rom_axi4_deburster_xactor_to_slave_f_wr_data$ENQ),
+									     .DEQ(boot_rom_axi4_deburster_xactor_to_slave_f_wr_data$DEQ),
+									     .CLR(boot_rom_axi4_deburster_xactor_to_slave_f_wr_data$CLR),
+									     .D_OUT(boot_rom_axi4_deburster_xactor_to_slave_f_wr_data$D_OUT),
+									     .FULL_N(boot_rom_axi4_deburster_xactor_to_slave_f_wr_data$FULL_N),
+									     .EMPTY_N(boot_rom_axi4_deburster_xactor_to_slave_f_wr_data$EMPTY_N));
+
+  // submodule boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp
+  FIFO2 #(.width(32'd6),
+	  .guarded(32'd1)) boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp(.RST(RST_N),
+									     .CLK(CLK),
+									     .D_IN(boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp$D_IN),
+									     .ENQ(boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp$ENQ),
+									     .DEQ(boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp$DEQ),
+									     .CLR(boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp$CLR),
+									     .D_OUT(boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp$D_OUT),
+									     .FULL_N(boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp$FULL_N),
+									     .EMPTY_N(boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp$EMPTY_N));
+
   // submodule core
   mkCore core(.CLK(CLK),
 	      .RST_N(RST_N),
+	      .core_external_interrupt_sources_0_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_0_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_10_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_10_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_11_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_11_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_12_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_12_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_13_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_13_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_14_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_14_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_15_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_15_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_1_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_1_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_2_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_2_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_3_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_3_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_4_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_4_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_5_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_5_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_6_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_6_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_7_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_7_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_8_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_8_m_interrupt_req_set_not_clear),
+	      .core_external_interrupt_sources_9_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_9_m_interrupt_req_set_not_clear),
 	      .cpu_dmem_master_arready(core$cpu_dmem_master_arready),
 	      .cpu_dmem_master_awready(core$cpu_dmem_master_awready),
 	      .cpu_dmem_master_bid(core$cpu_dmem_master_bid),
@@ -899,7 +1313,6 @@ module mkSoC_Top(CLK,
 	      .cpu_dmem_master_rresp(core$cpu_dmem_master_rresp),
 	      .cpu_dmem_master_rvalid(core$cpu_dmem_master_rvalid),
 	      .cpu_dmem_master_wready(core$cpu_dmem_master_wready),
-	      .cpu_external_interrupt_req_set_not_clear(core$cpu_external_interrupt_req_set_not_clear),
 	      .cpu_imem_master_arready(core$cpu_imem_master_arready),
 	      .cpu_imem_master_awready(core$cpu_imem_master_awready),
 	      .cpu_imem_master_bid(core$cpu_imem_master_bid),
@@ -911,40 +1324,13 @@ module mkSoC_Top(CLK,
 	      .cpu_imem_master_rresp(core$cpu_imem_master_rresp),
 	      .cpu_imem_master_rvalid(core$cpu_imem_master_rvalid),
 	      .cpu_imem_master_wready(core$cpu_imem_master_wready),
-	      .cpu_slave_araddr(core$cpu_slave_araddr),
-	      .cpu_slave_arburst(core$cpu_slave_arburst),
-	      .cpu_slave_arcache(core$cpu_slave_arcache),
-	      .cpu_slave_arid(core$cpu_slave_arid),
-	      .cpu_slave_arlen(core$cpu_slave_arlen),
-	      .cpu_slave_arlock(core$cpu_slave_arlock),
-	      .cpu_slave_arprot(core$cpu_slave_arprot),
-	      .cpu_slave_arqos(core$cpu_slave_arqos),
-	      .cpu_slave_arregion(core$cpu_slave_arregion),
-	      .cpu_slave_arsize(core$cpu_slave_arsize),
-	      .cpu_slave_arvalid(core$cpu_slave_arvalid),
-	      .cpu_slave_awaddr(core$cpu_slave_awaddr),
-	      .cpu_slave_awburst(core$cpu_slave_awburst),
-	      .cpu_slave_awcache(core$cpu_slave_awcache),
-	      .cpu_slave_awid(core$cpu_slave_awid),
-	      .cpu_slave_awlen(core$cpu_slave_awlen),
-	      .cpu_slave_awlock(core$cpu_slave_awlock),
-	      .cpu_slave_awprot(core$cpu_slave_awprot),
-	      .cpu_slave_awqos(core$cpu_slave_awqos),
-	      .cpu_slave_awregion(core$cpu_slave_awregion),
-	      .cpu_slave_awsize(core$cpu_slave_awsize),
-	      .cpu_slave_awvalid(core$cpu_slave_awvalid),
-	      .cpu_slave_bready(core$cpu_slave_bready),
-	      .cpu_slave_rready(core$cpu_slave_rready),
-	      .cpu_slave_wdata(core$cpu_slave_wdata),
-	      .cpu_slave_wid(core$cpu_slave_wid),
-	      .cpu_slave_wlast(core$cpu_slave_wlast),
-	      .cpu_slave_wstrb(core$cpu_slave_wstrb),
-	      .cpu_slave_wvalid(core$cpu_slave_wvalid),
+	      .nmi_req_set_not_clear(core$nmi_req_set_not_clear),
 	      .set_verbosity_logdelay(core$set_verbosity_logdelay),
 	      .set_verbosity_verbosity(core$set_verbosity_verbosity),
+	      .EN_set_verbosity(core$EN_set_verbosity),
 	      .EN_cpu_reset_server_request_put(core$EN_cpu_reset_server_request_put),
 	      .EN_cpu_reset_server_response_get(core$EN_cpu_reset_server_response_get),
-	      .EN_set_verbosity(core$EN_set_verbosity),
+	      .RDY_set_verbosity(),
 	      .RDY_cpu_reset_server_request_put(core$RDY_cpu_reset_server_request_put),
 	      .RDY_cpu_reset_server_response_get(core$RDY_cpu_reset_server_response_get),
 	      .cpu_imem_master_awvalid(core$cpu_imem_master_awvalid),
@@ -1004,19 +1390,7 @@ module mkSoC_Top(CLK,
 	      .cpu_dmem_master_arprot(core$cpu_dmem_master_arprot),
 	      .cpu_dmem_master_arqos(core$cpu_dmem_master_arqos),
 	      .cpu_dmem_master_arregion(core$cpu_dmem_master_arregion),
-	      .cpu_dmem_master_rready(core$cpu_dmem_master_rready),
-	      .cpu_slave_awready(core$cpu_slave_awready),
-	      .cpu_slave_wready(core$cpu_slave_wready),
-	      .cpu_slave_bvalid(core$cpu_slave_bvalid),
-	      .cpu_slave_bid(core$cpu_slave_bid),
-	      .cpu_slave_bresp(core$cpu_slave_bresp),
-	      .cpu_slave_arready(core$cpu_slave_arready),
-	      .cpu_slave_rvalid(core$cpu_slave_rvalid),
-	      .cpu_slave_rid(core$cpu_slave_rid),
-	      .cpu_slave_rdata(core$cpu_slave_rdata),
-	      .cpu_slave_rresp(core$cpu_slave_rresp),
-	      .cpu_slave_rlast(core$cpu_slave_rlast),
-	      .RDY_set_verbosity());
+	      .cpu_dmem_master_rready(core$cpu_dmem_master_rready));
 
   // submodule fabric
   mkFabric_AXI4 fabric(.CLK(CLK),
@@ -1080,35 +1454,6 @@ module mkSoC_Top(CLK,
 		       .v_from_masters_1_wlast(fabric$v_from_masters_1_wlast),
 		       .v_from_masters_1_wstrb(fabric$v_from_masters_1_wstrb),
 		       .v_from_masters_1_wvalid(fabric$v_from_masters_1_wvalid),
-		       .v_from_masters_2_araddr(fabric$v_from_masters_2_araddr),
-		       .v_from_masters_2_arburst(fabric$v_from_masters_2_arburst),
-		       .v_from_masters_2_arcache(fabric$v_from_masters_2_arcache),
-		       .v_from_masters_2_arid(fabric$v_from_masters_2_arid),
-		       .v_from_masters_2_arlen(fabric$v_from_masters_2_arlen),
-		       .v_from_masters_2_arlock(fabric$v_from_masters_2_arlock),
-		       .v_from_masters_2_arprot(fabric$v_from_masters_2_arprot),
-		       .v_from_masters_2_arqos(fabric$v_from_masters_2_arqos),
-		       .v_from_masters_2_arregion(fabric$v_from_masters_2_arregion),
-		       .v_from_masters_2_arsize(fabric$v_from_masters_2_arsize),
-		       .v_from_masters_2_arvalid(fabric$v_from_masters_2_arvalid),
-		       .v_from_masters_2_awaddr(fabric$v_from_masters_2_awaddr),
-		       .v_from_masters_2_awburst(fabric$v_from_masters_2_awburst),
-		       .v_from_masters_2_awcache(fabric$v_from_masters_2_awcache),
-		       .v_from_masters_2_awid(fabric$v_from_masters_2_awid),
-		       .v_from_masters_2_awlen(fabric$v_from_masters_2_awlen),
-		       .v_from_masters_2_awlock(fabric$v_from_masters_2_awlock),
-		       .v_from_masters_2_awprot(fabric$v_from_masters_2_awprot),
-		       .v_from_masters_2_awqos(fabric$v_from_masters_2_awqos),
-		       .v_from_masters_2_awregion(fabric$v_from_masters_2_awregion),
-		       .v_from_masters_2_awsize(fabric$v_from_masters_2_awsize),
-		       .v_from_masters_2_awvalid(fabric$v_from_masters_2_awvalid),
-		       .v_from_masters_2_bready(fabric$v_from_masters_2_bready),
-		       .v_from_masters_2_rready(fabric$v_from_masters_2_rready),
-		       .v_from_masters_2_wdata(fabric$v_from_masters_2_wdata),
-		       .v_from_masters_2_wid(fabric$v_from_masters_2_wid),
-		       .v_from_masters_2_wlast(fabric$v_from_masters_2_wlast),
-		       .v_from_masters_2_wstrb(fabric$v_from_masters_2_wstrb),
-		       .v_from_masters_2_wvalid(fabric$v_from_masters_2_wvalid),
 		       .v_to_slaves_0_arready(fabric$v_to_slaves_0_arready),
 		       .v_to_slaves_0_awready(fabric$v_to_slaves_0_awready),
 		       .v_to_slaves_0_bid(fabric$v_to_slaves_0_bid),
@@ -1142,32 +1487,21 @@ module mkSoC_Top(CLK,
 		       .v_to_slaves_2_rresp(fabric$v_to_slaves_2_rresp),
 		       .v_to_slaves_2_rvalid(fabric$v_to_slaves_2_rvalid),
 		       .v_to_slaves_2_wready(fabric$v_to_slaves_2_wready),
-		       .v_to_slaves_3_arready(fabric$v_to_slaves_3_arready),
-		       .v_to_slaves_3_awready(fabric$v_to_slaves_3_awready),
-		       .v_to_slaves_3_bid(fabric$v_to_slaves_3_bid),
-		       .v_to_slaves_3_bresp(fabric$v_to_slaves_3_bresp),
-		       .v_to_slaves_3_bvalid(fabric$v_to_slaves_3_bvalid),
-		       .v_to_slaves_3_rdata(fabric$v_to_slaves_3_rdata),
-		       .v_to_slaves_3_rid(fabric$v_to_slaves_3_rid),
-		       .v_to_slaves_3_rlast(fabric$v_to_slaves_3_rlast),
-		       .v_to_slaves_3_rresp(fabric$v_to_slaves_3_rresp),
-		       .v_to_slaves_3_rvalid(fabric$v_to_slaves_3_rvalid),
-		       .v_to_slaves_3_wready(fabric$v_to_slaves_3_wready),
 		       .EN_reset(fabric$EN_reset),
 		       .EN_set_verbosity(fabric$EN_set_verbosity),
 		       .RDY_reset(fabric$RDY_reset),
 		       .RDY_set_verbosity(),
-		       .v_from_masters_0_awready(),
-		       .v_from_masters_0_wready(),
-		       .v_from_masters_0_bvalid(),
-		       .v_from_masters_0_bid(),
-		       .v_from_masters_0_bresp(),
-		       .v_from_masters_0_arready(),
-		       .v_from_masters_0_rvalid(),
-		       .v_from_masters_0_rid(),
-		       .v_from_masters_0_rdata(),
-		       .v_from_masters_0_rresp(),
-		       .v_from_masters_0_rlast(),
+		       .v_from_masters_0_awready(fabric$v_from_masters_0_awready),
+		       .v_from_masters_0_wready(fabric$v_from_masters_0_wready),
+		       .v_from_masters_0_bvalid(fabric$v_from_masters_0_bvalid),
+		       .v_from_masters_0_bid(fabric$v_from_masters_0_bid),
+		       .v_from_masters_0_bresp(fabric$v_from_masters_0_bresp),
+		       .v_from_masters_0_arready(fabric$v_from_masters_0_arready),
+		       .v_from_masters_0_rvalid(fabric$v_from_masters_0_rvalid),
+		       .v_from_masters_0_rid(fabric$v_from_masters_0_rid),
+		       .v_from_masters_0_rdata(fabric$v_from_masters_0_rdata),
+		       .v_from_masters_0_rresp(fabric$v_from_masters_0_rresp),
+		       .v_from_masters_0_rlast(fabric$v_from_masters_0_rlast),
 		       .v_from_masters_1_awready(fabric$v_from_masters_1_awready),
 		       .v_from_masters_1_wready(fabric$v_from_masters_1_wready),
 		       .v_from_masters_1_bvalid(fabric$v_from_masters_1_bvalid),
@@ -1179,17 +1513,6 @@ module mkSoC_Top(CLK,
 		       .v_from_masters_1_rdata(fabric$v_from_masters_1_rdata),
 		       .v_from_masters_1_rresp(fabric$v_from_masters_1_rresp),
 		       .v_from_masters_1_rlast(fabric$v_from_masters_1_rlast),
-		       .v_from_masters_2_awready(fabric$v_from_masters_2_awready),
-		       .v_from_masters_2_wready(fabric$v_from_masters_2_wready),
-		       .v_from_masters_2_bvalid(fabric$v_from_masters_2_bvalid),
-		       .v_from_masters_2_bid(fabric$v_from_masters_2_bid),
-		       .v_from_masters_2_bresp(fabric$v_from_masters_2_bresp),
-		       .v_from_masters_2_arready(fabric$v_from_masters_2_arready),
-		       .v_from_masters_2_rvalid(fabric$v_from_masters_2_rvalid),
-		       .v_from_masters_2_rid(fabric$v_from_masters_2_rid),
-		       .v_from_masters_2_rdata(fabric$v_from_masters_2_rdata),
-		       .v_from_masters_2_rresp(fabric$v_from_masters_2_rresp),
-		       .v_from_masters_2_rlast(fabric$v_from_masters_2_rlast),
 		       .v_to_slaves_0_awvalid(fabric$v_to_slaves_0_awvalid),
 		       .v_to_slaves_0_awid(fabric$v_to_slaves_0_awid),
 		       .v_to_slaves_0_awaddr(fabric$v_to_slaves_0_awaddr),
@@ -1276,36 +1599,7 @@ module mkSoC_Top(CLK,
 		       .v_to_slaves_2_arprot(fabric$v_to_slaves_2_arprot),
 		       .v_to_slaves_2_arqos(fabric$v_to_slaves_2_arqos),
 		       .v_to_slaves_2_arregion(fabric$v_to_slaves_2_arregion),
-		       .v_to_slaves_2_rready(fabric$v_to_slaves_2_rready),
-		       .v_to_slaves_3_awvalid(fabric$v_to_slaves_3_awvalid),
-		       .v_to_slaves_3_awid(fabric$v_to_slaves_3_awid),
-		       .v_to_slaves_3_awaddr(fabric$v_to_slaves_3_awaddr),
-		       .v_to_slaves_3_awlen(fabric$v_to_slaves_3_awlen),
-		       .v_to_slaves_3_awsize(fabric$v_to_slaves_3_awsize),
-		       .v_to_slaves_3_awburst(fabric$v_to_slaves_3_awburst),
-		       .v_to_slaves_3_awlock(fabric$v_to_slaves_3_awlock),
-		       .v_to_slaves_3_awcache(fabric$v_to_slaves_3_awcache),
-		       .v_to_slaves_3_awprot(fabric$v_to_slaves_3_awprot),
-		       .v_to_slaves_3_awqos(fabric$v_to_slaves_3_awqos),
-		       .v_to_slaves_3_awregion(fabric$v_to_slaves_3_awregion),
-		       .v_to_slaves_3_wvalid(fabric$v_to_slaves_3_wvalid),
-		       .v_to_slaves_3_wid(fabric$v_to_slaves_3_wid),
-		       .v_to_slaves_3_wdata(fabric$v_to_slaves_3_wdata),
-		       .v_to_slaves_3_wstrb(fabric$v_to_slaves_3_wstrb),
-		       .v_to_slaves_3_wlast(fabric$v_to_slaves_3_wlast),
-		       .v_to_slaves_3_bready(fabric$v_to_slaves_3_bready),
-		       .v_to_slaves_3_arvalid(fabric$v_to_slaves_3_arvalid),
-		       .v_to_slaves_3_arid(fabric$v_to_slaves_3_arid),
-		       .v_to_slaves_3_araddr(fabric$v_to_slaves_3_araddr),
-		       .v_to_slaves_3_arlen(fabric$v_to_slaves_3_arlen),
-		       .v_to_slaves_3_arsize(fabric$v_to_slaves_3_arsize),
-		       .v_to_slaves_3_arburst(fabric$v_to_slaves_3_arburst),
-		       .v_to_slaves_3_arlock(fabric$v_to_slaves_3_arlock),
-		       .v_to_slaves_3_arcache(fabric$v_to_slaves_3_arcache),
-		       .v_to_slaves_3_arprot(fabric$v_to_slaves_3_arprot),
-		       .v_to_slaves_3_arqos(fabric$v_to_slaves_3_arqos),
-		       .v_to_slaves_3_arregion(fabric$v_to_slaves_3_arregion),
-		       .v_to_slaves_3_rready(fabric$v_to_slaves_3_rready));
+		       .v_to_slaves_2_rready(fabric$v_to_slaves_2_rready));
 
   // submodule mem0_controller
   mkMem_Controller mem0_controller(.CLK(CLK),
@@ -1369,18 +1663,169 @@ module mkSoC_Top(CLK,
 				   .RDY_to_raw_mem_response_put(mem0_controller$RDY_to_raw_mem_response_put),
 				   .RDY_set_watch_tohost());
 
+  // submodule mem0_controller_axi4_deburster_f_r_arlen
+  SizedFIFO #(.p1width(32'd8),
+	      .p2depth(32'd4),
+	      .p3cntr_width(32'd2),
+	      .guarded(32'd1)) mem0_controller_axi4_deburster_f_r_arlen(.RST(RST_N),
+									.CLK(CLK),
+									.D_IN(mem0_controller_axi4_deburster_f_r_arlen$D_IN),
+									.ENQ(mem0_controller_axi4_deburster_f_r_arlen$ENQ),
+									.DEQ(mem0_controller_axi4_deburster_f_r_arlen$DEQ),
+									.CLR(mem0_controller_axi4_deburster_f_r_arlen$CLR),
+									.D_OUT(mem0_controller_axi4_deburster_f_r_arlen$D_OUT),
+									.FULL_N(mem0_controller_axi4_deburster_f_r_arlen$FULL_N),
+									.EMPTY_N(mem0_controller_axi4_deburster_f_r_arlen$EMPTY_N));
+
+  // submodule mem0_controller_axi4_deburster_f_w_awlen
+  SizedFIFO #(.p1width(32'd8),
+	      .p2depth(32'd4),
+	      .p3cntr_width(32'd2),
+	      .guarded(32'd1)) mem0_controller_axi4_deburster_f_w_awlen(.RST(RST_N),
+									.CLK(CLK),
+									.D_IN(mem0_controller_axi4_deburster_f_w_awlen$D_IN),
+									.ENQ(mem0_controller_axi4_deburster_f_w_awlen$ENQ),
+									.DEQ(mem0_controller_axi4_deburster_f_w_awlen$DEQ),
+									.CLR(mem0_controller_axi4_deburster_f_w_awlen$CLR),
+									.D_OUT(mem0_controller_axi4_deburster_f_w_awlen$D_OUT),
+									.FULL_N(mem0_controller_axi4_deburster_f_w_awlen$FULL_N),
+									.EMPTY_N(mem0_controller_axi4_deburster_f_w_awlen$EMPTY_N));
+
+  // submodule mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr
+  FIFO2 #(.width(32'd97),
+	  .guarded(32'd1)) mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr(.RST(RST_N),
+										       .CLK(CLK),
+										       .D_IN(mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$D_IN),
+										       .ENQ(mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$ENQ),
+										       .DEQ(mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$DEQ),
+										       .CLR(mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$CLR),
+										       .D_OUT(mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$D_OUT),
+										       .FULL_N(mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$FULL_N),
+										       .EMPTY_N(mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$EMPTY_N));
+
+  // submodule mem0_controller_axi4_deburster_xactor_from_master_f_rd_data
+  FIFO2 #(.width(32'd71),
+	  .guarded(32'd1)) mem0_controller_axi4_deburster_xactor_from_master_f_rd_data(.RST(RST_N),
+										       .CLK(CLK),
+										       .D_IN(mem0_controller_axi4_deburster_xactor_from_master_f_rd_data$D_IN),
+										       .ENQ(mem0_controller_axi4_deburster_xactor_from_master_f_rd_data$ENQ),
+										       .DEQ(mem0_controller_axi4_deburster_xactor_from_master_f_rd_data$DEQ),
+										       .CLR(mem0_controller_axi4_deburster_xactor_from_master_f_rd_data$CLR),
+										       .D_OUT(mem0_controller_axi4_deburster_xactor_from_master_f_rd_data$D_OUT),
+										       .FULL_N(mem0_controller_axi4_deburster_xactor_from_master_f_rd_data$FULL_N),
+										       .EMPTY_N(mem0_controller_axi4_deburster_xactor_from_master_f_rd_data$EMPTY_N));
+
+  // submodule mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr
+  FIFO2 #(.width(32'd97),
+	  .guarded(32'd1)) mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr(.RST(RST_N),
+										       .CLK(CLK),
+										       .D_IN(mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$D_IN),
+										       .ENQ(mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$ENQ),
+										       .DEQ(mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$DEQ),
+										       .CLR(mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$CLR),
+										       .D_OUT(mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$D_OUT),
+										       .FULL_N(mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$FULL_N),
+										       .EMPTY_N(mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$EMPTY_N));
+
+  // submodule mem0_controller_axi4_deburster_xactor_from_master_f_wr_data
+  FIFO2 #(.width(32'd77),
+	  .guarded(32'd1)) mem0_controller_axi4_deburster_xactor_from_master_f_wr_data(.RST(RST_N),
+										       .CLK(CLK),
+										       .D_IN(mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$D_IN),
+										       .ENQ(mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$ENQ),
+										       .DEQ(mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$DEQ),
+										       .CLR(mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$CLR),
+										       .D_OUT(mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$D_OUT),
+										       .FULL_N(mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$FULL_N),
+										       .EMPTY_N(mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$EMPTY_N));
+
+  // submodule mem0_controller_axi4_deburster_xactor_from_master_f_wr_resp
+  FIFO2 #(.width(32'd6),
+	  .guarded(32'd1)) mem0_controller_axi4_deburster_xactor_from_master_f_wr_resp(.RST(RST_N),
+										       .CLK(CLK),
+										       .D_IN(mem0_controller_axi4_deburster_xactor_from_master_f_wr_resp$D_IN),
+										       .ENQ(mem0_controller_axi4_deburster_xactor_from_master_f_wr_resp$ENQ),
+										       .DEQ(mem0_controller_axi4_deburster_xactor_from_master_f_wr_resp$DEQ),
+										       .CLR(mem0_controller_axi4_deburster_xactor_from_master_f_wr_resp$CLR),
+										       .D_OUT(mem0_controller_axi4_deburster_xactor_from_master_f_wr_resp$D_OUT),
+										       .FULL_N(mem0_controller_axi4_deburster_xactor_from_master_f_wr_resp$FULL_N),
+										       .EMPTY_N(mem0_controller_axi4_deburster_xactor_from_master_f_wr_resp$EMPTY_N));
+
+  // submodule mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr
+  FIFO2 #(.width(32'd97),
+	  .guarded(32'd1)) mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr(.RST(RST_N),
+										    .CLK(CLK),
+										    .D_IN(mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$D_IN),
+										    .ENQ(mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$ENQ),
+										    .DEQ(mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$DEQ),
+										    .CLR(mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$CLR),
+										    .D_OUT(mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$D_OUT),
+										    .FULL_N(mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$FULL_N),
+										    .EMPTY_N(mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$EMPTY_N));
+
+  // submodule mem0_controller_axi4_deburster_xactor_to_slave_f_rd_data
+  FIFO2 #(.width(32'd71),
+	  .guarded(32'd1)) mem0_controller_axi4_deburster_xactor_to_slave_f_rd_data(.RST(RST_N),
+										    .CLK(CLK),
+										    .D_IN(mem0_controller_axi4_deburster_xactor_to_slave_f_rd_data$D_IN),
+										    .ENQ(mem0_controller_axi4_deburster_xactor_to_slave_f_rd_data$ENQ),
+										    .DEQ(mem0_controller_axi4_deburster_xactor_to_slave_f_rd_data$DEQ),
+										    .CLR(mem0_controller_axi4_deburster_xactor_to_slave_f_rd_data$CLR),
+										    .D_OUT(mem0_controller_axi4_deburster_xactor_to_slave_f_rd_data$D_OUT),
+										    .FULL_N(mem0_controller_axi4_deburster_xactor_to_slave_f_rd_data$FULL_N),
+										    .EMPTY_N(mem0_controller_axi4_deburster_xactor_to_slave_f_rd_data$EMPTY_N));
+
+  // submodule mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr
+  FIFO2 #(.width(32'd97),
+	  .guarded(32'd1)) mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr(.RST(RST_N),
+										    .CLK(CLK),
+										    .D_IN(mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$D_IN),
+										    .ENQ(mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$ENQ),
+										    .DEQ(mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$DEQ),
+										    .CLR(mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$CLR),
+										    .D_OUT(mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$D_OUT),
+										    .FULL_N(mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$FULL_N),
+										    .EMPTY_N(mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$EMPTY_N));
+
+  // submodule mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data
+  FIFO2 #(.width(32'd77),
+	  .guarded(32'd1)) mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data(.RST(RST_N),
+										    .CLK(CLK),
+										    .D_IN(mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data$D_IN),
+										    .ENQ(mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data$ENQ),
+										    .DEQ(mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data$DEQ),
+										    .CLR(mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data$CLR),
+										    .D_OUT(mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data$D_OUT),
+										    .FULL_N(mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data$FULL_N),
+										    .EMPTY_N(mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data$EMPTY_N));
+
+  // submodule mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp
+  FIFO2 #(.width(32'd6),
+	  .guarded(32'd1)) mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp(.RST(RST_N),
+										    .CLK(CLK),
+										    .D_IN(mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp$D_IN),
+										    .ENQ(mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp$ENQ),
+										    .DEQ(mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp$DEQ),
+										    .CLR(mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp$CLR),
+										    .D_OUT(mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp$D_OUT),
+										    .FULL_N(mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp$FULL_N),
+										    .EMPTY_N(mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp$EMPTY_N));
+
   // submodule soc_map
   mkSoC_Map soc_map(.CLK(CLK),
 		    .RST_N(RST_N),
 		    .m_is_IO_addr_addr(soc_map$m_is_IO_addr_addr),
 		    .m_is_mem_addr_addr(soc_map$m_is_mem_addr_addr),
 		    .m_is_near_mem_IO_addr_addr(soc_map$m_is_near_mem_IO_addr_addr),
-		    .m_uart0_addr_base(soc_map$m_uart0_addr_base),
-		    .m_uart0_addr_size(),
-		    .m_uart0_addr_lim(soc_map$m_uart0_addr_lim),
 		    .m_near_mem_io_addr_base(),
 		    .m_near_mem_io_addr_size(),
 		    .m_near_mem_io_addr_lim(),
+		    .m_plic_addr_base(),
+		    .m_plic_addr_size(),
+		    .m_plic_addr_lim(),
+		    .m_uart0_addr_base(soc_map$m_uart0_addr_base),
+		    .m_uart0_addr_size(),
+		    .m_uart0_addr_lim(soc_map$m_uart0_addr_lim),
 		    .m_boot_rom_addr_base(soc_map$m_boot_rom_addr_base),
 		    .m_boot_rom_addr_size(),
 		    .m_boot_rom_addr_lim(soc_map$m_boot_rom_addr_lim),
@@ -1393,7 +1838,9 @@ module mkSoC_Top(CLK,
 		    .m_is_mem_addr(),
 		    .m_is_IO_addr(),
 		    .m_is_near_mem_IO_addr(),
-		    .m_pc_reset_value());
+		    .m_pc_reset_value(),
+		    .m_mtvec_reset_value(),
+		    .m_nmivec_reset_value());
 
   // submodule uart0
   mkUART uart0(.CLK(CLK),
@@ -1462,13 +1909,17 @@ module mkSoC_Top(CLK,
   assign CAN_FIRE_RL_rl_wr_data_channel = 1'd1 ;
   assign WILL_FIRE_RL_rl_wr_data_channel = 1'd1 ;
 
+  // rule RL_rl_wr_response_channel
+  assign CAN_FIRE_RL_rl_wr_response_channel = 1'd1 ;
+  assign WILL_FIRE_RL_rl_wr_response_channel = 1'd1 ;
+
   // rule RL_rl_rd_addr_channel
   assign CAN_FIRE_RL_rl_rd_addr_channel = 1'd1 ;
   assign WILL_FIRE_RL_rl_rd_addr_channel = 1'd1 ;
 
-  // rule RL_rl_wr_response_channel
-  assign CAN_FIRE_RL_rl_wr_response_channel = 1'd1 ;
-  assign WILL_FIRE_RL_rl_wr_response_channel = 1'd1 ;
+  // rule RL_rl_rd_data_channel
+  assign CAN_FIRE_RL_rl_rd_data_channel = 1'd1 ;
+  assign WILL_FIRE_RL_rl_rd_data_channel = 1'd1 ;
 
   // rule RL_rl_wr_addr_channel_1
   assign CAN_FIRE_RL_rl_wr_addr_channel_1 = 1'd1 ;
@@ -1478,17 +1929,13 @@ module mkSoC_Top(CLK,
   assign CAN_FIRE_RL_rl_wr_data_channel_1 = 1'd1 ;
   assign WILL_FIRE_RL_rl_wr_data_channel_1 = 1'd1 ;
 
-  // rule RL_rl_rd_addr_channel_1
-  assign CAN_FIRE_RL_rl_rd_addr_channel_1 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_rd_addr_channel_1 = 1'd1 ;
-
-  // rule RL_rl_rd_data_channel
-  assign CAN_FIRE_RL_rl_rd_data_channel = 1'd1 ;
-  assign WILL_FIRE_RL_rl_rd_data_channel = 1'd1 ;
-
   // rule RL_rl_wr_response_channel_1
   assign CAN_FIRE_RL_rl_wr_response_channel_1 = 1'd1 ;
   assign WILL_FIRE_RL_rl_wr_response_channel_1 = 1'd1 ;
+
+  // rule RL_rl_rd_addr_channel_1
+  assign CAN_FIRE_RL_rl_rd_addr_channel_1 = 1'd1 ;
+  assign WILL_FIRE_RL_rl_rd_addr_channel_1 = 1'd1 ;
 
   // rule RL_rl_rd_data_channel_1
   assign CAN_FIRE_RL_rl_rd_data_channel_1 = 1'd1 ;
@@ -1594,9 +2041,9 @@ module mkSoC_Top(CLK,
   assign CAN_FIRE_RL_rl_rd_data_channel_6 = 1'd1 ;
   assign WILL_FIRE_RL_rl_rd_data_channel_6 = 1'd1 ;
 
-  // rule RL_rl_connect_external_interrupt_request
-  assign CAN_FIRE_RL_rl_connect_external_interrupt_request = 1'd1 ;
-  assign WILL_FIRE_RL_rl_connect_external_interrupt_request = 1'd1 ;
+  // rule RL_rl_connect_external_interrupt_requests
+  assign CAN_FIRE_RL_rl_connect_external_interrupt_requests = 1'd1 ;
+  assign WILL_FIRE_RL_rl_connect_external_interrupt_requests = 1'd1 ;
 
   // rule RL_rl_reset_start_2
   assign CAN_FIRE_RL_rl_reset_start_2 = MUX_rg_state$write_1__SEL_1 ;
@@ -1606,7 +2053,105 @@ module mkSoC_Top(CLK,
   assign CAN_FIRE_RL_rl_reset_complete = MUX_rg_state$write_1__SEL_2 ;
   assign WILL_FIRE_RL_rl_reset_complete = MUX_rg_state$write_1__SEL_2 ;
 
+  // rule RL_boot_rom_axi4_deburster_rl_wr_xaction_master_to_slave
+  assign CAN_FIRE_RL_boot_rom_axi4_deburster_rl_wr_xaction_master_to_slave =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$FULL_N &&
+	     boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$EMPTY_N &&
+	     boot_rom_axi4_deburster_xactor_to_slave_f_wr_data$FULL_N &&
+	     boot_rom_axi4_deburster_xactor_from_master_f_wr_data$EMPTY_N &&
+	     (boot_rom_axi4_deburster_rg_w_beat_count != 8'd0 ||
+	      boot_rom_axi4_deburster_f_w_awlen$FULL_N) ;
+  assign WILL_FIRE_RL_boot_rom_axi4_deburster_rl_wr_xaction_master_to_slave =
+	     CAN_FIRE_RL_boot_rom_axi4_deburster_rl_wr_xaction_master_to_slave ;
+
+  // rule RL_boot_rom_axi4_deburster_rl_wr_resp_slave_to_master
+  assign CAN_FIRE_RL_boot_rom_axi4_deburster_rl_wr_resp_slave_to_master =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp$EMPTY_N &&
+	     boot_rom_axi4_deburster_f_w_awlen$EMPTY_N &&
+	     (boot_rom_axi4_deburster_rg_b_beat_count_9_ULT__ETC___d51 ||
+	      boot_rom_axi4_deburster_xactor_from_master_f_wr_resp$FULL_N) ;
+  assign WILL_FIRE_RL_boot_rom_axi4_deburster_rl_wr_resp_slave_to_master =
+	     CAN_FIRE_RL_boot_rom_axi4_deburster_rl_wr_resp_slave_to_master ;
+
+  // rule RL_boot_rom_axi4_deburster_rl_rd_xaction_master_to_slave
+  assign CAN_FIRE_RL_boot_rom_axi4_deburster_rl_rd_xaction_master_to_slave =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$FULL_N &&
+	     boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$EMPTY_N &&
+	     (boot_rom_axi4_deburster_rg_ar_beat_count != 8'd0 ||
+	      boot_rom_axi4_deburster_f_r_arlen$FULL_N) ;
+  assign WILL_FIRE_RL_boot_rom_axi4_deburster_rl_rd_xaction_master_to_slave =
+	     CAN_FIRE_RL_boot_rom_axi4_deburster_rl_rd_xaction_master_to_slave ;
+
+  // rule RL_boot_rom_axi4_deburster_rl_rd_resp_slave_to_master
+  assign CAN_FIRE_RL_boot_rom_axi4_deburster_rl_rd_resp_slave_to_master =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_rd_data$EMPTY_N &&
+	     boot_rom_axi4_deburster_f_r_arlen$EMPTY_N &&
+	     boot_rom_axi4_deburster_xactor_from_master_f_rd_data$FULL_N ;
+  assign WILL_FIRE_RL_boot_rom_axi4_deburster_rl_rd_resp_slave_to_master =
+	     CAN_FIRE_RL_boot_rom_axi4_deburster_rl_rd_resp_slave_to_master ;
+
+  // rule RL_boot_rom_axi4_deburster_rl_reset
+  assign CAN_FIRE_RL_boot_rom_axi4_deburster_rl_reset =
+	     boot_rom_axi4_deburster_rg_reset ;
+  assign WILL_FIRE_RL_boot_rom_axi4_deburster_rl_reset =
+	     boot_rom_axi4_deburster_rg_reset ;
+
+  // rule RL_mem0_controller_axi4_deburster_rl_wr_xaction_master_to_slave
+  assign CAN_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_xaction_master_to_slave =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$FULL_N &&
+	     mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$EMPTY_N &&
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data$FULL_N &&
+	     mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$EMPTY_N &&
+	     (mem0_controller_axi4_deburster_rg_w_beat_count != 8'd0 ||
+	      mem0_controller_axi4_deburster_f_w_awlen$FULL_N) ;
+  assign WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_xaction_master_to_slave =
+	     CAN_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_xaction_master_to_slave ;
+
+  // rule RL_mem0_controller_axi4_deburster_rl_wr_resp_slave_to_master
+  assign CAN_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_resp_slave_to_master =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp$EMPTY_N &&
+	     mem0_controller_axi4_deburster_f_w_awlen$EMPTY_N &&
+	     (mem0_controller_axi4_deburster_rg_b_beat_count_ETC___d163 ||
+	      mem0_controller_axi4_deburster_xactor_from_master_f_wr_resp$FULL_N) ;
+  assign WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_resp_slave_to_master =
+	     CAN_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_resp_slave_to_master ;
+
+  // rule RL_mem0_controller_axi4_deburster_rl_rd_xaction_master_to_slave
+  assign CAN_FIRE_RL_mem0_controller_axi4_deburster_rl_rd_xaction_master_to_slave =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$FULL_N &&
+	     mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$EMPTY_N &&
+	     (mem0_controller_axi4_deburster_rg_ar_beat_count != 8'd0 ||
+	      mem0_controller_axi4_deburster_f_r_arlen$FULL_N) ;
+  assign WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_rd_xaction_master_to_slave =
+	     CAN_FIRE_RL_mem0_controller_axi4_deburster_rl_rd_xaction_master_to_slave ;
+
+  // rule RL_mem0_controller_axi4_deburster_rl_rd_resp_slave_to_master
+  assign CAN_FIRE_RL_mem0_controller_axi4_deburster_rl_rd_resp_slave_to_master =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_rd_data$EMPTY_N &&
+	     mem0_controller_axi4_deburster_f_r_arlen$EMPTY_N &&
+	     mem0_controller_axi4_deburster_xactor_from_master_f_rd_data$FULL_N ;
+  assign WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_rd_resp_slave_to_master =
+	     CAN_FIRE_RL_mem0_controller_axi4_deburster_rl_rd_resp_slave_to_master ;
+
+  // rule RL_mem0_controller_axi4_deburster_rl_reset
+  assign CAN_FIRE_RL_mem0_controller_axi4_deburster_rl_reset =
+	     mem0_controller_axi4_deburster_rg_reset ;
+  assign WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_reset =
+	     mem0_controller_axi4_deburster_rg_reset ;
+
   // inputs to muxes for submodule ports
+  assign MUX_boot_rom_axi4_deburster_rg_b_resp$write_1__SEL_2 =
+	     WILL_FIRE_RL_boot_rom_axi4_deburster_rl_wr_resp_slave_to_master &&
+	     (boot_rom_axi4_deburster_rg_b_resp == 2'b0 &&
+	      boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp$D_OUT[1:0] !=
+	      2'b0 ||
+	      !boot_rom_axi4_deburster_rg_b_beat_count_9_ULT__ETC___d51) ;
+  assign MUX_mem0_controller_axi4_deburster_rg_b_resp$write_1__SEL_2 =
+	     WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_resp_slave_to_master &&
+	     (mem0_controller_axi4_deburster_rg_b_resp == 2'b0 &&
+	      mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp$D_OUT[1:0] !=
+	      2'b0 ||
+	      !mem0_controller_axi4_deburster_rg_b_beat_count_ETC___d163) ;
   assign MUX_rg_state$write_1__SEL_1 =
 	     mem0_controller$RDY_server_reset_request_put &&
 	     uart0$RDY_server_reset_request_put &&
@@ -1619,6 +2164,146 @@ module mkSoC_Top(CLK,
 	     uart0$RDY_server_reset_response_get &&
 	     core$RDY_cpu_reset_server_response_get &&
 	     rg_state == 2'd1 ;
+  assign MUX_boot_rom_axi4_deburster_rg_ar_beat_count$write_1__VAL_2 =
+	     boot_rom_axi4_deburster_rg_ar_beat_count_3_ULT_ETC___d95 ?
+	       x__h6614 :
+	       8'd0 ;
+  assign MUX_boot_rom_axi4_deburster_rg_b_beat_count$write_1__VAL_2 =
+	     boot_rom_axi4_deburster_rg_b_beat_count_9_ULT__ETC___d51 ?
+	       x__h6222 :
+	       8'd0 ;
+  assign MUX_boot_rom_axi4_deburster_rg_b_resp$write_1__VAL_2 =
+	     boot_rom_axi4_deburster_rg_b_beat_count_9_ULT__ETC___d51 ?
+	       boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp$D_OUT[1:0] :
+	       2'b0 ;
+  assign MUX_boot_rom_axi4_deburster_rg_r_beat_count$write_1__VAL_2 =
+	     boot_rom_axi4_deburster_rg_r_beat_count_04_ULT_ETC___d106 ?
+	       x__h6812 :
+	       8'd0 ;
+  assign MUX_boot_rom_axi4_deburster_rg_w_beat_count$write_1__VAL_2 =
+	     boot_rom_axi4_deburster_rg_w_beat_count_ULT_bo_ETC___d35 ?
+	       x__h5729 :
+	       8'd0 ;
+  assign MUX_mem0_controller_axi4_deburster_rg_ar_beat_count$write_1__VAL_2 =
+	     mem0_controller_axi4_deburster_rg_ar_beat_coun_ETC___d207 ?
+	       x__h10575 :
+	       8'd0 ;
+  assign MUX_mem0_controller_axi4_deburster_rg_b_beat_count$write_1__VAL_2 =
+	     mem0_controller_axi4_deburster_rg_b_beat_count_ETC___d163 ?
+	       x__h10183 :
+	       8'd0 ;
+  assign MUX_mem0_controller_axi4_deburster_rg_b_resp$write_1__VAL_2 =
+	     mem0_controller_axi4_deburster_rg_b_beat_count_ETC___d163 ?
+	       mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp$D_OUT[1:0] :
+	       2'b0 ;
+  assign MUX_mem0_controller_axi4_deburster_rg_r_beat_count$write_1__VAL_2 =
+	     mem0_controller_axi4_deburster_rg_r_beat_count_ETC___d218 ?
+	       x__h10773 :
+	       8'd0 ;
+  assign MUX_mem0_controller_axi4_deburster_rg_w_beat_count$write_1__VAL_2 =
+	     mem0_controller_axi4_deburster_rg_w_beat_count_ETC___d147 ?
+	       x__h9690 :
+	       8'd0 ;
+
+  // register boot_rom_axi4_deburster_rg_ar_beat_count
+  assign boot_rom_axi4_deburster_rg_ar_beat_count$D_IN =
+	     boot_rom_axi4_deburster_rg_reset ?
+	       8'd0 :
+	       MUX_boot_rom_axi4_deburster_rg_ar_beat_count$write_1__VAL_2 ;
+  assign boot_rom_axi4_deburster_rg_ar_beat_count$EN =
+	     WILL_FIRE_RL_boot_rom_axi4_deburster_rl_rd_xaction_master_to_slave ||
+	     boot_rom_axi4_deburster_rg_reset ;
+
+  // register boot_rom_axi4_deburster_rg_b_beat_count
+  assign boot_rom_axi4_deburster_rg_b_beat_count$D_IN =
+	     boot_rom_axi4_deburster_rg_reset ?
+	       8'd0 :
+	       MUX_boot_rom_axi4_deburster_rg_b_beat_count$write_1__VAL_2 ;
+  assign boot_rom_axi4_deburster_rg_b_beat_count$EN =
+	     WILL_FIRE_RL_boot_rom_axi4_deburster_rl_wr_resp_slave_to_master ||
+	     boot_rom_axi4_deburster_rg_reset ;
+
+  // register boot_rom_axi4_deburster_rg_b_resp
+  assign boot_rom_axi4_deburster_rg_b_resp$D_IN =
+	     boot_rom_axi4_deburster_rg_reset ?
+	       2'b0 :
+	       MUX_boot_rom_axi4_deburster_rg_b_resp$write_1__VAL_2 ;
+  assign boot_rom_axi4_deburster_rg_b_resp$EN =
+	     MUX_boot_rom_axi4_deburster_rg_b_resp$write_1__SEL_2 ||
+	     boot_rom_axi4_deburster_rg_reset ;
+
+  // register boot_rom_axi4_deburster_rg_r_beat_count
+  assign boot_rom_axi4_deburster_rg_r_beat_count$D_IN =
+	     boot_rom_axi4_deburster_rg_reset ?
+	       8'd0 :
+	       MUX_boot_rom_axi4_deburster_rg_r_beat_count$write_1__VAL_2 ;
+  assign boot_rom_axi4_deburster_rg_r_beat_count$EN =
+	     WILL_FIRE_RL_boot_rom_axi4_deburster_rl_rd_resp_slave_to_master ||
+	     boot_rom_axi4_deburster_rg_reset ;
+
+  // register boot_rom_axi4_deburster_rg_reset
+  assign boot_rom_axi4_deburster_rg_reset$D_IN = 1'd0 ;
+  assign boot_rom_axi4_deburster_rg_reset$EN =
+	     boot_rom_axi4_deburster_rg_reset ;
+
+  // register boot_rom_axi4_deburster_rg_w_beat_count
+  assign boot_rom_axi4_deburster_rg_w_beat_count$D_IN =
+	     boot_rom_axi4_deburster_rg_reset ?
+	       8'd0 :
+	       MUX_boot_rom_axi4_deburster_rg_w_beat_count$write_1__VAL_2 ;
+  assign boot_rom_axi4_deburster_rg_w_beat_count$EN =
+	     WILL_FIRE_RL_boot_rom_axi4_deburster_rl_wr_xaction_master_to_slave ||
+	     boot_rom_axi4_deburster_rg_reset ;
+
+  // register mem0_controller_axi4_deburster_rg_ar_beat_count
+  assign mem0_controller_axi4_deburster_rg_ar_beat_count$D_IN =
+	     mem0_controller_axi4_deburster_rg_reset ?
+	       8'd0 :
+	       MUX_mem0_controller_axi4_deburster_rg_ar_beat_count$write_1__VAL_2 ;
+  assign mem0_controller_axi4_deburster_rg_ar_beat_count$EN =
+	     WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_rd_xaction_master_to_slave ||
+	     mem0_controller_axi4_deburster_rg_reset ;
+
+  // register mem0_controller_axi4_deburster_rg_b_beat_count
+  assign mem0_controller_axi4_deburster_rg_b_beat_count$D_IN =
+	     mem0_controller_axi4_deburster_rg_reset ?
+	       8'd0 :
+	       MUX_mem0_controller_axi4_deburster_rg_b_beat_count$write_1__VAL_2 ;
+  assign mem0_controller_axi4_deburster_rg_b_beat_count$EN =
+	     WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_resp_slave_to_master ||
+	     mem0_controller_axi4_deburster_rg_reset ;
+
+  // register mem0_controller_axi4_deburster_rg_b_resp
+  assign mem0_controller_axi4_deburster_rg_b_resp$D_IN =
+	     mem0_controller_axi4_deburster_rg_reset ?
+	       2'b0 :
+	       MUX_mem0_controller_axi4_deburster_rg_b_resp$write_1__VAL_2 ;
+  assign mem0_controller_axi4_deburster_rg_b_resp$EN =
+	     MUX_mem0_controller_axi4_deburster_rg_b_resp$write_1__SEL_2 ||
+	     mem0_controller_axi4_deburster_rg_reset ;
+
+  // register mem0_controller_axi4_deburster_rg_r_beat_count
+  assign mem0_controller_axi4_deburster_rg_r_beat_count$D_IN =
+	     mem0_controller_axi4_deburster_rg_reset ?
+	       8'd0 :
+	       MUX_mem0_controller_axi4_deburster_rg_r_beat_count$write_1__VAL_2 ;
+  assign mem0_controller_axi4_deburster_rg_r_beat_count$EN =
+	     WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_rd_resp_slave_to_master ||
+	     mem0_controller_axi4_deburster_rg_reset ;
+
+  // register mem0_controller_axi4_deburster_rg_reset
+  assign mem0_controller_axi4_deburster_rg_reset$D_IN = 1'd0 ;
+  assign mem0_controller_axi4_deburster_rg_reset$EN =
+	     mem0_controller_axi4_deburster_rg_reset ;
+
+  // register mem0_controller_axi4_deburster_rg_w_beat_count
+  assign mem0_controller_axi4_deburster_rg_w_beat_count$D_IN =
+	     mem0_controller_axi4_deburster_rg_reset ?
+	       8'd0 :
+	       MUX_mem0_controller_axi4_deburster_rg_w_beat_count$write_1__VAL_2 ;
+  assign mem0_controller_axi4_deburster_rg_w_beat_count$EN =
+	     WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_xaction_master_to_slave ||
+	     mem0_controller_axi4_deburster_rg_reset ;
 
   // register rg_state
   assign rg_state$D_IN = WILL_FIRE_RL_rl_reset_start_2 ? 2'd1 : 2'd2 ;
@@ -1628,235 +2313,419 @@ module mkSoC_Top(CLK,
   // submodule boot_rom
   assign boot_rom$set_addr_map_addr_base = soc_map$m_boot_rom_addr_base ;
   assign boot_rom$set_addr_map_addr_lim = soc_map$m_boot_rom_addr_lim ;
-  assign boot_rom$slave_araddr = fabric$v_to_slaves_1_araddr ;
-  assign boot_rom$slave_arburst = fabric$v_to_slaves_1_arburst ;
-  assign boot_rom$slave_arcache = fabric$v_to_slaves_1_arcache ;
-  assign boot_rom$slave_arid = fabric$v_to_slaves_1_arid ;
-  assign boot_rom$slave_arlen = fabric$v_to_slaves_1_arlen ;
-  assign boot_rom$slave_arlock = fabric$v_to_slaves_1_arlock ;
-  assign boot_rom$slave_arprot = fabric$v_to_slaves_1_arprot ;
-  assign boot_rom$slave_arqos = fabric$v_to_slaves_1_arqos ;
-  assign boot_rom$slave_arregion = fabric$v_to_slaves_1_arregion ;
-  assign boot_rom$slave_arsize = fabric$v_to_slaves_1_arsize ;
-  assign boot_rom$slave_arvalid = fabric$v_to_slaves_1_arvalid ;
-  assign boot_rom$slave_awaddr = fabric$v_to_slaves_1_awaddr ;
-  assign boot_rom$slave_awburst = fabric$v_to_slaves_1_awburst ;
-  assign boot_rom$slave_awcache = fabric$v_to_slaves_1_awcache ;
-  assign boot_rom$slave_awid = fabric$v_to_slaves_1_awid ;
-  assign boot_rom$slave_awlen = fabric$v_to_slaves_1_awlen ;
-  assign boot_rom$slave_awlock = fabric$v_to_slaves_1_awlock ;
-  assign boot_rom$slave_awprot = fabric$v_to_slaves_1_awprot ;
-  assign boot_rom$slave_awqos = fabric$v_to_slaves_1_awqos ;
-  assign boot_rom$slave_awregion = fabric$v_to_slaves_1_awregion ;
-  assign boot_rom$slave_awsize = fabric$v_to_slaves_1_awsize ;
-  assign boot_rom$slave_awvalid = fabric$v_to_slaves_1_awvalid ;
-  assign boot_rom$slave_bready = fabric$v_to_slaves_1_bready ;
-  assign boot_rom$slave_rready = fabric$v_to_slaves_1_rready ;
-  assign boot_rom$slave_wdata = fabric$v_to_slaves_1_wdata ;
-  assign boot_rom$slave_wid = fabric$v_to_slaves_1_wid ;
-  assign boot_rom$slave_wlast = fabric$v_to_slaves_1_wlast ;
-  assign boot_rom$slave_wstrb = fabric$v_to_slaves_1_wstrb ;
-  assign boot_rom$slave_wvalid = fabric$v_to_slaves_1_wvalid ;
+  assign boot_rom$slave_araddr =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$D_OUT[92:29] ;
+  assign boot_rom$slave_arburst =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$D_OUT[17:16] ;
+  assign boot_rom$slave_arcache =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$D_OUT[14:11] ;
+  assign boot_rom$slave_arid =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$D_OUT[96:93] ;
+  assign boot_rom$slave_arlen =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$D_OUT[28:21] ;
+  assign boot_rom$slave_arlock =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$D_OUT[15] ;
+  assign boot_rom$slave_arprot =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$D_OUT[10:8] ;
+  assign boot_rom$slave_arqos =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$D_OUT[7:4] ;
+  assign boot_rom$slave_arregion =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$D_OUT[3:0] ;
+  assign boot_rom$slave_arsize =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$D_OUT[20:18] ;
+  assign boot_rom$slave_arvalid =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$EMPTY_N ;
+  assign boot_rom$slave_awaddr =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$D_OUT[92:29] ;
+  assign boot_rom$slave_awburst =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$D_OUT[17:16] ;
+  assign boot_rom$slave_awcache =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$D_OUT[14:11] ;
+  assign boot_rom$slave_awid =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$D_OUT[96:93] ;
+  assign boot_rom$slave_awlen =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$D_OUT[28:21] ;
+  assign boot_rom$slave_awlock =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$D_OUT[15] ;
+  assign boot_rom$slave_awprot =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$D_OUT[10:8] ;
+  assign boot_rom$slave_awqos =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$D_OUT[7:4] ;
+  assign boot_rom$slave_awregion =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$D_OUT[3:0] ;
+  assign boot_rom$slave_awsize =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$D_OUT[20:18] ;
+  assign boot_rom$slave_awvalid =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$EMPTY_N ;
+  assign boot_rom$slave_bready =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp$FULL_N ;
+  assign boot_rom$slave_rready =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_rd_data$FULL_N ;
+  assign boot_rom$slave_wdata =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_wr_data$D_OUT[72:9] ;
+  assign boot_rom$slave_wid =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_wr_data$D_OUT[76:73] ;
+  assign boot_rom$slave_wlast =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_wr_data$D_OUT[0] ;
+  assign boot_rom$slave_wstrb =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_wr_data$D_OUT[8:1] ;
+  assign boot_rom$slave_wvalid =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_wr_data$EMPTY_N ;
   assign boot_rom$EN_set_addr_map = MUX_rg_state$write_1__SEL_2 ;
 
+  // submodule boot_rom_axi4_deburster_f_r_arlen
+  assign boot_rom_axi4_deburster_f_r_arlen$D_IN =
+	     boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$D_OUT[28:21] ;
+  assign boot_rom_axi4_deburster_f_r_arlen$ENQ =
+	     WILL_FIRE_RL_boot_rom_axi4_deburster_rl_rd_xaction_master_to_slave &&
+	     boot_rom_axi4_deburster_rg_ar_beat_count == 8'd0 ;
+  assign boot_rom_axi4_deburster_f_r_arlen$DEQ =
+	     WILL_FIRE_RL_boot_rom_axi4_deburster_rl_rd_resp_slave_to_master &&
+	     !boot_rom_axi4_deburster_rg_r_beat_count_04_ULT_ETC___d106 ;
+  assign boot_rom_axi4_deburster_f_r_arlen$CLR =
+	     boot_rom_axi4_deburster_rg_reset ;
+
+  // submodule boot_rom_axi4_deburster_f_w_awlen
+  assign boot_rom_axi4_deburster_f_w_awlen$D_IN =
+	     boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$D_OUT[28:21] ;
+  assign boot_rom_axi4_deburster_f_w_awlen$ENQ =
+	     WILL_FIRE_RL_boot_rom_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	     boot_rom_axi4_deburster_rg_w_beat_count == 8'd0 ;
+  assign boot_rom_axi4_deburster_f_w_awlen$DEQ =
+	     WILL_FIRE_RL_boot_rom_axi4_deburster_rl_wr_resp_slave_to_master &&
+	     !boot_rom_axi4_deburster_rg_b_beat_count_9_ULT__ETC___d51 ;
+  assign boot_rom_axi4_deburster_f_w_awlen$CLR =
+	     boot_rom_axi4_deburster_rg_reset ;
+
+  // submodule boot_rom_axi4_deburster_xactor_from_master_f_rd_addr
+  assign boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$D_IN =
+	     { fabric$v_to_slaves_0_arid,
+	       fabric$v_to_slaves_0_araddr,
+	       fabric$v_to_slaves_0_arlen,
+	       fabric$v_to_slaves_0_arsize,
+	       fabric$v_to_slaves_0_arburst,
+	       fabric$v_to_slaves_0_arlock,
+	       fabric$v_to_slaves_0_arcache,
+	       fabric$v_to_slaves_0_arprot,
+	       fabric$v_to_slaves_0_arqos,
+	       fabric$v_to_slaves_0_arregion } ;
+  assign boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$ENQ =
+	     fabric$v_to_slaves_0_arvalid &&
+	     boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$FULL_N ;
+  assign boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$DEQ =
+	     WILL_FIRE_RL_boot_rom_axi4_deburster_rl_rd_xaction_master_to_slave &&
+	     !boot_rom_axi4_deburster_rg_ar_beat_count_3_ULT_ETC___d95 ;
+  assign boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$CLR =
+	     boot_rom_axi4_deburster_rg_reset ;
+
+  // submodule boot_rom_axi4_deburster_xactor_from_master_f_rd_data
+  assign boot_rom_axi4_deburster_xactor_from_master_f_rd_data$D_IN =
+	     { boot_rom_axi4_deburster_xactor_to_slave_f_rd_data$D_OUT[70:1],
+	       !boot_rom_axi4_deburster_rg_r_beat_count_04_ULT_ETC___d106 } ;
+  assign boot_rom_axi4_deburster_xactor_from_master_f_rd_data$ENQ =
+	     CAN_FIRE_RL_boot_rom_axi4_deburster_rl_rd_resp_slave_to_master ;
+  assign boot_rom_axi4_deburster_xactor_from_master_f_rd_data$DEQ =
+	     fabric$v_to_slaves_0_rready &&
+	     boot_rom_axi4_deburster_xactor_from_master_f_rd_data$EMPTY_N ;
+  assign boot_rom_axi4_deburster_xactor_from_master_f_rd_data$CLR =
+	     boot_rom_axi4_deburster_rg_reset ;
+
+  // submodule boot_rom_axi4_deburster_xactor_from_master_f_wr_addr
+  assign boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$D_IN =
+	     { fabric$v_to_slaves_0_awid,
+	       fabric$v_to_slaves_0_awaddr,
+	       fabric$v_to_slaves_0_awlen,
+	       fabric$v_to_slaves_0_awsize,
+	       fabric$v_to_slaves_0_awburst,
+	       fabric$v_to_slaves_0_awlock,
+	       fabric$v_to_slaves_0_awcache,
+	       fabric$v_to_slaves_0_awprot,
+	       fabric$v_to_slaves_0_awqos,
+	       fabric$v_to_slaves_0_awregion } ;
+  assign boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$ENQ =
+	     fabric$v_to_slaves_0_awvalid &&
+	     boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$FULL_N ;
+  assign boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$DEQ =
+	     WILL_FIRE_RL_boot_rom_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	     !boot_rom_axi4_deburster_rg_w_beat_count_ULT_bo_ETC___d35 ;
+  assign boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$CLR =
+	     boot_rom_axi4_deburster_rg_reset ;
+
+  // submodule boot_rom_axi4_deburster_xactor_from_master_f_wr_data
+  assign boot_rom_axi4_deburster_xactor_from_master_f_wr_data$D_IN =
+	     { fabric$v_to_slaves_0_wid,
+	       fabric$v_to_slaves_0_wdata,
+	       fabric$v_to_slaves_0_wstrb,
+	       fabric$v_to_slaves_0_wlast } ;
+  assign boot_rom_axi4_deburster_xactor_from_master_f_wr_data$ENQ =
+	     fabric$v_to_slaves_0_wvalid &&
+	     boot_rom_axi4_deburster_xactor_from_master_f_wr_data$FULL_N ;
+  assign boot_rom_axi4_deburster_xactor_from_master_f_wr_data$DEQ =
+	     CAN_FIRE_RL_boot_rom_axi4_deburster_rl_wr_xaction_master_to_slave ;
+  assign boot_rom_axi4_deburster_xactor_from_master_f_wr_data$CLR =
+	     boot_rom_axi4_deburster_rg_reset ;
+
+  // submodule boot_rom_axi4_deburster_xactor_from_master_f_wr_resp
+  assign boot_rom_axi4_deburster_xactor_from_master_f_wr_resp$D_IN =
+	     { boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp$D_OUT[5:2],
+	       (boot_rom_axi4_deburster_rg_b_resp == 2'b0) ?
+		 boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp$D_OUT[1:0] :
+		 boot_rom_axi4_deburster_rg_b_resp } ;
+  assign boot_rom_axi4_deburster_xactor_from_master_f_wr_resp$ENQ =
+	     WILL_FIRE_RL_boot_rom_axi4_deburster_rl_wr_resp_slave_to_master &&
+	     !boot_rom_axi4_deburster_rg_b_beat_count_9_ULT__ETC___d51 ;
+  assign boot_rom_axi4_deburster_xactor_from_master_f_wr_resp$DEQ =
+	     fabric$v_to_slaves_0_bready &&
+	     boot_rom_axi4_deburster_xactor_from_master_f_wr_resp$EMPTY_N ;
+  assign boot_rom_axi4_deburster_xactor_from_master_f_wr_resp$CLR =
+	     boot_rom_axi4_deburster_rg_reset ;
+
+  // submodule boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr
+  assign boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$D_IN =
+	     { boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$D_OUT[96:93],
+	       a_out_araddr__h6368,
+	       8'd0,
+	       boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$D_OUT[20:18],
+	       2'b0,
+	       boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$D_OUT[15:0] } ;
+  assign boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$ENQ =
+	     CAN_FIRE_RL_boot_rom_axi4_deburster_rl_rd_xaction_master_to_slave ;
+  assign boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$DEQ =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$EMPTY_N &&
+	     boot_rom$slave_arready ;
+  assign boot_rom_axi4_deburster_xactor_to_slave_f_rd_addr$CLR =
+	     boot_rom_axi4_deburster_rg_reset ;
+
+  // submodule boot_rom_axi4_deburster_xactor_to_slave_f_rd_data
+  assign boot_rom_axi4_deburster_xactor_to_slave_f_rd_data$D_IN =
+	     { boot_rom$slave_rid,
+	       boot_rom$slave_rdata,
+	       boot_rom$slave_rresp,
+	       boot_rom$slave_rlast } ;
+  assign boot_rom_axi4_deburster_xactor_to_slave_f_rd_data$ENQ =
+	     boot_rom$slave_rvalid &&
+	     boot_rom_axi4_deburster_xactor_to_slave_f_rd_data$FULL_N ;
+  assign boot_rom_axi4_deburster_xactor_to_slave_f_rd_data$DEQ =
+	     CAN_FIRE_RL_boot_rom_axi4_deburster_rl_rd_resp_slave_to_master ;
+  assign boot_rom_axi4_deburster_xactor_to_slave_f_rd_data$CLR =
+	     boot_rom_axi4_deburster_rg_reset ;
+
+  // submodule boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr
+  assign boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$D_IN =
+	     { boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$D_OUT[96:93],
+	       a_out_awaddr__h5375,
+	       8'd0,
+	       boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$D_OUT[20:18],
+	       2'b0,
+	       boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$D_OUT[15:0] } ;
+  assign boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$ENQ =
+	     CAN_FIRE_RL_boot_rom_axi4_deburster_rl_wr_xaction_master_to_slave ;
+  assign boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$DEQ =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$EMPTY_N &&
+	     boot_rom$slave_awready ;
+  assign boot_rom_axi4_deburster_xactor_to_slave_f_wr_addr$CLR =
+	     boot_rom_axi4_deburster_rg_reset ;
+
+  // submodule boot_rom_axi4_deburster_xactor_to_slave_f_wr_data
+  assign boot_rom_axi4_deburster_xactor_to_slave_f_wr_data$D_IN =
+	     { boot_rom_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[76:1],
+	       1'd1 } ;
+  assign boot_rom_axi4_deburster_xactor_to_slave_f_wr_data$ENQ =
+	     CAN_FIRE_RL_boot_rom_axi4_deburster_rl_wr_xaction_master_to_slave ;
+  assign boot_rom_axi4_deburster_xactor_to_slave_f_wr_data$DEQ =
+	     boot_rom_axi4_deburster_xactor_to_slave_f_wr_data$EMPTY_N &&
+	     boot_rom$slave_wready ;
+  assign boot_rom_axi4_deburster_xactor_to_slave_f_wr_data$CLR =
+	     boot_rom_axi4_deburster_rg_reset ;
+
+  // submodule boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp
+  assign boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp$D_IN =
+	     { boot_rom$slave_bid, boot_rom$slave_bresp } ;
+  assign boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp$ENQ =
+	     boot_rom$slave_bvalid &&
+	     boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp$FULL_N ;
+  assign boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp$DEQ =
+	     CAN_FIRE_RL_boot_rom_axi4_deburster_rl_wr_resp_slave_to_master ;
+  assign boot_rom_axi4_deburster_xactor_to_slave_f_wr_resp$CLR =
+	     boot_rom_axi4_deburster_rg_reset ;
+
   // submodule core
-  assign core$cpu_dmem_master_arready = fabric$v_from_masters_2_arready ;
-  assign core$cpu_dmem_master_awready = fabric$v_from_masters_2_awready ;
-  assign core$cpu_dmem_master_bid = fabric$v_from_masters_2_bid ;
-  assign core$cpu_dmem_master_bresp = fabric$v_from_masters_2_bresp ;
-  assign core$cpu_dmem_master_bvalid = fabric$v_from_masters_2_bvalid ;
-  assign core$cpu_dmem_master_rdata = fabric$v_from_masters_2_rdata ;
-  assign core$cpu_dmem_master_rid = fabric$v_from_masters_2_rid ;
-  assign core$cpu_dmem_master_rlast = fabric$v_from_masters_2_rlast ;
-  assign core$cpu_dmem_master_rresp = fabric$v_from_masters_2_rresp ;
-  assign core$cpu_dmem_master_rvalid = fabric$v_from_masters_2_rvalid ;
-  assign core$cpu_dmem_master_wready = fabric$v_from_masters_2_wready ;
-  assign core$cpu_external_interrupt_req_set_not_clear = uart0$intr ;
-  assign core$cpu_imem_master_arready = fabric$v_from_masters_1_arready ;
-  assign core$cpu_imem_master_awready = fabric$v_from_masters_1_awready ;
-  assign core$cpu_imem_master_bid = fabric$v_from_masters_1_bid ;
-  assign core$cpu_imem_master_bresp = fabric$v_from_masters_1_bresp ;
-  assign core$cpu_imem_master_bvalid = fabric$v_from_masters_1_bvalid ;
-  assign core$cpu_imem_master_rdata = fabric$v_from_masters_1_rdata ;
-  assign core$cpu_imem_master_rid = fabric$v_from_masters_1_rid ;
-  assign core$cpu_imem_master_rlast = fabric$v_from_masters_1_rlast ;
-  assign core$cpu_imem_master_rresp = fabric$v_from_masters_1_rresp ;
-  assign core$cpu_imem_master_rvalid = fabric$v_from_masters_1_rvalid ;
-  assign core$cpu_imem_master_wready = fabric$v_from_masters_1_wready ;
-  assign core$cpu_slave_araddr = fabric$v_to_slaves_0_araddr ;
-  assign core$cpu_slave_arburst = fabric$v_to_slaves_0_arburst ;
-  assign core$cpu_slave_arcache = fabric$v_to_slaves_0_arcache ;
-  assign core$cpu_slave_arid = fabric$v_to_slaves_0_arid ;
-  assign core$cpu_slave_arlen = fabric$v_to_slaves_0_arlen ;
-  assign core$cpu_slave_arlock = fabric$v_to_slaves_0_arlock ;
-  assign core$cpu_slave_arprot = fabric$v_to_slaves_0_arprot ;
-  assign core$cpu_slave_arqos = fabric$v_to_slaves_0_arqos ;
-  assign core$cpu_slave_arregion = fabric$v_to_slaves_0_arregion ;
-  assign core$cpu_slave_arsize = fabric$v_to_slaves_0_arsize ;
-  assign core$cpu_slave_arvalid = fabric$v_to_slaves_0_arvalid ;
-  assign core$cpu_slave_awaddr = fabric$v_to_slaves_0_awaddr ;
-  assign core$cpu_slave_awburst = fabric$v_to_slaves_0_awburst ;
-  assign core$cpu_slave_awcache = fabric$v_to_slaves_0_awcache ;
-  assign core$cpu_slave_awid = fabric$v_to_slaves_0_awid ;
-  assign core$cpu_slave_awlen = fabric$v_to_slaves_0_awlen ;
-  assign core$cpu_slave_awlock = fabric$v_to_slaves_0_awlock ;
-  assign core$cpu_slave_awprot = fabric$v_to_slaves_0_awprot ;
-  assign core$cpu_slave_awqos = fabric$v_to_slaves_0_awqos ;
-  assign core$cpu_slave_awregion = fabric$v_to_slaves_0_awregion ;
-  assign core$cpu_slave_awsize = fabric$v_to_slaves_0_awsize ;
-  assign core$cpu_slave_awvalid = fabric$v_to_slaves_0_awvalid ;
-  assign core$cpu_slave_bready = fabric$v_to_slaves_0_bready ;
-  assign core$cpu_slave_rready = fabric$v_to_slaves_0_rready ;
-  assign core$cpu_slave_wdata = fabric$v_to_slaves_0_wdata ;
-  assign core$cpu_slave_wid = fabric$v_to_slaves_0_wid ;
-  assign core$cpu_slave_wlast = fabric$v_to_slaves_0_wlast ;
-  assign core$cpu_slave_wstrb = fabric$v_to_slaves_0_wstrb ;
-  assign core$cpu_slave_wvalid = fabric$v_to_slaves_0_wvalid ;
+  assign core$core_external_interrupt_sources_0_m_interrupt_req_set_not_clear =
+	     uart0$intr ;
+  assign core$core_external_interrupt_sources_10_m_interrupt_req_set_not_clear =
+	     1'd0 ;
+  assign core$core_external_interrupt_sources_11_m_interrupt_req_set_not_clear =
+	     1'd0 ;
+  assign core$core_external_interrupt_sources_12_m_interrupt_req_set_not_clear =
+	     1'd0 ;
+  assign core$core_external_interrupt_sources_13_m_interrupt_req_set_not_clear =
+	     1'd0 ;
+  assign core$core_external_interrupt_sources_14_m_interrupt_req_set_not_clear =
+	     1'd0 ;
+  assign core$core_external_interrupt_sources_15_m_interrupt_req_set_not_clear =
+	     1'd0 ;
+  assign core$core_external_interrupt_sources_1_m_interrupt_req_set_not_clear =
+	     1'd0 ;
+  assign core$core_external_interrupt_sources_2_m_interrupt_req_set_not_clear =
+	     1'd0 ;
+  assign core$core_external_interrupt_sources_3_m_interrupt_req_set_not_clear =
+	     1'd0 ;
+  assign core$core_external_interrupt_sources_4_m_interrupt_req_set_not_clear =
+	     1'd0 ;
+  assign core$core_external_interrupt_sources_5_m_interrupt_req_set_not_clear =
+	     1'd0 ;
+  assign core$core_external_interrupt_sources_6_m_interrupt_req_set_not_clear =
+	     1'd0 ;
+  assign core$core_external_interrupt_sources_7_m_interrupt_req_set_not_clear =
+	     1'd0 ;
+  assign core$core_external_interrupt_sources_8_m_interrupt_req_set_not_clear =
+	     1'd0 ;
+  assign core$core_external_interrupt_sources_9_m_interrupt_req_set_not_clear =
+	     1'd0 ;
+  assign core$cpu_dmem_master_arready = fabric$v_from_masters_1_arready ;
+  assign core$cpu_dmem_master_awready = fabric$v_from_masters_1_awready ;
+  assign core$cpu_dmem_master_bid = fabric$v_from_masters_1_bid ;
+  assign core$cpu_dmem_master_bresp = fabric$v_from_masters_1_bresp ;
+  assign core$cpu_dmem_master_bvalid = fabric$v_from_masters_1_bvalid ;
+  assign core$cpu_dmem_master_rdata = fabric$v_from_masters_1_rdata ;
+  assign core$cpu_dmem_master_rid = fabric$v_from_masters_1_rid ;
+  assign core$cpu_dmem_master_rlast = fabric$v_from_masters_1_rlast ;
+  assign core$cpu_dmem_master_rresp = fabric$v_from_masters_1_rresp ;
+  assign core$cpu_dmem_master_rvalid = fabric$v_from_masters_1_rvalid ;
+  assign core$cpu_dmem_master_wready = fabric$v_from_masters_1_wready ;
+  assign core$cpu_imem_master_arready = fabric$v_from_masters_0_arready ;
+  assign core$cpu_imem_master_awready = fabric$v_from_masters_0_awready ;
+  assign core$cpu_imem_master_bid = fabric$v_from_masters_0_bid ;
+  assign core$cpu_imem_master_bresp = fabric$v_from_masters_0_bresp ;
+  assign core$cpu_imem_master_bvalid = fabric$v_from_masters_0_bvalid ;
+  assign core$cpu_imem_master_rdata = fabric$v_from_masters_0_rdata ;
+  assign core$cpu_imem_master_rid = fabric$v_from_masters_0_rid ;
+  assign core$cpu_imem_master_rlast = fabric$v_from_masters_0_rlast ;
+  assign core$cpu_imem_master_rresp = fabric$v_from_masters_0_rresp ;
+  assign core$cpu_imem_master_rvalid = fabric$v_from_masters_0_rvalid ;
+  assign core$cpu_imem_master_wready = fabric$v_from_masters_0_wready ;
+  assign core$nmi_req_set_not_clear = 1'd0 ;
   assign core$set_verbosity_logdelay = set_verbosity_logdelay ;
   assign core$set_verbosity_verbosity = set_verbosity_verbosity ;
+  assign core$EN_set_verbosity = EN_set_verbosity ;
   assign core$EN_cpu_reset_server_request_put = MUX_rg_state$write_1__SEL_1 ;
   assign core$EN_cpu_reset_server_response_get = MUX_rg_state$write_1__SEL_2 ;
-  assign core$EN_set_verbosity = EN_set_verbosity ;
 
   // submodule fabric
   assign fabric$set_verbosity_verbosity = 4'h0 ;
-  assign fabric$v_from_masters_0_araddr =
-	     64'hAAAAAAAAAAAAAAAA /* unspecified value */  ;
-  assign fabric$v_from_masters_0_arburst = 2'b10 /* unspecified value */  ;
-  assign fabric$v_from_masters_0_arcache = 4'b1010 /* unspecified value */  ;
-  assign fabric$v_from_masters_0_arid = 4'b1010 /* unspecified value */  ;
-  assign fabric$v_from_masters_0_arlen =
-	     8'b10101010 /* unspecified value */  ;
-  assign fabric$v_from_masters_0_arlock = 1'b0 /* unspecified value */  ;
-  assign fabric$v_from_masters_0_arprot = 3'b010 /* unspecified value */  ;
-  assign fabric$v_from_masters_0_arqos = 4'b1010 /* unspecified value */  ;
-  assign fabric$v_from_masters_0_arregion = 4'b1010 /* unspecified value */  ;
-  assign fabric$v_from_masters_0_arsize = 3'b010 /* unspecified value */  ;
-  assign fabric$v_from_masters_0_arvalid = 1'd0 ;
-  assign fabric$v_from_masters_0_awaddr =
-	     64'hAAAAAAAAAAAAAAAA /* unspecified value */  ;
-  assign fabric$v_from_masters_0_awburst = 2'b10 /* unspecified value */  ;
-  assign fabric$v_from_masters_0_awcache = 4'b1010 /* unspecified value */  ;
-  assign fabric$v_from_masters_0_awid = 4'b1010 /* unspecified value */  ;
-  assign fabric$v_from_masters_0_awlen =
-	     8'b10101010 /* unspecified value */  ;
-  assign fabric$v_from_masters_0_awlock = 1'b0 /* unspecified value */  ;
-  assign fabric$v_from_masters_0_awprot = 3'b010 /* unspecified value */  ;
-  assign fabric$v_from_masters_0_awqos = 4'b1010 /* unspecified value */  ;
-  assign fabric$v_from_masters_0_awregion = 4'b1010 /* unspecified value */  ;
-  assign fabric$v_from_masters_0_awsize = 3'b010 /* unspecified value */  ;
-  assign fabric$v_from_masters_0_awvalid = 1'd0 ;
-  assign fabric$v_from_masters_0_bready = 1'd0 ;
-  assign fabric$v_from_masters_0_rready = 1'd0 ;
-  assign fabric$v_from_masters_0_wdata =
-	     64'hAAAAAAAAAAAAAAAA /* unspecified value */  ;
-  assign fabric$v_from_masters_0_wid = 4'b1010 /* unspecified value */  ;
-  assign fabric$v_from_masters_0_wlast = 1'b0 /* unspecified value */  ;
-  assign fabric$v_from_masters_0_wstrb =
-	     8'b10101010 /* unspecified value */  ;
-  assign fabric$v_from_masters_0_wvalid = 1'd0 ;
-  assign fabric$v_from_masters_1_araddr = core$cpu_imem_master_araddr ;
-  assign fabric$v_from_masters_1_arburst = core$cpu_imem_master_arburst ;
-  assign fabric$v_from_masters_1_arcache = core$cpu_imem_master_arcache ;
-  assign fabric$v_from_masters_1_arid = core$cpu_imem_master_arid ;
-  assign fabric$v_from_masters_1_arlen = core$cpu_imem_master_arlen ;
-  assign fabric$v_from_masters_1_arlock = core$cpu_imem_master_arlock ;
-  assign fabric$v_from_masters_1_arprot = core$cpu_imem_master_arprot ;
-  assign fabric$v_from_masters_1_arqos = core$cpu_imem_master_arqos ;
-  assign fabric$v_from_masters_1_arregion = core$cpu_imem_master_arregion ;
-  assign fabric$v_from_masters_1_arsize = core$cpu_imem_master_arsize ;
-  assign fabric$v_from_masters_1_arvalid = core$cpu_imem_master_arvalid ;
-  assign fabric$v_from_masters_1_awaddr = core$cpu_imem_master_awaddr ;
-  assign fabric$v_from_masters_1_awburst = core$cpu_imem_master_awburst ;
-  assign fabric$v_from_masters_1_awcache = core$cpu_imem_master_awcache ;
-  assign fabric$v_from_masters_1_awid = core$cpu_imem_master_awid ;
-  assign fabric$v_from_masters_1_awlen = core$cpu_imem_master_awlen ;
-  assign fabric$v_from_masters_1_awlock = core$cpu_imem_master_awlock ;
-  assign fabric$v_from_masters_1_awprot = core$cpu_imem_master_awprot ;
-  assign fabric$v_from_masters_1_awqos = core$cpu_imem_master_awqos ;
-  assign fabric$v_from_masters_1_awregion = core$cpu_imem_master_awregion ;
-  assign fabric$v_from_masters_1_awsize = core$cpu_imem_master_awsize ;
-  assign fabric$v_from_masters_1_awvalid = core$cpu_imem_master_awvalid ;
-  assign fabric$v_from_masters_1_bready = core$cpu_imem_master_bready ;
-  assign fabric$v_from_masters_1_rready = core$cpu_imem_master_rready ;
-  assign fabric$v_from_masters_1_wdata = core$cpu_imem_master_wdata ;
-  assign fabric$v_from_masters_1_wid = core$cpu_imem_master_wid ;
-  assign fabric$v_from_masters_1_wlast = core$cpu_imem_master_wlast ;
-  assign fabric$v_from_masters_1_wstrb = core$cpu_imem_master_wstrb ;
-  assign fabric$v_from_masters_1_wvalid = core$cpu_imem_master_wvalid ;
-  assign fabric$v_from_masters_2_araddr = core$cpu_dmem_master_araddr ;
-  assign fabric$v_from_masters_2_arburst = core$cpu_dmem_master_arburst ;
-  assign fabric$v_from_masters_2_arcache = core$cpu_dmem_master_arcache ;
-  assign fabric$v_from_masters_2_arid = core$cpu_dmem_master_arid ;
-  assign fabric$v_from_masters_2_arlen = core$cpu_dmem_master_arlen ;
-  assign fabric$v_from_masters_2_arlock = core$cpu_dmem_master_arlock ;
-  assign fabric$v_from_masters_2_arprot = core$cpu_dmem_master_arprot ;
-  assign fabric$v_from_masters_2_arqos = core$cpu_dmem_master_arqos ;
-  assign fabric$v_from_masters_2_arregion = core$cpu_dmem_master_arregion ;
-  assign fabric$v_from_masters_2_arsize = core$cpu_dmem_master_arsize ;
-  assign fabric$v_from_masters_2_arvalid = core$cpu_dmem_master_arvalid ;
-  assign fabric$v_from_masters_2_awaddr = core$cpu_dmem_master_awaddr ;
-  assign fabric$v_from_masters_2_awburst = core$cpu_dmem_master_awburst ;
-  assign fabric$v_from_masters_2_awcache = core$cpu_dmem_master_awcache ;
-  assign fabric$v_from_masters_2_awid = core$cpu_dmem_master_awid ;
-  assign fabric$v_from_masters_2_awlen = core$cpu_dmem_master_awlen ;
-  assign fabric$v_from_masters_2_awlock = core$cpu_dmem_master_awlock ;
-  assign fabric$v_from_masters_2_awprot = core$cpu_dmem_master_awprot ;
-  assign fabric$v_from_masters_2_awqos = core$cpu_dmem_master_awqos ;
-  assign fabric$v_from_masters_2_awregion = core$cpu_dmem_master_awregion ;
-  assign fabric$v_from_masters_2_awsize = core$cpu_dmem_master_awsize ;
-  assign fabric$v_from_masters_2_awvalid = core$cpu_dmem_master_awvalid ;
-  assign fabric$v_from_masters_2_bready = core$cpu_dmem_master_bready ;
-  assign fabric$v_from_masters_2_rready = core$cpu_dmem_master_rready ;
-  assign fabric$v_from_masters_2_wdata = core$cpu_dmem_master_wdata ;
-  assign fabric$v_from_masters_2_wid = core$cpu_dmem_master_wid ;
-  assign fabric$v_from_masters_2_wlast = core$cpu_dmem_master_wlast ;
-  assign fabric$v_from_masters_2_wstrb = core$cpu_dmem_master_wstrb ;
-  assign fabric$v_from_masters_2_wvalid = core$cpu_dmem_master_wvalid ;
-  assign fabric$v_to_slaves_0_arready = core$cpu_slave_arready ;
-  assign fabric$v_to_slaves_0_awready = core$cpu_slave_awready ;
-  assign fabric$v_to_slaves_0_bid = core$cpu_slave_bid ;
-  assign fabric$v_to_slaves_0_bresp = core$cpu_slave_bresp ;
-  assign fabric$v_to_slaves_0_bvalid = core$cpu_slave_bvalid ;
-  assign fabric$v_to_slaves_0_rdata = core$cpu_slave_rdata ;
-  assign fabric$v_to_slaves_0_rid = core$cpu_slave_rid ;
-  assign fabric$v_to_slaves_0_rlast = core$cpu_slave_rlast ;
-  assign fabric$v_to_slaves_0_rresp = core$cpu_slave_rresp ;
-  assign fabric$v_to_slaves_0_rvalid = core$cpu_slave_rvalid ;
-  assign fabric$v_to_slaves_0_wready = core$cpu_slave_wready ;
-  assign fabric$v_to_slaves_1_arready = boot_rom$slave_arready ;
-  assign fabric$v_to_slaves_1_awready = boot_rom$slave_awready ;
-  assign fabric$v_to_slaves_1_bid = boot_rom$slave_bid ;
-  assign fabric$v_to_slaves_1_bresp = boot_rom$slave_bresp ;
-  assign fabric$v_to_slaves_1_bvalid = boot_rom$slave_bvalid ;
-  assign fabric$v_to_slaves_1_rdata = boot_rom$slave_rdata ;
-  assign fabric$v_to_slaves_1_rid = boot_rom$slave_rid ;
-  assign fabric$v_to_slaves_1_rlast = boot_rom$slave_rlast ;
-  assign fabric$v_to_slaves_1_rresp = boot_rom$slave_rresp ;
-  assign fabric$v_to_slaves_1_rvalid = boot_rom$slave_rvalid ;
-  assign fabric$v_to_slaves_1_wready = boot_rom$slave_wready ;
-  assign fabric$v_to_slaves_2_arready = mem0_controller$slave_arready ;
-  assign fabric$v_to_slaves_2_awready = mem0_controller$slave_awready ;
-  assign fabric$v_to_slaves_2_bid = mem0_controller$slave_bid ;
-  assign fabric$v_to_slaves_2_bresp = mem0_controller$slave_bresp ;
-  assign fabric$v_to_slaves_2_bvalid = mem0_controller$slave_bvalid ;
-  assign fabric$v_to_slaves_2_rdata = mem0_controller$slave_rdata ;
-  assign fabric$v_to_slaves_2_rid = mem0_controller$slave_rid ;
-  assign fabric$v_to_slaves_2_rlast = mem0_controller$slave_rlast ;
-  assign fabric$v_to_slaves_2_rresp = mem0_controller$slave_rresp ;
-  assign fabric$v_to_slaves_2_rvalid = mem0_controller$slave_rvalid ;
-  assign fabric$v_to_slaves_2_wready = mem0_controller$slave_wready ;
-  assign fabric$v_to_slaves_3_arready = uart0$slave_arready ;
-  assign fabric$v_to_slaves_3_awready = uart0$slave_awready ;
-  assign fabric$v_to_slaves_3_bid = uart0$slave_bid ;
-  assign fabric$v_to_slaves_3_bresp = uart0$slave_bresp ;
-  assign fabric$v_to_slaves_3_bvalid = uart0$slave_bvalid ;
-  assign fabric$v_to_slaves_3_rdata = uart0$slave_rdata ;
-  assign fabric$v_to_slaves_3_rid = uart0$slave_rid ;
-  assign fabric$v_to_slaves_3_rlast = uart0$slave_rlast ;
-  assign fabric$v_to_slaves_3_rresp = uart0$slave_rresp ;
-  assign fabric$v_to_slaves_3_rvalid = uart0$slave_rvalid ;
-  assign fabric$v_to_slaves_3_wready = uart0$slave_wready ;
+  assign fabric$v_from_masters_0_araddr = core$cpu_imem_master_araddr ;
+  assign fabric$v_from_masters_0_arburst = core$cpu_imem_master_arburst ;
+  assign fabric$v_from_masters_0_arcache = core$cpu_imem_master_arcache ;
+  assign fabric$v_from_masters_0_arid = core$cpu_imem_master_arid ;
+  assign fabric$v_from_masters_0_arlen = core$cpu_imem_master_arlen ;
+  assign fabric$v_from_masters_0_arlock = core$cpu_imem_master_arlock ;
+  assign fabric$v_from_masters_0_arprot = core$cpu_imem_master_arprot ;
+  assign fabric$v_from_masters_0_arqos = core$cpu_imem_master_arqos ;
+  assign fabric$v_from_masters_0_arregion = core$cpu_imem_master_arregion ;
+  assign fabric$v_from_masters_0_arsize = core$cpu_imem_master_arsize ;
+  assign fabric$v_from_masters_0_arvalid = core$cpu_imem_master_arvalid ;
+  assign fabric$v_from_masters_0_awaddr = core$cpu_imem_master_awaddr ;
+  assign fabric$v_from_masters_0_awburst = core$cpu_imem_master_awburst ;
+  assign fabric$v_from_masters_0_awcache = core$cpu_imem_master_awcache ;
+  assign fabric$v_from_masters_0_awid = core$cpu_imem_master_awid ;
+  assign fabric$v_from_masters_0_awlen = core$cpu_imem_master_awlen ;
+  assign fabric$v_from_masters_0_awlock = core$cpu_imem_master_awlock ;
+  assign fabric$v_from_masters_0_awprot = core$cpu_imem_master_awprot ;
+  assign fabric$v_from_masters_0_awqos = core$cpu_imem_master_awqos ;
+  assign fabric$v_from_masters_0_awregion = core$cpu_imem_master_awregion ;
+  assign fabric$v_from_masters_0_awsize = core$cpu_imem_master_awsize ;
+  assign fabric$v_from_masters_0_awvalid = core$cpu_imem_master_awvalid ;
+  assign fabric$v_from_masters_0_bready = core$cpu_imem_master_bready ;
+  assign fabric$v_from_masters_0_rready = core$cpu_imem_master_rready ;
+  assign fabric$v_from_masters_0_wdata = core$cpu_imem_master_wdata ;
+  assign fabric$v_from_masters_0_wid = core$cpu_imem_master_wid ;
+  assign fabric$v_from_masters_0_wlast = core$cpu_imem_master_wlast ;
+  assign fabric$v_from_masters_0_wstrb = core$cpu_imem_master_wstrb ;
+  assign fabric$v_from_masters_0_wvalid = core$cpu_imem_master_wvalid ;
+  assign fabric$v_from_masters_1_araddr = core$cpu_dmem_master_araddr ;
+  assign fabric$v_from_masters_1_arburst = core$cpu_dmem_master_arburst ;
+  assign fabric$v_from_masters_1_arcache = core$cpu_dmem_master_arcache ;
+  assign fabric$v_from_masters_1_arid = core$cpu_dmem_master_arid ;
+  assign fabric$v_from_masters_1_arlen = core$cpu_dmem_master_arlen ;
+  assign fabric$v_from_masters_1_arlock = core$cpu_dmem_master_arlock ;
+  assign fabric$v_from_masters_1_arprot = core$cpu_dmem_master_arprot ;
+  assign fabric$v_from_masters_1_arqos = core$cpu_dmem_master_arqos ;
+  assign fabric$v_from_masters_1_arregion = core$cpu_dmem_master_arregion ;
+  assign fabric$v_from_masters_1_arsize = core$cpu_dmem_master_arsize ;
+  assign fabric$v_from_masters_1_arvalid = core$cpu_dmem_master_arvalid ;
+  assign fabric$v_from_masters_1_awaddr = core$cpu_dmem_master_awaddr ;
+  assign fabric$v_from_masters_1_awburst = core$cpu_dmem_master_awburst ;
+  assign fabric$v_from_masters_1_awcache = core$cpu_dmem_master_awcache ;
+  assign fabric$v_from_masters_1_awid = core$cpu_dmem_master_awid ;
+  assign fabric$v_from_masters_1_awlen = core$cpu_dmem_master_awlen ;
+  assign fabric$v_from_masters_1_awlock = core$cpu_dmem_master_awlock ;
+  assign fabric$v_from_masters_1_awprot = core$cpu_dmem_master_awprot ;
+  assign fabric$v_from_masters_1_awqos = core$cpu_dmem_master_awqos ;
+  assign fabric$v_from_masters_1_awregion = core$cpu_dmem_master_awregion ;
+  assign fabric$v_from_masters_1_awsize = core$cpu_dmem_master_awsize ;
+  assign fabric$v_from_masters_1_awvalid = core$cpu_dmem_master_awvalid ;
+  assign fabric$v_from_masters_1_bready = core$cpu_dmem_master_bready ;
+  assign fabric$v_from_masters_1_rready = core$cpu_dmem_master_rready ;
+  assign fabric$v_from_masters_1_wdata = core$cpu_dmem_master_wdata ;
+  assign fabric$v_from_masters_1_wid = core$cpu_dmem_master_wid ;
+  assign fabric$v_from_masters_1_wlast = core$cpu_dmem_master_wlast ;
+  assign fabric$v_from_masters_1_wstrb = core$cpu_dmem_master_wstrb ;
+  assign fabric$v_from_masters_1_wvalid = core$cpu_dmem_master_wvalid ;
+  assign fabric$v_to_slaves_0_arready =
+	     boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$FULL_N ;
+  assign fabric$v_to_slaves_0_awready =
+	     boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$FULL_N ;
+  assign fabric$v_to_slaves_0_bid =
+	     boot_rom_axi4_deburster_xactor_from_master_f_wr_resp$D_OUT[5:2] ;
+  assign fabric$v_to_slaves_0_bresp =
+	     boot_rom_axi4_deburster_xactor_from_master_f_wr_resp$D_OUT[1:0] ;
+  assign fabric$v_to_slaves_0_bvalid =
+	     boot_rom_axi4_deburster_xactor_from_master_f_wr_resp$EMPTY_N ;
+  assign fabric$v_to_slaves_0_rdata =
+	     boot_rom_axi4_deburster_xactor_from_master_f_rd_data$D_OUT[66:3] ;
+  assign fabric$v_to_slaves_0_rid =
+	     boot_rom_axi4_deburster_xactor_from_master_f_rd_data$D_OUT[70:67] ;
+  assign fabric$v_to_slaves_0_rlast =
+	     boot_rom_axi4_deburster_xactor_from_master_f_rd_data$D_OUT[0] ;
+  assign fabric$v_to_slaves_0_rresp =
+	     boot_rom_axi4_deburster_xactor_from_master_f_rd_data$D_OUT[2:1] ;
+  assign fabric$v_to_slaves_0_rvalid =
+	     boot_rom_axi4_deburster_xactor_from_master_f_rd_data$EMPTY_N ;
+  assign fabric$v_to_slaves_0_wready =
+	     boot_rom_axi4_deburster_xactor_from_master_f_wr_data$FULL_N ;
+  assign fabric$v_to_slaves_1_arready =
+	     mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$FULL_N ;
+  assign fabric$v_to_slaves_1_awready =
+	     mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$FULL_N ;
+  assign fabric$v_to_slaves_1_bid =
+	     mem0_controller_axi4_deburster_xactor_from_master_f_wr_resp$D_OUT[5:2] ;
+  assign fabric$v_to_slaves_1_bresp =
+	     mem0_controller_axi4_deburster_xactor_from_master_f_wr_resp$D_OUT[1:0] ;
+  assign fabric$v_to_slaves_1_bvalid =
+	     mem0_controller_axi4_deburster_xactor_from_master_f_wr_resp$EMPTY_N ;
+  assign fabric$v_to_slaves_1_rdata =
+	     mem0_controller_axi4_deburster_xactor_from_master_f_rd_data$D_OUT[66:3] ;
+  assign fabric$v_to_slaves_1_rid =
+	     mem0_controller_axi4_deburster_xactor_from_master_f_rd_data$D_OUT[70:67] ;
+  assign fabric$v_to_slaves_1_rlast =
+	     mem0_controller_axi4_deburster_xactor_from_master_f_rd_data$D_OUT[0] ;
+  assign fabric$v_to_slaves_1_rresp =
+	     mem0_controller_axi4_deburster_xactor_from_master_f_rd_data$D_OUT[2:1] ;
+  assign fabric$v_to_slaves_1_rvalid =
+	     mem0_controller_axi4_deburster_xactor_from_master_f_rd_data$EMPTY_N ;
+  assign fabric$v_to_slaves_1_wready =
+	     mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$FULL_N ;
+  assign fabric$v_to_slaves_2_arready = uart0$slave_arready ;
+  assign fabric$v_to_slaves_2_awready = uart0$slave_awready ;
+  assign fabric$v_to_slaves_2_bid = uart0$slave_bid ;
+  assign fabric$v_to_slaves_2_bresp = uart0$slave_bresp ;
+  assign fabric$v_to_slaves_2_bvalid = uart0$slave_bvalid ;
+  assign fabric$v_to_slaves_2_rdata = uart0$slave_rdata ;
+  assign fabric$v_to_slaves_2_rid = uart0$slave_rid ;
+  assign fabric$v_to_slaves_2_rlast = uart0$slave_rlast ;
+  assign fabric$v_to_slaves_2_rresp = uart0$slave_rresp ;
+  assign fabric$v_to_slaves_2_rvalid = uart0$slave_rvalid ;
+  assign fabric$v_to_slaves_2_wready = uart0$slave_wready ;
   assign fabric$EN_reset = MUX_rg_state$write_1__SEL_1 ;
   assign fabric$EN_set_verbosity = 1'b0 ;
 
@@ -1869,35 +2738,64 @@ module mkSoC_Top(CLK,
 	     set_watch_tohost_tohost_addr ;
   assign mem0_controller$set_watch_tohost_watch_tohost =
 	     set_watch_tohost_watch_tohost ;
-  assign mem0_controller$slave_araddr = fabric$v_to_slaves_2_araddr ;
-  assign mem0_controller$slave_arburst = fabric$v_to_slaves_2_arburst ;
-  assign mem0_controller$slave_arcache = fabric$v_to_slaves_2_arcache ;
-  assign mem0_controller$slave_arid = fabric$v_to_slaves_2_arid ;
-  assign mem0_controller$slave_arlen = fabric$v_to_slaves_2_arlen ;
-  assign mem0_controller$slave_arlock = fabric$v_to_slaves_2_arlock ;
-  assign mem0_controller$slave_arprot = fabric$v_to_slaves_2_arprot ;
-  assign mem0_controller$slave_arqos = fabric$v_to_slaves_2_arqos ;
-  assign mem0_controller$slave_arregion = fabric$v_to_slaves_2_arregion ;
-  assign mem0_controller$slave_arsize = fabric$v_to_slaves_2_arsize ;
-  assign mem0_controller$slave_arvalid = fabric$v_to_slaves_2_arvalid ;
-  assign mem0_controller$slave_awaddr = fabric$v_to_slaves_2_awaddr ;
-  assign mem0_controller$slave_awburst = fabric$v_to_slaves_2_awburst ;
-  assign mem0_controller$slave_awcache = fabric$v_to_slaves_2_awcache ;
-  assign mem0_controller$slave_awid = fabric$v_to_slaves_2_awid ;
-  assign mem0_controller$slave_awlen = fabric$v_to_slaves_2_awlen ;
-  assign mem0_controller$slave_awlock = fabric$v_to_slaves_2_awlock ;
-  assign mem0_controller$slave_awprot = fabric$v_to_slaves_2_awprot ;
-  assign mem0_controller$slave_awqos = fabric$v_to_slaves_2_awqos ;
-  assign mem0_controller$slave_awregion = fabric$v_to_slaves_2_awregion ;
-  assign mem0_controller$slave_awsize = fabric$v_to_slaves_2_awsize ;
-  assign mem0_controller$slave_awvalid = fabric$v_to_slaves_2_awvalid ;
-  assign mem0_controller$slave_bready = fabric$v_to_slaves_2_bready ;
-  assign mem0_controller$slave_rready = fabric$v_to_slaves_2_rready ;
-  assign mem0_controller$slave_wdata = fabric$v_to_slaves_2_wdata ;
-  assign mem0_controller$slave_wid = fabric$v_to_slaves_2_wid ;
-  assign mem0_controller$slave_wlast = fabric$v_to_slaves_2_wlast ;
-  assign mem0_controller$slave_wstrb = fabric$v_to_slaves_2_wstrb ;
-  assign mem0_controller$slave_wvalid = fabric$v_to_slaves_2_wvalid ;
+  assign mem0_controller$slave_araddr =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$D_OUT[92:29] ;
+  assign mem0_controller$slave_arburst =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$D_OUT[17:16] ;
+  assign mem0_controller$slave_arcache =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$D_OUT[14:11] ;
+  assign mem0_controller$slave_arid =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$D_OUT[96:93] ;
+  assign mem0_controller$slave_arlen =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$D_OUT[28:21] ;
+  assign mem0_controller$slave_arlock =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$D_OUT[15] ;
+  assign mem0_controller$slave_arprot =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$D_OUT[10:8] ;
+  assign mem0_controller$slave_arqos =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$D_OUT[7:4] ;
+  assign mem0_controller$slave_arregion =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$D_OUT[3:0] ;
+  assign mem0_controller$slave_arsize =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$D_OUT[20:18] ;
+  assign mem0_controller$slave_arvalid =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$EMPTY_N ;
+  assign mem0_controller$slave_awaddr =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$D_OUT[92:29] ;
+  assign mem0_controller$slave_awburst =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$D_OUT[17:16] ;
+  assign mem0_controller$slave_awcache =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$D_OUT[14:11] ;
+  assign mem0_controller$slave_awid =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$D_OUT[96:93] ;
+  assign mem0_controller$slave_awlen =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$D_OUT[28:21] ;
+  assign mem0_controller$slave_awlock =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$D_OUT[15] ;
+  assign mem0_controller$slave_awprot =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$D_OUT[10:8] ;
+  assign mem0_controller$slave_awqos =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$D_OUT[7:4] ;
+  assign mem0_controller$slave_awregion =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$D_OUT[3:0] ;
+  assign mem0_controller$slave_awsize =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$D_OUT[20:18] ;
+  assign mem0_controller$slave_awvalid =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$EMPTY_N ;
+  assign mem0_controller$slave_bready =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp$FULL_N ;
+  assign mem0_controller$slave_rready =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_rd_data$FULL_N ;
+  assign mem0_controller$slave_wdata =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data$D_OUT[72:9] ;
+  assign mem0_controller$slave_wid =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data$D_OUT[76:73] ;
+  assign mem0_controller$slave_wlast =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data$D_OUT[0] ;
+  assign mem0_controller$slave_wstrb =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data$D_OUT[8:1] ;
+  assign mem0_controller$slave_wvalid =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data$EMPTY_N ;
   assign mem0_controller$to_raw_mem_response_put = to_raw_mem_response_put ;
   assign mem0_controller$EN_server_reset_request_put =
 	     MUX_rg_state$write_1__SEL_1 ;
@@ -1910,6 +2808,182 @@ module mkSoC_Top(CLK,
 	     EN_to_raw_mem_response_put ;
   assign mem0_controller$EN_set_watch_tohost = EN_set_watch_tohost ;
 
+  // submodule mem0_controller_axi4_deburster_f_r_arlen
+  assign mem0_controller_axi4_deburster_f_r_arlen$D_IN =
+	     mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$D_OUT[28:21] ;
+  assign mem0_controller_axi4_deburster_f_r_arlen$ENQ =
+	     WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_rd_xaction_master_to_slave &&
+	     mem0_controller_axi4_deburster_rg_ar_beat_count == 8'd0 ;
+  assign mem0_controller_axi4_deburster_f_r_arlen$DEQ =
+	     WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_rd_resp_slave_to_master &&
+	     !mem0_controller_axi4_deburster_rg_r_beat_count_ETC___d218 ;
+  assign mem0_controller_axi4_deburster_f_r_arlen$CLR =
+	     mem0_controller_axi4_deburster_rg_reset ;
+
+  // submodule mem0_controller_axi4_deburster_f_w_awlen
+  assign mem0_controller_axi4_deburster_f_w_awlen$D_IN =
+	     mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$D_OUT[28:21] ;
+  assign mem0_controller_axi4_deburster_f_w_awlen$ENQ =
+	     WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	     mem0_controller_axi4_deburster_rg_w_beat_count == 8'd0 ;
+  assign mem0_controller_axi4_deburster_f_w_awlen$DEQ =
+	     WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_resp_slave_to_master &&
+	     !mem0_controller_axi4_deburster_rg_b_beat_count_ETC___d163 ;
+  assign mem0_controller_axi4_deburster_f_w_awlen$CLR =
+	     mem0_controller_axi4_deburster_rg_reset ;
+
+  // submodule mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr
+  assign mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$D_IN =
+	     { fabric$v_to_slaves_1_arid,
+	       fabric$v_to_slaves_1_araddr,
+	       fabric$v_to_slaves_1_arlen,
+	       fabric$v_to_slaves_1_arsize,
+	       fabric$v_to_slaves_1_arburst,
+	       fabric$v_to_slaves_1_arlock,
+	       fabric$v_to_slaves_1_arcache,
+	       fabric$v_to_slaves_1_arprot,
+	       fabric$v_to_slaves_1_arqos,
+	       fabric$v_to_slaves_1_arregion } ;
+  assign mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$ENQ =
+	     fabric$v_to_slaves_1_arvalid &&
+	     mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$FULL_N ;
+  assign mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$DEQ =
+	     WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_rd_xaction_master_to_slave &&
+	     !mem0_controller_axi4_deburster_rg_ar_beat_coun_ETC___d207 ;
+  assign mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$CLR =
+	     mem0_controller_axi4_deburster_rg_reset ;
+
+  // submodule mem0_controller_axi4_deburster_xactor_from_master_f_rd_data
+  assign mem0_controller_axi4_deburster_xactor_from_master_f_rd_data$D_IN =
+	     { mem0_controller_axi4_deburster_xactor_to_slave_f_rd_data$D_OUT[70:1],
+	       !mem0_controller_axi4_deburster_rg_r_beat_count_ETC___d218 } ;
+  assign mem0_controller_axi4_deburster_xactor_from_master_f_rd_data$ENQ =
+	     CAN_FIRE_RL_mem0_controller_axi4_deburster_rl_rd_resp_slave_to_master ;
+  assign mem0_controller_axi4_deburster_xactor_from_master_f_rd_data$DEQ =
+	     fabric$v_to_slaves_1_rready &&
+	     mem0_controller_axi4_deburster_xactor_from_master_f_rd_data$EMPTY_N ;
+  assign mem0_controller_axi4_deburster_xactor_from_master_f_rd_data$CLR =
+	     mem0_controller_axi4_deburster_rg_reset ;
+
+  // submodule mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr
+  assign mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$D_IN =
+	     { fabric$v_to_slaves_1_awid,
+	       fabric$v_to_slaves_1_awaddr,
+	       fabric$v_to_slaves_1_awlen,
+	       fabric$v_to_slaves_1_awsize,
+	       fabric$v_to_slaves_1_awburst,
+	       fabric$v_to_slaves_1_awlock,
+	       fabric$v_to_slaves_1_awcache,
+	       fabric$v_to_slaves_1_awprot,
+	       fabric$v_to_slaves_1_awqos,
+	       fabric$v_to_slaves_1_awregion } ;
+  assign mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$ENQ =
+	     fabric$v_to_slaves_1_awvalid &&
+	     mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$FULL_N ;
+  assign mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$DEQ =
+	     WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	     !mem0_controller_axi4_deburster_rg_w_beat_count_ETC___d147 ;
+  assign mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$CLR =
+	     mem0_controller_axi4_deburster_rg_reset ;
+
+  // submodule mem0_controller_axi4_deburster_xactor_from_master_f_wr_data
+  assign mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$D_IN =
+	     { fabric$v_to_slaves_1_wid,
+	       fabric$v_to_slaves_1_wdata,
+	       fabric$v_to_slaves_1_wstrb,
+	       fabric$v_to_slaves_1_wlast } ;
+  assign mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$ENQ =
+	     fabric$v_to_slaves_1_wvalid &&
+	     mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$FULL_N ;
+  assign mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$DEQ =
+	     CAN_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_xaction_master_to_slave ;
+  assign mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$CLR =
+	     mem0_controller_axi4_deburster_rg_reset ;
+
+  // submodule mem0_controller_axi4_deburster_xactor_from_master_f_wr_resp
+  assign mem0_controller_axi4_deburster_xactor_from_master_f_wr_resp$D_IN =
+	     { mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp$D_OUT[5:2],
+	       (mem0_controller_axi4_deburster_rg_b_resp == 2'b0) ?
+		 mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp$D_OUT[1:0] :
+		 mem0_controller_axi4_deburster_rg_b_resp } ;
+  assign mem0_controller_axi4_deburster_xactor_from_master_f_wr_resp$ENQ =
+	     WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_resp_slave_to_master &&
+	     !mem0_controller_axi4_deburster_rg_b_beat_count_ETC___d163 ;
+  assign mem0_controller_axi4_deburster_xactor_from_master_f_wr_resp$DEQ =
+	     fabric$v_to_slaves_1_bready &&
+	     mem0_controller_axi4_deburster_xactor_from_master_f_wr_resp$EMPTY_N ;
+  assign mem0_controller_axi4_deburster_xactor_from_master_f_wr_resp$CLR =
+	     mem0_controller_axi4_deburster_rg_reset ;
+
+  // submodule mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr
+  assign mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$D_IN =
+	     { mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$D_OUT[96:93],
+	       a_out_araddr__h10329,
+	       8'd0,
+	       mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$D_OUT[20:18],
+	       2'b0,
+	       mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$D_OUT[15:0] } ;
+  assign mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$ENQ =
+	     CAN_FIRE_RL_mem0_controller_axi4_deburster_rl_rd_xaction_master_to_slave ;
+  assign mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$DEQ =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$EMPTY_N &&
+	     mem0_controller$slave_arready ;
+  assign mem0_controller_axi4_deburster_xactor_to_slave_f_rd_addr$CLR =
+	     mem0_controller_axi4_deburster_rg_reset ;
+
+  // submodule mem0_controller_axi4_deburster_xactor_to_slave_f_rd_data
+  assign mem0_controller_axi4_deburster_xactor_to_slave_f_rd_data$D_IN =
+	     { mem0_controller$slave_rid,
+	       mem0_controller$slave_rdata,
+	       mem0_controller$slave_rresp,
+	       mem0_controller$slave_rlast } ;
+  assign mem0_controller_axi4_deburster_xactor_to_slave_f_rd_data$ENQ =
+	     mem0_controller$slave_rvalid &&
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_rd_data$FULL_N ;
+  assign mem0_controller_axi4_deburster_xactor_to_slave_f_rd_data$DEQ =
+	     CAN_FIRE_RL_mem0_controller_axi4_deburster_rl_rd_resp_slave_to_master ;
+  assign mem0_controller_axi4_deburster_xactor_to_slave_f_rd_data$CLR =
+	     mem0_controller_axi4_deburster_rg_reset ;
+
+  // submodule mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr
+  assign mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$D_IN =
+	     { mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$D_OUT[96:93],
+	       a_out_awaddr__h9336,
+	       8'd0,
+	       mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$D_OUT[20:18],
+	       2'b0,
+	       mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$D_OUT[15:0] } ;
+  assign mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$ENQ =
+	     CAN_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_xaction_master_to_slave ;
+  assign mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$DEQ =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$EMPTY_N &&
+	     mem0_controller$slave_awready ;
+  assign mem0_controller_axi4_deburster_xactor_to_slave_f_wr_addr$CLR =
+	     mem0_controller_axi4_deburster_rg_reset ;
+
+  // submodule mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data
+  assign mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data$D_IN =
+	     { mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[76:1],
+	       1'd1 } ;
+  assign mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data$ENQ =
+	     CAN_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_xaction_master_to_slave ;
+  assign mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data$DEQ =
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data$EMPTY_N &&
+	     mem0_controller$slave_wready ;
+  assign mem0_controller_axi4_deburster_xactor_to_slave_f_wr_data$CLR =
+	     mem0_controller_axi4_deburster_rg_reset ;
+
+  // submodule mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp
+  assign mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp$D_IN =
+	     { mem0_controller$slave_bid, mem0_controller$slave_bresp } ;
+  assign mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp$ENQ =
+	     mem0_controller$slave_bvalid &&
+	     mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp$FULL_N ;
+  assign mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp$DEQ =
+	     CAN_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_resp_slave_to_master ;
+  assign mem0_controller_axi4_deburster_xactor_to_slave_f_wr_resp$CLR =
+	     mem0_controller_axi4_deburster_rg_reset ;
+
   // submodule soc_map
   assign soc_map$m_is_IO_addr_addr = 64'h0 ;
   assign soc_map$m_is_mem_addr_addr = 64'h0 ;
@@ -1919,40 +2993,110 @@ module mkSoC_Top(CLK,
   assign uart0$put_from_console_put = put_from_console_put ;
   assign uart0$set_addr_map_addr_base = soc_map$m_uart0_addr_base ;
   assign uart0$set_addr_map_addr_lim = soc_map$m_uart0_addr_lim ;
-  assign uart0$slave_araddr = fabric$v_to_slaves_3_araddr ;
-  assign uart0$slave_arburst = fabric$v_to_slaves_3_arburst ;
-  assign uart0$slave_arcache = fabric$v_to_slaves_3_arcache ;
-  assign uart0$slave_arid = fabric$v_to_slaves_3_arid ;
-  assign uart0$slave_arlen = fabric$v_to_slaves_3_arlen ;
-  assign uart0$slave_arlock = fabric$v_to_slaves_3_arlock ;
-  assign uart0$slave_arprot = fabric$v_to_slaves_3_arprot ;
-  assign uart0$slave_arqos = fabric$v_to_slaves_3_arqos ;
-  assign uart0$slave_arregion = fabric$v_to_slaves_3_arregion ;
-  assign uart0$slave_arsize = fabric$v_to_slaves_3_arsize ;
-  assign uart0$slave_arvalid = fabric$v_to_slaves_3_arvalid ;
-  assign uart0$slave_awaddr = fabric$v_to_slaves_3_awaddr ;
-  assign uart0$slave_awburst = fabric$v_to_slaves_3_awburst ;
-  assign uart0$slave_awcache = fabric$v_to_slaves_3_awcache ;
-  assign uart0$slave_awid = fabric$v_to_slaves_3_awid ;
-  assign uart0$slave_awlen = fabric$v_to_slaves_3_awlen ;
-  assign uart0$slave_awlock = fabric$v_to_slaves_3_awlock ;
-  assign uart0$slave_awprot = fabric$v_to_slaves_3_awprot ;
-  assign uart0$slave_awqos = fabric$v_to_slaves_3_awqos ;
-  assign uart0$slave_awregion = fabric$v_to_slaves_3_awregion ;
-  assign uart0$slave_awsize = fabric$v_to_slaves_3_awsize ;
-  assign uart0$slave_awvalid = fabric$v_to_slaves_3_awvalid ;
-  assign uart0$slave_bready = fabric$v_to_slaves_3_bready ;
-  assign uart0$slave_rready = fabric$v_to_slaves_3_rready ;
-  assign uart0$slave_wdata = fabric$v_to_slaves_3_wdata ;
-  assign uart0$slave_wid = fabric$v_to_slaves_3_wid ;
-  assign uart0$slave_wlast = fabric$v_to_slaves_3_wlast ;
-  assign uart0$slave_wstrb = fabric$v_to_slaves_3_wstrb ;
-  assign uart0$slave_wvalid = fabric$v_to_slaves_3_wvalid ;
+  assign uart0$slave_araddr = fabric$v_to_slaves_2_araddr ;
+  assign uart0$slave_arburst = fabric$v_to_slaves_2_arburst ;
+  assign uart0$slave_arcache = fabric$v_to_slaves_2_arcache ;
+  assign uart0$slave_arid = fabric$v_to_slaves_2_arid ;
+  assign uart0$slave_arlen = fabric$v_to_slaves_2_arlen ;
+  assign uart0$slave_arlock = fabric$v_to_slaves_2_arlock ;
+  assign uart0$slave_arprot = fabric$v_to_slaves_2_arprot ;
+  assign uart0$slave_arqos = fabric$v_to_slaves_2_arqos ;
+  assign uart0$slave_arregion = fabric$v_to_slaves_2_arregion ;
+  assign uart0$slave_arsize = fabric$v_to_slaves_2_arsize ;
+  assign uart0$slave_arvalid = fabric$v_to_slaves_2_arvalid ;
+  assign uart0$slave_awaddr = fabric$v_to_slaves_2_awaddr ;
+  assign uart0$slave_awburst = fabric$v_to_slaves_2_awburst ;
+  assign uart0$slave_awcache = fabric$v_to_slaves_2_awcache ;
+  assign uart0$slave_awid = fabric$v_to_slaves_2_awid ;
+  assign uart0$slave_awlen = fabric$v_to_slaves_2_awlen ;
+  assign uart0$slave_awlock = fabric$v_to_slaves_2_awlock ;
+  assign uart0$slave_awprot = fabric$v_to_slaves_2_awprot ;
+  assign uart0$slave_awqos = fabric$v_to_slaves_2_awqos ;
+  assign uart0$slave_awregion = fabric$v_to_slaves_2_awregion ;
+  assign uart0$slave_awsize = fabric$v_to_slaves_2_awsize ;
+  assign uart0$slave_awvalid = fabric$v_to_slaves_2_awvalid ;
+  assign uart0$slave_bready = fabric$v_to_slaves_2_bready ;
+  assign uart0$slave_rready = fabric$v_to_slaves_2_rready ;
+  assign uart0$slave_wdata = fabric$v_to_slaves_2_wdata ;
+  assign uart0$slave_wid = fabric$v_to_slaves_2_wid ;
+  assign uart0$slave_wlast = fabric$v_to_slaves_2_wlast ;
+  assign uart0$slave_wstrb = fabric$v_to_slaves_2_wstrb ;
+  assign uart0$slave_wvalid = fabric$v_to_slaves_2_wvalid ;
   assign uart0$EN_server_reset_request_put = MUX_rg_state$write_1__SEL_1 ;
   assign uart0$EN_server_reset_response_get = MUX_rg_state$write_1__SEL_2 ;
   assign uart0$EN_set_addr_map = MUX_rg_state$write_1__SEL_2 ;
   assign uart0$EN_get_to_console_get = EN_get_to_console_get ;
   assign uart0$EN_put_from_console_put = EN_put_from_console_put ;
+
+  // remaining internal signals
+  assign a_out_araddr__h10329 =
+	     (mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$D_OUT[17:16] ==
+	      2'b01) ?
+	       addr___1__h10414 :
+	       mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$D_OUT[92:29] ;
+  assign a_out_araddr__h6368 =
+	     (boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$D_OUT[17:16] ==
+	      2'b01) ?
+	       addr___1__h6453 :
+	       boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$D_OUT[92:29] ;
+  assign a_out_awaddr__h5375 =
+	     (boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$D_OUT[17:16] ==
+	      2'b01) ?
+	       addr___1__h5460 :
+	       boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$D_OUT[92:29] ;
+  assign a_out_awaddr__h9336 =
+	     (mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$D_OUT[17:16] ==
+	      2'b01) ?
+	       addr___1__h9421 :
+	       mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$D_OUT[92:29] ;
+  assign addr___1__h10414 =
+	     mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$D_OUT[92:29] +
+	     ({ 56'd0, mem0_controller_axi4_deburster_rg_ar_beat_count } <<
+	      mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$D_OUT[20:18]) ;
+  assign addr___1__h5460 =
+	     boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$D_OUT[92:29] +
+	     ({ 56'd0, boot_rom_axi4_deburster_rg_w_beat_count } <<
+	      boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$D_OUT[20:18]) ;
+  assign addr___1__h6453 =
+	     boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$D_OUT[92:29] +
+	     ({ 56'd0, boot_rom_axi4_deburster_rg_ar_beat_count } <<
+	      boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$D_OUT[20:18]) ;
+  assign addr___1__h9421 =
+	     mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$D_OUT[92:29] +
+	     ({ 56'd0, mem0_controller_axi4_deburster_rg_w_beat_count } <<
+	      mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$D_OUT[20:18]) ;
+  assign boot_rom_axi4_deburster_rg_ar_beat_count_3_ULT_ETC___d95 =
+	     boot_rom_axi4_deburster_rg_ar_beat_count <
+	     boot_rom_axi4_deburster_xactor_from_master_f_rd_addr$D_OUT[28:21] ;
+  assign boot_rom_axi4_deburster_rg_b_beat_count_9_ULT__ETC___d51 =
+	     boot_rom_axi4_deburster_rg_b_beat_count <
+	     boot_rom_axi4_deburster_f_w_awlen$D_OUT ;
+  assign boot_rom_axi4_deburster_rg_r_beat_count_04_ULT_ETC___d106 =
+	     boot_rom_axi4_deburster_rg_r_beat_count <
+	     boot_rom_axi4_deburster_f_r_arlen$D_OUT ;
+  assign boot_rom_axi4_deburster_rg_w_beat_count_ULT_bo_ETC___d35 =
+	     boot_rom_axi4_deburster_rg_w_beat_count <
+	     boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$D_OUT[28:21] ;
+  assign mem0_controller_axi4_deburster_rg_ar_beat_coun_ETC___d207 =
+	     mem0_controller_axi4_deburster_rg_ar_beat_count <
+	     mem0_controller_axi4_deburster_xactor_from_master_f_rd_addr$D_OUT[28:21] ;
+  assign mem0_controller_axi4_deburster_rg_b_beat_count_ETC___d163 =
+	     mem0_controller_axi4_deburster_rg_b_beat_count <
+	     mem0_controller_axi4_deburster_f_w_awlen$D_OUT ;
+  assign mem0_controller_axi4_deburster_rg_r_beat_count_ETC___d218 =
+	     mem0_controller_axi4_deburster_rg_r_beat_count <
+	     mem0_controller_axi4_deburster_f_r_arlen$D_OUT ;
+  assign mem0_controller_axi4_deburster_rg_w_beat_count_ETC___d147 =
+	     mem0_controller_axi4_deburster_rg_w_beat_count <
+	     mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$D_OUT[28:21] ;
+  assign x__h10183 = mem0_controller_axi4_deburster_rg_b_beat_count + 8'd1 ;
+  assign x__h10575 = mem0_controller_axi4_deburster_rg_ar_beat_count + 8'd1 ;
+  assign x__h10773 = mem0_controller_axi4_deburster_rg_r_beat_count + 8'd1 ;
+  assign x__h5729 = boot_rom_axi4_deburster_rg_w_beat_count + 8'd1 ;
+  assign x__h6222 = boot_rom_axi4_deburster_rg_b_beat_count + 8'd1 ;
+  assign x__h6614 = boot_rom_axi4_deburster_rg_ar_beat_count + 8'd1 ;
+  assign x__h6812 = boot_rom_axi4_deburster_rg_r_beat_count + 8'd1 ;
+  assign x__h9690 = mem0_controller_axi4_deburster_rg_w_beat_count + 8'd1 ;
 
   // handling of inlined registers
 
@@ -1960,11 +3104,65 @@ module mkSoC_Top(CLK,
   begin
     if (RST_N == `BSV_RESET_VALUE)
       begin
-        rg_state <= `BSV_ASSIGNMENT_DELAY 2'd0;
+        boot_rom_axi4_deburster_rg_ar_beat_count <= `BSV_ASSIGNMENT_DELAY
+	    8'd0;
+	boot_rom_axi4_deburster_rg_b_beat_count <= `BSV_ASSIGNMENT_DELAY 8'd0;
+	boot_rom_axi4_deburster_rg_b_resp <= `BSV_ASSIGNMENT_DELAY 2'b0;
+	boot_rom_axi4_deburster_rg_r_beat_count <= `BSV_ASSIGNMENT_DELAY 8'd0;
+	boot_rom_axi4_deburster_rg_reset <= `BSV_ASSIGNMENT_DELAY 1'd1;
+	boot_rom_axi4_deburster_rg_w_beat_count <= `BSV_ASSIGNMENT_DELAY 8'd0;
+	mem0_controller_axi4_deburster_rg_ar_beat_count <= `BSV_ASSIGNMENT_DELAY
+	    8'd0;
+	mem0_controller_axi4_deburster_rg_b_beat_count <= `BSV_ASSIGNMENT_DELAY
+	    8'd0;
+	mem0_controller_axi4_deburster_rg_b_resp <= `BSV_ASSIGNMENT_DELAY
+	    2'b0;
+	mem0_controller_axi4_deburster_rg_r_beat_count <= `BSV_ASSIGNMENT_DELAY
+	    8'd0;
+	mem0_controller_axi4_deburster_rg_reset <= `BSV_ASSIGNMENT_DELAY 1'd1;
+	mem0_controller_axi4_deburster_rg_w_beat_count <= `BSV_ASSIGNMENT_DELAY
+	    8'd0;
+	rg_state <= `BSV_ASSIGNMENT_DELAY 2'd0;
       end
     else
       begin
-        if (rg_state$EN) rg_state <= `BSV_ASSIGNMENT_DELAY rg_state$D_IN;
+        if (boot_rom_axi4_deburster_rg_ar_beat_count$EN)
+	  boot_rom_axi4_deburster_rg_ar_beat_count <= `BSV_ASSIGNMENT_DELAY
+	      boot_rom_axi4_deburster_rg_ar_beat_count$D_IN;
+	if (boot_rom_axi4_deburster_rg_b_beat_count$EN)
+	  boot_rom_axi4_deburster_rg_b_beat_count <= `BSV_ASSIGNMENT_DELAY
+	      boot_rom_axi4_deburster_rg_b_beat_count$D_IN;
+	if (boot_rom_axi4_deburster_rg_b_resp$EN)
+	  boot_rom_axi4_deburster_rg_b_resp <= `BSV_ASSIGNMENT_DELAY
+	      boot_rom_axi4_deburster_rg_b_resp$D_IN;
+	if (boot_rom_axi4_deburster_rg_r_beat_count$EN)
+	  boot_rom_axi4_deburster_rg_r_beat_count <= `BSV_ASSIGNMENT_DELAY
+	      boot_rom_axi4_deburster_rg_r_beat_count$D_IN;
+	if (boot_rom_axi4_deburster_rg_reset$EN)
+	  boot_rom_axi4_deburster_rg_reset <= `BSV_ASSIGNMENT_DELAY
+	      boot_rom_axi4_deburster_rg_reset$D_IN;
+	if (boot_rom_axi4_deburster_rg_w_beat_count$EN)
+	  boot_rom_axi4_deburster_rg_w_beat_count <= `BSV_ASSIGNMENT_DELAY
+	      boot_rom_axi4_deburster_rg_w_beat_count$D_IN;
+	if (mem0_controller_axi4_deburster_rg_ar_beat_count$EN)
+	  mem0_controller_axi4_deburster_rg_ar_beat_count <= `BSV_ASSIGNMENT_DELAY
+	      mem0_controller_axi4_deburster_rg_ar_beat_count$D_IN;
+	if (mem0_controller_axi4_deburster_rg_b_beat_count$EN)
+	  mem0_controller_axi4_deburster_rg_b_beat_count <= `BSV_ASSIGNMENT_DELAY
+	      mem0_controller_axi4_deburster_rg_b_beat_count$D_IN;
+	if (mem0_controller_axi4_deburster_rg_b_resp$EN)
+	  mem0_controller_axi4_deburster_rg_b_resp <= `BSV_ASSIGNMENT_DELAY
+	      mem0_controller_axi4_deburster_rg_b_resp$D_IN;
+	if (mem0_controller_axi4_deburster_rg_r_beat_count$EN)
+	  mem0_controller_axi4_deburster_rg_r_beat_count <= `BSV_ASSIGNMENT_DELAY
+	      mem0_controller_axi4_deburster_rg_r_beat_count$D_IN;
+	if (mem0_controller_axi4_deburster_rg_reset$EN)
+	  mem0_controller_axi4_deburster_rg_reset <= `BSV_ASSIGNMENT_DELAY
+	      mem0_controller_axi4_deburster_rg_reset$D_IN;
+	if (mem0_controller_axi4_deburster_rg_w_beat_count$EN)
+	  mem0_controller_axi4_deburster_rg_w_beat_count <= `BSV_ASSIGNMENT_DELAY
+	      mem0_controller_axi4_deburster_rg_w_beat_count$D_IN;
+	if (rg_state$EN) rg_state <= `BSV_ASSIGNMENT_DELAY rg_state$D_IN;
       end
   end
 
@@ -1973,6 +3171,18 @@ module mkSoC_Top(CLK,
   `else // not BSV_NO_INITIAL_BLOCKS
   initial
   begin
+    boot_rom_axi4_deburster_rg_ar_beat_count = 8'hAA;
+    boot_rom_axi4_deburster_rg_b_beat_count = 8'hAA;
+    boot_rom_axi4_deburster_rg_b_resp = 2'h2;
+    boot_rom_axi4_deburster_rg_r_beat_count = 8'hAA;
+    boot_rom_axi4_deburster_rg_reset = 1'h0;
+    boot_rom_axi4_deburster_rg_w_beat_count = 8'hAA;
+    mem0_controller_axi4_deburster_rg_ar_beat_count = 8'hAA;
+    mem0_controller_axi4_deburster_rg_b_beat_count = 8'hAA;
+    mem0_controller_axi4_deburster_rg_b_resp = 2'h2;
+    mem0_controller_axi4_deburster_rg_r_beat_count = 8'hAA;
+    mem0_controller_axi4_deburster_rg_reset = 1'h0;
+    mem0_controller_axi4_deburster_rg_w_beat_count = 8'hAA;
     rg_state = 2'h2;
   end
   `endif // BSV_NO_INITIAL_BLOCKS
@@ -1987,23 +3197,211 @@ module mkSoC_Top(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset_start_2)
 	begin
-	  v__h9497 = $stime;
+	  v__h16993 = $stime;
 	  #0;
 	end
-    v__h9491 = v__h9497 / 32'd10;
+    v__h16987 = v__h16993 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset_start_2)
-	$display("%0d: SoC_Top. Reset start ...", v__h9491);
+	$display("%0d: SoC_Top. Reset start ...", v__h16987);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset_complete)
 	begin
-	  v__h9757 = $stime;
+	  v__h17253 = $stime;
 	  #0;
 	end
-    v__h9751 = v__h9757 / 32'd10;
+    v__h17247 = v__h17253 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset_complete)
-	$display("%0d: SoC_Top. Reset complete ...", v__h9751);
+	$display("%0d: SoC_Top. Reset complete ...", v__h17247);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_boot_rom_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !boot_rom_axi4_deburster_rg_w_beat_count_ULT_bo_ETC___d35 &&
+	  !boot_rom_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	begin
+	  v__h5854 = $stime;
+	  #0;
+	end
+    v__h5848 = v__h5854 / 32'd10;
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_boot_rom_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !boot_rom_axi4_deburster_rg_w_beat_count_ULT_bo_ETC___d35 &&
+	  !boot_rom_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	$display("%0d: ERROR: %m::AXI4_Deburster.rl_wr_xaction_master_to_slave: m -> s",
+		 v__h5848);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_boot_rom_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !boot_rom_axi4_deburster_rg_w_beat_count_ULT_bo_ETC___d35 &&
+	  !boot_rom_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	$display("    WLAST not set on last data beat (awlen = %0d)",
+		 boot_rom_axi4_deburster_xactor_from_master_f_wr_addr$D_OUT[28:21]);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_boot_rom_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !boot_rom_axi4_deburster_rg_w_beat_count_ULT_bo_ETC___d35 &&
+	  !boot_rom_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	$write("    ");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_boot_rom_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !boot_rom_axi4_deburster_rg_w_beat_count_ULT_bo_ETC___d35 &&
+	  !boot_rom_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	$write("AXI4_Wr_Data { ", "wid: ");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_boot_rom_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !boot_rom_axi4_deburster_rg_w_beat_count_ULT_bo_ETC___d35 &&
+	  !boot_rom_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	$write("'h%h",
+	       boot_rom_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[76:73]);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_boot_rom_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !boot_rom_axi4_deburster_rg_w_beat_count_ULT_bo_ETC___d35 &&
+	  !boot_rom_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	$write(", ", "wdata: ");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_boot_rom_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !boot_rom_axi4_deburster_rg_w_beat_count_ULT_bo_ETC___d35 &&
+	  !boot_rom_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	$write("'h%h",
+	       boot_rom_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[72:9]);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_boot_rom_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !boot_rom_axi4_deburster_rg_w_beat_count_ULT_bo_ETC___d35 &&
+	  !boot_rom_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	$write(", ", "wstrb: ");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_boot_rom_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !boot_rom_axi4_deburster_rg_w_beat_count_ULT_bo_ETC___d35 &&
+	  !boot_rom_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	$write("'h%h",
+	       boot_rom_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[8:1]);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_boot_rom_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !boot_rom_axi4_deburster_rg_w_beat_count_ULT_bo_ETC___d35 &&
+	  !boot_rom_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	$write(", ", "wlast: ");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_boot_rom_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !boot_rom_axi4_deburster_rg_w_beat_count_ULT_bo_ETC___d35 &&
+	  !boot_rom_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	$write("False");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_boot_rom_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !boot_rom_axi4_deburster_rg_w_beat_count_ULT_bo_ETC___d35 &&
+	  !boot_rom_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	$write(", ", "wuser: ");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_boot_rom_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !boot_rom_axi4_deburster_rg_w_beat_count_ULT_bo_ETC___d35 &&
+	  !boot_rom_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	$write("'h%h", 1'd0, " }");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_boot_rom_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !boot_rom_axi4_deburster_rg_w_beat_count_ULT_bo_ETC___d35 &&
+	  !boot_rom_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	$write("\n");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (boot_rom_axi4_deburster_rg_reset)
+	begin
+	  v__h4870 = $stime;
+	  #0;
+	end
+    v__h4864 = v__h4870 / 32'd10;
+    if (RST_N != `BSV_RESET_VALUE)
+      if (boot_rom_axi4_deburster_rg_reset)
+	$display("%0d: %m::AXI4_Deburster.rl_reset", v__h4864);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !mem0_controller_axi4_deburster_rg_w_beat_count_ETC___d147 &&
+	  !mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	begin
+	  v__h9815 = $stime;
+	  #0;
+	end
+    v__h9809 = v__h9815 / 32'd10;
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !mem0_controller_axi4_deburster_rg_w_beat_count_ETC___d147 &&
+	  !mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	$display("%0d: ERROR: %m::AXI4_Deburster.rl_wr_xaction_master_to_slave: m -> s",
+		 v__h9809);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !mem0_controller_axi4_deburster_rg_w_beat_count_ETC___d147 &&
+	  !mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	$display("    WLAST not set on last data beat (awlen = %0d)",
+		 mem0_controller_axi4_deburster_xactor_from_master_f_wr_addr$D_OUT[28:21]);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !mem0_controller_axi4_deburster_rg_w_beat_count_ETC___d147 &&
+	  !mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	$write("    ");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !mem0_controller_axi4_deburster_rg_w_beat_count_ETC___d147 &&
+	  !mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	$write("AXI4_Wr_Data { ", "wid: ");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !mem0_controller_axi4_deburster_rg_w_beat_count_ETC___d147 &&
+	  !mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	$write("'h%h",
+	       mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[76:73]);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !mem0_controller_axi4_deburster_rg_w_beat_count_ETC___d147 &&
+	  !mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	$write(", ", "wdata: ");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !mem0_controller_axi4_deburster_rg_w_beat_count_ETC___d147 &&
+	  !mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	$write("'h%h",
+	       mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[72:9]);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !mem0_controller_axi4_deburster_rg_w_beat_count_ETC___d147 &&
+	  !mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	$write(", ", "wstrb: ");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !mem0_controller_axi4_deburster_rg_w_beat_count_ETC___d147 &&
+	  !mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	$write("'h%h",
+	       mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[8:1]);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !mem0_controller_axi4_deburster_rg_w_beat_count_ETC___d147 &&
+	  !mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	$write(", ", "wlast: ");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !mem0_controller_axi4_deburster_rg_w_beat_count_ETC___d147 &&
+	  !mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	$write("False");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !mem0_controller_axi4_deburster_rg_w_beat_count_ETC___d147 &&
+	  !mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	$write(", ", "wuser: ");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !mem0_controller_axi4_deburster_rg_w_beat_count_ETC___d147 &&
+	  !mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	$write("'h%h", 1'd0, " }");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_mem0_controller_axi4_deburster_rl_wr_xaction_master_to_slave &&
+	  !mem0_controller_axi4_deburster_rg_w_beat_count_ETC___d147 &&
+	  !mem0_controller_axi4_deburster_xactor_from_master_f_wr_data$D_OUT[0])
+	$write("\n");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (mem0_controller_axi4_deburster_rg_reset)
+	begin
+	  v__h8834 = $stime;
+	  #0;
+	end
+    v__h8828 = v__h8834 / 32'd10;
+    if (RST_N != `BSV_RESET_VALUE)
+      if (mem0_controller_axi4_deburster_rg_reset)
+	$display("%0d: %m::AXI4_Deburster.rl_reset", v__h8828);
   end
   // synopsys translate_on
 endmodule  // mkSoC_Top

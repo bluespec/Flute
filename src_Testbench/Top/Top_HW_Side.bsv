@@ -98,6 +98,11 @@ module mkTop_HW_Side (Empty) ;
 `endif
 
       // ----------------
+      // Start timing the simulation
+      Bit #(32) cycle_num <- cur_cycle;
+      c_start_timing (zeroExtend (cycle_num));
+
+      // ----------------
       // Open file for Tandem Verification trace output
 `ifdef INCLUDE_TANDEM_VERIF
 `ifndef IVERILOG
@@ -131,6 +136,20 @@ module mkTop_HW_Side (Empty) ;
 `endif
 `endif
 
+   endrule: rl_step0
+
+   // ================================================================
+   // Terminate on any non-zero status
+
+   rule rl_terminate (soc_top.status != 0);
+      $display ("%0d: %m:.rl_terminate: soc_top status is 0x%0h (= 0d%0d)",
+		cur_cycle, soc_top.status, soc_top.status);
+
+      // End timing the simulation
+      Bit #(32) cycle_num <- cur_cycle;
+      c_end_timing (zeroExtend (cycle_num));
+
+      $finish (0);
    endrule
 
    // ================================================================
@@ -235,6 +254,11 @@ module mkTop_HW_Side (Empty) ;
 	 end
 	 else if (op == dmi_op_shutdown) begin
 	    $display ("Top_HW_Side.rl_debug_client_request_recv: SHUTDOWN");
+
+	    // End timing the simulation and print simulation speed stats
+	    Bit #(32) cycle_num <- cur_cycle;
+	    c_end_timing (zeroExtend (cycle_num));
+
 	    $finish (0);
 	 end
 	 else if (op == dmi_op_start_command) begin    // For debugging only

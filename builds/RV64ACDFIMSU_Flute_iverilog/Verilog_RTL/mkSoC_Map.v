@@ -6,12 +6,15 @@
 //
 // Ports:
 // Name                         I/O  size props
-// m_uart0_addr_base              O    64 const
-// m_uart0_addr_size              O    64 const
-// m_uart0_addr_lim               O    64 const
 // m_near_mem_io_addr_base        O    64 const
 // m_near_mem_io_addr_size        O    64 const
 // m_near_mem_io_addr_lim         O    64 const
+// m_plic_addr_base               O    64 const
+// m_plic_addr_size               O    64 const
+// m_plic_addr_lim                O    64 const
+// m_uart0_addr_base              O    64 const
+// m_uart0_addr_size              O    64 const
+// m_uart0_addr_lim               O    64 const
 // m_boot_rom_addr_base           O    64 const
 // m_boot_rom_addr_size           O    64 const
 // m_boot_rom_addr_lim            O    64 const
@@ -25,6 +28,8 @@
 // m_is_IO_addr                   O     1
 // m_is_near_mem_IO_addr          O     1
 // m_pc_reset_value               O    64 const
+// m_mtvec_reset_value            O    64 const
+// m_nmivec_reset_value           O    64 const
 // CLK                            I     1 unused
 // RST_N                          I     1 unused
 // m_is_mem_addr_addr             I    64
@@ -54,17 +59,23 @@
 module mkSoC_Map(CLK,
 		 RST_N,
 
-		 m_uart0_addr_base,
-
-		 m_uart0_addr_size,
-
-		 m_uart0_addr_lim,
-
 		 m_near_mem_io_addr_base,
 
 		 m_near_mem_io_addr_size,
 
 		 m_near_mem_io_addr_lim,
+
+		 m_plic_addr_base,
+
+		 m_plic_addr_size,
+
+		 m_plic_addr_lim,
+
+		 m_uart0_addr_base,
+
+		 m_uart0_addr_size,
+
+		 m_uart0_addr_lim,
 
 		 m_boot_rom_addr_base,
 
@@ -93,18 +104,13 @@ module mkSoC_Map(CLK,
 		 m_is_near_mem_IO_addr_addr,
 		 m_is_near_mem_IO_addr,
 
-		 m_pc_reset_value);
+		 m_pc_reset_value,
+
+		 m_mtvec_reset_value,
+
+		 m_nmivec_reset_value);
   input  CLK;
   input  RST_N;
-
-  // value method m_uart0_addr_base
-  output [63 : 0] m_uart0_addr_base;
-
-  // value method m_uart0_addr_size
-  output [63 : 0] m_uart0_addr_size;
-
-  // value method m_uart0_addr_lim
-  output [63 : 0] m_uart0_addr_lim;
 
   // value method m_near_mem_io_addr_base
   output [63 : 0] m_near_mem_io_addr_base;
@@ -114,6 +120,24 @@ module mkSoC_Map(CLK,
 
   // value method m_near_mem_io_addr_lim
   output [63 : 0] m_near_mem_io_addr_lim;
+
+  // value method m_plic_addr_base
+  output [63 : 0] m_plic_addr_base;
+
+  // value method m_plic_addr_size
+  output [63 : 0] m_plic_addr_size;
+
+  // value method m_plic_addr_lim
+  output [63 : 0] m_plic_addr_lim;
+
+  // value method m_uart0_addr_base
+  output [63 : 0] m_uart0_addr_base;
+
+  // value method m_uart0_addr_size
+  output [63 : 0] m_uart0_addr_size;
+
+  // value method m_uart0_addr_lim
+  output [63 : 0] m_uart0_addr_lim;
 
   // value method m_boot_rom_addr_base
   output [63 : 0] m_boot_rom_addr_base;
@@ -157,6 +181,12 @@ module mkSoC_Map(CLK,
   // value method m_pc_reset_value
   output [63 : 0] m_pc_reset_value;
 
+  // value method m_mtvec_reset_value
+  output [63 : 0] m_mtvec_reset_value;
+
+  // value method m_nmivec_reset_value
+  output [63 : 0] m_nmivec_reset_value;
+
   // signals for module outputs
   wire [63 : 0] m_boot_rom_addr_base,
 		m_boot_rom_addr_lim,
@@ -164,10 +194,15 @@ module mkSoC_Map(CLK,
 		m_mem0_controller_addr_base,
 		m_mem0_controller_addr_lim,
 		m_mem0_controller_addr_size,
+		m_mtvec_reset_value,
 		m_near_mem_io_addr_base,
 		m_near_mem_io_addr_lim,
 		m_near_mem_io_addr_size,
+		m_nmivec_reset_value,
 		m_pc_reset_value,
+		m_plic_addr_base,
+		m_plic_addr_lim,
+		m_plic_addr_size,
 		m_tcm_addr_base,
 		m_tcm_addr_lim,
 		m_tcm_addr_size,
@@ -175,15 +210,6 @@ module mkSoC_Map(CLK,
 		m_uart0_addr_lim,
 		m_uart0_addr_size;
   wire m_is_IO_addr, m_is_mem_addr, m_is_near_mem_IO_addr;
-
-  // value method m_uart0_addr_base
-  assign m_uart0_addr_base = 64'h00000000C0000000 ;
-
-  // value method m_uart0_addr_size
-  assign m_uart0_addr_size = 64'h0000000000000080 ;
-
-  // value method m_uart0_addr_lim
-  assign m_uart0_addr_lim = 64'h00000000C0000080 ;
 
   // value method m_near_mem_io_addr_base
   assign m_near_mem_io_addr_base = 64'h0000000002000000 ;
@@ -193,6 +219,24 @@ module mkSoC_Map(CLK,
 
   // value method m_near_mem_io_addr_lim
   assign m_near_mem_io_addr_lim = 64'd33603584 ;
+
+  // value method m_plic_addr_base
+  assign m_plic_addr_base = 64'h000000000C000000 ;
+
+  // value method m_plic_addr_size
+  assign m_plic_addr_size = 64'h0000000000400000 ;
+
+  // value method m_plic_addr_lim
+  assign m_plic_addr_lim = 64'd205520896 ;
+
+  // value method m_uart0_addr_base
+  assign m_uart0_addr_base = 64'h00000000C0000000 ;
+
+  // value method m_uart0_addr_size
+  assign m_uart0_addr_size = 64'h0000000000000080 ;
+
+  // value method m_uart0_addr_lim
+  assign m_uart0_addr_lim = 64'h00000000C0000080 ;
 
   // value method m_boot_rom_addr_base
   assign m_boot_rom_addr_base = 64'h0000000000001000 ;
@@ -207,10 +251,10 @@ module mkSoC_Map(CLK,
   assign m_mem0_controller_addr_base = 64'h0000000080000000 ;
 
   // value method m_mem0_controller_addr_size
-  assign m_mem0_controller_addr_size = 64'h000000000FFFFFFF ;
+  assign m_mem0_controller_addr_size = 64'h0000000010000000 ;
 
   // value method m_mem0_controller_addr_lim
-  assign m_mem0_controller_addr_lim = 64'h000000008FFFFFFF ;
+  assign m_mem0_controller_addr_lim = 64'h0000000090000000 ;
 
   // value method m_tcm_addr_base
   assign m_tcm_addr_base = 64'h0 ;
@@ -226,14 +270,16 @@ module mkSoC_Map(CLK,
 	     m_is_mem_addr_addr >= 64'h0000000000001000 &&
 	     m_is_mem_addr_addr < 64'd8192 ||
 	     m_is_mem_addr_addr >= 64'h0000000080000000 &&
-	     m_is_mem_addr_addr < 64'h000000008FFFFFFF ;
+	     m_is_mem_addr_addr < 64'h0000000090000000 ;
 
   // value method m_is_IO_addr
   assign m_is_IO_addr =
-	     m_is_IO_addr_addr >= 64'h00000000C0000000 &&
-	     m_is_IO_addr_addr < 64'h00000000C0000080 ||
 	     m_is_IO_addr_addr >= 64'h0000000002000000 &&
-	     m_is_IO_addr_addr < 64'd33603584 ;
+	     m_is_IO_addr_addr < 64'd33603584 ||
+	     m_is_IO_addr_addr >= 64'h000000000C000000 &&
+	     m_is_IO_addr_addr < 64'd205520896 ||
+	     m_is_IO_addr_addr >= 64'h00000000C0000000 &&
+	     m_is_IO_addr_addr < 64'h00000000C0000080 ;
 
   // value method m_is_near_mem_IO_addr
   assign m_is_near_mem_IO_addr =
@@ -242,5 +288,11 @@ module mkSoC_Map(CLK,
 
   // value method m_pc_reset_value
   assign m_pc_reset_value = 64'h0000000000001000 ;
+
+  // value method m_mtvec_reset_value
+  assign m_mtvec_reset_value = 64'h0000000000001000 ;
+
+  // value method m_nmivec_reset_value
+  assign m_nmivec_reset_value = 64'hAAAAAAAAAAAAAAAA ;
 endmodule  // mkSoC_Map
 

@@ -89,8 +89,9 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
    PLIC_IFC_16_2_7  plic <- mkPLIC_16_2_7;
 
    // Reset requests from SoC and responses to SoC
-   FIFOF #(Bit #(0)) f_reset_reqs <- mkFIFOF;
-   FIFOF #(Bit #(0)) f_reset_rsps <- mkFIFOF;
+   // 'Bool' is 'running' state
+   FIFOF #(Bool) f_reset_reqs <- mkFIFOF;
+   FIFOF #(Bool) f_reset_rsps <- mkFIFOF;
 
 `ifdef INCLUDE_TANDEM_VERIF
    // The TV encoder transforms Trace_Data structures produced by the CPU and DM
@@ -106,12 +107,10 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
    // ================================================================
    // RESET
    // There are two sources of reset requests to the CPU: externally
-   // from the SoC and, optionally, the DM.  The SoC requires a
-   // response, the DM does not.  When both requestors are present
-   // (i.e., DM is present), we merge the reset requests into the CPU,
-   // and we remember which one was the requestor in
-   // f_reset_requestor, so that we know whether or not to respond to
-   // the SoC.
+   // from the SoC and, optionally, the DM.  When both requestors are
+   // present (i.e., DM is present), we merge the reset requests into
+   // the CPU, and we remember which one was the requestor in
+   // f_reset_requestor, so that we know whome to respond to.
 
    Bit #(1) reset_requestor_dm  = 0;
    Bit #(1) reset_requestor_soc = 1;
@@ -121,12 +120,12 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
 
    // Reset-hart0 request from SoC
    rule rl_cpu_hart0_reset_from_soc_start;
-      let req <- pop (f_reset_reqs);
+      let running <- pop (f_reset_reqs);
 
-      cpu.hart0_server_reset.request.put (?);      // CPU
-      near_mem_io.server_reset.request.put (?);    // Near_Mem_IO
-      plic.server_reset.request.put (?);           // PLIC
-      fabric_2x3.reset;                            // Local 2x3 Fabric
+      cpu.hart0_server_reset.request.put (running);    // CPU
+      near_mem_io.server_reset.request.put (?);        // Near_Mem_IO
+      plic.server_reset.request.put (?);               // PLIC
+      fabric_2x3.reset;                                // Local 2x3 Fabric
 
 `ifdef INCLUDE_GDB_CONTROL
       // Remember the requestor, so we can respond to it
@@ -138,12 +137,12 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
 `ifdef INCLUDE_GDB_CONTROL
    // Reset-hart0 from Debug Module
    rule rl_cpu_hart0_reset_from_dm_start;
-      let req <- debug_module.hart0_get_reset_req.get;
+      let running <- debug_module.hart0_reset_client.request.get;
 
-      cpu.hart0_server_reset.request.put (?);      // CPU
-      near_mem_io.server_reset.request.put (?);    // Near_Mem_IO
-      plic.server_reset.request.put (?);           // PLIC
-      fabric_2x3.reset;                            // Local 2x3 fabric
+      cpu.hart0_server_reset.request.put (running);    // CPU
+      near_mem_io.server_reset.request.put (?);        // Near_Mem_IO
+      plic.server_reset.request.put (?);               // PLIC
+      fabric_2x3.reset;                                // Local 2x3 fabric
 
       // Remember the requestor, so we can respond to it
       f_reset_requestor.enq (reset_requestor_dm);
@@ -152,9 +151,9 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
 `endif
 
    rule rl_cpu_hart0_reset_complete;
-      let rsp1 <- cpu.hart0_server_reset.response.get;      // CPU
-      let rsp2 <- near_mem_io.server_reset.response.get;    // Near_Mem_IO
-      let rsp3 <- plic.server_reset.response.get;           // PLIC
+      let running <- cpu.hart0_server_reset.response.get;      // CPU
+      let rsp2    <- near_mem_io.server_reset.response.get;    // Near_Mem_IO
+      let rsp3    <- plic.server_reset.response.get;           // PLIC
 
       near_mem_io.set_addr_map (zeroExtend (soc_map.m_near_mem_io_addr_base),
 				zeroExtend (soc_map.m_near_mem_io_addr_lim));
@@ -165,9 +164,11 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
       Bit #(1) requestor = reset_requestor_soc;
 `ifdef INCLUDE_GDB_CONTROL
       requestor <- pop (f_reset_requestor);
+      if (requestor == reset_requestor_dm)
+	 debug_module.hart0_reset_client.response.put (running);
 `endif
       if (requestor == reset_requestor_soc)
-	 f_reset_rsps.enq (?);
+	 f_reset_rsps.enq (running);
 
       $display ("%0d: Core.rl_cpu_hart0_reset_complete", cur_cycle);
    endrule
@@ -338,13 +339,6 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
       // $display ("%0d: Core.rl_relay_external_interrupts: relaying: %d", cur_cycle, pack (x));
    endrule
 
-   // TODO: fixup.  Need to combine NMIs from multiple sources (cache, fabric, devices, ...)
-   rule rl_relay_non_maskable_interrupt;
-      cpu.non_maskable_interrupt_req (False);
-
-      // $display ("%0d: Core.rl_relay_non_maskable_interrupts: relaying: %d", cur_cycle, pack (x));
-   endrule
-
    // ================================================================
    // INTERFACE
 
@@ -375,6 +369,13 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
    interface core_external_interrupt_sources = plic.v_sources;
 
    // ----------------------------------------------------------------
+   // Non-maskable interrupt request
+
+   method Action nmi_req (Bool set_not_clear);
+      cpu.nmi_req (set_not_clear);
+   endmethod
+
+   // ----------------------------------------------------------------
    // Optional TV interface
 
 `ifdef INCLUDE_TANDEM_VERIF
@@ -399,7 +400,7 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
    // Facing Platform
 
    // Non-Debug-Module Reset (reset all except DM)
-   interface Get  dm_ndm_reset_req_get = debug_module.get_ndm_reset_req;
+   interface Client ndm_reset_client = debug_module.ndm_reset_client;
 `endif
 
 endmodule: mkCore

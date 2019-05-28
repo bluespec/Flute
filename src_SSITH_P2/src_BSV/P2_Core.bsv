@@ -112,23 +112,47 @@ module mkP2_Core (P2_Core_IFC);
       core.set_verbosity (?, ?);
    endrule
 
+   // Tie-offs
+   rule rl_always (True);
+      // Non-maskable interrupt request.
+      core.nmi_req (False);
+   endrule
+
    // ================================================================
    // Reset on startup, and also on NDM reset from Debug Module
-   // (NDM reset from Debug Module = reset all except Debug Module)
+   // (NDM reset from Debug Module = "non-debug-module-reset" = reset all except Debug Module)
 
-   Reg #(Bool) rg_once <- mkReg (False);
+   Reg #(Bool)          rg_once      <- mkReg (False);
+   Reg #(Maybe #(Bool)) rg_ndm_reset <- mkReg (tagged Invalid);
 
    rule rl_once (! rg_once);
-      core.cpu_reset_server.request.put (?);
+      Bool running = True;
+      if (rg_ndm_reset matches tagged Valid False)
+	 running = False;
+      core.cpu_reset_server.request.put (running);
       rg_once <= True;
    endrule
 
    rule rl_reset_response;
-      let tmp <- core.cpu_reset_server.response.get;
+      let running <- core.cpu_reset_server.response.get;
+
+`ifdef INCLUDE_GDB_CONTROL
+      // Respond to Debug module if this is an ndm-reset
+      if (rg_ndm_reset matches tagged Valid .x)
+	 core.ndm_reset_client.response.put (running);
+      rg_ndm_reset <= tagged Invalid;
+`endif
    endrule
 
+   // ----------------
+   // Also do a reset if requested from Debug Module (NDM = Non-Debug-Module reset)
+
    rule rl_ndmreset (rg_once);
-      let tmp <- core.dm_ndm_reset_req_get.get;
+`ifdef INCLUDE_GDB_CONTROL
+      let running <- core.ndm_reset_client.request.get;
+      rg_ndm_reset <= tagged Valid running;
+`endif
+
       rg_once <= False;
    endrule
 

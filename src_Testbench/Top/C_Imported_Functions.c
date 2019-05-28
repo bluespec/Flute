@@ -22,6 +22,7 @@
 #include <inttypes.h>
 #include <string.h>
 #include <errno.h>
+#include <time.h>
 
 // For comms polling
 #include <sys/types.h>
@@ -38,6 +39,50 @@
 // Includes for this project
 
 #include "C_Imported_Functions.h"
+
+// ****************************************************************
+// ****************************************************************
+// ****************************************************************
+
+// Functions to measure simulation speed
+
+static uint64_t  start_cycle = 0;
+static struct timespec timespec_start;
+
+// ================================================================
+// c_start_timing()
+// Start the timing interval; argument is current cycle number.
+
+extern
+void c_start_timing (uint64_t  cycle_num)
+{
+    start_cycle = cycle_num;
+    clock_gettime (CLOCK_REALTIME, & timespec_start);
+}
+
+// ================================================================
+// c_end_timing()
+// End the timing interval; argument is current cycle number,
+// and print delta cycles, delta time and simulation speed.
+
+extern
+void c_end_timing (uint64_t  cycle_num)
+{
+    // Delta time
+    struct timespec timespec_end;
+    clock_gettime (CLOCK_REALTIME, & timespec_end);
+    uint64_t nsecs1 = ((uint64_t) timespec_start.tv_sec) * 1000000000 + timespec_start.tv_nsec;
+    uint64_t nsecs2 = ((uint64_t) timespec_end.tv_sec)   * 1000000000 + timespec_end.tv_nsec;
+    uint64_t delta_nsecs = nsecs2 - nsecs1;
+
+    // Delta cycles
+    uint64_t delta_cycles = cycle_num - start_cycle;
+
+    fprintf (stdout, "Simulation speed: %0" PRId64 " cycles, %0" PRId64 " nsecs", delta_cycles, delta_nsecs);
+    if (delta_nsecs != 0)
+	fprintf (stdout, "  = %0" PRId64 " cycles/sec", (delta_cycles * 1000000000) / delta_nsecs);
+    fprintf (stdout, "\n");
+}
 
 // ****************************************************************
 // ****************************************************************
@@ -540,7 +585,7 @@ uint8_t  c_debug_client_connect (const uint16_t tcp_port)
 
     fprintf (stdout, "Connected\n");
 
-    logfile_fp = fopen (logfile_name, "w");
+    logfile_fp = NULL;    // Debugging: fopen (logfile_name, "w");
     if (logfile_fp != NULL) {
 	fprintf (stdout, "    Logfile for debug client transactions is '%s'\n", logfile_name);
 	fprintf (logfile_fp, "CONNECTED on TCP port %0d\n", tcp_port);

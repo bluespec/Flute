@@ -49,8 +49,9 @@ interface Core_IFC #(numeric type t_n_interrupt_sources);
 
    // ----------------------------------------------------------------
    // Soft reset
+   // 'Bool' is initial 'running' state
 
-   interface Server #(Bit #(0), Bit #(0))  cpu_reset_server;
+   interface Server #(Bool, Bool)  cpu_reset_server;
 
    // ----------------------------------------------------------------
    // AXI4 Fabric interfaces
@@ -65,6 +66,12 @@ interface Core_IFC #(numeric type t_n_interrupt_sources);
    // External interrupt sources
 
    interface Vector #(t_n_interrupt_sources, PLIC_Source_IFC)  core_external_interrupt_sources;
+
+   // ----------------------------------------------------------------
+   // Non-maskable interrupt request
+
+   (* always_ready, always_enabled *)
+   method Action nmi_req (Bool set_not_clear);
 
    // ----------------------------------------------------------------
    // Optional Tandem Verifier interface output tuples (n,vb),
@@ -87,8 +94,9 @@ interface Core_IFC #(numeric type t_n_interrupt_sources);
    // ----------------
    // Facing Platform
    // Non-Debug-Module Reset (reset all except DM)
+   // Bool indicates 'running' hart state.
 
-   interface Get #(Bit #(0)) dm_ndm_reset_req_get;
+   interface Client #(Bool, Bool) ndm_reset_client;
 `endif
 endinterface
 
