@@ -40,6 +40,7 @@ export  accel0_slave_num;
 export  N_External_Interrupt_Sources;
 export  n_external_interrupt_sources;
 export  irq_num_uart0;
+export  irq_num_accel0;
 
 // ================================================================
 // Bluespec library imports
@@ -321,7 +322,8 @@ Integer accel0_slave_num          = 3;
 typedef  16  N_External_Interrupt_Sources;
 Integer  n_external_interrupt_sources = valueOf (N_External_Interrupt_Sources);
 
-Integer irq_num_uart0 = 0;
+Integer irq_num_uart0  = 0;
+Integer irq_num_accel0 = 1;
 
 // ================================================================
 

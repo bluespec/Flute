@@ -102,6 +102,7 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
 	     Add #(_any_1, TLog #(t_n_targets), T_wd_target_id),
 	     Log #(TAdd #(t_max_priority, 1), t_wd_priority));
 
+   // 0 = quiet; 1 = show PLIC transactions; 2 = also show AXI4 transactions
    Reg #(Bit #(4)) cfg_verbosity <- mkConfigReg (0);
 
    // Source_Ids and Priorities are read and written over the memory interface
@@ -555,7 +556,7 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
 			 vrg_source_ip [source_id+1] <= set_not_clear;
 
 			 if ((cfg_verbosity > 0) && (vrg_source_ip [source_id+1] != set_not_clear))
-			    $display ("%0d: Changing vrg_source_ip [%0d] to %0d",
+			    $display ("%0d: %m.m_interrupt_req: changing vrg_source_ip [%0d] to %0d",
 				      cur_cycle, source_id+1, pack (set_not_clear));
 		      end
 		   endaction
