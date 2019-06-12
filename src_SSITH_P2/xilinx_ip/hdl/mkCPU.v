@@ -1947,7 +1947,6 @@ module mkCPU(CLK,
        csr_regfile_read_misa__7_BIT_2_420_AND_stageD__ETC___d1501,
        csr_regfile_read_mstatus__0_BITS_14_TO_13_2_EQ_ETC___d698,
        f_reset_reqs_i_notEmpty__942_AND_stageF_f_rese_ETC___d1954,
-       fpr_regfile_RDY_server_reset_request_put__939__ETC___d1957,
        near_mem_imem_pc_BITS_63_TO_2_EQ_imem_rg_pc_BI_ETC___d8,
        near_mem_imem_pc_EQ_imem_rg_pc_PLUS_2_9_805_OR_ETC___d1838,
        near_mem_imem_pc_EQ_imem_rg_pc_PLUS_2_9_805_OR_ETC___d1840,
@@ -3179,7 +3178,10 @@ module mkCPU(CLK,
   // rule RL_rl_reset_start
   assign CAN_FIRE_RL_rl_reset_start =
 	     gpr_regfile$RDY_server_reset_request_put &&
-	     fpr_regfile_RDY_server_reset_request_put__939__ETC___d1957 &&
+	     fpr_regfile$RDY_server_reset_request_put &&
+	     near_mem$RDY_server_reset_request_put &&
+	     csr_regfile$RDY_server_reset_request_put &&
+	     f_reset_reqs_i_notEmpty__942_AND_stageF_f_rese_ETC___d1954 &&
 	     rg_state == 4'd0 ;
   assign WILL_FIRE_RL_rl_reset_start = CAN_FIRE_RL_rl_reset_start ;
 
@@ -4476,10 +4478,7 @@ module mkCPU(CLK,
   // submodule f_reset_reqs
   assign f_reset_reqs$D_IN = hart0_server_reset_request_put ;
   assign f_reset_reqs$ENQ = EN_hart0_server_reset_request_put ;
-  assign f_reset_reqs$DEQ =
-	     gpr_regfile$RDY_server_reset_request_put &&
-	     fpr_regfile_RDY_server_reset_request_put__939__ETC___d1957 &&
-	     rg_state == 4'd0 ;
+  assign f_reset_reqs$DEQ = CAN_FIRE_RL_rl_reset_start ;
   assign f_reset_reqs$CLR = 1'b0 ;
 
   // submodule f_reset_rsps
@@ -5504,14 +5503,14 @@ module mkCPU(CLK,
 	     (!near_mem_imem_pc_BITS_63_TO_2_EQ_imem_rg_pc_BI_ETC___d8 ||
 	      imem_rg_pc[1:0] == 2'b0 ||
 	      near_mem$imem_instr[17:16] != 2'b11) &&
-	     stageF_branch_predictor$RDY_predict_req &&
-	     near_mem$RDY_server_fence_i_response_get ;
+	     near_mem$RDY_server_fence_i_response_get &&
+	     stageF_branch_predictor$RDY_predict_req ;
   assign NOT_near_mem_imem_pc_BITS_63_TO_2_EQ_imem_rg_p_ETC___d2545 =
 	     (!near_mem_imem_pc_BITS_63_TO_2_EQ_imem_rg_pc_BI_ETC___d8 ||
 	      imem_rg_pc[1:0] == 2'b0 ||
 	      near_mem$imem_instr[17:16] != 2'b11) &&
-	     stageF_branch_predictor$RDY_predict_req &&
-	     near_mem$RDY_server_fence_response_get ;
+	     near_mem$RDY_server_fence_response_get &&
+	     stageF_branch_predictor$RDY_predict_req ;
   assign NOT_near_mem_imem_pc_BITS_63_TO_2_EQ_imem_rg_p_ETC___d2636 =
 	     (!near_mem_imem_pc_BITS_63_TO_2_EQ_imem_rg_pc_BI_ETC___d8 ||
 	      imem_rg_pc[1:0] == 2'b0 ||
@@ -5901,11 +5900,6 @@ module mkCPU(CLK,
   assign fall_through_pc__h9396 =
 	     stage1_rg_stage_input[401:338] +
 	     (stage1_rg_stage_input[333] ? 64'd4 : 64'd2) ;
-  assign fpr_regfile_RDY_server_reset_request_put__939__ETC___d1957 =
-	     fpr_regfile$RDY_server_reset_request_put &&
-	     near_mem$RDY_server_reset_request_put &&
-	     csr_regfile$RDY_server_reset_request_put &&
-	     f_reset_reqs_i_notEmpty__942_AND_stageF_f_rese_ETC___d1954 ;
   assign frs1_val_bypassed__h4956 =
 	     (IF_NOT_stage2_rg_full_14_51_OR_stage2_rg_stage_ETC___d302 ==
 	      2'd2 &&
@@ -6768,14 +6762,6 @@ module mkCPU(CLK,
 	       stage1_rg_stage_input[331:328] :
 	       alu_outputs_exc_code__h10471 ;
   assign y__h31977 = ~rs1_val__h31673 ;
-  always@(stage2_rg_stage2 or near_mem$dmem_exc_code)
-  begin
-    case (stage2_rg_stage2[629:627])
-      3'd1, 3'd2, 3'd4:
-	  x_out_trap_info_exc_code__h8745 = near_mem$dmem_exc_code;
-      default: x_out_trap_info_exc_code__h8745 = 4'd2;
-    endcase
-  end
   always@(stage2_rg_stage2)
   begin
     case (stage2_rg_stage2[629:627])
@@ -6788,6 +6774,14 @@ module mkCPU(CLK,
     case (stage2_rg_stage2[629:627])
       3'd1, 3'd2, 3'd4: value__h8769 = stage2_rg_stage2[621:558];
       default: value__h8769 = 64'd0;
+    endcase
+  end
+  always@(stage2_rg_stage2 or near_mem$dmem_exc_code)
+  begin
+    case (stage2_rg_stage2[629:627])
+      3'd1, 3'd2, 3'd4:
+	  x_out_trap_info_exc_code__h8745 = near_mem$dmem_exc_code;
+      default: x_out_trap_info_exc_code__h8745 = 4'd2;
     endcase
   end
   always@(stage2_rg_stage2 or stage2_fbox$word_snd)
