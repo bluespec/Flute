@@ -164,7 +164,6 @@ interface AXI4_Master_IFC #(numeric type wd_id,
    // Wr Data channel
    (* always_ready, result="wvalid" *)  method Bool                      m_wvalid;    // out
 
-   (* always_ready, result="wid" *)     method Bit #(wd_id)              m_wid;       // out
    (* always_ready, result="wdata" *)   method Bit #(wd_data)            m_wdata;     // out
    (* always_ready, result="wstrb" *)   method Bit #(TDiv #(wd_data, 8)) m_wstrb;     // out
    (* always_ready, result="wlast" *)   method Bool                      m_wlast;     // out
@@ -246,7 +245,6 @@ interface AXI4_Slave_IFC #(numeric type wd_id,
    // Wr Data channel
    (* always_ready, always_enabled, prefix = "" *)
    method Action m_wvalid ((* port="wvalid" *) Bool                      wvalid,    // in
-			   (* port="wid" *)    Bit #(wd_id)              wid,       // in
 			   (* port="wdata" *)  Bit #(wd_data)            wdata,     // in
 			   (* port="wstrb" *)  Bit #(TDiv #(wd_data,8))  wstrb,     // in
 			   (* port="wlast" *)  Bool                      wlast,     // in
@@ -320,7 +318,6 @@ instance Connectable #(AXI4_Master_IFC #(wd_id, wd_addr, wd_data, wd_user),
       (* fire_when_enabled, no_implicit_conditions *)
       rule rl_wr_data_channel;
 	 axis.m_wvalid (axim.m_wvalid,
-			axim.m_wid,
 			axim.m_wdata,
 			axim.m_wstrb,
 			axim.m_wlast,
@@ -389,7 +386,6 @@ AXI4_Master_IFC #(wd_id, wd_addr, wd_data, wd_user)
 
 			       // Wr Data channel
 			       method Bool                       m_wvalid = False;     // out
-			       method Bit #(wd_id)               m_wid    = ?;         // out
 			       method Bit #(wd_data)             m_wdata  = ?;         // out
 			       method Bit #(TDiv #(wd_data, 8))  m_wstrb  = ?;         // out
 			       method Bool                       m_wlast  = ?;         // out
@@ -460,7 +456,6 @@ AXI4_Slave_IFC #(wd_id, wd_addr, wd_data, wd_user)
 
 			     // Wr Data channel
 			     method Action m_wvalid (Bool                       wvalid,
-						     Bit #(wd_id)               wid,
 						     Bit #(wd_data)             wdata,
 						     Bit #(TDiv #(wd_data, 8))  wstrb,
 						     Bool                       wlast,
@@ -605,13 +600,11 @@ deriving (Bits, FShow);
 // Write Data channel
 
 typedef struct {
-   Bit #(wd_id)               wid;
    Bit #(wd_data)             wdata;
    Bit #(TDiv #(wd_data, 8))  wstrb;
    Bool                       wlast;
    Bit #(wd_user)             wuser;
-   } AXI4_Wr_Data #(numeric type wd_id,
-		    numeric type wd_data,
+   } AXI4_Wr_Data #(numeric type wd_data,
 		    numeric type wd_user)
 deriving (Bits, FShow);
 
@@ -705,7 +698,7 @@ function Fmt fshow_Wr_Addr (AXI4_Wr_Addr #(wd_id, wd_addr, wd_user) x);
    return result;
 endfunction
 
-function Fmt fshow_Wr_Data (AXI4_Wr_Data #(wd_id, wd_data, wd_user) x);
+function Fmt fshow_Wr_Data (AXI4_Wr_Data #(wd_data, wd_user) x);
    let result = ($format ("{wdata:%0h,wstrb:%0h", x.wdata, x.wstrb)
 		 + (x.wlast ? $format (",wlast") : $format (",.."))
 		 + $format ("}"));
@@ -751,7 +744,7 @@ interface AXI4_Server_IFC  #(numeric type wd_id,
 			     numeric type wd_user);
 
    interface FIFOF_I #(AXI4_Wr_Addr #(wd_id, wd_addr, wd_user))  i_wr_addr;
-   interface FIFOF_I #(AXI4_Wr_Data #(wd_id, wd_data, wd_user))  i_wr_data;
+   interface FIFOF_I #(AXI4_Wr_Data #(wd_data, wd_user))         i_wr_data;
    interface FIFOF_O #(AXI4_Wr_Resp #(wd_id, wd_user))           o_wr_resp;
 
    interface FIFOF_I #(AXI4_Rd_Addr #(wd_id, wd_addr, wd_user))  i_rd_addr;
@@ -767,7 +760,7 @@ interface AXI4_Client_IFC  #(numeric type wd_id,
 			     numeric type wd_user);
 
    interface FIFOF_O #(AXI4_Wr_Addr #(wd_id, wd_addr, wd_user))  o_wr_addr;
-   interface FIFOF_O #(AXI4_Wr_Data #(wd_id, wd_data, wd_user))  o_wr_data;
+   interface FIFOF_O #(AXI4_Wr_Data #(wd_data, wd_user))         o_wr_data;
    interface FIFOF_I #(AXI4_Wr_Resp #(wd_id, wd_user))           i_wr_resp;
 
    interface FIFOF_O #(AXI4_Rd_Addr #(wd_id, wd_addr, wd_user))  o_rd_addr;
@@ -791,7 +784,7 @@ endinterface
 module mkAXI4_Buffer (AXI4_Buffer_IFC #(wd_id, wd_addr, wd_data, wd_user));
 
    FIFOF #(AXI4_Wr_Addr #(wd_id, wd_addr, wd_user))  f_wr_addr <- mkFIFOF;
-   FIFOF #(AXI4_Wr_Data #(wd_id, wd_data, wd_user))  f_wr_data <- mkFIFOF;
+   FIFOF #(AXI4_Wr_Data #(wd_data, wd_user))         f_wr_data <- mkFIFOF;
    FIFOF #(AXI4_Wr_Resp #(wd_id, wd_user))           f_wr_resp <- mkFIFOF;
 
    FIFOF #(AXI4_Rd_Addr #(wd_id, wd_addr, wd_user))  f_rd_addr <- mkFIFOF;
@@ -828,7 +821,7 @@ endmodule
 module mkAXI4_Buffer_2 (AXI4_Buffer_IFC #(wd_id, wd_addr, wd_data, wd_user));
 
    FIFOF #(AXI4_Wr_Addr #(wd_id, wd_addr, wd_user))  f_wr_addr <- mkMaster_EdgeFIFOF;
-   FIFOF #(AXI4_Wr_Data #(wd_id, wd_data, wd_user))  f_wr_data <- mkMaster_EdgeFIFOF;
+   FIFOF #(AXI4_Wr_Data #(wd_data, wd_user))         f_wr_data <- mkMaster_EdgeFIFOF;
    FIFOF #(AXI4_Wr_Resp #(wd_id, wd_user))           f_wr_resp <- mkSlave_EdgeFIFOF;
 
    FIFOF #(AXI4_Rd_Addr #(wd_id, wd_addr, wd_user))  f_rd_addr <- mkMaster_EdgeFIFOF;
@@ -876,7 +869,7 @@ interface AXI4_Master_Xactor_IFC #(numeric type wd_id,
 
    // FIFOF side
    interface FIFOF_I #(AXI4_Wr_Addr #(wd_id, wd_addr, wd_user))  i_wr_addr;
-   interface FIFOF_I #(AXI4_Wr_Data #(wd_id, wd_data, wd_user))  i_wr_data;
+   interface FIFOF_I #(AXI4_Wr_Data #(wd_data, wd_user))         i_wr_data;
    interface FIFOF_O #(AXI4_Wr_Resp #(wd_id, wd_user))           o_wr_resp;
 
    interface FIFOF_I #(AXI4_Rd_Addr #(wd_id, wd_addr, wd_user))  i_rd_addr;
@@ -894,7 +887,7 @@ module mkAXI4_Master_Xactor (AXI4_Master_Xactor_IFC #(wd_id, wd_addr, wd_data, w
 
    // These FIFOs are guarded on BSV side, unguarded on AXI side
    FIFOF #(AXI4_Wr_Addr #(wd_id, wd_addr, wd_user))  f_wr_addr <- mkGFIFOF (guarded, unguarded);
-   FIFOF #(AXI4_Wr_Data #(wd_id, wd_data, wd_user))  f_wr_data <- mkGFIFOF (guarded, unguarded);
+   FIFOF #(AXI4_Wr_Data #(wd_data, wd_user))         f_wr_data <- mkGFIFOF (guarded, unguarded);
    FIFOF #(AXI4_Wr_Resp #(wd_id, wd_user))           f_wr_resp <- mkGFIFOF (unguarded, guarded);
 
    FIFOF #(AXI4_Rd_Addr #(wd_id, wd_addr, wd_user))  f_rd_addr <- mkGFIFOF (guarded, unguarded);
@@ -932,7 +925,6 @@ module mkAXI4_Master_Xactor (AXI4_Master_Xactor_IFC #(wd_id, wd_addr, wd_data, w
 
 			   // Wr Data channel
 			   method Bool                       m_wvalid = f_wr_data.notEmpty;
-			   method Bit #(wd_id)               m_wid    = f_wr_data.first.wid;
 			   method Bit #(wd_data)             m_wdata  = f_wr_data.first.wdata;
 			   method Bit #(TDiv #(wd_data, 8))  m_wstrb  = f_wr_data.first.wstrb;
 			   method Bool                       m_wlast  = f_wr_data.first.wlast;
@@ -1017,7 +1009,7 @@ module mkAXI4_Master_Xactor_2 (AXI4_Master_Xactor_IFC #(wd_id, wd_addr, wd_data,
    Reg #(AXI4_Wr_Addr #(wd_id, wd_addr, wd_user))  rg_wr_addr <- mkRegU;
 
    Array #(Reg #(Bool))                            crg_wr_data_full <- mkCReg (3, False);
-   Reg #(AXI4_Wr_Data #(wd_id, wd_data, wd_user))  rg_wr_data <- mkRegU;
+   Reg #(AXI4_Wr_Data #(wd_data, wd_user))         rg_wr_data <- mkRegU;
 
    Array #(Reg #(Bool))                            crg_wr_resp_full <- mkCReg (3, False);
    Reg #(AXI4_Wr_Resp #(wd_id, wd_user))           rg_wr_resp <- mkRegU;
@@ -1071,7 +1063,6 @@ module mkAXI4_Master_Xactor_2 (AXI4_Master_Xactor_IFC #(wd_id, wd_addr, wd_data,
 
 			   // Wr Data channel
 			   method Bool                       m_wvalid = crg_wr_data_full [port_deq];
-			   method Bit #(wd_id)               m_wid    = rg_wr_data.wid;
 			   method Bit #(wd_data)             m_wdata  = rg_wr_data.wdata;
 			   method Bit #(TDiv #(wd_data, 8))  m_wstrb  = rg_wr_data.wstrb;
 			   method Bool                       m_wlast  = rg_wr_data.wlast;
@@ -1161,7 +1152,7 @@ interface AXI4_Slave_Xactor_IFC #(numeric type wd_id,
 
    // FIFOF side
    interface FIFOF_O #(AXI4_Wr_Addr #(wd_id, wd_addr, wd_user))  o_wr_addr;
-   interface FIFOF_O #(AXI4_Wr_Data #(wd_id, wd_data, wd_user))  o_wr_data;
+   interface FIFOF_O #(AXI4_Wr_Data #(wd_data, wd_user))         o_wr_data;
    interface FIFOF_I #(AXI4_Wr_Resp #(wd_id, wd_user))           i_wr_resp;
 
    interface FIFOF_O #(AXI4_Rd_Addr #(wd_id, wd_addr, wd_user))  o_rd_addr;
@@ -1179,7 +1170,7 @@ module mkAXI4_Slave_Xactor (AXI4_Slave_Xactor_IFC #(wd_id, wd_addr, wd_data, wd_
 
    // These FIFOs are guarded on BSV side, unguarded on AXI side
    FIFOF #(AXI4_Wr_Addr #(wd_id, wd_addr, wd_user))  f_wr_addr <- mkGFIFOF (unguarded, guarded);
-   FIFOF #(AXI4_Wr_Data #(wd_id, wd_data, wd_user))  f_wr_data <- mkGFIFOF (unguarded, guarded);
+   FIFOF #(AXI4_Wr_Data #(wd_data, wd_user))         f_wr_data <- mkGFIFOF (unguarded, guarded);
    FIFOF #(AXI4_Wr_Resp #(wd_id, wd_user))           f_wr_resp <- mkGFIFOF (guarded, unguarded);
 
    FIFOF #(AXI4_Rd_Addr #(wd_id, wd_addr, wd_user))  f_rd_addr <- mkGFIFOF (unguarded, guarded);
@@ -1231,14 +1222,12 @@ module mkAXI4_Slave_Xactor (AXI4_Slave_Xactor_IFC #(wd_id, wd_addr, wd_data, wd_
 
 			   // Wr Data channel
 			   method Action m_wvalid (Bool                       wvalid,
-						   Bit #(wd_id)               wid,
 						   Bit #(wd_data)             wdata,
 						   Bit #(TDiv #(wd_data, 8))  wstrb,
 						   Bool                       wlast,
 						   Bit #(wd_user)             wuser);
 			      if (wvalid && f_wr_data.notFull)
-				 f_wr_data.enq (AXI4_Wr_Data {wid:   wid,
-							      wdata: wdata,
+				 f_wr_data.enq (AXI4_Wr_Data {wdata: wdata,
 							      wstrb: wstrb,
 							      wlast: wlast,
 							      wuser: wuser});
@@ -1325,7 +1314,7 @@ module mkAXI4_Slave_Xactor_2 (AXI4_Slave_Xactor_IFC #(wd_id, wd_addr, wd_data, w
    Reg #(AXI4_Wr_Addr #(wd_id, wd_addr, wd_user))  rg_wr_addr <- mkRegU;
 
    Array #(Reg #(Bool))                            crg_wr_data_full <- mkCReg (3, False);
-   Reg #(AXI4_Wr_Data #(wd_id, wd_data, wd_user))  rg_wr_data <- mkRegU;
+   Reg #(AXI4_Wr_Data #(wd_data, wd_user))         rg_wr_data <- mkRegU;
 
    Array #(Reg #(Bool))                            crg_wr_resp_full <- mkCReg (3, False);
    Reg #(AXI4_Wr_Resp #(wd_id, wd_user))           rg_wr_resp <- mkRegU;
@@ -1391,15 +1380,13 @@ module mkAXI4_Slave_Xactor_2 (AXI4_Slave_Xactor_IFC #(wd_id, wd_addr, wd_data, w
 
 			   // Wr Data channel
 			   method Action m_wvalid (Bool                       wvalid,
-						   Bit #(wd_id)               wid,
 						   Bit #(wd_data)             wdata,
 						   Bit #(TDiv #(wd_data, 8))  wstrb,
 						   Bool                       wlast,
 						   Bit #(wd_user)             wuser);
 			      if (wvalid && (! crg_wr_data_full [port_enq])) begin
 				 crg_wr_data_full [port_enq] <= True;    // enq
-				 rg_wr_data <= AXI4_Wr_Data {wid:   wid,
-							     wdata: wdata,
+				 rg_wr_data <= AXI4_Wr_Data {wdata: wdata,
 							     wstrb: wstrb,
 							     wlast: wlast,
 							     wuser: wuser};

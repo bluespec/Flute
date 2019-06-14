@@ -139,7 +139,7 @@ module mkAXI4_Deburster (AXI4_Deburster_IFC #(wd_id, wd_addr, wd_data, wd_user))
 
    rule rl_wr_xaction_master_to_slave;
       AXI4_Wr_Addr #(wd_id, wd_addr, wd_user) a_in = xactor_from_master.o_wr_addr.first;
-      AXI4_Wr_Data #(wd_id, wd_data, wd_user) d_in = xactor_from_master.o_wr_data.first;
+      AXI4_Wr_Data #(wd_data, wd_user)        d_in = xactor_from_master.o_wr_data.first;
 
       // Construct output AW item
       let a_out = a_in;

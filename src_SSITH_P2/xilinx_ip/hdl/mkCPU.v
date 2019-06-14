@@ -21,7 +21,6 @@
 // imem_master_awqos              O     4 reg
 // imem_master_awregion           O     4 reg
 // imem_master_wvalid             O     1
-// imem_master_wid                O     4 reg
 // imem_master_wdata              O    64 reg
 // imem_master_wstrb              O     8 reg
 // imem_master_wlast              O     1 reg
@@ -50,7 +49,6 @@
 // dmem_master_awqos              O     4 reg
 // dmem_master_awregion           O     4 reg
 // dmem_master_wvalid             O     1
-// dmem_master_wid                O     4 reg
 // dmem_master_wdata              O    64 reg
 // dmem_master_wstrb              O     8 reg
 // dmem_master_wlast              O     1 reg
@@ -200,8 +198,6 @@ module mkCPU(CLK,
 
 	     imem_master_wvalid,
 
-	     imem_master_wid,
-
 	     imem_master_wdata,
 
 	     imem_master_wstrb,
@@ -273,8 +269,6 @@ module mkCPU(CLK,
 	     dmem_master_awready,
 
 	     dmem_master_wvalid,
-
-	     dmem_master_wid,
 
 	     dmem_master_wdata,
 
@@ -430,9 +424,6 @@ module mkCPU(CLK,
   // value method imem_master_m_wvalid
   output imem_master_wvalid;
 
-  // value method imem_master_m_wid
-  output [3 : 0] imem_master_wid;
-
   // value method imem_master_m_wdata
   output [63 : 0] imem_master_wdata;
 
@@ -543,9 +534,6 @@ module mkCPU(CLK,
 
   // value method dmem_master_m_wvalid
   output dmem_master_wvalid;
-
-  // value method dmem_master_m_wid
-  output [3 : 0] dmem_master_wid;
 
   // value method dmem_master_m_wdata
   output [63 : 0] dmem_master_wdata;
@@ -713,7 +701,6 @@ module mkCPU(CLK,
 	       dmem_master_awid,
 	       dmem_master_awqos,
 	       dmem_master_awregion,
-	       dmem_master_wid,
 	       imem_master_arcache,
 	       imem_master_arid,
 	       imem_master_arqos,
@@ -721,8 +708,7 @@ module mkCPU(CLK,
 	       imem_master_awcache,
 	       imem_master_awid,
 	       imem_master_awqos,
-	       imem_master_awregion,
-	       imem_master_wid;
+	       imem_master_awregion;
   wire [2 : 0] dmem_master_arprot,
 	       dmem_master_arsize,
 	       dmem_master_awprot,
@@ -1171,7 +1157,6 @@ module mkCPU(CLK,
 	       near_mem$dmem_master_awregion,
 	       near_mem$dmem_master_bid,
 	       near_mem$dmem_master_rid,
-	       near_mem$dmem_master_wid,
 	       near_mem$imem_exc_code,
 	       near_mem$imem_master_arcache,
 	       near_mem$imem_master_arid,
@@ -1182,8 +1167,7 @@ module mkCPU(CLK,
 	       near_mem$imem_master_awqos,
 	       near_mem$imem_master_awregion,
 	       near_mem$imem_master_bid,
-	       near_mem$imem_master_rid,
-	       near_mem$imem_master_wid;
+	       near_mem$imem_master_rid;
   wire [2 : 0] near_mem$dmem_master_arprot,
 	       near_mem$dmem_master_arsize,
 	       near_mem$dmem_master_awprot,
@@ -1583,6 +1567,7 @@ module mkCPU(CLK,
 	       IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d1271,
 	       IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d2259,
 	       IF_stage2_rg_stage2_15_BITS_629_TO_627_16_EQ_0_ETC___d2149,
+<<<<<<< HEAD
 	       _theResult_____1_fst__h10941,
 	       alu_outputs_trace_data_pc__h25914,
 	       alu_outputs_trace_data_word1__h25918,
@@ -1603,6 +1588,28 @@ module mkCPU(CLK,
 	      x_out_data_to_stage3_fpr_flags__h8434,
 	      x_out_data_to_stage3_rd__h8431,
 	      x_out_fbypass_rd__h9058;
+=======
+	       _theResult_____1_fst__h11019,
+	       alu_outputs_trace_data_pc__h25992,
+	       alu_outputs_trace_data_word1__h25996,
+	       alu_outputs_trace_data_word2__h25997,
+	       alu_outputs_trace_data_word3__h25998,
+	       rd_val__h9814,
+	       rs1_val__h31657,
+	       value__h8692,
+	       value__h8753,
+	       x_out_bypass_rd_val__h8988,
+	       x_out_data_to_stage2_addr__h9449,
+	       x_out_data_to_stage2_val1__h9450,
+	       x_out_data_to_stage3_rd_val__h8513,
+	       x_out_fbypass_rd_val__h9137;
+  reg [4 : 0] alu_outputs_trace_data_rd__h25995,
+	      data_to_stage2_rd__h9434,
+	      x_out_bypass_rd__h8987,
+	      x_out_data_to_stage3_fpr_flags__h8512,
+	      x_out_data_to_stage3_rd__h8509,
+	      x_out_fbypass_rd__h9136;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   reg [3 : 0] CASE_rg_cur_priv_0b0_8_0b1_9_11__q16,
 	      CASE_stage1_rg_stage_input_BITS_112_TO_110_0b0_ETC__q18,
 	      CASE_stage1_rg_stage_input_BITS_112_TO_110_0b0_ETC__q19,
@@ -1611,8 +1618,13 @@ module mkCPU(CLK,
 	      IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d986,
 	      IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d989,
 	      IF_stage1_rg_stage_input_20_BITS_87_TO_76_41_E_ETC___d964,
+<<<<<<< HEAD
 	      alu_outputs_exc_code__h10377,
 	      x_out_trap_info_exc_code__h8651;
+=======
+	      alu_outputs_exc_code__h10455,
+	      x_out_trap_info_exc_code__h8729;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   reg [2 : 0] CASE_stage1_rg_stage_input_BITS_151_TO_145_0b1_ETC__q20,
 	      CASE_stage1_rg_stage_input_BITS_151_TO_145_0b1_ETC__q21;
   reg [1 : 0] CASE_stage2_rg_stage2_BITS_629_TO_627_0_2_1_IF_ETC__q4,
@@ -1642,6 +1654,7 @@ module mkCPU(CLK,
 		IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d1290,
 		IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d2260,
 		SEXT_stage1_rg_stage_input_20_BITS_87_TO_76_41___d1152,
+<<<<<<< HEAD
 		_theResult_____1_fst__h10934,
 		_theResult_____1_fst__h10969,
 		_theResult_____1_fst_rd_val__h8888,
@@ -1724,6 +1737,90 @@ module mkCPU(CLK,
 		x_out_data_to_stage2_val3__h9374,
 		x_out_next_pc__h9318,
 		y__h31739;
+=======
+		_theResult_____1_fst__h11012,
+		_theResult_____1_fst__h11047,
+		_theResult_____1_fst_rd_val__h8966,
+		_theResult_____1_snd_fst_rd_val__h9122,
+		_theResult_____2_fst_rd_val__h8963,
+		_theResult_____2_snd_rd_val__h9119,
+		_theResult____h40165,
+		_theResult____h9720,
+		_theResult___fst__h11137,
+		_theResult___fst__h11144,
+		_theResult___fst__h11224,
+		_theResult___fst_rd_val__h8977,
+		_theResult___snd__h13319,
+		_theResult___snd_rd_val__h9128,
+		alu_outputs___1_addr__h9590,
+		alu_outputs___1_addr__h9614,
+		alu_outputs___1_addr__h9643,
+		alu_outputs___1_addr__h9926,
+		alu_outputs___1_trace_data_pc__h25947,
+		alu_outputs___1_val1__h10203,
+		alu_outputs___1_val1__h10227,
+		alu_outputs___1_val1__h10428,
+		alu_outputs___1_val2__h9928,
+		branch_target__h9569,
+		cpi__h40167,
+		cpifrac__h40168,
+		data_to_stage2_addr__h9435,
+		data_to_stage3_rd_val__h8407,
+		delta_CPI_cycles__h40163,
+		delta_CPI_instrs___1__h40200,
+		delta_CPI_instrs__h40164,
+		fall_through_pc__h9380,
+		frs1_val_bypassed__h4940,
+		frs2_val_bypassed__h4945,
+		next_pc___1__h12718,
+		next_pc__h12715,
+		next_pc__h29626,
+		next_pc__h9381,
+		rd_val___1__h11000,
+		rd_val___1__h11008,
+		rd_val___1__h11015,
+		rd_val___1__h11022,
+		rd_val___1__h11029,
+		rd_val___1__h11036,
+		rd_val___1__h13350,
+		rd_val___1__h13381,
+		rd_val___1__h13434,
+		rd_val___1__h13463,
+		rd_val___1__h13517,
+		rd_val___1__h13565,
+		rd_val___1__h13571,
+		rd_val___1__h13616,
+		rd_val__h13214,
+		rd_val__h13265,
+		rd_val__h13287,
+		rd_val__h13883,
+		rd_val__h13946,
+		rd_val__h14007,
+		rd_val__h9332,
+		rd_val__h9357,
+		rd_val__h9762,
+		rd_val__h9788,
+		rd_val__h9834,
+		rd_val__h9853,
+		rs1_val__h31065,
+		rs1_val_bypassed__h4929,
+		rs2_val_bypassed__h4935,
+		trap_info_tval__h12949,
+		val__h9334,
+		val__h9359,
+		value__h12999,
+		x__h27435,
+		x__h27498,
+		x__h27770,
+		x__h31482,
+		x__h32112,
+		x__h32121,
+		x__h40166,
+		x_out_data_to_stage2_val2__h9451,
+		x_out_data_to_stage2_val3__h9452,
+		x_out_next_pc__h9396,
+		y__h31961;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   wire [31 : 0] IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1674,
 		IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1675,
 		IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1676,
@@ -1751,6 +1848,7 @@ module mkCPU(CLK,
 		IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1706,
 		IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1707,
 		IF_stage1_rg_stage_input_20_BITS_139_TO_135_23_ETC__q23,
+<<<<<<< HEAD
 		_theResult____h5208,
 		_theResult___fst__h21699,
 		_theResult___fst__h21727,
@@ -1845,6 +1943,102 @@ module mkCPU(CLK,
 	       trace_data_rd__h39643,
 	       x_out_data_to_stage2_rd__h9370,
 	       x_out_data_to_stage2_trace_data_rd__h25928;
+=======
+		_theResult____h5287,
+		_theResult___fst__h21777,
+		_theResult___fst__h21805,
+		alu_outputs___1_trace_data_instr__h25949,
+		d_instr__h21745,
+		instr___1__h14157,
+		instr__h14334,
+		instr__h14479,
+		instr__h14671,
+		instr__h14866,
+		instr__h15095,
+		instr__h15548,
+		instr__h15664,
+		instr__h15729,
+		instr__h16046,
+		instr__h16384,
+		instr__h16568,
+		instr__h16697,
+		instr__h16924,
+		instr__h17179,
+		instr__h17351,
+		instr__h17520,
+		instr__h17709,
+		instr__h17898,
+		instr__h18015,
+		instr__h18193,
+		instr__h18312,
+		instr__h18407,
+		instr__h18543,
+		instr__h18679,
+		instr__h18815,
+		instr__h18953,
+		instr__h19091,
+		instr__h19249,
+		instr__h19345,
+		instr__h19498,
+		instr__h19697,
+		instr__h19848,
+		instr__h20887,
+		instr__h21040,
+		instr__h21239,
+		instr__h21390,
+		instr_out___1__h21747,
+		instr_out___1__h21779,
+		instr_out___1__h21807,
+		result___1__h27177,
+		rs1_val_bypassed929_BITS_31_TO_0_MINUS_rs2_val_ETC__q11,
+		rs1_val_bypassed929_BITS_31_TO_0_PLUS_rs2_val__ETC__q10,
+		rs1_val_bypassed929_BITS_31_TO_0_SRL_rs2_val_b_ETC__q9,
+		rs1_val_bypassed929_BITS_31_TO_0__q8,
+		stage1_rg_stage_input_BITS_263_TO_232__q1,
+		tmp__h13462,
+		v32__h9832,
+		x__h13384,
+		x__h13437,
+		x__h13574,
+		x__h13619,
+		x_out_data_to_stage1_instr__h14121;
+  wire [20 : 0] SEXT_stageD_rg_data_415_BIT_76_432_CONCAT_stag_ETC___d1485,
+		decoded_instr_imm21_UJ__h28670,
+		stage1_rg_stage_input_BITS_30_TO_10__q3;
+  wire [19 : 0] imm20__h16436;
+  wire [12 : 0] SEXT_stageD_rg_data_415_BIT_76_432_CONCAT_stag_ETC___d1510,
+		decoded_instr_imm13_SB__h28668,
+		stage1_rg_stage_input_BITS_63_TO_51__q2;
+  wire [11 : 0] decoded_instr_imm12_S__h28667,
+		imm12__h14335,
+		imm12__h14672,
+		imm12__h16308,
+		imm12__h16977,
+		imm12__h17192,
+		imm12__h17388,
+		imm12__h17725,
+		imm12__h19346,
+		imm12__h19698,
+		offset__h15042,
+		stage1_rg_stage_input_BITS_75_TO_64__q7,
+		stage1_rg_stage_input_BITS_87_TO_76__q22;
+  wire [9 : 0] decoded_instr_funct10__h28665,
+	       nzimm10__h16975,
+	       nzimm10__h17190;
+  wire [8 : 0] offset__h15673, offset__h19260;
+  wire [7 : 0] offset__h14207, offset__h19632;
+  wire [6 : 0] offset__h14614;
+  wire [5 : 0] imm6__h16306, shamt__h9716;
+  wire [4 : 0] offset_BITS_4_TO_0___h14603,
+	       offset_BITS_4_TO_0___h15034,
+	       offset_BITS_4_TO_0___h19973,
+	       rd__h14674,
+	       rs1__h14673,
+	       td1_rd__h33357,
+	       trace_data_rd__h39865,
+	       x_out_data_to_stage2_rd__h9448,
+	       x_out_data_to_stage2_trace_data_rd__h26006;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   wire [3 : 0] IF_NOT_csr_regfile_read_mstatus__0_BITS_14_TO__ETC___d974,
 	       IF_NOT_stage1_rg_stage_input_20_BITS_104_TO_98_ETC___d2216,
 	       IF_NOT_stage1_rg_stage_input_20_BITS_112_TO_11_ETC___d918,
@@ -1854,12 +2048,21 @@ module mkCPU(CLK,
 	       IF_stage1_rg_stage_input_20_BITS_144_TO_140_31_ETC___d966,
 	       IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d2215,
 	       IF_stage1_rg_stage_input_20_BITS_335_TO_334_21_ETC___d992,
+<<<<<<< HEAD
 	       alu_outputs___1_exc_code__h10121,
 	       cur_verbosity__h3308,
 	       x_out_trap_info_exc_code__h12876;
   wire [2 : 0] IF_stage1_rg_stage_input_20_BITS_335_TO_334_21_ETC___d1086,
 	       rm__h10253,
 	       x_out_data_to_stage2_rounding_mode__h9376;
+=======
+	       alu_outputs___1_exc_code__h10199,
+	       cur_verbosity__h3292,
+	       x_out_trap_info_exc_code__h12954;
+  wire [2 : 0] IF_stage1_rg_stage_input_20_BITS_335_TO_334_21_ETC___d1086,
+	       rm__h10331,
+	       x_out_data_to_stage2_rounding_mode__h9454;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   wire [1 : 0] IF_NOT_near_mem_dmem_valid__38_60_OR_NOT_near__ETC___d271,
 	       IF_NOT_near_mem_dmem_valid__38_60_OR_NOT_near__ETC___d297,
 	       IF_NOT_stage2_rg_full_14_51_OR_stage2_rg_stage_ETC___d302,
@@ -1869,10 +2072,17 @@ module mkCPU(CLK,
 	       IF_stage2_mbox_valid__42_THEN_2_ELSE_1___d143,
 	       IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d150,
 	       IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d278,
+<<<<<<< HEAD
 	       epoch__h29546,
 	       sxl__h7225,
 	       uxl__h7226,
 	       v__h23141;
+=======
+	       epoch__h29624,
+	       sxl__h7303,
+	       uxl__h7304,
+	       v__h23219;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   wire IF_IF_stage1_rg_stage_input_20_BITS_151_TO_145_ETC___d1405,
        IF_NOT_stage1_rg_full_19_15_OR_NOT_stage1_rg_s_ETC___d2175,
        IF_NOT_stage1_rg_stage_input_20_BITS_335_TO_33_ETC___d2043,
@@ -1950,9 +2160,16 @@ module mkCPU(CLK,
        rg_state_2_EQ_4_004_AND_NOT_stage1_rg_stage_in_ETC___d2612,
        rg_state_2_EQ_4_004_AND_NOT_stage3_rg_full_9_0_ETC___d2412,
        rg_state_2_EQ_4_004_AND_stage3_rg_full_9_OR_NO_ETC___d2088,
+<<<<<<< HEAD
        rg_state_2_EQ_5_556_OR_rg_state_2_EQ_4_004_AND_ETC___d2565,
        rg_state_2_EQ_5_556_OR_rg_state_2_EQ_4_004_AND_ETC___d2566,
        rg_state_2_EQ_7_498_AND_NOT_stageF_rg_full_823_ETC___d2499,
+=======
+       rg_state_2_EQ_5_418_AND_NOT_stageF_rg_full_823_ETC___d2419,
+       rg_state_2_EQ_7_562_OR_rg_state_2_EQ_4_004_AND_ETC___d2571,
+       rg_state_2_EQ_7_562_OR_rg_state_2_EQ_4_004_AND_ETC___d2572,
+       rg_state_2_EQ_8_504_AND_NOT_stageF_rg_full_823_ETC___d2505,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
        stage1_rg_full_19_AND_NOT_stage1_rg_stage_inpu_ETC___d2008,
        stage1_rg_full_19_AND_NOT_stage1_rg_stage_inpu_ETC___d2402,
        stage1_rg_full_19_AND_NOT_stage1_rg_stage_inpu_ETC___d914,
@@ -2041,9 +2258,6 @@ module mkCPU(CLK,
 
   // value method imem_master_m_wvalid
   assign imem_master_wvalid = near_mem$imem_master_wvalid ;
-
-  // value method imem_master_m_wid
-  assign imem_master_wid = near_mem$imem_master_wid ;
 
   // value method imem_master_m_wdata
   assign imem_master_wdata = near_mem$imem_master_wdata ;
@@ -2148,9 +2362,6 @@ module mkCPU(CLK,
 
   // value method dmem_master_m_wvalid
   assign dmem_master_wvalid = near_mem$dmem_master_wvalid ;
-
-  // value method dmem_master_m_wid
-  assign dmem_master_wid = near_mem$dmem_master_wid ;
 
   // value method dmem_master_m_wdata
   assign dmem_master_wdata = near_mem$dmem_master_wdata ;
@@ -2626,7 +2837,6 @@ module mkCPU(CLK,
 		      .imem_master_awqos(near_mem$imem_master_awqos),
 		      .imem_master_awregion(near_mem$imem_master_awregion),
 		      .imem_master_wvalid(near_mem$imem_master_wvalid),
-		      .imem_master_wid(near_mem$imem_master_wid),
 		      .imem_master_wdata(near_mem$imem_master_wdata),
 		      .imem_master_wstrb(near_mem$imem_master_wstrb),
 		      .imem_master_wlast(near_mem$imem_master_wlast),
@@ -2660,7 +2870,6 @@ module mkCPU(CLK,
 		      .dmem_master_awqos(near_mem$dmem_master_awqos),
 		      .dmem_master_awregion(near_mem$dmem_master_awregion),
 		      .dmem_master_wvalid(near_mem$dmem_master_wvalid),
-		      .dmem_master_wid(near_mem$dmem_master_wid),
 		      .dmem_master_wdata(near_mem$dmem_master_wdata),
 		      .dmem_master_wstrb(near_mem$dmem_master_wstrb),
 		      .dmem_master_wlast(near_mem$dmem_master_wlast),
@@ -2989,8 +3198,13 @@ module mkCPU(CLK,
   assign WILL_FIRE_RL_rl_stage1_FENCE_I = MUX_rg_state$write_1__SEL_10 ;
 
   // rule RL_rl_stage1_FENCE
+<<<<<<< HEAD
   assign CAN_FIRE_RL_rl_stage1_FENCE = MUX_rg_state$write_1__SEL_11 ;
   assign WILL_FIRE_RL_rl_stage1_FENCE = MUX_rg_state$write_1__SEL_11 ;
+=======
+  assign CAN_FIRE_RL_rl_stage1_FENCE = MUX_rg_state$write_1__SEL_12 ;
+  assign WILL_FIRE_RL_rl_stage1_FENCE = MUX_rg_state$write_1__SEL_12 ;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 
   // rule RL_rl_stage1_trap
   assign CAN_FIRE_RL_rl_stage1_trap =
@@ -2999,15 +3213,25 @@ module mkCPU(CLK,
   assign WILL_FIRE_RL_rl_stage1_trap = CAN_FIRE_RL_rl_stage1_trap ;
 
   // rule RL_rl_stage1_WFI
+<<<<<<< HEAD
   assign CAN_FIRE_RL_rl_stage1_WFI = MUX_rg_state$write_1__SEL_13 ;
   assign WILL_FIRE_RL_rl_stage1_WFI = MUX_rg_state$write_1__SEL_13 ;
+=======
+  assign CAN_FIRE_RL_rl_stage1_WFI = MUX_rg_state$write_1__SEL_14 ;
+  assign WILL_FIRE_RL_rl_stage1_WFI = MUX_rg_state$write_1__SEL_14 ;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 
   // rule RL_rl_trap_BREAK_to_Debug_Mode
   assign CAN_FIRE_RL_rl_trap_BREAK_to_Debug_Mode =
 	     near_mem$RDY_server_fence_i_request_put &&
 	     f_run_halt_rsps$FULL_N &&
+<<<<<<< HEAD
 	     rg_state_2_EQ_4_004_AND_NOT_stage1_rg_stage_in_ETC___d2579 &&
 	     x_out_trap_info_exc_code__h12876 == 4'd3 &&
+=======
+	     rg_state_2_EQ_4_004_AND_NOT_stage1_rg_stage_in_ETC___d2585 &&
+	     x_out_trap_info_exc_code__h12954 == 4'd3 &&
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	     csr_regfile$dcsr_break_enters_debug ;
   assign WILL_FIRE_RL_rl_trap_BREAK_to_Debug_Mode =
 	     CAN_FIRE_RL_rl_trap_BREAK_to_Debug_Mode ;
@@ -3078,10 +3302,21 @@ module mkCPU(CLK,
 	     !WILL_FIRE_RL_rl_stage1_CSRR_W ;
 
   // rule RL_rl_stage2_nonpipe
+<<<<<<< HEAD
   assign CAN_FIRE_RL_rl_stage2_nonpipe =
 	     f_trace_data$FULL_N &&
 	     rg_state_2_EQ_4_004_AND_NOT_stage3_rg_full_9_0_ETC___d2412 ;
   assign WILL_FIRE_RL_rl_stage2_nonpipe = CAN_FIRE_RL_rl_stage2_nonpipe ;
+=======
+  assign CAN_FIRE_RL_rl_stage2_nonpipe = MUX_rg_state$write_1__SEL_9 ;
+  assign WILL_FIRE_RL_rl_stage2_nonpipe = MUX_rg_state$write_1__SEL_9 ;
+
+  // rule RL_rl_trap
+  assign CAN_FIRE_RL_rl_trap =
+	     f_trace_data$FULL_N &&
+	     rg_state_2_EQ_5_418_AND_NOT_stageF_rg_full_823_ETC___d2419 ;
+  assign WILL_FIRE_RL_rl_trap = CAN_FIRE_RL_rl_trap ;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 
   // rule RL_rl_stage1_restart_after_csrrx
   assign CAN_FIRE_RL_rl_stage1_restart_after_csrrx =
@@ -3109,17 +3344,26 @@ module mkCPU(CLK,
   assign WILL_FIRE_RL_rl_finish_SFENCE_VMA =
 	     CAN_FIRE_RL_rl_finish_SFENCE_VMA ;
 
+<<<<<<< HEAD
   // rule RL_rl_WFI_resume
   assign CAN_FIRE_RL_rl_WFI_resume =
 	     NOT_near_mem_imem_pc_BITS_63_TO_2_EQ_imem_rg_p_ETC___d1978 &&
 	     rg_state_2_EQ_11_5_AND_csr_regfile_wfi_resume__ETC___d2552 ;
   assign WILL_FIRE_RL_rl_WFI_resume = CAN_FIRE_RL_rl_WFI_resume ;
 
+=======
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   // rule RL_rl_reset_from_WFI
   assign CAN_FIRE_RL_rl_reset_from_WFI =
 	     rg_state == 4'd11 && f_reset_reqs$EMPTY_N ;
   assign WILL_FIRE_RL_rl_reset_from_WFI =
 	     CAN_FIRE_RL_rl_reset_from_WFI && !WILL_FIRE_RL_rl_WFI_resume ;
+
+  // rule RL_rl_WFI_resume
+  assign CAN_FIRE_RL_rl_WFI_resume =
+	     NOT_near_mem_imem_pc_BITS_63_TO_2_EQ_imem_rg_p_ETC___d1978 &&
+	     rg_state_2_EQ_12_5_AND_csr_regfile_wfi_resume__ETC___d2558 ;
+  assign WILL_FIRE_RL_rl_WFI_resume = CAN_FIRE_RL_rl_WFI_resume ;
 
   // rule RL_rl_trap_fetch
   assign CAN_FIRE_RL_rl_trap_fetch =
@@ -3298,6 +3542,13 @@ module mkCPU(CLK,
 	     WILL_FIRE_RL_rl_finish_FENCE_I ||
 	     WILL_FIRE_RL_rl_stage1_restart_after_csrrx ;
   assign MUX_rg_state$write_1__SEL_9 =
+<<<<<<< HEAD
+=======
+	     rg_state == 4'd4 && !stage3_rg_full &&
+	     IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d150 ==
+	     2'd3 ;
+  assign MUX_rg_state$write_1__SEL_10 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	     WILL_FIRE_RL_rl_stage1_interrupt ||
 	     WILL_FIRE_RL_rl_stage1_trap ||
 	     WILL_FIRE_RL_rl_stage1_xRET ||
@@ -3331,15 +3582,24 @@ module mkCPU(CLK,
 	       4'd0 ;
   always@(stage1_rg_stage_input_BITS_263_TO_232__q1 or
 	  csr_regfile$read_csr or
+<<<<<<< HEAD
 	  y__h31739 or
 	  IF_csr_regfile_read_csr_IF_stage1_rg_full_19_T_ETC___d2484)
+=======
+	  y__h31961 or
+	  IF_csr_regfile_read_csr_IF_stage1_rg_full_19_T_ETC___d2490)
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   begin
     case (stage1_rg_stage_input_BITS_263_TO_232__q1[14:12])
       3'b010, 3'b110:
 	  MUX_csr_regfile$mav_csr_write_2__VAL_2 =
 	      IF_csr_regfile_read_csr_IF_stage1_rg_full_19_T_ETC___d2484;
       default: MUX_csr_regfile$mav_csr_write_2__VAL_2 =
+<<<<<<< HEAD
 		   csr_regfile$read_csr[63:0] & y__h31739;
+=======
+		   csr_regfile$read_csr[63:0] & y__h31961;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     endcase
   end
   assign MUX_csr_regfile$write_dcsr_cause_priv_1__VAL_2 =
@@ -3354,6 +3614,7 @@ module mkCPU(CLK,
 	       stage2_rg_stage2[191:0] } ;
   assign MUX_f_trace_data$enq_1__VAL_2 =
 	     { 4'd14,
+<<<<<<< HEAD
 	       alu_outputs_trace_data_pc__h25914,
 	       stage1_rg_stage_input[333],
 	       alu_outputs___1_trace_data_instr__h25871,
@@ -3372,47 +3633,99 @@ module mkCPU(CLK,
 	       x__h31890,
 	       x__h31260,
 	       x__h31899 } ;
+=======
+	       alu_outputs_trace_data_pc__h25992,
+	       stage1_rg_stage_input[333],
+	       alu_outputs___1_trace_data_instr__h25949,
+	       stage1_rg_stage_input_BITS_263_TO_232__q1[11:7],
+	       csr_regfile$read_csr[63:0],
+	       64'd1,
+	       x__h31482,
+	       csr_regfile$mav_csr_write } ;
+  assign MUX_f_trace_data$enq_1__VAL_3 =
+	     { 4'd14,
+	       alu_outputs_trace_data_pc__h25992,
+	       stage1_rg_stage_input[333],
+	       alu_outputs___1_trace_data_instr__h25949,
+	       stage1_rg_stage_input_BITS_263_TO_232__q1[11:7],
+	       csr_regfile$read_csr[63:0],
+	       x__h32112,
+	       x__h31482,
+	       x__h32121 } ;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   assign MUX_f_trace_data$enq_1__VAL_6 =
 	     { 298'h0EAAAAAAAAAAAAAAA955555554AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA0000000000000344,
 	       csr_regfile$csr_mip_read } ;
   assign MUX_f_trace_data$enq_1__VAL_7 =
 	     { 4'd12,
 	       csr_regfile$csr_trap_actions[193:130],
+<<<<<<< HEAD
 	       stage2_rg_stage2[293:261],
 	       _0_CONCAT_csr_regfile_csr_trap_actions_414_BITS_ETC___d2427 } ;
+=======
+	       rg_trap_trace_data[293:261],
+	       trace_data_rd__h39865,
+	       csr_regfile$csr_trap_actions[129:2],
+	       rg_trap_info[131:68],
+	       rg_trap_info[63:0] } ;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   assign MUX_f_trace_data$enq_1__VAL_8 =
 	     { 4'd13,
 	       csr_regfile$csr_ret_actions[129:66],
 	       stage1_rg_stage_input[333],
+<<<<<<< HEAD
 	       alu_outputs___1_trace_data_instr__h25871,
 	       td1_rd__h33135,
+=======
+	       alu_outputs___1_trace_data_instr__h25949,
+	       td1_rd__h33357,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       csr_regfile$csr_ret_actions[63:0],
 	       192'hAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA } ;
   assign MUX_f_trace_data$enq_1__VAL_9 =
 	     { 4'd12,
 	       csr_regfile$csr_trap_actions[193:130],
 	       stage1_rg_stage_input[333],
+<<<<<<< HEAD
 	       alu_outputs___1_trace_data_instr__h25871,
 	       trace_data_rd__h39643,
+=======
+	       alu_outputs___1_trace_data_instr__h25949,
+	       trace_data_rd__h39865,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       csr_regfile$csr_trap_actions[129:2],
 	       stage1_rg_stage_input[401:338],
 	       stage1_rg_stage_input[332] ?
 		 stage1_rg_stage_input[327:264] :
+<<<<<<< HEAD
 		 trap_info_tval__h12871 } ;
+=======
+		 trap_info_tval__h12949 } ;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   assign MUX_f_trace_data$enq_1__VAL_10 =
 	     { 4'd15,
 	       csr_regfile$csr_trap_actions[193:130],
 	       33'h0AAAAAAAA,
+<<<<<<< HEAD
 	       trace_data_rd__h39643,
+=======
+	       trace_data_rd__h39865,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       csr_regfile$csr_trap_actions[129:2],
 	       stage1_rg_stage_input[401:338],
 	       64'd0 } ;
   assign MUX_imem_rg_tval$write_1__VAL_6 = imem_rg_pc + 64'd2 ;
   assign MUX_near_mem$imem_req_2__VAL_1 =
 	     { soc_map$m_pc_reset_value[63:2], 2'b0 } ;
+<<<<<<< HEAD
   assign MUX_near_mem$imem_req_2__VAL_2 = { next_pc__h29548[63:2], 2'b0 } ;
   assign MUX_near_mem$imem_req_2__VAL_4 =
 	     { x_out_next_pc__h9318[63:2], 2'b0 } ;
+=======
+  assign MUX_near_mem$imem_req_2__VAL_2 = { next_pc__h29626[63:2], 2'b0 } ;
+  assign MUX_near_mem$imem_req_2__VAL_4 =
+	     { x_out_next_pc__h9396[63:2], 2'b0 } ;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   assign MUX_near_mem$imem_req_2__VAL_5 = { rg_next_pc[63:2], 2'b0 } ;
   assign MUX_near_mem$imem_req_2__VAL_7 =
 	     { csr_regfile$read_dpc[63:2], 2'b0 } ;
@@ -3493,18 +3806,30 @@ module mkCPU(CLK,
   always@(MUX_imem_rg_f3$write_1__SEL_1 or
 	  soc_map$m_pc_reset_value or
 	  MUX_imem_rg_f3$write_1__SEL_2 or
+<<<<<<< HEAD
 	  next_pc__h29548 or
 	  WILL_FIRE_RL_rl_stage1_restart_after_csrrx or
 	  x_out_next_pc__h9318 or
+=======
+	  next_pc__h29626 or
+	  WILL_FIRE_RL_rl_stage1_restart_after_csrrx or
+	  x_out_next_pc__h9396 or
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	  MUX_imem_rg_pc$write_1__SEL_4 or
 	  rg_next_pc or WILL_FIRE_RL_rl_debug_run or csr_regfile$read_dpc)
   begin
     case (1'b1) // synopsys parallel_case
       MUX_imem_rg_f3$write_1__SEL_1:
 	  imem_rg_pc$D_IN = soc_map$m_pc_reset_value;
+<<<<<<< HEAD
       MUX_imem_rg_f3$write_1__SEL_2: imem_rg_pc$D_IN = next_pc__h29548;
       WILL_FIRE_RL_rl_stage1_restart_after_csrrx:
 	  imem_rg_pc$D_IN = x_out_next_pc__h9318;
+=======
+      MUX_imem_rg_f3$write_1__SEL_2: imem_rg_pc$D_IN = next_pc__h29626;
+      WILL_FIRE_RL_rl_stage1_restart_after_csrrx:
+	  imem_rg_pc$D_IN = x_out_next_pc__h9396;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
       MUX_imem_rg_pc$write_1__SEL_4: imem_rg_pc$D_IN = rg_next_pc;
       WILL_FIRE_RL_rl_debug_run: imem_rg_pc$D_IN = csr_regfile$read_dpc;
       default: imem_rg_pc$D_IN =
@@ -3574,9 +3899,15 @@ module mkCPU(CLK,
   always@(MUX_imem_rg_f3$write_1__SEL_1 or
 	  soc_map$m_pc_reset_value or
 	  MUX_imem_rg_f3$write_1__SEL_2 or
+<<<<<<< HEAD
 	  next_pc__h29548 or
 	  WILL_FIRE_RL_rl_stage1_restart_after_csrrx or
 	  x_out_next_pc__h9318 or
+=======
+	  next_pc__h29626 or
+	  WILL_FIRE_RL_rl_stage1_restart_after_csrrx or
+	  x_out_next_pc__h9396 or
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	  MUX_imem_rg_pc$write_1__SEL_4 or
 	  rg_next_pc or
 	  WILL_FIRE_RL_rl_debug_run or
@@ -3587,9 +3918,15 @@ module mkCPU(CLK,
     case (1'b1) // synopsys parallel_case
       MUX_imem_rg_f3$write_1__SEL_1:
 	  imem_rg_tval$D_IN = soc_map$m_pc_reset_value;
+<<<<<<< HEAD
       MUX_imem_rg_f3$write_1__SEL_2: imem_rg_tval$D_IN = next_pc__h29548;
       WILL_FIRE_RL_rl_stage1_restart_after_csrrx:
 	  imem_rg_tval$D_IN = x_out_next_pc__h9318;
+=======
+      MUX_imem_rg_f3$write_1__SEL_2: imem_rg_tval$D_IN = next_pc__h29626;
+      WILL_FIRE_RL_rl_stage1_restart_after_csrrx:
+	  imem_rg_tval$D_IN = x_out_next_pc__h9396;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
       MUX_imem_rg_pc$write_1__SEL_4: imem_rg_tval$D_IN = rg_next_pc;
       WILL_FIRE_RL_rl_debug_run: imem_rg_tval$D_IN = csr_regfile$read_dpc;
       WILL_FIRE_RL_imem_rl_fetch_next_32b:
@@ -3635,14 +3972,24 @@ module mkCPU(CLK,
 
   // register rg_epoch
   always@(MUX_imem_rg_f3$write_1__SEL_1 or
+<<<<<<< HEAD
 	  v__h23141 or
+=======
+	  v__h23219 or
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	  MUX_rg_epoch$write_1__SEL_2 or
 	  MUX_rg_state$write_1__SEL_8 or WILL_FIRE_RL_rl_reset_start)
   begin
     case (1'b1) // synopsys parallel_case
+<<<<<<< HEAD
       MUX_imem_rg_f3$write_1__SEL_1: rg_epoch$D_IN = v__h23141;
       MUX_rg_epoch$write_1__SEL_2: rg_epoch$D_IN = v__h23141;
       MUX_rg_state$write_1__SEL_8: rg_epoch$D_IN = v__h23141;
+=======
+      MUX_imem_rg_f3$write_1__SEL_1: rg_epoch$D_IN = v__h23219;
+      MUX_rg_epoch$write_1__SEL_2: rg_epoch$D_IN = v__h23219;
+      MUX_rg_state$write_1__SEL_8: rg_epoch$D_IN = v__h23219;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
       WILL_FIRE_RL_rl_reset_start: rg_epoch$D_IN = 2'd0;
       default: rg_epoch$D_IN = 2'b10 /* unspecified value */ ;
     endcase
@@ -3669,13 +4016,21 @@ module mkCPU(CLK,
 
   // register rg_next_pc
   always@(MUX_f_trace_data$enq_1__SEL_4 or
+<<<<<<< HEAD
 	  x_out_next_pc__h9318 or
+=======
+	  x_out_next_pc__h9396 or
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	  WILL_FIRE_RL_rl_stage1_xRET or
 	  csr_regfile$csr_ret_actions or
 	  MUX_rg_cur_priv$write_1__SEL_2 or csr_regfile$csr_trap_actions)
   begin
     case (1'b1) // synopsys parallel_case
+<<<<<<< HEAD
       MUX_f_trace_data$enq_1__SEL_4: rg_next_pc$D_IN = x_out_next_pc__h9318;
+=======
+      MUX_f_trace_data$enq_1__SEL_4: rg_next_pc$D_IN = x_out_next_pc__h9396;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
       WILL_FIRE_RL_rl_stage1_xRET:
 	  rg_next_pc$D_IN = csr_regfile$csr_ret_actions[129:66];
       MUX_rg_cur_priv$write_1__SEL_2:
@@ -3857,6 +4212,7 @@ module mkCPU(CLK,
 	       stageD_rg_data[167:166],
 	       stageD_rg_data[169:168],
 	       stageD_rg_data[165:96],
+<<<<<<< HEAD
 	       _theResult____h5208,
 	       stageD_rg_data[79:0],
 	       _theResult____h5208[6:0],
@@ -3876,6 +4232,27 @@ module mkCPU(CLK,
 	       decoded_instr_imm21_UJ__h28592,
 	       _theResult____h5208[27:20],
 	       _theResult____h5208[26:25] } ;
+=======
+	       _theResult____h5287,
+	       stageD_rg_data[79:0],
+	       _theResult____h5287[6:0],
+	       _theResult____h5287[11:7],
+	       _theResult____h5287[19:15],
+	       _theResult____h5287[24:20],
+	       _theResult____h5287[31:27],
+	       _theResult____h5287[31:20],
+	       _theResult____h5287[14:12],
+	       _theResult____h5287[31:27],
+	       _theResult____h5287[31:25],
+	       decoded_instr_funct10__h28665,
+	       _theResult____h5287[31:20],
+	       decoded_instr_imm12_S__h28667,
+	       decoded_instr_imm13_SB__h28668,
+	       _theResult____h5287[31:12],
+	       decoded_instr_imm21_UJ__h28670,
+	       _theResult____h5287[27:20],
+	       _theResult____h5287[26:25] } ;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   assign stage1_rg_stage_input$EN =
 	     WILL_FIRE_RL_rl_pipe &&
 	     IF_stage1_rg_stage_input_20_BITS_335_TO_334_21_ETC___d2330 &&
@@ -3915,11 +4292,19 @@ module mkCPU(CLK,
 	       stage1_rg_stage_input[401:338],
 	       stage1_rg_stage_input[263:232],
 	       IF_stage1_rg_stage_input_20_BITS_335_TO_334_21_ETC___d1086,
+<<<<<<< HEAD
 	       x_out_data_to_stage2_rd__h9370,
 	       x_out_data_to_stage2_addr__h9371,
 	       x_out_data_to_stage2_val1__h9372,
 	       x_out_data_to_stage2_val2__h9373,
 	       x_out_data_to_stage2_val3__h9374,
+=======
+	       x_out_data_to_stage2_rd__h9448,
+	       x_out_data_to_stage2_addr__h9449,
+	       x_out_data_to_stage2_val1__h9450,
+	       x_out_data_to_stage2_val2__h9451,
+	       x_out_data_to_stage2_val3__h9452,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       stage1_rg_stage_input[151:145] == 7'b0000111 ||
 	       (stage1_rg_stage_input[151:145] == 7'b1010011 ||
 		stage1_rg_stage_input[151:145] == 7'b1000011 ||
@@ -3946,7 +4331,11 @@ module mkCPU(CLK,
 		stage1_rg_stage_input[134:130] != 5'd1) &&
 	       stage1_rg_stage_input[104:98] != 7'h70 &&
 	       stage1_rg_stage_input[104:98] != 7'h50,
+<<<<<<< HEAD
 	       x_out_data_to_stage2_rounding_mode__h9376,
+=======
+	       x_out_data_to_stage2_rounding_mode__h9454,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       IF_stage1_rg_full_19_THEN_IF_stage1_rg_stage_i_ETC___d2287 } ;
   assign stage2_rg_stage2$EN =
 	     WILL_FIRE_RL_rl_pipe &&
@@ -3981,7 +4370,11 @@ module mkCPU(CLK,
 	       stage2_rg_stage2[727:726],
 	       stage2_rg_stage2[629:627] == 3'd0 ||
 	       IF_stage2_rg_stage2_15_BITS_629_TO_627_16_EQ_1_ETC___d176,
+<<<<<<< HEAD
 	       x_out_data_to_stage3_rd__h8431,
+=======
+	       x_out_data_to_stage3_rd__h8509,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       stage2_rg_stage2[629:627] != 3'd0 &&
 	       stage2_rg_stage2[629:627] != 3'd1 &&
 	       stage2_rg_stage2[629:627] != 3'd4 &&
@@ -3989,8 +4382,13 @@ module mkCPU(CLK,
 	       stage2_rg_stage2[629:627] != 3'd3,
 	       stage2_rg_stage2[629:627] != 3'd0 &&
 	       IF_stage2_rg_stage2_15_BITS_629_TO_627_16_EQ_1_ETC___d211,
+<<<<<<< HEAD
 	       x_out_data_to_stage3_fpr_flags__h8434,
 	       x_out_data_to_stage3_rd_val__h8435 } ;
+=======
+	       x_out_data_to_stage3_fpr_flags__h8512,
+	       x_out_data_to_stage3_rd_val__h8513 } ;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   assign stage3_rg_stage3$EN = MUX_f_trace_data$enq_1__SEL_1 ;
 
   // register stageD_rg_data
@@ -4002,7 +4400,11 @@ module mkCPU(CLK,
 	       near_mem$imem_exc,
 	       near_mem$imem_exc_code,
 	       imem_rg_tval,
+<<<<<<< HEAD
 	       d_instr__h21667,
+=======
+	       d_instr__h21745,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       stageF_branch_predictor$predict_rsp } ;
   assign stageD_rg_data$EN = MUX_imem_rg_f3$write_1__SEL_2 ;
 
@@ -4052,13 +4454,18 @@ module mkCPU(CLK,
   // register stageF_rg_epoch
   always@(WILL_FIRE_RL_stageF_rl_reset or
 	  WILL_FIRE_RL_rl_trap_fetch or
+<<<<<<< HEAD
 	  v__h23141 or
+=======
+	  v__h23219 or
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	  WILL_FIRE_RL_rl_WFI_resume or
 	  WILL_FIRE_RL_rl_finish_SFENCE_VMA or
 	  WILL_FIRE_RL_rl_finish_FENCE or
 	  WILL_FIRE_RL_rl_finish_FENCE_I or
 	  WILL_FIRE_RL_rl_stage1_restart_after_csrrx or
 	  MUX_imem_rg_f3$write_1__SEL_2 or
+<<<<<<< HEAD
 	  epoch__h29546 or
 	  MUX_imem_rg_f3$write_1__SEL_1 or WILL_FIRE_RL_rl_debug_run)
   case (1'b1)
@@ -4073,6 +4480,22 @@ module mkCPU(CLK,
     MUX_imem_rg_f3$write_1__SEL_2: stageF_rg_epoch$D_IN = epoch__h29546;
     MUX_imem_rg_f3$write_1__SEL_1: stageF_rg_epoch$D_IN = v__h23141;
     WILL_FIRE_RL_rl_debug_run: stageF_rg_epoch$D_IN = v__h23141;
+=======
+	  epoch__h29624 or
+	  MUX_imem_rg_f3$write_1__SEL_1 or WILL_FIRE_RL_rl_debug_run)
+  case (1'b1)
+    WILL_FIRE_RL_stageF_rl_reset: stageF_rg_epoch$D_IN = 2'd0;
+    WILL_FIRE_RL_rl_trap_fetch: stageF_rg_epoch$D_IN = v__h23219;
+    WILL_FIRE_RL_rl_WFI_resume: stageF_rg_epoch$D_IN = v__h23219;
+    WILL_FIRE_RL_rl_finish_SFENCE_VMA: stageF_rg_epoch$D_IN = v__h23219;
+    WILL_FIRE_RL_rl_finish_FENCE: stageF_rg_epoch$D_IN = v__h23219;
+    WILL_FIRE_RL_rl_finish_FENCE_I: stageF_rg_epoch$D_IN = v__h23219;
+    WILL_FIRE_RL_rl_stage1_restart_after_csrrx:
+	stageF_rg_epoch$D_IN = v__h23219;
+    MUX_imem_rg_f3$write_1__SEL_2: stageF_rg_epoch$D_IN = epoch__h29624;
+    MUX_imem_rg_f3$write_1__SEL_1: stageF_rg_epoch$D_IN = v__h23219;
+    WILL_FIRE_RL_rl_debug_run: stageF_rg_epoch$D_IN = v__h23219;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     default: stageF_rg_epoch$D_IN = 2'b10 /* unspecified value */ ;
   endcase
   assign stageF_rg_epoch$EN =
@@ -4147,7 +4570,11 @@ module mkCPU(CLK,
 	     stage1_rg_stage_input_BITS_263_TO_232__q1[31:20] ;
   assign csr_regfile$access_permitted_2_priv = rg_cur_priv ;
   assign csr_regfile$access_permitted_2_read_not_write =
+<<<<<<< HEAD
 	     rs1_val__h31435 == 64'd0 ;
+=======
+	     rs1_val__h31657 == 64'd0 ;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   assign csr_regfile$csr_counter_read_fault_csr_addr = 12'h0 ;
   assign csr_regfile$csr_counter_read_fault_priv = 2'h0 ;
   always@(IF_stage1_rg_stage_input_20_BITS_335_TO_334_21_ETC___d992)
@@ -4158,11 +4585,19 @@ module mkCPU(CLK,
       default: csr_regfile$csr_ret_actions_from_priv = 2'b0;
     endcase
   end
+<<<<<<< HEAD
   always@(WILL_FIRE_RL_rl_stage2_nonpipe or
 	  x_out_trap_info_exc_code__h8651 or
 	  WILL_FIRE_RL_rl_stage1_interrupt or
 	  MUX_csr_regfile$csr_trap_actions_5__VAL_2 or
 	  WILL_FIRE_RL_rl_stage1_trap or x_out_trap_info_exc_code__h12876)
+=======
+  always@(WILL_FIRE_RL_rl_stage1_interrupt or
+	  MUX_csr_regfile$csr_trap_actions_5__VAL_1 or
+	  WILL_FIRE_RL_rl_stage1_trap or
+	  x_out_trap_info_exc_code__h12954 or
+	  WILL_FIRE_RL_rl_trap or rg_trap_info)
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   begin
     case (1'b1) // synopsys parallel_case
       WILL_FIRE_RL_rl_stage2_nonpipe:
@@ -4173,7 +4608,13 @@ module mkCPU(CLK,
 	      MUX_csr_regfile$csr_trap_actions_5__VAL_2;
       WILL_FIRE_RL_rl_stage1_trap:
 	  csr_regfile$csr_trap_actions_exc_code =
+<<<<<<< HEAD
 	      x_out_trap_info_exc_code__h12876;
+=======
+	      x_out_trap_info_exc_code__h12954;
+      WILL_FIRE_RL_rl_trap:
+	  csr_regfile$csr_trap_actions_exc_code = rg_trap_info[67:64];
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
       default: csr_regfile$csr_trap_actions_exc_code =
 		   4'b1010 /* unspecified value */ ;
     endcase
@@ -4184,6 +4625,7 @@ module mkCPU(CLK,
   assign csr_regfile$csr_trap_actions_nmi =
 	     WILL_FIRE_RL_rl_stage1_interrupt && csr_regfile$nmi_pending ;
   assign csr_regfile$csr_trap_actions_pc =
+<<<<<<< HEAD
 	     (WILL_FIRE_RL_rl_stage1_interrupt ||
 	      WILL_FIRE_RL_rl_stage1_trap) ?
 	       stage1_rg_stage_input[401:338] :
@@ -4192,6 +4634,14 @@ module mkCPU(CLK,
 	  value__h8675 or
 	  WILL_FIRE_RL_rl_stage1_interrupt or
 	  WILL_FIRE_RL_rl_stage1_trap or value__h12921)
+=======
+	     WILL_FIRE_RL_rl_trap ?
+	       rg_trap_info[131:68] :
+	       stage1_rg_stage_input[401:338] ;
+  always@(WILL_FIRE_RL_rl_stage1_interrupt or
+	  WILL_FIRE_RL_rl_stage1_trap or
+	  value__h12999 or WILL_FIRE_RL_rl_trap or rg_trap_info)
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   begin
     case (1'b1) // synopsys parallel_case
       WILL_FIRE_RL_rl_stage2_nonpipe:
@@ -4199,7 +4649,13 @@ module mkCPU(CLK,
       WILL_FIRE_RL_rl_stage1_interrupt:
 	  csr_regfile$csr_trap_actions_xtval = 64'd0;
       WILL_FIRE_RL_rl_stage1_trap:
+<<<<<<< HEAD
 	  csr_regfile$csr_trap_actions_xtval = value__h12921;
+=======
+	  csr_regfile$csr_trap_actions_xtval = value__h12999;
+      WILL_FIRE_RL_rl_trap:
+	  csr_regfile$csr_trap_actions_xtval = rg_trap_info[63:0];
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
       default: csr_regfile$csr_trap_actions_xtval =
 		   64'hAAAAAAAAAAAAAAAA /* unspecified value */ ;
     endcase
@@ -4216,14 +4672,22 @@ module mkCPU(CLK,
 	       stage1_rg_stage_input_BITS_263_TO_232__q1[31:20] :
 	       f_csr_reqs$D_OUT[75:64] ;
   always@(MUX_csr_regfile$mav_csr_write_1__SEL_1 or
+<<<<<<< HEAD
 	  rs1_val__h30843 or
+=======
+	  rs1_val__h31065 or
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	  MUX_csr_regfile$mav_csr_write_1__SEL_2 or
 	  MUX_csr_regfile$mav_csr_write_2__VAL_2 or
 	  WILL_FIRE_RL_rl_debug_write_csr or f_csr_reqs$D_OUT)
   begin
     case (1'b1) // synopsys parallel_case
       MUX_csr_regfile$mav_csr_write_1__SEL_1:
+<<<<<<< HEAD
 	  csr_regfile$mav_csr_write_word = rs1_val__h30843;
+=======
+	  csr_regfile$mav_csr_write_word = rs1_val__h31065;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
       MUX_csr_regfile$mav_csr_write_1__SEL_2:
 	  csr_regfile$mav_csr_write_word =
 	      MUX_csr_regfile$mav_csr_write_2__VAL_2;
@@ -4415,9 +4879,15 @@ module mkCPU(CLK,
 
   // submodule f_redirects
   assign f_redirects$D_IN =
+<<<<<<< HEAD
 	     { v__h23141,
 	       stage1_rg_stage_input[401:338],
 	       x_out_next_pc__h9318 } ;
+=======
+	     { v__h23219,
+	       stage1_rg_stage_input[401:338],
+	       x_out_next_pc__h9396 } ;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   assign f_redirects$ENQ = MUX_rg_epoch$write_1__SEL_2 ;
   assign f_redirects$DEQ =
 	     WILL_FIRE_RL_rl_pipe &&
@@ -4616,9 +5086,15 @@ module mkCPU(CLK,
   assign near_mem$dmem_master_rresp = dmem_master_rresp ;
   assign near_mem$dmem_master_rvalid = dmem_master_rvalid ;
   assign near_mem$dmem_master_wready = dmem_master_wready ;
+<<<<<<< HEAD
   assign near_mem$dmem_req_addr = x_out_data_to_stage2_addr__h9371 ;
   assign near_mem$dmem_req_amo_funct7 =
 	     x_out_data_to_stage2_val1__h9372[6:0] ;
+=======
+  assign near_mem$dmem_req_addr = x_out_data_to_stage2_addr__h9449 ;
+  assign near_mem$dmem_req_amo_funct7 =
+	     x_out_data_to_stage2_val1__h9450[6:0] ;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   assign near_mem$dmem_req_f3 =
 	     stage1_rg_stage_input_BITS_263_TO_232__q1[14:12] ;
   assign near_mem$dmem_req_mstatus_MXR = csr_regfile$read_mstatus[19] ;
@@ -4636,7 +5112,11 @@ module mkCPU(CLK,
 	       rg_cur_priv ;
   assign near_mem$dmem_req_satp = csr_regfile$read_satp ;
   assign near_mem$dmem_req_sstatus_SUM = csr_regfile$read_sstatus[18] ;
+<<<<<<< HEAD
   assign near_mem$dmem_req_store_value = x_out_data_to_stage2_val2__h9373 ;
+=======
+  assign near_mem$dmem_req_store_value = x_out_data_to_stage2_val2__h9451 ;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   assign near_mem$imem_master_arready = imem_master_arready ;
   assign near_mem$imem_master_awready = imem_master_awready ;
   assign near_mem$imem_master_bid = imem_master_bid ;
@@ -4810,12 +5290,21 @@ module mkCPU(CLK,
 	     stage1_rg_stage_input_BITS_263_TO_232__q1[31:25] ;
   assign stage2_fbox$req_opcode =
 	     stage1_rg_stage_input_BITS_263_TO_232__q1[6:0] ;
+<<<<<<< HEAD
   assign stage2_fbox$req_rm = x_out_data_to_stage2_rounding_mode__h9376 ;
   assign stage2_fbox$req_rs2 =
 	     stage1_rg_stage_input_BITS_263_TO_232__q1[24:20] ;
   assign stage2_fbox$req_v1 = x_out_data_to_stage2_val1__h9372 ;
   assign stage2_fbox$req_v2 = x_out_data_to_stage2_val2__h9373 ;
   assign stage2_fbox$req_v3 = x_out_data_to_stage2_val3__h9374 ;
+=======
+  assign stage2_fbox$req_rm = x_out_data_to_stage2_rounding_mode__h9454 ;
+  assign stage2_fbox$req_rs2 =
+	     stage1_rg_stage_input_BITS_263_TO_232__q1[24:20] ;
+  assign stage2_fbox$req_v1 = x_out_data_to_stage2_val1__h9450 ;
+  assign stage2_fbox$req_v2 = x_out_data_to_stage2_val2__h9451 ;
+  assign stage2_fbox$req_v3 = x_out_data_to_stage2_val3__h9452 ;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   assign stage2_fbox$EN_server_reset_request_put =
 	     CAN_FIRE_RL_stage2_rl_reset_begin ;
   assign stage2_fbox$EN_server_reset_response_get =
@@ -4834,8 +5323,13 @@ module mkCPU(CLK,
 	     stage1_rg_stage_input_BITS_263_TO_232__q1[14:12] ;
   assign stage2_mbox$req_is_OP_not_OP_32 =
 	     !stage1_rg_stage_input_BITS_263_TO_232__q1[3] ;
+<<<<<<< HEAD
   assign stage2_mbox$req_v1 = x_out_data_to_stage2_val1__h9372 ;
   assign stage2_mbox$req_v2 = x_out_data_to_stage2_val2__h9373 ;
+=======
+  assign stage2_mbox$req_v1 = x_out_data_to_stage2_val1__h9450 ;
+  assign stage2_mbox$req_v2 = x_out_data_to_stage2_val2__h9451 ;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   assign stage2_mbox$set_verbosity_verbosity = 4'h0 ;
   assign stage2_mbox$EN_set_verbosity = 1'b0 ;
   assign stage2_mbox$EN_req_reset = 1'b0 ;
@@ -4877,9 +5371,15 @@ module mkCPU(CLK,
   always@(MUX_imem_rg_f3$write_1__SEL_1 or
 	  soc_map$m_pc_reset_value or
 	  MUX_imem_rg_f3$write_1__SEL_2 or
+<<<<<<< HEAD
 	  next_pc__h29548 or
 	  WILL_FIRE_RL_rl_stage1_restart_after_csrrx or
 	  x_out_next_pc__h9318 or
+=======
+	  next_pc__h29626 or
+	  WILL_FIRE_RL_rl_stage1_restart_after_csrrx or
+	  x_out_next_pc__h9396 or
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	  MUX_imem_rg_pc$write_1__SEL_4 or
 	  rg_next_pc or WILL_FIRE_RL_rl_debug_run or csr_regfile$read_dpc)
   begin
@@ -4887,9 +5387,15 @@ module mkCPU(CLK,
       MUX_imem_rg_f3$write_1__SEL_1:
 	  stageF_branch_predictor$predict_req_pc = soc_map$m_pc_reset_value;
       MUX_imem_rg_f3$write_1__SEL_2:
+<<<<<<< HEAD
 	  stageF_branch_predictor$predict_req_pc = next_pc__h29548;
       WILL_FIRE_RL_rl_stage1_restart_after_csrrx:
 	  stageF_branch_predictor$predict_req_pc = x_out_next_pc__h9318;
+=======
+	  stageF_branch_predictor$predict_req_pc = next_pc__h29626;
+      WILL_FIRE_RL_rl_stage1_restart_after_csrrx:
+	  stageF_branch_predictor$predict_req_pc = x_out_next_pc__h9396;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
       MUX_imem_rg_pc$write_1__SEL_4:
 	  stageF_branch_predictor$predict_req_pc = rg_next_pc;
       WILL_FIRE_RL_rl_debug_run:
@@ -4923,7 +5429,11 @@ module mkCPU(CLK,
 
   // remaining internal signals
   assign IF_IF_stage1_rg_stage_input_20_BITS_151_TO_145_ETC___d1405 =
+<<<<<<< HEAD
 	     next_pc__h9303 == stage1_rg_stage_input[215:152] ;
+=======
+	     next_pc__h9381 == stage1_rg_stage_input[215:152] ;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   assign IF_NOT_csr_regfile_read_mstatus__0_BITS_14_TO__ETC___d974 =
 	     NOT_csr_regfile_read_mstatus__0_BITS_14_TO_13__ETC___d891 ?
 	       4'd1 :
@@ -4981,6 +5491,7 @@ module mkCPU(CLK,
 	     (!stage2_rg_full || stage2_rg_stage2[629:627] == 3'd0) ?
 	       2'd0 :
 	       CASE_stage2_rg_stage2_BITS_629_TO_627_1_IF_NOT_ETC__q6 ;
+<<<<<<< HEAD
   assign IF_csr_regfile_read_csr_IF_stage1_rg_full_19_T_ETC___d2484 =
 	     csr_regfile$read_csr[63:0] | rs1_val__h31435 ;
   assign IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1674 =
@@ -4990,125 +5501,225 @@ module mkCPU(CLK,
 	       ((csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b0 &&
 		 stageD_rg_data[79:77] == 3'b101) ?
 		  instr__h21312 :
+=======
+  assign IF_csr_regfile_read_csr_IF_stage1_rg_full_19_T_ETC___d2490 =
+	     csr_regfile$read_csr[63:0] | rs1_val__h31657 ;
+  assign IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1674 =
+	     (csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b0 &&
+	      stageD_rg_data[79:77] == 3'b001) ?
+	       instr__h21239 :
+	       ((csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b0 &&
+		 stageD_rg_data[79:77] == 3'b101) ?
+		  instr__h21390 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 		  32'h0) ;
   assign IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1675 =
 	     (csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b10 &&
 	      stageD_rg_data[79:77] == 3'b101) ?
+<<<<<<< HEAD
 	       instr__h20962 :
+=======
+	       instr__h21040 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1674 ;
   assign IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1676 =
 	     (csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b10 &&
 	      stageD_rg_data[75:71] != 5'd0 &&
 	      stageD_rg_data[79:77] == 3'b001 &&
 	      csr_regfile$read_misa[3]) ?
+<<<<<<< HEAD
 	       instr__h20809 :
+=======
+	       instr__h20887 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1675 ;
   assign IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1677 =
 	     (csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b0 &&
 	      stageD_rg_data[79:77] == 3'b111) ?
+<<<<<<< HEAD
 	       instr__h19770 :
+=======
+	       instr__h19848 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1676 ;
   assign IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1678 =
 	     (csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b0 &&
 	      stageD_rg_data[79:77] == 3'b011) ?
+<<<<<<< HEAD
 	       instr__h19619 :
+=======
+	       instr__h19697 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1677 ;
   assign IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1679 =
 	     (csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b10 &&
 	      stageD_rg_data[79:77] == 3'b111) ?
+<<<<<<< HEAD
 	       instr__h19420 :
+=======
+	       instr__h19498 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1678 ;
   assign IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1681 =
 	     (csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b10 &&
 	      stageD_rg_data[79:76] == 4'b1001 &&
 	      stageD_rg_data[75:71] == 5'd0 &&
 	      stageD_rg_data[70:66] == 5'd0) ?
+<<<<<<< HEAD
 	       instr__h19171 :
 	       ((csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b10 &&
 		 stageD_rg_data[75:71] != 5'd0 &&
 		 stageD_rg_data[79:77] == 3'b011) ?
 		  instr__h19267 :
+=======
+	       instr__h19249 :
+	       ((csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b10 &&
+		 stageD_rg_data[75:71] != 5'd0 &&
+		 stageD_rg_data[79:77] == 3'b011) ?
+		  instr__h19345 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 		  IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1679) ;
   assign IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1683 =
 	     (csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b01 &&
 	      stageD_rg_data[79:74] == 6'b100111 &&
 	      stageD_rg_data[70:69] == 2'b01) ?
+<<<<<<< HEAD
 	       instr__h18875 :
 	       ((csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b01 &&
 		 stageD_rg_data[79:74] == 6'b100111 &&
 		 stageD_rg_data[70:69] == 2'b0) ?
 		  instr__h19013 :
+=======
+	       instr__h18953 :
+	       ((csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b01 &&
+		 stageD_rg_data[79:74] == 6'b100111 &&
+		 stageD_rg_data[70:69] == 2'b0) ?
+		  instr__h19091 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 		  IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1681) ;
   assign IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1685 =
 	     (csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b01 &&
 	      stageD_rg_data[79:74] == 6'b100011 &&
 	      stageD_rg_data[70:69] == 2'b01) ?
+<<<<<<< HEAD
 	       instr__h18601 :
 	       ((csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b01 &&
 		 stageD_rg_data[79:74] == 6'b100011 &&
 		 stageD_rg_data[70:69] == 2'b0) ?
 		  instr__h18737 :
+=======
+	       instr__h18679 :
+	       ((csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b01 &&
+		 stageD_rg_data[79:74] == 6'b100011 &&
+		 stageD_rg_data[70:69] == 2'b0) ?
+		  instr__h18815 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 		  IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1683) ;
   assign IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1687 =
 	     (csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b01 &&
 	      stageD_rg_data[79:74] == 6'b100011 &&
 	      stageD_rg_data[70:69] == 2'b11) ?
+<<<<<<< HEAD
 	       instr__h18329 :
 	       ((csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b01 &&
 		 stageD_rg_data[79:74] == 6'b100011 &&
 		 stageD_rg_data[70:69] == 2'b10) ?
 		  instr__h18465 :
+=======
+	       instr__h18407 :
+	       ((csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b01 &&
+		 stageD_rg_data[79:74] == 6'b100011 &&
+		 stageD_rg_data[70:69] == 2'b10) ?
+		  instr__h18543 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 		  IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1685) ;
   assign IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1688 =
 	     (csr_regfile_read_misa__7_BIT_2_420_AND_stageD__ETC___d1501 &&
 	      stageD_rg_data[70:66] != 5'd0) ?
+<<<<<<< HEAD
 	       instr__h18234 :
+=======
+	       instr__h18312 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1687 ;
   assign IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1689 =
 	     (csr_regfile_read_misa__7_BIT_2_420_AND_stageD__ETC___d1495 &&
 	      stageD_rg_data[70:66] != 5'd0) ?
+<<<<<<< HEAD
 	       instr__h18115 :
+=======
+	       instr__h18193 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1688 ;
   assign IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1691 =
 	     (csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b01 &&
 	      stageD_rg_data[79:77] == 3'b100 &&
 	      stageD_rg_data[75:74] == 2'b01 &&
+<<<<<<< HEAD
 	      imm6__h16228 != 6'd0) ?
 	       instr__h17820 :
 	       ((csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b01 &&
 		 stageD_rg_data[79:77] == 3'b100 &&
 		 stageD_rg_data[75:74] == 2'b10) ?
 		  instr__h17937 :
+=======
+	      imm6__h16306 != 6'd0) ?
+	       instr__h17898 :
+	       ((csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b01 &&
+		 stageD_rg_data[79:77] == 3'b100 &&
+		 stageD_rg_data[75:74] == 2'b10) ?
+		  instr__h18015 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 		  IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1689) ;
   assign IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1692 =
 	     (csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b01 &&
 	      stageD_rg_data[79:77] == 3'b100 &&
 	      stageD_rg_data[75:74] == 2'b0 &&
+<<<<<<< HEAD
 	      imm6__h16228 != 6'd0) ?
 	       instr__h17631 :
+=======
+	      imm6__h16306 != 6'd0) ?
+	       instr__h17709 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1691 ;
   assign IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1693 =
 	     (csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b10 &&
 	      stageD_rg_data[79:77] == 3'b0 &&
 	      stageD_rg_data[75:71] != 5'd0 &&
+<<<<<<< HEAD
 	      imm6__h16228 != 6'd0) ?
 	       instr__h17442 :
+=======
+	      imm6__h16306 != 6'd0) ?
+	       instr__h17520 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1692 ;
   assign IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1695 =
 	     (csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b01 &&
 	      stageD_rg_data[79:77] == 3'b011 &&
 	      stageD_rg_data[75:71] == 5'd2 &&
+<<<<<<< HEAD
 	      nzimm10__h16897 != 10'd0) ?
 	       instr__h17101 :
 	       ((csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b0 &&
 		 stageD_rg_data[79:77] == 3'b0 &&
 		 nzimm10__h17112 != 10'd0) ?
 		  instr__h17273 :
+=======
+	      nzimm10__h16975 != 10'd0) ?
+	       instr__h17179 :
+	       ((csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b0 &&
+		 stageD_rg_data[79:77] == 3'b0 &&
+		 nzimm10__h17190 != 10'd0) ?
+		  instr__h17351 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 		  IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1693) ;
   assign IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1697 =
 	     (csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b01 &&
 	      stageD_rg_data[79:77] == 3'b0 &&
 	      stageD_rg_data[75:71] != 5'd0 &&
+<<<<<<< HEAD
 	      imm6__h16228 != 6'd0 ||
 	      csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b01 &&
 	      stageD_rg_data[79:77] == 3'b0 &&
@@ -5119,58 +5730,111 @@ module mkCPU(CLK,
 		 stageD_rg_data[79:77] == 3'b001 &&
 		 stageD_rg_data[75:71] != 5'd0) ?
 		  instr__h16846 :
+=======
+	      imm6__h16306 != 6'd0 ||
+	      csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b01 &&
+	      stageD_rg_data[79:77] == 3'b0 &&
+	      stageD_rg_data[75:71] == 5'd0 &&
+	      imm6__h16306 == 6'd0) ?
+	       instr__h16697 :
+	       ((csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b01 &&
+		 stageD_rg_data[79:77] == 3'b001 &&
+		 stageD_rg_data[75:71] != 5'd0) ?
+		  instr__h16924 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 		  IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1695) ;
   assign IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1698 =
 	     (csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b01 &&
 	      stageD_rg_data[79:77] == 3'b011 &&
 	      stageD_rg_data[75:71] != 5'd0 &&
 	      stageD_rg_data[75:71] != 5'd2 &&
+<<<<<<< HEAD
 	      imm6__h16228 != 6'd0) ?
 	       instr__h16490 :
+=======
+	      imm6__h16306 != 6'd0) ?
+	       instr__h16568 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1697 ;
   assign IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1700 =
 	     (csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b01 &&
 	      stageD_rg_data[79:77] == 3'b111) ?
+<<<<<<< HEAD
 	       instr__h15968 :
 	       ((csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b01 &&
 		 stageD_rg_data[79:77] == 3'b010 &&
 		 stageD_rg_data[75:71] != 5'd0) ?
 		  instr__h16306 :
+=======
+	       instr__h16046 :
+	       ((csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b01 &&
+		 stageD_rg_data[79:77] == 3'b010 &&
+		 stageD_rg_data[75:71] != 5'd0) ?
+		  instr__h16384 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 		  IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1698) ;
   assign IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1701 =
 	     (csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b01 &&
 	      stageD_rg_data[79:77] == 3'b110) ?
+<<<<<<< HEAD
 	       instr__h15651 :
+=======
+	       instr__h15729 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1700 ;
   assign IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1702 =
 	     (csr_regfile_read_misa__7_BIT_2_420_AND_stageD__ETC___d1501 &&
 	      stageD_rg_data[70:66] == 5'd0) ?
+<<<<<<< HEAD
 	       instr__h15586 :
+=======
+	       instr__h15664 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1701 ;
   assign IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1703 =
 	     (csr_regfile_read_misa__7_BIT_2_420_AND_stageD__ETC___d1495 &&
 	      stageD_rg_data[70:66] == 5'd0) ?
+<<<<<<< HEAD
 	       instr__h15470 :
+=======
+	       instr__h15548 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1702 ;
   assign IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1704 =
 	     (csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b01 &&
 	      stageD_rg_data[79:77] == 3'b101) ?
+<<<<<<< HEAD
 	       instr__h15017 :
+=======
+	       instr__h15095 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1703 ;
   assign IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1705 =
 	     (csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b0 &&
 	      stageD_rg_data[79:77] == 3'b110) ?
+<<<<<<< HEAD
 	       instr__h14788 :
+=======
+	       instr__h14866 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1704 ;
   assign IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1706 =
 	     (csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b0 &&
 	      stageD_rg_data[79:77] == 3'b010) ?
+<<<<<<< HEAD
 	       instr__h14593 :
+=======
+	       instr__h14671 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1705 ;
   assign IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1707 =
 	     (csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b10 &&
 	      stageD_rg_data[79:77] == 3'b110) ?
+<<<<<<< HEAD
 	       instr__h14401 :
+=======
+	       instr__h14479 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1706 ;
   assign IF_near_mem_dmem_valid__38_AND_NOT_near_mem_dm_ETC___d269 =
 	     (near_mem$dmem_valid && !near_mem$dmem_exc) ? 2'd2 : 2'd1 ;
@@ -5185,6 +5849,7 @@ module mkCPU(CLK,
 		  4'd11 :
 		  4'd12) ;
   assign IF_stage1_rg_full_19_THEN_IF_stage1_rg_stage_i_ETC___d2287 =
+<<<<<<< HEAD
 	     { CASE_stage1_rg_stage_input_BITS_151_TO_145_0b1_ETC__q27,
 	       alu_outputs_trace_data_pc__h25914,
 	       stage1_rg_stage_input[333],
@@ -5193,6 +5858,16 @@ module mkCPU(CLK,
 	       x__h27357,
 	       x__h27420,
 	       x__h27692,
+=======
+	     { CASE_stage1_rg_stage_input_BITS_151_TO_145_0b1_ETC__q26,
+	       alu_outputs_trace_data_pc__h25992,
+	       stage1_rg_stage_input[333],
+	       alu_outputs___1_trace_data_instr__h25949,
+	       x_out_data_to_stage2_trace_data_rd__h26006,
+	       x__h27435,
+	       x__h27498,
+	       x__h27770,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       64'hAAAAAAAAAAAAAAAA } ;
   assign IF_stage1_rg_stage_input_20_BITS_112_TO_110_49_ETC___d924 =
 	     ((stage1_rg_stage_input[112:110] == 3'b0 ||
@@ -5216,6 +5891,7 @@ module mkCPU(CLK,
 	       4'd1 :
 	       4'd12 ;
   assign IF_stage1_rg_stage_input_20_BITS_139_TO_135_23_ETC___d1153 =
+<<<<<<< HEAD
 	     rs1_val_bypassed__h4850 +
 	     SEXT_stage1_rg_stage_input_20_BITS_87_TO_76_41___d1152 ;
   assign IF_stage1_rg_stage_input_20_BITS_139_TO_135_23_ETC___d384 =
@@ -5225,6 +5901,17 @@ module mkCPU(CLK,
 	     (rs2_val_bypassed__h4856 ^ 64'h8000000000000000) ;
   assign IF_stage1_rg_stage_input_20_BITS_139_TO_135_23_ETC___d388 =
 	     rs1_val_bypassed__h4850 < rs2_val_bypassed__h4856 ;
+=======
+	     rs1_val_bypassed__h4929 +
+	     SEXT_stage1_rg_stage_input_20_BITS_87_TO_76_41___d1152 ;
+  assign IF_stage1_rg_stage_input_20_BITS_139_TO_135_23_ETC___d384 =
+	     rs1_val_bypassed__h4929 == rs2_val_bypassed__h4935 ;
+  assign IF_stage1_rg_stage_input_20_BITS_139_TO_135_23_ETC___d386 =
+	     (rs1_val_bypassed__h4929 ^ 64'h8000000000000000) <
+	     (rs2_val_bypassed__h4935 ^ 64'h8000000000000000) ;
+  assign IF_stage1_rg_stage_input_20_BITS_139_TO_135_23_ETC___d388 =
+	     rs1_val_bypassed__h4929 < rs2_val_bypassed__h4935 ;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   assign IF_stage1_rg_stage_input_20_BITS_139_TO_135_23_ETC__q23 =
 	     IF_stage1_rg_stage_input_20_BITS_139_TO_135_23_ETC___d1153[31:0] ;
   assign IF_stage1_rg_stage_input_20_BITS_144_TO_140_31_ETC___d966 =
@@ -5239,19 +5926,31 @@ module mkCPU(CLK,
 	       stage1_rg_stage_input[151:145] == 7'b0110011) &&
 	      (stage1_rg_stage_input[112:110] == 3'b001 ||
 	       stage1_rg_stage_input[112:110] == 3'b101)) ?
+<<<<<<< HEAD
 	       _theResult____h9642 :
+=======
+	       _theResult____h9720 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d1271 ;
   assign IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d1273 =
 	     ((stage1_rg_stage_input[151:145] == 7'b0110011 ||
 	       stage1_rg_stage_input[151:145] == 7'b0111011) &&
 	      stage1_rg_stage_input[104:98] == 7'b0000001) ?
+<<<<<<< HEAD
 	       rs1_val_bypassed__h4850 :
+=======
+	       rs1_val_bypassed__h4929 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d1272 ;
   assign IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d1290 =
 	     ((stage1_rg_stage_input[151:145] == 7'b0110011 ||
 	       stage1_rg_stage_input[151:145] == 7'b0111011) &&
 	      stage1_rg_stage_input[104:98] == 7'b0000001) ?
+<<<<<<< HEAD
 	       rs2_val_bypassed__h4856 :
+=======
+	       rs2_val_bypassed__h4935 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       CASE_stage1_rg_stage_input_BITS_151_TO_145_0b1_ETC__q24 ;
   assign IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d2215 =
 	     (stage1_rg_stage_input[151:145] == 7'b0000111) ? 4'd9 : 4'd8 ;
@@ -5260,7 +5959,11 @@ module mkCPU(CLK,
 	       stage1_rg_stage_input[151:145] == 7'b0110011) &&
 	      (stage1_rg_stage_input[112:110] == 3'b001 ||
 	       stage1_rg_stage_input[112:110] == 3'b101)) ?
+<<<<<<< HEAD
 	       _theResult____h9642 :
+=======
+	       _theResult____h9720 :
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d2259 ;
   assign IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d713 =
 	     (stage1_rg_stage_input[151:145] == 7'b1100011) ?
@@ -5384,9 +6087,15 @@ module mkCPU(CLK,
 	       CASE_stage2_rg_stage2_BITS_629_TO_627_0_2_1_IF_ETC__q5 :
 	       2'd0 ;
   assign IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d324 =
+<<<<<<< HEAD
 	     x_out_bypass_rd__h8909 == stage1_rg_stage_input[139:135] ;
   assign IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d326 =
 	     x_out_bypass_rd__h8909 == stage1_rg_stage_input[134:130] ;
+=======
+	     x_out_bypass_rd__h8987 == stage1_rg_stage_input[139:135] ;
+  assign IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d326 =
+	     x_out_bypass_rd__h8987 == stage1_rg_stage_input[134:130] ;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   assign IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d911 =
 	     IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d278 ==
 	     2'd1 &&
@@ -5396,7 +6105,7 @@ module mkCPU(CLK,
 	     (IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d906 ||
 	      IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d908) ;
   assign NOT_IF_csr_regfile_read_csr_minstret__5_ULT_cf_ETC___d51 =
-	     cur_verbosity__h3308 > 4'd1 ;
+	     cur_verbosity__h3292 > 4'd1 ;
   assign NOT_IF_stage2_rg_full_14_THEN_IF_stage2_rg_sta_ETC___d2005 =
 	     (IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d278 !=
 	      2'd1 ||
@@ -5459,13 +6168,21 @@ module mkCPU(CLK,
 	      near_mem$imem_instr[17:16] != 2'b11) &&
 	     stageF_branch_predictor$RDY_predict_req &&
 	     near_mem$RDY_server_fence_i_response_get ;
+<<<<<<< HEAD
   assign NOT_near_mem_imem_pc_BITS_63_TO_2_EQ_imem_rg_p_ETC___d2539 =
+=======
+  assign NOT_near_mem_imem_pc_BITS_63_TO_2_EQ_imem_rg_p_ETC___d2545 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	     (!near_mem_imem_pc_BITS_63_TO_2_EQ_imem_rg_pc_BI_ETC___d8 ||
 	      imem_rg_pc[1:0] == 2'b0 ||
 	      near_mem$imem_instr[17:16] != 2'b11) &&
 	     stageF_branch_predictor$RDY_predict_req &&
 	     near_mem$RDY_server_fence_response_get ;
+<<<<<<< HEAD
   assign NOT_near_mem_imem_pc_BITS_63_TO_2_EQ_imem_rg_p_ETC___d2630 =
+=======
+  assign NOT_near_mem_imem_pc_BITS_63_TO_2_EQ_imem_rg_p_ETC___d2636 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	     (!near_mem_imem_pc_BITS_63_TO_2_EQ_imem_rg_pc_BI_ETC___d8 ||
 	      imem_rg_pc[1:0] == 2'b0 ||
 	      near_mem$imem_instr[17:16] != 2'b11) &&
@@ -5626,6 +6343,7 @@ module mkCPU(CLK,
 	     { {52{stage1_rg_stage_input_BITS_87_TO_76__q22[11]}},
 	       stage1_rg_stage_input_BITS_87_TO_76__q22 } ;
   assign SEXT_stageD_rg_data_415_BIT_76_432_CONCAT_stag_ETC___d1485 =
+<<<<<<< HEAD
 	     { {9{offset__h14964[11]}}, offset__h14964 } ;
   assign SEXT_stageD_rg_data_415_BIT_76_432_CONCAT_stag_ETC___d1510 =
 	     { {4{offset__h15595[8]}}, offset__h15595 } ;
@@ -5720,6 +6438,98 @@ module mkCPU(CLK,
 	     { {52{stage1_rg_stage_input_BITS_75_TO_64__q7[11]}},
 	       stage1_rg_stage_input_BITS_75_TO_64__q7 } ;
   assign alu_outputs___1_exc_code__h10121 =
+=======
+	     { {9{offset__h15042[11]}}, offset__h15042 } ;
+  assign SEXT_stageD_rg_data_415_BIT_76_432_CONCAT_stag_ETC___d1510 =
+	     { {4{offset__h15673[8]}}, offset__h15673 } ;
+  assign _theResult_____1_fst__h11012 =
+	     (stage1_rg_stage_input[112:110] == 3'b0 &&
+	      stage1_rg_stage_input[151:145] == 7'b0110011 &&
+	      stage1_rg_stage_input[262]) ?
+	       rd_val___1__h11008 :
+	       _theResult_____1_fst__h11019 ;
+  assign _theResult_____1_fst__h11047 =
+	     rs1_val_bypassed__h4929 & _theResult___snd__h13319 ;
+  assign _theResult_____1_fst_rd_val__h8966 =
+	     (!near_mem$dmem_valid || !near_mem$dmem_exc) ?
+	       _theResult_____2_fst_rd_val__h8963 :
+	       stage2_rg_stage2[557:494] ;
+  assign _theResult_____1_snd_fst_rd_val__h9122 =
+	     (!near_mem$dmem_valid || !near_mem$dmem_exc) ?
+	       _theResult_____2_snd_rd_val__h9119 :
+	       stage2_rg_stage2[557:494] ;
+  assign _theResult_____2_fst_rd_val__h8963 =
+	     (stage2_rg_stage2[365] || stage2_rg_stage2[626:622] == 5'd0) ?
+	       stage2_rg_stage2[557:494] :
+	       near_mem$dmem_word64 ;
+  assign _theResult_____2_snd_rd_val__h9119 =
+	     stage2_rg_stage2[365] ?
+	       data_to_stage3_rd_val__h8407 :
+	       stage2_rg_stage2[557:494] ;
+  assign _theResult____h40165 =
+	     (delta_CPI_instrs__h40164 == 64'd0) ?
+	       delta_CPI_instrs___1__h40200 :
+	       delta_CPI_instrs__h40164 ;
+  assign _theResult____h5287 = x_out_data_to_stage1_instr__h14121 ;
+  assign _theResult____h9720 =
+	     (stage1_rg_stage_input[112:110] == 3'b001) ?
+	       rd_val__h13214 :
+	       (stage1_rg_stage_input[262] ?
+		  rd_val__h13287 :
+		  rd_val__h13265) ;
+  assign _theResult___fst__h11137 =
+	     (stage1_rg_stage_input[112:110] == 3'b001 &&
+	      !stage1_rg_stage_input[257]) ?
+	       rd_val___1__h13381 :
+	       _theResult___fst__h11144 ;
+  assign _theResult___fst__h11144 =
+	     stage1_rg_stage_input[262] ?
+	       rd_val___1__h13463 :
+	       rd_val___1__h13434 ;
+  assign _theResult___fst__h11224 =
+	     { {32{rs1_val_bypassed929_BITS_31_TO_0_SRL_rs2_val_b_ETC__q9[31]}},
+	       rs1_val_bypassed929_BITS_31_TO_0_SRL_rs2_val_b_ETC__q9 } ;
+  assign _theResult___fst__h21777 =
+	     (near_mem_imem_pc_BITS_63_TO_2_EQ_imem_rg_pc_BI_ETC___d8 &&
+	      imem_rg_pc[1:0] == 2'b0 &&
+	      near_mem$imem_instr[1:0] != 2'b11) ?
+	       instr_out___1__h21779 :
+	       _theResult___fst__h21805 ;
+  assign _theResult___fst__h21805 =
+	     (near_mem_imem_pc_BITS_63_TO_2_EQ_imem_rg_pc_BI_ETC___d8 &&
+	      imem_rg_pc[1:0] != 2'b0 &&
+	      near_mem$imem_instr[17:16] != 2'b11) ?
+	       instr_out___1__h21807 :
+	       near_mem$imem_instr ;
+  assign _theResult___fst_rd_val__h8977 =
+	     stage2_rg_stage2[365] ?
+	       stage2_rg_stage2[557:494] :
+	       stage2_fbox$word_fst ;
+  assign _theResult___snd__h13319 =
+	     (stage1_rg_stage_input[151:145] == 7'b0010011) ?
+	       SEXT_stage1_rg_stage_input_20_BITS_87_TO_76_41___d1152 :
+	       rs2_val_bypassed__h4935 ;
+  assign _theResult___snd_rd_val__h9128 =
+	     stage2_rg_stage2[365] ?
+	       stage2_fbox$word_fst :
+	       stage2_rg_stage2[557:494] ;
+  assign alu_outputs___1_addr__h9590 =
+	     IF_stage1_rg_stage_input_20_BITS_112_TO_110_49_ETC___d395 ?
+	       branch_target__h9569 :
+	       alu_outputs___1_trace_data_pc__h25947 ;
+  assign alu_outputs___1_addr__h9614 =
+	     stage1_rg_stage_input[401:338] +
+	     { {43{stage1_rg_stage_input_BITS_30_TO_10__q3[20]}},
+	       stage1_rg_stage_input_BITS_30_TO_10__q3 } ;
+  assign alu_outputs___1_addr__h9643 =
+	     { IF_stage1_rg_stage_input_20_BITS_139_TO_135_23_ETC___d1153[63:1],
+	       1'd0 } ;
+  assign alu_outputs___1_addr__h9926 =
+	     rs1_val_bypassed__h4929 +
+	     { {52{stage1_rg_stage_input_BITS_75_TO_64__q7[11]}},
+	       stage1_rg_stage_input_BITS_75_TO_64__q7 } ;
+  assign alu_outputs___1_exc_code__h10199 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	     (stage1_rg_stage_input[112:110] == 3'b0) ?
 	       (stage1_rg_stage_input_20_BITS_144_TO_140_31_EQ_ETC___d939 ?
 		  4'd2 :
@@ -5728,6 +6538,7 @@ module mkCPU(CLK,
 		     CASE_stage1_rg_stage_input_BITS_87_TO_76_0b0_C_ETC__q17 :
 		     4'd2)) :
 	       4'd2 ;
+<<<<<<< HEAD
   assign alu_outputs___1_trace_data_instr__h25871 =
 	     stage1_rg_stage_input[333] ?
 	       stage1_rg_stage_input[263:232] :
@@ -5743,6 +6554,23 @@ module mkCPU(CLK,
   assign alu_outputs___1_val1__h10149 =
 	     { 57'd0, stage1_rg_stage_input[104:98] } ;
   assign alu_outputs___1_val1__h10350 =
+=======
+  assign alu_outputs___1_trace_data_instr__h25949 =
+	     stage1_rg_stage_input[333] ?
+	       stage1_rg_stage_input[263:232] :
+	       result___1__h27177 ;
+  assign alu_outputs___1_trace_data_pc__h25947 =
+	     stage1_rg_stage_input[333] ?
+	       next_pc__h12715 :
+	       next_pc___1__h12718 ;
+  assign alu_outputs___1_val1__h10203 =
+	     stage1_rg_stage_input[112] ?
+	       { 59'd0, stage1_rg_stage_input[139:135] } :
+	       rs1_val_bypassed__h4929 ;
+  assign alu_outputs___1_val1__h10227 =
+	     { 57'd0, stage1_rg_stage_input[104:98] } ;
+  assign alu_outputs___1_val1__h10428 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	     (stage1_rg_stage_input[151:145] == 7'b1010011 &&
 	      (stage1_rg_stage_input[104:98] == 7'h69 &&
 	       (stage1_rg_stage_input[134:130] == 5'd0 ||
@@ -5756,6 +6584,7 @@ module mkCPU(CLK,
 		stage1_rg_stage_input[134:130] == 5'd2 ||
 		stage1_rg_stage_input[134:130] == 5'd3) ||
 	       stage1_rg_stage_input[104:98] == 7'h78)) ?
+<<<<<<< HEAD
 	       rs1_val_bypassed__h4850 :
 	       frs1_val_bypassed__h4861 ;
   assign alu_outputs___1_val2__h9850 =
@@ -5768,6 +6597,20 @@ module mkCPU(CLK,
 	       stage1_rg_stage_input_BITS_63_TO_51__q2 } ;
   assign cpi__h39945 = x__h39944 / 64'd10 ;
   assign cpifrac__h39946 = x__h39944 % 64'd10 ;
+=======
+	       rs1_val_bypassed__h4929 :
+	       frs1_val_bypassed__h4940 ;
+  assign alu_outputs___1_val2__h9928 =
+	     (stage1_rg_stage_input[151:145] == 7'b0100111) ?
+	       frs2_val_bypassed__h4945 :
+	       rs2_val_bypassed__h4935 ;
+  assign branch_target__h9569 =
+	     stage1_rg_stage_input[401:338] +
+	     { {51{stage1_rg_stage_input_BITS_63_TO_51__q2[12]}},
+	       stage1_rg_stage_input_BITS_63_TO_51__q2 } ;
+  assign cpi__h40167 = x__h40166 / 64'd10 ;
+  assign cpifrac__h40168 = x__h40166 % 64'd10 ;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   assign csr_regfile_csr_mip_read__011_EQ_rg_prev_mip_012___d2013 =
 	     csr_regfile$csr_mip_read == rg_prev_mip ;
   assign csr_regfile_interrupt_pending_rg_cur_priv_9_03_ETC___d2034 =
@@ -5789,8 +6632,13 @@ module mkCPU(CLK,
 	     (!stageF_rg_full ||
 	      near_mem$imem_valid &&
 	      near_mem_imem_pc_EQ_imem_rg_pc_PLUS_2_9_805_OR_ETC___d1840) ;
+<<<<<<< HEAD
   assign csr_regfile_read_csr_mcycle__8_MINUS_rg_start__ETC___d2616 =
 	     delta_CPI_cycles__h39941 * 64'd10 ;
+=======
+  assign csr_regfile_read_csr_mcycle__8_MINUS_rg_start__ETC___d2622 =
+	     delta_CPI_cycles__h40163 * 64'd10 ;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   assign csr_regfile_read_misa__7_BIT_2_420_AND_stageD__ETC___d1495 =
 	     csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b10 &&
 	     stageD_rg_data[79:76] == 4'b1000 &&
@@ -5808,21 +6656,31 @@ module mkCPU(CLK,
 		csr_regfile$read_frm == 3'b111 :
 		stage1_rg_stage_input[112:110] == 3'b101 ||
 		stage1_rg_stage_input[112:110] == 3'b110) ;
-  assign cur_verbosity__h3308 =
+  assign cur_verbosity__h3292 =
 	     (csr_regfile$read_csr_minstret < cfg_logdelay) ?
 	       4'd0 :
 	       cfg_verbosity ;
+<<<<<<< HEAD
   assign d_instr__h21667 =
 	     near_mem_imem_pc_EQ_imem_rg_pc_PLUS_2_9___d1805 ?
 	       instr_out___1__h21669 :
 	       _theResult___fst__h21699 ;
   assign data_to_stage2_addr__h9357 = x_out_data_to_stage2_addr__h9371 ;
   assign data_to_stage3_rd_val__h8329 =
+=======
+  assign d_instr__h21745 =
+	     near_mem_imem_pc_EQ_imem_rg_pc_PLUS_2_9___d1805 ?
+	       instr_out___1__h21747 :
+	       _theResult___fst__h21777 ;
+  assign data_to_stage2_addr__h9435 = x_out_data_to_stage2_addr__h9449 ;
+  assign data_to_stage3_rd_val__h8407 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	     stage2_rg_stage2[365] ?
 	       ((stage2_rg_stage2[644:642] == 3'b010) ?
 		  { 32'hFFFFFFFF, near_mem$dmem_word64[31:0] } :
 		  near_mem$dmem_word64) :
 	       near_mem$dmem_word64 ;
+<<<<<<< HEAD
   assign decoded_instr_funct10__h28587 =
 	     { _theResult____h5208[31:25], _theResult____h5208[14:12] } ;
   assign decoded_instr_imm12_S__h28589 =
@@ -5845,6 +6703,30 @@ module mkCPU(CLK,
   assign delta_CPI_instrs__h39942 =
 	     csr_regfile$read_csr_minstret - rg_start_CPI_instrs ;
   assign epoch__h29546 =
+=======
+  assign decoded_instr_funct10__h28665 =
+	     { _theResult____h5287[31:25], _theResult____h5287[14:12] } ;
+  assign decoded_instr_imm12_S__h28667 =
+	     { _theResult____h5287[31:25], _theResult____h5287[11:7] } ;
+  assign decoded_instr_imm13_SB__h28668 =
+	     { _theResult____h5287[31],
+	       _theResult____h5287[7],
+	       _theResult____h5287[30:25],
+	       _theResult____h5287[11:8],
+	       1'b0 } ;
+  assign decoded_instr_imm21_UJ__h28670 =
+	     { _theResult____h5287[31],
+	       _theResult____h5287[19:12],
+	       _theResult____h5287[20],
+	       _theResult____h5287[30:21],
+	       1'b0 } ;
+  assign delta_CPI_cycles__h40163 =
+	     csr_regfile$read_csr_mcycle - rg_start_CPI_cycles ;
+  assign delta_CPI_instrs___1__h40200 = delta_CPI_instrs__h40164 + 64'd1 ;
+  assign delta_CPI_instrs__h40164 =
+	     csr_regfile$read_csr_minstret - rg_start_CPI_instrs ;
+  assign epoch__h29624 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	     f_redirects$EMPTY_N ?
 	       f_redirects$D_OUT[129:128] :
 	       stageF_rg_epoch ;
@@ -5855,6 +6737,7 @@ module mkCPU(CLK,
 	     stage2_f_reset_reqs$FULL_N &&
 	     stage3_f_reset_reqs$FULL_N &&
 	     f_trace_data$FULL_N ;
+<<<<<<< HEAD
   assign fall_through_pc__h9302 =
 	     stage1_rg_stage_input[401:338] +
 	     (stage1_rg_stage_input[333] ? 64'd4 : 64'd2) ;
@@ -5895,11 +6778,49 @@ module mkCPU(CLK,
   assign instr__h14256 =
 	     { imm12__h14257, 8'd18, stageD_rg_data[75:71], 7'b0000011 } ;
   assign instr__h14401 =
+=======
+  assign fall_through_pc__h9380 =
+	     stage1_rg_stage_input[401:338] +
+	     (stage1_rg_stage_input[333] ? 64'd4 : 64'd2) ;
+  assign frs1_val_bypassed__h4940 =
+	     (IF_NOT_stage2_rg_full_14_51_OR_stage2_rg_stage_ETC___d302 ==
+	      2'd2 &&
+	      x_out_fbypass_rd__h9136 == stage1_rg_stage_input[139:135]) ?
+	       x_out_fbypass_rd_val__h9137 :
+	       rd_val__h13883 ;
+  assign frs2_val_bypassed__h4945 =
+	     (IF_NOT_stage2_rg_full_14_51_OR_stage2_rg_stage_ETC___d302 ==
+	      2'd2 &&
+	      x_out_fbypass_rd__h9136 == stage1_rg_stage_input[134:130]) ?
+	       x_out_fbypass_rd_val__h9137 :
+	       rd_val__h13946 ;
+  assign imm12__h14335 = { 4'd0, offset__h14207 } ;
+  assign imm12__h14672 = { 5'd0, offset__h14614 } ;
+  assign imm12__h16308 = { {6{imm6__h16306[5]}}, imm6__h16306 } ;
+  assign imm12__h16977 = { {2{nzimm10__h16975[9]}}, nzimm10__h16975 } ;
+  assign imm12__h17192 = { 2'd0, nzimm10__h17190 } ;
+  assign imm12__h17388 = { 6'b0, imm6__h16306 } ;
+  assign imm12__h17725 = { 6'b010000, imm6__h16306 } ;
+  assign imm12__h19346 = { 3'd0, offset__h19260 } ;
+  assign imm12__h19698 = { 4'd0, offset__h19632 } ;
+  assign imm20__h16436 = { {14{imm6__h16306[5]}}, imm6__h16306 } ;
+  assign imm6__h16306 = { stageD_rg_data[76], stageD_rg_data[70:66] } ;
+  assign instr___1__h14157 =
+	     (csr_regfile$read_misa[2] && stageD_rg_data[65:64] == 2'b10 &&
+	      stageD_rg_data[75:71] != 5'd0 &&
+	      stageD_rg_data[79:77] == 3'b010) ?
+	       instr__h14334 :
+	       IF_csr_regfile_read_misa__7_BIT_2_420_AND_stag_ETC___d1707 ;
+  assign instr__h14334 =
+	     { imm12__h14335, 8'd18, stageD_rg_data[75:71], 7'b0000011 } ;
+  assign instr__h14479 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	     { 4'd0,
 	       stageD_rg_data[72:71],
 	       stageD_rg_data[76],
 	       stageD_rg_data[70:66],
 	       8'd18,
+<<<<<<< HEAD
 	       offset_BITS_4_TO_0___h14525,
 	       7'b0100011 } ;
   assign instr__h14593 =
@@ -5914,11 +6835,28 @@ module mkCPU(CLK,
 	       offset_BITS_4_TO_0___h14956,
 	       7'b0100011 } ;
   assign instr__h15017 =
+=======
+	       offset_BITS_4_TO_0___h14603,
+	       7'b0100011 } ;
+  assign instr__h14671 =
+	     { imm12__h14672, rs1__h14673, 3'b010, rd__h14674, 7'b0000011 } ;
+  assign instr__h14866 =
+	     { 5'd0,
+	       stageD_rg_data[69],
+	       stageD_rg_data[76],
+	       rd__h14674,
+	       rs1__h14673,
+	       3'b010,
+	       offset_BITS_4_TO_0___h15034,
+	       7'b0100011 } ;
+  assign instr__h15095 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	     { SEXT_stageD_rg_data_415_BIT_76_432_CONCAT_stag_ETC___d1485[20],
 	       SEXT_stageD_rg_data_415_BIT_76_432_CONCAT_stag_ETC___d1485[10:1],
 	       SEXT_stageD_rg_data_415_BIT_76_432_CONCAT_stag_ETC___d1485[11],
 	       SEXT_stageD_rg_data_415_BIT_76_432_CONCAT_stag_ETC___d1485[19:12],
 	       12'd111 } ;
+<<<<<<< HEAD
   assign instr__h15470 = { 12'd0, stageD_rg_data[75:71], 15'd103 } ;
   assign instr__h15586 = { 12'd0, stageD_rg_data[75:71], 15'd231 } ;
   assign instr__h15651 =
@@ -5926,48 +6864,91 @@ module mkCPU(CLK,
 	       SEXT_stageD_rg_data_415_BIT_76_432_CONCAT_stag_ETC___d1510[10:5],
 	       5'd0,
 	       rs1__h14595,
+=======
+  assign instr__h15548 = { 12'd0, stageD_rg_data[75:71], 15'd103 } ;
+  assign instr__h15664 = { 12'd0, stageD_rg_data[75:71], 15'd231 } ;
+  assign instr__h15729 =
+	     { SEXT_stageD_rg_data_415_BIT_76_432_CONCAT_stag_ETC___d1510[12],
+	       SEXT_stageD_rg_data_415_BIT_76_432_CONCAT_stag_ETC___d1510[10:5],
+	       5'd0,
+	       rs1__h14673,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       3'b0,
 	       SEXT_stageD_rg_data_415_BIT_76_432_CONCAT_stag_ETC___d1510[4:1],
 	       SEXT_stageD_rg_data_415_BIT_76_432_CONCAT_stag_ETC___d1510[11],
 	       7'b1100011 } ;
+<<<<<<< HEAD
   assign instr__h15968 =
 	     { SEXT_stageD_rg_data_415_BIT_76_432_CONCAT_stag_ETC___d1510[12],
 	       SEXT_stageD_rg_data_415_BIT_76_432_CONCAT_stag_ETC___d1510[10:5],
 	       5'd0,
 	       rs1__h14595,
+=======
+  assign instr__h16046 =
+	     { SEXT_stageD_rg_data_415_BIT_76_432_CONCAT_stag_ETC___d1510[12],
+	       SEXT_stageD_rg_data_415_BIT_76_432_CONCAT_stag_ETC___d1510[10:5],
+	       5'd0,
+	       rs1__h14673,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       3'b001,
 	       SEXT_stageD_rg_data_415_BIT_76_432_CONCAT_stag_ETC___d1510[4:1],
 	       SEXT_stageD_rg_data_415_BIT_76_432_CONCAT_stag_ETC___d1510[11],
 	       7'b1100011 } ;
+<<<<<<< HEAD
   assign instr__h16306 =
 	     { imm12__h16230, 8'd0, stageD_rg_data[75:71], 7'b0010011 } ;
   assign instr__h16490 =
 	     { imm20__h16358, stageD_rg_data[75:71], 7'b0110111 } ;
   assign instr__h16619 =
 	     { imm12__h16230,
+=======
+  assign instr__h16384 =
+	     { imm12__h16308, 8'd0, stageD_rg_data[75:71], 7'b0010011 } ;
+  assign instr__h16568 =
+	     { imm20__h16436, stageD_rg_data[75:71], 7'b0110111 } ;
+  assign instr__h16697 =
+	     { imm12__h16308,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       stageD_rg_data[75:71],
 	       3'b0,
 	       stageD_rg_data[75:71],
 	       7'b0010011 } ;
+<<<<<<< HEAD
   assign instr__h16846 =
 	     { imm12__h16230,
+=======
+  assign instr__h16924 =
+	     { imm12__h16308,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       stageD_rg_data[75:71],
 	       3'b0,
 	       stageD_rg_data[75:71],
 	       7'b0011011 } ;
+<<<<<<< HEAD
   assign instr__h17101 =
 	     { imm12__h16899,
+=======
+  assign instr__h17179 =
+	     { imm12__h16977,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       stageD_rg_data[75:71],
 	       3'b0,
 	       stageD_rg_data[75:71],
 	       7'b0010011 } ;
+<<<<<<< HEAD
   assign instr__h17273 = { imm12__h17114, 8'd16, rd__h14596, 7'b0010011 } ;
   assign instr__h17442 =
 	     { imm12__h17310,
+=======
+  assign instr__h17351 = { imm12__h17192, 8'd16, rd__h14674, 7'b0010011 } ;
+  assign instr__h17520 =
+	     { imm12__h17388,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       stageD_rg_data[75:71],
 	       3'b001,
 	       stageD_rg_data[75:71],
 	       7'b0010011 } ;
+<<<<<<< HEAD
   assign instr__h17631 =
 	     { imm12__h17310, rs1__h14595, 3'b101, rs1__h14595, 7'b0010011 } ;
   assign instr__h17820 =
@@ -5975,18 +6956,32 @@ module mkCPU(CLK,
   assign instr__h17937 =
 	     { imm12__h16230, rs1__h14595, 3'b111, rs1__h14595, 7'b0010011 } ;
   assign instr__h18115 =
+=======
+  assign instr__h17709 =
+	     { imm12__h17388, rs1__h14673, 3'b101, rs1__h14673, 7'b0010011 } ;
+  assign instr__h17898 =
+	     { imm12__h17725, rs1__h14673, 3'b101, rs1__h14673, 7'b0010011 } ;
+  assign instr__h18015 =
+	     { imm12__h16308, rs1__h14673, 3'b111, rs1__h14673, 7'b0010011 } ;
+  assign instr__h18193 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	     { 7'b0,
 	       stageD_rg_data[70:66],
 	       8'd0,
 	       stageD_rg_data[75:71],
 	       7'b0110011 } ;
+<<<<<<< HEAD
   assign instr__h18234 =
+=======
+  assign instr__h18312 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	     { 7'b0,
 	       stageD_rg_data[70:66],
 	       stageD_rg_data[75:71],
 	       3'b0,
 	       stageD_rg_data[75:71],
 	       7'b0110011 } ;
+<<<<<<< HEAD
   assign instr__h18329 =
 	     { 7'b0,
 	       rd__h14596,
@@ -6030,19 +7025,71 @@ module mkCPU(CLK,
 	       rs1__h14595,
 	       7'b0111011 } ;
   assign instr__h19171 =
+=======
+  assign instr__h18407 =
+	     { 7'b0,
+	       rd__h14674,
+	       rs1__h14673,
+	       3'b111,
+	       rs1__h14673,
+	       7'b0110011 } ;
+  assign instr__h18543 =
+	     { 7'b0,
+	       rd__h14674,
+	       rs1__h14673,
+	       3'b110,
+	       rs1__h14673,
+	       7'b0110011 } ;
+  assign instr__h18679 =
+	     { 7'b0,
+	       rd__h14674,
+	       rs1__h14673,
+	       3'b100,
+	       rs1__h14673,
+	       7'b0110011 } ;
+  assign instr__h18815 =
+	     { 7'b0100000,
+	       rd__h14674,
+	       rs1__h14673,
+	       3'b0,
+	       rs1__h14673,
+	       7'b0110011 } ;
+  assign instr__h18953 =
+	     { 7'b0,
+	       rd__h14674,
+	       rs1__h14673,
+	       3'b0,
+	       rs1__h14673,
+	       7'b0111011 } ;
+  assign instr__h19091 =
+	     { 7'b0100000,
+	       rd__h14674,
+	       rs1__h14673,
+	       3'b0,
+	       rs1__h14673,
+	       7'b0111011 } ;
+  assign instr__h19249 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	     { 12'b000000000001,
 	       stageD_rg_data[75:71],
 	       3'b0,
 	       stageD_rg_data[75:71],
 	       7'b1110011 } ;
+<<<<<<< HEAD
   assign instr__h19267 =
 	     { imm12__h19268, 8'd19, stageD_rg_data[75:71], 7'b0000011 } ;
   assign instr__h19420 =
+=======
+  assign instr__h19345 =
+	     { imm12__h19346, 8'd19, stageD_rg_data[75:71], 7'b0000011 } ;
+  assign instr__h19498 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	     { 3'd0,
 	       stageD_rg_data[73:71],
 	       stageD_rg_data[76],
 	       stageD_rg_data[70:66],
 	       8'd19,
+<<<<<<< HEAD
 	       offset_BITS_4_TO_0___h19895,
 	       7'b0100011 } ;
   assign instr__h19619 =
@@ -6059,11 +7106,30 @@ module mkCPU(CLK,
   assign instr__h20809 =
 	     { imm12__h19268, 8'd19, stageD_rg_data[75:71], 7'b0000111 } ;
   assign instr__h20962 =
+=======
+	       offset_BITS_4_TO_0___h19973,
+	       7'b0100011 } ;
+  assign instr__h19697 =
+	     { imm12__h19698, rs1__h14673, 3'b011, rd__h14674, 7'b0000011 } ;
+  assign instr__h19848 =
+	     { 4'd0,
+	       stageD_rg_data[70:69],
+	       stageD_rg_data[76],
+	       rd__h14674,
+	       rs1__h14673,
+	       3'b011,
+	       offset_BITS_4_TO_0___h19973,
+	       7'b0100011 } ;
+  assign instr__h20887 =
+	     { imm12__h19346, 8'd19, stageD_rg_data[75:71], 7'b0000111 } ;
+  assign instr__h21040 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	     { 3'd0,
 	       stageD_rg_data[73:71],
 	       stageD_rg_data[76],
 	       stageD_rg_data[70:66],
 	       8'd19,
+<<<<<<< HEAD
 	       offset_BITS_4_TO_0___h19895,
 	       7'b0100111 } ;
   assign instr__h21161 =
@@ -6081,6 +7147,25 @@ module mkCPU(CLK,
 	     { near_mem$imem_instr[15:0], imem_rg_instr_15_0 } ;
   assign instr_out___1__h21701 = { 16'b0, near_mem$imem_instr[15:0] } ;
   assign instr_out___1__h21729 = { 16'b0, near_mem$imem_instr[31:16] } ;
+=======
+	       offset_BITS_4_TO_0___h19973,
+	       7'b0100111 } ;
+  assign instr__h21239 =
+	     { imm12__h19698, rs1__h14673, 3'b011, rd__h14674, 7'b0000111 } ;
+  assign instr__h21390 =
+	     { 4'd0,
+	       stageD_rg_data[70:69],
+	       stageD_rg_data[76],
+	       rd__h14674,
+	       rs1__h14673,
+	       3'b011,
+	       offset_BITS_4_TO_0___h19973,
+	       7'b0100111 } ;
+  assign instr_out___1__h21747 =
+	     { near_mem$imem_instr[15:0], imem_rg_instr_15_0 } ;
+  assign instr_out___1__h21779 = { 16'b0, near_mem$imem_instr[15:0] } ;
+  assign instr_out___1__h21807 = { 16'b0, near_mem$imem_instr[31:16] } ;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   assign near_mem_imem_pc_BITS_63_TO_2_EQ_imem_rg_pc_BI_ETC___d8 =
 	     near_mem$imem_pc[63:2] == imem_rg_pc[63:2] ;
   assign near_mem_imem_pc_EQ_imem_rg_pc_PLUS_2_9_805_OR_ETC___d1838 =
@@ -6116,6 +7201,7 @@ module mkCPU(CLK,
 	     near_mem$imem_exc_code != 4'd12 &&
 	     near_mem$imem_exc_code != 4'd13 &&
 	     near_mem$imem_exc_code != 4'd15 ;
+<<<<<<< HEAD
   assign next_pc___1__h12640 = stage1_rg_stage_input[401:338] + 64'd2 ;
   assign next_pc__h12637 = stage1_rg_stage_input[401:338] + 64'd4 ;
   assign next_pc__h29548 =
@@ -6124,33 +7210,63 @@ module mkCPU(CLK,
 	       stageF_branch_predictor$predict_rsp ;
   assign next_pc__h9303 = x_out_next_pc__h9318 ;
   assign nzimm10__h16897 =
+=======
+  assign next_pc___1__h12718 = stage1_rg_stage_input[401:338] + 64'd2 ;
+  assign next_pc__h12715 = stage1_rg_stage_input[401:338] + 64'd4 ;
+  assign next_pc__h29626 =
+	     f_redirects$EMPTY_N ?
+	       f_redirects$D_OUT[63:0] :
+	       stageF_branch_predictor$predict_rsp ;
+  assign next_pc__h9381 = x_out_next_pc__h9396 ;
+  assign nzimm10__h16975 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	     { stageD_rg_data[76],
 	       stageD_rg_data[68:67],
 	       stageD_rg_data[69],
 	       stageD_rg_data[66],
 	       stageD_rg_data[70],
 	       4'b0 } ;
+<<<<<<< HEAD
   assign nzimm10__h17112 =
+=======
+  assign nzimm10__h17190 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	     { stageD_rg_data[74:71],
 	       stageD_rg_data[76:75],
 	       stageD_rg_data[69],
 	       stageD_rg_data[70],
 	       2'b0 } ;
+<<<<<<< HEAD
   assign offset_BITS_4_TO_0___h14525 = { stageD_rg_data[75:73], 2'b0 } ;
   assign offset_BITS_4_TO_0___h14956 =
 	     { stageD_rg_data[75:74], stageD_rg_data[70], 2'b0 } ;
   assign offset_BITS_4_TO_0___h19895 = { stageD_rg_data[75:74], 3'b0 } ;
   assign offset__h14129 =
+=======
+  assign offset_BITS_4_TO_0___h14603 = { stageD_rg_data[75:73], 2'b0 } ;
+  assign offset_BITS_4_TO_0___h15034 =
+	     { stageD_rg_data[75:74], stageD_rg_data[70], 2'b0 } ;
+  assign offset_BITS_4_TO_0___h19973 = { stageD_rg_data[75:74], 3'b0 } ;
+  assign offset__h14207 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	     { stageD_rg_data[67:66],
 	       stageD_rg_data[76],
 	       stageD_rg_data[70:68],
 	       2'b0 } ;
+<<<<<<< HEAD
   assign offset__h14536 =
+=======
+  assign offset__h14614 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	     { stageD_rg_data[69],
 	       stageD_rg_data[76:74],
 	       stageD_rg_data[70],
 	       2'b0 } ;
+<<<<<<< HEAD
   assign offset__h14964 =
+=======
+  assign offset__h15042 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	     { stageD_rg_data[76],
 	       stageD_rg_data[72],
 	       stageD_rg_data[74:73],
@@ -6160,18 +7276,27 @@ module mkCPU(CLK,
 	       stageD_rg_data[75],
 	       stageD_rg_data[69:67],
 	       1'b0 } ;
+<<<<<<< HEAD
   assign offset__h15595 =
+=======
+  assign offset__h15673 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	     { stageD_rg_data[76],
 	       stageD_rg_data[70:69],
 	       stageD_rg_data[66],
 	       stageD_rg_data[75:74],
 	       stageD_rg_data[68:67],
 	       1'b0 } ;
+<<<<<<< HEAD
   assign offset__h19182 =
+=======
+  assign offset__h19260 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	     { stageD_rg_data[68:66],
 	       stageD_rg_data[76],
 	       stageD_rg_data[70:69],
 	       3'b0 } ;
+<<<<<<< HEAD
   assign offset__h19554 =
 	     { stageD_rg_data[70:69], stageD_rg_data[76:74], 3'b0 } ;
   assign rd__h14596 = { 2'b01, stageD_rg_data[68:66] } ;
@@ -6213,35 +7338,95 @@ module mkCPU(CLK,
 	     ~(64'hFFFFFFFFFFFFFFFF >> shamt__h9638) &
 	     {64{rs1_val_bypassed__h4850[63]}} ;
   assign rd_val__h13805 =
+=======
+  assign offset__h19632 =
+	     { stageD_rg_data[70:69], stageD_rg_data[76:74], 3'b0 } ;
+  assign rd__h14674 = { 2'b01, stageD_rg_data[68:66] } ;
+  assign rd_val___1__h11000 =
+	     rs1_val_bypassed__h4929 + _theResult___snd__h13319 ;
+  assign rd_val___1__h11008 =
+	     rs1_val_bypassed__h4929 - _theResult___snd__h13319 ;
+  assign rd_val___1__h11015 =
+	     ((rs1_val_bypassed__h4929 ^ 64'h8000000000000000) <
+	      (_theResult___snd__h13319 ^ 64'h8000000000000000)) ?
+	       64'd1 :
+	       64'd0 ;
+  assign rd_val___1__h11022 =
+	     (rs1_val_bypassed__h4929 < _theResult___snd__h13319) ?
+	       64'd1 :
+	       64'd0 ;
+  assign rd_val___1__h11029 =
+	     rs1_val_bypassed__h4929 ^ _theResult___snd__h13319 ;
+  assign rd_val___1__h11036 =
+	     rs1_val_bypassed__h4929 | _theResult___snd__h13319 ;
+  assign rd_val___1__h13350 =
+	     { {32{IF_stage1_rg_stage_input_20_BITS_139_TO_135_23_ETC__q23[31]}},
+	       IF_stage1_rg_stage_input_20_BITS_139_TO_135_23_ETC__q23 } ;
+  assign rd_val___1__h13381 = { {32{x__h13384[31]}}, x__h13384 } ;
+  assign rd_val___1__h13434 = { {32{x__h13437[31]}}, x__h13437 } ;
+  assign rd_val___1__h13463 = { {32{tmp__h13462[31]}}, tmp__h13462 } ;
+  assign rd_val___1__h13517 =
+	     { {32{rs1_val_bypassed929_BITS_31_TO_0_PLUS_rs2_val__ETC__q10[31]}},
+	       rs1_val_bypassed929_BITS_31_TO_0_PLUS_rs2_val__ETC__q10 } ;
+  assign rd_val___1__h13565 =
+	     { {32{rs1_val_bypassed929_BITS_31_TO_0_MINUS_rs2_val_ETC__q11[31]}},
+	       rs1_val_bypassed929_BITS_31_TO_0_MINUS_rs2_val_ETC__q11 } ;
+  assign rd_val___1__h13571 = { {32{x__h13574[31]}}, x__h13574 } ;
+  assign rd_val___1__h13616 = { {32{x__h13619[31]}}, x__h13619 } ;
+  assign rd_val__h13214 = rs1_val_bypassed__h4929 << shamt__h9716 ;
+  assign rd_val__h13265 = rs1_val_bypassed__h4929 >> shamt__h9716 ;
+  assign rd_val__h13287 =
+	     rs1_val_bypassed__h4929 >> shamt__h9716 |
+	     ~(64'hFFFFFFFFFFFFFFFF >> shamt__h9716) &
+	     {64{rs1_val_bypassed__h4929[63]}} ;
+  assign rd_val__h13883 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	     (stage3_rg_stage3[69] && stage3_rg_full &&
 	      stage3_rg_stage3[76] &&
 	      stage3_rg_stage3_01_BITS_75_TO_71_10_EQ_stage1_ETC___d370) ?
 	       stage3_rg_stage3[63:0] :
 	       fpr_regfile$read_rs1 ;
+<<<<<<< HEAD
   assign rd_val__h13868 =
+=======
+  assign rd_val__h13946 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	     (stage3_rg_stage3[69] && stage3_rg_full &&
 	      stage3_rg_stage3[76] &&
 	      stage3_rg_stage3_01_BITS_75_TO_71_10_EQ_stage1_ETC___d378) ?
 	       stage3_rg_stage3[63:0] :
 	       fpr_regfile$read_rs2 ;
+<<<<<<< HEAD
   assign rd_val__h13929 =
+=======
+  assign rd_val__h14007 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	     (stage3_rg_stage3[69] && stage3_rg_full &&
 	      stage3_rg_stage3[76] &&
 	      stage3_rg_stage3[75:71] == stage1_rg_stage_input[129:125]) ?
 	       stage3_rg_stage3[63:0] :
 	       fpr_regfile$read_rs3 ;
+<<<<<<< HEAD
   assign rd_val__h9254 =
+=======
+  assign rd_val__h9332 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	     (!stage3_rg_stage3[69] && stage3_rg_full &&
 	      stage3_rg_stage3[76] &&
 	      stage3_rg_stage3_01_BITS_75_TO_71_10_EQ_stage1_ETC___d370) ?
 	       stage3_rg_stage3[63:0] :
 	       gpr_regfile$read_rs1 ;
+<<<<<<< HEAD
   assign rd_val__h9279 =
+=======
+  assign rd_val__h9357 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	     (!stage3_rg_stage3[69] && stage3_rg_full &&
 	      stage3_rg_stage3[76] &&
 	      stage3_rg_stage3_01_BITS_75_TO_71_10_EQ_stage1_ETC___d378) ?
 	       stage3_rg_stage3[63:0] :
 	       gpr_regfile$read_rs2 ;
+<<<<<<< HEAD
   assign rd_val__h9684 =
 	     (stage1_rg_stage_input[112:110] == 3'b0 &&
 	      (stage1_rg_stage_input[151:145] != 7'b0110011 ||
@@ -6255,6 +7440,21 @@ module mkCPU(CLK,
   assign rd_val__h9756 = { {32{v32__h9754[31]}}, v32__h9754 } ;
   assign rd_val__h9775 = stage1_rg_stage_input[401:338] + rd_val__h9756 ;
   assign result___1__h27099 = { 16'd0, stage1_rg_stage_input[231:216] } ;
+=======
+  assign rd_val__h9762 =
+	     (stage1_rg_stage_input[112:110] == 3'b0 &&
+	      (stage1_rg_stage_input[151:145] != 7'b0110011 ||
+	       !stage1_rg_stage_input[262])) ?
+	       rd_val___1__h11000 :
+	       _theResult_____1_fst__h11012 ;
+  assign rd_val__h9788 =
+	     (stage1_rg_stage_input[112:110] == 3'b0) ?
+	       rd_val___1__h13350 :
+	       _theResult___fst__h11137 ;
+  assign rd_val__h9834 = { {32{v32__h9832[31]}}, v32__h9832 } ;
+  assign rd_val__h9853 = stage1_rg_stage_input[401:338] + rd_val__h9834 ;
+  assign result___1__h27177 = { 16'd0, stage1_rg_stage_input[231:216] } ;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   assign rg_cur_priv_9_EQ_0b11_33_OR_rg_cur_priv_9_EQ_0_ETC___d1375 =
 	     (rg_cur_priv == 2'b11 ||
 	      rg_cur_priv == 2'b01 && !csr_regfile$read_mstatus[20]) &&
@@ -6355,12 +7555,26 @@ module mkCPU(CLK,
 	      IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d150 !=
 	      2'd3) &&
 	     stage3_rg_full_9_OR_NOT_IF_stage2_rg_full_14_T_ETC___d2086 ;
+<<<<<<< HEAD
   assign rg_state_2_EQ_5_556_OR_rg_state_2_EQ_4_004_AND_ETC___d2565 =
 	     rg_state == 4'd5 ||
 	     rg_state_2_EQ_4_004_AND_NOT_stage1_rg_stage_in_ETC___d2443 &&
 	     IF_stage1_rg_stage_input_20_BITS_335_TO_334_21_ETC___d992 ==
 	     4'd12 &&
 	     (x_out_trap_info_exc_code__h12876 != 4'd3 ||
+=======
+  assign rg_state_2_EQ_5_418_AND_NOT_stageF_rg_full_823_ETC___d2419 =
+	     rg_state == 4'd5 &&
+	     (!stageF_rg_full ||
+	      near_mem$imem_valid &&
+	      near_mem_imem_pc_EQ_imem_rg_pc_PLUS_2_9_805_OR_ETC___d1840) ;
+  assign rg_state_2_EQ_7_562_OR_rg_state_2_EQ_4_004_AND_ETC___d2571 =
+	     rg_state == 4'd7 ||
+	     rg_state_2_EQ_4_004_AND_NOT_stage1_rg_stage_in_ETC___d2449 &&
+	     IF_stage1_rg_stage_input_20_BITS_335_TO_334_21_ETC___d992 ==
+	     4'd12 &&
+	     (x_out_trap_info_exc_code__h12954 != 4'd3 ||
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	      !csr_regfile$dcsr_break_enters_debug) ;
   assign rg_state_2_EQ_5_556_OR_rg_state_2_EQ_4_004_AND_ETC___d2566 =
 	     rg_state_2_EQ_5_556_OR_rg_state_2_EQ_4_004_AND_ETC___d2565 &&
@@ -6372,6 +7586,7 @@ module mkCPU(CLK,
 	     (!stageF_rg_full ||
 	      near_mem$imem_valid &&
 	      near_mem_imem_pc_EQ_imem_rg_pc_PLUS_2_9_805_OR_ETC___d1840) ;
+<<<<<<< HEAD
   assign rm__h10253 = x_out_data_to_stage2_rounding_mode__h9376 ;
   assign rs1__h14595 = { 2'b01, stageD_rg_data[73:71] } ;
   assign rs1_val__h30843 =
@@ -6396,6 +7611,32 @@ module mkCPU(CLK,
 	     (stage1_rg_stage_input[151:145] == 7'b0010011) ?
 	       stage1_rg_stage_input[81:76] :
 	       rs2_val_bypassed__h4856[5:0] ;
+=======
+  assign rm__h10331 = x_out_data_to_stage2_rounding_mode__h9454 ;
+  assign rs1__h14673 = { 2'b01, stageD_rg_data[73:71] } ;
+  assign rs1_val__h31065 =
+	     (stage1_rg_stage_input_BITS_263_TO_232__q1[14:12] == 3'b001) ?
+	       x_out_data_to_stage2_val1__h9450 :
+	       { 59'd0, stage1_rg_stage_input_BITS_263_TO_232__q1[19:15] } ;
+  assign rs1_val_bypassed929_BITS_31_TO_0_MINUS_rs2_val_ETC__q11 =
+	     rs1_val_bypassed__h4929[31:0] - rs2_val_bypassed__h4935[31:0] ;
+  assign rs1_val_bypassed929_BITS_31_TO_0_PLUS_rs2_val__ETC__q10 =
+	     rs1_val_bypassed__h4929[31:0] + rs2_val_bypassed__h4935[31:0] ;
+  assign rs1_val_bypassed929_BITS_31_TO_0_SRL_rs2_val_b_ETC__q9 =
+	     rs1_val_bypassed__h4929[31:0] >> rs2_val_bypassed__h4935[4:0] |
+	     ~(32'hFFFFFFFF >> rs2_val_bypassed__h4935[4:0]) &
+	     {32{rs1_val_bypassed929_BITS_31_TO_0__q8[31]}} ;
+  assign rs1_val_bypassed929_BITS_31_TO_0__q8 =
+	     rs1_val_bypassed__h4929[31:0] ;
+  assign rs1_val_bypassed__h4929 =
+	     (stage1_rg_stage_input[139:135] == 5'd0) ? 64'd0 : val__h9334 ;
+  assign rs2_val_bypassed__h4935 =
+	     (stage1_rg_stage_input[134:130] == 5'd0) ? 64'd0 : val__h9359 ;
+  assign shamt__h9716 =
+	     (stage1_rg_stage_input[151:145] == 7'b0010011) ?
+	       stage1_rg_stage_input[81:76] :
+	       rs2_val_bypassed__h4935[5:0] ;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   assign stage1_rg_full_19_AND_NOT_stage1_rg_stage_inpu_ETC___d2008 =
 	     stage1_rg_full &&
 	     (!stage1_rg_stage_input_20_BITS_335_TO_334_21_EQ_ETC___d322 ||
@@ -6624,6 +7865,7 @@ module mkCPU(CLK,
 	     near_mem_imem_pc_EQ_imem_rg_pc_PLUS_2_9_805_OR_ETC___d1840 &&
 	     near_mem$imem_exc &&
 	     near_mem$imem_exc_code == 4'd15 ;
+<<<<<<< HEAD
   assign sxl__h7225 =
 	     (csr_regfile$read_misa[27:26] == 2'd2) ?
 	       csr_regfile$read_mstatus[35:34] :
@@ -6635,6 +7877,19 @@ module mkCPU(CLK,
 	     {32{rs1_val_bypassed850_BITS_31_TO_0__q8[31]}} ;
   assign trace_data_rd__h39643 = { 3'd0, csr_regfile$csr_trap_actions[1:0] } ;
   assign trap_info_tval__h12871 =
+=======
+  assign sxl__h7303 =
+	     (csr_regfile$read_misa[27:26] == 2'd2) ?
+	       csr_regfile$read_mstatus[35:34] :
+	       2'd0 ;
+  assign td1_rd__h33357 = { 3'd0, csr_regfile$csr_ret_actions[65:64] } ;
+  assign tmp__h13462 =
+	     rs1_val_bypassed__h4929[31:0] >> stage1_rg_stage_input[80:76] |
+	     ~(32'hFFFFFFFF >> stage1_rg_stage_input[80:76]) &
+	     {32{rs1_val_bypassed929_BITS_31_TO_0__q8[31]}} ;
+  assign trace_data_rd__h39865 = { 3'd0, csr_regfile$csr_trap_actions[1:0] } ;
+  assign trap_info_tval__h12949 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	     (stage1_rg_stage_input[151:145] != 7'b1101111 &&
 	      stage1_rg_stage_input[151:145] != 7'b1100111 &&
 	      (stage1_rg_stage_input[151:145] != 7'b1110011 ||
@@ -6644,6 +7899,7 @@ module mkCPU(CLK,
 		  { 32'd0, stage1_rg_stage_input[263:232] } :
 		  { 48'd0, stage1_rg_stage_input[231:216] }) :
 	       CASE_stage1_rg_stage_input_BITS_151_TO_145_0b1_ETC__q25 ;
+<<<<<<< HEAD
   assign uxl__h7226 =
 	     (csr_regfile$read_misa[27:26] == 2'd2) ?
 	       csr_regfile$read_mstatus[33:32] :
@@ -6737,56 +7993,184 @@ module mkCPU(CLK,
     case (stage2_rg_stage2[629:627])
       3'd1, 3'd2, 3'd4: value__h8614 = stage2_rg_stage2[725:662];
       default: value__h8614 = stage2_rg_stage2[725:662];
-    endcase
-  end
+=======
+  assign uxl__h7304 =
+	     (csr_regfile$read_misa[27:26] == 2'd2) ?
+	       csr_regfile$read_mstatus[33:32] :
+	       2'd0 ;
+  assign v32__h9832 = { stage1_rg_stage_input[50:31], 12'h0 } ;
+  assign v__h23219 = rg_epoch + 2'd1 ;
+  assign val__h9334 =
+	     (IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d278 ==
+	      2'd2 &&
+	      IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d324) ?
+	       x_out_bypass_rd_val__h8988 :
+	       rd_val__h9332 ;
+  assign val__h9359 =
+	     (IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d278 ==
+	      2'd2 &&
+	      IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d326) ?
+	       x_out_bypass_rd_val__h8988 :
+	       rd_val__h9357 ;
+  assign value__h12999 =
+	     stage1_rg_stage_input[332] ?
+	       stage1_rg_stage_input[327:264] :
+	       trap_info_tval__h12949 ;
+  assign x__h13384 =
+	     rs1_val_bypassed__h4929[31:0] << stage1_rg_stage_input[80:76] ;
+  assign x__h13437 =
+	     rs1_val_bypassed__h4929[31:0] >> stage1_rg_stage_input[80:76] ;
+  assign x__h13574 =
+	     rs1_val_bypassed__h4929[31:0] << rs2_val_bypassed__h4935[4:0] ;
+  assign x__h13619 =
+	     rs1_val_bypassed__h4929[31:0] >> rs2_val_bypassed__h4935[4:0] ;
+  assign x__h27435 =
+	     stage1_rg_stage_input_20_BITS_335_TO_334_21_EQ_ETC___d322 ?
+	       alu_outputs_trace_data_word1__h25996 :
+	       alu_outputs_trace_data_word1__h25996 ;
+  assign x__h27498 =
+	     stage1_rg_stage_input_20_BITS_335_TO_334_21_EQ_ETC___d322 ?
+	       alu_outputs_trace_data_word2__h25997 :
+	       alu_outputs_trace_data_word2__h25997 ;
+  assign x__h27770 =
+	     stage1_rg_stage_input_20_BITS_335_TO_334_21_EQ_ETC___d322 ?
+	       alu_outputs_trace_data_word3__h25998 :
+	       alu_outputs_trace_data_word3__h25998 ;
+  assign x__h31482 =
+	     { 52'd0, stage1_rg_stage_input_BITS_263_TO_232__q1[31:20] } ;
+  assign x__h32112 =
+	     (stage1_rg_stage_input_BITS_263_TO_232__q1[19:15] == 5'd0) ?
+	       64'd0 :
+	       64'd1 ;
+  assign x__h32121 =
+	     (stage1_rg_stage_input_BITS_263_TO_232__q1[19:15] == 5'd0) ?
+	       64'hAAAAAAAAAAAAAAAA :
+	       csr_regfile$mav_csr_write ;
+  assign x__h40166 =
+	     csr_regfile_read_csr_mcycle__8_MINUS_rg_start__ETC___d2622[63:0] /
+	     _theResult____h40165 ;
+  assign x_out_data_to_stage1_instr__h14121 =
+	     stageD_rg_data[165] ? stageD_rg_data[95:64] : instr___1__h14157 ;
+  assign x_out_data_to_stage2_rd__h9448 =
+	     stage1_rg_stage_input_20_BITS_335_TO_334_21_EQ_ETC___d322 ?
+	       data_to_stage2_rd__h9434 :
+	       5'd0 ;
+  assign x_out_data_to_stage2_rounding_mode__h9454 =
+	     (stage1_rg_stage_input[112:110] == 3'b111) ?
+	       csr_regfile$read_frm :
+	       stage1_rg_stage_input[112:110] ;
+  assign x_out_data_to_stage2_trace_data_rd__h26006 =
+	     stage1_rg_stage_input_20_BITS_335_TO_334_21_EQ_ETC___d322 ?
+	       alu_outputs_trace_data_rd__h25995 :
+	       alu_outputs_trace_data_rd__h25995 ;
+  assign x_out_data_to_stage2_val2__h9451 =
+	     (stage1_rg_stage_input[151:145] == 7'b1100011) ?
+	       branch_target__h9569 :
+	       IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d1290 ;
+  assign x_out_data_to_stage2_val3__h9452 =
+	     (IF_NOT_stage2_rg_full_14_51_OR_stage2_rg_stage_ETC___d302 ==
+	      2'd2 &&
+	      x_out_fbypass_rd__h9136 == stage1_rg_stage_input[129:125]) ?
+	       x_out_fbypass_rd_val__h9137 :
+	       rd_val__h14007 ;
+  assign x_out_next_pc__h9396 =
+	     IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d908 ?
+	       data_to_stage2_addr__h9435 :
+	       fall_through_pc__h9380 ;
+  assign x_out_trap_info_exc_code__h12954 =
+	     stage1_rg_stage_input[332] ?
+	       stage1_rg_stage_input[331:328] :
+	       alu_outputs_exc_code__h10455 ;
+  assign y__h31961 = ~rs1_val__h31657 ;
   always@(stage2_rg_stage2)
   begin
     case (stage2_rg_stage2[629:627])
-      3'd1, 3'd2, 3'd4: value__h8675 = stage2_rg_stage2[621:558];
-      default: value__h8675 = 64'd0;
+      3'd1, 3'd2, 3'd4: value__h8692 = stage2_rg_stage2[725:662];
+      default: value__h8692 = stage2_rg_stage2[725:662];
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     endcase
   end
   always@(stage2_rg_stage2 or near_mem$dmem_exc_code)
   begin
     case (stage2_rg_stage2[629:627])
+<<<<<<< HEAD
+      3'd1, 3'd2, 3'd4: value__h8675 = stage2_rg_stage2[621:558];
+      default: value__h8675 = 64'd0;
+=======
+      3'd1, 3'd2, 3'd4:
+	  x_out_trap_info_exc_code__h8729 = near_mem$dmem_exc_code;
+      default: x_out_trap_info_exc_code__h8729 = 4'd2;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
+    endcase
+  end
+  always@(stage2_rg_stage2)
+  begin
+    case (stage2_rg_stage2[629:627])
+<<<<<<< HEAD
       3'd1, 3'd2, 3'd4:
 	  x_out_trap_info_exc_code__h8651 = near_mem$dmem_exc_code;
       default: x_out_trap_info_exc_code__h8651 = 4'd2;
+=======
+      3'd1, 3'd2, 3'd4: value__h8753 = stage2_rg_stage2[621:558];
+      default: value__h8753 = 64'd0;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     endcase
   end
   always@(stage2_rg_stage2 or stage2_fbox$word_snd)
   begin
     case (stage2_rg_stage2[629:627])
       3'd0, 3'd1, 3'd2, 3'd3, 3'd4:
+<<<<<<< HEAD
 	  x_out_data_to_stage3_fpr_flags__h8434 = 5'd0;
       default: x_out_data_to_stage3_fpr_flags__h8434 = stage2_fbox$word_snd;
+=======
+	  x_out_data_to_stage3_fpr_flags__h8512 = 5'd0;
+      default: x_out_data_to_stage3_fpr_flags__h8512 = stage2_fbox$word_snd;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     endcase
   end
   always@(stage2_rg_stage2)
   begin
     case (stage2_rg_stage2[629:627])
       3'd0, 3'd1, 3'd4:
+<<<<<<< HEAD
 	  x_out_data_to_stage3_rd__h8431 = stage2_rg_stage2[626:622];
       3'd2: x_out_data_to_stage3_rd__h8431 = 5'd0;
       default: x_out_data_to_stage3_rd__h8431 = stage2_rg_stage2[626:622];
+=======
+	  x_out_data_to_stage3_rd__h8509 = stage2_rg_stage2[626:622];
+      3'd2: x_out_data_to_stage3_rd__h8509 = 5'd0;
+      default: x_out_data_to_stage3_rd__h8509 = stage2_rg_stage2[626:622];
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     endcase
   end
   always@(stage2_rg_stage2)
   begin
     case (stage2_rg_stage2[629:627])
+<<<<<<< HEAD
       3'd0, 3'd1, 3'd4: x_out_bypass_rd__h8909 = stage2_rg_stage2[626:622];
       default: x_out_bypass_rd__h8909 = stage2_rg_stage2[626:622];
+=======
+      3'd0, 3'd1, 3'd4: x_out_bypass_rd__h8987 = stage2_rg_stage2[626:622];
+      default: x_out_bypass_rd__h8987 = stage2_rg_stage2[626:622];
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     endcase
   end
   always@(stage2_rg_stage2)
   begin
     case (stage2_rg_stage2[629:627])
+<<<<<<< HEAD
       3'd1, 3'd4: x_out_fbypass_rd__h9058 = stage2_rg_stage2[626:622];
       default: x_out_fbypass_rd__h9058 = stage2_rg_stage2[626:622];
+=======
+      3'd1, 3'd4: x_out_fbypass_rd__h9136 = stage2_rg_stage2[626:622];
+      default: x_out_fbypass_rd__h9136 = stage2_rg_stage2[626:622];
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     endcase
   end
   always@(stage2_rg_stage2 or
 	  stage2_fbox$word_fst or
+<<<<<<< HEAD
 	  data_to_stage3_rd_val__h8329 or stage2_mbox$word)
   begin
     case (stage2_rg_stage2[629:627])
@@ -6818,6 +8202,39 @@ module mkCPU(CLK,
 	  x_out_fbypass_rd_val__h9059 =
 	      _theResult_____1_snd_fst_rd_val__h9044;
       default: x_out_fbypass_rd_val__h9059 = _theResult___snd_rd_val__h9050;
+=======
+	  data_to_stage3_rd_val__h8407 or stage2_mbox$word)
+  begin
+    case (stage2_rg_stage2[629:627])
+      3'd0: x_out_data_to_stage3_rd_val__h8513 = stage2_rg_stage2[557:494];
+      3'd1, 3'd4:
+	  x_out_data_to_stage3_rd_val__h8513 = data_to_stage3_rd_val__h8407;
+      3'd3: x_out_data_to_stage3_rd_val__h8513 = stage2_mbox$word;
+      default: x_out_data_to_stage3_rd_val__h8513 = stage2_fbox$word_fst;
+    endcase
+  end
+  always@(stage2_rg_stage2 or
+	  _theResult___fst_rd_val__h8977 or
+	  _theResult_____1_fst_rd_val__h8966 or stage2_mbox$word)
+  begin
+    case (stage2_rg_stage2[629:627])
+      3'd0: x_out_bypass_rd_val__h8988 = stage2_rg_stage2[557:494];
+      3'd1, 3'd4:
+	  x_out_bypass_rd_val__h8988 = _theResult_____1_fst_rd_val__h8966;
+      3'd3: x_out_bypass_rd_val__h8988 = stage2_mbox$word;
+      default: x_out_bypass_rd_val__h8988 = _theResult___fst_rd_val__h8977;
+    endcase
+  end
+  always@(stage2_rg_stage2 or
+	  _theResult___snd_rd_val__h9128 or
+	  _theResult_____1_snd_fst_rd_val__h9122)
+  begin
+    case (stage2_rg_stage2[629:627])
+      3'd1, 3'd4:
+	  x_out_fbypass_rd_val__h9137 =
+	      _theResult_____1_snd_fst_rd_val__h9122;
+      default: x_out_fbypass_rd_val__h9137 = _theResult___snd_rd_val__h9128;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     endcase
   end
   always@(stage1_rg_stage_input)
@@ -6839,8 +8256,13 @@ module mkCPU(CLK,
       7'b1010011,
       7'b1100111,
       7'b1101111:
+<<<<<<< HEAD
 	  alu_outputs_trace_data_rd__h25917 = stage1_rg_stage_input[144:140];
       default: alu_outputs_trace_data_rd__h25917 = 5'd2;
+=======
+	  alu_outputs_trace_data_rd__h25995 = stage1_rg_stage_input[144:140];
+      default: alu_outputs_trace_data_rd__h25995 = 5'd2;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     endcase
   end
   always@(stage1_rg_stage_input)
@@ -6856,9 +8278,15 @@ module mkCPU(CLK,
       7'b0111011,
       7'b1100111,
       7'b1101111:
+<<<<<<< HEAD
 	  data_to_stage2_rd__h9356 = stage1_rg_stage_input[144:140];
       7'b1100011: data_to_stage2_rd__h9356 = 5'd0;
       default: data_to_stage2_rd__h9356 = stage1_rg_stage_input[144:140];
+=======
+	  data_to_stage2_rd__h9434 = stage1_rg_stage_input[144:140];
+      7'b1100011: data_to_stage2_rd__h9434 = 5'd0;
+      default: data_to_stage2_rd__h9434 = stage1_rg_stage_input[144:140];
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     endcase
   end
   always@(stage2_rg_stage2 or
@@ -6912,19 +8340,6 @@ module mkCPU(CLK,
   begin
     case (stage2_rg_stage2[629:627])
       3'd1, 3'd4:
-	  IF_stage2_rg_stage2_15_BITS_629_TO_627_16_EQ_1_ETC___d211 =
-	      (!near_mem$dmem_valid || !near_mem$dmem_exc) &&
-	      stage2_rg_stage2[365];
-      default: IF_stage2_rg_stage2_15_BITS_629_TO_627_16_EQ_1_ETC___d211 =
-		   stage2_rg_stage2[629:627] != 3'd2 &&
-		   stage2_rg_stage2[629:627] != 3'd3 &&
-		   stage2_rg_stage2[365];
-    endcase
-  end
-  always@(stage2_rg_stage2 or near_mem$dmem_valid or near_mem$dmem_exc)
-  begin
-    case (stage2_rg_stage2[629:627])
-      3'd1, 3'd4:
 	  IF_stage2_rg_stage2_15_BITS_629_TO_627_16_EQ_1_ETC___d245 =
 	      near_mem$dmem_valid && near_mem$dmem_exc ||
 	      !stage2_rg_stage2[365];
@@ -6932,6 +8347,19 @@ module mkCPU(CLK,
 		   stage2_rg_stage2[629:627] == 3'd2 ||
 		   stage2_rg_stage2[629:627] == 3'd3 ||
 		   !stage2_rg_stage2[365];
+    endcase
+  end
+  always@(stage2_rg_stage2 or near_mem$dmem_valid or near_mem$dmem_exc)
+  begin
+    case (stage2_rg_stage2[629:627])
+      3'd1, 3'd4:
+	  IF_stage2_rg_stage2_15_BITS_629_TO_627_16_EQ_1_ETC___d211 =
+	      (!near_mem$dmem_valid || !near_mem$dmem_exc) &&
+	      stage2_rg_stage2[365];
+      default: IF_stage2_rg_stage2_15_BITS_629_TO_627_16_EQ_1_ETC___d211 =
+		   stage2_rg_stage2[629:627] != 3'd2 &&
+		   stage2_rg_stage2[629:627] != 3'd3 &&
+		   stage2_rg_stage2[365];
     endcase
   end
   always@(stage2_rg_stage2 or
@@ -6971,6 +8399,7 @@ module mkCPU(CLK,
     endcase
   end
   always@(stage1_rg_stage_input or
+<<<<<<< HEAD
 	  rs2_val_bypassed__h4856 or
 	  alu_outputs___1_val2__h9850 or frs2_val_bypassed__h4866)
   begin
@@ -6995,6 +8424,32 @@ module mkCPU(CLK,
       10'b0000000101: rd_val__h9736 = rd_val___1__h13538;
       10'b0100000000: rd_val__h9736 = rd_val___1__h13487;
       default: rd_val__h9736 = _theResult___fst__h11146;
+=======
+	  rs2_val_bypassed__h4935 or
+	  alu_outputs___1_val2__h9928 or frs2_val_bypassed__h4945)
+  begin
+    case (stage1_rg_stage_input[151:145])
+      7'b0100011:
+	  alu_outputs_trace_data_word2__h25997 = alu_outputs___1_val2__h9928;
+      7'b0100111:
+	  alu_outputs_trace_data_word2__h25997 = frs2_val_bypassed__h4945;
+      7'b0101111:
+	  alu_outputs_trace_data_word2__h25997 = rs2_val_bypassed__h4935;
+      default: alu_outputs_trace_data_word2__h25997 = rs2_val_bypassed__h4935;
+    endcase
+  end
+  always@(stage1_rg_stage_input or
+	  _theResult___fst__h11224 or
+	  rd_val___1__h13517 or
+	  rd_val___1__h13571 or rd_val___1__h13616 or rd_val___1__h13565)
+  begin
+    case (stage1_rg_stage_input[97:88])
+      10'b0: rd_val__h9814 = rd_val___1__h13517;
+      10'b0000000001: rd_val__h9814 = rd_val___1__h13571;
+      10'b0000000101: rd_val__h9814 = rd_val___1__h13616;
+      10'b0100000000: rd_val__h9814 = rd_val___1__h13565;
+      default: rd_val__h9814 = _theResult___fst__h11224;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     endcase
   end
   always@(stage1_rg_stage_input or
@@ -7049,7 +8504,11 @@ module mkCPU(CLK,
 		   !IF_stage1_rg_stage_input_20_BITS_139_TO_135_23_ETC___d388;
     endcase
   end
+<<<<<<< HEAD
   always@(stage1_rg_stage_input or rm__h10253)
+=======
+  always@(stage1_rg_stage_input or rm__h10331)
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   begin
     case (stage1_rg_stage_input[151:145])
       7'b1000011, 7'b1000111, 7'b1001011, 7'b1001111:
@@ -7063,11 +8522,19 @@ module mkCPU(CLK,
 		   stage1_rg_stage_input[104:98] != 7'h0C &&
 		   stage1_rg_stage_input[104:98] != 7'h2C &&
 		   (stage1_rg_stage_input[104:98] != 7'h10 ||
+<<<<<<< HEAD
 		    rm__h10253 != 3'd0) &&
 		   (stage1_rg_stage_input[104:98] != 7'h10 ||
 		    rm__h10253 != 3'd1) &&
 		   (stage1_rg_stage_input[104:98] != 7'h10 ||
 		    rm__h10253 != 3'd2) &&
+=======
+		    rm__h10331 != 3'd0) &&
+		   (stage1_rg_stage_input[104:98] != 7'h10 ||
+		    rm__h10331 != 3'd1) &&
+		   (stage1_rg_stage_input[104:98] != 7'h10 ||
+		    rm__h10331 != 3'd2) &&
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 		   (stage1_rg_stage_input[104:98] != 7'h60 ||
 		    stage1_rg_stage_input[134:130] != 5'd0) &&
 		   (stage1_rg_stage_input[104:98] != 7'h60 ||
@@ -7085,6 +8552,7 @@ module mkCPU(CLK,
 		   (stage1_rg_stage_input[104:98] != 7'h68 ||
 		    stage1_rg_stage_input[134:130] != 5'd3) &&
 		   (stage1_rg_stage_input[104:98] != 7'h14 ||
+<<<<<<< HEAD
 		    rm__h10253 != 3'd0) &&
 		   (stage1_rg_stage_input[104:98] != 7'h14 ||
 		    rm__h10253 != 3'd1) &&
@@ -7100,17 +8568,42 @@ module mkCPU(CLK,
 		    rm__h10253 != 3'd0) &&
 		   (stage1_rg_stage_input[104:98] != 7'h70 ||
 		    rm__h10253 != 3'd1) &&
+=======
+		    rm__h10331 != 3'd0) &&
+		   (stage1_rg_stage_input[104:98] != 7'h14 ||
+		    rm__h10331 != 3'd1) &&
+		   (stage1_rg_stage_input[104:98] != 7'h50 ||
+		    rm__h10331 != 3'd0) &&
+		   (stage1_rg_stage_input[104:98] != 7'h50 ||
+		    rm__h10331 != 3'd1) &&
+		   (stage1_rg_stage_input[104:98] != 7'h50 ||
+		    rm__h10331 != 3'd2) &&
+		   (stage1_rg_stage_input[104:98] != 7'h70 ||
+		    rm__h10331 != 3'd0) &&
+		   (stage1_rg_stage_input[104:98] != 7'h78 ||
+		    rm__h10331 != 3'd0) &&
+		   (stage1_rg_stage_input[104:98] != 7'h70 ||
+		    rm__h10331 != 3'd1) &&
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 		   stage1_rg_stage_input[104:98] != 7'b0000001 &&
 		   stage1_rg_stage_input[104:98] != 7'h05 &&
 		   stage1_rg_stage_input[104:98] != 7'b0001001 &&
 		   stage1_rg_stage_input[104:98] != 7'h0D &&
 		   stage1_rg_stage_input[104:98] != 7'h2D &&
 		   (stage1_rg_stage_input[104:98] != 7'h11 ||
+<<<<<<< HEAD
 		    rm__h10253 != 3'd0) &&
 		   (stage1_rg_stage_input[104:98] != 7'h11 ||
 		    rm__h10253 != 3'd1) &&
 		   (stage1_rg_stage_input[104:98] != 7'h11 ||
 		    rm__h10253 != 3'd2) &&
+=======
+		    rm__h10331 != 3'd0) &&
+		   (stage1_rg_stage_input[104:98] != 7'h11 ||
+		    rm__h10331 != 3'd1) &&
+		   (stage1_rg_stage_input[104:98] != 7'h11 ||
+		    rm__h10331 != 3'd2) &&
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 		   (stage1_rg_stage_input[104:98] != 7'h61 ||
 		    stage1_rg_stage_input[134:130] != 5'd0) &&
 		   (stage1_rg_stage_input[104:98] != 7'h61 ||
@@ -7132,6 +8625,7 @@ module mkCPU(CLK,
 		   (stage1_rg_stage_input[104:98] != 7'h20 ||
 		    stage1_rg_stage_input[134:130] != 5'd1) &&
 		   (stage1_rg_stage_input[104:98] != 7'h15 ||
+<<<<<<< HEAD
 		    rm__h10253 != 3'd0) &&
 		   (stage1_rg_stage_input[104:98] != 7'h15 ||
 		    rm__h10253 != 3'd1) &&
@@ -7147,6 +8641,23 @@ module mkCPU(CLK,
 		    rm__h10253 != 3'd0) &&
 		   (stage1_rg_stage_input[104:98] != 7'h71 ||
 		    rm__h10253 != 3'd1);
+=======
+		    rm__h10331 != 3'd0) &&
+		   (stage1_rg_stage_input[104:98] != 7'h15 ||
+		    rm__h10331 != 3'd1) &&
+		   (stage1_rg_stage_input[104:98] != 7'h51 ||
+		    rm__h10331 != 3'd0) &&
+		   (stage1_rg_stage_input[104:98] != 7'h51 ||
+		    rm__h10331 != 3'd1) &&
+		   (stage1_rg_stage_input[104:98] != 7'h51 ||
+		    rm__h10331 != 3'd2) &&
+		   (stage1_rg_stage_input[104:98] != 7'h71 ||
+		    rm__h10331 != 3'd0) &&
+		   (stage1_rg_stage_input[104:98] != 7'h79 ||
+		    rm__h10331 != 3'd0) &&
+		   (stage1_rg_stage_input[104:98] != 7'h71 ||
+		    rm__h10331 != 3'd1);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     endcase
   end
   always@(stage1_rg_stage_input or
@@ -7248,7 +8759,11 @@ module mkCPU(CLK,
 		   CASE_stage1_rg_stage_input_BITS_151_TO_145_0b1_ETC__q13;
     endcase
   end
+<<<<<<< HEAD
   always@(stage1_rg_stage_input or rm__h10253)
+=======
+  always@(stage1_rg_stage_input or rm__h10331)
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   begin
     case (stage1_rg_stage_input[151:145])
       7'b1000011, 7'b1000111, 7'b1001011, 7'b1001111:
@@ -7262,8 +8777,13 @@ module mkCPU(CLK,
 		   stage1_rg_stage_input[104:98] == 7'h0C ||
 		   stage1_rg_stage_input[104:98] == 7'h2C ||
 		   stage1_rg_stage_input[104:98] == 7'h10 &&
+<<<<<<< HEAD
 		   (rm__h10253 == 3'd0 || rm__h10253 == 3'd1 ||
 		    rm__h10253 == 3'd2) ||
+=======
+		   (rm__h10331 == 3'd0 || rm__h10331 == 3'd1 ||
+		    rm__h10331 == 3'd2) ||
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 		   stage1_rg_stage_input[104:98] == 7'h60 &&
 		   stage1_rg_stage_input[134:130] == 5'd0 ||
 		   stage1_rg_stage_input[104:98] == 7'h60 &&
@@ -7277,6 +8797,7 @@ module mkCPU(CLK,
 		   stage1_rg_stage_input[104:98] == 7'h68 &&
 		   stage1_rg_stage_input[134:130] == 5'd3 ||
 		   stage1_rg_stage_input[104:98] == 7'h14 &&
+<<<<<<< HEAD
 		   rm__h10253 == 3'd0 ||
 		   stage1_rg_stage_input[104:98] == 7'h14 &&
 		   rm__h10253 == 3'd1 ||
@@ -7289,15 +8810,35 @@ module mkCPU(CLK,
 		   rm__h10253 == 3'd0 ||
 		   stage1_rg_stage_input[104:98] == 7'h70 &&
 		   rm__h10253 == 3'd1 ||
+=======
+		   rm__h10331 == 3'd0 ||
+		   stage1_rg_stage_input[104:98] == 7'h14 &&
+		   rm__h10331 == 3'd1 ||
+		   stage1_rg_stage_input[104:98] == 7'h50 &&
+		   (rm__h10331 == 3'd0 || rm__h10331 == 3'd1) ||
+		   stage1_rg_stage_input[104:98] == 7'h50 &&
+		   rm__h10331 == 3'd2 ||
+		   (stage1_rg_stage_input[104:98] == 7'h70 ||
+		    stage1_rg_stage_input[104:98] == 7'h78) &&
+		   rm__h10331 == 3'd0 ||
+		   stage1_rg_stage_input[104:98] == 7'h70 &&
+		   rm__h10331 == 3'd1 ||
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 		   stage1_rg_stage_input[104:98] == 7'b0000001 ||
 		   stage1_rg_stage_input[104:98] == 7'h05 ||
 		   stage1_rg_stage_input[104:98] == 7'b0001001 ||
 		   stage1_rg_stage_input[104:98] == 7'h0D ||
 		   stage1_rg_stage_input[104:98] == 7'h2D ||
 		   stage1_rg_stage_input[104:98] == 7'h11 &&
+<<<<<<< HEAD
 		   rm__h10253 == 3'd0 ||
 		   stage1_rg_stage_input[104:98] == 7'h11 &&
 		   (rm__h10253 == 3'd1 || rm__h10253 == 3'd2) ||
+=======
+		   rm__h10331 == 3'd0 ||
+		   stage1_rg_stage_input[104:98] == 7'h11 &&
+		   (rm__h10331 == 3'd1 || rm__h10331 == 3'd2) ||
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 		   stage1_rg_stage_input[104:98] == 7'h61 &&
 		   stage1_rg_stage_input[134:130] == 5'd0 ||
 		   stage1_rg_stage_input[104:98] == 7'h61 &&
@@ -7315,6 +8856,7 @@ module mkCPU(CLK,
 		   stage1_rg_stage_input[104:98] == 7'h20 &&
 		   stage1_rg_stage_input[134:130] == 5'd1 ||
 		   stage1_rg_stage_input[104:98] == 7'h15 &&
+<<<<<<< HEAD
 		   (rm__h10253 == 3'd0 || rm__h10253 == 3'd1) ||
 		   stage1_rg_stage_input[104:98] == 7'h51 &&
 		   rm__h10253 == 3'd0 ||
@@ -7326,6 +8868,19 @@ module mkCPU(CLK,
 		   rm__h10253 == 3'd0 ||
 		   stage1_rg_stage_input[104:98] == 7'h71 &&
 		   rm__h10253 == 3'd1;
+=======
+		   (rm__h10331 == 3'd0 || rm__h10331 == 3'd1) ||
+		   stage1_rg_stage_input[104:98] == 7'h51 &&
+		   rm__h10331 == 3'd0 ||
+		   stage1_rg_stage_input[104:98] == 7'h51 &&
+		   (rm__h10331 == 3'd1 || rm__h10331 == 3'd2) ||
+		   stage1_rg_stage_input[104:98] == 7'h71 &&
+		   rm__h10331 == 3'd0 ||
+		   stage1_rg_stage_input[104:98] == 7'h79 &&
+		   rm__h10331 == 3'd0 ||
+		   stage1_rg_stage_input[104:98] == 7'h71 &&
+		   rm__h10331 == 3'd1;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     endcase
   end
   always@(stage1_rg_stage_input or
@@ -7445,7 +9000,11 @@ module mkCPU(CLK,
       default: CASE_stage1_rg_stage_input_BITS_87_TO_76_0b0_C_ETC__q17 = 4'd2;
     endcase
   end
+<<<<<<< HEAD
   always@(stage1_rg_stage_input or alu_outputs___1_exc_code__h10121)
+=======
+  always@(stage1_rg_stage_input or alu_outputs___1_exc_code__h10199)
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   begin
     case (stage1_rg_stage_input[151:145])
       7'b0000011,
@@ -7458,11 +9017,19 @@ module mkCPU(CLK,
       7'b0110111,
       7'b0111011,
       7'b1100011:
+<<<<<<< HEAD
 	  alu_outputs_exc_code__h10377 = 4'd2;
       7'b1100111, 7'b1101111: alu_outputs_exc_code__h10377 = 4'd0;
       7'b1110011:
 	  alu_outputs_exc_code__h10377 = alu_outputs___1_exc_code__h10121;
       default: alu_outputs_exc_code__h10377 = 4'd2;
+=======
+	  alu_outputs_exc_code__h10455 = 4'd2;
+      7'b1100111, 7'b1101111: alu_outputs_exc_code__h10455 = 4'd0;
+      7'b1110011:
+	  alu_outputs_exc_code__h10455 = alu_outputs___1_exc_code__h10199;
+      default: alu_outputs_exc_code__h10455 = 4'd2;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     endcase
   end
   always@(stage1_rg_stage_input or
@@ -7625,6 +9192,7 @@ module mkCPU(CLK,
     endcase
   end
   always@(stage1_rg_stage_input or
+<<<<<<< HEAD
 	  _theResult_____1_fst__h10969 or
 	  rd_val___1__h10937 or
 	  rd_val___1__h10944 or rd_val___1__h10951 or rd_val___1__h10958)
@@ -7696,26 +9264,116 @@ module mkCPU(CLK,
   always@(stage1_rg_stage_input or
 	  frs2_val_bypassed__h4866 or
 	  alu_outputs___1_val2__h9850 or rs2_val_bypassed__h4856)
+=======
+	  _theResult_____1_fst__h11047 or
+	  rd_val___1__h11015 or
+	  rd_val___1__h11022 or rd_val___1__h11029 or rd_val___1__h11036)
+  begin
+    case (stage1_rg_stage_input[112:110])
+      3'b010: _theResult_____1_fst__h11019 = rd_val___1__h11015;
+      3'b011: _theResult_____1_fst__h11019 = rd_val___1__h11022;
+      3'b100: _theResult_____1_fst__h11019 = rd_val___1__h11029;
+      3'b110: _theResult_____1_fst__h11019 = rd_val___1__h11036;
+      default: _theResult_____1_fst__h11019 = _theResult_____1_fst__h11047;
+    endcase
+  end
+  always@(stage1_rg_stage_input or
+	  alu_outputs___1_addr__h9926 or
+	  IF_stage1_rg_stage_input_20_BITS_139_TO_135_23_ETC___d1153 or
+	  rs1_val_bypassed__h4929)
+  begin
+    case (stage1_rg_stage_input[151:145])
+      7'b0000011, 7'b0000111:
+	  alu_outputs_trace_data_word3__h25998 =
+	      IF_stage1_rg_stage_input_20_BITS_139_TO_135_23_ETC___d1153;
+      7'b0100011:
+	  alu_outputs_trace_data_word3__h25998 = alu_outputs___1_addr__h9926;
+      7'b0101111:
+	  alu_outputs_trace_data_word3__h25998 = rs1_val_bypassed__h4929;
+      default: alu_outputs_trace_data_word3__h25998 =
+		   alu_outputs___1_addr__h9926;
+    endcase
+  end
+  always@(stage1_rg_stage_input or
+	  alu_outputs___1_addr__h9926 or
+	  IF_stage1_rg_stage_input_20_BITS_139_TO_135_23_ETC___d1153 or
+	  rs1_val_bypassed__h4929 or
+	  alu_outputs___1_addr__h9590 or
+	  alu_outputs___1_addr__h9643 or alu_outputs___1_addr__h9614)
+  begin
+    case (stage1_rg_stage_input[151:145])
+      7'b0000011, 7'b0000111:
+	  x_out_data_to_stage2_addr__h9449 =
+	      IF_stage1_rg_stage_input_20_BITS_139_TO_135_23_ETC___d1153;
+      7'b0100011:
+	  x_out_data_to_stage2_addr__h9449 = alu_outputs___1_addr__h9926;
+      7'b0101111: x_out_data_to_stage2_addr__h9449 = rs1_val_bypassed__h4929;
+      7'b1100011:
+	  x_out_data_to_stage2_addr__h9449 = alu_outputs___1_addr__h9590;
+      7'b1100111:
+	  x_out_data_to_stage2_addr__h9449 = alu_outputs___1_addr__h9643;
+      7'b1101111:
+	  x_out_data_to_stage2_addr__h9449 = alu_outputs___1_addr__h9614;
+      default: x_out_data_to_stage2_addr__h9449 = alu_outputs___1_addr__h9926;
+    endcase
+  end
+  always@(stage1_rg_stage_input or
+	  alu_outputs___1_trace_data_pc__h25947 or
+	  alu_outputs___1_addr__h9590 or
+	  alu_outputs___1_addr__h9643 or alu_outputs___1_addr__h9614)
+  begin
+    case (stage1_rg_stage_input[151:145])
+      7'b1100011:
+	  alu_outputs_trace_data_pc__h25992 = alu_outputs___1_addr__h9590;
+      7'b1100111:
+	  alu_outputs_trace_data_pc__h25992 = alu_outputs___1_addr__h9643;
+      7'b1101111:
+	  alu_outputs_trace_data_pc__h25992 = alu_outputs___1_addr__h9614;
+      default: alu_outputs_trace_data_pc__h25992 =
+		   alu_outputs___1_trace_data_pc__h25947;
+    endcase
+  end
+  always@(stage1_rg_stage_input or
+	  frs2_val_bypassed__h4945 or
+	  alu_outputs___1_val2__h9928 or rs2_val_bypassed__h4935)
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   begin
     case (stage1_rg_stage_input[151:145])
       7'b0100011, 7'b0100111:
 	  CASE_stage1_rg_stage_input_BITS_151_TO_145_0b1_ETC__q24 =
+<<<<<<< HEAD
 	      alu_outputs___1_val2__h9850;
       7'b0101111:
 	  CASE_stage1_rg_stage_input_BITS_151_TO_145_0b1_ETC__q24 =
 	      rs2_val_bypassed__h4856;
       default: CASE_stage1_rg_stage_input_BITS_151_TO_145_0b1_ETC__q24 =
 		   frs2_val_bypassed__h4866;
+=======
+	      alu_outputs___1_val2__h9928;
+      7'b0101111:
+	  CASE_stage1_rg_stage_input_BITS_151_TO_145_0b1_ETC__q24 =
+	      rs2_val_bypassed__h4935;
+      default: CASE_stage1_rg_stage_input_BITS_151_TO_145_0b1_ETC__q24 =
+		   frs2_val_bypassed__h4945;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     endcase
   end
   always@(stage1_rg_stage_input or
 	  NOT_rg_cur_priv_9_EQ_0b11_33_384_AND_NOT_rg_cu_ETC___d1390 or
+<<<<<<< HEAD
 	  data_to_stage2_addr__h9357)
+=======
+	  data_to_stage2_addr__h9435)
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   begin
     case (stage1_rg_stage_input[151:145])
       7'b1100111, 7'b1101111:
 	  CASE_stage1_rg_stage_input_BITS_151_TO_145_0b1_ETC__q25 =
+<<<<<<< HEAD
 	      data_to_stage2_addr__h9357;
+=======
+	      data_to_stage2_addr__h9435;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
       default: CASE_stage1_rg_stage_input_BITS_151_TO_145_0b1_ETC__q25 =
 		   (stage1_rg_stage_input[151:145] == 7'b1110011 &&
 		    stage1_rg_stage_input[112:110] == 3'b0 &&
@@ -7725,12 +9383,18 @@ module mkCPU(CLK,
     endcase
   end
   always@(stage1_rg_stage_input or
+<<<<<<< HEAD
 	  rd_val__h9775 or
 	  rd_val__h9684 or rd_val__h9710 or rd_val__h9756 or rd_val__h9736)
+=======
+	  rd_val__h9853 or
+	  rd_val__h9762 or rd_val__h9788 or rd_val__h9834 or rd_val__h9814)
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   begin
     case (stage1_rg_stage_input[151:145])
       7'b0010011, 7'b0110011:
 	  IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d2259 =
+<<<<<<< HEAD
 	      rd_val__h9684;
       7'b0011011:
 	  IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d2259 =
@@ -7752,10 +9416,34 @@ module mkCPU(CLK,
 	  rd_val__h9710 or
 	  alu_outputs___1_val1__h10149 or
 	  rd_val__h9756 or rd_val__h9736 or alu_outputs___1_val1__h10125)
+=======
+	      rd_val__h9762;
+      7'b0011011:
+	  IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d2259 =
+	      rd_val__h9788;
+      7'b0110111:
+	  IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d2259 =
+	      rd_val__h9834;
+      7'b0111011:
+	  IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d2259 =
+	      rd_val__h9814;
+      default: IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d2259 =
+		   rd_val__h9853;
+    endcase
+  end
+  always@(stage1_rg_stage_input or
+	  alu_outputs___1_val1__h10428 or
+	  rd_val__h9762 or
+	  rd_val__h9853 or
+	  rd_val__h9788 or
+	  alu_outputs___1_val1__h10227 or
+	  rd_val__h9834 or rd_val__h9814 or alu_outputs___1_val1__h10203)
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   begin
     case (stage1_rg_stage_input[151:145])
       7'b0010011, 7'b0110011:
 	  IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d1271 =
+<<<<<<< HEAD
 	      rd_val__h9684;
       7'b0010111:
 	  IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d1271 =
@@ -7777,10 +9465,34 @@ module mkCPU(CLK,
 	      alu_outputs___1_val1__h10125;
       default: IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d1271 =
 		   alu_outputs___1_val1__h10350;
+=======
+	      rd_val__h9762;
+      7'b0010111:
+	  IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d1271 =
+	      rd_val__h9853;
+      7'b0011011:
+	  IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d1271 =
+	      rd_val__h9788;
+      7'b0101111:
+	  IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d1271 =
+	      alu_outputs___1_val1__h10227;
+      7'b0110111:
+	  IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d1271 =
+	      rd_val__h9834;
+      7'b0111011:
+	  IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d1271 =
+	      rd_val__h9814;
+      7'b1110011:
+	  IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d1271 =
+	      alu_outputs___1_val1__h10203;
+      default: IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d1271 =
+		   alu_outputs___1_val1__h10428;
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     endcase
   end
   always@(stage1_rg_stage_input or
 	  IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d2260 or
+<<<<<<< HEAD
 	  alu_outputs___1_trace_data_pc__h25869)
   begin
     case (stage1_rg_stage_input[151:145])
@@ -7788,11 +9500,21 @@ module mkCPU(CLK,
 	  alu_outputs_trace_data_word1__h25918 =
 	      alu_outputs___1_trace_data_pc__h25869;
       default: alu_outputs_trace_data_word1__h25918 =
+=======
+	  alu_outputs___1_trace_data_pc__h25947)
+  begin
+    case (stage1_rg_stage_input[151:145])
+      7'b1100111, 7'b1101111:
+	  alu_outputs_trace_data_word1__h25996 =
+	      alu_outputs___1_trace_data_pc__h25947;
+      default: alu_outputs_trace_data_word1__h25996 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 		   IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d2260;
     endcase
   end
   always@(stage1_rg_stage_input or
 	  IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d1273 or
+<<<<<<< HEAD
 	  alu_outputs___1_trace_data_pc__h25869)
   begin
     case (stage1_rg_stage_input[151:145])
@@ -7800,19 +9522,37 @@ module mkCPU(CLK,
 	  x_out_data_to_stage2_val1__h9372 =
 	      alu_outputs___1_trace_data_pc__h25869;
       default: x_out_data_to_stage2_val1__h9372 =
+=======
+	  alu_outputs___1_trace_data_pc__h25947)
+  begin
+    case (stage1_rg_stage_input[151:145])
+      7'b1100111, 7'b1101111:
+	  x_out_data_to_stage2_val1__h9450 =
+	      alu_outputs___1_trace_data_pc__h25947;
+      default: x_out_data_to_stage2_val1__h9450 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 		   IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d1273;
     endcase
   end
   always@(stage1_rg_stage_input_BITS_263_TO_232__q1 or
+<<<<<<< HEAD
 	  x_out_data_to_stage2_val1__h9372)
   begin
     case (stage1_rg_stage_input_BITS_263_TO_232__q1[14:12])
       3'b010, 3'b011: rs1_val__h31435 = x_out_data_to_stage2_val1__h9372;
       default: rs1_val__h31435 =
+=======
+	  x_out_data_to_stage2_val1__h9450)
+  begin
+    case (stage1_rg_stage_input_BITS_263_TO_232__q1[14:12])
+      3'b010, 3'b011: rs1_val__h31657 = x_out_data_to_stage2_val1__h9450;
+      default: rs1_val__h31657 =
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 		   { 59'd0,
 		     stage1_rg_stage_input_BITS_263_TO_232__q1[19:15] };
     endcase
   end
+<<<<<<< HEAD
   always@(stage2_rg_stage2)
   begin
     case (stage2_rg_stage2[629:627])
@@ -7823,6 +9563,8 @@ module mkCPU(CLK,
 		   { stage2_rg_stage2[725:662], 64'd0 };
     endcase
   end
+=======
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
   always@(stage1_rg_stage_input or
 	  IF_stage1_rg_stage_input_20_BITS_151_TO_145_47_ETC___d2215 or
 	  IF_NOT_stage1_rg_stage_input_20_BITS_104_TO_98_ETC___d2216)
@@ -8036,7 +9778,11 @@ module mkCPU(CLK,
 	       csr_regfile$read_mstatus[16:15] == 2'h3);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe && csr_regfile$read_misa[27:26] == 2'd2)
+<<<<<<< HEAD
 	$write(" sxl:%0d uxl:%0d", sxl__h7225, uxl__h7226);
+=======
+	$write(" sxl:%0d uxl:%0d", sxl__h7303, uxl__h7304);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe && csr_regfile$read_misa[27:26] != 2'd2)
 	$write("");
@@ -8262,7 +10008,11 @@ module mkCPU(CLK,
 	  stage2_rg_stage2[629:627] != 3'd3)
 	$write("  fflags: %05b",
 	       "'h%h",
+<<<<<<< HEAD
 	       x_out_data_to_stage3_fpr_flags__h8434);
+=======
+	       x_out_data_to_stage3_fpr_flags__h8512);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe &&
 	  IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d150 != 2'd0 &&
@@ -8294,8 +10044,13 @@ module mkCPU(CLK,
 	  stage2_rg_stage2[629:627] != 3'd0 &&
 	  IF_stage2_rg_stage2_15_BITS_629_TO_627_16_EQ_1_ETC___d211)
 	$write("  frd:%0d  rd_val:%h\n",
+<<<<<<< HEAD
 	       x_out_data_to_stage3_rd__h8431,
 	       x_out_data_to_stage3_rd_val__h8435);
+=======
+	       x_out_data_to_stage3_rd__h8509,
+	       x_out_data_to_stage3_rd_val__h8513);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe &&
 	  IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d150 != 2'd0 &&
@@ -8304,8 +10059,13 @@ module mkCPU(CLK,
 	  (stage2_rg_stage2[629:627] == 3'd0 ||
 	   IF_stage2_rg_stage2_15_BITS_629_TO_627_16_EQ_1_ETC___d245))
 	$write("  grd:%0d  rd_val:%h\n",
+<<<<<<< HEAD
 	       x_out_data_to_stage3_rd__h8431,
 	       x_out_data_to_stage3_rd_val__h8435);
+=======
+	       x_out_data_to_stage3_rd__h8509,
+	       x_out_data_to_stage3_rd_val__h8513);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe &&
 	  IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d150 == 2'd0)
@@ -8335,7 +10095,11 @@ module mkCPU(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe &&
 	  IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d150 == 2'd3)
+<<<<<<< HEAD
 	$write("'h%h", value__h8614);
+=======
+	$write("'h%h", value__h8692);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe &&
 	  IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d150 != 2'd0 &&
@@ -8371,7 +10135,11 @@ module mkCPU(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe &&
 	  IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d150 == 2'd3)
+<<<<<<< HEAD
 	$write("'h%h", x_out_trap_info_exc_code__h8651);
+=======
+	$write("'h%h", x_out_trap_info_exc_code__h8729);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe &&
 	  IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d150 != 2'd0 &&
@@ -8407,7 +10175,11 @@ module mkCPU(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe &&
 	  IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d150 == 2'd3)
+<<<<<<< HEAD
 	$write("'h%h", value__h8675, " }");
+=======
+	$write("'h%h", value__h8753, " }");
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe &&
 	  IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d150 != 2'd0 &&
@@ -8461,7 +10233,11 @@ module mkCPU(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe &&
 	  IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d150 == 2'd3)
+<<<<<<< HEAD
 	$write("'h%h", value__h8614);
+=======
+	$write("'h%h", value__h8692);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe &&
 	  IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d150 != 2'd0 &&
@@ -8497,7 +10273,11 @@ module mkCPU(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe &&
 	  IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d150 == 2'd3)
+<<<<<<< HEAD
 	$write("'h%h", x_out_trap_info_exc_code__h8651);
+=======
+	$write("'h%h", x_out_trap_info_exc_code__h8729);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe &&
 	  IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d150 != 2'd0 &&
@@ -8533,7 +10313,11 @@ module mkCPU(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe &&
 	  IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d150 == 2'd3)
+<<<<<<< HEAD
 	$write("'h%h", value__h8675, " }");
+=======
+	$write("'h%h", value__h8753, " }");
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe &&
 	  IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d150 != 2'd0 &&
@@ -8553,7 +10337,11 @@ module mkCPU(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe &&
 	  IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d278 != 2'd0)
+<<<<<<< HEAD
 	$write("Rd %0d ", x_out_bypass_rd__h8909);
+=======
+	$write("Rd %0d ", x_out_bypass_rd__h8987);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe &&
 	  IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d278 == 2'd0)
@@ -8566,7 +10354,11 @@ module mkCPU(CLK,
       if (WILL_FIRE_RL_rl_show_pipe &&
 	  IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d278 != 2'd0 &&
 	  IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d278 != 2'd1)
+<<<<<<< HEAD
 	$write("rd_val:%h", x_out_bypass_rd_val__h8910);
+=======
+	$write("rd_val:%h", x_out_bypass_rd_val__h8988);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE) if (WILL_FIRE_RL_rl_show_pipe) $write("}");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe) $write("\n");
@@ -8581,7 +10373,11 @@ module mkCPU(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe &&
 	  IF_NOT_stage2_rg_full_14_51_OR_stage2_rg_stage_ETC___d302 != 2'd0)
+<<<<<<< HEAD
 	$write("FRd %0d ", x_out_fbypass_rd__h9058);
+=======
+	$write("FRd %0d ", x_out_fbypass_rd__h9136);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe &&
 	  IF_NOT_stage2_rg_full_14_51_OR_stage2_rg_stage_ETC___d302 == 2'd0)
@@ -8594,7 +10390,11 @@ module mkCPU(CLK,
       if (WILL_FIRE_RL_rl_show_pipe &&
 	  IF_NOT_stage2_rg_full_14_51_OR_stage2_rg_stage_ETC___d302 != 2'd0 &&
 	  IF_NOT_stage2_rg_full_14_51_OR_stage2_rg_stage_ETC___d302 != 2'd1)
+<<<<<<< HEAD
 	$write("frd_val:%h", x_out_fbypass_rd_val__h9059);
+=======
+	$write("frd_val:%h", x_out_fbypass_rd_val__h9137);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE) if (WILL_FIRE_RL_rl_show_pipe) $write("}");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe) $write("\n");
@@ -8862,7 +10662,11 @@ module mkCPU(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe &&
 	  stage1_rg_full_19_AND_NOT_stage1_rg_stage_inpu_ETC___d914)
+<<<<<<< HEAD
 	$write("  rd:%0d\n", x_out_data_to_stage2_rd__h9370);
+=======
+	$write("  rd:%0d\n", x_out_data_to_stage2_rd__h9448);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe && !stage1_rg_full) $write("");
     if (RST_N != `BSV_RESET_VALUE)
@@ -8878,10 +10682,17 @@ module mkCPU(CLK,
       if (WILL_FIRE_RL_rl_show_pipe &&
 	  stage1_rg_full_19_AND_NOT_stage1_rg_stage_inpu_ETC___d914)
 	$write("            addr:%h  val1:%h  val2:%h  val3:%h}",
+<<<<<<< HEAD
 	       x_out_data_to_stage2_addr__h9371,
 	       x_out_data_to_stage2_val1__h9372,
 	       x_out_data_to_stage2_val2__h9373,
 	       x_out_data_to_stage2_val3__h9374);
+=======
+	       x_out_data_to_stage2_addr__h9449,
+	       x_out_data_to_stage2_val1__h9450,
+	       x_out_data_to_stage2_val2__h9451,
+	       x_out_data_to_stage2_val3__h9452);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe && !stage1_rg_full) $write("");
     if (RST_N != `BSV_RESET_VALUE)
@@ -9053,7 +10864,11 @@ module mkCPU(CLK,
       if (WILL_FIRE_RL_rl_show_pipe && stage1_rg_full &&
 	  stage1_rg_stage_input_20_BITS_335_TO_334_21_EQ_ETC___d322 &&
 	  NOT_IF_stage2_rg_full_14_THEN_IF_stage2_rg_sta_ETC___d727)
+<<<<<<< HEAD
 	$write("'h%h", x_out_trap_info_exc_code__h12876);
+=======
+	$write("'h%h", x_out_trap_info_exc_code__h12954);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe &&
 	  stage1_rg_full_19_AND_NOT_stage1_rg_stage_inpu_ETC___d914)
@@ -9083,7 +10898,11 @@ module mkCPU(CLK,
       if (WILL_FIRE_RL_rl_show_pipe && stage1_rg_full &&
 	  stage1_rg_stage_input_20_BITS_335_TO_334_21_EQ_ETC___d322 &&
 	  NOT_IF_stage2_rg_full_14_THEN_IF_stage2_rg_sta_ETC___d727)
+<<<<<<< HEAD
 	$write("'h%h", value__h12921, " }");
+=======
+	$write("'h%h", value__h12999, " }");
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe &&
 	  stage1_rg_full_19_AND_NOT_stage1_rg_stage_inpu_ETC___d914)
@@ -9098,7 +10917,11 @@ module mkCPU(CLK,
       if (WILL_FIRE_RL_rl_show_pipe && stage1_rg_full &&
 	  NOT_stage1_rg_stage_input_20_BITS_335_TO_334_2_ETC___d731 &&
 	  !IF_IF_stage1_rg_stage_input_20_BITS_151_TO_145_ETC___d1405)
+<<<<<<< HEAD
 	$write("\n        redirect next_pc:%h", x_out_next_pc__h9318);
+=======
+	$write("\n        redirect next_pc:%h", x_out_next_pc__h9396);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe && stage1_rg_full &&
 	  NOT_stage1_rg_stage_input_20_BITS_335_TO_334_2_ETC___d731 &&
@@ -9112,7 +10935,11 @@ module mkCPU(CLK,
       if (WILL_FIRE_RL_rl_show_pipe)
 	$display("    StageD: pc 0x%08h instr 0x%08h priv %0d epoch %0d",
 		 stageD_rg_data[233:170],
+<<<<<<< HEAD
 		 x_out_data_to_stage1_instr__h14043,
+=======
+		 x_out_data_to_stage1_instr__h14121,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 		 stageD_rg_data[167:166],
 		 stageD_rg_data[169:168]);
     if (RST_N != `BSV_RESET_VALUE)
@@ -9158,7 +10985,11 @@ module mkCPU(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe && stageD_rg_full && !stageD_rg_data[164])
 	$write("  instr:%0h  pred_pc:%0h",
+<<<<<<< HEAD
 	       x_out_data_to_stage1_instr__h14043,
+=======
+	       x_out_data_to_stage1_instr__h14121,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       stageD_rg_data[63:0]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe && !stageD_rg_full) $write("");
@@ -9281,7 +11112,11 @@ module mkCPU(CLK,
       if (WILL_FIRE_RL_rl_show_pipe)
 	$display("    StageF: pc 0x%08h instr 0x%08h priv %0d epoch %0d",
 		 imem_rg_pc,
+<<<<<<< HEAD
 		 d_instr__h21667,
+=======
+		 d_instr__h21745,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 		 stageF_rg_priv,
 		 stageF_rg_epoch);
     if (RST_N != `BSV_RESET_VALUE)
@@ -9330,7 +11165,11 @@ module mkCPU(CLK,
       if (WILL_FIRE_RL_rl_show_pipe &&
 	  stageF_rg_full_823_AND_near_mem_imem_valid_AND_ETC___d1849)
 	$write("  instr:%h  pred_pc:%h",
+<<<<<<< HEAD
 	       d_instr__h21667,
+=======
+	       d_instr__h21745,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       stageF_branch_predictor$predict_rsp);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_show_pipe && !stageF_rg_full) $write("");
@@ -9551,13 +11390,21 @@ module mkCPU(CLK,
 	$display("%0d: fav_update_epoch: %0d -> %0d",
 		 csr_regfile$read_csr_mcycle,
 		 rg_epoch,
+<<<<<<< HEAD
 		 v__h23141);
+=======
+		 v__h23219);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_debug_run &&
 	  NOT_IF_csr_regfile_read_csr_minstret__5_ULT_cf_ETC___d51)
 	$write("    CPU_StageF.enq:  pc:0x%0h  epoch:%0d  priv:%0d",
 	       csr_regfile$read_dpc,
+<<<<<<< HEAD
 	       v__h23141,
+=======
+	       v__h23219,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       rg_cur_priv);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_debug_run &&
@@ -9604,7 +11451,7 @@ module mkCPU(CLK,
 	$display("%0d: CPU.rl_stage1_CSRR_W", csr_regfile$read_csr_mcycle);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_stage1_CSRR_W && csr_regfile$access_permitted_1 &&
-	  cur_verbosity__h3308 == 4'd1)
+	  cur_verbosity__h3292 == 4'd1)
 	$display("instret:%0d  PC:0x%0h  instr:0x%0h  priv:%0d",
 		 csr_regfile$read_csr_minstret,
 		 stage1_rg_stage_input[401:338],
@@ -9615,13 +11462,17 @@ module mkCPU(CLK,
 	  NOT_IF_csr_regfile_read_csr_minstret__5_ULT_cf_ETC___d51)
 	$display("    S1: write CSRRW/CSRRWI Rs1 %0d Rs1_val 0x%0h csr 0x%0h csr_val 0x%0h Rd %0d",
 		 stage1_rg_stage_input_BITS_263_TO_232__q1[19:15],
+<<<<<<< HEAD
 		 rs1_val__h30843,
+=======
+		 rs1_val__h31065,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 		 stage1_rg_stage_input_BITS_263_TO_232__q1[31:20],
 		 csr_regfile$read_csr[63:0],
 		 stage1_rg_stage_input_BITS_263_TO_232__q1[11:7]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_stage1_CSRR_W && !csr_regfile$access_permitted_1 &&
-	  cur_verbosity__h3308 == 4'd1)
+	  cur_verbosity__h3292 == 4'd1)
 	$display("instret:%0d  PC:0x%0h  instr:0x%0h  priv:%0d",
 		 csr_regfile$read_csr_minstret,
 		 stage1_rg_stage_input[401:338],
@@ -9632,7 +11483,11 @@ module mkCPU(CLK,
 	  NOT_IF_csr_regfile_read_csr_minstret__5_ULT_cf_ETC___d51)
 	$display("    rl_stage1_CSRR_W: Trap on CSR permissions: Rs1 %0d Rs1_val 0x%0h csr 0x%0h Rd %0d",
 		 stage1_rg_stage_input_BITS_263_TO_232__q1[19:15],
+<<<<<<< HEAD
 		 rs1_val__h30843,
+=======
+		 rs1_val__h31065,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 		 stage1_rg_stage_input_BITS_263_TO_232__q1[31:20],
 		 stage1_rg_stage_input_BITS_263_TO_232__q1[11:7]);
     if (RST_N != `BSV_RESET_VALUE)
@@ -9643,7 +11498,7 @@ module mkCPU(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_stage1_CSRR_S_or_C &&
 	  csr_regfile$access_permitted_2 &&
-	  cur_verbosity__h3308 == 4'd1)
+	  cur_verbosity__h3292 == 4'd1)
 	$display("instret:%0d  PC:0x%0h  instr:0x%0h  priv:%0d",
 		 csr_regfile$read_csr_minstret,
 		 stage1_rg_stage_input[401:338],
@@ -9655,14 +11510,18 @@ module mkCPU(CLK,
 	  NOT_IF_csr_regfile_read_csr_minstret__5_ULT_cf_ETC___d51)
 	$display("    S1: write CSRR_S_or_C: Rs1 %0d Rs1_val 0x%0h csr 0x%0h csr_val 0x%0h Rd %0d",
 		 stage1_rg_stage_input_BITS_263_TO_232__q1[19:15],
+<<<<<<< HEAD
 		 rs1_val__h31435,
+=======
+		 rs1_val__h31657,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 		 stage1_rg_stage_input_BITS_263_TO_232__q1[31:20],
 		 csr_regfile$read_csr[63:0],
 		 stage1_rg_stage_input_BITS_263_TO_232__q1[11:7]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_stage1_CSRR_S_or_C &&
 	  !csr_regfile$access_permitted_2 &&
-	  cur_verbosity__h3308 == 4'd1)
+	  cur_verbosity__h3292 == 4'd1)
 	$display("instret:%0d  PC:0x%0h  instr:0x%0h  priv:%0d",
 		 csr_regfile$read_csr_minstret,
 		 stage1_rg_stage_input[401:338],
@@ -9674,7 +11533,11 @@ module mkCPU(CLK,
 	  NOT_IF_csr_regfile_read_csr_minstret__5_ULT_cf_ETC___d51)
 	$display("    rl_stage1_CSRR_S_or_C: Trap on CSR permissions: Rs1 %0d Rs1_val 0x%0h csr 0x%0h Rd %0d",
 		 stage1_rg_stage_input_BITS_263_TO_232__q1[19:15],
+<<<<<<< HEAD
 		 rs1_val__h31435,
+=======
+		 rs1_val__h31657,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 		 stage1_rg_stage_input_BITS_263_TO_232__q1[31:20],
 		 stage1_rg_stage_input_BITS_263_TO_232__q1[11:7]);
     if (RST_N != `BSV_RESET_VALUE)
@@ -9682,14 +11545,14 @@ module mkCPU(CLK,
 	  NOT_IF_csr_regfile_read_csr_minstret__5_ULT_cf_ETC___d51)
 	$display("%0d: CPU.rl_stage1_xRET", csr_regfile$read_csr_mcycle);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_stage1_xRET && cur_verbosity__h3308 == 4'd1)
+      if (WILL_FIRE_RL_rl_stage1_xRET && cur_verbosity__h3292 == 4'd1)
 	$display("instret:%0d  PC:0x%0h  instr:0x%0h  priv:%0d",
 		 csr_regfile$read_csr_minstret,
 		 stage1_rg_stage_input[401:338],
 		 stage1_rg_stage_input[263:232],
 		 rg_cur_priv);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_stage1_xRET && cur_verbosity__h3308 != 4'd0)
+      if (WILL_FIRE_RL_rl_stage1_xRET && cur_verbosity__h3292 != 4'd0)
 	$display("    xRET: next_pc:0x%0h  new mstatus:0x%0h  new priv:%0d",
 		 csr_regfile$csr_ret_actions[129:66],
 		 csr_regfile$csr_ret_actions[63:0],
@@ -9699,7 +11562,7 @@ module mkCPU(CLK,
 	  NOT_IF_csr_regfile_read_csr_minstret__5_ULT_cf_ETC___d51)
 	$display("%0d: CPU.rl_stage1_FENCE_I", csr_regfile$read_csr_mcycle);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_stage1_FENCE_I && cur_verbosity__h3308 == 4'd1)
+      if (WILL_FIRE_RL_rl_stage1_FENCE_I && cur_verbosity__h3292 == 4'd1)
 	$display("instret:%0d  PC:0x%0h  instr:0x%0h  priv:%0d",
 		 csr_regfile$read_csr_minstret,
 		 stage1_rg_stage_input[401:338],
@@ -9714,7 +11577,7 @@ module mkCPU(CLK,
 	  NOT_IF_csr_regfile_read_csr_minstret__5_ULT_cf_ETC___d51)
 	$display("%0d: CPU.rl_stage1_FENCE", csr_regfile$read_csr_mcycle);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_stage1_FENCE && cur_verbosity__h3308 == 4'd1)
+      if (WILL_FIRE_RL_rl_stage1_FENCE && cur_verbosity__h3292 == 4'd1)
 	$display("instret:%0d  PC:0x%0h  instr:0x%0h  priv:%0d",
 		 csr_regfile$read_csr_minstret,
 		 stage1_rg_stage_input[401:338],
@@ -9729,23 +11592,27 @@ module mkCPU(CLK,
 	  NOT_IF_csr_regfile_read_csr_minstret__5_ULT_cf_ETC___d51)
 	$display("%0d: CPU.rl_stage1_trap", csr_regfile$read_csr_mcycle);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_stage1_trap && cur_verbosity__h3308 == 4'd1)
+      if (WILL_FIRE_RL_rl_stage1_trap && cur_verbosity__h3292 == 4'd1)
 	$display("instret:%0d  PC:0x%0h  instr:0x%0h  priv:%0d",
 		 csr_regfile$read_csr_minstret,
 		 stage1_rg_stage_input[401:338],
 		 stage1_rg_stage_input[263:232],
 		 rg_cur_priv);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_stage1_trap && cur_verbosity__h3308 != 4'd0)
+      if (WILL_FIRE_RL_rl_stage1_trap && cur_verbosity__h3292 != 4'd0)
 	$display("%0d: CPU.rl_stage1_trap: priv:%0d  mcause:0x%0h  epc:0x%0h",
 		 csr_regfile$read_csr_mcycle,
 		 rg_cur_priv,
 		 csr_regfile$csr_trap_actions[65:2],
 		 stage1_rg_stage_input[401:338]);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_stage1_trap && cur_verbosity__h3308 != 4'd0)
+      if (WILL_FIRE_RL_rl_stage1_trap && cur_verbosity__h3292 != 4'd0)
 	$display("    tval:0x%0h  new pc:0x%0h  new mstatus:0x%0h",
+<<<<<<< HEAD
 		 value__h12921,
+=======
+		 value__h12999,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 		 csr_regfile$csr_trap_actions[193:130],
 		 csr_regfile$csr_trap_actions[129:66]);
     if (RST_N != `BSV_RESET_VALUE)
@@ -9753,7 +11620,11 @@ module mkCPU(CLK,
 	  NOT_IF_csr_regfile_read_csr_minstret__5_ULT_cf_ETC___d51)
 	$display("%0d: CPU.rl_stage1_WFI", csr_regfile$read_csr_mcycle);
     if (RST_N != `BSV_RESET_VALUE)
+<<<<<<< HEAD
       if (WILL_FIRE_RL_rl_stage1_WFI && cur_verbosity__h3308 == 4'd1)
+=======
+      if (WILL_FIRE_RL_rl_stage1_WFI && cur_verbosity__h3292 == 4'd1)
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	$display("instret:%0d  PC:0x%0h  instr:0x%0h  priv:%0d",
 		 csr_regfile$read_csr_minstret,
 		 stage1_rg_stage_input[401:338],
@@ -9798,10 +11669,17 @@ module mkCPU(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_stage1_stop && rg_stop_req)
 	$display("CPI: %0d.%0d = (%0d/%0d) since last 'continue'",
+<<<<<<< HEAD
 		 cpi__h39945,
 		 cpifrac__h39946,
 		 delta_CPI_cycles__h39941,
 		 _theResult____h39943);
+=======
+		 cpi__h40167,
+		 cpifrac__h40168,
+		 delta_CPI_cycles__h40163,
+		 _theResult____h40165);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_stage1_stop && !rg_stop_req)
 	$display("%0d: CPU.rl_stage1_stop: Stop after single-step. PC = 0x%08h",
@@ -9816,13 +11694,21 @@ module mkCPU(CLK,
 	$display("%0d: fav_update_epoch: %0d -> %0d",
 		 csr_regfile$read_csr_mcycle,
 		 rg_epoch,
+<<<<<<< HEAD
 		 v__h23141);
+=======
+		 v__h23219);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset_complete && rg_run_on_reset &&
 	  NOT_IF_csr_regfile_read_csr_minstret__5_ULT_cf_ETC___d51)
 	$write("    CPU_StageF.enq:  pc:0x%0h  epoch:%0d  priv:%0d",
 	       soc_map$m_pc_reset_value,
+<<<<<<< HEAD
 	       v__h23141,
+=======
+	       v__h23219,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       rg_cur_priv);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset_complete && rg_run_on_reset &&
@@ -9909,7 +11795,11 @@ module mkCPU(CLK,
 	  stage2_rg_stage2[629:627] != 3'd3)
 	$write("  fflags: %05b",
 	       "'h%h",
+<<<<<<< HEAD
 	       x_out_data_to_stage3_fpr_flags__h8434);
+=======
+	       x_out_data_to_stage3_fpr_flags__h8512);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_pipe &&
 	  IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d150 == 2'd2 &&
@@ -9927,8 +11817,13 @@ module mkCPU(CLK,
 	  stage2_rg_stage2[629:627] != 3'd0 &&
 	  IF_stage2_rg_stage2_15_BITS_629_TO_627_16_EQ_1_ETC___d211)
 	$write("  frd:%0d  rd_val:%h\n",
+<<<<<<< HEAD
 	       x_out_data_to_stage3_rd__h8431,
 	       x_out_data_to_stage3_rd_val__h8435);
+=======
+	       x_out_data_to_stage3_rd__h8509,
+	       x_out_data_to_stage3_rd_val__h8513);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_pipe &&
 	  IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d150 == 2'd2 &&
@@ -9936,8 +11831,13 @@ module mkCPU(CLK,
 	  (stage2_rg_stage2[629:627] == 3'd0 ||
 	   IF_stage2_rg_stage2_15_BITS_629_TO_627_16_EQ_1_ETC___d245))
 	$write("  grd:%0d  rd_val:%h\n",
+<<<<<<< HEAD
 	       x_out_data_to_stage3_rd__h8431,
 	       x_out_data_to_stage3_rd_val__h8435);
+=======
+	       x_out_data_to_stage3_rd__h8509,
+	       x_out_data_to_stage3_rd_val__h8513);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_pipe &&
 	  IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d150 == 2'd2 &&
@@ -9946,7 +11846,7 @@ module mkCPU(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_pipe &&
 	  IF_stage2_rg_full_14_THEN_IF_stage2_rg_stage2__ETC___d150 == 2'd2 &&
-	  cur_verbosity__h3308 == 4'd1)
+	  cur_verbosity__h3292 == 4'd1)
 	$display("instret:%0d  PC:0x%0h  instr:0x%0h  priv:%0d",
 		 csr_regfile$read_csr_minstret,
 		 stage2_rg_stage2[725:662],
@@ -9975,7 +11875,11 @@ module mkCPU(CLK,
 	$display("%0d: fav_update_epoch: %0d -> %0d",
 		 csr_regfile$read_csr_mcycle,
 		 rg_epoch,
+<<<<<<< HEAD
 		 v__h23141);
+=======
+		 v__h23219);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_pipe &&
 	  IF_stage1_rg_stage_input_20_BITS_335_TO_334_21_ETC___d2330 &&
@@ -9992,8 +11896,13 @@ module mkCPU(CLK,
 	  IF_stage1_rg_stage_input_20_BITS_335_TO_334_21_ETC___d2371 &&
 	  NOT_IF_csr_regfile_read_csr_minstret__5_ULT_cf_ETC___d51)
 	$write("    CPU_StageF.enq:  pc:0x%0h  epoch:%0d  priv:%0d",
+<<<<<<< HEAD
 	       next_pc__h29548,
 	       epoch__h29546,
+=======
+	       next_pc__h29626,
+	       epoch__h29624,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       rg_cur_priv);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_pipe &&
@@ -10026,7 +11935,7 @@ module mkCPU(CLK,
 	$display("%0d: CPU.rl_stage1_SFENCE_VMA",
 		 csr_regfile$read_csr_mcycle);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_stage1_SFENCE_VMA && cur_verbosity__h3308 == 4'd1)
+      if (WILL_FIRE_RL_rl_stage1_SFENCE_VMA && cur_verbosity__h3292 == 4'd1)
 	$display("instret:%0d  PC:0x%0h  instr:0x%0h  priv:%0d",
 		 csr_regfile$read_csr_minstret,
 		 stage1_rg_stage_input[401:338],
@@ -10050,14 +11959,22 @@ module mkCPU(CLK,
 	  NOT_IF_csr_regfile_read_csr_minstret__5_ULT_cf_ETC___d51)
 	$display("%0d: CPU.rl_stage2_nonpipe", csr_regfile$read_csr_mcycle);
     if (RST_N != `BSV_RESET_VALUE)
+<<<<<<< HEAD
       if (WILL_FIRE_RL_rl_stage2_nonpipe && cur_verbosity__h3308 == 4'd1)
+=======
+      if (WILL_FIRE_RL_rl_trap && cur_verbosity__h3292 == 4'd1)
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	$display("instret:%0d  PC:0x%0h  instr:0x%0h  priv:%0d",
 		 csr_regfile$read_csr_minstret,
 		 value__h8614,
 		 stage2_rg_stage2[661:630],
 		 rg_cur_priv);
     if (RST_N != `BSV_RESET_VALUE)
+<<<<<<< HEAD
       if (WILL_FIRE_RL_rl_stage2_nonpipe && cur_verbosity__h3308 != 4'd0)
+=======
+      if (WILL_FIRE_RL_rl_trap && cur_verbosity__h3292 != 4'd0)
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	$display("    mcause:0x%0h  epc 0x%0h  tval:0x%0h  new pc 0x%0h, new mstatus 0x%0h",
 		 csr_regfile$csr_trap_actions[65:2],
 		 value__h8614,
@@ -10070,13 +11987,22 @@ module mkCPU(CLK,
 	$display("%0d: fav_update_epoch: %0d -> %0d",
 		 csr_regfile$read_csr_mcycle,
 		 rg_epoch,
+<<<<<<< HEAD
 		 v__h23141);
+=======
+		 v__h23219);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_stage1_restart_after_csrrx &&
 	  NOT_IF_csr_regfile_read_csr_minstret__5_ULT_cf_ETC___d51)
 	$write("    CPU_StageF.enq:  pc:0x%0h  epoch:%0d  priv:%0d",
+<<<<<<< HEAD
 	       x_out_next_pc__h9318,
 	       v__h23141,
+=======
+	       x_out_next_pc__h9396,
+	       v__h23219,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       rg_cur_priv);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_stage1_restart_after_csrrx &&
@@ -10099,9 +12025,15 @@ module mkCPU(CLK,
 	$display("%0d: rl_stage1_restart_after_csrrx: minstret:%0d  pc:%0x  cur_priv:%0d  epoch:%0d",
 		 csr_regfile$read_csr_mcycle,
 		 csr_regfile$read_csr_minstret,
+<<<<<<< HEAD
 		 x_out_next_pc__h9318,
 		 rg_cur_priv,
 		 v__h23141);
+=======
+		 x_out_next_pc__h9396,
+		 rg_cur_priv,
+		 v__h23219);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_finish_FENCE_I &&
 	  NOT_IF_csr_regfile_read_csr_minstret__5_ULT_cf_ETC___d51)
@@ -10112,13 +12044,21 @@ module mkCPU(CLK,
 	$display("%0d: fav_update_epoch: %0d -> %0d",
 		 csr_regfile$read_csr_mcycle,
 		 rg_epoch,
+<<<<<<< HEAD
 		 v__h23141);
+=======
+		 v__h23219);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_finish_FENCE_I &&
 	  NOT_IF_csr_regfile_read_csr_minstret__5_ULT_cf_ETC___d51)
 	$write("    CPU_StageF.enq:  pc:0x%0h  epoch:%0d  priv:%0d",
 	       rg_next_pc,
+<<<<<<< HEAD
 	       v__h23141,
+=======
+	       v__h23219,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       rg_cur_priv);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_finish_FENCE_I &&
@@ -10149,13 +12089,21 @@ module mkCPU(CLK,
 	$display("%0d: fav_update_epoch: %0d -> %0d",
 		 csr_regfile$read_csr_mcycle,
 		 rg_epoch,
+<<<<<<< HEAD
 		 v__h23141);
+=======
+		 v__h23219);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_finish_FENCE &&
 	  NOT_IF_csr_regfile_read_csr_minstret__5_ULT_cf_ETC___d51)
 	$write("    CPU_StageF.enq:  pc:0x%0h  epoch:%0d  priv:%0d",
 	       rg_next_pc,
+<<<<<<< HEAD
 	       v__h23141,
+=======
+	       v__h23219,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       rg_cur_priv);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_finish_FENCE &&
@@ -10187,13 +12135,21 @@ module mkCPU(CLK,
 	$display("%0d: fav_update_epoch: %0d -> %0d",
 		 csr_regfile$read_csr_mcycle,
 		 rg_epoch,
+<<<<<<< HEAD
 		 v__h23141);
+=======
+		 v__h23219);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_finish_SFENCE_VMA &&
 	  NOT_IF_csr_regfile_read_csr_minstret__5_ULT_cf_ETC___d51)
 	$write("    CPU_StageF.enq:  pc:0x%0h  epoch:%0d  priv:%0d",
 	       rg_next_pc,
+<<<<<<< HEAD
 	       v__h23141,
+=======
+	       v__h23219,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       rg_cur_priv);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_finish_SFENCE_VMA &&
@@ -10215,11 +12171,15 @@ module mkCPU(CLK,
 	  NOT_IF_csr_regfile_read_csr_minstret__5_ULT_cf_ETC___d51)
 	$display("    CPU.rl_finish_SFENCE_VMA");
     if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_reset_from_WFI &&
+	  NOT_IF_csr_regfile_read_csr_minstret__5_ULT_cf_ETC___d51)
+	$display("%0d: CPU.rl_reset_from_WFI", csr_regfile$read_csr_mcycle);
+    if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_WFI_resume &&
 	  NOT_IF_csr_regfile_read_csr_minstret__5_ULT_cf_ETC___d51)
 	$display("%0d: CPU.rl_WFI_resume", csr_regfile$read_csr_mcycle);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_WFI_resume && cur_verbosity__h3308 != 4'd0)
+      if (WILL_FIRE_RL_rl_WFI_resume && cur_verbosity__h3292 != 4'd0)
 	$display("    WFI resume");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_WFI_resume &&
@@ -10227,13 +12187,21 @@ module mkCPU(CLK,
 	$display("%0d: fav_update_epoch: %0d -> %0d",
 		 csr_regfile$read_csr_mcycle,
 		 rg_epoch,
+<<<<<<< HEAD
 		 v__h23141);
+=======
+		 v__h23219);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_WFI_resume &&
 	  NOT_IF_csr_regfile_read_csr_minstret__5_ULT_cf_ETC___d51)
 	$write("    CPU_StageF.enq:  pc:0x%0h  epoch:%0d  priv:%0d",
 	       rg_next_pc,
+<<<<<<< HEAD
 	       v__h23141,
+=======
+	       v__h23219,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       rg_cur_priv);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_WFI_resume &&
@@ -10251,22 +12219,26 @@ module mkCPU(CLK,
 	  NOT_IF_csr_regfile_read_csr_minstret__5_ULT_cf_ETC___d51)
 	$write("\n");
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_reset_from_WFI &&
-	  NOT_IF_csr_regfile_read_csr_minstret__5_ULT_cf_ETC___d51)
-	$display("%0d: CPU.rl_reset_from_WFI", csr_regfile$read_csr_mcycle);
-    if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_trap_fetch &&
 	  NOT_cfg_verbosity_read__8_ULE_1_993___d1994)
 	$display("%0d: fav_update_epoch: %0d -> %0d",
 		 csr_regfile$read_csr_mcycle,
 		 rg_epoch,
+<<<<<<< HEAD
 		 v__h23141);
+=======
+		 v__h23219);
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_trap_fetch &&
 	  NOT_IF_csr_regfile_read_csr_minstret__5_ULT_cf_ETC___d51)
 	$write("    CPU_StageF.enq:  pc:0x%0h  epoch:%0d  priv:%0d",
 	       rg_next_pc,
+<<<<<<< HEAD
 	       v__h23141,
+=======
+	       v__h23219,
+>>>>>>> Removed 'wid' from AXI4 Wr_Data structs. Regen'd SSITH RTL.
 	       rg_cur_priv);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_trap_fetch &&
@@ -10292,14 +12264,14 @@ module mkCPU(CLK,
 	  NOT_IF_csr_regfile_read_csr_minstret__5_ULT_cf_ETC___d51)
 	$display("%0d: CPU.rl_stage1_interrupt", csr_regfile$read_csr_mcycle);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_stage1_interrupt && cur_verbosity__h3308 == 4'd1)
+      if (WILL_FIRE_RL_rl_stage1_interrupt && cur_verbosity__h3292 == 4'd1)
 	$display("instret:%0d  PC:0x%0h  instr:0x%0h  priv:%0d",
 		 csr_regfile$read_csr_minstret,
 		 stage1_rg_stage_input[401:338],
 		 stage1_rg_stage_input[263:232],
 		 rg_cur_priv);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_stage1_interrupt && cur_verbosity__h3308 != 4'd0)
+      if (WILL_FIRE_RL_rl_stage1_interrupt && cur_verbosity__h3292 != 4'd0)
 	$display("%0d: CPU.rl_stage1_interrupt: epc 0x%0h  next PC 0x%0h  new_priv %0d  new mstatus 0x%0h",
 		 csr_regfile$read_csr_mcycle,
 		 stage1_rg_stage_input[401:338],
@@ -10321,7 +12293,7 @@ module mkCPU(CLK,
       if (WILL_FIRE_RL_rl_reset_start)
 	$display("================================================================");
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_reset_start && cur_verbosity__h3308 != 4'd0)
+      if (WILL_FIRE_RL_rl_reset_start && cur_verbosity__h3292 != 4'd0)
 	$display("%0d: CPU.rl_reset_start", csr_regfile$read_csr_mcycle);
   end
   // synopsys translate_on

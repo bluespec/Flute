@@ -30,7 +30,6 @@
 // to_slave_awqos                 O     4 reg
 // to_slave_awregion              O     4 reg
 // to_slave_wvalid                O     1 reg
-// to_slave_wid                   O     4 reg
 // to_slave_wdata                 O    64 reg
 // to_slave_wstrb                 O     8 reg
 // to_slave_wlast                 O     1 reg
@@ -61,7 +60,6 @@
 // from_master_awqos              I     4 reg
 // from_master_awregion           I     4 reg
 // from_master_wvalid             I     1
-// from_master_wid                I     4 reg
 // from_master_wdata              I    64 reg
 // from_master_wstrb              I     8 reg
 // from_master_wlast              I     1 reg
@@ -129,7 +127,6 @@ module mkAXI4_Deburster_A(CLK,
 			  from_master_awready,
 
 			  from_master_wvalid,
-			  from_master_wid,
 			  from_master_wdata,
 			  from_master_wstrb,
 			  from_master_wlast,
@@ -195,8 +192,6 @@ module mkAXI4_Deburster_A(CLK,
 			  to_slave_awready,
 
 			  to_slave_wvalid,
-
-			  to_slave_wid,
 
 			  to_slave_wdata,
 
@@ -268,7 +263,6 @@ module mkAXI4_Deburster_A(CLK,
 
   // action method from_master_m_wvalid
   input  from_master_wvalid;
-  input  [3 : 0] from_master_wid;
   input  [63 : 0] from_master_wdata;
   input  [7 : 0] from_master_wstrb;
   input  from_master_wlast;
@@ -367,9 +361,6 @@ module mkAXI4_Deburster_A(CLK,
   // value method to_slave_m_wvalid
   output to_slave_wvalid;
 
-  // value method to_slave_m_wid
-  output [3 : 0] to_slave_wid;
-
   // value method to_slave_m_wdata
   output [63 : 0] to_slave_wdata;
 
@@ -455,8 +446,7 @@ module mkAXI4_Deburster_A(CLK,
 	       to_slave_awcache,
 	       to_slave_awid,
 	       to_slave_awqos,
-	       to_slave_awregion,
-	       to_slave_wid;
+	       to_slave_awregion;
   wire [2 : 0] to_slave_arprot,
 	       to_slave_arsize,
 	       to_slave_awprot,
@@ -554,7 +544,7 @@ module mkAXI4_Deburster_A(CLK,
        m_xactor_from_master_f_wr_addr$FULL_N;
 
   // ports of submodule m_xactor_from_master_f_wr_data
-  wire [76 : 0] m_xactor_from_master_f_wr_data$D_IN,
+  wire [72 : 0] m_xactor_from_master_f_wr_data$D_IN,
 		m_xactor_from_master_f_wr_data$D_OUT;
   wire m_xactor_from_master_f_wr_data$CLR,
        m_xactor_from_master_f_wr_data$DEQ,
@@ -599,7 +589,7 @@ module mkAXI4_Deburster_A(CLK,
        m_xactor_to_slave_f_wr_addr$FULL_N;
 
   // ports of submodule m_xactor_to_slave_f_wr_data
-  wire [76 : 0] m_xactor_to_slave_f_wr_data$D_IN,
+  wire [72 : 0] m_xactor_to_slave_f_wr_data$D_IN,
 		m_xactor_to_slave_f_wr_data$D_OUT;
   wire m_xactor_to_slave_f_wr_data$CLR,
        m_xactor_to_slave_f_wr_data$DEQ,
@@ -660,21 +650,21 @@ module mkAXI4_Deburster_A(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h2430;
+  reg [31 : 0] v__h2422;
   reg [31 : 0] v__h1446;
   reg [31 : 0] v__h1440;
-  reg [31 : 0] v__h2424;
+  reg [31 : 0] v__h2416;
   // synopsys translate_on
 
   // remaining internal signals
-  wire [63 : 0] a_out_araddr__h2944,
+  wire [63 : 0] a_out_araddr__h2934,
 		a_out_awaddr__h1951,
 		addr___1__h2036,
-		addr___1__h3029;
-  wire [7 : 0] x__h2305, x__h2798, x__h3190, x__h3388;
-  wire m_rg_ar_beat_count_3_ULT_m_xactor_from_master__ETC___d95,
-       m_rg_b_beat_count_9_ULT_m_f_w_awlen_first__0___d51,
-       m_rg_r_beat_count_04_ULT_m_f_r_arlen_first__05___d106,
+		addr___1__h3019;
+  wire [7 : 0] x__h2297, x__h2788, x__h3180, x__h3378;
+  wire m_rg_ar_beat_count_2_ULT_m_xactor_from_master__ETC___d94,
+       m_rg_b_beat_count_8_ULT_m_f_w_awlen_first__9___d50,
+       m_rg_r_beat_count_03_ULT_m_f_r_arlen_first__04___d105,
        m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d35;
 
   // action method reset
@@ -774,9 +764,6 @@ module mkAXI4_Deburster_A(CLK,
 
   // value method to_slave_m_wvalid
   assign to_slave_wvalid = m_xactor_to_slave_f_wr_data$EMPTY_N ;
-
-  // value method to_slave_m_wid
-  assign to_slave_wid = m_xactor_to_slave_f_wr_data$D_OUT[76:73] ;
 
   // value method to_slave_m_wdata
   assign to_slave_wdata = m_xactor_to_slave_f_wr_data$D_OUT[72:9] ;
@@ -907,7 +894,7 @@ module mkAXI4_Deburster_A(CLK,
 							  .EMPTY_N(m_xactor_from_master_f_wr_addr$EMPTY_N));
 
   // submodule m_xactor_from_master_f_wr_data
-  FIFO2 #(.width(32'd77),
+  FIFO2 #(.width(32'd73),
 	  .guarded(32'd1)) m_xactor_from_master_f_wr_data(.RST(RST_N),
 							  .CLK(CLK),
 							  .D_IN(m_xactor_from_master_f_wr_data$D_IN),
@@ -967,7 +954,7 @@ module mkAXI4_Deburster_A(CLK,
 						       .EMPTY_N(m_xactor_to_slave_f_wr_addr$EMPTY_N));
 
   // submodule m_xactor_to_slave_f_wr_data
-  FIFO2 #(.width(32'd77),
+  FIFO2 #(.width(32'd73),
 	  .guarded(32'd1)) m_xactor_to_slave_f_wr_data(.RST(RST_N),
 						       .CLK(CLK),
 						       .D_IN(m_xactor_to_slave_f_wr_data$D_IN),
@@ -1003,7 +990,7 @@ module mkAXI4_Deburster_A(CLK,
   // rule RL_m_rl_wr_resp_slave_to_master
   assign CAN_FIRE_RL_m_rl_wr_resp_slave_to_master =
 	     m_xactor_to_slave_f_wr_resp$EMPTY_N && m_f_w_awlen$EMPTY_N &&
-	     (m_rg_b_beat_count_9_ULT_m_f_w_awlen_first__0___d51 ||
+	     (m_rg_b_beat_count_8_ULT_m_f_w_awlen_first__9___d50 ||
 	      m_xactor_from_master_f_wr_resp$FULL_N) ;
   assign WILL_FIRE_RL_m_rl_wr_resp_slave_to_master =
 	     CAN_FIRE_RL_m_rl_wr_resp_slave_to_master ;
@@ -1032,26 +1019,26 @@ module mkAXI4_Deburster_A(CLK,
 	     WILL_FIRE_RL_m_rl_wr_resp_slave_to_master &&
 	     (m_rg_b_resp == 2'b0 &&
 	      m_xactor_to_slave_f_wr_resp$D_OUT[1:0] != 2'b0 ||
-	      !m_rg_b_beat_count_9_ULT_m_f_w_awlen_first__0___d51) ;
+	      !m_rg_b_beat_count_8_ULT_m_f_w_awlen_first__9___d50) ;
   assign MUX_m_rg_ar_beat_count$write_1__VAL_2 =
-	     m_rg_ar_beat_count_3_ULT_m_xactor_from_master__ETC___d95 ?
-	       x__h3190 :
+	     m_rg_ar_beat_count_2_ULT_m_xactor_from_master__ETC___d94 ?
+	       x__h3180 :
 	       8'd0 ;
   assign MUX_m_rg_b_beat_count$write_1__VAL_2 =
-	     m_rg_b_beat_count_9_ULT_m_f_w_awlen_first__0___d51 ?
-	       x__h2798 :
+	     m_rg_b_beat_count_8_ULT_m_f_w_awlen_first__9___d50 ?
+	       x__h2788 :
 	       8'd0 ;
   assign MUX_m_rg_b_resp$write_1__VAL_2 =
-	     m_rg_b_beat_count_9_ULT_m_f_w_awlen_first__0___d51 ?
+	     m_rg_b_beat_count_8_ULT_m_f_w_awlen_first__9___d50 ?
 	       m_xactor_to_slave_f_wr_resp$D_OUT[1:0] :
 	       2'b0 ;
   assign MUX_m_rg_r_beat_count$write_1__VAL_2 =
-	     m_rg_r_beat_count_04_ULT_m_f_r_arlen_first__05___d106 ?
-	       x__h3388 :
+	     m_rg_r_beat_count_03_ULT_m_f_r_arlen_first__04___d105 ?
+	       x__h3378 :
 	       8'd0 ;
   assign MUX_m_rg_w_beat_count$write_1__VAL_2 =
 	     m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d35 ?
-	       x__h2305 :
+	       x__h2297 :
 	       8'd0 ;
 
   // register m_rg_ar_beat_count
@@ -1094,7 +1081,7 @@ module mkAXI4_Deburster_A(CLK,
 	     m_rg_ar_beat_count == 8'd0 ;
   assign m_f_r_arlen$DEQ =
 	     WILL_FIRE_RL_m_rl_rd_resp_slave_to_master &&
-	     !m_rg_r_beat_count_04_ULT_m_f_r_arlen_first__05___d106 ;
+	     !m_rg_r_beat_count_03_ULT_m_f_r_arlen_first__04___d105 ;
   assign m_f_r_arlen$CLR = m_rg_reset ;
 
   // submodule m_f_w_awlen
@@ -1104,7 +1091,7 @@ module mkAXI4_Deburster_A(CLK,
 	     m_rg_w_beat_count == 8'd0 ;
   assign m_f_w_awlen$DEQ =
 	     WILL_FIRE_RL_m_rl_wr_resp_slave_to_master &&
-	     !m_rg_b_beat_count_9_ULT_m_f_w_awlen_first__0___d51 ;
+	     !m_rg_b_beat_count_8_ULT_m_f_w_awlen_first__9___d50 ;
   assign m_f_w_awlen$CLR = m_rg_reset ;
 
   // submodule m_xactor_from_master_f_rd_addr
@@ -1123,13 +1110,13 @@ module mkAXI4_Deburster_A(CLK,
 	     from_master_arvalid && m_xactor_from_master_f_rd_addr$FULL_N ;
   assign m_xactor_from_master_f_rd_addr$DEQ =
 	     WILL_FIRE_RL_m_rl_rd_xaction_master_to_slave &&
-	     !m_rg_ar_beat_count_3_ULT_m_xactor_from_master__ETC___d95 ;
+	     !m_rg_ar_beat_count_2_ULT_m_xactor_from_master__ETC___d94 ;
   assign m_xactor_from_master_f_rd_addr$CLR = m_rg_reset ;
 
   // submodule m_xactor_from_master_f_rd_data
   assign m_xactor_from_master_f_rd_data$D_IN =
 	     { m_xactor_to_slave_f_rd_data$D_OUT[70:1],
-	       !m_rg_r_beat_count_04_ULT_m_f_r_arlen_first__05___d106 } ;
+	       !m_rg_r_beat_count_03_ULT_m_f_r_arlen_first__04___d105 } ;
   assign m_xactor_from_master_f_rd_data$ENQ =
 	     CAN_FIRE_RL_m_rl_rd_resp_slave_to_master ;
   assign m_xactor_from_master_f_rd_data$DEQ =
@@ -1157,10 +1144,7 @@ module mkAXI4_Deburster_A(CLK,
 
   // submodule m_xactor_from_master_f_wr_data
   assign m_xactor_from_master_f_wr_data$D_IN =
-	     { from_master_wid,
-	       from_master_wdata,
-	       from_master_wstrb,
-	       from_master_wlast } ;
+	     { from_master_wdata, from_master_wstrb, from_master_wlast } ;
   assign m_xactor_from_master_f_wr_data$ENQ =
 	     from_master_wvalid && m_xactor_from_master_f_wr_data$FULL_N ;
   assign m_xactor_from_master_f_wr_data$DEQ =
@@ -1175,7 +1159,7 @@ module mkAXI4_Deburster_A(CLK,
 		 m_rg_b_resp } ;
   assign m_xactor_from_master_f_wr_resp$ENQ =
 	     WILL_FIRE_RL_m_rl_wr_resp_slave_to_master &&
-	     !m_rg_b_beat_count_9_ULT_m_f_w_awlen_first__0___d51 ;
+	     !m_rg_b_beat_count_8_ULT_m_f_w_awlen_first__9___d50 ;
   assign m_xactor_from_master_f_wr_resp$DEQ =
 	     from_master_bready && m_xactor_from_master_f_wr_resp$EMPTY_N ;
   assign m_xactor_from_master_f_wr_resp$CLR = m_rg_reset ;
@@ -1183,7 +1167,7 @@ module mkAXI4_Deburster_A(CLK,
   // submodule m_xactor_to_slave_f_rd_addr
   assign m_xactor_to_slave_f_rd_addr$D_IN =
 	     { m_xactor_from_master_f_rd_addr$D_OUT[96:93],
-	       a_out_araddr__h2944,
+	       a_out_araddr__h2934,
 	       8'd0,
 	       m_xactor_from_master_f_rd_addr$D_OUT[20:18],
 	       2'b0,
@@ -1222,7 +1206,7 @@ module mkAXI4_Deburster_A(CLK,
 
   // submodule m_xactor_to_slave_f_wr_data
   assign m_xactor_to_slave_f_wr_data$D_IN =
-	     { m_xactor_from_master_f_wr_data$D_OUT[76:1], 1'd1 } ;
+	     { m_xactor_from_master_f_wr_data$D_OUT[72:1], 1'd1 } ;
   assign m_xactor_to_slave_f_wr_data$ENQ =
 	     CAN_FIRE_RL_m_rl_wr_xaction_master_to_slave ;
   assign m_xactor_to_slave_f_wr_data$DEQ =
@@ -1238,9 +1222,9 @@ module mkAXI4_Deburster_A(CLK,
   assign m_xactor_to_slave_f_wr_resp$CLR = m_rg_reset ;
 
   // remaining internal signals
-  assign a_out_araddr__h2944 =
+  assign a_out_araddr__h2934 =
 	     (m_xactor_from_master_f_rd_addr$D_OUT[17:16] == 2'b01) ?
-	       addr___1__h3029 :
+	       addr___1__h3019 :
 	       m_xactor_from_master_f_rd_addr$D_OUT[92:29] ;
   assign a_out_awaddr__h1951 =
 	     (m_xactor_from_master_f_wr_addr$D_OUT[17:16] == 2'b01) ?
@@ -1250,23 +1234,23 @@ module mkAXI4_Deburster_A(CLK,
 	     m_xactor_from_master_f_wr_addr$D_OUT[92:29] +
 	     ({ 56'd0, m_rg_w_beat_count } <<
 	      m_xactor_from_master_f_wr_addr$D_OUT[20:18]) ;
-  assign addr___1__h3029 =
+  assign addr___1__h3019 =
 	     m_xactor_from_master_f_rd_addr$D_OUT[92:29] +
 	     ({ 56'd0, m_rg_ar_beat_count } <<
 	      m_xactor_from_master_f_rd_addr$D_OUT[20:18]) ;
-  assign m_rg_ar_beat_count_3_ULT_m_xactor_from_master__ETC___d95 =
+  assign m_rg_ar_beat_count_2_ULT_m_xactor_from_master__ETC___d94 =
 	     m_rg_ar_beat_count <
 	     m_xactor_from_master_f_rd_addr$D_OUT[28:21] ;
-  assign m_rg_b_beat_count_9_ULT_m_f_w_awlen_first__0___d51 =
+  assign m_rg_b_beat_count_8_ULT_m_f_w_awlen_first__9___d50 =
 	     m_rg_b_beat_count < m_f_w_awlen$D_OUT ;
-  assign m_rg_r_beat_count_04_ULT_m_f_r_arlen_first__05___d106 =
+  assign m_rg_r_beat_count_03_ULT_m_f_r_arlen_first__04___d105 =
 	     m_rg_r_beat_count < m_f_r_arlen$D_OUT ;
   assign m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d35 =
 	     m_rg_w_beat_count < m_xactor_from_master_f_wr_addr$D_OUT[28:21] ;
-  assign x__h2305 = m_rg_w_beat_count + 8'd1 ;
-  assign x__h2798 = m_rg_b_beat_count + 8'd1 ;
-  assign x__h3190 = m_rg_ar_beat_count + 8'd1 ;
-  assign x__h3388 = m_rg_r_beat_count + 8'd1 ;
+  assign x__h2297 = m_rg_w_beat_count + 8'd1 ;
+  assign x__h2788 = m_rg_b_beat_count + 8'd1 ;
+  assign x__h3180 = m_rg_ar_beat_count + 8'd1 ;
+  assign x__h3378 = m_rg_r_beat_count + 8'd1 ;
 
   // handling of inlined registers
 
@@ -1324,16 +1308,16 @@ module mkAXI4_Deburster_A(CLK,
 	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d35 &&
 	  !m_xactor_from_master_f_wr_data$D_OUT[0])
 	begin
-	  v__h2430 = $stime;
+	  v__h2422 = $stime;
 	  #0;
 	end
-    v__h2424 = v__h2430 / 32'd10;
+    v__h2416 = v__h2422 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_m_rl_wr_xaction_master_to_slave &&
 	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d35 &&
 	  !m_xactor_from_master_f_wr_data$D_OUT[0])
 	$display("%0d: ERROR: %m::AXI4_Deburster.rl_wr_xaction_master_to_slave: m -> s",
-		 v__h2424);
+		 v__h2416);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_m_rl_wr_xaction_master_to_slave &&
 	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d35 &&
@@ -1349,17 +1333,7 @@ module mkAXI4_Deburster_A(CLK,
       if (WILL_FIRE_RL_m_rl_wr_xaction_master_to_slave &&
 	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d35 &&
 	  !m_xactor_from_master_f_wr_data$D_OUT[0])
-	$write("AXI4_Wr_Data { ", "wid: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_m_rl_wr_xaction_master_to_slave &&
-	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d35 &&
-	  !m_xactor_from_master_f_wr_data$D_OUT[0])
-	$write("'h%h", m_xactor_from_master_f_wr_data$D_OUT[76:73]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_m_rl_wr_xaction_master_to_slave &&
-	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d35 &&
-	  !m_xactor_from_master_f_wr_data$D_OUT[0])
-	$write(", ", "wdata: ");
+	$write("AXI4_Wr_Data { ", "wdata: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_m_rl_wr_xaction_master_to_slave &&
 	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d35 &&

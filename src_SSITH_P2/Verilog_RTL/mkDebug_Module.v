@@ -42,7 +42,6 @@
 // master_awqos                   O     4 reg
 // master_awregion                O     4 reg
 // master_wvalid                  O     1
-// master_wid                     O     4 reg
 // master_wdata                   O    64 reg
 // master_wstrb                   O     8 reg
 // master_wlast                   O     1 reg
@@ -217,8 +216,6 @@ module mkDebug_Module(CLK,
 
 		      master_wvalid,
 
-		      master_wid,
-
 		      master_wdata,
 
 		      master_wstrb,
@@ -389,9 +386,6 @@ module mkDebug_Module(CLK,
   // value method master_m_wvalid
   output master_wvalid;
 
-  // value method master_m_wid
-  output [3 : 0] master_wid;
-
   // value method master_m_wdata
   output [63 : 0] master_wdata;
 
@@ -477,8 +471,7 @@ module mkDebug_Module(CLK,
 	       master_awcache,
 	       master_awid,
 	       master_awqos,
-	       master_awregion,
-	       master_wid;
+	       master_awregion;
   wire [2 : 0] master_arprot, master_arsize, master_awprot, master_awsize;
   wire [1 : 0] master_arburst, master_awburst;
   wire RDY_dmi_read_addr,
@@ -595,8 +588,7 @@ module mkDebug_Module(CLK,
 	       dm_system_bus$master_awqos,
 	       dm_system_bus$master_awregion,
 	       dm_system_bus$master_bid,
-	       dm_system_bus$master_rid,
-	       dm_system_bus$master_wid;
+	       dm_system_bus$master_rid;
   wire [2 : 0] dm_system_bus$master_arprot,
 	       dm_system_bus$master_arsize,
 	       dm_system_bus$master_awprot,
@@ -673,8 +665,8 @@ module mkDebug_Module(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h919;
-  reg [31 : 0] v__h913;
+  reg [31 : 0] v__h911;
+  reg [31 : 0] v__h905;
   // synopsys translate_on
 
   // action method dmi_read_addr
@@ -907,9 +899,6 @@ module mkDebug_Module(CLK,
   // value method master_m_wvalid
   assign master_wvalid = dm_system_bus$master_wvalid ;
 
-  // value method master_m_wid
-  assign master_wid = dm_system_bus$master_wid ;
-
   // value method master_m_wdata
   assign master_wdata = dm_system_bus$master_wdata ;
 
@@ -1079,7 +1068,6 @@ module mkDebug_Module(CLK,
 				.master_awqos(dm_system_bus$master_awqos),
 				.master_awregion(dm_system_bus$master_awregion),
 				.master_wvalid(dm_system_bus$master_wvalid),
-				.master_wid(dm_system_bus$master_wid),
 				.master_wdata(dm_system_bus$master_wdata),
 				.master_wstrb(dm_system_bus$master_wstrb),
 				.master_wlast(dm_system_bus$master_wlast),
@@ -1293,12 +1281,12 @@ module mkDebug_Module(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset)
 	begin
-	  v__h919 = $stime;
+	  v__h911 = $stime;
 	  #0;
 	end
-    v__h913 = v__h919 / 32'd10;
+    v__h905 = v__h911 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_reset) $display("%0d: Debug_Module reset", v__h913);
+      if (WILL_FIRE_RL_rl_reset) $display("%0d: Debug_Module reset", v__h905);
   end
   // synopsys translate_on
 endmodule  // mkDebug_Module

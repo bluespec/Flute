@@ -318,8 +318,7 @@ module mkDM_System_Bus (DM_System_Bus_IFC);
 				 awuser:   fabric_default_user};
 	 master_xactor.i_wr_addr.enq (wra);
 
-	 let wrd = AXI4_Wr_Data {wid:   fabric_default_id,
-				 wdata: fabric_data,
+	 let wrd = AXI4_Wr_Data {wdata: fabric_data,
 				 wstrb: fabric_strb,
 				 wlast: True,
 				 wuser: fabric_default_user};

@@ -149,8 +149,7 @@ module mkSoC_Top(CLK,
 	       boot_rom$slave_awqos,
 	       boot_rom$slave_awregion,
 	       boot_rom$slave_bid,
-	       boot_rom$slave_rid,
-	       boot_rom$slave_wid;
+	       boot_rom$slave_rid;
   wire [2 : 0] boot_rom$slave_arprot,
 	       boot_rom$slave_arsize,
 	       boot_rom$slave_awprot,
@@ -200,7 +199,6 @@ module mkSoC_Top(CLK,
 	       boot_rom_axi4_deburster$from_master_awregion,
 	       boot_rom_axi4_deburster$from_master_bid,
 	       boot_rom_axi4_deburster$from_master_rid,
-	       boot_rom_axi4_deburster$from_master_wid,
 	       boot_rom_axi4_deburster$to_slave_arcache,
 	       boot_rom_axi4_deburster$to_slave_arid,
 	       boot_rom_axi4_deburster$to_slave_arqos,
@@ -210,8 +208,7 @@ module mkSoC_Top(CLK,
 	       boot_rom_axi4_deburster$to_slave_awqos,
 	       boot_rom_axi4_deburster$to_slave_awregion,
 	       boot_rom_axi4_deburster$to_slave_bid,
-	       boot_rom_axi4_deburster$to_slave_rid,
-	       boot_rom_axi4_deburster$to_slave_wid;
+	       boot_rom_axi4_deburster$to_slave_rid;
   wire [2 : 0] boot_rom_axi4_deburster$from_master_arprot,
 	       boot_rom_axi4_deburster$from_master_arsize,
 	       boot_rom_axi4_deburster$from_master_awprot,
@@ -284,7 +281,6 @@ module mkSoC_Top(CLK,
 	       core$cpu_dmem_master_awregion,
 	       core$cpu_dmem_master_bid,
 	       core$cpu_dmem_master_rid,
-	       core$cpu_dmem_master_wid,
 	       core$cpu_imem_master_arcache,
 	       core$cpu_imem_master_arid,
 	       core$cpu_imem_master_arqos,
@@ -295,7 +291,6 @@ module mkSoC_Top(CLK,
 	       core$cpu_imem_master_awregion,
 	       core$cpu_imem_master_bid,
 	       core$cpu_imem_master_rid,
-	       core$cpu_imem_master_wid,
 	       core$set_verbosity_verbosity;
   wire [2 : 0] core$cpu_dmem_master_arprot,
 	       core$cpu_dmem_master_arsize,
@@ -362,6 +357,7 @@ module mkSoC_Top(CLK,
        core$cpu_imem_master_wlast,
        core$cpu_imem_master_wready,
        core$cpu_imem_master_wvalid,
+       core$cpu_reset_server_request_put,
        core$nmi_req_set_not_clear;
 
   // ports of submodule fabric
@@ -411,7 +407,6 @@ module mkSoC_Top(CLK,
 	       fabric$v_from_masters_0_awregion,
 	       fabric$v_from_masters_0_bid,
 	       fabric$v_from_masters_0_rid,
-	       fabric$v_from_masters_0_wid,
 	       fabric$v_from_masters_1_arcache,
 	       fabric$v_from_masters_1_arid,
 	       fabric$v_from_masters_1_arqos,
@@ -422,7 +417,6 @@ module mkSoC_Top(CLK,
 	       fabric$v_from_masters_1_awregion,
 	       fabric$v_from_masters_1_bid,
 	       fabric$v_from_masters_1_rid,
-	       fabric$v_from_masters_1_wid,
 	       fabric$v_to_slaves_0_arcache,
 	       fabric$v_to_slaves_0_arid,
 	       fabric$v_to_slaves_0_arqos,
@@ -433,7 +427,6 @@ module mkSoC_Top(CLK,
 	       fabric$v_to_slaves_0_awregion,
 	       fabric$v_to_slaves_0_bid,
 	       fabric$v_to_slaves_0_rid,
-	       fabric$v_to_slaves_0_wid,
 	       fabric$v_to_slaves_1_arcache,
 	       fabric$v_to_slaves_1_arid,
 	       fabric$v_to_slaves_1_arqos,
@@ -444,7 +437,6 @@ module mkSoC_Top(CLK,
 	       fabric$v_to_slaves_1_awregion,
 	       fabric$v_to_slaves_1_bid,
 	       fabric$v_to_slaves_1_rid,
-	       fabric$v_to_slaves_1_wid,
 	       fabric$v_to_slaves_2_arcache,
 	       fabric$v_to_slaves_2_arid,
 	       fabric$v_to_slaves_2_arqos,
@@ -454,8 +446,7 @@ module mkSoC_Top(CLK,
 	       fabric$v_to_slaves_2_awqos,
 	       fabric$v_to_slaves_2_awregion,
 	       fabric$v_to_slaves_2_bid,
-	       fabric$v_to_slaves_2_rid,
-	       fabric$v_to_slaves_2_wid;
+	       fabric$v_to_slaves_2_rid;
   wire [2 : 0] fabric$v_from_masters_0_arprot,
 	       fabric$v_from_masters_0_arsize,
 	       fabric$v_from_masters_0_awprot,
@@ -593,8 +584,7 @@ module mkSoC_Top(CLK,
 	       mem0_controller$slave_awqos,
 	       mem0_controller$slave_awregion,
 	       mem0_controller$slave_bid,
-	       mem0_controller$slave_rid,
-	       mem0_controller$slave_wid;
+	       mem0_controller$slave_rid;
   wire [2 : 0] mem0_controller$slave_arprot,
 	       mem0_controller$slave_arsize,
 	       mem0_controller$slave_awprot,
@@ -655,7 +645,6 @@ module mkSoC_Top(CLK,
 	       mem0_controller_axi4_deburster$from_master_awregion,
 	       mem0_controller_axi4_deburster$from_master_bid,
 	       mem0_controller_axi4_deburster$from_master_rid,
-	       mem0_controller_axi4_deburster$from_master_wid,
 	       mem0_controller_axi4_deburster$to_slave_arcache,
 	       mem0_controller_axi4_deburster$to_slave_arid,
 	       mem0_controller_axi4_deburster$to_slave_arqos,
@@ -665,8 +654,7 @@ module mkSoC_Top(CLK,
 	       mem0_controller_axi4_deburster$to_slave_awqos,
 	       mem0_controller_axi4_deburster$to_slave_awregion,
 	       mem0_controller_axi4_deburster$to_slave_bid,
-	       mem0_controller_axi4_deburster$to_slave_rid,
-	       mem0_controller_axi4_deburster$to_slave_wid;
+	       mem0_controller_axi4_deburster$to_slave_rid;
   wire [2 : 0] mem0_controller_axi4_deburster$from_master_arprot,
 	       mem0_controller_axi4_deburster$from_master_arsize,
 	       mem0_controller_axi4_deburster$from_master_awprot,
@@ -745,8 +733,7 @@ module mkSoC_Top(CLK,
 	       uart0$slave_awqos,
 	       uart0$slave_awregion,
 	       uart0$slave_bid,
-	       uart0$slave_rid,
-	       uart0$slave_wid;
+	       uart0$slave_rid;
   wire [2 : 0] uart0$slave_arprot,
 	       uart0$slave_arsize,
 	       uart0$slave_awprot,
@@ -796,8 +783,8 @@ module mkSoC_Top(CLK,
        CAN_FIRE_RL_rl_rd_data_channel_4,
        CAN_FIRE_RL_rl_rd_data_channel_5,
        CAN_FIRE_RL_rl_rd_data_channel_6,
-       CAN_FIRE_RL_rl_reset_complete,
-       CAN_FIRE_RL_rl_reset_start_2,
+       CAN_FIRE_RL_rl_reset_complete_initial,
+       CAN_FIRE_RL_rl_reset_start_initial,
        CAN_FIRE_RL_rl_wr_addr_channel,
        CAN_FIRE_RL_rl_wr_addr_channel_1,
        CAN_FIRE_RL_rl_wr_addr_channel_2,
@@ -840,8 +827,8 @@ module mkSoC_Top(CLK,
        WILL_FIRE_RL_rl_rd_data_channel_4,
        WILL_FIRE_RL_rl_rd_data_channel_5,
        WILL_FIRE_RL_rl_rd_data_channel_6,
-       WILL_FIRE_RL_rl_reset_complete,
-       WILL_FIRE_RL_rl_reset_start_2,
+       WILL_FIRE_RL_rl_reset_complete_initial,
+       WILL_FIRE_RL_rl_reset_start_initial,
        WILL_FIRE_RL_rl_wr_addr_channel,
        WILL_FIRE_RL_rl_wr_addr_channel_1,
        WILL_FIRE_RL_rl_wr_addr_channel_2,
@@ -875,10 +862,10 @@ module mkSoC_Top(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h11269;
-  reg [31 : 0] v__h11529;
-  reg [31 : 0] v__h11263;
-  reg [31 : 0] v__h11523;
+  reg [31 : 0] v__h11111;
+  reg [31 : 0] v__h11381;
+  reg [31 : 0] v__h11105;
+  reg [31 : 0] v__h11375;
   // synopsys translate_on
 
   // action method set_verbosity
@@ -950,7 +937,6 @@ module mkSoC_Top(CLK,
 		      .slave_bready(boot_rom$slave_bready),
 		      .slave_rready(boot_rom$slave_rready),
 		      .slave_wdata(boot_rom$slave_wdata),
-		      .slave_wid(boot_rom$slave_wid),
 		      .slave_wlast(boot_rom$slave_wlast),
 		      .slave_wstrb(boot_rom$slave_wstrb),
 		      .slave_wvalid(boot_rom$slave_wvalid),
@@ -996,7 +982,6 @@ module mkSoC_Top(CLK,
 					     .from_master_bready(boot_rom_axi4_deburster$from_master_bready),
 					     .from_master_rready(boot_rom_axi4_deburster$from_master_rready),
 					     .from_master_wdata(boot_rom_axi4_deburster$from_master_wdata),
-					     .from_master_wid(boot_rom_axi4_deburster$from_master_wid),
 					     .from_master_wlast(boot_rom_axi4_deburster$from_master_wlast),
 					     .from_master_wstrb(boot_rom_axi4_deburster$from_master_wstrb),
 					     .from_master_wvalid(boot_rom_axi4_deburster$from_master_wvalid),
@@ -1036,7 +1021,6 @@ module mkSoC_Top(CLK,
 					     .to_slave_awqos(boot_rom_axi4_deburster$to_slave_awqos),
 					     .to_slave_awregion(boot_rom_axi4_deburster$to_slave_awregion),
 					     .to_slave_wvalid(boot_rom_axi4_deburster$to_slave_wvalid),
-					     .to_slave_wid(boot_rom_axi4_deburster$to_slave_wid),
 					     .to_slave_wdata(boot_rom_axi4_deburster$to_slave_wdata),
 					     .to_slave_wstrb(boot_rom_axi4_deburster$to_slave_wstrb),
 					     .to_slave_wlast(boot_rom_axi4_deburster$to_slave_wlast),
@@ -1095,6 +1079,7 @@ module mkSoC_Top(CLK,
 	      .cpu_imem_master_rresp(core$cpu_imem_master_rresp),
 	      .cpu_imem_master_rvalid(core$cpu_imem_master_rvalid),
 	      .cpu_imem_master_wready(core$cpu_imem_master_wready),
+	      .cpu_reset_server_request_put(core$cpu_reset_server_request_put),
 	      .nmi_req_set_not_clear(core$nmi_req_set_not_clear),
 	      .set_verbosity_logdelay(core$set_verbosity_logdelay),
 	      .set_verbosity_verbosity(core$set_verbosity_verbosity),
@@ -1103,6 +1088,7 @@ module mkSoC_Top(CLK,
 	      .EN_cpu_reset_server_response_get(core$EN_cpu_reset_server_response_get),
 	      .RDY_set_verbosity(),
 	      .RDY_cpu_reset_server_request_put(core$RDY_cpu_reset_server_request_put),
+	      .cpu_reset_server_response_get(),
 	      .RDY_cpu_reset_server_response_get(core$RDY_cpu_reset_server_response_get),
 	      .cpu_imem_master_awvalid(core$cpu_imem_master_awvalid),
 	      .cpu_imem_master_awid(core$cpu_imem_master_awid),
@@ -1116,7 +1102,6 @@ module mkSoC_Top(CLK,
 	      .cpu_imem_master_awqos(core$cpu_imem_master_awqos),
 	      .cpu_imem_master_awregion(core$cpu_imem_master_awregion),
 	      .cpu_imem_master_wvalid(core$cpu_imem_master_wvalid),
-	      .cpu_imem_master_wid(core$cpu_imem_master_wid),
 	      .cpu_imem_master_wdata(core$cpu_imem_master_wdata),
 	      .cpu_imem_master_wstrb(core$cpu_imem_master_wstrb),
 	      .cpu_imem_master_wlast(core$cpu_imem_master_wlast),
@@ -1145,7 +1130,6 @@ module mkSoC_Top(CLK,
 	      .cpu_dmem_master_awqos(core$cpu_dmem_master_awqos),
 	      .cpu_dmem_master_awregion(core$cpu_dmem_master_awregion),
 	      .cpu_dmem_master_wvalid(core$cpu_dmem_master_wvalid),
-	      .cpu_dmem_master_wid(core$cpu_dmem_master_wid),
 	      .cpu_dmem_master_wdata(core$cpu_dmem_master_wdata),
 	      .cpu_dmem_master_wstrb(core$cpu_dmem_master_wstrb),
 	      .cpu_dmem_master_wlast(core$cpu_dmem_master_wlast),
@@ -1192,7 +1176,6 @@ module mkSoC_Top(CLK,
 		       .v_from_masters_0_bready(fabric$v_from_masters_0_bready),
 		       .v_from_masters_0_rready(fabric$v_from_masters_0_rready),
 		       .v_from_masters_0_wdata(fabric$v_from_masters_0_wdata),
-		       .v_from_masters_0_wid(fabric$v_from_masters_0_wid),
 		       .v_from_masters_0_wlast(fabric$v_from_masters_0_wlast),
 		       .v_from_masters_0_wstrb(fabric$v_from_masters_0_wstrb),
 		       .v_from_masters_0_wvalid(fabric$v_from_masters_0_wvalid),
@@ -1221,7 +1204,6 @@ module mkSoC_Top(CLK,
 		       .v_from_masters_1_bready(fabric$v_from_masters_1_bready),
 		       .v_from_masters_1_rready(fabric$v_from_masters_1_rready),
 		       .v_from_masters_1_wdata(fabric$v_from_masters_1_wdata),
-		       .v_from_masters_1_wid(fabric$v_from_masters_1_wid),
 		       .v_from_masters_1_wlast(fabric$v_from_masters_1_wlast),
 		       .v_from_masters_1_wstrb(fabric$v_from_masters_1_wstrb),
 		       .v_from_masters_1_wvalid(fabric$v_from_masters_1_wvalid),
@@ -1296,7 +1278,6 @@ module mkSoC_Top(CLK,
 		       .v_to_slaves_0_awqos(fabric$v_to_slaves_0_awqos),
 		       .v_to_slaves_0_awregion(fabric$v_to_slaves_0_awregion),
 		       .v_to_slaves_0_wvalid(fabric$v_to_slaves_0_wvalid),
-		       .v_to_slaves_0_wid(fabric$v_to_slaves_0_wid),
 		       .v_to_slaves_0_wdata(fabric$v_to_slaves_0_wdata),
 		       .v_to_slaves_0_wstrb(fabric$v_to_slaves_0_wstrb),
 		       .v_to_slaves_0_wlast(fabric$v_to_slaves_0_wlast),
@@ -1325,7 +1306,6 @@ module mkSoC_Top(CLK,
 		       .v_to_slaves_1_awqos(fabric$v_to_slaves_1_awqos),
 		       .v_to_slaves_1_awregion(fabric$v_to_slaves_1_awregion),
 		       .v_to_slaves_1_wvalid(fabric$v_to_slaves_1_wvalid),
-		       .v_to_slaves_1_wid(fabric$v_to_slaves_1_wid),
 		       .v_to_slaves_1_wdata(fabric$v_to_slaves_1_wdata),
 		       .v_to_slaves_1_wstrb(fabric$v_to_slaves_1_wstrb),
 		       .v_to_slaves_1_wlast(fabric$v_to_slaves_1_wlast),
@@ -1354,7 +1334,6 @@ module mkSoC_Top(CLK,
 		       .v_to_slaves_2_awqos(fabric$v_to_slaves_2_awqos),
 		       .v_to_slaves_2_awregion(fabric$v_to_slaves_2_awregion),
 		       .v_to_slaves_2_wvalid(fabric$v_to_slaves_2_wvalid),
-		       .v_to_slaves_2_wid(fabric$v_to_slaves_2_wid),
 		       .v_to_slaves_2_wdata(fabric$v_to_slaves_2_wdata),
 		       .v_to_slaves_2_wstrb(fabric$v_to_slaves_2_wstrb),
 		       .v_to_slaves_2_wlast(fabric$v_to_slaves_2_wlast),
@@ -1404,7 +1383,6 @@ module mkSoC_Top(CLK,
 				   .slave_bready(mem0_controller$slave_bready),
 				   .slave_rready(mem0_controller$slave_rready),
 				   .slave_wdata(mem0_controller$slave_wdata),
-				   .slave_wid(mem0_controller$slave_wid),
 				   .slave_wlast(mem0_controller$slave_wlast),
 				   .slave_wstrb(mem0_controller$slave_wstrb),
 				   .slave_wvalid(mem0_controller$slave_wvalid),
@@ -1463,7 +1441,6 @@ module mkSoC_Top(CLK,
 						    .from_master_bready(mem0_controller_axi4_deburster$from_master_bready),
 						    .from_master_rready(mem0_controller_axi4_deburster$from_master_rready),
 						    .from_master_wdata(mem0_controller_axi4_deburster$from_master_wdata),
-						    .from_master_wid(mem0_controller_axi4_deburster$from_master_wid),
 						    .from_master_wlast(mem0_controller_axi4_deburster$from_master_wlast),
 						    .from_master_wstrb(mem0_controller_axi4_deburster$from_master_wstrb),
 						    .from_master_wvalid(mem0_controller_axi4_deburster$from_master_wvalid),
@@ -1503,7 +1480,6 @@ module mkSoC_Top(CLK,
 						    .to_slave_awqos(mem0_controller_axi4_deburster$to_slave_awqos),
 						    .to_slave_awregion(mem0_controller_axi4_deburster$to_slave_awregion),
 						    .to_slave_wvalid(mem0_controller_axi4_deburster$to_slave_wvalid),
-						    .to_slave_wid(mem0_controller_axi4_deburster$to_slave_wid),
 						    .to_slave_wdata(mem0_controller_axi4_deburster$to_slave_wdata),
 						    .to_slave_wstrb(mem0_controller_axi4_deburster$to_slave_wstrb),
 						    .to_slave_wlast(mem0_controller_axi4_deburster$to_slave_wlast),
@@ -1583,7 +1559,6 @@ module mkSoC_Top(CLK,
 	       .slave_bready(uart0$slave_bready),
 	       .slave_rready(uart0$slave_rready),
 	       .slave_wdata(uart0$slave_wdata),
-	       .slave_wid(uart0$slave_wid),
 	       .slave_wlast(uart0$slave_wlast),
 	       .slave_wstrb(uart0$slave_wstrb),
 	       .slave_wvalid(uart0$slave_wvalid),
@@ -1755,13 +1730,14 @@ module mkSoC_Top(CLK,
   assign CAN_FIRE_RL_rl_connect_external_interrupt_requests = 1'd1 ;
   assign WILL_FIRE_RL_rl_connect_external_interrupt_requests = 1'd1 ;
 
-  // rule RL_rl_reset_start_2
-  assign CAN_FIRE_RL_rl_reset_start_2 = MUX_rg_state$write_1__SEL_1 ;
-  assign WILL_FIRE_RL_rl_reset_start_2 = MUX_rg_state$write_1__SEL_1 ;
+  // rule RL_rl_reset_start_initial
+  assign CAN_FIRE_RL_rl_reset_start_initial = MUX_rg_state$write_1__SEL_1 ;
+  assign WILL_FIRE_RL_rl_reset_start_initial = MUX_rg_state$write_1__SEL_1 ;
 
-  // rule RL_rl_reset_complete
-  assign CAN_FIRE_RL_rl_reset_complete = MUX_rg_state$write_1__SEL_2 ;
-  assign WILL_FIRE_RL_rl_reset_complete = MUX_rg_state$write_1__SEL_2 ;
+  // rule RL_rl_reset_complete_initial
+  assign CAN_FIRE_RL_rl_reset_complete_initial = MUX_rg_state$write_1__SEL_2 ;
+  assign WILL_FIRE_RL_rl_reset_complete_initial =
+	     MUX_rg_state$write_1__SEL_2 ;
 
   // inputs to muxes for submodule ports
   assign MUX_rg_state$write_1__SEL_1 =
@@ -1778,9 +1754,10 @@ module mkSoC_Top(CLK,
 	     rg_state == 2'd1 ;
 
   // register rg_state
-  assign rg_state$D_IN = WILL_FIRE_RL_rl_reset_start_2 ? 2'd1 : 2'd2 ;
+  assign rg_state$D_IN = WILL_FIRE_RL_rl_reset_start_initial ? 2'd1 : 2'd2 ;
   assign rg_state$EN =
-	     WILL_FIRE_RL_rl_reset_start_2 || WILL_FIRE_RL_rl_reset_complete ;
+	     WILL_FIRE_RL_rl_reset_start_initial ||
+	     WILL_FIRE_RL_rl_reset_complete_initial ;
 
   // submodule boot_rom
   assign boot_rom$set_addr_map_addr_base = soc_map$m_boot_rom_addr_base ;
@@ -1810,7 +1787,6 @@ module mkSoC_Top(CLK,
   assign boot_rom$slave_bready = boot_rom_axi4_deburster$to_slave_bready ;
   assign boot_rom$slave_rready = boot_rom_axi4_deburster$to_slave_rready ;
   assign boot_rom$slave_wdata = boot_rom_axi4_deburster$to_slave_wdata ;
-  assign boot_rom$slave_wid = boot_rom_axi4_deburster$to_slave_wid ;
   assign boot_rom$slave_wlast = boot_rom_axi4_deburster$to_slave_wlast ;
   assign boot_rom$slave_wstrb = boot_rom_axi4_deburster$to_slave_wstrb ;
   assign boot_rom$slave_wvalid = boot_rom_axi4_deburster$to_slave_wvalid ;
@@ -1867,7 +1843,6 @@ module mkSoC_Top(CLK,
 	     fabric$v_to_slaves_0_rready ;
   assign boot_rom_axi4_deburster$from_master_wdata =
 	     fabric$v_to_slaves_0_wdata ;
-  assign boot_rom_axi4_deburster$from_master_wid = fabric$v_to_slaves_0_wid ;
   assign boot_rom_axi4_deburster$from_master_wlast =
 	     fabric$v_to_slaves_0_wlast ;
   assign boot_rom_axi4_deburster$from_master_wstrb =
@@ -1942,6 +1917,7 @@ module mkSoC_Top(CLK,
   assign core$cpu_imem_master_rresp = fabric$v_from_masters_0_rresp ;
   assign core$cpu_imem_master_rvalid = fabric$v_from_masters_0_rvalid ;
   assign core$cpu_imem_master_wready = fabric$v_from_masters_0_wready ;
+  assign core$cpu_reset_server_request_put = 1'd1 ;
   assign core$nmi_req_set_not_clear = 1'd0 ;
   assign core$set_verbosity_logdelay = set_verbosity_logdelay ;
   assign core$set_verbosity_verbosity = set_verbosity_verbosity ;
@@ -1976,7 +1952,6 @@ module mkSoC_Top(CLK,
   assign fabric$v_from_masters_0_bready = core$cpu_imem_master_bready ;
   assign fabric$v_from_masters_0_rready = core$cpu_imem_master_rready ;
   assign fabric$v_from_masters_0_wdata = core$cpu_imem_master_wdata ;
-  assign fabric$v_from_masters_0_wid = core$cpu_imem_master_wid ;
   assign fabric$v_from_masters_0_wlast = core$cpu_imem_master_wlast ;
   assign fabric$v_from_masters_0_wstrb = core$cpu_imem_master_wstrb ;
   assign fabric$v_from_masters_0_wvalid = core$cpu_imem_master_wvalid ;
@@ -2005,7 +1980,6 @@ module mkSoC_Top(CLK,
   assign fabric$v_from_masters_1_bready = core$cpu_dmem_master_bready ;
   assign fabric$v_from_masters_1_rready = core$cpu_dmem_master_rready ;
   assign fabric$v_from_masters_1_wdata = core$cpu_dmem_master_wdata ;
-  assign fabric$v_from_masters_1_wid = core$cpu_dmem_master_wid ;
   assign fabric$v_from_masters_1_wlast = core$cpu_dmem_master_wlast ;
   assign fabric$v_from_masters_1_wstrb = core$cpu_dmem_master_wstrb ;
   assign fabric$v_from_masters_1_wvalid = core$cpu_dmem_master_wvalid ;
@@ -2124,8 +2098,6 @@ module mkSoC_Top(CLK,
 	     mem0_controller_axi4_deburster$to_slave_rready ;
   assign mem0_controller$slave_wdata =
 	     mem0_controller_axi4_deburster$to_slave_wdata ;
-  assign mem0_controller$slave_wid =
-	     mem0_controller_axi4_deburster$to_slave_wid ;
   assign mem0_controller$slave_wlast =
 	     mem0_controller_axi4_deburster$to_slave_wlast ;
   assign mem0_controller$slave_wstrb =
@@ -2195,8 +2167,6 @@ module mkSoC_Top(CLK,
 	     fabric$v_to_slaves_1_rready ;
   assign mem0_controller_axi4_deburster$from_master_wdata =
 	     fabric$v_to_slaves_1_wdata ;
-  assign mem0_controller_axi4_deburster$from_master_wid =
-	     fabric$v_to_slaves_1_wid ;
   assign mem0_controller_axi4_deburster$from_master_wlast =
 	     fabric$v_to_slaves_1_wlast ;
   assign mem0_controller_axi4_deburster$from_master_wstrb =
@@ -2261,7 +2231,6 @@ module mkSoC_Top(CLK,
   assign uart0$slave_bready = fabric$v_to_slaves_2_bready ;
   assign uart0$slave_rready = fabric$v_to_slaves_2_rready ;
   assign uart0$slave_wdata = fabric$v_to_slaves_2_wdata ;
-  assign uart0$slave_wid = fabric$v_to_slaves_2_wid ;
   assign uart0$slave_wlast = fabric$v_to_slaves_2_wlast ;
   assign uart0$slave_wstrb = fabric$v_to_slaves_2_wstrb ;
   assign uart0$slave_wvalid = fabric$v_to_slaves_2_wvalid ;
@@ -2302,25 +2271,25 @@ module mkSoC_Top(CLK,
   begin
     #0;
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_reset_start_2)
+      if (WILL_FIRE_RL_rl_reset_start_initial)
 	begin
-	  v__h11269 = $stime;
+	  v__h11111 = $stime;
 	  #0;
 	end
-    v__h11263 = v__h11269 / 32'd10;
+    v__h11105 = v__h11111 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_reset_start_2)
-	$display("%0d: SoC_Top. Reset start ...", v__h11263);
+      if (WILL_FIRE_RL_rl_reset_start_initial)
+	$display("%0d:%m.rl_reset_start_initial ...", v__h11105);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_reset_complete)
+      if (WILL_FIRE_RL_rl_reset_complete_initial)
 	begin
-	  v__h11529 = $stime;
+	  v__h11381 = $stime;
 	  #0;
 	end
-    v__h11523 = v__h11529 / 32'd10;
+    v__h11375 = v__h11381 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_reset_complete)
-	$display("%0d: SoC_Top. Reset complete ...", v__h11523);
+      if (WILL_FIRE_RL_rl_reset_complete_initial)
+	$display("%0d:%m.rl_reset_complete_initial", v__h11375);
   end
   // synopsys translate_on
 endmodule  // mkSoC_Top
