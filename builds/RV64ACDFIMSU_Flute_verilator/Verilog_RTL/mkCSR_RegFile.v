@@ -2594,134 +2594,6 @@ module mkCSR_RegFile(CLK,
 		   rg_tdata3;
     endcase
   end
-  always@(read_csr_port2_csr_addr or
-	  rg_tdata3 or
-	  rg_fflags or
-	  rg_frm or
-	  csr_mstatus_rg_mstatus or
-	  csr_mie$fv_sie_read or
-	  rg_stvec or
-	  rg_sscratch or
-	  rg_sepc or
-	  rg_scause or
-	  rg_stval or
-	  csr_mip$fv_sip_read or
-	  rg_satp or
-	  rg_medeleg or
-	  rg_mideleg or
-	  csr_mie$fv_read or
-	  rg_mtvec or
-	  rg_mcounteren or
-	  rg_mscratch or
-	  rg_mepc or
-	  rg_mcause or
-	  rg_mtval or
-	  csr_mip$fv_read or
-	  rg_tselect or rg_tdata1 or rg_tdata2 or rg_mcycle or rg_minstret)
-  begin
-    case (read_csr_port2_csr_addr)
-      12'h001:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
-	      { 59'd0, rg_fflags };
-      12'h002:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
-	      { 61'd0, rg_frm };
-      12'h003:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
-	      { 56'd0, rg_frm, rg_fflags };
-      12'h100:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
-	      { csr_mstatus_rg_mstatus[63],
-		29'd0,
-		csr_mstatus_rg_mstatus[33:32],
-		12'd0,
-		csr_mstatus_rg_mstatus[19:18],
-		1'd0,
-		csr_mstatus_rg_mstatus[16:13],
-		4'd0,
-		csr_mstatus_rg_mstatus[8],
-		2'd0,
-		csr_mstatus_rg_mstatus[5:4],
-		2'd0,
-		csr_mstatus_rg_mstatus[1:0] };
-      12'h102, 12'h103, 12'h106, 12'hF11, 12'hF12, 12'hF13, 12'hF14:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 = 64'd0;
-      12'h104:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
-	      csr_mie$fv_sie_read;
-      12'h105:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
-	      { rg_stvec[62:1], 1'b0, rg_stvec[0] };
-      12'h140:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
-	      rg_sscratch;
-      12'h141:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 = rg_sepc;
-      12'h142:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
-	      { rg_scause[4], 59'd0, rg_scause[3:0] };
-      12'h143:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
-	      rg_stval;
-      12'h144:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
-	      csr_mip$fv_sip_read;
-      12'h180:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 = rg_satp;
-      12'h300:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
-	      csr_mstatus_rg_mstatus;
-      12'h301:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
-	      64'h800000000014112D;
-      12'h302:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
-	      { 48'd0, rg_medeleg };
-      12'h303:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
-	      { 52'd0, rg_mideleg };
-      12'h304:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
-	      csr_mie$fv_read;
-      12'h305:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
-	      { rg_mtvec[62:1], 1'b0, rg_mtvec[0] };
-      12'h306:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
-	      { 61'd0, rg_mcounteren };
-      12'h340:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
-	      rg_mscratch;
-      12'h341:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 = rg_mepc;
-      12'h342:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
-	      { rg_mcause[4], 59'd0, rg_mcause[3:0] };
-      12'h343:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
-	      rg_mtval;
-      12'h344:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
-	      csr_mip$fv_read;
-      12'h7A0:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
-	      rg_tselect;
-      12'h7A1:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
-	      rg_tdata1;
-      12'h7A2:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
-	      rg_tdata2;
-      12'hB00, 12'hC00:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
-	      rg_mcycle;
-      12'hB02, 12'hC02:
-	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
-	      rg_minstret;
-      default: IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
-		   rg_tdata3;
-    endcase
-  end
   always@(mav_read_csr_csr_addr or
 	  rg_tdata3 or
 	  rg_fflags or
@@ -2847,6 +2719,134 @@ module mkCSR_RegFile(CLK,
 	  IF_mav_read_csr_csr_addr_EQ_0x1_26_THEN_0_CONC_ETC___d731 =
 	      rg_minstret;
       default: IF_mav_read_csr_csr_addr_EQ_0x1_26_THEN_0_CONC_ETC___d731 =
+		   rg_tdata3;
+    endcase
+  end
+  always@(read_csr_port2_csr_addr or
+	  rg_tdata3 or
+	  rg_fflags or
+	  rg_frm or
+	  csr_mstatus_rg_mstatus or
+	  csr_mie$fv_sie_read or
+	  rg_stvec or
+	  rg_sscratch or
+	  rg_sepc or
+	  rg_scause or
+	  rg_stval or
+	  csr_mip$fv_sip_read or
+	  rg_satp or
+	  rg_medeleg or
+	  rg_mideleg or
+	  csr_mie$fv_read or
+	  rg_mtvec or
+	  rg_mcounteren or
+	  rg_mscratch or
+	  rg_mepc or
+	  rg_mcause or
+	  rg_mtval or
+	  csr_mip$fv_read or
+	  rg_tselect or rg_tdata1 or rg_tdata2 or rg_mcycle or rg_minstret)
+  begin
+    case (read_csr_port2_csr_addr)
+      12'h001:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
+	      { 59'd0, rg_fflags };
+      12'h002:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
+	      { 61'd0, rg_frm };
+      12'h003:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
+	      { 56'd0, rg_frm, rg_fflags };
+      12'h100:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
+	      { csr_mstatus_rg_mstatus[63],
+		29'd0,
+		csr_mstatus_rg_mstatus[33:32],
+		12'd0,
+		csr_mstatus_rg_mstatus[19:18],
+		1'd0,
+		csr_mstatus_rg_mstatus[16:13],
+		4'd0,
+		csr_mstatus_rg_mstatus[8],
+		2'd0,
+		csr_mstatus_rg_mstatus[5:4],
+		2'd0,
+		csr_mstatus_rg_mstatus[1:0] };
+      12'h102, 12'h103, 12'h106, 12'hF11, 12'hF12, 12'hF13, 12'hF14:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 = 64'd0;
+      12'h104:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
+	      csr_mie$fv_sie_read;
+      12'h105:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
+	      { rg_stvec[62:1], 1'b0, rg_stvec[0] };
+      12'h140:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
+	      rg_sscratch;
+      12'h141:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 = rg_sepc;
+      12'h142:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
+	      { rg_scause[4], 59'd0, rg_scause[3:0] };
+      12'h143:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
+	      rg_stval;
+      12'h144:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
+	      csr_mip$fv_sip_read;
+      12'h180:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 = rg_satp;
+      12'h300:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
+	      csr_mstatus_rg_mstatus;
+      12'h301:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
+	      64'h800000000014112D;
+      12'h302:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
+	      { 48'd0, rg_medeleg };
+      12'h303:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
+	      { 52'd0, rg_mideleg };
+      12'h304:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
+	      csr_mie$fv_read;
+      12'h305:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
+	      { rg_mtvec[62:1], 1'b0, rg_mtvec[0] };
+      12'h306:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
+	      { 61'd0, rg_mcounteren };
+      12'h340:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
+	      rg_mscratch;
+      12'h341:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 = rg_mepc;
+      12'h342:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
+	      { rg_mcause[4], 59'd0, rg_mcause[3:0] };
+      12'h343:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
+	      rg_mtval;
+      12'h344:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
+	      csr_mip$fv_read;
+      12'h7A0:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
+	      rg_tselect;
+      12'h7A1:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
+	      rg_tdata1;
+      12'h7A2:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
+	      rg_tdata2;
+      12'hB00, 12'hC00:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
+	      rg_mcycle;
+      12'hB02, 12'hC02:
+	  IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
+	      rg_minstret;
+      default: IF_read_csr_port2_csr_addr_EQ_0x1_06_THEN_0_CO_ETC___d511 =
 		   rg_tdata3;
     endcase
   end

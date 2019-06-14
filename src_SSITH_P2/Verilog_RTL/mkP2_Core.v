@@ -18,7 +18,6 @@
 // master0_awqos                  O     4 reg
 // master0_awregion               O     4 reg
 // master0_wvalid                 O     1
-// master0_wid                    O     4 reg
 // master0_wdata                  O    64 reg
 // master0_wstrb                  O     8 reg
 // master0_wlast                  O     1 reg
@@ -47,7 +46,6 @@
 // master1_awqos                  O     4 reg
 // master1_awregion               O     4 reg
 // master1_wvalid                 O     1 reg
-// master1_wid                    O     4 reg
 // master1_wdata                  O    64 reg
 // master1_wstrb                  O     8 reg
 // master1_wlast                  O     1 reg
@@ -150,8 +148,6 @@ module mkP2_Core(CLK,
 
 		 master0_wvalid,
 
-		 master0_wid,
-
 		 master0_wdata,
 
 		 master0_wstrb,
@@ -223,8 +219,6 @@ module mkP2_Core(CLK,
 		 master1_awready,
 
 		 master1_wvalid,
-
-		 master1_wid,
 
 		 master1_wdata,
 
@@ -340,9 +334,6 @@ module mkP2_Core(CLK,
   // value method master0_m_wvalid
   output master0_wvalid;
 
-  // value method master0_m_wid
-  output [3 : 0] master0_wid;
-
   // value method master0_m_wdata
   output [63 : 0] master0_wdata;
 
@@ -453,9 +444,6 @@ module mkP2_Core(CLK,
 
   // value method master1_m_wvalid
   output master1_wvalid;
-
-  // value method master1_m_wid
-  output [3 : 0] master1_wid;
 
   // value method master1_m_wdata
   output [63 : 0] master1_wdata;
@@ -593,7 +581,6 @@ module mkP2_Core(CLK,
 	       master0_awid,
 	       master0_awqos,
 	       master0_awregion,
-	       master0_wid,
 	       master1_arcache,
 	       master1_arid,
 	       master1_arqos,
@@ -601,8 +588,7 @@ module mkP2_Core(CLK,
 	       master1_awcache,
 	       master1_awid,
 	       master1_awqos,
-	       master1_awregion,
-	       master1_wid;
+	       master1_awregion;
   wire [2 : 0] master0_arprot,
 	       master0_arsize,
 	       master0_awprot,
@@ -702,7 +688,6 @@ module mkP2_Core(CLK,
 	       core$cpu_dmem_master_awregion,
 	       core$cpu_dmem_master_bid,
 	       core$cpu_dmem_master_rid,
-	       core$cpu_dmem_master_wid,
 	       core$cpu_imem_master_arcache,
 	       core$cpu_imem_master_arid,
 	       core$cpu_imem_master_arqos,
@@ -713,7 +698,6 @@ module mkP2_Core(CLK,
 	       core$cpu_imem_master_awregion,
 	       core$cpu_imem_master_bid,
 	       core$cpu_imem_master_rid,
-	       core$cpu_imem_master_wid,
 	       core$set_verbosity_verbosity;
   wire [2 : 0] core$cpu_dmem_master_arprot,
 	       core$cpu_dmem_master_arsize,
@@ -902,7 +886,7 @@ module mkP2_Core(CLK,
   // inputs to muxes for submodule ports
   wire [33 : 0] MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1,
 		MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2,
-		MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_1,
+		MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_2,
 		MUX_bus_dmi_rsp_fifof_x_wire$wset_1__VAL_1,
 		MUX_bus_dmi_rsp_fifof_x_wire$wset_1__VAL_2;
   wire [1 : 0] MUX_bus_dmi_rsp_fifof_cntr_r$write_1__VAL_2,
@@ -962,9 +946,6 @@ module mkP2_Core(CLK,
 
   // value method master0_m_wvalid
   assign master0_wvalid = core$cpu_imem_master_wvalid ;
-
-  // value method master0_m_wid
-  assign master0_wid = core$cpu_imem_master_wid ;
 
   // value method master0_m_wdata
   assign master0_wdata = core$cpu_imem_master_wdata ;
@@ -1069,9 +1050,6 @@ module mkP2_Core(CLK,
 
   // value method master1_m_wvalid
   assign master1_wvalid = core$cpu_dmem_master_wvalid ;
-
-  // value method master1_m_wid
-  assign master1_wid = core$cpu_dmem_master_wid ;
 
   // value method master1_m_wdata
   assign master1_wdata = core$cpu_dmem_master_wdata ;
@@ -1260,7 +1238,6 @@ module mkP2_Core(CLK,
 	      .cpu_imem_master_awqos(core$cpu_imem_master_awqos),
 	      .cpu_imem_master_awregion(core$cpu_imem_master_awregion),
 	      .cpu_imem_master_wvalid(core$cpu_imem_master_wvalid),
-	      .cpu_imem_master_wid(core$cpu_imem_master_wid),
 	      .cpu_imem_master_wdata(core$cpu_imem_master_wdata),
 	      .cpu_imem_master_wstrb(core$cpu_imem_master_wstrb),
 	      .cpu_imem_master_wlast(core$cpu_imem_master_wlast),
@@ -1289,7 +1266,6 @@ module mkP2_Core(CLK,
 	      .cpu_dmem_master_awqos(core$cpu_dmem_master_awqos),
 	      .cpu_dmem_master_awregion(core$cpu_dmem_master_awregion),
 	      .cpu_dmem_master_wvalid(core$cpu_dmem_master_wvalid),
-	      .cpu_dmem_master_wid(core$cpu_dmem_master_wid),
 	      .cpu_dmem_master_wdata(core$cpu_dmem_master_wdata),
 	      .cpu_dmem_master_wstrb(core$cpu_dmem_master_wstrb),
 	      .cpu_dmem_master_wlast(core$cpu_dmem_master_wlast),
@@ -1464,31 +1440,31 @@ module mkP2_Core(CLK,
 
   // inputs to muxes for submodule ports
   assign MUX_bus_dmi_rsp_fifof_q_0$write_1__SEL_1 =
-	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo3 ;
-  assign MUX_bus_dmi_rsp_fifof_q_0$write_1__SEL_2 =
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_incCtr &&
 	     bus_dmi_rsp_fifof_cntr_r == 2'd0 ;
+  assign MUX_bus_dmi_rsp_fifof_q_0$write_1__SEL_2 =
+	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo3 ;
   assign MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_1 =
-	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo1 ;
-  assign MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_2 =
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_incCtr &&
 	     bus_dmi_rsp_fifof_cntr_r == 2'd1 ;
+  assign MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_2 =
+	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo1 ;
   assign MUX_bus_dmi_rsp_fifof_x_wire$wset_1__SEL_1 =
 	     WILL_FIRE_RL_rl_dmi_req_cpu &&
 	     bus_dmi_req_fifof$D_OUT[1:0] != 2'd1 ;
   assign MUX_bus_dmi_rsp_fifof_cntr_r$write_1__VAL_2 =
 	     bus_dmi_rsp_fifof_cntr_r + 2'd1 ;
   assign MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1 =
-	     (bus_dmi_rsp_fifof_cntr_r == 2'd1) ?
-	       MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2 :
-	       bus_dmi_rsp_fifof_q_1 ;
-  assign MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2 =
 	     MUX_bus_dmi_rsp_fifof_x_wire$wset_1__SEL_1 ?
 	       MUX_bus_dmi_rsp_fifof_x_wire$wset_1__VAL_1 :
 	       MUX_bus_dmi_rsp_fifof_x_wire$wset_1__VAL_2 ;
-  assign MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_1 =
+  assign MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2 =
+	     (bus_dmi_rsp_fifof_cntr_r == 2'd1) ?
+	       MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1 :
+	       bus_dmi_rsp_fifof_q_1 ;
+  assign MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_2 =
 	     (bus_dmi_rsp_fifof_cntr_r == 2'd2) ?
-	       MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2 :
+	       MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1 :
 	       34'd0 ;
   assign MUX_bus_dmi_rsp_fifof_x_wire$wset_1__VAL_1 =
 	     { 32'hAAAAAAAA,
@@ -1538,25 +1514,25 @@ module mkP2_Core(CLK,
     endcase
   end
   assign bus_dmi_rsp_fifof_q_0$EN =
-	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo3 ||
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_incCtr &&
 	     bus_dmi_rsp_fifof_cntr_r == 2'd0 ||
+	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo3 ||
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_decCtr ;
 
   // register bus_dmi_rsp_fifof_q_1
   always@(MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_1 or
-	  MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_1 or
+	  MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1 or
 	  MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_2 or
-	  MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2 or
+	  MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_2 or
 	  WILL_FIRE_RL_bus_dmi_rsp_fifof_decCtr)
   begin
     case (1'b1) // synopsys parallel_case
       MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_1:
 	  bus_dmi_rsp_fifof_q_1$D_IN =
-	      MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_1;
+	      MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1;
       MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_2:
 	  bus_dmi_rsp_fifof_q_1$D_IN =
-	      MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2;
+	      MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_2;
       WILL_FIRE_RL_bus_dmi_rsp_fifof_decCtr:
 	  bus_dmi_rsp_fifof_q_1$D_IN = 34'd0;
       default: bus_dmi_rsp_fifof_q_1$D_IN =
@@ -1564,9 +1540,9 @@ module mkP2_Core(CLK,
     endcase
   end
   assign bus_dmi_rsp_fifof_q_1$EN =
-	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo1 ||
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_incCtr &&
 	     bus_dmi_rsp_fifof_cntr_r == 2'd1 ||
+	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo1 ||
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_decCtr ;
 
   // register rg_ndm_reset

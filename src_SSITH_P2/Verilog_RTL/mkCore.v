@@ -22,7 +22,6 @@
 // cpu_imem_master_awqos          O     4 reg
 // cpu_imem_master_awregion       O     4 reg
 // cpu_imem_master_wvalid         O     1
-// cpu_imem_master_wid            O     4 reg
 // cpu_imem_master_wdata          O    64 reg
 // cpu_imem_master_wstrb          O     8 reg
 // cpu_imem_master_wlast          O     1 reg
@@ -51,7 +50,6 @@
 // cpu_dmem_master_awqos          O     4 reg
 // cpu_dmem_master_awregion       O     4 reg
 // cpu_dmem_master_wvalid         O     1 reg
-// cpu_dmem_master_wid            O     4 reg
 // cpu_dmem_master_wdata          O    64 reg
 // cpu_dmem_master_wstrb          O     8 reg
 // cpu_dmem_master_wlast          O     1 reg
@@ -202,8 +200,6 @@ module mkCore(CLK,
 
 	      cpu_imem_master_wvalid,
 
-	      cpu_imem_master_wid,
-
 	      cpu_imem_master_wdata,
 
 	      cpu_imem_master_wstrb,
@@ -275,8 +271,6 @@ module mkCore(CLK,
 	      cpu_dmem_master_awready,
 
 	      cpu_dmem_master_wvalid,
-
-	      cpu_dmem_master_wid,
 
 	      cpu_dmem_master_wdata,
 
@@ -442,9 +436,6 @@ module mkCore(CLK,
   // value method cpu_imem_master_m_wvalid
   output cpu_imem_master_wvalid;
 
-  // value method cpu_imem_master_m_wid
-  output [3 : 0] cpu_imem_master_wid;
-
   // value method cpu_imem_master_m_wdata
   output [63 : 0] cpu_imem_master_wdata;
 
@@ -555,9 +546,6 @@ module mkCore(CLK,
 
   // value method cpu_dmem_master_m_wvalid
   output cpu_dmem_master_wvalid;
-
-  // value method cpu_dmem_master_m_wid
-  output [3 : 0] cpu_dmem_master_wid;
 
   // value method cpu_dmem_master_m_wdata
   output [63 : 0] cpu_dmem_master_wdata;
@@ -734,7 +722,6 @@ module mkCore(CLK,
 	       cpu_dmem_master_awid,
 	       cpu_dmem_master_awqos,
 	       cpu_dmem_master_awregion,
-	       cpu_dmem_master_wid,
 	       cpu_imem_master_arcache,
 	       cpu_imem_master_arid,
 	       cpu_imem_master_arqos,
@@ -742,8 +729,7 @@ module mkCore(CLK,
 	       cpu_imem_master_awcache,
 	       cpu_imem_master_awid,
 	       cpu_imem_master_awqos,
-	       cpu_imem_master_awregion,
-	       cpu_imem_master_wid;
+	       cpu_imem_master_awregion;
   wire [2 : 0] cpu_dmem_master_arprot,
 	       cpu_dmem_master_arsize,
 	       cpu_dmem_master_awprot,
@@ -817,7 +803,6 @@ module mkCore(CLK,
 	       cpu$dmem_master_awregion,
 	       cpu$dmem_master_bid,
 	       cpu$dmem_master_rid,
-	       cpu$dmem_master_wid,
 	       cpu$hart0_put_other_req_put,
 	       cpu$imem_master_arcache,
 	       cpu$imem_master_arid,
@@ -829,7 +814,6 @@ module mkCore(CLK,
 	       cpu$imem_master_awregion,
 	       cpu$imem_master_bid,
 	       cpu$imem_master_rid,
-	       cpu$imem_master_wid,
 	       cpu$set_verbosity_verbosity;
   wire [2 : 0] cpu$dmem_master_arprot,
 	       cpu$dmem_master_arsize,
@@ -936,8 +920,7 @@ module mkCore(CLK,
 	       debug_module$master_awqos,
 	       debug_module$master_awregion,
 	       debug_module$master_bid,
-	       debug_module$master_rid,
-	       debug_module$master_wid;
+	       debug_module$master_rid;
   wire [2 : 0] debug_module$master_arprot,
 	       debug_module$master_arsize,
 	       debug_module$master_awprot,
@@ -1075,7 +1058,6 @@ module mkCore(CLK,
 	       dm_mem_tap$master_awregion,
 	       dm_mem_tap$master_bid,
 	       dm_mem_tap$master_rid,
-	       dm_mem_tap$master_wid,
 	       dm_mem_tap$slave_arcache,
 	       dm_mem_tap$slave_arid,
 	       dm_mem_tap$slave_arqos,
@@ -1085,8 +1067,7 @@ module mkCore(CLK,
 	       dm_mem_tap$slave_awqos,
 	       dm_mem_tap$slave_awregion,
 	       dm_mem_tap$slave_bid,
-	       dm_mem_tap$slave_rid,
-	       dm_mem_tap$slave_wid;
+	       dm_mem_tap$slave_rid;
   wire [2 : 0] dm_mem_tap$master_arprot,
 	       dm_mem_tap$master_arsize,
 	       dm_mem_tap$master_awprot,
@@ -1217,7 +1198,6 @@ module mkCore(CLK,
 	       fabric_2x3$v_from_masters_0_awregion,
 	       fabric_2x3$v_from_masters_0_bid,
 	       fabric_2x3$v_from_masters_0_rid,
-	       fabric_2x3$v_from_masters_0_wid,
 	       fabric_2x3$v_from_masters_1_arcache,
 	       fabric_2x3$v_from_masters_1_arid,
 	       fabric_2x3$v_from_masters_1_arqos,
@@ -1228,7 +1208,6 @@ module mkCore(CLK,
 	       fabric_2x3$v_from_masters_1_awregion,
 	       fabric_2x3$v_from_masters_1_bid,
 	       fabric_2x3$v_from_masters_1_rid,
-	       fabric_2x3$v_from_masters_1_wid,
 	       fabric_2x3$v_to_slaves_0_arcache,
 	       fabric_2x3$v_to_slaves_0_arid,
 	       fabric_2x3$v_to_slaves_0_arqos,
@@ -1239,7 +1218,6 @@ module mkCore(CLK,
 	       fabric_2x3$v_to_slaves_0_awregion,
 	       fabric_2x3$v_to_slaves_0_bid,
 	       fabric_2x3$v_to_slaves_0_rid,
-	       fabric_2x3$v_to_slaves_0_wid,
 	       fabric_2x3$v_to_slaves_1_arcache,
 	       fabric_2x3$v_to_slaves_1_arid,
 	       fabric_2x3$v_to_slaves_1_arqos,
@@ -1250,7 +1228,6 @@ module mkCore(CLK,
 	       fabric_2x3$v_to_slaves_1_awregion,
 	       fabric_2x3$v_to_slaves_1_bid,
 	       fabric_2x3$v_to_slaves_1_rid,
-	       fabric_2x3$v_to_slaves_1_wid,
 	       fabric_2x3$v_to_slaves_2_arcache,
 	       fabric_2x3$v_to_slaves_2_arid,
 	       fabric_2x3$v_to_slaves_2_arqos,
@@ -1260,8 +1237,7 @@ module mkCore(CLK,
 	       fabric_2x3$v_to_slaves_2_awqos,
 	       fabric_2x3$v_to_slaves_2_awregion,
 	       fabric_2x3$v_to_slaves_2_bid,
-	       fabric_2x3$v_to_slaves_2_rid,
-	       fabric_2x3$v_to_slaves_2_wid;
+	       fabric_2x3$v_to_slaves_2_rid;
   wire [2 : 0] fabric_2x3$v_from_masters_0_arprot,
 	       fabric_2x3$v_from_masters_0_arsize,
 	       fabric_2x3$v_from_masters_0_awprot,
@@ -1395,8 +1371,7 @@ module mkCore(CLK,
 	       near_mem_io$axi4_slave_awqos,
 	       near_mem_io$axi4_slave_awregion,
 	       near_mem_io$axi4_slave_bid,
-	       near_mem_io$axi4_slave_rid,
-	       near_mem_io$axi4_slave_wid;
+	       near_mem_io$axi4_slave_rid;
   wire [2 : 0] near_mem_io$axi4_slave_arprot,
 	       near_mem_io$axi4_slave_arsize,
 	       near_mem_io$axi4_slave_awprot,
@@ -1451,7 +1426,6 @@ module mkCore(CLK,
 	       plic$axi4_slave_awregion,
 	       plic$axi4_slave_bid,
 	       plic$axi4_slave_rid,
-	       plic$axi4_slave_wid,
 	       plic$set_verbosity_verbosity;
   wire [2 : 0] plic$axi4_slave_arprot,
 	       plic$axi4_slave_arsize,
@@ -1699,16 +1673,16 @@ module mkCore(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h5188;
-  reg [31 : 0] v__h5389;
-  reg [31 : 0] v__h5757;
-  reg [31 : 0] v__h5182;
-  reg [31 : 0] v__h5383;
-  reg [31 : 0] v__h5751;
+  reg [31 : 0] v__h5108;
+  reg [31 : 0] v__h5309;
+  reg [31 : 0] v__h5677;
+  reg [31 : 0] v__h5102;
+  reg [31 : 0] v__h5303;
+  reg [31 : 0] v__h5671;
   // synopsys translate_on
 
   // remaining internal signals
-  wire fabric_2x3_RDY_reset_AND_cpu_RDY_hart0_server__ETC___d9;
+  wire plic_RDY_server_reset_request_put_AND_cpu_RDY__ETC___d9;
 
   // action method set_verbosity
   assign RDY_set_verbosity = 1'd1 ;
@@ -1767,9 +1741,6 @@ module mkCore(CLK,
 
   // value method cpu_imem_master_m_wvalid
   assign cpu_imem_master_wvalid = cpu$imem_master_wvalid ;
-
-  // value method cpu_imem_master_m_wid
-  assign cpu_imem_master_wid = cpu$imem_master_wid ;
 
   // value method cpu_imem_master_m_wdata
   assign cpu_imem_master_wdata = cpu$imem_master_wdata ;
@@ -1874,9 +1845,6 @@ module mkCore(CLK,
 
   // value method cpu_dmem_master_m_wvalid
   assign cpu_dmem_master_wvalid = fabric_2x3$v_to_slaves_0_wvalid ;
-
-  // value method cpu_dmem_master_m_wid
-  assign cpu_dmem_master_wid = fabric_2x3$v_to_slaves_0_wid ;
 
   // value method cpu_dmem_master_m_wdata
   assign cpu_dmem_master_wdata = fabric_2x3$v_to_slaves_0_wdata ;
@@ -2116,7 +2084,6 @@ module mkCore(CLK,
 	    .imem_master_awqos(cpu$imem_master_awqos),
 	    .imem_master_awregion(cpu$imem_master_awregion),
 	    .imem_master_wvalid(cpu$imem_master_wvalid),
-	    .imem_master_wid(cpu$imem_master_wid),
 	    .imem_master_wdata(cpu$imem_master_wdata),
 	    .imem_master_wstrb(cpu$imem_master_wstrb),
 	    .imem_master_wlast(cpu$imem_master_wlast),
@@ -2145,7 +2112,6 @@ module mkCore(CLK,
 	    .dmem_master_awqos(cpu$dmem_master_awqos),
 	    .dmem_master_awregion(cpu$dmem_master_awregion),
 	    .dmem_master_wvalid(cpu$dmem_master_wvalid),
-	    .dmem_master_wid(cpu$dmem_master_wid),
 	    .dmem_master_wdata(cpu$dmem_master_wdata),
 	    .dmem_master_wstrb(cpu$dmem_master_wstrb),
 	    .dmem_master_wlast(cpu$dmem_master_wlast),
@@ -2254,7 +2220,6 @@ module mkCore(CLK,
 			      .master_awqos(debug_module$master_awqos),
 			      .master_awregion(debug_module$master_awregion),
 			      .master_wvalid(debug_module$master_wvalid),
-			      .master_wid(debug_module$master_wid),
 			      .master_wdata(debug_module$master_wdata),
 			      .master_wstrb(debug_module$master_wstrb),
 			      .master_wlast(debug_module$master_wlast),
@@ -2368,7 +2333,6 @@ module mkCore(CLK,
 			  .slave_bready(dm_mem_tap$slave_bready),
 			  .slave_rready(dm_mem_tap$slave_rready),
 			  .slave_wdata(dm_mem_tap$slave_wdata),
-			  .slave_wid(dm_mem_tap$slave_wid),
 			  .slave_wlast(dm_mem_tap$slave_wlast),
 			  .slave_wstrb(dm_mem_tap$slave_wstrb),
 			  .slave_wvalid(dm_mem_tap$slave_wvalid),
@@ -2396,7 +2360,6 @@ module mkCore(CLK,
 			  .master_awqos(dm_mem_tap$master_awqos),
 			  .master_awregion(dm_mem_tap$master_awregion),
 			  .master_wvalid(dm_mem_tap$master_wvalid),
-			  .master_wid(dm_mem_tap$master_wid),
 			  .master_wdata(dm_mem_tap$master_wdata),
 			  .master_wstrb(dm_mem_tap$master_wstrb),
 			  .master_wlast(dm_mem_tap$master_wlast),
@@ -2489,7 +2452,6 @@ module mkCore(CLK,
 			  .v_from_masters_0_bready(fabric_2x3$v_from_masters_0_bready),
 			  .v_from_masters_0_rready(fabric_2x3$v_from_masters_0_rready),
 			  .v_from_masters_0_wdata(fabric_2x3$v_from_masters_0_wdata),
-			  .v_from_masters_0_wid(fabric_2x3$v_from_masters_0_wid),
 			  .v_from_masters_0_wlast(fabric_2x3$v_from_masters_0_wlast),
 			  .v_from_masters_0_wstrb(fabric_2x3$v_from_masters_0_wstrb),
 			  .v_from_masters_0_wvalid(fabric_2x3$v_from_masters_0_wvalid),
@@ -2518,7 +2480,6 @@ module mkCore(CLK,
 			  .v_from_masters_1_bready(fabric_2x3$v_from_masters_1_bready),
 			  .v_from_masters_1_rready(fabric_2x3$v_from_masters_1_rready),
 			  .v_from_masters_1_wdata(fabric_2x3$v_from_masters_1_wdata),
-			  .v_from_masters_1_wid(fabric_2x3$v_from_masters_1_wid),
 			  .v_from_masters_1_wlast(fabric_2x3$v_from_masters_1_wlast),
 			  .v_from_masters_1_wstrb(fabric_2x3$v_from_masters_1_wstrb),
 			  .v_from_masters_1_wvalid(fabric_2x3$v_from_masters_1_wvalid),
@@ -2593,7 +2554,6 @@ module mkCore(CLK,
 			  .v_to_slaves_0_awqos(fabric_2x3$v_to_slaves_0_awqos),
 			  .v_to_slaves_0_awregion(fabric_2x3$v_to_slaves_0_awregion),
 			  .v_to_slaves_0_wvalid(fabric_2x3$v_to_slaves_0_wvalid),
-			  .v_to_slaves_0_wid(fabric_2x3$v_to_slaves_0_wid),
 			  .v_to_slaves_0_wdata(fabric_2x3$v_to_slaves_0_wdata),
 			  .v_to_slaves_0_wstrb(fabric_2x3$v_to_slaves_0_wstrb),
 			  .v_to_slaves_0_wlast(fabric_2x3$v_to_slaves_0_wlast),
@@ -2622,7 +2582,6 @@ module mkCore(CLK,
 			  .v_to_slaves_1_awqos(fabric_2x3$v_to_slaves_1_awqos),
 			  .v_to_slaves_1_awregion(fabric_2x3$v_to_slaves_1_awregion),
 			  .v_to_slaves_1_wvalid(fabric_2x3$v_to_slaves_1_wvalid),
-			  .v_to_slaves_1_wid(fabric_2x3$v_to_slaves_1_wid),
 			  .v_to_slaves_1_wdata(fabric_2x3$v_to_slaves_1_wdata),
 			  .v_to_slaves_1_wstrb(fabric_2x3$v_to_slaves_1_wstrb),
 			  .v_to_slaves_1_wlast(fabric_2x3$v_to_slaves_1_wlast),
@@ -2651,7 +2610,6 @@ module mkCore(CLK,
 			  .v_to_slaves_2_awqos(fabric_2x3$v_to_slaves_2_awqos),
 			  .v_to_slaves_2_awregion(fabric_2x3$v_to_slaves_2_awregion),
 			  .v_to_slaves_2_wvalid(fabric_2x3$v_to_slaves_2_wvalid),
-			  .v_to_slaves_2_wid(fabric_2x3$v_to_slaves_2_wid),
 			  .v_to_slaves_2_wdata(fabric_2x3$v_to_slaves_2_wdata),
 			  .v_to_slaves_2_wstrb(fabric_2x3$v_to_slaves_2_wstrb),
 			  .v_to_slaves_2_wlast(fabric_2x3$v_to_slaves_2_wlast),
@@ -2697,7 +2655,6 @@ module mkCore(CLK,
 				 .axi4_slave_bready(near_mem_io$axi4_slave_bready),
 				 .axi4_slave_rready(near_mem_io$axi4_slave_rready),
 				 .axi4_slave_wdata(near_mem_io$axi4_slave_wdata),
-				 .axi4_slave_wid(near_mem_io$axi4_slave_wid),
 				 .axi4_slave_wlast(near_mem_io$axi4_slave_wlast),
 				 .axi4_slave_wstrb(near_mem_io$axi4_slave_wstrb),
 				 .axi4_slave_wvalid(near_mem_io$axi4_slave_wvalid),
@@ -2755,7 +2712,6 @@ module mkCore(CLK,
 		     .axi4_slave_bready(plic$axi4_slave_bready),
 		     .axi4_slave_rready(plic$axi4_slave_rready),
 		     .axi4_slave_wdata(plic$axi4_slave_wdata),
-		     .axi4_slave_wid(plic$axi4_slave_wid),
 		     .axi4_slave_wlast(plic$axi4_slave_wlast),
 		     .axi4_slave_wstrb(plic$axi4_slave_wstrb),
 		     .axi4_slave_wvalid(plic$axi4_slave_wvalid),
@@ -3122,18 +3078,18 @@ module mkCore(CLK,
 
   // rule RL_rl_cpu_hart0_reset_from_soc_start
   assign CAN_FIRE_RL_rl_cpu_hart0_reset_from_soc_start =
+	     fabric_2x3$RDY_reset &&
 	     near_mem_io$RDY_server_reset_request_put &&
-	     plic$RDY_server_reset_request_put &&
-	     fabric_2x3_RDY_reset_AND_cpu_RDY_hart0_server__ETC___d9 ;
+	     plic_RDY_server_reset_request_put_AND_cpu_RDY__ETC___d9 ;
   assign WILL_FIRE_RL_rl_cpu_hart0_reset_from_soc_start =
 	     CAN_FIRE_RL_rl_cpu_hart0_reset_from_soc_start ;
 
   // rule RL_rl_cpu_hart0_reset_from_dm_start
   assign CAN_FIRE_RL_rl_cpu_hart0_reset_from_dm_start =
+	     fabric_2x3$RDY_reset &&
+	     debug_module$RDY_hart0_reset_client_request_get &&
 	     near_mem_io$RDY_server_reset_request_put &&
 	     plic$RDY_server_reset_request_put &&
-	     debug_module$RDY_hart0_reset_client_request_get &&
-	     fabric_2x3$RDY_reset &&
 	     cpu$RDY_hart0_server_reset_request_put &&
 	     f_reset_requestor$FULL_N ;
   assign WILL_FIRE_RL_rl_cpu_hart0_reset_from_dm_start =
@@ -3370,7 +3326,6 @@ module mkCore(CLK,
   assign dm_mem_tap$slave_bready = debug_module$master_bready ;
   assign dm_mem_tap$slave_rready = debug_module$master_rready ;
   assign dm_mem_tap$slave_wdata = debug_module$master_wdata ;
-  assign dm_mem_tap$slave_wid = debug_module$master_wid ;
   assign dm_mem_tap$slave_wlast = debug_module$master_wlast ;
   assign dm_mem_tap$slave_wstrb = debug_module$master_wstrb ;
   assign dm_mem_tap$slave_wvalid = debug_module$master_wvalid ;
@@ -3381,9 +3336,9 @@ module mkCore(CLK,
   assign f_reset_reqs$D_IN = cpu_reset_server_request_put ;
   assign f_reset_reqs$ENQ = EN_cpu_reset_server_request_put ;
   assign f_reset_reqs$DEQ =
+	     fabric_2x3$RDY_reset &&
 	     near_mem_io$RDY_server_reset_request_put &&
-	     plic$RDY_server_reset_request_put &&
-	     fabric_2x3_RDY_reset_AND_cpu_RDY_hart0_server__ETC___d9 ;
+	     plic_RDY_server_reset_request_put_AND_cpu_RDY__ETC___d9 ;
   assign f_reset_reqs$CLR = 1'b0 ;
 
   // submodule f_reset_requestor
@@ -3466,7 +3421,6 @@ module mkCore(CLK,
   assign fabric_2x3$v_from_masters_0_bready = cpu$dmem_master_bready ;
   assign fabric_2x3$v_from_masters_0_rready = cpu$dmem_master_rready ;
   assign fabric_2x3$v_from_masters_0_wdata = cpu$dmem_master_wdata ;
-  assign fabric_2x3$v_from_masters_0_wid = cpu$dmem_master_wid ;
   assign fabric_2x3$v_from_masters_0_wlast = cpu$dmem_master_wlast ;
   assign fabric_2x3$v_from_masters_0_wstrb = cpu$dmem_master_wstrb ;
   assign fabric_2x3$v_from_masters_0_wvalid = cpu$dmem_master_wvalid ;
@@ -3495,7 +3449,6 @@ module mkCore(CLK,
   assign fabric_2x3$v_from_masters_1_bready = dm_mem_tap$master_bready ;
   assign fabric_2x3$v_from_masters_1_rready = dm_mem_tap$master_rready ;
   assign fabric_2x3$v_from_masters_1_wdata = dm_mem_tap$master_wdata ;
-  assign fabric_2x3$v_from_masters_1_wid = dm_mem_tap$master_wid ;
   assign fabric_2x3$v_from_masters_1_wlast = dm_mem_tap$master_wlast ;
   assign fabric_2x3$v_from_masters_1_wstrb = dm_mem_tap$master_wstrb ;
   assign fabric_2x3$v_from_masters_1_wvalid = dm_mem_tap$master_wvalid ;
@@ -3563,7 +3516,6 @@ module mkCore(CLK,
   assign near_mem_io$axi4_slave_bready = fabric_2x3$v_to_slaves_1_bready ;
   assign near_mem_io$axi4_slave_rready = fabric_2x3$v_to_slaves_1_rready ;
   assign near_mem_io$axi4_slave_wdata = fabric_2x3$v_to_slaves_1_wdata ;
-  assign near_mem_io$axi4_slave_wid = fabric_2x3$v_to_slaves_1_wid ;
   assign near_mem_io$axi4_slave_wlast = fabric_2x3$v_to_slaves_1_wlast ;
   assign near_mem_io$axi4_slave_wstrb = fabric_2x3$v_to_slaves_1_wstrb ;
   assign near_mem_io$axi4_slave_wvalid = fabric_2x3$v_to_slaves_1_wvalid ;
@@ -3608,7 +3560,6 @@ module mkCore(CLK,
   assign plic$axi4_slave_bready = fabric_2x3$v_to_slaves_2_bready ;
   assign plic$axi4_slave_rready = fabric_2x3$v_to_slaves_2_rready ;
   assign plic$axi4_slave_wdata = fabric_2x3$v_to_slaves_2_wdata ;
-  assign plic$axi4_slave_wid = fabric_2x3$v_to_slaves_2_wid ;
   assign plic$axi4_slave_wlast = fabric_2x3$v_to_slaves_2_wlast ;
   assign plic$axi4_slave_wstrb = fabric_2x3$v_to_slaves_2_wstrb ;
   assign plic$axi4_slave_wvalid = fabric_2x3$v_to_slaves_2_wvalid ;
@@ -3668,8 +3619,9 @@ module mkCore(CLK,
   assign tv_encode$EN_tv_vb_out_get = EN_tv_verifier_info_get_get ;
 
   // remaining internal signals
-  assign fabric_2x3_RDY_reset_AND_cpu_RDY_hart0_server__ETC___d9 =
-	     fabric_2x3$RDY_reset && cpu$RDY_hart0_server_reset_request_put &&
+  assign plic_RDY_server_reset_request_put_AND_cpu_RDY__ETC___d9 =
+	     plic$RDY_server_reset_request_put &&
+	     cpu$RDY_hart0_server_reset_request_put &&
 	     f_reset_reqs$EMPTY_N &&
 	     f_reset_requestor$FULL_N ;
 
@@ -3682,33 +3634,33 @@ module mkCore(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_from_soc_start)
 	begin
-	  v__h5188 = $stime;
+	  v__h5108 = $stime;
 	  #0;
 	end
-    v__h5182 = v__h5188 / 32'd10;
+    v__h5102 = v__h5108 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_from_soc_start)
-	$display("%0d: Core.rl_cpu_hart0_reset_from_soc_start", v__h5182);
+	$display("%0d: Core.rl_cpu_hart0_reset_from_soc_start", v__h5102);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_from_dm_start)
 	begin
-	  v__h5389 = $stime;
+	  v__h5309 = $stime;
 	  #0;
 	end
-    v__h5383 = v__h5389 / 32'd10;
+    v__h5303 = v__h5309 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_from_dm_start)
-	$display("%0d: Core.rl_cpu_hart0_reset_from_dm_start", v__h5383);
+	$display("%0d: Core.rl_cpu_hart0_reset_from_dm_start", v__h5303);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_complete)
 	begin
-	  v__h5757 = $stime;
+	  v__h5677 = $stime;
 	  #0;
 	end
-    v__h5751 = v__h5757 / 32'd10;
+    v__h5671 = v__h5677 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_complete)
-	$display("%0d: Core.rl_cpu_hart0_reset_complete", v__h5751);
+	$display("%0d: Core.rl_cpu_hart0_reset_complete", v__h5671);
   end
   // synopsys translate_on
 endmodule  // mkCore

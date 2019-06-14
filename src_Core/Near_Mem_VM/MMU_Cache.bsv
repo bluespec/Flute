@@ -725,8 +725,7 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
 					     awregion: fabric_default_region,
 					     awuser:   fabric_default_user};
 
-	 let mem_req_wr_data = AXI4_Wr_Data {wid:    fabric_default_id,
-					     wdata:  fabric_data,
+	 let mem_req_wr_data = AXI4_Wr_Data {wdata:  fabric_data,
 					     wstrb:  fabric_strb,
 					     wlast:  True,
 					     wuser:  fabric_default_user};
