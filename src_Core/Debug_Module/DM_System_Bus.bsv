@@ -179,7 +179,7 @@ module mkDM_System_Bus (DM_System_Bus_IFC);
    // ----------------------------------------------------------------
 
    // Interface to memory fabric
-   AXI4_Master_Xactor_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) master_xactor <- mkAXI4_Master_Xactor_2;
+   AXI4_Master_Xactor_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) master_xactor <- mkAXI4_Master_Xactor;
 
    // ----------------------------------------------------------------
    // System Bus state
