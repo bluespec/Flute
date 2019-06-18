@@ -58,18 +58,18 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
    Reg #(Bool) rg_start_reg_access <- mkReg (False);
 
    // FIFOs for request/response to access GPRs
-   FIFOF #(DM_CPU_Req #(5,  XLEN)) f_hart0_gpr_reqs <- mkFIFOF1;
-   FIFOF #(DM_CPU_Rsp #(XLEN))     f_hart0_gpr_rsps <- mkFIFOF1;
+   FIFOF #(DM_CPU_Req #(5,  XLEN)) f_hart0_gpr_reqs <- mkFIFOF;
+   FIFOF #(DM_CPU_Rsp #(XLEN))     f_hart0_gpr_rsps <- mkFIFOF;
 
    // FIFOs for request/response to access FPRs
 `ifdef ISA_F
-   FIFOF #(DM_CPU_Req #(5,  FLEN)) f_hart0_fpr_reqs <- mkFIFOF1;
-   FIFOF #(DM_CPU_Rsp #(FLEN))     f_hart0_fpr_rsps <- mkFIFOF1;
+   FIFOF #(DM_CPU_Req #(5,  FLEN)) f_hart0_fpr_reqs <- mkFIFOF;
+   FIFOF #(DM_CPU_Rsp #(FLEN))     f_hart0_fpr_rsps <- mkFIFOF;
 `endif
 
    // FIFOs for request/response to access CSRs
-   FIFOF #(DM_CPU_Req #(12, XLEN)) f_hart0_csr_reqs <- mkFIFOF1;
-   FIFOF #(DM_CPU_Rsp #(XLEN))     f_hart0_csr_rsps <- mkFIFOF1;
+   FIFOF #(DM_CPU_Req #(12, XLEN)) f_hart0_csr_reqs <- mkFIFOF;
+   FIFOF #(DM_CPU_Rsp #(XLEN))     f_hart0_csr_rsps <- mkFIFOF;
 
    // ----------------------------------------------------------------
    // rg_data0
