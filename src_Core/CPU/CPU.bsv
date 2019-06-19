@@ -92,6 +92,8 @@ typedef enum {CPU_RESET1,
 	      CPU_RUNNING,          // Normal operation
 	      CPU_TRAP,
 	      CPU_START_TRAP_HANDLER,
+	      CPU_CSRR_W_2,
+	      CPU_CSRR_S_or_C_2,
 	      CPU_CSRRx_TRAP,
 	      CPU_CSRRX_RESTART,    // Restart pipe after a CSRRX instruction
 	      CPU_FENCE_I,          // While waiting for FENCE.I to complete in Near_Mem
@@ -764,7 +766,7 @@ module mkCPU (CPU_IFC);
       if (cur_verbosity > 1)
 	 $display ("%0d: CPU.rl_stage2_nonpipe", mcycle);
 
-      // Just save relevant info and handle in next clock
+      // Just register the relevant info and handle in next clock
       rg_trap_info       <= stage2.out.trap_info;
       rg_trap_instr      <= stage2.out.data_to_stage3.instr;
 `ifdef INCLUDE_TANDEM_VERIF
@@ -782,13 +784,17 @@ module mkCPU (CPU_IFC);
       let epc      = rg_trap_info.epc;
       let exc_code = rg_trap_info.exc_code;
       let tval     = rg_trap_info.tval;
+
       let instr    = rg_trap_instr;
+
+      Bool nmi       = csr_regfile.nmi_pending;    // Non-maskable interrupt
+      Bool interrupt = isValid (csr_regfile.interrupt_pending (rg_cur_priv));
 
       // Take trap, save trap information for next phase
       let trap_info <- csr_regfile.csr_trap_actions (rg_cur_priv,    // from priv
 						     epc,
-						     False,          // non-maskable interrupt
-						     False,          // interrupt_req
+						     nmi,
+						     interrupt,
 						     exc_code,
 						     tval);
 
@@ -811,15 +817,15 @@ module mkCPU (CPU_IFC);
 
       rg_state <= CPU_START_TRAP_HANDLER;
 
-      stage1.set_full (False);
       stage2.set_full (False);
-
-      // Accounting
-      csr_regfile.csr_minstret_incr;
+      stage1.set_full (False);    fa_step_check;
+      stageD.set_full (False);
 
 `ifdef INCLUDE_TANDEM_VERIF
       // Trace Data
       let trace_data = rg_trap_trace_data;
+      if (interrupt || nmi)
+	 trace_data = mkTrace_INTR (next_pc, new_priv, new_mstatus, mcause, epc, 0);
       trace_data.op = TRACE_TRAP;
       trace_data.pc = next_pc;
       // trace_data.instr_sz    should already be set
@@ -830,6 +836,16 @@ module mkCPU (CPU_IFC);
       trace_data.word3 = zeroExtend (epc);
       trace_data.word4 = tval;
       f_trace_data.enq (trace_data);
+`endif
+
+      // Simulation heuristic: finish if trap back to this instr
+`ifndef INCLUDE_GDB_CONTROL
+      if (epc == next_pc) begin
+	 $display ("%0d: %m.rl_trap: Tight infinite trap loop: pc 0x%0x instr 0x%08x",
+		   mcycle, next_pc, instr);
+	 fa_report_CPI;
+	 $finish (0);
+      end
 `endif
 
       fa_emit_instr_trace (minstret, epc, instr, rg_cur_priv);
@@ -843,6 +859,8 @@ module mkCPU (CPU_IFC);
    // ================================================================
    // Stage1: nonpipe special: CSRRW and CSRRWI
 
+   Reg #(Data_Stage1_to_Stage2) rg_csrr_x_data <- mkRegU;
+
    rule rl_stage1_CSRR_W (   (rg_state == CPU_RUNNING)
 			  && (! halting)
 			  && (stage3.out.ostatus == OSTATUS_EMPTY)
@@ -850,9 +868,16 @@ module mkCPU (CPU_IFC);
 			  && (stage1.out.ostatus == OSTATUS_NONPIPE)
 			  && (stage1.out.control == CONTROL_CSRR_W));
 
-      if (cur_verbosity > 1) $display ("%0d: CPU.rl_stage1_CSRR_W", mcycle);
+      if (cur_verbosity > 1) $display ("%0d: %m.rl_stage1_CSRR_W", mcycle);
 
-      let instr    = stage1.out.data_to_stage2.instr;
+      // Just register the relevant data and process on next clock
+      rg_csrr_x_data <= stage1.out.data_to_stage2;
+      rg_state <= CPU_CSRR_W_2;
+   endrule
+
+   rule rl_CSRR_W_2 (rg_state == CPU_CSRR_W_2);
+      if (cur_verbosity > 1) $display ("%0d: %m.rl_CSRR_W_2", mcycle);
+      let instr    = rg_csrr_x_data.instr;
       let csr_addr = instr_csr    (instr);
       let rs1      = instr_rs1    (instr);
       let funct3   = instr_funct3 (instr);
@@ -861,9 +886,9 @@ module mkCPU (CPU_IFC);
 `ifdef ISA_F
       // With FP, the val is always Bit #(64)
       // TODO: is this ifdef necessary? Can't we always use 'truncate'?
-      WordXL stage2_val1= truncate (stage1.out.data_to_stage2.val1);
+      WordXL stage2_val1= truncate (rg_csrr_x_data.val1);
 `else
-      WordXL stage2_val1= stage1.out.data_to_stage2.val1;
+      WordXL stage2_val1= rg_csrr_x_data.val1;
 `endif
 
       let rs1_val  = (  (funct3 == f3_CSRRW)
@@ -877,7 +902,7 @@ module mkCPU (CPU_IFC);
 	 rg_state <= CPU_CSRRx_TRAP;
 
 	 // Debug
-	 fa_emit_instr_trace (minstret, stage1.out.data_to_stage2.pc, instr, rg_cur_priv);
+	 fa_emit_instr_trace (minstret, rg_csrr_x_data.pc, instr, rg_cur_priv);
 	 if (cur_verbosity > 1) begin
 	    $display ("    rl_stage1_CSRR_W: Trap on CSR permissions: Rs1 %0d Rs1_val 0x%0h csr 0x%0h Rd %0d",
 		      rs1, rs1_val, csr_addr, rd);
@@ -907,7 +932,7 @@ module mkCPU (CPU_IFC);
 
 `ifdef INCLUDE_TANDEM_VERIF
 	 // Trace data
-	 let trace_data = stage1.out.data_to_stage2.trace_data;
+	 let trace_data = rg_csrr_x_data.trace_data;
 	 trace_data.op = TRACE_CSRRX;
 	 // trace_data.pc, instr_sz and instr    should already be set
 	 trace_data.rd = rd;
@@ -919,13 +944,13 @@ module mkCPU (CPU_IFC);
 `endif
 
 	 // Debug
-	 fa_emit_instr_trace (minstret, stage1.out.data_to_stage2.pc, instr, rg_cur_priv);
+	 fa_emit_instr_trace (minstret, rg_csrr_x_data.pc, instr, rg_cur_priv);
 	 if (cur_verbosity > 1) begin
 	    $display ("    S1: write CSRRW/CSRRWI Rs1 %0d Rs1_val 0x%0h csr 0x%0h csr_val 0x%0h Rd %0d",
 		      rs1, rs1_val, csr_addr, csr_val, rd);
 	 end
       end
-   endrule: rl_stage1_CSRR_W
+   endrule: rl_CSRR_W_2
 
    // ================================================================
    // Stage1: nonpipe special: CSRRS, CSRRSI, CSRRC, CSRRCI
@@ -939,7 +964,14 @@ module mkCPU (CPU_IFC);
 
       if (cur_verbosity > 1) $display ("%0d: CPU.rl_stage1_CSRR_S_or_C", mcycle);
 
-      let instr    = stage1.out.data_to_stage2.instr;
+      // Just register the relevant data and process on next clock
+      rg_csrr_x_data <= stage1.out.data_to_stage2;
+      rg_state <= CPU_CSRR_S_or_C_2;
+   endrule
+   
+   rule rl_CSRR_S_or_C_2 (rg_state == CPU_CSRR_S_or_C_2);
+      if (cur_verbosity > 1) $display ("%0d: %m.rl_CSRR_S_or_C_2", mcycle);
+      let instr    = rg_csrr_x_data.instr;
       let csr_addr = instr_csr    (instr);
       let rs1      = instr_rs1    (instr);
       let funct3   = instr_funct3 (instr);
@@ -947,9 +979,9 @@ module mkCPU (CPU_IFC);
 
 `ifdef ISA_F
       // With FP, the val is always Bit #(64)
-      WordXL stage2_val1= truncate (stage1.out.data_to_stage2.val1);
+      WordXL stage2_val1= truncate (rg_csrr_x_data.val1);
 `else
-      WordXL stage2_val1= stage1.out.data_to_stage2.val1;
+      WordXL stage2_val1= rg_csrr_x_data.val1;
 `endif
 
       let rs1_val  = (  ((funct3 == f3_CSRRS) || (funct3 == f3_CSRRC))
@@ -963,7 +995,7 @@ module mkCPU (CPU_IFC);
 	 rg_state <= CPU_CSRRx_TRAP;
 
 	 // Debug
-	 fa_emit_instr_trace (minstret, stage1.out.data_to_stage2.pc, instr, rg_cur_priv);
+	 fa_emit_instr_trace (minstret, rg_csrr_x_data.pc, instr, rg_cur_priv);
 	 if (cur_verbosity > 1) begin
 	    $display ("    rl_stage1_CSRR_S_or_C: Trap on CSR permissions: Rs1 %0d Rs1_val 0x%0h csr 0x%0h Rd %0d",
 		      rs1, rs1_val, csr_addr, rd);
@@ -997,7 +1029,7 @@ module mkCPU (CPU_IFC);
 
 `ifdef INCLUDE_TANDEM_VERIF
 	 // Trace data
-	 let trace_data = stage1.out.data_to_stage2.trace_data;
+	 let trace_data = rg_csrr_x_data.trace_data;
 	 trace_data.op = TRACE_CSRRX;
 	 // trace_data.pc, instr_sz and instr    should already be set
 	 trace_data.rd = rd;
@@ -1009,13 +1041,13 @@ module mkCPU (CPU_IFC);
 `endif
 
 	 // Debug
-	 fa_emit_instr_trace (minstret, stage1.out.data_to_stage2.pc, instr, rg_cur_priv);
+	 fa_emit_instr_trace (minstret, rg_csrr_x_data.pc, instr, rg_cur_priv);
 	 if (cur_verbosity > 1) begin
 	    $display ("    S1: write CSRR_S_or_C: Rs1 %0d Rs1_val 0x%0h csr 0x%0h csr_val 0x%0h Rd %0d",
 		      rs1, rs1_val, csr_addr, csr_val, rd);
 	 end
       end
-   endrule: rl_stage1_CSRR_S_or_C
+   endrule: rl_CSRR_S_or_C_2
 
    // ================================================================
    // Restart the pipe after a CSRRX stall
@@ -1397,86 +1429,25 @@ module mkCPU (CPU_IFC);
    Bool break_into_Debug_Mode = False;
 `endif
 
-   rule rl_stage1_trap (   (   (rg_state == CPU_CSRRx_TRAP)
-			    || (   (rg_state == CPU_RUNNING)
-				&& (! halting)
-				&& (stage3.out.ostatus == OSTATUS_EMPTY)
-				&& (stage2.out.ostatus == OSTATUS_EMPTY)
-				&& (stage1.out.ostatus == OSTATUS_NONPIPE)
-				&& (stage1.out.control == CONTROL_TRAP)
-				&& (! break_into_Debug_Mode)))
-			&& (stageF.out.ostatus != OSTATUS_BUSY));
+   rule rl_stage1_trap (   (rg_state == CPU_CSRRx_TRAP)
+			|| (   (rg_state == CPU_RUNNING)
+			    && (! halting)
+			    && (stage3.out.ostatus == OSTATUS_EMPTY)
+			    && (stage2.out.ostatus == OSTATUS_EMPTY)
+			    && (stage1.out.ostatus == OSTATUS_NONPIPE)
+			    && (stage1.out.control == CONTROL_TRAP)
+			    && (! break_into_Debug_Mode)));
       if (cur_verbosity > 1) $display ("%0d: CPU.rl_stage1_trap", mcycle);
 
-      let epc      = stage1.out.trap_info.epc;
-      let exc_code = stage1.out.trap_info.exc_code;
-      let tval     = stage1.out.trap_info.tval;
-      let instr    = stage1.out.data_to_stage2.instr;
-
-      // Take trap, save trap information for next phase
-      let trap_info <- csr_regfile.csr_trap_actions (rg_cur_priv, // from priv
-						     epc,
-						     False,       // non-maskable interrupt
-						     False,       // interrupt_req
-						     exc_code,
-						     tval);
-
-      let next_pc    = trap_info.pc;
-      let new_mstatus= trap_info.mstatus;
-      let mcause     = trap_info.mcause;
-      let new_priv   = trap_info.priv;
-
-      // Save new privilege and pc for ifetch
-      rg_cur_priv <= new_priv;
-      rg_next_pc  <= next_pc;
-
-      // Note old MSTATUS.MXR and SSTATUS.SUM for initiating FETCH in next phase
-      rg_mstatus_MXR <= mstatus [19];
-`ifdef ISA_PRIV_S
-      rg_sstatus_SUM <= (csr_regfile.read_sstatus) [18];
-`else
-      rg_sstatus_SUM <= 0;
-`endif
-
-      rg_state <= CPU_START_TRAP_HANDLER;
-      
-      stageD.set_full (False);
-      stage1.set_full (False);    fa_step_check;
-
-      // Tandem Verification and Debug related actions
+      // Just register the relevant info and handle in next clock
+      rg_trap_info       <= stage1.out.trap_info;
+      rg_trap_instr      <= stage1.out.data_to_stage2.instr;
 `ifdef INCLUDE_TANDEM_VERIF
-      // Trace data
-      let trace_data = stage1.out.data_to_stage2.trace_data;
-      trace_data.op = TRACE_TRAP;
-      trace_data.pc = next_pc;
-      // trace_data.instr_sz    should already be set
-      // trace_data.instr       should already be set
-      trace_data.rd    = zeroExtend (new_priv);
-      trace_data.word1 = new_mstatus;
-      trace_data.word2 = mcause;
-      trace_data.word3 = zeroExtend (epc);
-      trace_data.word4 = tval;
-      f_trace_data.enq (trace_data);
+      rg_trap_trace_data <= stage1.out.data_to_stage2.trace_data;
 `endif
 
-      // Simulation heuristic: finish if trap back to this instr
-`ifndef INCLUDE_GDB_CONTROL
-      if (epc == next_pc) begin
-	 $display ("%0d: CPU.rl_stage1_trap: Tight infinite trap loop: pc 0x%0x instr 0x%08x", mcycle,
-		   next_pc, instr);
-	 fa_report_CPI;
-	 $finish (0);
-      end
-`endif
-
-      // Debug
-      fa_emit_instr_trace (minstret, epc, instr, rg_cur_priv);
-      if (cur_verbosity != 0) begin
-	 $display ("%0d: CPU.rl_stage1_trap: priv:%0d  mcause:0x%0h  epc:0x%0h",
-		   mcycle, rg_cur_priv, mcause, epc);
-	 $display ("    tval:0x%0h  new pc:0x%0h  new mstatus:0x%0h", tval, next_pc, new_mstatus);
-      end
-   endrule : rl_stage1_trap
+      rg_state           <= CPU_TRAP;
+   endrule: rl_stage1_trap
 
    // ================================================================
    // Initiate instruction fetch from new_pc.
@@ -1568,53 +1539,19 @@ module mkCPU (CPU_IFC);
 			     && (stageF.out.ostatus != OSTATUS_BUSY));
       if (cur_verbosity > 1) $display ("%0d: CPU.rl_stage1_interrupt", mcycle);
 
-      let instr = stage1.out.data_to_stage2.instr;
+      // Just register the relevant info and handle in next clock
 
-      WordXL   epc      = stage1.out.data_to_stage2.pc;
       Exc_Code exc_code = 0;    // "Unknown cause" for NMI
-
       if (csr_regfile.interrupt_pending (rg_cur_priv) matches tagged Valid .ec
 	  &&& (! csr_regfile.nmi_pending))
 	 exc_code = ec;
 
-      // Take trap
-      let trap_info <- csr_regfile.csr_trap_actions (rg_cur_priv,    // from priv
-						     epc,
-						     csr_regfile.nmi_pending,        // non-maskable interrupt
-						     (! csr_regfile.nmi_pending),    // interrupt_req,
-						     exc_code,
-						     0);             // tval
-      let next_pc       = trap_info.pc;
-      let new_mstatus   = trap_info.mstatus;
-      let mcause        = trap_info.mcause;
-      let new_priv      = trap_info.priv;
+      rg_trap_info       <= Trap_Info {epc:      stage1.out.data_to_stage2.pc,
+				       exc_code: exc_code,
+				       tval:     0};
+      rg_trap_instr      <= stage1.out.data_to_stage2.instr;
 
-      // Prepare the next_pc into stage1, for enq as the interrupt is taken
-      rg_next_pc  <= next_pc;
-
-      // Save new privilege
-      rg_cur_priv <= new_priv;
-
-      rg_sstatus_SUM <= new_mstatus [18];
-      rg_mstatus_MXR <= new_mstatus [19];
-
-      rg_state <= CPU_START_TRAP_HANDLER;
-
-      stage1.set_full (False);
-
-      // Accounting: none (instruction is abandoned)
-
-`ifdef INCLUDE_TANDEM_VERIF
-      // Trace data
-      let trace_data = mkTrace_INTR (next_pc, new_priv, new_mstatus, mcause, epc, 0);
-      f_trace_data.enq (trace_data);
-`endif
-
-      // Debug
-      fa_emit_instr_trace (minstret, epc, instr, rg_cur_priv);
-      if (cur_verbosity > 0)
-	 $display ("%0d: CPU.rl_stage1_interrupt: epc 0x%0h  next PC 0x%0h  new_priv %0d  new mstatus 0x%0h",
-		   mcycle, epc, next_pc, new_priv, new_mstatus);
+      rg_state <= CPU_TRAP;
    endrule: rl_stage1_interrupt
 
    // ----------------
