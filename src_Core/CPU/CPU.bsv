@@ -244,18 +244,18 @@ module mkCPU (CPU_IFC);
    Reg #(Bit #(1))  rg_step_count <- mkReg (0);
 
    // Debugger GPR read/write request/response
-   FIFOF #(DM_CPU_Req #(5,  XLEN)) f_gpr_reqs <- mkFIFOF1;
-   FIFOF #(DM_CPU_Rsp #(XLEN))     f_gpr_rsps <- mkFIFOF1;
+   FIFOF #(DM_CPU_Req #(5,  XLEN)) f_gpr_reqs <- mkFIFOF;
+   FIFOF #(DM_CPU_Rsp #(XLEN))     f_gpr_rsps <- mkFIFOF;
 
 `ifdef ISA_F
    // Debugger FPR read/write request/response
-   FIFOF #(DM_CPU_Req #(5,  FLEN)) f_fpr_reqs <- mkFIFOF1;
-   FIFOF #(DM_CPU_Rsp #(FLEN))     f_fpr_rsps <- mkFIFOF1;
+   FIFOF #(DM_CPU_Req #(5,  FLEN)) f_fpr_reqs <- mkFIFOF;
+   FIFOF #(DM_CPU_Rsp #(FLEN))     f_fpr_rsps <- mkFIFOF;
 `endif
 
    // Debugger CSR read/write request/response
-   FIFOF #(DM_CPU_Req #(12, XLEN)) f_csr_reqs <- mkFIFOF1;
-   FIFOF #(DM_CPU_Rsp #(XLEN))     f_csr_rsps <- mkFIFOF1;
+   FIFOF #(DM_CPU_Req #(12, XLEN)) f_csr_reqs <- mkFIFOF;
+   FIFOF #(DM_CPU_Rsp #(XLEN))     f_csr_rsps <- mkFIFOF;
 
 `endif
 
@@ -760,8 +760,7 @@ module mkCPU (CPU_IFC);
 
    rule rl_stage2_nonpipe (   (rg_state == CPU_RUNNING)
 			   && (stage3.out.ostatus == OSTATUS_EMPTY)
-			   && (stage2.out.ostatus == OSTATUS_NONPIPE)
-			   && (stageF.out.ostatus != OSTATUS_BUSY));
+			   && (stage2.out.ostatus == OSTATUS_NONPIPE));
       if (cur_verbosity > 1)
 	 $display ("%0d: CPU.rl_stage2_nonpipe", mcycle);
 
@@ -778,7 +777,8 @@ module mkCPU (CPU_IFC);
    // ================================================================
    // Trap
 
-   rule rl_trap (rg_state == CPU_TRAP);
+   rule rl_trap ((rg_state == CPU_TRAP)
+		 && (stageF.out.ostatus != OSTATUS_BUSY));
       let epc      = rg_trap_info.epc;
       let exc_code = rg_trap_info.exc_code;
       let tval     = rg_trap_info.tval;

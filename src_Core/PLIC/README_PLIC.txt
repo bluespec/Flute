@@ -52,7 +52,7 @@ IP (Interrupt Pending) array: 32 sources per 32b word
 >----------------
 Reserved
 
-0x1018 ... 0x1FFF
+0x1040 ... 0x1FFF
 
 >----------------
 IE (interrupt enables) array for Hart0 M mode (1 bit per source)
@@ -130,32 +130,32 @@ Reserved
 >----------------
 Threshold (of priority) and Claim/Complete registers
 
-0x0C20 0000    Hart 0 M-mode
-0x0C20 0004    Hart 0 M-mode claim/complete
+0x0020 0000    Hart 0 M-mode
+0x0020 0004    Hart 0 M-mode claim/complete
 >----------------
-0x0C20 1000    Hart 1 M-mode
-0x0C20 1004    Hart 1 M-mode claim/complete
+0x0020 1000    Hart 1 M-mode
+0x0020 1004    Hart 1 M-mode claim/complete
 >----------------
-0x0C20 2000    Hart 1 S-mode
-0x0C20 2004    Hart 1 S-mode claim/complete
+0x0020 2000    Hart 1 S-mode
+0x0020 2004    Hart 1 S-mode claim/complete
 >----------------
-0x0C20 3000    Hart 2 M-mode
-0x0C20 3004    Hart 2 M-mode claim/complete
+0x0020 3000    Hart 2 M-mode
+0x0020 3004    Hart 2 M-mode claim/complete
 >----------------
-0x0C20 4000    Hart 2 S-mode
-0x0C20 4004    Hart 2 S-mode claim/complete
+0x0020 4000    Hart 2 S-mode
+0x0020 4004    Hart 2 S-mode claim/complete
 >----------------
-0x0C20 5000    Hart 3 M-mode
-0x0C20 5004    Hart 3 M-mode claim/complete
+0x0020 5000    Hart 3 M-mode
+0x0020 5004    Hart 3 M-mode claim/complete
 >----------------
-0x0C20 6000    Hart 3 S-mode
-0x0C20 6004    Hart 3 S-mode claim/complete
+0x0020 6000    Hart 3 S-mode
+0x0020 6004    Hart 3 S-mode claim/complete
 >----------------
-0x0C20 7000    Hart 4 M-mode
-0x0C20 7004    Hart 4 M-mode claim/complete
+0x0020 7000    Hart 4 M-mode
+0x0020 7004    Hart 4 M-mode claim/complete
 >----------------
-0x0C20 8000    Hart 4 S-mode
-0x0C20 8004    Hart 4 S-mode claim/complete
+0x0020 8000    Hart 4 S-mode
+0x0020 8004    Hart 4 S-mode claim/complete
 >----------------
 
 >================================================================

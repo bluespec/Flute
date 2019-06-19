@@ -205,9 +205,16 @@ module mkSoC_Top (SoC_Top_IFC);
 
       // UART
       core.core_external_interrupt_sources [irq_num_uart0].m_interrupt_req (intr);
+      Integer last_irq_num = irq_num_uart0;
 
-      // Tie off remaining interrupt request lines (1..N)
-      for (Integer j = 1; j < valueOf (N_External_Interrupt_Sources); j = j + 1)
+`ifdef INCLUDE_ACCEL0
+      Bool intr_accel0 = accel0.interrupt_req;
+      core.core_external_interrupt_sources [irq_num_accel0].m_interrupt_req (intr_accel0);
+      last_irq_num = irq_num_accel0;
+`endif
+
+      // Tie off remaining interrupt request lines (2..N)
+      for (Integer j = last_irq_num + 1; j < valueOf (N_External_Interrupt_Sources); j = j + 1)
 	 core.core_external_interrupt_sources [j].m_interrupt_req (False);
 
       // Non-maskable interrupt request. [Tie-off; TODO: connect to genuine sources]

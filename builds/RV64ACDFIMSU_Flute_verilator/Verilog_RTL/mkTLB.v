@@ -190,23 +190,15 @@ module mkTLB(CLK,
        MUX_tlb2_valids_3$write_1__SEL_1;
 
   // remaining internal signals
-  reg SEL_ARR_tlb0_valids_0_5_tlb0_valids_1_6_tlb0_v_ETC___d51,
-      SEL_ARR_tlb1_valids_0_3_tlb1_valids_1_4_tlb1_v_ETC___d29,
-      SEL_ARR_tlb2_valids_0_tlb2_valids_1_tlb2_valid_ETC___d8;
-  wire [129 : 0] IF_NOT_SEL_ARR_tlb2_valids_0_tlb2_valids_1_tlb_ETC___d92,
-		 IF_NOT_SEL_ARR_tlb2_valids_0_tlb2_valids_1_tlb_ETC___d93;
-  wire NOT_SEL_ARR_tlb0_valids_0_5_tlb0_valids_1_6_tl_ETC___d73,
-       NOT_SEL_ARR_tlb1_valids_0_3_tlb1_valids_1_4_tl_ETC___d43,
-       NOT_SEL_ARR_tlb2_valids_0_tlb2_valids_1_tlb2_v_ETC___d22,
-       NOT_SEL_ARR_tlb2_valids_0_tlb2_valids_1_tlb2_v_ETC___d80,
-       SEL_ARR_tlb0_valids_0_5_tlb0_valids_1_6_tlb0_v_ETC___d61,
-       SEL_ARR_tlb1_valids_0_3_tlb1_valids_1_4_tlb1_v_ETC___d65,
-       tlb0_entries_sub_lookup_vpn_BITS_1_TO_0_0_2_BI_ETC___d54,
-       tlb0_entries_sub_lookup_vpn_BITS_1_TO_0_0_2_BI_ETC___d60,
-       tlb1_entries_sub_lookup_vpn_BITS_10_TO_9_8_1_B_ETC___d33,
-       tlb1_entries_sub_lookup_vpn_BITS_10_TO_9_8_1_B_ETC___d41,
-       tlb2_entries_sub_lookup_vpn_BITS_19_TO_18_0_BI_ETC___d12,
-       tlb2_entries_sub_lookup_vpn_BITS_19_TO_18_0_BI_ETC___d20;
+  reg SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d8,
+      SEL_ARR_tlb1_valids_0_9_tlb1_valids_1_0_tlb1_v_ETC___d25,
+      SEL_ARR_tlb2_valids_0_6_tlb2_valids_1_7_tlb2_v_ETC___d42;
+  wire [129 : 0] IF_SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_va_ETC___d66,
+		 IF_SEL_ARR_tlb1_valids_0_9_tlb1_valids_1_0_tlb_ETC___d65;
+  wire SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d14,
+       SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d54,
+       SEL_ARR_tlb1_valids_0_9_tlb1_valids_1_0_tlb1_v_ETC___d31,
+       SEL_ARR_tlb1_valids_0_9_tlb1_valids_1_0_tlb1_v_ETC___d53;
 
   // action method flush
   assign RDY_flush = 1'd1 ;
@@ -215,11 +207,8 @@ module mkTLB(CLK,
 
   // value method lookup
   assign lookup =
-	     { NOT_SEL_ARR_tlb2_valids_0_tlb2_valids_1_tlb2_v_ETC___d22 &&
-	       NOT_SEL_ARR_tlb1_valids_0_3_tlb1_valids_1_4_tl_ETC___d43 &&
-	       SEL_ARR_tlb0_valids_0_5_tlb0_valids_1_6_tlb0_v_ETC___d61 ||
-	       NOT_SEL_ARR_tlb2_valids_0_tlb2_valids_1_tlb2_v_ETC___d80,
-	       IF_NOT_SEL_ARR_tlb2_valids_0_tlb2_valids_1_tlb_ETC___d93 } ;
+	     { SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d54,
+	       IF_SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_va_ETC___d66 } ;
   assign RDY_lookup = !rg_flushing ;
 
   // action method insert
@@ -433,87 +422,57 @@ module mkTLB(CLK,
 	     EN_insert && insert_level != 2'd0 && insert_level != 2'd1 ;
 
   // remaining internal signals
-  assign IF_NOT_SEL_ARR_tlb2_valids_0_tlb2_valids_1_tlb_ETC___d92 =
-	     (NOT_SEL_ARR_tlb2_valids_0_tlb2_valids_1_tlb2_v_ETC___d22 &&
-	      SEL_ARR_tlb1_valids_0_3_tlb1_valids_1_4_tlb1_v_ETC___d65 &&
-	      NOT_SEL_ARR_tlb0_valids_0_5_tlb0_valids_1_6_tl_ETC___d73) ?
+  assign IF_SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_va_ETC___d66 =
+	     (SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d14 &&
+	      tlb0_entries$D_OUT_1[152:128] == lookup_vpn[26:2]) ?
+	       { tlb0_entries$D_OUT_1[127:64],
+		 2'd0,
+		 tlb0_entries$D_OUT_1[63:0] } :
+	       IF_SEL_ARR_tlb1_valids_0_9_tlb1_valids_1_0_tlb_ETC___d65 ;
+  assign IF_SEL_ARR_tlb1_valids_0_9_tlb1_valids_1_0_tlb_ETC___d65 =
+	     (SEL_ARR_tlb1_valids_0_9_tlb1_valids_1_0_tlb1_v_ETC___d31 &&
+	      tlb1_entries$D_OUT_1[143:128] == lookup_vpn[26:11]) ?
 	       { tlb1_entries$D_OUT_1[127:64],
 		 2'd1,
 		 tlb1_entries$D_OUT_1[63:0] } :
 	       { tlb2_entries$D_OUT_1[127:64],
 		 2'd2,
 		 tlb2_entries$D_OUT_1[63:0] } ;
-  assign IF_NOT_SEL_ARR_tlb2_valids_0_tlb2_valids_1_tlb_ETC___d93 =
-	     (NOT_SEL_ARR_tlb2_valids_0_tlb2_valids_1_tlb2_v_ETC___d22 &&
-	      NOT_SEL_ARR_tlb1_valids_0_3_tlb1_valids_1_4_tl_ETC___d43 &&
-	      SEL_ARR_tlb0_valids_0_5_tlb0_valids_1_6_tlb0_v_ETC___d61) ?
-	       { tlb0_entries$D_OUT_1[127:64],
-		 2'd0,
-		 tlb0_entries$D_OUT_1[63:0] } :
-	       IF_NOT_SEL_ARR_tlb2_valids_0_tlb2_valids_1_tlb_ETC___d92 ;
-  assign NOT_SEL_ARR_tlb0_valids_0_5_tlb0_valids_1_6_tl_ETC___d73 =
-	     !SEL_ARR_tlb0_valids_0_5_tlb0_valids_1_6_tlb0_v_ETC___d51 ||
-	     !tlb0_entries_sub_lookup_vpn_BITS_1_TO_0_0_2_BI_ETC___d54 &&
-	     !tlb0_entries$D_OUT_1[69] ||
-	     !tlb0_entries_sub_lookup_vpn_BITS_1_TO_0_0_2_BI_ETC___d60 ;
-  assign NOT_SEL_ARR_tlb1_valids_0_3_tlb1_valids_1_4_tl_ETC___d43 =
-	     !SEL_ARR_tlb1_valids_0_3_tlb1_valids_1_4_tlb1_v_ETC___d29 ||
-	     !tlb1_entries_sub_lookup_vpn_BITS_10_TO_9_8_1_B_ETC___d33 &&
-	     !tlb1_entries$D_OUT_1[69] ||
-	     !tlb1_entries_sub_lookup_vpn_BITS_10_TO_9_8_1_B_ETC___d41 ;
-  assign NOT_SEL_ARR_tlb2_valids_0_tlb2_valids_1_tlb2_v_ETC___d22 =
-	     !SEL_ARR_tlb2_valids_0_tlb2_valids_1_tlb2_valid_ETC___d8 ||
-	     !tlb2_entries_sub_lookup_vpn_BITS_19_TO_18_0_BI_ETC___d12 &&
-	     !tlb2_entries$D_OUT_1[69] ||
-	     !tlb2_entries_sub_lookup_vpn_BITS_19_TO_18_0_BI_ETC___d20 ;
-  assign NOT_SEL_ARR_tlb2_valids_0_tlb2_valids_1_tlb2_v_ETC___d80 =
-	     NOT_SEL_ARR_tlb2_valids_0_tlb2_valids_1_tlb2_v_ETC___d22 &&
-	     SEL_ARR_tlb1_valids_0_3_tlb1_valids_1_4_tlb1_v_ETC___d65 &&
-	     NOT_SEL_ARR_tlb0_valids_0_5_tlb0_valids_1_6_tl_ETC___d73 ||
-	     SEL_ARR_tlb2_valids_0_tlb2_valids_1_tlb2_valid_ETC___d8 &&
-	     (tlb2_entries_sub_lookup_vpn_BITS_19_TO_18_0_BI_ETC___d12 ||
+  assign SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d14 =
+	     SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d8 &&
+	     (tlb0_entries$D_OUT_1[168:153] == lookup_asid ||
+	      tlb0_entries$D_OUT_1[69]) ;
+  assign SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d54 =
+	     SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d14 &&
+	     tlb0_entries$D_OUT_1[152:128] == lookup_vpn[26:2] ||
+	     SEL_ARR_tlb1_valids_0_9_tlb1_valids_1_0_tlb1_v_ETC___d53 ;
+  assign SEL_ARR_tlb1_valids_0_9_tlb1_valids_1_0_tlb1_v_ETC___d31 =
+	     SEL_ARR_tlb1_valids_0_9_tlb1_valids_1_0_tlb1_v_ETC___d25 &&
+	     (tlb1_entries$D_OUT_1[159:144] == lookup_asid ||
+	      tlb1_entries$D_OUT_1[69]) ;
+  assign SEL_ARR_tlb1_valids_0_9_tlb1_valids_1_0_tlb1_v_ETC___d53 =
+	     SEL_ARR_tlb1_valids_0_9_tlb1_valids_1_0_tlb1_v_ETC___d31 &&
+	     tlb1_entries$D_OUT_1[143:128] == lookup_vpn[26:11] ||
+	     SEL_ARR_tlb2_valids_0_6_tlb2_valids_1_7_tlb2_v_ETC___d42 &&
+	     (tlb2_entries$D_OUT_1[150:135] == lookup_asid ||
 	      tlb2_entries$D_OUT_1[69]) &&
-	     tlb2_entries_sub_lookup_vpn_BITS_19_TO_18_0_BI_ETC___d20 &&
-	     NOT_SEL_ARR_tlb1_valids_0_3_tlb1_valids_1_4_tl_ETC___d43 &&
-	     NOT_SEL_ARR_tlb0_valids_0_5_tlb0_valids_1_6_tl_ETC___d73 ;
-  assign SEL_ARR_tlb0_valids_0_5_tlb0_valids_1_6_tlb0_v_ETC___d61 =
-	     SEL_ARR_tlb0_valids_0_5_tlb0_valids_1_6_tlb0_v_ETC___d51 &&
-	     (tlb0_entries_sub_lookup_vpn_BITS_1_TO_0_0_2_BI_ETC___d54 ||
-	      tlb0_entries$D_OUT_1[69]) &&
-	     tlb0_entries_sub_lookup_vpn_BITS_1_TO_0_0_2_BI_ETC___d60 ;
-  assign SEL_ARR_tlb1_valids_0_3_tlb1_valids_1_4_tlb1_v_ETC___d65 =
-	     SEL_ARR_tlb1_valids_0_3_tlb1_valids_1_4_tlb1_v_ETC___d29 &&
-	     (tlb1_entries_sub_lookup_vpn_BITS_10_TO_9_8_1_B_ETC___d33 ||
-	      tlb1_entries$D_OUT_1[69]) &&
-	     tlb1_entries_sub_lookup_vpn_BITS_10_TO_9_8_1_B_ETC___d41 ;
-  assign tlb0_entries_sub_lookup_vpn_BITS_1_TO_0_0_2_BI_ETC___d54 =
-	     tlb0_entries$D_OUT_1[168:153] == lookup_asid ;
-  assign tlb0_entries_sub_lookup_vpn_BITS_1_TO_0_0_2_BI_ETC___d60 =
-	     tlb0_entries$D_OUT_1[152:128] == lookup_vpn[26:2] ;
-  assign tlb1_entries_sub_lookup_vpn_BITS_10_TO_9_8_1_B_ETC___d33 =
-	     tlb1_entries$D_OUT_1[159:144] == lookup_asid ;
-  assign tlb1_entries_sub_lookup_vpn_BITS_10_TO_9_8_1_B_ETC___d41 =
-	     tlb1_entries$D_OUT_1[143:128] == lookup_vpn[26:11] ;
-  assign tlb2_entries_sub_lookup_vpn_BITS_19_TO_18_0_BI_ETC___d12 =
-	     tlb2_entries$D_OUT_1[150:135] == lookup_asid ;
-  assign tlb2_entries_sub_lookup_vpn_BITS_19_TO_18_0_BI_ETC___d20 =
 	     tlb2_entries$D_OUT_1[134:128] == lookup_vpn[26:20] ;
   always@(lookup_vpn or
-	  tlb2_valids_0 or tlb2_valids_1 or tlb2_valids_2 or tlb2_valids_3)
+	  tlb0_valids_0 or tlb0_valids_1 or tlb0_valids_2 or tlb0_valids_3)
   begin
-    case (lookup_vpn[19:18])
+    case (lookup_vpn[1:0])
       2'd0:
-	  SEL_ARR_tlb2_valids_0_tlb2_valids_1_tlb2_valid_ETC___d8 =
-	      tlb2_valids_0;
+	  SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d8 =
+	      tlb0_valids_0;
       2'd1:
-	  SEL_ARR_tlb2_valids_0_tlb2_valids_1_tlb2_valid_ETC___d8 =
-	      tlb2_valids_1;
+	  SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d8 =
+	      tlb0_valids_1;
       2'd2:
-	  SEL_ARR_tlb2_valids_0_tlb2_valids_1_tlb2_valid_ETC___d8 =
-	      tlb2_valids_2;
+	  SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d8 =
+	      tlb0_valids_2;
       2'd3:
-	  SEL_ARR_tlb2_valids_0_tlb2_valids_1_tlb2_valid_ETC___d8 =
-	      tlb2_valids_3;
+	  SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d8 =
+	      tlb0_valids_3;
     endcase
   end
   always@(lookup_vpn or
@@ -521,35 +480,35 @@ module mkTLB(CLK,
   begin
     case (lookup_vpn[10:9])
       2'd0:
-	  SEL_ARR_tlb1_valids_0_3_tlb1_valids_1_4_tlb1_v_ETC___d29 =
+	  SEL_ARR_tlb1_valids_0_9_tlb1_valids_1_0_tlb1_v_ETC___d25 =
 	      tlb1_valids_0;
       2'd1:
-	  SEL_ARR_tlb1_valids_0_3_tlb1_valids_1_4_tlb1_v_ETC___d29 =
+	  SEL_ARR_tlb1_valids_0_9_tlb1_valids_1_0_tlb1_v_ETC___d25 =
 	      tlb1_valids_1;
       2'd2:
-	  SEL_ARR_tlb1_valids_0_3_tlb1_valids_1_4_tlb1_v_ETC___d29 =
+	  SEL_ARR_tlb1_valids_0_9_tlb1_valids_1_0_tlb1_v_ETC___d25 =
 	      tlb1_valids_2;
       2'd3:
-	  SEL_ARR_tlb1_valids_0_3_tlb1_valids_1_4_tlb1_v_ETC___d29 =
+	  SEL_ARR_tlb1_valids_0_9_tlb1_valids_1_0_tlb1_v_ETC___d25 =
 	      tlb1_valids_3;
     endcase
   end
   always@(lookup_vpn or
-	  tlb0_valids_0 or tlb0_valids_1 or tlb0_valids_2 or tlb0_valids_3)
+	  tlb2_valids_0 or tlb2_valids_1 or tlb2_valids_2 or tlb2_valids_3)
   begin
-    case (lookup_vpn[1:0])
+    case (lookup_vpn[19:18])
       2'd0:
-	  SEL_ARR_tlb0_valids_0_5_tlb0_valids_1_6_tlb0_v_ETC___d51 =
-	      tlb0_valids_0;
+	  SEL_ARR_tlb2_valids_0_6_tlb2_valids_1_7_tlb2_v_ETC___d42 =
+	      tlb2_valids_0;
       2'd1:
-	  SEL_ARR_tlb0_valids_0_5_tlb0_valids_1_6_tlb0_v_ETC___d51 =
-	      tlb0_valids_1;
+	  SEL_ARR_tlb2_valids_0_6_tlb2_valids_1_7_tlb2_v_ETC___d42 =
+	      tlb2_valids_1;
       2'd2:
-	  SEL_ARR_tlb0_valids_0_5_tlb0_valids_1_6_tlb0_v_ETC___d51 =
-	      tlb0_valids_2;
+	  SEL_ARR_tlb2_valids_0_6_tlb2_valids_1_7_tlb2_v_ETC___d42 =
+	      tlb2_valids_2;
       2'd3:
-	  SEL_ARR_tlb0_valids_0_5_tlb0_valids_1_6_tlb0_v_ETC___d51 =
-	      tlb0_valids_3;
+	  SEL_ARR_tlb2_valids_0_6_tlb2_valids_1_7_tlb2_v_ETC___d42 =
+	      tlb2_valids_3;
     endcase
   end
 

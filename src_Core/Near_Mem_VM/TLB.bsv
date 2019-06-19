@@ -283,16 +283,16 @@ module mkTLB #(parameter Bool dmem_not_imem) (TLB_IFC);
 
       let result = TLB_Lookup_Result {hit: False, pte: ?, pte_level: ?, pte_pa: ?};
 
-      if ((! match2) && (! match1) && match0) begin
+      if (match0) begin
 	 let tlbe0 = tlb0_entries.sub (idx0);
 	 result = TLB_Lookup_Result {hit: True, pte: tlbe0.pte, pte_level: 0, pte_pa: tlbe0.pte_pa};
       end
-      else if ((! match2) && match1 && (! match0)) begin
+      else if (match1) begin
 	 let tlbe1 = tlb1_entries.sub (idx1);
 	 result = TLB_Lookup_Result {hit: True, pte: tlbe1.pte, pte_level: 1, pte_pa: tlbe1.pte_pa};
       end
 `ifdef RV64
-      else if (match2 && (! match1) && (! match0)) begin
+      else if (match2) begin
 	 let tlbe2 = tlb2_entries.sub (idx2);
 	 result = TLB_Lookup_Result {hit: True, pte: tlbe2.pte, pte_level: 2, pte_pa: tlbe2.pte_pa};
       end

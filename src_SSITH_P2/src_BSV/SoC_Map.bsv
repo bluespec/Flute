@@ -44,6 +44,12 @@ export  irq_num_uart16550_0;
 import Fabric_Defs :: *;    // Only for type Fabric_Addr
 
 // ================================================================
+
+function Bool addr_function(Fabric_Addr base, Fabric_Addr size, Fabric_Addr addr);
+   return (base <= addr) && (addr < (base + size));
+endfunction
+
+// ================================================================
 // Interface and module for the address map
 
 interface SoC_Map_IFC;
@@ -158,7 +164,7 @@ module mkSoC_Map (SoC_Map_IFC);
    // Flash Mem
 
    Fabric_Addr flash_mem_addr_base = 'h_4000_0000;
-   Fabric_Addr flash_mem_addr_size = 'h_0001_0000;    // 64K
+   Fabric_Addr flash_mem_addr_size = 'h_0800_0000;    // 128M
    Fabric_Addr flash_mem_addr_lim  = flash_mem_addr_base + flash_mem_addr_size;
 
    function Bool fn_is_flash_mem_addr (Fabric_Addr addr);
@@ -257,6 +263,16 @@ module mkSoC_Map (SoC_Map_IFC);
    endfunction
 
    // ----------------------------------------------------------------
+
+   function fn_is_flash_regs_addr = addr_function('h6240_0000, 'h1000);
+   function fn_is_uart1_addr = addr_function('h6230_0000, 'h1000);
+   function fn_is_i2c_addr = addr_function('h6231_0000, 'h1000);
+   function fn_is_spi_addr = addr_function('h6232_0000, 'h1000);
+   function fn_is_uart2_addr = addr_function('h6236_0000, 'h1000);
+   function fn_is_gpio1_addr = addr_function('h6233_0000, 'h1000);
+   function fn_is_gpio2_addr = addr_function('h6237_0000, 'h1000);
+
+   // ----------------------------------------------------------------
    // Memory address predicate
    // Identifies memory addresses in the Fabric.
    // (Caches needs this information to cache these addresses.)
@@ -283,6 +299,13 @@ module mkSoC_Map (SoC_Map_IFC);
 	      || fn_is_gpio_0_addr (addr)
 	      || fn_is_boot_rom_addr (addr)
 	      || fn_is_ddr4_0_uncached_addr (addr)
+	      || fn_is_flash_regs_addr (addr)
+	      || fn_is_uart1_addr (addr)
+	      || fn_is_i2c_addr (addr)
+	      || fn_is_spi_addr (addr)
+	      || fn_is_uart2_addr (addr)
+	      || fn_is_gpio1_addr (addr)
+	      || fn_is_gpio2_addr (addr)
 	      );
    endfunction
 

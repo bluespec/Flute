@@ -179,7 +179,7 @@ module mkDM_System_Bus (DM_System_Bus_IFC);
    // ----------------------------------------------------------------
 
    // Interface to memory fabric
-   AXI4_Master_Xactor_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) master_xactor <- mkAXI4_Master_Xactor_2;
+   AXI4_Master_Xactor_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) master_xactor <- mkAXI4_Master_Xactor;
 
    // ----------------------------------------------------------------
    // System Bus state
@@ -318,8 +318,7 @@ module mkDM_System_Bus (DM_System_Bus_IFC);
 				 awuser:   fabric_default_user};
 	 master_xactor.i_wr_addr.enq (wra);
 
-	 let wrd = AXI4_Wr_Data {wid:   fabric_default_id,
-				 wdata: fabric_data,
+	 let wrd = AXI4_Wr_Data {wdata: fabric_data,
 				 wstrb: fabric_strb,
 				 wlast: True,
 				 wuser: fabric_default_user};

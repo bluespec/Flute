@@ -79,23 +79,21 @@ module mkUnit_Test_Deburster (Empty);
 			   awuser: user};
    endfunction
 
-   function AXI4_Wr_Data #(Wd_Id, Wd_Data, Wd_User)
-            fv_mk_wr_data (Bit #(Wd_Id)    id,
-			   Bit #(Wd_Data)  data,
+   function AXI4_Wr_Data #(Wd_Data, Wd_User)
+            fv_mk_wr_data (Bit #(Wd_Data)  data,
 			   Bit #(Wd_User)  user);
       Bool last = (rg_beat == f_len.first - 1);
-      return AXI4_Wr_Data {wid: id,
-			   wdata: data,
+      return AXI4_Wr_Data {wdata: data,
 			   wstrb: 'hFF,
 			   wlast: last,
 			   wuser: user};
    endfunction
 
    function AXI4_Wr_Resp #(Wd_Id, Wd_User)
-            fv_mk_wr_resp (AXI4_Wr_Data #(Wd_Id, Wd_Data, Wd_User) wd);
-      return AXI4_Wr_Resp {bid:   wd.wid,
+            fv_mk_wr_resp (AXI4_Wr_Addr #(Wd_Id, Wd_Addr, Wd_User) wa);
+      return AXI4_Wr_Resp {bid:   wa.awid,
 			   bresp: axi4_resp_okay,
-			   buser: wd.wuser};
+			   buser: wa.awuser};
    endfunction
 
    function AXI4_Rd_Addr #(Wd_Id, Wd_Addr, Wd_User)
@@ -176,7 +174,7 @@ module mkUnit_Test_Deburster (Empty);
 
    rule rl_wr_data;
       let data = 'h1_0000 + zeroExtend (rg_beat);
-      let wd = fv_mk_wr_data (id1, data, user1);
+      let wd = fv_mk_wr_data (data, user1);
       master.i_wr_data.enq (wd);
       rg_idle_count <= 0;
       
@@ -251,19 +249,17 @@ module mkUnit_Test_Deburster (Empty);
    // Slave: return functional responses
    // Note: we should not be receiving any bursts, since we're fronted by the Deburster.
 
-   rule rl_slave_IP_model_wr_addr;
+   rule rl_slave_IP_model_writes;
+      $display ("%0d: %m.rl_slave_IP_model_writes: ", cur_cycle);
+
       let wa <- pop_o (slave.o_wr_addr);
-
-      $display ("%0d: slave: ", cur_cycle);
-      $display ("  ", fshow (wa));
-   endrule
-
-   rule rl_slave_IP_model_wr_data;
       let wd <- pop_o (slave.o_wr_data);
-      slave.i_wr_resp.enq (fv_mk_wr_resp (wd));
 
-      $display ("%0d: slave: ", cur_cycle);
+      let wr = fv_mk_wr_resp (wa);
+      slave.i_wr_resp.enq (wr);
+      $display ("  ", fshow (wa));
       $display ("  ", fshow (wd));
+      $display ("  ", fshow (wr));
    endrule
 
    rule rl_slave_IP_model_rd_addr;

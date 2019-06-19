@@ -41,6 +41,8 @@ interface AXI4_Accel_IFC;
 
    interface AXI4_Slave_IFC  #(Wd_Id, Wd_Addr, Wd_Data, Wd_User)  slave;
 
+   method Bool interrupt_req;
+
    interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User)  master;
 endinterface
 
