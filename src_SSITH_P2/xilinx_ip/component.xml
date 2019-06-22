@@ -111,14 +111,6 @@
         </spirit:portMap>
         <spirit:portMap>
           <spirit:logicalPort>
-            <spirit:name>WID</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>master0_wid</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-        <spirit:portMap>
-          <spirit:logicalPort>
             <spirit:name>WDATA</spirit:name>
           </spirit:logicalPort>
           <spirit:physicalPort>
@@ -437,14 +429,6 @@
           </spirit:logicalPort>
           <spirit:physicalPort>
             <spirit:name>master1_awready</spirit:name>
-          </spirit:physicalPort>
-        </spirit:portMap>
-        <spirit:portMap>
-          <spirit:logicalPort>
-            <spirit:name>WID</spirit:name>
-          </spirit:logicalPort>
-          <spirit:physicalPort>
-            <spirit:name>master1_wid</spirit:name>
           </spirit:physicalPort>
         </spirit:portMap>
         <spirit:portMap>
@@ -796,7 +780,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>073ddeff</spirit:value>
+            <spirit:value>c1b61aa6</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -812,7 +796,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>a38db3fe</spirit:value>
+            <spirit:value>8fa1569c</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -1057,23 +1041,6 @@
         <spirit:name>master0_wvalid</spirit:name>
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>wire</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-        </spirit:wire>
-      </spirit:port>
-      <spirit:port>
-        <spirit:name>master0_wid</spirit:name>
-        <spirit:wire>
-          <spirit:direction>out</spirit:direction>
-          <spirit:vector>
-            <spirit:left spirit:format="long">3</spirit:left>
-            <spirit:right spirit:format="long">0</spirit:right>
-          </spirit:vector>
           <spirit:wireTypeDefs>
             <spirit:wireTypeDef>
               <spirit:typeName>wire</spirit:typeName>
@@ -1724,23 +1691,6 @@
         </spirit:wire>
       </spirit:port>
       <spirit:port>
-        <spirit:name>master1_wid</spirit:name>
-        <spirit:wire>
-          <spirit:direction>out</spirit:direction>
-          <spirit:vector>
-            <spirit:left spirit:format="long">3</spirit:left>
-            <spirit:right spirit:format="long">0</spirit:right>
-          </spirit:vector>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>wire</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-        </spirit:wire>
-      </spirit:port>
-      <spirit:port>
         <spirit:name>master1_wdata</spirit:name>
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
@@ -2182,7 +2132,7 @@
           </spirit:vector>
           <spirit:wireTypeDefs>
             <spirit:wireTypeDef>
-              <spirit:typeName>std_logic</spirit:typeName>
+              <spirit:typeName>std_logic_vector</spirit:typeName>
               <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
               <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
             </spirit:wireTypeDef>
@@ -2568,6 +2518,7 @@
       <spirit:file>
         <spirit:name>hdl/mkDM_FPR_Tap.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
+        <spirit:userFileType>CHECKSUM_223a0d1a</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
     <spirit:fileSet>
@@ -2783,19 +2734,19 @@
       </xilinx:taxonomies>
       <xilinx:displayName>mkP2_Core_v1_0</xilinx:displayName>
       <xilinx:definitionSource>package_project</xilinx:definitionSource>
-      <xilinx:coreRevision>6</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2019-03-16T16:37:14Z</xilinx:coreCreationDateTime>
+      <xilinx:coreRevision>10</xilinx:coreRevision>
+      <xilinx:coreCreationDateTime>2019-06-22T21:20:34Z</xilinx:coreCreationDateTime>
       <xilinx:tags>
         <xilinx:tag xilinx:name="nopcore"/>
-        <xilinx:tag xilinx:name="ssith:user:ssith_processor:1.0_ARCHIVE_LOCATION">/export/home/stoy/examples/galois/gfe1/bluespec-processors/P2/Flute/src_SSITH_P2/xilinx_ip</xilinx:tag>
+        <xilinx:tag xilinx:name="ssith:user:ssith_processor:1.0_ARCHIVE_LOCATION">/tmp/stoy/galois/gfe/bluespec-processors/P2/Flute/src_SSITH_P2/xilinx_ip</xilinx:tag>
       </xilinx:tags>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2017.4</xilinx:xilinxVersion>
-      <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="683c18e5"/>
+      <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="16fe7448"/>
       <xilinx:checksum xilinx:scope="addressSpaces" xilinx:value="3315be85"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="ba124cd5"/>
-      <xilinx:checksum xilinx:scope="ports" xilinx:value="2d96e421"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="788693fb"/>
+      <xilinx:checksum xilinx:scope="ports" xilinx:value="a3be71c0"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="fb7325a1"/>
     </xilinx:packagingInfo>
   </spirit:vendorExtensions>
