@@ -2,6 +2,209 @@
 accordance with the RISC-V standard "External Debug Support" spec:
 
     RISC-V External Debug Support
+    Version 0.13.2
+    d5029366d59e8563c08b6b9435f82573b603e48e
+    Fri Mar 22 09:06:04 2019 -0700
+
+Note: the spec is independent of any particular RISC-V CPU
+implementation.  It just specifies the standard registers in the Debug
+Module that can be read and written by an external debugger (such as
+GDB).  It specifies the address map of these registers, and the
+semantics, i.e., what happens when one reads or writes these
+registers.  The spec does not say anything about how this spec is
+implemented.
+
+Please see comments in Debug_Module.bsv for more details on our
+implementation of the Debug Module spec.  This implementation is also
+not specific to any particular CPU implementation.  We use it in
+multiple Bluespec RISC-V CPU implementations, and it could be used
+with other CPU implementations as well.
+
+// ================================================================
+What follows is a concise cheat-sheet for the registers in the Debug Module.
+
+DM_Addr dm_addr_data0        = 'h04;
+DM_Addr dm_addr_data1        = 'h05;
+DM_Addr dm_addr_data2        = 'h06;
+DM_Addr dm_addr_data3        = 'h07;
+DM_Addr dm_addr_data4        = 'h08;
+DM_Addr dm_addr_data5        = 'h09;
+DM_Addr dm_addr_data6        = 'h0a;
+DM_Addr dm_addr_data7        = 'h0b;
+DM_Addr dm_addr_data8        = 'h0c;
+DM_Addr dm_addr_data9        = 'h0d;
+DM_Addr dm_addr_data10       = 'h0d;
+DM_Addr dm_addr_data11       = 'h0f;
+
+// ----------------
+// Run Control
+
+DM_Addr dm_addr_dmcontrol    = 'h10;
+    31.30.29.28| 27.26.25.24| 23.22.21.20| 19.18.17.16| 15.14.13.12| 11.10.9.8| 7.6.5.4| 3.2.1.0|
+     |  |  |  |   0  |  |                            |   |                        | 0 0  | | | |dmactive
+     |  |  |  |      |  |                            |   |                        |      | | |ndmreset
+     |  |  |  |      |  |                            |   |                        |      | |clrresethaltreq
+     |  |  |  |      |  |                            |   |                        |      |setresethaltreq
+     |  |  |  |      |  |                            |   |-----------10-----------|hartselhi
+     |  |  |  |      |  |------------10--------------|hartsello
+     |  |  |  |      |hasel
+     |  |  |  |        0: Single hart selected (hartsel)
+     |  |  |  |        1: Multiple harts selected (hartsel + hart array mask)
+     |  |  |  |ackhavereset
+     |  |  |hartreset
+     |  |resumereq
+     |haltreq
+
+DM_Addr dm_addr_dmstatus     = 'h11;
+    31.30.29.28| 27.26.25.24| 23.22.21.20| 19.18.17.16| 15.14.13.12| 11.10.9.8| 7.6.5.4| 3.2.1.0|
+     0  0  0  0   0  0  0  0   |  |  0  0   |  |  |  |   |  |  |  |   |  | | |  | | | |  |--4--|version
+                               |  |         |  |  |  |   |  |  |  |   |  | | |  | | | |  |       0: no DM present
+                               |  |         |  |  |  |   |  |  |  |   |  | | |  | | | |  |       1: DM v011
+                               |  |         |  |  |  |   |  |  |  |   |  | | |  | | | |  |       2: DM v013
+                               |  |         |  |  |  |   |  |  |  |   |  | | |  | | | |  |       15: DM vUnknown
+                               |  |         |  |  |  |   |  |  |  |   |  | | |  | | | |confstrptrvalid
+                               |  |         |  |  |  |   |  |  |  |   |  | | |  | | |hasresethaltreq
+                               |  |         |  |  |  |   |  |  |  |   |  | | |  | |authbusy
+                               |  |         |  |  |  |   |  |  |  |   |  | | |  |authenticated
+                               |  |         |  |  |  |   |  |  |  |   |  | | |anyhalted
+                               |  |         |  |  |  |   |  |  |  |   |  | |allhalted
+                               |  |         |  |  |  |   |  |  |  |   |  |anyrunning
+                               |  |         |  |  |  |   |  |  |  |   |allrunning
+                               |  |         |  |  |  |   |  |  |  |anyunavail
+                               |  |         |  |  |  |   |  |  |allunavail
+                               |  |         |  |  |  |   |  |anynonexistent
+                               |  |         |  |  |  |   |allnonexistent
+                               |  |         |  |  |  |anyresumeack
+                               |  |         |  |  |allresumeack
+                               |  |         |  |anyhavereset
+                               |  |         |allhavereset
+                               |  |impebreak
+                               |    0 No implicit EBREAK at end of PB
+                               |    1 Implicit    EBREAK at end of PB
+
+DM_Addr dm_addr_hartinfo     = 'h12;
+    31.30.29.28| 27.26.25.24| 23.22.21.20| 19.18.17.16| 15.14.13.12| 11.10.9.8| 7.6.5.4| 3.2.1.0|
+     0  0  0  0   0  0  0  0   |        |   0  0  0  |   |        |   |-----------12-----------|dataaddr
+                               |        |            |   |----4---|datasize
+                               |----4---|nscratch    |dataaccess
+
+
+DM_Addr dm_addr_haltsum1     = 'h13;
+DM_Addr dm_addr_hawindowsel  = 'h14;
+DM_Addr dm_addr_hawindow     = 'h15;
+
+// ----------------
+// Abstract commands (read/write RISC-V registers and RISC-V CSRs)
+
+DM_Addr dm_addr_abstractcs   = 'h16;
+    31.30.29.28| 27.26.25.24| 23.22.21.20| 19.18.17.16| 15.14.13.12| 11.10.9.8| 7.6.5.4| 3.2.1.0|
+     0  0  0  |            |   0  0  0  0   0  0  0  0   0  0  0  |   0  |   |  0 0 0 0  |--4--|datacount
+     0  0  0  |-----5------|progbufsize                           |busy  |-3-|cmderr
+
+DM_Addr dm_addr_command      = 'h17;
+    31.30.29.28| 27.26.25.24| 23.22.21.20| 19.18.17.16| 15.14.13.12| 11.10.9.8| 7.6.5.4| 3.2.1.0|
+                           |   0  |     |   |  |  |  |   |-----------------16------------------|regno
+                           |      |     |   |  |  |  |   |        0x0000-0x0FFF    CSRs (dpc => PC)
+                           |      |     |   |  |  |  |   |        0x1000-0x101F    GPRs
+                           |      |     |   |  |  |  |   |        0x1020-0x103F    Floating Point Regs
+                           |      |     |   |  |  |  |   |        0xC000-0xFFFF    Reserved
+                           |      |     |   |  |  |  |write
+                           |      |     |   |  |  |    0: specified reg -> arg0 of data
+                           |      |     |   |  |  |    1: specified reg <- arg0 of data
+                           |      |     |   |  |  |transfer
+                           |      |     |   |  |    0 Don't do the 'write' op
+                           |      |     |   |  |    1 Do       the 'write' op
+                           |      |     |   |  |    Allows exec of PB without valid vals in 'size' and 'regno'
+                           |      |     |   |  |postexec
+                           |      |     |   |    1 exec Program Buffer exactly once after the xfer
+                           |      |     |   |aarpostincrement
+                           |      |--3--|aarsize
+                           |              2 Lowest  32b of reg
+                           |              3 Lowest  64b of reg
+                           |              4 Lowest 128b of reg
+     |---------8-----------|cmdtype
+                             0 ACCESS_REG
+                             1 QUICK_ACCESS
+
+DM_Addr dm_addr_abstractauto = 'h18;
+DM_Addr dm_addr_confstrptr0  = 'h19;
+DM_Addr dm_addr_confstrptr1  = 'h1a;
+DM_Addr dm_addr_confstrptr2  = 'h1b;
+DM_Addr dm_addr_confstrptr3  = 'h1c;
+DM_Addr dm_addr_nextdm       = 'h1d;
+
+DM_Addr dm_addr_progbuf0     = 'h20;
+DM_Addr dm_addr_progbuf1     = 'h21;
+DM_Addr dm_addr_progbuf2     = 'h22;
+DM_Addr dm_addr_progbuf3     = 'h23;
+DM_Addr dm_addr_progbuf4     = 'h24;
+DM_Addr dm_addr_progbuf5     = 'h25;
+DM_Addr dm_addr_progbuf6     = 'h26;
+DM_Addr dm_addr_progbuf7     = 'h27;
+DM_Addr dm_addr_progbuf8     = 'h28;
+DM_Addr dm_addr_progbuf9     = 'h29;
+DM_Addr dm_addr_progbuf10    = 'h2a;
+DM_Addr dm_addr_progbuf11    = 'h2b;
+DM_Addr dm_addr_progbuf12    = 'h2c;
+DM_Addr dm_addr_progbuf13    = 'h2d;
+DM_Addr dm_addr_progbuf14    = 'h2e;
+DM_Addr dm_addr_progbuf15    = 'h2f;
+
+DM_Addr dm_addr_authdata     = 'h30;
+DM_Addr dm_addr_haltsum2     = 'h34;
+DM_Addr dm_addr_haltsum3     = 'h35;
+
+DM_Addr dm_addr_sbaddress3   = 'h37;
+
+// ----------------
+// System Bus access (read/write RISC-V memory/devices)
+
+DM_Addr dm_addr_sbcs         = 'h38;
+    31.30.29.28| 27.26.25.24| 23.22.21.20| 19.18.17.16| 15.14.13.12| 11.10.9.8| 7.6.5.4| 3.2.1.0|
+     |     |  0   0  0  0  0   0  |  |  |   |     |  |   |  |     |   |             | |  | | | |sbaccess8
+     |     |                      |  |  |   |     |  |   |  |     |   |             | |  | | |sbaccess16
+     |     |                      |  |  |   |     |  |   |  |     |   |             | |  | |sbaccess32
+     |     |                      |  |  |   |     |  |   |  |     |   |             | |  |sbaccess64
+     |     |                      |  |  |   |     |  |   |  |     |   |             | |sbaccess128
+     |     |                      |  |  |   |     |  |   |  |     |   |-----7-------|sbasize
+     |     |                      |  |  |   |     |  |   |  |--3--|sberror
+     |     |                      |  |  |   |     |  |   |          0: no bus err
+     |     |                      |  |  |   |     |  |   |          1: timeout
+     |     |                      |  |  |   |     |  |   |          2: bad addr
+     |     |                      |  |  |   |     |  |   |          3: alignment err
+     |     |                      |  |  |   |     |  |   |          4: unsupported size
+     |     |                      |  |  |   |     |  |   |          7: other
+     |     |                      |  |  |   |     |  |   |sbreadondata: read on sbdata0 triggers sb read
+     |     |                      |  |  |   |     |  |sbautoincrement
+     |     |                      |  |  |   |--3--|sbaccess
+     |     |                      |  |  |            0:8b, 1:16b, 2:32b, 3:64b, 4:128b
+     |     |                      |  |  |sbreadonaddr
+     |     |                      |  |   1 Every write to sbaddress0 triggers sb read at new addr
+     |     |                      |  |sbbusy
+     |     |                      |sbbusyerror
+     |--3--|sbversion
+              0: System Bus interface spec version < 2018-01-01
+              1: This System Bus interface spec version
+
+DM_Addr dm_addr_sbaddress0   = 'h39;
+DM_Addr dm_addr_sbaddress1   = 'h3a;
+DM_Addr dm_addr_sbaddress2   = 'h3b;
+DM_Addr dm_addr_sbdata0      = 'h3c;
+DM_Addr dm_addr_sbdata1      = 'h3d;
+DM_Addr dm_addr_sbdata2      = 'h3e;
+DM_Addr dm_addr_sbdata3      = 'h3f;
+DM_Addr dm_addr_haltsum0     = 'h40;
+
+// ================================================================
+// ================================================================
+// OLDER VERSIONS OF THE DEBUG MODULE SPEC
+// ================================================================
+// ================================================================
+
+'Debug_Module' implements a Debug Module for RISC-V processors in
+accordance with the RISC-V standard "External Debug Support" spec:
+
+    RISC-V External Debug Support
     Version 0.13-DRAFT
     dd8d8714184970031fa447a452068223f257b51c
     Mon Dec 18 13:54:14 2017 -0800
