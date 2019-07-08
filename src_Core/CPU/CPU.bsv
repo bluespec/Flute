@@ -775,7 +775,38 @@ module mkCPU (CPU_IFC);
    endrule: rl_stage2_nonpipe
 
    // ================================================================
-   // Trap
+   // Stage1: nonpipe traps (except BREAKs that enter Debug Mode)
+
+`ifdef INCLUDE_GDB_CONTROL
+   Bool break_into_Debug_Mode = (   (stage1.out.trap_info.exc_code == exc_code_BREAKPOINT)
+				 && csr_regfile.dcsr_break_enters_debug (rg_cur_priv));
+`else
+   Bool break_into_Debug_Mode = False;
+`endif
+
+   rule rl_stage1_trap (   (   (rg_state == CPU_CSRRx_TRAP)
+			    || (   (rg_state == CPU_RUNNING)
+				&& (! halting)
+				&& (stage3.out.ostatus == OSTATUS_EMPTY)
+				&& (stage2.out.ostatus == OSTATUS_EMPTY)
+				&& (stage1.out.ostatus == OSTATUS_NONPIPE)
+				&& (stage1.out.control == CONTROL_TRAP)
+				&& (! break_into_Debug_Mode)))
+			&& (stageF.out.ostatus != OSTATUS_BUSY));
+      if (cur_verbosity > 1) $display ("%0d: %m.rl_stage1_trap", mcycle);
+
+      // Just save relevant info and handle in next clock
+      rg_trap_info       <= stage1.out.trap_info;
+      rg_trap_instr      <= stage1.out.data_to_stage2.instr;
+`ifdef INCLUDE_TANDEM_VERIF
+      rg_trap_trace_data <= stage1.out.data_to_stage2.trace_data;
+`endif
+
+      rg_state           <= CPU_TRAP;
+   endrule: rl_stage1_trap
+
+   // ================================================================
+   // Traps
 
    rule rl_trap ((rg_state == CPU_TRAP)
 		 && (stageF.out.ostatus != OSTATUS_BUSY));
@@ -811,14 +842,16 @@ module mkCPU (CPU_IFC);
 
       rg_state <= CPU_START_TRAP_HANDLER;
 
-      stage1.set_full (False);
+      stageD.set_full (False);
+      stage1.set_full (False);    fa_step_check;
       stage2.set_full (False);
 
-      // Accounting
-      csr_regfile.csr_minstret_incr;
+      // Accounting    TODO: should traps be counted as retired insrs?
+      // csr_regfile.csr_minstret_incr;
 
+      // Tandem Verification and Debug related actions
 `ifdef INCLUDE_TANDEM_VERIF
-      // Trace Data
+      // Trace data
       let trace_data = rg_trap_trace_data;
       trace_data.op = TRACE_TRAP;
       trace_data.pc = next_pc;
@@ -830,6 +863,16 @@ module mkCPU (CPU_IFC);
       trace_data.word3 = zeroExtend (epc);
       trace_data.word4 = tval;
       f_trace_data.enq (trace_data);
+`endif
+
+      // Simulation heuristic: finish if trap back to this instr
+`ifndef INCLUDE_GDB_CONTROL
+      if (epc == next_pc) begin
+	 $display ("%0d: %m.rl_stage1_trap: Tight infinite trap loop: pc 0x%0x instr 0x%08x", mcycle,
+		   next_pc, instr);
+	 fa_report_CPI;
+	 $finish (0);
+      end
 `endif
 
       fa_emit_instr_trace (minstret, epc, instr, rg_cur_priv);
@@ -1386,97 +1429,6 @@ module mkCPU (CPU_IFC);
 
       rg_state <= CPU_RESET1;
    endrule: rl_reset_from_WFI
-
-   // ================================================================
-   // Stage1: nonpipe traps (except BREAKs that enter Debug Mode)
-
-`ifdef INCLUDE_GDB_CONTROL
-   Bool break_into_Debug_Mode = (   (stage1.out.trap_info.exc_code == exc_code_BREAKPOINT)
-				 && csr_regfile.dcsr_break_enters_debug (rg_cur_priv));
-`else
-   Bool break_into_Debug_Mode = False;
-`endif
-
-   rule rl_stage1_trap (   (   (rg_state == CPU_CSRRx_TRAP)
-			    || (   (rg_state == CPU_RUNNING)
-				&& (! halting)
-				&& (stage3.out.ostatus == OSTATUS_EMPTY)
-				&& (stage2.out.ostatus == OSTATUS_EMPTY)
-				&& (stage1.out.ostatus == OSTATUS_NONPIPE)
-				&& (stage1.out.control == CONTROL_TRAP)
-				&& (! break_into_Debug_Mode)))
-			&& (stageF.out.ostatus != OSTATUS_BUSY));
-      if (cur_verbosity > 1) $display ("%0d: %m.rl_stage1_trap", mcycle);
-
-      let epc      = stage1.out.trap_info.epc;
-      let exc_code = stage1.out.trap_info.exc_code;
-      let tval     = stage1.out.trap_info.tval;
-      let instr    = stage1.out.data_to_stage2.instr;
-
-      // Take trap, save trap information for next phase
-      let trap_info <- csr_regfile.csr_trap_actions (rg_cur_priv, // from priv
-						     epc,
-						     False,       // non-maskable interrupt
-						     False,       // interrupt_req
-						     exc_code,
-						     tval);
-
-      let next_pc    = trap_info.pc;
-      let new_mstatus= trap_info.mstatus;
-      let mcause     = trap_info.mcause;
-      let new_priv   = trap_info.priv;
-
-      // Save new privilege and pc for ifetch
-      rg_cur_priv <= new_priv;
-      rg_next_pc  <= next_pc;
-
-      // Note old MSTATUS.MXR and SSTATUS.SUM for initiating FETCH in next phase
-      rg_mstatus_MXR <= mstatus [19];
-`ifdef ISA_PRIV_S
-      rg_sstatus_SUM <= (csr_regfile.read_sstatus) [18];
-`else
-      rg_sstatus_SUM <= 0;
-`endif
-
-      rg_state <= CPU_START_TRAP_HANDLER;
-      
-      stageD.set_full (False);
-      stage1.set_full (False);    fa_step_check;
-
-      // Tandem Verification and Debug related actions
-`ifdef INCLUDE_TANDEM_VERIF
-      // Trace data
-      let trace_data = stage1.out.data_to_stage2.trace_data;
-      trace_data.op = TRACE_TRAP;
-      trace_data.pc = next_pc;
-      // trace_data.instr_sz    should already be set
-      // trace_data.instr       should already be set
-      trace_data.rd    = zeroExtend (new_priv);
-      trace_data.word1 = new_mstatus;
-      trace_data.word2 = mcause;
-      trace_data.word3 = zeroExtend (epc);
-      trace_data.word4 = tval;
-      f_trace_data.enq (trace_data);
-`endif
-
-      // Simulation heuristic: finish if trap back to this instr
-`ifndef INCLUDE_GDB_CONTROL
-      if (epc == next_pc) begin
-	 $display ("%0d: %m.rl_stage1_trap: Tight infinite trap loop: pc 0x%0x instr 0x%08x", mcycle,
-		   next_pc, instr);
-	 fa_report_CPI;
-	 $finish (0);
-      end
-`endif
-
-      // Debug
-      fa_emit_instr_trace (minstret, epc, instr, rg_cur_priv);
-      if (cur_verbosity != 0) begin
-	 $display ("%0d: %m.rl_stage1_trap: priv:%0d  mcause:0x%0h  epc:0x%0h",
-		   mcycle, rg_cur_priv, mcause, epc);
-	 $display ("    tval:0x%0h  new pc:0x%0h  new mstatus:0x%0h", tval, next_pc, new_mstatus);
-      end
-   endrule : rl_stage1_trap
 
    // ================================================================
    // Initiate instruction fetch from new_pc.
