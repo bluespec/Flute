@@ -164,6 +164,7 @@ module mkCPU (CPU_IFC);
 
    // These regs save info on a trap in Stage1 or Stage2
    Reg #(Trap_Info)  rg_trap_info       <- mkRegU;
+   Reg #(Bool)       rg_trap_interrupt  <- mkRegU;
    Reg #(Instr)      rg_trap_instr      <- mkRegU;
 `ifdef INCLUDE_TANDEM_VERIF
    Reg #(Trace_Data) rg_trap_trace_data <- mkRegU;
@@ -766,6 +767,7 @@ module mkCPU (CPU_IFC);
 
       // Just save relevant info and handle in next clock
       rg_trap_info       <= stage2.out.trap_info;
+      rg_trap_interrupt  <= False;
       rg_trap_instr      <= stage2.out.data_to_stage3.instr;
 `ifdef INCLUDE_TANDEM_VERIF
       rg_trap_trace_data <= stage2.out.trace_data;
@@ -797,6 +799,7 @@ module mkCPU (CPU_IFC);
 
       // Just save relevant info and handle in next clock
       rg_trap_info       <= stage1.out.trap_info;
+      rg_trap_interrupt  <= False;
       rg_trap_instr      <= stage1.out.data_to_stage2.instr;
 `ifdef INCLUDE_TANDEM_VERIF
       rg_trap_trace_data <= stage1.out.data_to_stage2.trace_data;
@@ -810,16 +813,17 @@ module mkCPU (CPU_IFC);
 
    rule rl_trap ((rg_state == CPU_TRAP)
 		 && (stageF.out.ostatus != OSTATUS_BUSY));
-      let epc      = rg_trap_info.epc;
-      let exc_code = rg_trap_info.exc_code;
-      let tval     = rg_trap_info.tval;
-      let instr    = rg_trap_instr;
+      let epc          = rg_trap_info.epc;
+      let exc_code     = rg_trap_info.exc_code;
+      let tval         = rg_trap_info.tval;
+      let instr        = rg_trap_instr;
+      let is_interrupt = rg_trap_interrupt;
 
       // Take trap, save trap information for next phase
       let trap_info <- csr_regfile.csr_trap_actions (rg_cur_priv,    // from priv
 						     epc,
-						     False,          // non-maskable interrupt
-						     False,          // interrupt_req
+						     (is_interrupt && csr_regfile.nmi_pending),
+						     (is_interrupt && (! csr_regfile.nmi_pending)),
 						     exc_code,
 						     tval);
 
@@ -852,16 +856,21 @@ module mkCPU (CPU_IFC);
       // Tandem Verification and Debug related actions
 `ifdef INCLUDE_TANDEM_VERIF
       // Trace data
-      let trace_data = rg_trap_trace_data;
-      trace_data.op = TRACE_TRAP;
-      trace_data.pc = next_pc;
-      // trace_data.instr_sz    should already be set
-      // trace_data.instr       should already be set
-      trace_data.rd    = zeroExtend (new_priv);
-      trace_data.word1 = new_mstatus;
-      trace_data.word2 = mcause;
-      trace_data.word3 = zeroExtend (epc);
-      trace_data.word4 = tval;
+      Trace_Data trace_data;
+      if (is_interrupt)
+	 trace_data = mkTrace_INTR (next_pc, new_priv, new_mstatus, mcause, epc, 0);
+      else begin
+	 trace_data = rg_trap_trace_data);
+	 trace_data.op = TRACE_TRAP;
+	 trace_data.pc = next_pc;
+	 // trace_data.instr_sz    should already be set
+	 // trace_data.instr       should already be set
+	 trace_data.rd    = zeroExtend (new_priv);
+	 trace_data.word1 = new_mstatus;
+	 trace_data.word2 = mcause;
+	 trace_data.word3 = zeroExtend (epc);
+	 trace_data.word4 = tval;
+      end
       f_trace_data.enq (trace_data);
 `endif
 
@@ -879,8 +888,8 @@ module mkCPU (CPU_IFC);
 
       // Debug
       if (cur_verbosity != 0)
-	 $display ("    mcause:0x%0h  epc 0x%0h  tval:0x%0h  new pc 0x%0h, new mstatus 0x%0h",
-		   mcause, epc, tval, next_pc, new_mstatus);
+	 $display ("    mcause:0x%0h  epc 0x%0h  tval:0x%0h  next_pc 0x%0h, new_priv %0d new_mstatus 0x%0h",
+		   mcause, epc, tval, next_pc, new_priv, new_mstatus);
    endrule: rl_trap
 
    // ================================================================
@@ -1520,56 +1529,27 @@ module mkCPU (CPU_IFC);
 			     && (stageF.out.ostatus != OSTATUS_BUSY));
       if (cur_verbosity > 1) $display ("%0d: %m.rl_stage1_interrupt", mcycle);
 
-      let instr = stage1.out.data_to_stage2.instr;
-
-      WordXL   epc      = stage1.out.data_to_stage2.pc;
+      // Just save relevant info and handle in next clock
       Exc_Code exc_code = 0;    // "Unknown cause" for NMI
-
       if (csr_regfile.interrupt_pending (rg_cur_priv) matches tagged Valid .ec
 	  &&& (! csr_regfile.nmi_pending))
 	 exc_code = ec;
 
-      // Take trap
-      let trap_info <- csr_regfile.csr_trap_actions (rg_cur_priv,    // from priv
-						     epc,
-						     csr_regfile.nmi_pending,        // non-maskable interrupt
-						     (! csr_regfile.nmi_pending),    // interrupt_req,
-						     exc_code,
-						     0);             // tval
-      let next_pc       = trap_info.pc;
-      let new_mstatus   = trap_info.mstatus;
-      let mcause        = trap_info.mcause;
-      let new_priv      = trap_info.priv;
-
-      // Prepare the next_pc into stage1, for enq as the interrupt is taken
-      rg_next_pc  <= next_pc;
-
-      // Save new privilege
-      rg_cur_priv <= new_priv;
-
-      rg_sstatus_SUM <= new_mstatus [18];
-      rg_mstatus_MXR <= new_mstatus [19];
-
-      rg_state <= CPU_START_TRAP_HANDLER;
-
-      stage1.set_full (False);
-
-      // Accounting: none (instruction is abandoned)
+      rg_trap_info       <= Trap_Info {epc:      stage1.out.data_to_stage2.pc,
+				       exc_code: exc_code,
+				       tval:     0};
+      rg_trap_interrupt  <= True;
+      rg_trap_instr      <= stage1.out.data_to_stage2.instr;
 
 `ifdef INCLUDE_TANDEM_VERIF
-      // Trace data
-      let trace_data = mkTrace_INTR (next_pc, new_priv, new_mstatus, mcause, epc, 0);
-      f_trace_data.enq (trace_data);
+      // rg_trap_trace_data <= ?;    // Will be filled in in rl_trap
 `endif
 
-      // Debug
-      fa_emit_instr_trace (minstret, epc, instr, rg_cur_priv);
-      if (cur_verbosity > 0)
-	 $display ("%0d: %m.rl_stage1_interrupt: epc 0x%0h  next PC 0x%0h  new_priv %0d  new mstatus 0x%0h",
-		   mcycle, epc, next_pc, new_priv, new_mstatus);
+      rg_state           <= CPU_TRAP;
    endrule: rl_stage1_interrupt
 
-   // ----------------
+
+   // ================================================================
    // Stage1: Handle debugger stop-request and dcsr.step step-request while running
    // and no interrupt pending.  Stage1 has an architectural instruction,
    // and stage2 and stage3 are empty, and stageF is not BUSY.
