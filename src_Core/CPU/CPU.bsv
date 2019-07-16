@@ -863,7 +863,7 @@ module mkCPU (CPU_IFC);
       if (is_interrupt)
 	 trace_data = mkTrace_INTR (next_pc, new_priv, new_mstatus, mcause, epc, 0);
       else begin
-	 trace_data = rg_trap_trace_data);
+	 trace_data = rg_trap_trace_data;
 	 trace_data.op = TRACE_TRAP;
 	 trace_data.pc = next_pc;
 	 // trace_data.instr_sz    should already be set
