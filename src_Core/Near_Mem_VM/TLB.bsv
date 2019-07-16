@@ -108,7 +108,7 @@ Integer  tlb2_tag_sz = valueOf (TLB2_Tag_sz);
 // ----------------
 // Level 1 tags and indexes
 
-typedef  4                     TLB1_Size;    // # of entries in TLB1
+typedef  8                     TLB1_Size;    // # of entries in TLB1
 typedef  TLog #(TLB1_Size)     TLB1_Index_sz;
 typedef  Bit #(TLB1_Index_sz)  TLB1_Index;
 Integer  tlb1_index_sz = valueOf (TLB1_Index_sz);
@@ -120,7 +120,7 @@ Integer  tlb1_tag_sz = valueOf (TLB1_Tag_sz);
 // ----------------
 // Level 0 tags and indexes
 
-typedef  4                     TLB0_Size;    // # of entries in TLB0
+typedef  16                    TLB0_Size;    // # of entries in TLB0
 typedef  TLog #(TLB0_Size)     TLB0_Index_sz;
 typedef  Bit #(TLB0_Index_sz)  TLB0_Index;
 Integer  tlb0_index_sz = valueOf (TLB0_Index_sz);
@@ -281,23 +281,28 @@ module mkTLB #(parameter Bool dmem_not_imem) (TLB_IFC);
       let match2 = False;
 `endif
 
-      let result = TLB_Lookup_Result {hit: False, pte: ?, pte_level: ?, pte_pa: ?};
+      TLB_Lookup_Result  result0 = unpack (0);
+      TLB_Lookup_Result  result1 = unpack (0);
+      TLB_Lookup_Result  result2 = unpack (0);
 
       if (match0) begin
 	 let tlbe0 = tlb0_entries.sub (idx0);
-	 result = TLB_Lookup_Result {hit: True, pte: tlbe0.pte, pte_level: 0, pte_pa: tlbe0.pte_pa};
+	 result0 = TLB_Lookup_Result {hit: True, pte: tlbe0.pte, pte_level: 0, pte_pa: tlbe0.pte_pa};
       end
-      else if (match1) begin
+
+      if (match1) begin
 	 let tlbe1 = tlb1_entries.sub (idx1);
-	 result = TLB_Lookup_Result {hit: True, pte: tlbe1.pte, pte_level: 1, pte_pa: tlbe1.pte_pa};
+	 result1 = TLB_Lookup_Result {hit: True, pte: tlbe1.pte, pte_level: 1, pte_pa: tlbe1.pte_pa};
       end
+
 `ifdef RV64
-      else if (match2) begin
+      if (match2) begin
 	 let tlbe2 = tlb2_entries.sub (idx2);
-	 result = TLB_Lookup_Result {hit: True, pte: tlbe2.pte, pte_level: 2, pte_pa: tlbe2.pte_pa};
+	 result2 = TLB_Lookup_Result {hit: True, pte: tlbe2.pte, pte_level: 2, pte_pa: tlbe2.pte_pa};
       end
 `endif
-      return result;
+      let result = (pack (result0) | pack (result1) | pack (result2));
+      return unpack (result);
    endmethod
 
    // ----------------

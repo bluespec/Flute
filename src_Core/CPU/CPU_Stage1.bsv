@@ -225,10 +225,17 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
 	 output_stage1.data_to_stage2 = data_to_stage2;
       end
 
-      // Stall if bypass pending for rs1 or rs2
+      // Stall if bypass pending for GPR rs1 or rs2
       else if (rs1_busy || rs2_busy) begin
 	 output_stage1.ostatus = OSTATUS_BUSY;
       end
+
+`ifdef ISA_F
+      // Stall if bypass pending for FPR rs1, rs2 or rs3
+      else if (frs1_busy || frs2_busy || frs3_busy) begin
+	 output_stage1.ostatus = OSTATUS_BUSY;
+      end
+`endif
 
       // Trap on fetch-exception
       else if (rg_stage_input.exc) begin

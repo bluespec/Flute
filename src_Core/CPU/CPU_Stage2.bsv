@@ -301,20 +301,17 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
                // here as nanboxing has been taken care of in the data being sent
                // to stage3
                if (upd_fpr) begin
-		  fbypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
-		  fbypass.rd_val       = data_to_stage3.rd_val;
+		  fbypass.bypass_state = BYPASS_RD;
                end
 
                // Bypassing GPR value in a FD system
                else if (rg_stage2.rd != 0) begin    // TODO: is this test necessary?
-		  bypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
-		  bypass.rd_val       = result;
+		  bypass.bypass_state = BYPASS_RD;
 	       end
 `else
                // Bypassing GPR value in a non-FD system. LD result meant for GPR
 	       if (rg_stage2.rd != 0) begin    // TODO: is this test necessary?
-		  bypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
-		  bypass.rd_val       = result;
+		  bypass.bypass_state = BYPASS_RD;
 	       end
 `endif
 	    end
