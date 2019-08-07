@@ -187,12 +187,12 @@ endmodule
 // ================================================================
 // Integer multiplication
 
-typedef enum { Mul_RDY, Mul_BUSY} MulState
+typedef enum { MUL_IDLE, MUL_BUSY, MUL_READY} MulState
    deriving (Eq, Bits, FShow);
 
 module mkIntMul (IntMul_IFC #(w));
 
-   Reg #(MulState) rg_state <- mkReg (Mul_RDY);
+   Reg #(MulState) rg_state <- mkReg (MUL_IDLE);
 
    Reg #(Bit #(TAdd #(w,w)))  rg_xy     <- mkRegU;
    Reg #(Bit #(TAdd #(w,w)))  rg_x      <- mkRegU;
@@ -203,17 +203,28 @@ module mkIntMul (IntMul_IFC #(w));
    // ----------------
    // RULES
 
-   rule compute ((rg_y != 0) && rg_state == Mul_BUSY) ;
-      if (lsb (rg_y) == 1) rg_xy <= rg_xy + rg_x;
-      rg_x <= rg_x << 1;
-      rg_y <= rg_y >> 1;
+   rule compute (rg_state == MUL_BUSY);
+      if (rg_y == 0) begin
+	 let xy = rg_xy;
+	 if (rg_isNeg) begin
+	    Int #(TAdd #(w,w)) xy_s = unpack (xy);
+	    xy = pack (- xy_s);
+	 end
+	 rg_xy    <= xy;
+	 rg_state <= MUL_READY;
+      end
+      else begin
+	 if (lsb (rg_y) == 1) rg_xy <= rg_xy + rg_x;
+	 rg_x <= rg_x << 1;
+	 rg_y <= rg_y >> 1;
+      end
    endrule
 
    // ----------------
    // INTERFACE
 
    method Action put_args (Bool x_is_signed, Bit #(w) x,
-			   Bool y_is_signed, Bit #(w) y);//  if (! rg_busy);
+			   Bool y_is_signed, Bit #(w) y);    // if (rg_state == MUL_IDLE)
       Int #(w) x_s = unpack (x);
       Int #(w) y_s = unpack (y);
       Bool isNeg   = False;
@@ -236,20 +247,15 @@ module mkIntMul (IntMul_IFC #(w));
       rg_y      <= y;
       rg_isNeg  <= isNeg;
       rg_xy     <= 0;
-      rg_state  <= Mul_BUSY;
+      rg_state  <= MUL_BUSY;
       // $display ("DBG: IntMul: x = %h", x);
       // $display ("DBG: IntMul: y = %h", y);
    endmethod
 
-   method result_valid = (rg_state == Mul_BUSY && (rg_y == 0));
+   method result_valid = (rg_state == MUL_READY);
 
    method result_value;
-      let xy = rg_xy;
-      if (rg_isNeg) begin
-	 Int #(TAdd #(w,w)) xy_s = unpack (xy);
-	 xy = pack (- xy_s);
-      end
-      return xy;
+      return rg_xy;
    endmethod
 endmodule
 

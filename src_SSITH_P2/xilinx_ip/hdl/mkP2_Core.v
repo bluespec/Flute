@@ -6,7 +6,7 @@
 //
 // Ports:
 // Name                         I/O  size props
-// master0_awvalid                O     1
+// master0_awvalid                O     1 reg
 // master0_awid                   O     4 reg
 // master0_awaddr                 O    64 reg
 // master0_awlen                  O     8 reg
@@ -17,12 +17,12 @@
 // master0_awprot                 O     3 reg
 // master0_awqos                  O     4 reg
 // master0_awregion               O     4 reg
-// master0_wvalid                 O     1
+// master0_wvalid                 O     1 reg
 // master0_wdata                  O    64 reg
 // master0_wstrb                  O     8 reg
 // master0_wlast                  O     1 reg
-// master0_bready                 O     1
-// master0_arvalid                O     1
+// master0_bready                 O     1 reg
+// master0_arvalid                O     1 reg
 // master0_arid                   O     4 reg
 // master0_araddr                 O    64 reg
 // master0_arlen                  O     8 reg
@@ -33,7 +33,7 @@
 // master0_arprot                 O     3 reg
 // master0_arqos                  O     4 reg
 // master0_arregion               O     4 reg
-// master0_rready                 O     1
+// master0_rready                 O     1 reg
 // master1_awvalid                O     1 reg
 // master1_awid                   O     4 reg
 // master1_awaddr                 O    64 reg
@@ -100,9 +100,7 @@
 // jtag_tms                       I     1
 // jtag_tclk                      I     1
 //
-// Combinational paths from inputs to outputs:
-//   (master0_awready, master0_wready) -> master0_bready
-//   (master0_awready, master0_wready, master0_arready) -> master0_rready
+// No combinational paths from inputs to outputs
 //
 //
 

@@ -10,7 +10,7 @@
 // RDY_cpu_reset_server_request_put  O     1 reg
 // cpu_reset_server_response_get  O     1 reg
 // RDY_cpu_reset_server_response_get  O     1 reg
-// cpu_imem_master_awvalid        O     1
+// cpu_imem_master_awvalid        O     1 reg
 // cpu_imem_master_awid           O     4 reg
 // cpu_imem_master_awaddr         O    64 reg
 // cpu_imem_master_awlen          O     8 reg
@@ -21,12 +21,12 @@
 // cpu_imem_master_awprot         O     3 reg
 // cpu_imem_master_awqos          O     4 reg
 // cpu_imem_master_awregion       O     4 reg
-// cpu_imem_master_wvalid         O     1
+// cpu_imem_master_wvalid         O     1 reg
 // cpu_imem_master_wdata          O    64 reg
 // cpu_imem_master_wstrb          O     8 reg
 // cpu_imem_master_wlast          O     1 reg
-// cpu_imem_master_bready         O     1
-// cpu_imem_master_arvalid        O     1
+// cpu_imem_master_bready         O     1 reg
+// cpu_imem_master_arvalid        O     1 reg
 // cpu_imem_master_arid           O     4 reg
 // cpu_imem_master_araddr         O    64 reg
 // cpu_imem_master_arlen          O     8 reg
@@ -37,7 +37,7 @@
 // cpu_imem_master_arprot         O     3 reg
 // cpu_imem_master_arqos          O     4 reg
 // cpu_imem_master_arregion       O     4 reg
-// cpu_imem_master_rready         O     1
+// cpu_imem_master_rready         O     1 reg
 // cpu_dmem_master_awvalid        O     1 reg
 // cpu_dmem_master_awid           O     4 reg
 // cpu_dmem_master_awaddr         O    64 reg
@@ -134,10 +134,6 @@
 // EN_ndm_reset_client_request_get  I     1
 //
 // Combinational paths from inputs to outputs:
-//   (cpu_imem_master_awready, cpu_imem_master_wready) -> cpu_imem_master_bready
-//   (cpu_imem_master_awready,
-//    cpu_imem_master_wready,
-//    cpu_imem_master_arready) -> cpu_imem_master_rready
 //   (dm_dmi_read_addr_dm_addr, EN_dm_dmi_read_addr) -> RDY_dm_dmi_read_data
 //   (dm_dmi_read_addr_dm_addr,
 //    EN_dm_dmi_read_addr,
@@ -1682,7 +1678,7 @@ module mkCore(CLK,
   // synopsys translate_on
 
   // remaining internal signals
-  wire plic_RDY_server_reset_request_put_AND_cpu_RDY__ETC___d9;
+  wire fabric_2x3_RDY_reset_AND_cpu_RDY_hart0_server__ETC___d9;
 
   // action method set_verbosity
   assign RDY_set_verbosity = 1'd1 ;
@@ -2846,6 +2842,10 @@ module mkCore(CLK,
   assign CAN_FIRE_RL_rl_wr_data_channel = 1'd1 ;
   assign WILL_FIRE_RL_rl_wr_data_channel = 1'd1 ;
 
+  // rule RL_rl_wr_response_channel
+  assign CAN_FIRE_RL_rl_wr_response_channel = 1'd1 ;
+  assign WILL_FIRE_RL_rl_wr_response_channel = 1'd1 ;
+
   // rule RL_rl_rd_addr_channel
   assign CAN_FIRE_RL_rl_rd_addr_channel = 1'd1 ;
   assign WILL_FIRE_RL_rl_rd_addr_channel = 1'd1 ;
@@ -2882,19 +2882,19 @@ module mkCore(CLK,
   assign WILL_FIRE_RL_ClientServerResponse_2 =
 	     CAN_FIRE_RL_ClientServerResponse_2 ;
 
-  // rule RL_ClientServerRequest_3
-  assign CAN_FIRE_RL_ClientServerRequest_3 =
-	     debug_module$RDY_hart0_fpr_mem_client_request_get &&
-	     dm_fpr_tap_ifc$RDY_server_request_put ;
-  assign WILL_FIRE_RL_ClientServerRequest_3 =
-	     CAN_FIRE_RL_ClientServerRequest_3 ;
-
   // rule RL_ClientServerResponse_3
   assign CAN_FIRE_RL_ClientServerResponse_3 =
 	     debug_module$RDY_hart0_fpr_mem_client_response_put &&
 	     dm_fpr_tap_ifc$RDY_server_response_get ;
   assign WILL_FIRE_RL_ClientServerResponse_3 =
 	     CAN_FIRE_RL_ClientServerResponse_3 ;
+
+  // rule RL_ClientServerRequest_3
+  assign CAN_FIRE_RL_ClientServerRequest_3 =
+	     debug_module$RDY_hart0_fpr_mem_client_request_get &&
+	     dm_fpr_tap_ifc$RDY_server_request_put ;
+  assign WILL_FIRE_RL_ClientServerRequest_3 =
+	     CAN_FIRE_RL_ClientServerRequest_3 ;
 
   // rule RL_ClientServerRequest_4
   assign CAN_FIRE_RL_ClientServerRequest_4 =
@@ -3078,18 +3078,18 @@ module mkCore(CLK,
 
   // rule RL_rl_cpu_hart0_reset_from_soc_start
   assign CAN_FIRE_RL_rl_cpu_hart0_reset_from_soc_start =
-	     fabric_2x3$RDY_reset &&
 	     near_mem_io$RDY_server_reset_request_put &&
-	     plic_RDY_server_reset_request_put_AND_cpu_RDY__ETC___d9 ;
+	     plic$RDY_server_reset_request_put &&
+	     fabric_2x3_RDY_reset_AND_cpu_RDY_hart0_server__ETC___d9 ;
   assign WILL_FIRE_RL_rl_cpu_hart0_reset_from_soc_start =
 	     CAN_FIRE_RL_rl_cpu_hart0_reset_from_soc_start ;
 
   // rule RL_rl_cpu_hart0_reset_from_dm_start
   assign CAN_FIRE_RL_rl_cpu_hart0_reset_from_dm_start =
-	     fabric_2x3$RDY_reset &&
-	     debug_module$RDY_hart0_reset_client_request_get &&
 	     near_mem_io$RDY_server_reset_request_put &&
 	     plic$RDY_server_reset_request_put &&
+	     fabric_2x3$RDY_reset &&
+	     debug_module$RDY_hart0_reset_client_request_get &&
 	     cpu$RDY_hart0_server_reset_request_put &&
 	     f_reset_requestor$FULL_N ;
   assign WILL_FIRE_RL_rl_cpu_hart0_reset_from_dm_start =
@@ -3107,10 +3107,6 @@ module mkCore(CLK,
 	     (!f_reset_requestor$D_OUT || f_reset_rsps$FULL_N) ;
   assign WILL_FIRE_RL_rl_cpu_hart0_reset_complete =
 	     CAN_FIRE_RL_rl_cpu_hart0_reset_complete ;
-
-  // rule RL_rl_wr_response_channel
-  assign CAN_FIRE_RL_rl_wr_response_channel = 1'd1 ;
-  assign WILL_FIRE_RL_rl_wr_response_channel = 1'd1 ;
 
   // submodule cpu
   assign cpu$dmem_master_arready = fabric_2x3$v_from_masters_0_arready ;
@@ -3336,9 +3332,9 @@ module mkCore(CLK,
   assign f_reset_reqs$D_IN = cpu_reset_server_request_put ;
   assign f_reset_reqs$ENQ = EN_cpu_reset_server_request_put ;
   assign f_reset_reqs$DEQ =
-	     fabric_2x3$RDY_reset &&
 	     near_mem_io$RDY_server_reset_request_put &&
-	     plic_RDY_server_reset_request_put_AND_cpu_RDY__ETC___d9 ;
+	     plic$RDY_server_reset_request_put &&
+	     fabric_2x3_RDY_reset_AND_cpu_RDY_hart0_server__ETC___d9 ;
   assign f_reset_reqs$CLR = 1'b0 ;
 
   // submodule f_reset_requestor
@@ -3619,9 +3615,8 @@ module mkCore(CLK,
   assign tv_encode$EN_tv_vb_out_get = EN_tv_verifier_info_get_get ;
 
   // remaining internal signals
-  assign plic_RDY_server_reset_request_put_AND_cpu_RDY__ETC___d9 =
-	     plic$RDY_server_reset_request_put &&
-	     cpu$RDY_hart0_server_reset_request_put &&
+  assign fabric_2x3_RDY_reset_AND_cpu_RDY_hart0_server__ETC___d9 =
+	     fabric_2x3$RDY_reset && cpu$RDY_hart0_server_reset_request_put &&
 	     f_reset_reqs$EMPTY_N &&
 	     f_reset_requestor$FULL_N ;
 
