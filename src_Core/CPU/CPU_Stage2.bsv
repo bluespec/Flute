@@ -297,24 +297,46 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 `ifdef ISA_F
                data_to_stage3.rd_in_fpr= upd_fpr;
 
-               // Bypassing FPR value. We are not using dcache.word64 or result
-               // here as nanboxing has been taken care of in the data being sent
-               // to stage3
+               // Bypassing FPR value.
                if (upd_fpr) begin
-		  fbypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
-		  fbypass.rd_val       = data_to_stage3.rd_val;
+		  // Choose one of the following two options
+
+		  // Option 1: longer critical path, since the data is bypassed back into previous stage.
+		  // We use data_to_stage3.rd_val since nanboxing has been done.
+		  // fbypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
+		  // fbypass.rd_val       = data_to_stage3.rd_val;
+
+		  // Option 2: shorter critical path, since the data is not bypassed into previous stage,
+		  // (the bypassing is effectively delayed until the next stage).
+		  fbypass.bypass_state = BYPASS_RD;
                end
 
                // Bypassing GPR value in a FD system
                else if (rg_stage2.rd != 0) begin    // TODO: is this test necessary?
-		  bypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
-		  bypass.rd_val       = result;
+		  // Choose one of the following two options
+
+		  // Option 1: longer critical path, since the data is bypassed back into previous stage.
+		  // We use data_to_stage3.rd_val since nanboxing has been done.
+		  // bypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
+		  // bypass.rd_val       = result;
+
+		  // Option 2: shorter critical path, since the data is not bypassed into previous stage,
+		  // (the bypassing is effectively delayed until the next stage).
+		  bypass.bypass_state = BYPASS_RD;
 	       end
 `else
                // Bypassing GPR value in a non-FD system. LD result meant for GPR
 	       if (rg_stage2.rd != 0) begin    // TODO: is this test necessary?
-		  bypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
-		  bypass.rd_val       = result;
+		  // Choose one of the following two options
+
+		  // Option 1: longer critical path, since the data is bypassed back into previous stage.
+		  // We use data_to_stage3.rd_val since nanboxing has been done.
+		  // bypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
+		  // bypass.rd_val       = result;
+
+		  // Option 2: shorter critical path, since the data is not bypassed into previous stage,
+		  // (the bypassing is effectively delayed until the next stage).
+		  bypass.bypass_state = BYPASS_RD;
 	       end
 `endif
 	    end

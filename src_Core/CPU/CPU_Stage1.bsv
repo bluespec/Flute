@@ -225,10 +225,17 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
 	 output_stage1.data_to_stage2 = data_to_stage2;
       end
 
-      // Stall if bypass pending for rs1 or rs2
+      // Stall if bypass pending for GPR rs1 or rs2
       else if (rs1_busy || rs2_busy) begin
 	 output_stage1.ostatus = OSTATUS_BUSY;
       end
+
+`ifdef ISA_F
+      // Stall if bypass pending for FPR rs1, rs2 or rs3
+      else if (frs1_busy || frs2_busy || frs3_busy) begin
+	 output_stage1.ostatus = OSTATUS_BUSY;
+      end
+`endif
 
       // Trap on fetch-exception
       else if (rg_stage_input.exc) begin
@@ -249,12 +256,11 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
 			: OSTATUS_NONPIPE);
 
 	 // Compute MTVAL in case of traps
-	 let tval = 0;
-	 if (alu_outputs.exc_code == exc_code_ILLEGAL_INSTRUCTION)
-	    tval = (rg_stage_input.is_i32_not_i16
-		    ? zeroExtend (rg_stage_input.instr)
-		    : zeroExtend (rg_stage_input.instr_C));    // The instruction
-	 else if (alu_outputs.exc_code == exc_code_INSTR_ADDR_MISALIGNED)
+	 // Default for illegal instruction traps
+	 let tval = (rg_stage_input.is_i32_not_i16
+		     ? zeroExtend (rg_stage_input.instr)
+		     : zeroExtend (rg_stage_input.instr_C));    // The instruction
+	 if (alu_outputs.exc_code == exc_code_INSTR_ADDR_MISALIGNED)
 	    tval = alu_outputs.addr;                           // The branch target pc
 	 else if (alu_outputs.exc_code == exc_code_BREAKPOINT)
 	    tval = rg_stage_input.pc;                          // The faulting virtual address

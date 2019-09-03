@@ -64,6 +64,7 @@ module mkRISCV_MBox (RISCV_MBox_IFC);
    Reg #(Bit #(3))  rg_f3              <- mkRegU;
    Reg #(WordXL)    rg_v1              <- mkRegU;
    Reg #(WordXL)    rg_v2              <- mkRegU;
+   Reg #(WordXL)    rg_result          <- mkRegU;
 
    IntDiv_IFC #(XLEN) intDiv <- mkIntDiv (rg_v1, rg_v2);
 
@@ -107,12 +108,12 @@ module mkRISCV_MBox (RISCV_MBox_IFC);
 	 $finish (1);    // TODO: illegal instruction; should trap
       end
 
-      rg_v1 <= result;
-      rg_state <= STATE_MUL2;
+      rg_result <= result;
+      rg_state  <= STATE_MUL2;
    endrule
 
    rule rl_mul2 (rg_state == STATE_MUL2);
-      let result = rg_v1;
+      let result = rg_result;
       dw_valid  <= True;
       dw_result <= result;
    endrule

@@ -10,7 +10,7 @@
 // av_read                        O    32
 // RDY_av_read                    O     1
 // RDY_write                      O     1
-// master_awvalid                 O     1
+// master_awvalid                 O     1 reg
 // master_awid                    O     4 reg
 // master_awaddr                  O    64 reg
 // master_awlen                   O     8 reg
@@ -21,12 +21,12 @@
 // master_awprot                  O     3 reg
 // master_awqos                   O     4 reg
 // master_awregion                O     4 reg
-// master_wvalid                  O     1
+// master_wvalid                  O     1 reg
 // master_wdata                   O    64 reg
 // master_wstrb                   O     8 reg
 // master_wlast                   O     1 reg
-// master_bready                  O     1 const
-// master_arvalid                 O     1
+// master_bready                  O     1 reg
+// master_arvalid                 O     1 reg
 // master_arid                    O     4 reg
 // master_araddr                  O    64 reg
 // master_arlen                   O     8 reg
@@ -37,7 +37,7 @@
 // master_arprot                  O     3 reg
 // master_arqos                   O     4 reg
 // master_arregion                O     4 reg
-// master_rready                  O     1
+// master_rready                  O     1 reg
 // CLK                            I     1 clock
 // RST_N                          I     1 reset
 // av_read_dm_addr                I     7
@@ -59,9 +59,7 @@
 // EN_av_read                     I     1
 //
 // Combinational paths from inputs to outputs:
-//   (master_awready, master_wready, master_arready) -> RDY_write
-//   master_arready -> RDY_av_read
-//   (master_arready, av_read_dm_addr) -> av_read
+//   av_read_dm_addr -> av_read
 //
 //
 
@@ -321,66 +319,6 @@ module mkDM_System_Bus(CLK,
        master_wlast,
        master_wvalid;
 
-  // inlined wires
-  wire master_xactor_crg_rd_addr_full$EN_port1__write,
-       master_xactor_crg_rd_addr_full$EN_port2__write,
-       master_xactor_crg_rd_addr_full$port2__read,
-       master_xactor_crg_rd_addr_full$port3__read,
-       master_xactor_crg_rd_data_full$EN_port2__write,
-       master_xactor_crg_rd_data_full$port2__read,
-       master_xactor_crg_rd_data_full$port3__read,
-       master_xactor_crg_wr_addr_full$EN_port1__write,
-       master_xactor_crg_wr_addr_full$port2__read,
-       master_xactor_crg_wr_addr_full$port3__read,
-       master_xactor_crg_wr_data_full$EN_port1__write,
-       master_xactor_crg_wr_data_full$port2__read,
-       master_xactor_crg_wr_data_full$port3__read;
-
-  // register master_xactor_crg_rd_addr_full
-  reg master_xactor_crg_rd_addr_full;
-  wire master_xactor_crg_rd_addr_full$D_IN, master_xactor_crg_rd_addr_full$EN;
-
-  // register master_xactor_crg_rd_data_full
-  reg master_xactor_crg_rd_data_full;
-  wire master_xactor_crg_rd_data_full$D_IN, master_xactor_crg_rd_data_full$EN;
-
-  // register master_xactor_crg_wr_addr_full
-  reg master_xactor_crg_wr_addr_full;
-  wire master_xactor_crg_wr_addr_full$D_IN, master_xactor_crg_wr_addr_full$EN;
-
-  // register master_xactor_crg_wr_data_full
-  reg master_xactor_crg_wr_data_full;
-  wire master_xactor_crg_wr_data_full$D_IN, master_xactor_crg_wr_data_full$EN;
-
-  // register master_xactor_crg_wr_resp_full
-  reg master_xactor_crg_wr_resp_full;
-  wire master_xactor_crg_wr_resp_full$D_IN, master_xactor_crg_wr_resp_full$EN;
-
-  // register master_xactor_rg_rd_addr
-  reg [96 : 0] master_xactor_rg_rd_addr;
-  wire [96 : 0] master_xactor_rg_rd_addr$D_IN;
-  wire master_xactor_rg_rd_addr$EN;
-
-  // register master_xactor_rg_rd_data
-  reg [70 : 0] master_xactor_rg_rd_data;
-  wire [70 : 0] master_xactor_rg_rd_data$D_IN;
-  wire master_xactor_rg_rd_data$EN;
-
-  // register master_xactor_rg_wr_addr
-  reg [96 : 0] master_xactor_rg_wr_addr;
-  wire [96 : 0] master_xactor_rg_wr_addr$D_IN;
-  wire master_xactor_rg_wr_addr$EN;
-
-  // register master_xactor_rg_wr_data
-  reg [72 : 0] master_xactor_rg_wr_data;
-  wire [72 : 0] master_xactor_rg_wr_data$D_IN;
-  wire master_xactor_rg_wr_data$EN;
-
-  // register master_xactor_rg_wr_resp
-  reg [5 : 0] master_xactor_rg_wr_resp;
-  wire [5 : 0] master_xactor_rg_wr_resp$D_IN;
-  wire master_xactor_rg_wr_resp$EN;
-
   // register rg_sb_state
   reg [1 : 0] rg_sb_state;
   wire [1 : 0] rg_sb_state$D_IN;
@@ -433,6 +371,46 @@ module mkDM_System_Bus(CLK,
   reg [31 : 0] rg_sbdata0$D_IN;
   wire rg_sbdata0$EN;
 
+  // ports of submodule master_xactor_f_rd_addr
+  wire [96 : 0] master_xactor_f_rd_addr$D_IN, master_xactor_f_rd_addr$D_OUT;
+  wire master_xactor_f_rd_addr$CLR,
+       master_xactor_f_rd_addr$DEQ,
+       master_xactor_f_rd_addr$EMPTY_N,
+       master_xactor_f_rd_addr$ENQ,
+       master_xactor_f_rd_addr$FULL_N;
+
+  // ports of submodule master_xactor_f_rd_data
+  wire [70 : 0] master_xactor_f_rd_data$D_IN, master_xactor_f_rd_data$D_OUT;
+  wire master_xactor_f_rd_data$CLR,
+       master_xactor_f_rd_data$DEQ,
+       master_xactor_f_rd_data$EMPTY_N,
+       master_xactor_f_rd_data$ENQ,
+       master_xactor_f_rd_data$FULL_N;
+
+  // ports of submodule master_xactor_f_wr_addr
+  wire [96 : 0] master_xactor_f_wr_addr$D_IN, master_xactor_f_wr_addr$D_OUT;
+  wire master_xactor_f_wr_addr$CLR,
+       master_xactor_f_wr_addr$DEQ,
+       master_xactor_f_wr_addr$EMPTY_N,
+       master_xactor_f_wr_addr$ENQ,
+       master_xactor_f_wr_addr$FULL_N;
+
+  // ports of submodule master_xactor_f_wr_data
+  wire [72 : 0] master_xactor_f_wr_data$D_IN, master_xactor_f_wr_data$D_OUT;
+  wire master_xactor_f_wr_data$CLR,
+       master_xactor_f_wr_data$DEQ,
+       master_xactor_f_wr_data$EMPTY_N,
+       master_xactor_f_wr_data$ENQ,
+       master_xactor_f_wr_data$FULL_N;
+
+  // ports of submodule master_xactor_f_wr_resp
+  wire [5 : 0] master_xactor_f_wr_resp$D_IN, master_xactor_f_wr_resp$D_OUT;
+  wire master_xactor_f_wr_resp$CLR,
+       master_xactor_f_wr_resp$DEQ,
+       master_xactor_f_wr_resp$EMPTY_N,
+       master_xactor_f_wr_resp$ENQ,
+       master_xactor_f_wr_resp$FULL_N;
+
   // rule scheduling signals
   wire CAN_FIRE_RL_rl_sb_read_finish,
        CAN_FIRE_RL_rl_sb_write_response,
@@ -459,9 +437,9 @@ module mkDM_System_Bus(CLK,
   reg [31 : 0] MUX_rg_sbaddress0$write_1__VAL_2,
 	       MUX_rg_sbaddress1$write_1__VAL_2;
   reg [2 : 0] MUX_rg_sbcs_sberror$write_1__VAL_4;
-  wire [96 : 0] MUX_master_xactor_rg_rd_addr$write_1__VAL_1,
-		MUX_master_xactor_rg_rd_addr$write_1__VAL_2;
-  wire MUX_master_xactor_crg_rd_addr_full$port2__write_1__SEL_1,
+  wire [96 : 0] MUX_master_xactor_f_rd_addr$enq_1__VAL_1,
+		MUX_master_xactor_f_rd_addr$enq_1__VAL_2;
+  wire MUX_master_xactor_f_rd_addr$enq_1__SEL_1,
        MUX_rg_sbaddress0$write_1__SEL_2,
        MUX_rg_sbaddress0$write_1__SEL_3,
        MUX_rg_sbaddress1$write_1__SEL_2,
@@ -478,45 +456,45 @@ module mkDM_System_Bus(CLK,
 	       IF_rg_sbaddress_reading_0_BITS_2_TO_0_1_EQ_0x0_ETC___d66,
 	       IF_rg_sbcs_sbaccess_8_EQ_0_9_THEN_1_ELSE_IF_rg_ETC___d103,
 	       IF_rg_sbcs_sbaccess_8_EQ_0_9_THEN_IF_rg_sbaddr_ETC___d79,
-	       wrd_wdata__h5116;
-  reg [7 : 0] wrd_wstrb__h5117;
-  reg [2 : 0] x__h3283, x__h4988;
-  wire [63 : 0] _theResult___fst__h5026,
-		addr64__h4330,
-		result__h1836,
-		result__h1866,
-		result__h1893,
-		result__h1920,
-		result__h1947,
-		result__h1974,
-		result__h2001,
-		result__h2028,
-		result__h2073,
-		result__h2100,
-		result__h2127,
-		result__h2154,
-		result__h2195,
-		result__h2222,
+	       wrd_wdata__h4397;
+  reg [7 : 0] wrd_wstrb__h4398;
+  reg [2 : 0] x__h2654, x__h4302;
+  wire [63 : 0] _theResult___fst__h4340,
+		addr64__h3701,
+		result__h1250,
+		result__h1280,
+		result__h1307,
+		result__h1334,
+		result__h1361,
+		result__h1388,
+		result__h1415,
+		result__h1442,
+		result__h1487,
+		result__h1514,
+		result__h1541,
+		result__h1568,
+		result__h1609,
+		result__h1636,
 		rg_sbaddress1_7_CONCAT_rg_sbaddress0_8_9_PLUS__ETC___d104,
-		rg_sbaddress1_7_CONCAT_write_dm_word_99_PLUS_I_ETC___d300,
-		sbaddress__h1228,
-		word64__h4970;
-  wire [31 : 0] IF_rg_sbcs_sbreadonaddr_24_THEN_IF_rg_sbcs_sba_ETC___d311,
-		IF_write_dm_addr_EQ_0x39_59_THEN_rg_sbaddress1_ETC___d302,
-		v__h2727,
-		v__h2861;
-  wire [7 : 0] strobe64__h5025, strobe64__h5028, strobe64__h5031;
-  wire [5 : 0] shift_bits__h4973;
+		rg_sbaddress1_7_CONCAT_write_dm_word_98_PLUS_I_ETC___d299,
+		sbaddress__h638,
+		word64__h4284;
+  wire [31 : 0] IF_rg_sbcs_sbreadonaddr_24_THEN_IF_rg_sbcs_sba_ETC___d310,
+		IF_write_dm_addr_EQ_0x39_58_THEN_rg_sbaddress1_ETC___d301,
+		v__h2132,
+		v__h2266;
+  wire [7 : 0] strobe64__h4339, strobe64__h4342, strobe64__h4345;
+  wire [5 : 0] shift_bits__h4287;
   wire rg_sb_state_EQ_0_7_AND_NOT_rg_sbcs_sbbusyerror_ETC___d110,
-       rg_sb_state_EQ_0_7_AND_NOT_rg_sbcs_sbbusyerror_ETC___d317,
+       rg_sb_state_EQ_0_7_AND_NOT_rg_sbcs_sbbusyerror_ETC___d316,
        rg_sb_state_EQ_0_7_AND_NOT_rg_sbcs_sbbusyerror_ETC___d95,
-       rg_sbcs_sberror_EQ_0_AND_rg_sbcs_sbreadonaddr__ETC___d292,
-       write_dm_addr_EQ_0x38_42_AND_rg_sbcs_sberror_E_ETC___d257,
-       write_dm_addr_EQ_0x38_42_AND_rg_sbcs_sberror_E_ETC___d266,
-       write_dm_addr_EQ_0x38_42_AND_rg_sbcs_sberror_E_ETC___d272,
-       write_dm_addr_EQ_0x38_42_AND_rg_sbcs_sberror_E_ETC___d274,
-       write_dm_addr_EQ_0x38_42_AND_rg_sbcs_sberror_E_ETC___d279,
-       write_dm_addr_EQ_0x3C_62_AND_rg_sb_state_EQ_0__ETC___d327;
+       rg_sbcs_sberror_EQ_0_AND_rg_sbcs_sbreadonaddr__ETC___d291,
+       write_dm_addr_EQ_0x38_41_AND_rg_sbcs_sberror_E_ETC___d256,
+       write_dm_addr_EQ_0x38_41_AND_rg_sbcs_sberror_E_ETC___d265,
+       write_dm_addr_EQ_0x38_41_AND_rg_sbcs_sberror_E_ETC___d271,
+       write_dm_addr_EQ_0x38_41_AND_rg_sbcs_sberror_E_ETC___d273,
+       write_dm_addr_EQ_0x38_41_AND_rg_sbcs_sberror_E_ETC___d278,
+       write_dm_addr_EQ_0x3C_61_AND_rg_sb_state_EQ_0__ETC___d326;
 
   // action method reset
   assign RDY_reset = 1'd1 ;
@@ -525,13 +503,13 @@ module mkDM_System_Bus(CLK,
 
   // actionvalue method av_read
   always@(av_read_dm_addr or
-	  v__h2727 or rg_sbaddress0 or rg_sbaddress1 or v__h2861)
+	  v__h2132 or rg_sbaddress0 or rg_sbaddress1 or v__h2266)
   begin
     case (av_read_dm_addr)
-      7'h38: av_read = v__h2727;
+      7'h38: av_read = v__h2132;
       7'h39: av_read = rg_sbaddress0;
       7'h3A: av_read = rg_sbaddress1;
-      7'h3C: av_read = v__h2861;
+      7'h3C: av_read = v__h2266;
       default: av_read = 32'd0;
     endcase
   end
@@ -539,7 +517,7 @@ module mkDM_System_Bus(CLK,
 	     rg_sb_state == 2'd0 &&
 	     (rg_sbcs_sbbusyerror || rg_sbcs_sberror != 3'd0 ||
 	      !rg_sbcs_sbreadondata ||
-	      !master_xactor_crg_rd_addr_full$port2__read) ;
+	      master_xactor_f_rd_addr$FULL_N) ;
   assign CAN_FIRE_av_read = RDY_av_read ;
   assign WILL_FIRE_av_read = EN_av_read ;
 
@@ -549,61 +527,61 @@ module mkDM_System_Bus(CLK,
 	     (rg_sb_state != 2'd0 || rg_sbcs_sbbusyerror ||
 	      rg_sbcs_sberror != 3'd0 ||
 	      !rg_sbcs_sbreadonaddr ||
-	      !master_xactor_crg_rd_addr_full$port2__read) &&
+	      master_xactor_f_rd_addr$FULL_N) &&
 	     (rg_sb_state != 2'd0 || rg_sbcs_sbbusyerror ||
 	      rg_sbcs_sberror != 3'd0 ||
-	      !master_xactor_crg_wr_addr_full$port2__read &&
-	      !master_xactor_crg_wr_data_full$port2__read) ;
+	      master_xactor_f_wr_addr$FULL_N &&
+	      master_xactor_f_wr_data$FULL_N) ;
   assign WILL_FIRE_write = EN_write ;
 
   // value method master_m_awvalid
-  assign master_awvalid = master_xactor_crg_wr_addr_full ;
+  assign master_awvalid = master_xactor_f_wr_addr$EMPTY_N ;
 
   // value method master_m_awid
-  assign master_awid = master_xactor_rg_wr_addr[96:93] ;
+  assign master_awid = master_xactor_f_wr_addr$D_OUT[96:93] ;
 
   // value method master_m_awaddr
-  assign master_awaddr = master_xactor_rg_wr_addr[92:29] ;
+  assign master_awaddr = master_xactor_f_wr_addr$D_OUT[92:29] ;
 
   // value method master_m_awlen
-  assign master_awlen = master_xactor_rg_wr_addr[28:21] ;
+  assign master_awlen = master_xactor_f_wr_addr$D_OUT[28:21] ;
 
   // value method master_m_awsize
-  assign master_awsize = master_xactor_rg_wr_addr[20:18] ;
+  assign master_awsize = master_xactor_f_wr_addr$D_OUT[20:18] ;
 
   // value method master_m_awburst
-  assign master_awburst = master_xactor_rg_wr_addr[17:16] ;
+  assign master_awburst = master_xactor_f_wr_addr$D_OUT[17:16] ;
 
   // value method master_m_awlock
-  assign master_awlock = master_xactor_rg_wr_addr[15] ;
+  assign master_awlock = master_xactor_f_wr_addr$D_OUT[15] ;
 
   // value method master_m_awcache
-  assign master_awcache = master_xactor_rg_wr_addr[14:11] ;
+  assign master_awcache = master_xactor_f_wr_addr$D_OUT[14:11] ;
 
   // value method master_m_awprot
-  assign master_awprot = master_xactor_rg_wr_addr[10:8] ;
+  assign master_awprot = master_xactor_f_wr_addr$D_OUT[10:8] ;
 
   // value method master_m_awqos
-  assign master_awqos = master_xactor_rg_wr_addr[7:4] ;
+  assign master_awqos = master_xactor_f_wr_addr$D_OUT[7:4] ;
 
   // value method master_m_awregion
-  assign master_awregion = master_xactor_rg_wr_addr[3:0] ;
+  assign master_awregion = master_xactor_f_wr_addr$D_OUT[3:0] ;
 
   // action method master_m_awready
   assign CAN_FIRE_master_m_awready = 1'd1 ;
   assign WILL_FIRE_master_m_awready = 1'd1 ;
 
   // value method master_m_wvalid
-  assign master_wvalid = master_xactor_crg_wr_data_full ;
+  assign master_wvalid = master_xactor_f_wr_data$EMPTY_N ;
 
   // value method master_m_wdata
-  assign master_wdata = master_xactor_rg_wr_data[72:9] ;
+  assign master_wdata = master_xactor_f_wr_data$D_OUT[72:9] ;
 
   // value method master_m_wstrb
-  assign master_wstrb = master_xactor_rg_wr_data[8:1] ;
+  assign master_wstrb = master_xactor_f_wr_data$D_OUT[8:1] ;
 
   // value method master_m_wlast
-  assign master_wlast = master_xactor_rg_wr_data[0] ;
+  assign master_wlast = master_xactor_f_wr_data$D_OUT[0] ;
 
   // action method master_m_wready
   assign CAN_FIRE_master_m_wready = 1'd1 ;
@@ -614,40 +592,40 @@ module mkDM_System_Bus(CLK,
   assign WILL_FIRE_master_m_bvalid = 1'd1 ;
 
   // value method master_m_bready
-  assign master_bready = 1'b1 ;
+  assign master_bready = master_xactor_f_wr_resp$FULL_N ;
 
   // value method master_m_arvalid
-  assign master_arvalid = master_xactor_crg_rd_addr_full ;
+  assign master_arvalid = master_xactor_f_rd_addr$EMPTY_N ;
 
   // value method master_m_arid
-  assign master_arid = master_xactor_rg_rd_addr[96:93] ;
+  assign master_arid = master_xactor_f_rd_addr$D_OUT[96:93] ;
 
   // value method master_m_araddr
-  assign master_araddr = master_xactor_rg_rd_addr[92:29] ;
+  assign master_araddr = master_xactor_f_rd_addr$D_OUT[92:29] ;
 
   // value method master_m_arlen
-  assign master_arlen = master_xactor_rg_rd_addr[28:21] ;
+  assign master_arlen = master_xactor_f_rd_addr$D_OUT[28:21] ;
 
   // value method master_m_arsize
-  assign master_arsize = master_xactor_rg_rd_addr[20:18] ;
+  assign master_arsize = master_xactor_f_rd_addr$D_OUT[20:18] ;
 
   // value method master_m_arburst
-  assign master_arburst = master_xactor_rg_rd_addr[17:16] ;
+  assign master_arburst = master_xactor_f_rd_addr$D_OUT[17:16] ;
 
   // value method master_m_arlock
-  assign master_arlock = master_xactor_rg_rd_addr[15] ;
+  assign master_arlock = master_xactor_f_rd_addr$D_OUT[15] ;
 
   // value method master_m_arcache
-  assign master_arcache = master_xactor_rg_rd_addr[14:11] ;
+  assign master_arcache = master_xactor_f_rd_addr$D_OUT[14:11] ;
 
   // value method master_m_arprot
-  assign master_arprot = master_xactor_rg_rd_addr[10:8] ;
+  assign master_arprot = master_xactor_f_rd_addr$D_OUT[10:8] ;
 
   // value method master_m_arqos
-  assign master_arqos = master_xactor_rg_rd_addr[7:4] ;
+  assign master_arqos = master_xactor_f_rd_addr$D_OUT[7:4] ;
 
   // value method master_m_arregion
-  assign master_arregion = master_xactor_rg_rd_addr[3:0] ;
+  assign master_arregion = master_xactor_f_rd_addr$D_OUT[3:0] ;
 
   // action method master_m_arready
   assign CAN_FIRE_master_m_arready = 1'd1 ;
@@ -658,20 +636,79 @@ module mkDM_System_Bus(CLK,
   assign WILL_FIRE_master_m_rvalid = 1'd1 ;
 
   // value method master_m_rready
-  assign master_rready = !master_xactor_crg_rd_data_full$port2__read ;
+  assign master_rready = master_xactor_f_rd_data$FULL_N ;
+
+  // submodule master_xactor_f_rd_addr
+  FIFO2 #(.width(32'd97),
+	  .guarded(32'd1)) master_xactor_f_rd_addr(.RST(RST_N),
+						   .CLK(CLK),
+						   .D_IN(master_xactor_f_rd_addr$D_IN),
+						   .ENQ(master_xactor_f_rd_addr$ENQ),
+						   .DEQ(master_xactor_f_rd_addr$DEQ),
+						   .CLR(master_xactor_f_rd_addr$CLR),
+						   .D_OUT(master_xactor_f_rd_addr$D_OUT),
+						   .FULL_N(master_xactor_f_rd_addr$FULL_N),
+						   .EMPTY_N(master_xactor_f_rd_addr$EMPTY_N));
+
+  // submodule master_xactor_f_rd_data
+  FIFO2 #(.width(32'd71),
+	  .guarded(32'd1)) master_xactor_f_rd_data(.RST(RST_N),
+						   .CLK(CLK),
+						   .D_IN(master_xactor_f_rd_data$D_IN),
+						   .ENQ(master_xactor_f_rd_data$ENQ),
+						   .DEQ(master_xactor_f_rd_data$DEQ),
+						   .CLR(master_xactor_f_rd_data$CLR),
+						   .D_OUT(master_xactor_f_rd_data$D_OUT),
+						   .FULL_N(master_xactor_f_rd_data$FULL_N),
+						   .EMPTY_N(master_xactor_f_rd_data$EMPTY_N));
+
+  // submodule master_xactor_f_wr_addr
+  FIFO2 #(.width(32'd97),
+	  .guarded(32'd1)) master_xactor_f_wr_addr(.RST(RST_N),
+						   .CLK(CLK),
+						   .D_IN(master_xactor_f_wr_addr$D_IN),
+						   .ENQ(master_xactor_f_wr_addr$ENQ),
+						   .DEQ(master_xactor_f_wr_addr$DEQ),
+						   .CLR(master_xactor_f_wr_addr$CLR),
+						   .D_OUT(master_xactor_f_wr_addr$D_OUT),
+						   .FULL_N(master_xactor_f_wr_addr$FULL_N),
+						   .EMPTY_N(master_xactor_f_wr_addr$EMPTY_N));
+
+  // submodule master_xactor_f_wr_data
+  FIFO2 #(.width(32'd73),
+	  .guarded(32'd1)) master_xactor_f_wr_data(.RST(RST_N),
+						   .CLK(CLK),
+						   .D_IN(master_xactor_f_wr_data$D_IN),
+						   .ENQ(master_xactor_f_wr_data$ENQ),
+						   .DEQ(master_xactor_f_wr_data$DEQ),
+						   .CLR(master_xactor_f_wr_data$CLR),
+						   .D_OUT(master_xactor_f_wr_data$D_OUT),
+						   .FULL_N(master_xactor_f_wr_data$FULL_N),
+						   .EMPTY_N(master_xactor_f_wr_data$EMPTY_N));
+
+  // submodule master_xactor_f_wr_resp
+  FIFO2 #(.width(32'd6), .guarded(32'd1)) master_xactor_f_wr_resp(.RST(RST_N),
+								  .CLK(CLK),
+								  .D_IN(master_xactor_f_wr_resp$D_IN),
+								  .ENQ(master_xactor_f_wr_resp$ENQ),
+								  .DEQ(master_xactor_f_wr_resp$DEQ),
+								  .CLR(master_xactor_f_wr_resp$CLR),
+								  .D_OUT(master_xactor_f_wr_resp$D_OUT),
+								  .FULL_N(master_xactor_f_wr_resp$FULL_N),
+								  .EMPTY_N(master_xactor_f_wr_resp$EMPTY_N));
 
   // rule RL_rl_sb_read_finish
   assign CAN_FIRE_RL_rl_sb_read_finish =
-	     master_xactor_crg_rd_data_full && rg_sb_state == 2'd1 &&
+	     master_xactor_f_rd_data$EMPTY_N && rg_sb_state == 2'd1 &&
 	     rg_sbcs_sberror == 3'd0 ;
   assign WILL_FIRE_RL_rl_sb_read_finish = CAN_FIRE_RL_rl_sb_read_finish ;
 
   // rule RL_rl_sb_write_response
-  assign CAN_FIRE_RL_rl_sb_write_response = master_xactor_crg_wr_resp_full ;
-  assign WILL_FIRE_RL_rl_sb_write_response = master_xactor_crg_wr_resp_full ;
+  assign CAN_FIRE_RL_rl_sb_write_response = master_xactor_f_wr_resp$EMPTY_N ;
+  assign WILL_FIRE_RL_rl_sb_write_response = master_xactor_f_wr_resp$EMPTY_N ;
 
   // inputs to muxes for submodule ports
-  assign MUX_master_xactor_crg_rd_addr_full$port2__write_1__SEL_1 =
+  assign MUX_master_xactor_f_rd_addr$enq_1__SEL_1 =
 	     EN_av_read && av_read_dm_addr == 7'h3C &&
 	     rg_sb_state_EQ_0_7_AND_NOT_rg_sbcs_sbbusyerror_ETC___d110 ;
   assign MUX_rg_sbaddress0$write_1__SEL_2 =
@@ -689,50 +726,50 @@ module mkDM_System_Bus(CLK,
 	     ((write_dm_addr == 7'h39 || write_dm_addr == 7'h3A) &&
 	      rg_sb_state == 2'd0 &&
 	      !rg_sbcs_sbbusyerror &&
-	      rg_sbcs_sberror_EQ_0_AND_rg_sbcs_sbreadonaddr__ETC___d292 ||
+	      rg_sbcs_sberror_EQ_0_AND_rg_sbcs_sbreadonaddr__ETC___d291 ||
 	      write_dm_addr == 7'h3C &&
 	      rg_sb_state_EQ_0_7_AND_NOT_rg_sbcs_sbbusyerror_ETC___d95) ;
   assign MUX_rg_sbcs_sbbusyerror$write_1__SEL_2 =
 	     EN_write &&
-	     write_dm_addr_EQ_0x38_42_AND_rg_sbcs_sberror_E_ETC___d266 ;
+	     write_dm_addr_EQ_0x38_41_AND_rg_sbcs_sberror_E_ETC___d265 ;
   assign MUX_rg_sbcs_sbbusyerror$write_1__SEL_3 =
 	     EN_av_read && av_read_dm_addr == 7'h3C && rg_sb_state != 2'd0 ;
   assign MUX_rg_sbcs_sberror$write_1__SEL_1 =
-	     master_xactor_crg_wr_resp_full &&
-	     master_xactor_rg_wr_resp[1:0] != 2'b0 ;
+	     master_xactor_f_wr_resp$EMPTY_N &&
+	     master_xactor_f_wr_resp$D_OUT[1:0] != 2'b0 ;
   assign MUX_rg_sbcs_sberror$write_1__SEL_3 =
 	     WILL_FIRE_RL_rl_sb_read_finish &&
-	     master_xactor_rg_rd_data[2:1] != 2'b0 ;
+	     master_xactor_f_rd_data$D_OUT[2:1] != 2'b0 ;
   assign MUX_rg_sbcs_sberror$write_1__SEL_4 =
 	     EN_write &&
-	     write_dm_addr_EQ_0x38_42_AND_rg_sbcs_sberror_E_ETC___d274 ;
+	     write_dm_addr_EQ_0x38_41_AND_rg_sbcs_sberror_E_ETC___d273 ;
   assign MUX_rg_sbdata0$write_1__SEL_3 =
 	     EN_write &&
-	     write_dm_addr_EQ_0x3C_62_AND_rg_sb_state_EQ_0__ETC___d327 ;
-  assign MUX_master_xactor_rg_rd_addr$write_1__VAL_1 =
-	     { 4'd0, sbaddress__h1228, 8'd0, x__h3283, 18'd65536 } ;
-  assign MUX_master_xactor_rg_rd_addr$write_1__VAL_2 =
-	     { 4'd0, addr64__h4330, 8'd0, x__h3283, 18'd65536 } ;
+	     write_dm_addr_EQ_0x3C_61_AND_rg_sb_state_EQ_0__ETC___d326 ;
+  assign MUX_master_xactor_f_rd_addr$enq_1__VAL_1 =
+	     { 4'd0, sbaddress__h638, 8'd0, x__h2654, 18'd65536 } ;
+  assign MUX_master_xactor_f_rd_addr$enq_1__VAL_2 =
+	     { 4'd0, addr64__h3701, 8'd0, x__h2654, 18'd65536 } ;
   always@(write_dm_addr or
 	  rg_sbaddress1_7_CONCAT_rg_sbaddress0_8_9_PLUS__ETC___d104 or
-	  IF_rg_sbcs_sbreadonaddr_24_THEN_IF_rg_sbcs_sba_ETC___d311)
+	  IF_rg_sbcs_sbreadonaddr_24_THEN_IF_rg_sbcs_sba_ETC___d310)
   begin
     case (write_dm_addr)
       7'h39, 7'h3A:
 	  MUX_rg_sbaddress0$write_1__VAL_2 =
-	      IF_rg_sbcs_sbreadonaddr_24_THEN_IF_rg_sbcs_sba_ETC___d311;
+	      IF_rg_sbcs_sbreadonaddr_24_THEN_IF_rg_sbcs_sba_ETC___d310;
       default: MUX_rg_sbaddress0$write_1__VAL_2 =
 		   rg_sbaddress1_7_CONCAT_rg_sbaddress0_8_9_PLUS__ETC___d104[31:0];
     endcase
   end
   always@(write_dm_addr or
 	  rg_sbaddress1_7_CONCAT_rg_sbaddress0_8_9_PLUS__ETC___d104 or
-	  IF_write_dm_addr_EQ_0x39_59_THEN_rg_sbaddress1_ETC___d302)
+	  IF_write_dm_addr_EQ_0x39_58_THEN_rg_sbaddress1_ETC___d301)
   begin
     case (write_dm_addr)
       7'h39, 7'h3A:
 	  MUX_rg_sbaddress1$write_1__VAL_2 =
-	      IF_write_dm_addr_EQ_0x39_59_THEN_rg_sbaddress1_ETC___d302;
+	      IF_write_dm_addr_EQ_0x39_58_THEN_rg_sbaddress1_ETC___d301;
       default: MUX_rg_sbaddress1$write_1__VAL_2 =
 		   rg_sbaddress1_7_CONCAT_rg_sbaddress0_8_9_PLUS__ETC___d104[63:32];
     endcase
@@ -745,100 +782,6 @@ module mkDM_System_Bus(CLK,
     endcase
   end
 
-  // inlined wires
-  assign master_xactor_crg_wr_addr_full$EN_port1__write =
-	     master_xactor_crg_wr_addr_full && master_awready ;
-  assign master_xactor_crg_wr_addr_full$port2__read =
-	     !master_xactor_crg_wr_addr_full$EN_port1__write &&
-	     master_xactor_crg_wr_addr_full ;
-  assign master_xactor_crg_wr_addr_full$port3__read =
-	     MUX_rg_sbdata0$write_1__SEL_3 ||
-	     master_xactor_crg_wr_addr_full$port2__read ;
-  assign master_xactor_crg_wr_data_full$EN_port1__write =
-	     master_xactor_crg_wr_data_full && master_wready ;
-  assign master_xactor_crg_wr_data_full$port2__read =
-	     !master_xactor_crg_wr_data_full$EN_port1__write &&
-	     master_xactor_crg_wr_data_full ;
-  assign master_xactor_crg_wr_data_full$port3__read =
-	     MUX_rg_sbdata0$write_1__SEL_3 ||
-	     master_xactor_crg_wr_data_full$port2__read ;
-  assign master_xactor_crg_rd_addr_full$EN_port1__write =
-	     master_xactor_crg_rd_addr_full && master_arready ;
-  assign master_xactor_crg_rd_addr_full$port2__read =
-	     !master_xactor_crg_rd_addr_full$EN_port1__write &&
-	     master_xactor_crg_rd_addr_full ;
-  assign master_xactor_crg_rd_addr_full$EN_port2__write =
-	     EN_av_read && av_read_dm_addr == 7'h3C &&
-	     rg_sb_state_EQ_0_7_AND_NOT_rg_sbcs_sbbusyerror_ETC___d110 ||
-	     EN_write && write_dm_addr == 7'h39 &&
-	     rg_sb_state_EQ_0_7_AND_NOT_rg_sbcs_sbbusyerror_ETC___d317 ;
-  assign master_xactor_crg_rd_addr_full$port3__read =
-	     master_xactor_crg_rd_addr_full$EN_port2__write ?
-	       1'd1 :
-	       master_xactor_crg_rd_addr_full$port2__read ;
-  assign master_xactor_crg_rd_data_full$port2__read =
-	     !CAN_FIRE_RL_rl_sb_read_finish &&
-	     master_xactor_crg_rd_data_full ;
-  assign master_xactor_crg_rd_data_full$EN_port2__write =
-	     master_rvalid && !master_xactor_crg_rd_data_full$port2__read ;
-  assign master_xactor_crg_rd_data_full$port3__read =
-	     master_xactor_crg_rd_data_full$EN_port2__write ||
-	     master_xactor_crg_rd_data_full$port2__read ;
-
-  // register master_xactor_crg_rd_addr_full
-  assign master_xactor_crg_rd_addr_full$D_IN =
-	     master_xactor_crg_rd_addr_full$port3__read ;
-  assign master_xactor_crg_rd_addr_full$EN = 1'b1 ;
-
-  // register master_xactor_crg_rd_data_full
-  assign master_xactor_crg_rd_data_full$D_IN =
-	     master_xactor_crg_rd_data_full$port3__read ;
-  assign master_xactor_crg_rd_data_full$EN = 1'b1 ;
-
-  // register master_xactor_crg_wr_addr_full
-  assign master_xactor_crg_wr_addr_full$D_IN =
-	     master_xactor_crg_wr_addr_full$port3__read ;
-  assign master_xactor_crg_wr_addr_full$EN = 1'b1 ;
-
-  // register master_xactor_crg_wr_data_full
-  assign master_xactor_crg_wr_data_full$D_IN =
-	     master_xactor_crg_wr_data_full$port3__read ;
-  assign master_xactor_crg_wr_data_full$EN = 1'b1 ;
-
-  // register master_xactor_crg_wr_resp_full
-  assign master_xactor_crg_wr_resp_full$D_IN = master_bvalid ;
-  assign master_xactor_crg_wr_resp_full$EN = 1'b1 ;
-
-  // register master_xactor_rg_rd_addr
-  assign master_xactor_rg_rd_addr$D_IN =
-	     MUX_master_xactor_crg_rd_addr_full$port2__write_1__SEL_1 ?
-	       MUX_master_xactor_rg_rd_addr$write_1__VAL_1 :
-	       MUX_master_xactor_rg_rd_addr$write_1__VAL_2 ;
-  assign master_xactor_rg_rd_addr$EN =
-	     EN_av_read && av_read_dm_addr == 7'h3C &&
-	     rg_sb_state_EQ_0_7_AND_NOT_rg_sbcs_sbbusyerror_ETC___d110 ||
-	     EN_write && write_dm_addr == 7'h39 &&
-	     rg_sb_state_EQ_0_7_AND_NOT_rg_sbcs_sbbusyerror_ETC___d317 ;
-
-  // register master_xactor_rg_rd_data
-  assign master_xactor_rg_rd_data$D_IN =
-	     { master_rid, master_rdata, master_rresp, master_rlast } ;
-  assign master_xactor_rg_rd_data$EN = 1'd1 ;
-
-  // register master_xactor_rg_wr_addr
-  assign master_xactor_rg_wr_addr$D_IN =
-	     { 4'd0, sbaddress__h1228, 8'd0, x__h4988, 18'd65536 } ;
-  assign master_xactor_rg_wr_addr$EN = MUX_rg_sbdata0$write_1__SEL_3 ;
-
-  // register master_xactor_rg_wr_data
-  assign master_xactor_rg_wr_data$D_IN =
-	     { wrd_wdata__h5116, wrd_wstrb__h5117, 1'd1 } ;
-  assign master_xactor_rg_wr_data$EN = MUX_rg_sbdata0$write_1__SEL_3 ;
-
-  // register master_xactor_rg_wr_resp
-  assign master_xactor_rg_wr_resp$D_IN = { master_bid, master_bresp } ;
-  assign master_xactor_rg_wr_resp$EN = master_bvalid ;
-
   // register rg_sb_state
   assign rg_sb_state$D_IN =
 	     (EN_reset || WILL_FIRE_RL_rl_sb_read_finish) ? 2'd0 : 2'd1 ;
@@ -846,7 +789,7 @@ module mkDM_System_Bus(CLK,
 	     EN_av_read && av_read_dm_addr == 7'h3C &&
 	     rg_sb_state_EQ_0_7_AND_NOT_rg_sbcs_sbbusyerror_ETC___d110 ||
 	     EN_write && write_dm_addr == 7'h39 &&
-	     rg_sb_state_EQ_0_7_AND_NOT_rg_sbcs_sbbusyerror_ETC___d317 ||
+	     rg_sb_state_EQ_0_7_AND_NOT_rg_sbcs_sbbusyerror_ETC___d316 ||
 	     WILL_FIRE_RL_rl_sb_read_finish ||
 	     EN_reset ;
 
@@ -894,27 +837,27 @@ module mkDM_System_Bus(CLK,
 
   // register rg_sbaddress_reading
   assign rg_sbaddress_reading$D_IN =
-	     MUX_master_xactor_crg_rd_addr_full$port2__write_1__SEL_1 ?
-	       sbaddress__h1228 :
-	       addr64__h4330 ;
+	     MUX_master_xactor_f_rd_addr$enq_1__SEL_1 ?
+	       sbaddress__h638 :
+	       addr64__h3701 ;
   assign rg_sbaddress_reading$EN =
 	     EN_av_read && av_read_dm_addr == 7'h3C &&
 	     rg_sb_state_EQ_0_7_AND_NOT_rg_sbcs_sbbusyerror_ETC___d110 ||
 	     EN_write && write_dm_addr == 7'h39 &&
-	     rg_sb_state_EQ_0_7_AND_NOT_rg_sbcs_sbbusyerror_ETC___d317 ;
+	     rg_sb_state_EQ_0_7_AND_NOT_rg_sbcs_sbbusyerror_ETC___d316 ;
 
   // register rg_sbcs_sbaccess
   assign rg_sbcs_sbaccess$D_IN = EN_reset ? 3'd2 : write_dm_word[19:17] ;
   assign rg_sbcs_sbaccess$EN =
 	     EN_write &&
-	     write_dm_addr_EQ_0x38_42_AND_rg_sbcs_sberror_E_ETC___d257 ||
+	     write_dm_addr_EQ_0x38_41_AND_rg_sbcs_sberror_E_ETC___d256 ||
 	     EN_reset ;
 
   // register rg_sbcs_sbautoincrement
   assign rg_sbcs_sbautoincrement$D_IN = !EN_reset && write_dm_word[16] ;
   assign rg_sbcs_sbautoincrement$EN =
 	     EN_write &&
-	     write_dm_addr_EQ_0x38_42_AND_rg_sbcs_sberror_E_ETC___d257 ||
+	     write_dm_addr_EQ_0x38_41_AND_rg_sbcs_sberror_E_ETC___d256 ||
 	     EN_reset ;
 
   // register rg_sbcs_sbbusyerror
@@ -931,7 +874,7 @@ module mkDM_System_Bus(CLK,
   assign rg_sbcs_sbbusyerror$EN =
 	     EN_av_read && av_read_dm_addr == 7'h3C && rg_sb_state != 2'd0 ||
 	     EN_write &&
-	     write_dm_addr_EQ_0x38_42_AND_rg_sbcs_sberror_E_ETC___d266 ||
+	     write_dm_addr_EQ_0x38_41_AND_rg_sbcs_sberror_E_ETC___d265 ||
 	     EN_reset ;
 
   // register rg_sbcs_sberror
@@ -950,25 +893,25 @@ module mkDM_System_Bus(CLK,
   endcase
   assign rg_sbcs_sberror$EN =
 	     WILL_FIRE_RL_rl_sb_read_finish &&
-	     master_xactor_rg_rd_data[2:1] != 2'b0 ||
-	     master_xactor_crg_wr_resp_full &&
-	     master_xactor_rg_wr_resp[1:0] != 2'b0 ||
+	     master_xactor_f_rd_data$D_OUT[2:1] != 2'b0 ||
+	     master_xactor_f_wr_resp$EMPTY_N &&
+	     master_xactor_f_wr_resp$D_OUT[1:0] != 2'b0 ||
 	     EN_write &&
-	     write_dm_addr_EQ_0x38_42_AND_rg_sbcs_sberror_E_ETC___d274 ||
+	     write_dm_addr_EQ_0x38_41_AND_rg_sbcs_sberror_E_ETC___d273 ||
 	     EN_reset ;
 
   // register rg_sbcs_sbreadonaddr
   assign rg_sbcs_sbreadonaddr$D_IN = !EN_reset && write_dm_word[20] ;
   assign rg_sbcs_sbreadonaddr$EN =
 	     EN_write &&
-	     write_dm_addr_EQ_0x38_42_AND_rg_sbcs_sberror_E_ETC___d257 ||
+	     write_dm_addr_EQ_0x38_41_AND_rg_sbcs_sberror_E_ETC___d256 ||
 	     EN_reset ;
 
   // register rg_sbcs_sbreadondata
   assign rg_sbcs_sbreadondata$D_IN = !EN_reset && write_dm_word[15] ;
   assign rg_sbcs_sbreadondata$EN =
 	     EN_write &&
-	     write_dm_addr_EQ_0x38_42_AND_rg_sbcs_sberror_E_ETC___d257 ||
+	     write_dm_addr_EQ_0x38_41_AND_rg_sbcs_sberror_E_ETC___d256 ||
 	     EN_reset ;
 
   // register rg_sbdata0
@@ -986,42 +929,93 @@ module mkDM_System_Bus(CLK,
   endcase
   assign rg_sbdata0$EN =
 	     EN_write &&
-	     write_dm_addr_EQ_0x3C_62_AND_rg_sb_state_EQ_0__ETC___d327 ||
+	     write_dm_addr_EQ_0x3C_61_AND_rg_sb_state_EQ_0__ETC___d326 ||
 	     WILL_FIRE_RL_rl_sb_read_finish ||
 	     EN_reset ;
 
+  // submodule master_xactor_f_rd_addr
+  assign master_xactor_f_rd_addr$D_IN =
+	     MUX_master_xactor_f_rd_addr$enq_1__SEL_1 ?
+	       MUX_master_xactor_f_rd_addr$enq_1__VAL_1 :
+	       MUX_master_xactor_f_rd_addr$enq_1__VAL_2 ;
+  assign master_xactor_f_rd_addr$ENQ =
+	     EN_av_read && av_read_dm_addr == 7'h3C &&
+	     rg_sb_state_EQ_0_7_AND_NOT_rg_sbcs_sbbusyerror_ETC___d110 ||
+	     EN_write && write_dm_addr == 7'h39 &&
+	     rg_sb_state_EQ_0_7_AND_NOT_rg_sbcs_sbbusyerror_ETC___d316 ;
+  assign master_xactor_f_rd_addr$DEQ =
+	     master_xactor_f_rd_addr$EMPTY_N && master_arready ;
+  assign master_xactor_f_rd_addr$CLR = 1'b0 ;
+
+  // submodule master_xactor_f_rd_data
+  assign master_xactor_f_rd_data$D_IN =
+	     { master_rid, master_rdata, master_rresp, master_rlast } ;
+  assign master_xactor_f_rd_data$ENQ =
+	     master_rvalid && master_xactor_f_rd_data$FULL_N ;
+  assign master_xactor_f_rd_data$DEQ =
+	     master_xactor_f_rd_data$EMPTY_N && rg_sb_state == 2'd1 &&
+	     rg_sbcs_sberror == 3'd0 ;
+  assign master_xactor_f_rd_data$CLR = 1'b0 ;
+
+  // submodule master_xactor_f_wr_addr
+  assign master_xactor_f_wr_addr$D_IN =
+	     { 4'd0, sbaddress__h638, 8'd0, x__h4302, 18'd65536 } ;
+  assign master_xactor_f_wr_addr$ENQ =
+	     EN_write &&
+	     write_dm_addr_EQ_0x3C_61_AND_rg_sb_state_EQ_0__ETC___d326 ;
+  assign master_xactor_f_wr_addr$DEQ =
+	     master_xactor_f_wr_addr$EMPTY_N && master_awready ;
+  assign master_xactor_f_wr_addr$CLR = 1'b0 ;
+
+  // submodule master_xactor_f_wr_data
+  assign master_xactor_f_wr_data$D_IN =
+	     { wrd_wdata__h4397, wrd_wstrb__h4398, 1'd1 } ;
+  assign master_xactor_f_wr_data$ENQ =
+	     EN_write &&
+	     write_dm_addr_EQ_0x3C_61_AND_rg_sb_state_EQ_0__ETC___d326 ;
+  assign master_xactor_f_wr_data$DEQ =
+	     master_xactor_f_wr_data$EMPTY_N && master_wready ;
+  assign master_xactor_f_wr_data$CLR = 1'b0 ;
+
+  // submodule master_xactor_f_wr_resp
+  assign master_xactor_f_wr_resp$D_IN = { master_bid, master_bresp } ;
+  assign master_xactor_f_wr_resp$ENQ =
+	     master_bvalid && master_xactor_f_wr_resp$FULL_N ;
+  assign master_xactor_f_wr_resp$DEQ = master_xactor_f_wr_resp$EMPTY_N ;
+  assign master_xactor_f_wr_resp$CLR = 1'b0 ;
+
   // remaining internal signals
-  assign IF_rg_sbcs_sbreadonaddr_24_THEN_IF_rg_sbcs_sba_ETC___d311 =
+  assign IF_rg_sbcs_sbreadonaddr_24_THEN_IF_rg_sbcs_sba_ETC___d310 =
 	     rg_sbcs_sbreadonaddr ?
 	       (rg_sbcs_sbautoincrement ?
-		  rg_sbaddress1_7_CONCAT_write_dm_word_99_PLUS_I_ETC___d300[31:0] :
+		  rg_sbaddress1_7_CONCAT_write_dm_word_98_PLUS_I_ETC___d299[31:0] :
 		  write_dm_word) :
 	       write_dm_word ;
-  assign IF_write_dm_addr_EQ_0x39_59_THEN_rg_sbaddress1_ETC___d302 =
+  assign IF_write_dm_addr_EQ_0x39_58_THEN_rg_sbaddress1_ETC___d301 =
 	     (write_dm_addr == 7'h39) ?
-	       rg_sbaddress1_7_CONCAT_write_dm_word_99_PLUS_I_ETC___d300[63:32] :
+	       rg_sbaddress1_7_CONCAT_write_dm_word_98_PLUS_I_ETC___d299[63:32] :
 	       write_dm_word ;
-  assign _theResult___fst__h5026 = word64__h4970 << shift_bits__h4973 ;
-  assign addr64__h4330 = { rg_sbaddress1, write_dm_word } ;
-  assign result__h1836 = { 56'd0, master_xactor_rg_rd_data[10:3] } ;
-  assign result__h1866 = { 56'd0, master_xactor_rg_rd_data[18:11] } ;
-  assign result__h1893 = { 56'd0, master_xactor_rg_rd_data[26:19] } ;
-  assign result__h1920 = { 56'd0, master_xactor_rg_rd_data[34:27] } ;
-  assign result__h1947 = { 56'd0, master_xactor_rg_rd_data[42:35] } ;
-  assign result__h1974 = { 56'd0, master_xactor_rg_rd_data[50:43] } ;
-  assign result__h2001 = { 56'd0, master_xactor_rg_rd_data[58:51] } ;
-  assign result__h2028 = { 56'd0, master_xactor_rg_rd_data[66:59] } ;
-  assign result__h2073 = { 48'd0, master_xactor_rg_rd_data[18:3] } ;
-  assign result__h2100 = { 48'd0, master_xactor_rg_rd_data[34:19] } ;
-  assign result__h2127 = { 48'd0, master_xactor_rg_rd_data[50:35] } ;
-  assign result__h2154 = { 48'd0, master_xactor_rg_rd_data[66:51] } ;
-  assign result__h2195 = { 32'd0, master_xactor_rg_rd_data[34:3] } ;
-  assign result__h2222 = { 32'd0, master_xactor_rg_rd_data[66:35] } ;
+  assign _theResult___fst__h4340 = word64__h4284 << shift_bits__h4287 ;
+  assign addr64__h3701 = { rg_sbaddress1, write_dm_word } ;
+  assign result__h1250 = { 56'd0, master_xactor_f_rd_data$D_OUT[10:3] } ;
+  assign result__h1280 = { 56'd0, master_xactor_f_rd_data$D_OUT[18:11] } ;
+  assign result__h1307 = { 56'd0, master_xactor_f_rd_data$D_OUT[26:19] } ;
+  assign result__h1334 = { 56'd0, master_xactor_f_rd_data$D_OUT[34:27] } ;
+  assign result__h1361 = { 56'd0, master_xactor_f_rd_data$D_OUT[42:35] } ;
+  assign result__h1388 = { 56'd0, master_xactor_f_rd_data$D_OUT[50:43] } ;
+  assign result__h1415 = { 56'd0, master_xactor_f_rd_data$D_OUT[58:51] } ;
+  assign result__h1442 = { 56'd0, master_xactor_f_rd_data$D_OUT[66:59] } ;
+  assign result__h1487 = { 48'd0, master_xactor_f_rd_data$D_OUT[18:3] } ;
+  assign result__h1514 = { 48'd0, master_xactor_f_rd_data$D_OUT[34:19] } ;
+  assign result__h1541 = { 48'd0, master_xactor_f_rd_data$D_OUT[50:35] } ;
+  assign result__h1568 = { 48'd0, master_xactor_f_rd_data$D_OUT[66:51] } ;
+  assign result__h1609 = { 32'd0, master_xactor_f_rd_data$D_OUT[34:3] } ;
+  assign result__h1636 = { 32'd0, master_xactor_f_rd_data$D_OUT[66:35] } ;
   assign rg_sb_state_EQ_0_7_AND_NOT_rg_sbcs_sbbusyerror_ETC___d110 =
 	     rg_sb_state == 2'd0 && !rg_sbcs_sbbusyerror &&
 	     rg_sbcs_sberror == 3'd0 &&
 	     rg_sbcs_sbreadondata ;
-  assign rg_sb_state_EQ_0_7_AND_NOT_rg_sbcs_sbbusyerror_ETC___d317 =
+  assign rg_sb_state_EQ_0_7_AND_NOT_rg_sbcs_sbbusyerror_ETC___d316 =
 	     rg_sb_state == 2'd0 && !rg_sbcs_sbbusyerror &&
 	     rg_sbcs_sberror == 3'd0 &&
 	     rg_sbcs_sbreadonaddr ;
@@ -1030,21 +1024,21 @@ module mkDM_System_Bus(CLK,
 	     rg_sbcs_sberror == 3'd0 &&
 	     rg_sbcs_sbautoincrement ;
   assign rg_sbaddress1_7_CONCAT_rg_sbaddress0_8_9_PLUS__ETC___d104 =
-	     sbaddress__h1228 +
+	     sbaddress__h638 +
 	     IF_rg_sbcs_sbaccess_8_EQ_0_9_THEN_1_ELSE_IF_rg_ETC___d103 ;
-  assign rg_sbaddress1_7_CONCAT_write_dm_word_99_PLUS_I_ETC___d300 =
-	     addr64__h4330 +
+  assign rg_sbaddress1_7_CONCAT_write_dm_word_98_PLUS_I_ETC___d299 =
+	     addr64__h3701 +
 	     IF_rg_sbcs_sbaccess_8_EQ_0_9_THEN_1_ELSE_IF_rg_ETC___d103 ;
-  assign rg_sbcs_sberror_EQ_0_AND_rg_sbcs_sbreadonaddr__ETC___d292 =
+  assign rg_sbcs_sberror_EQ_0_AND_rg_sbcs_sbreadonaddr__ETC___d291 =
 	     rg_sbcs_sberror == 3'd0 &&
 	     (rg_sbcs_sbreadonaddr && rg_sbcs_sbautoincrement ||
 	      write_dm_addr != 7'h39) ;
-  assign sbaddress__h1228 = { rg_sbaddress1, rg_sbaddress0 } ;
-  assign shift_bits__h4973 = { rg_sbaddress0[2:0], 3'b0 } ;
-  assign strobe64__h5025 = 8'b00000001 << rg_sbaddress0[2:0] ;
-  assign strobe64__h5028 = 8'b00000011 << rg_sbaddress0[2:0] ;
-  assign strobe64__h5031 = 8'b00001111 << rg_sbaddress0[2:0] ;
-  assign v__h2727 =
+  assign sbaddress__h638 = { rg_sbaddress1, rg_sbaddress0 } ;
+  assign shift_bits__h4287 = { rg_sbaddress0[2:0], 3'b0 } ;
+  assign strobe64__h4339 = 8'b00000001 << rg_sbaddress0[2:0] ;
+  assign strobe64__h4342 = 8'b00000011 << rg_sbaddress0[2:0] ;
+  assign strobe64__h4345 = 8'b00001111 << rg_sbaddress0[2:0] ;
+  assign v__h2132 =
 	     { 9'd64,
 	       rg_sbcs_sbbusyerror,
 	       rg_sb_state != 2'd0,
@@ -1054,71 +1048,71 @@ module mkDM_System_Bus(CLK,
 	       rg_sbcs_sbreadondata,
 	       rg_sbcs_sberror,
 	       12'd2055 } ;
-  assign v__h2861 =
+  assign v__h2266 =
 	     (rg_sb_state != 2'd0 || rg_sbcs_sbbusyerror ||
 	      rg_sbcs_sberror != 3'd0) ?
 	       32'd0 :
 	       rg_sbdata0 ;
-  assign word64__h4970 = { 32'd0, write_dm_word } ;
-  assign write_dm_addr_EQ_0x38_42_AND_rg_sbcs_sberror_E_ETC___d257 =
+  assign word64__h4284 = { 32'd0, write_dm_word } ;
+  assign write_dm_addr_EQ_0x38_41_AND_rg_sbcs_sberror_E_ETC___d256 =
 	     write_dm_addr == 7'h38 &&
 	     (rg_sbcs_sberror == 3'd0 || write_dm_word[14:12] != 3'd0) &&
 	     (!rg_sbcs_sbbusyerror || write_dm_word[22]) &&
 	     write_dm_word[19:17] != 3'd4 &&
 	     write_dm_word[19:17] != 3'd3 ;
-  assign write_dm_addr_EQ_0x38_42_AND_rg_sbcs_sberror_E_ETC___d266 =
-	     write_dm_addr_EQ_0x38_42_AND_rg_sbcs_sberror_E_ETC___d257 ||
+  assign write_dm_addr_EQ_0x38_41_AND_rg_sbcs_sberror_E_ETC___d265 =
+	     write_dm_addr_EQ_0x38_41_AND_rg_sbcs_sberror_E_ETC___d256 ||
 	     (write_dm_addr == 7'h39 || write_dm_addr == 7'h3A ||
 	      write_dm_addr == 7'h3C) &&
 	     rg_sb_state != 2'd0 ;
-  assign write_dm_addr_EQ_0x38_42_AND_rg_sbcs_sberror_E_ETC___d272 =
+  assign write_dm_addr_EQ_0x38_41_AND_rg_sbcs_sberror_E_ETC___d271 =
 	     write_dm_addr == 7'h38 &&
 	     (rg_sbcs_sberror == 3'd0 || write_dm_word[14:12] != 3'd0) &&
 	     rg_sbcs_sbbusyerror &&
 	     !write_dm_word[22] ;
-  assign write_dm_addr_EQ_0x38_42_AND_rg_sbcs_sberror_E_ETC___d274 =
+  assign write_dm_addr_EQ_0x38_41_AND_rg_sbcs_sberror_E_ETC___d273 =
 	     write_dm_addr == 7'h38 &&
 	     (rg_sbcs_sberror == 3'd0 || write_dm_word[14:12] != 3'd0) &&
 	     (!rg_sbcs_sbbusyerror || write_dm_word[22]) ;
-  assign write_dm_addr_EQ_0x38_42_AND_rg_sbcs_sberror_E_ETC___d279 =
+  assign write_dm_addr_EQ_0x38_41_AND_rg_sbcs_sberror_E_ETC___d278 =
 	     write_dm_addr == 7'h38 &&
 	     (rg_sbcs_sberror == 3'd0 || write_dm_word[14:12] != 3'd0) &&
 	     (!rg_sbcs_sbbusyerror || write_dm_word[22]) &&
 	     (write_dm_word[19:17] == 3'd4 || write_dm_word[19:17] == 3'd3) ;
-  assign write_dm_addr_EQ_0x3C_62_AND_rg_sb_state_EQ_0__ETC___d327 =
+  assign write_dm_addr_EQ_0x3C_61_AND_rg_sb_state_EQ_0__ETC___d326 =
 	     write_dm_addr == 7'h3C && rg_sb_state == 2'd0 &&
 	     !rg_sbcs_sbbusyerror &&
 	     rg_sbcs_sberror == 3'd0 ;
   always@(rg_sbcs_sbaccess)
   begin
     case (rg_sbcs_sbaccess)
-      3'd0, 3'd1, 3'd2: x__h3283 = rg_sbcs_sbaccess;
-      default: x__h3283 = 3'b011;
+      3'd0, 3'd1, 3'd2: x__h2654 = rg_sbcs_sbaccess;
+      default: x__h2654 = 3'b011;
     endcase
   end
   always@(rg_sbcs_sbaccess)
   begin
     case (rg_sbcs_sbaccess)
-      3'd0, 3'd1, 3'd2, 3'd3: x__h4988 = rg_sbcs_sbaccess;
-      default: x__h4988 = 3'b111;
+      3'd0, 3'd1, 3'd2, 3'd3: x__h4302 = rg_sbcs_sbaccess;
+      default: x__h4302 = 3'b111;
     endcase
   end
   always@(rg_sbcs_sbaccess or
-	  strobe64__h5025 or strobe64__h5028 or strobe64__h5031)
+	  strobe64__h4339 or strobe64__h4342 or strobe64__h4345)
   begin
     case (rg_sbcs_sbaccess)
-      3'd0: wrd_wstrb__h5117 = strobe64__h5025;
-      3'd1: wrd_wstrb__h5117 = strobe64__h5028;
-      3'd2: wrd_wstrb__h5117 = strobe64__h5031;
-      3'd3: wrd_wstrb__h5117 = 8'b11111111;
-      default: wrd_wstrb__h5117 = 8'd0;
+      3'd0: wrd_wstrb__h4398 = strobe64__h4339;
+      3'd1: wrd_wstrb__h4398 = strobe64__h4342;
+      3'd2: wrd_wstrb__h4398 = strobe64__h4345;
+      3'd3: wrd_wstrb__h4398 = 8'b11111111;
+      default: wrd_wstrb__h4398 = 8'd0;
     endcase
   end
-  always@(rg_sbcs_sbaccess or word64__h4970 or _theResult___fst__h5026)
+  always@(rg_sbcs_sbaccess or word64__h4284 or _theResult___fst__h4340)
   begin
     case (rg_sbcs_sbaccess)
-      3'd0, 3'd1, 3'd2: wrd_wdata__h5116 = _theResult___fst__h5026;
-      default: wrd_wdata__h5116 = word64__h4970;
+      3'd0, 3'd1, 3'd2: wrd_wdata__h4397 = _theResult___fst__h4340;
+      default: wrd_wdata__h4397 = word64__h4284;
     endcase
   end
   always@(rg_sbcs_sbaccess)
@@ -1133,68 +1127,68 @@ module mkDM_System_Bus(CLK,
     endcase
   end
   always@(rg_sbaddress_reading or
-	  result__h1836 or
-	  result__h1866 or
-	  result__h1893 or
-	  result__h1920 or
-	  result__h1947 or result__h1974 or result__h2001 or result__h2028)
+	  result__h1250 or
+	  result__h1280 or
+	  result__h1307 or
+	  result__h1334 or
+	  result__h1361 or result__h1388 or result__h1415 or result__h1442)
   begin
     case (rg_sbaddress_reading[2:0])
       3'h0:
 	  IF_rg_sbaddress_reading_0_BITS_2_TO_0_1_EQ_0x0_ETC___d53 =
-	      result__h1836;
+	      result__h1250;
       3'h1:
 	  IF_rg_sbaddress_reading_0_BITS_2_TO_0_1_EQ_0x0_ETC___d53 =
-	      result__h1866;
+	      result__h1280;
       3'h2:
 	  IF_rg_sbaddress_reading_0_BITS_2_TO_0_1_EQ_0x0_ETC___d53 =
-	      result__h1893;
+	      result__h1307;
       3'h3:
 	  IF_rg_sbaddress_reading_0_BITS_2_TO_0_1_EQ_0x0_ETC___d53 =
-	      result__h1920;
+	      result__h1334;
       3'h4:
 	  IF_rg_sbaddress_reading_0_BITS_2_TO_0_1_EQ_0x0_ETC___d53 =
-	      result__h1947;
+	      result__h1361;
       3'h5:
 	  IF_rg_sbaddress_reading_0_BITS_2_TO_0_1_EQ_0x0_ETC___d53 =
-	      result__h1974;
+	      result__h1388;
       3'h6:
 	  IF_rg_sbaddress_reading_0_BITS_2_TO_0_1_EQ_0x0_ETC___d53 =
-	      result__h2001;
+	      result__h1415;
       3'h7:
 	  IF_rg_sbaddress_reading_0_BITS_2_TO_0_1_EQ_0x0_ETC___d53 =
-	      result__h2028;
+	      result__h1442;
     endcase
   end
   always@(rg_sbaddress_reading or
-	  result__h2073 or result__h2100 or result__h2127 or result__h2154)
+	  result__h1487 or result__h1514 or result__h1541 or result__h1568)
   begin
     case (rg_sbaddress_reading[2:0])
       3'h0:
 	  IF_rg_sbaddress_reading_0_BITS_2_TO_0_1_EQ_0x0_ETC___d66 =
-	      result__h2073;
+	      result__h1487;
       3'h2:
 	  IF_rg_sbaddress_reading_0_BITS_2_TO_0_1_EQ_0x0_ETC___d66 =
-	      result__h2100;
+	      result__h1514;
       3'h4:
 	  IF_rg_sbaddress_reading_0_BITS_2_TO_0_1_EQ_0x0_ETC___d66 =
-	      result__h2127;
+	      result__h1541;
       3'h6:
 	  IF_rg_sbaddress_reading_0_BITS_2_TO_0_1_EQ_0x0_ETC___d66 =
-	      result__h2154;
+	      result__h1568;
       default: IF_rg_sbaddress_reading_0_BITS_2_TO_0_1_EQ_0x0_ETC___d66 =
 		   64'd0;
     endcase
   end
-  always@(rg_sbaddress_reading or result__h2195 or result__h2222)
+  always@(rg_sbaddress_reading or result__h1609 or result__h1636)
   begin
     case (rg_sbaddress_reading[2:0])
       3'h0:
 	  CASE_rg_sbaddress_reading_BITS_2_TO_0_0x0_resu_ETC__q1 =
-	      result__h2195;
+	      result__h1609;
       3'h4:
 	  CASE_rg_sbaddress_reading_BITS_2_TO_0_0x0_resu_ETC__q1 =
-	      result__h2222;
+	      result__h1636;
       default: CASE_rg_sbaddress_reading_BITS_2_TO_0_0x0_resu_ETC__q1 = 64'd0;
     endcase
   end
@@ -1202,7 +1196,7 @@ module mkDM_System_Bus(CLK,
 	  IF_rg_sbaddress_reading_0_BITS_2_TO_0_1_EQ_0x0_ETC___d53 or
 	  IF_rg_sbaddress_reading_0_BITS_2_TO_0_1_EQ_0x0_ETC___d66 or
 	  CASE_rg_sbaddress_reading_BITS_2_TO_0_0x0_resu_ETC__q1 or
-	  rg_sbaddress_reading or master_xactor_rg_rd_data)
+	  rg_sbaddress_reading or master_xactor_f_rd_data$D_OUT)
   begin
     case (rg_sbcs_sbaccess)
       3'd0:
@@ -1217,7 +1211,7 @@ module mkDM_System_Bus(CLK,
       3'd3:
 	  IF_rg_sbcs_sbaccess_8_EQ_0_9_THEN_IF_rg_sbaddr_ETC___d79 =
 	      (rg_sbaddress_reading[2:0] == 3'h0) ?
-		master_xactor_rg_rd_data[66:3] :
+		master_xactor_f_rd_data$D_OUT[66:3] :
 		64'd0;
       default: IF_rg_sbcs_sbaccess_8_EQ_0_9_THEN_IF_rg_sbaddr_ETC___d79 =
 		   64'd0;
@@ -1230,51 +1224,16 @@ module mkDM_System_Bus(CLK,
   begin
     if (RST_N == `BSV_RESET_VALUE)
       begin
-        master_xactor_crg_rd_addr_full <= `BSV_ASSIGNMENT_DELAY 1'd0;
-	master_xactor_crg_rd_data_full <= `BSV_ASSIGNMENT_DELAY 1'd0;
-	master_xactor_crg_wr_addr_full <= `BSV_ASSIGNMENT_DELAY 1'd0;
-	master_xactor_crg_wr_data_full <= `BSV_ASSIGNMENT_DELAY 1'd0;
-	master_xactor_crg_wr_resp_full <= `BSV_ASSIGNMENT_DELAY 1'd0;
-	rg_sbaddress0 <= `BSV_ASSIGNMENT_DELAY 32'd0;
+        rg_sbaddress0 <= `BSV_ASSIGNMENT_DELAY 32'd0;
 	rg_sbaddress1 <= `BSV_ASSIGNMENT_DELAY 32'd0;
       end
     else
       begin
-        if (master_xactor_crg_rd_addr_full$EN)
-	  master_xactor_crg_rd_addr_full <= `BSV_ASSIGNMENT_DELAY
-	      master_xactor_crg_rd_addr_full$D_IN;
-	if (master_xactor_crg_rd_data_full$EN)
-	  master_xactor_crg_rd_data_full <= `BSV_ASSIGNMENT_DELAY
-	      master_xactor_crg_rd_data_full$D_IN;
-	if (master_xactor_crg_wr_addr_full$EN)
-	  master_xactor_crg_wr_addr_full <= `BSV_ASSIGNMENT_DELAY
-	      master_xactor_crg_wr_addr_full$D_IN;
-	if (master_xactor_crg_wr_data_full$EN)
-	  master_xactor_crg_wr_data_full <= `BSV_ASSIGNMENT_DELAY
-	      master_xactor_crg_wr_data_full$D_IN;
-	if (master_xactor_crg_wr_resp_full$EN)
-	  master_xactor_crg_wr_resp_full <= `BSV_ASSIGNMENT_DELAY
-	      master_xactor_crg_wr_resp_full$D_IN;
-	if (rg_sbaddress0$EN)
+        if (rg_sbaddress0$EN)
 	  rg_sbaddress0 <= `BSV_ASSIGNMENT_DELAY rg_sbaddress0$D_IN;
 	if (rg_sbaddress1$EN)
 	  rg_sbaddress1 <= `BSV_ASSIGNMENT_DELAY rg_sbaddress1$D_IN;
       end
-    if (master_xactor_rg_rd_addr$EN)
-      master_xactor_rg_rd_addr <= `BSV_ASSIGNMENT_DELAY
-	  master_xactor_rg_rd_addr$D_IN;
-    if (master_xactor_rg_rd_data$EN)
-      master_xactor_rg_rd_data <= `BSV_ASSIGNMENT_DELAY
-	  master_xactor_rg_rd_data$D_IN;
-    if (master_xactor_rg_wr_addr$EN)
-      master_xactor_rg_wr_addr <= `BSV_ASSIGNMENT_DELAY
-	  master_xactor_rg_wr_addr$D_IN;
-    if (master_xactor_rg_wr_data$EN)
-      master_xactor_rg_wr_data <= `BSV_ASSIGNMENT_DELAY
-	  master_xactor_rg_wr_data$D_IN;
-    if (master_xactor_rg_wr_resp$EN)
-      master_xactor_rg_wr_resp <= `BSV_ASSIGNMENT_DELAY
-	  master_xactor_rg_wr_resp$D_IN;
     if (rg_sb_state$EN) rg_sb_state <= `BSV_ASSIGNMENT_DELAY rg_sb_state$D_IN;
     if (rg_sbaddress_reading$EN)
       rg_sbaddress_reading <= `BSV_ASSIGNMENT_DELAY rg_sbaddress_reading$D_IN;
@@ -1299,16 +1258,6 @@ module mkDM_System_Bus(CLK,
   `else // not BSV_NO_INITIAL_BLOCKS
   initial
   begin
-    master_xactor_crg_rd_addr_full = 1'h0;
-    master_xactor_crg_rd_data_full = 1'h0;
-    master_xactor_crg_wr_addr_full = 1'h0;
-    master_xactor_crg_wr_data_full = 1'h0;
-    master_xactor_crg_wr_resp_full = 1'h0;
-    master_xactor_rg_rd_addr = 97'h0AAAAAAAAAAAAAAAAAAAAAAAA;
-    master_xactor_rg_rd_data = 71'h2AAAAAAAAAAAAAAAAA;
-    master_xactor_rg_wr_addr = 97'h0AAAAAAAAAAAAAAAAAAAAAAAA;
-    master_xactor_rg_wr_data = 73'h0AAAAAAAAAAAAAAAAAA;
-    master_xactor_rg_wr_resp = 6'h2A;
     rg_sb_state = 2'h2;
     rg_sbaddress0 = 32'hAAAAAAAA;
     rg_sbaddress1 = 32'hAAAAAAAA;
@@ -1474,24 +1423,24 @@ module mkDM_System_Bus(CLK,
 	$display("    Must be cleared to re-enable system bus access.");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write &&
-	  write_dm_addr_EQ_0x38_42_AND_rg_sbcs_sberror_E_ETC___d272)
+	  write_dm_addr_EQ_0x38_41_AND_rg_sbcs_sberror_E_ETC___d271)
 	$display("DM_System_Bus.sbcs_write <= 0x%08h: ERROR", write_dm_word);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write &&
-	  write_dm_addr_EQ_0x38_42_AND_rg_sbcs_sberror_E_ETC___d272)
+	  write_dm_addr_EQ_0x38_41_AND_rg_sbcs_sberror_E_ETC___d271)
 	$display("    ERROR: existing sbbusyerror (%0d) is not being cleared.",
 		 rg_sbcs_sbbusyerror);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write &&
-	  write_dm_addr_EQ_0x38_42_AND_rg_sbcs_sberror_E_ETC___d272)
+	  write_dm_addr_EQ_0x38_41_AND_rg_sbcs_sberror_E_ETC___d271)
 	$display("    Must be cleared to re-enable system bus access.");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write &&
-	  write_dm_addr_EQ_0x38_42_AND_rg_sbcs_sberror_E_ETC___d279)
+	  write_dm_addr_EQ_0x38_41_AND_rg_sbcs_sberror_E_ETC___d278)
 	$display("DM_System_Bus.sbcs_write <= 0x%08h: ERROR", write_dm_word);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write &&
-	  write_dm_addr_EQ_0x38_42_AND_rg_sbcs_sberror_E_ETC___d279)
+	  write_dm_addr_EQ_0x38_41_AND_rg_sbcs_sberror_E_ETC___d278)
 	$write("    ERROR: sbaccess ");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr == 7'h38 &&
@@ -1507,7 +1456,7 @@ module mkDM_System_Bus(CLK,
 	$write("DM_SBACCESS_128_BIT");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write &&
-	  write_dm_addr_EQ_0x38_42_AND_rg_sbcs_sberror_E_ETC___d279)
+	  write_dm_addr_EQ_0x38_41_AND_rg_sbcs_sberror_E_ETC___d278)
 	$write(" not supported", "\n");
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_write && write_dm_addr != 7'h38 &&
@@ -1648,61 +1597,61 @@ module mkDM_System_Bus(CLK,
 	$write("] <= 0x%08h; addr not supported", write_dm_word, "\n");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_sb_read_finish &&
-	  master_xactor_rg_rd_data[2:1] != 2'b0)
+	  master_xactor_f_rd_data$D_OUT[2:1] != 2'b0)
 	$display("DM_System_Bus.rule_sb_read_finish: setting rg_sbcs_sberror to DM_SBERROR_OTHER\n");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_sb_read_finish &&
-	  master_xactor_rg_rd_data[2:1] != 2'b0)
+	  master_xactor_f_rd_data$D_OUT[2:1] != 2'b0)
 	$write("    rdr = ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_sb_read_finish &&
-	  master_xactor_rg_rd_data[2:1] != 2'b0)
+	  master_xactor_f_rd_data$D_OUT[2:1] != 2'b0)
 	$write("AXI4_Rd_Data { ", "rid: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_sb_read_finish &&
-	  master_xactor_rg_rd_data[2:1] != 2'b0)
-	$write("'h%h", master_xactor_rg_rd_data[70:67]);
+	  master_xactor_f_rd_data$D_OUT[2:1] != 2'b0)
+	$write("'h%h", master_xactor_f_rd_data$D_OUT[70:67]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_sb_read_finish &&
-	  master_xactor_rg_rd_data[2:1] != 2'b0)
+	  master_xactor_f_rd_data$D_OUT[2:1] != 2'b0)
 	$write(", ", "rdata: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_sb_read_finish &&
-	  master_xactor_rg_rd_data[2:1] != 2'b0)
-	$write("'h%h", master_xactor_rg_rd_data[66:3]);
+	  master_xactor_f_rd_data$D_OUT[2:1] != 2'b0)
+	$write("'h%h", master_xactor_f_rd_data$D_OUT[66:3]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_sb_read_finish &&
-	  master_xactor_rg_rd_data[2:1] != 2'b0)
+	  master_xactor_f_rd_data$D_OUT[2:1] != 2'b0)
 	$write(", ", "rresp: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_sb_read_finish &&
-	  master_xactor_rg_rd_data[2:1] != 2'b0)
-	$write("'h%h", master_xactor_rg_rd_data[2:1]);
+	  master_xactor_f_rd_data$D_OUT[2:1] != 2'b0)
+	$write("'h%h", master_xactor_f_rd_data$D_OUT[2:1]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_sb_read_finish &&
-	  master_xactor_rg_rd_data[2:1] != 2'b0)
+	  master_xactor_f_rd_data$D_OUT[2:1] != 2'b0)
 	$write(", ", "rlast: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_sb_read_finish &&
-	  master_xactor_rg_rd_data[2:1] != 2'b0 &&
-	  master_xactor_rg_rd_data[0])
+	  master_xactor_f_rd_data$D_OUT[2:1] != 2'b0 &&
+	  master_xactor_f_rd_data$D_OUT[0])
 	$write("True");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_sb_read_finish &&
-	  master_xactor_rg_rd_data[2:1] != 2'b0 &&
-	  !master_xactor_rg_rd_data[0])
+	  master_xactor_f_rd_data$D_OUT[2:1] != 2'b0 &&
+	  !master_xactor_f_rd_data$D_OUT[0])
 	$write("False");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_sb_read_finish &&
-	  master_xactor_rg_rd_data[2:1] != 2'b0)
+	  master_xactor_f_rd_data$D_OUT[2:1] != 2'b0)
 	$write(", ", "ruser: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_sb_read_finish &&
-	  master_xactor_rg_rd_data[2:1] != 2'b0)
+	  master_xactor_f_rd_data$D_OUT[2:1] != 2'b0)
 	$write("'h%h", 1'd0, " }");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_sb_read_finish &&
-	  master_xactor_rg_rd_data[2:1] != 2'b0)
+	  master_xactor_f_rd_data$D_OUT[2:1] != 2'b0)
 	$write("\n");
   end
   // synopsys translate_on

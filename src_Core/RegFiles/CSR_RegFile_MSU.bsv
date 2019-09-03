@@ -718,20 +718,31 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 
    // ----------------------------------------------------------------
    // CSR writes
+   // Returns the "actual value written": many CSRs have WARL/WLRL semantics, i.e., the
+   // value attempted to be written is transformed in an implementation-defined way into
+   // a value actually written.  In the extreme case of CSRs with hardwired value, the
+   // transformation is to ignore the attempted write-value and return the hardwired value.
+   // The value returned is conceptually the value you'd read if you did a subsequent CSR read.
 
    function ActionValue #(WordXL) fav_csr_write (CSR_Addr csr_addr, WordXL wordxl);
       actionvalue
 	 Bool    success = True;
-	 WordXL  result  = 0;
+	 WordXL  result  = ?;
 
 	 if ((csr_addr_mhpmcounter3 <= csr_addr) && (csr_addr <= csr_addr_mhpmcounter31))
-	    noAction;
+	    begin
+	       result = 0;    // hardwired
+	    end
 `ifdef RV32
 	 else if ((csr_addr_mhpmcounter3h <= csr_addr) && (csr_addr <= csr_addr_mhpmcounter31h))
-	    noAction;
+	    begin
+	       result = 0;    // hardwired
+	    end
 `endif
 	 else if ((csr_addr_mhpmevent3 <= csr_addr) && (csr_addr <= csr_addr_mhpmevent31))
-	    noAction;
+	    begin
+	       result = 0;    // hardwired
+	    end
 	 else
 	    case (csr_addr)
 	       // User mode csrs
@@ -755,8 +766,12 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 	       csr_addr_sstatus:    begin
 				       result <- csr_mstatus.fav_sstatus_write (misa, wordxl);
 				    end
-	       csr_addr_sedeleg:    noAction;               // Hardwired to 0 (no delegation)
-	       csr_addr_sideleg:    noAction;               // Hardwired to 0 (no delegation)
+	       csr_addr_sedeleg:    begin
+				       result = 0;               // Hardwired to 0 (no delegation)
+				    end
+	       csr_addr_sideleg:    begin
+				       result = 0;               // Hardwired to 0 (no delegation)
+				    end
 	       csr_addr_sie:        begin
 				       result <- csr_mie.fav_sie_write (misa, wordxl);
 				    end
@@ -765,7 +780,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 				       result    = mtvec_to_word (mtvec);
 				       rg_stvec <= mtvec;
 				    end
-	       csr_addr_scounteren: noAction;
+	       csr_addr_scounteren: result = 0;    // Hardwired to zero
 
 	       csr_addr_sscratch:   begin
 				       result       = wordxl;
@@ -802,14 +817,16 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 `endif
 
 	       // Machine mode
-	       csr_addr_mvendorid:  noAction;
-	       csr_addr_marchid:    noAction;
-	       csr_addr_mimpid:     noAction;
-	       csr_addr_mhartid:    noAction;
+	       csr_addr_mvendorid:  result = mvendorid;    // hardwired
+	       csr_addr_marchid:    result = marchid;      // hardwired
+	       csr_addr_mimpid:     result = mimpid;       // hardwired
+	       csr_addr_mhartid:    result = mhartid;      // hardwired
 	       csr_addr_mstatus:    begin
 				      result <- csr_mstatus.fav_write (misa, wordxl);
 				    end
-	       csr_addr_misa:       noAction;
+	       csr_addr_misa:       begin
+				       result = misa_to_word (misa);
+				    end
 	       csr_addr_mie:        begin
 				       result <- csr_mie.fav_write (misa, wordxl);
 				    end
