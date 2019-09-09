@@ -756,9 +756,17 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 				       rg_frm <= wordxl [2:0];
 				    end
 	       csr_addr_fcsr:       begin
+				       // Update fcsr itself
 				       result     = zeroExtend (wordxl [7:0]);
 				       rg_fflags <= wordxl [4:0];
 				       rg_frm    <= wordxl [7:5];
+
+				       // Update mstatus.fs to 'dirty'
+				       let old_mstatus = csr_mstatus.fv_read;
+				       let new_mstatus = fv_assign_bits (old_mstatus,
+									 fromInteger (mstatus_fs_bitpos),
+									 fs_xs_dirty);
+				       csr_mstatus.fa_write (misa, new_mstatus);
 				    end
 `endif
 
