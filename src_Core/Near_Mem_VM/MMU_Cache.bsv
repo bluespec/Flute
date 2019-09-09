@@ -632,7 +632,7 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
       action
 	 dw_valid             <= True;
 	 // Value loaded into rd (LOAD, LR, AMO, SC success/fail result)
-	 dw_output_ld_val     <= fn_extract_and_extend_bytes (f3, addr, ld_val);
+	 dw_output_ld_val     <= (is_AMO_SC ? ld_val : fn_extract_and_extend_bytes (f3, addr, ld_val));
 	 // Value stored into mem (STORE, SC, AMO final value stored)
 	 dw_output_st_amo_val <= st_amo_val;
 	 if (cfg_verbosity > 1)
@@ -1020,6 +1020,7 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
 				  rg_lrsc_pa, vm_xlate_result.pa);
 		  end
 
+		  // SC result=0 on success, =1 on failure
 		  Bit #(1) lrsc_result = (do_write ? 1'b0 : 1'b1);
 
 		  rg_ld_val     <= zeroExtend (lrsc_result);
