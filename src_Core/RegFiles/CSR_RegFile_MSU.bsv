@@ -632,7 +632,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 	    csr_addr_scounteren: m_csr_value = tagged Valid 0;
 
 	    csr_addr_sscratch:   m_csr_value = tagged Valid rg_sscratch;
-	    csr_addr_sepc:       m_csr_value = tagged Valid rg_sepc;
+	    csr_addr_sepc:       m_csr_value = tagged Valid ((misa.c == 1'b1) ? rg_sepc : (rg_sepc & (~ 2)));
 	    csr_addr_scause:     m_csr_value = tagged Valid (mcause_to_word (rg_scause));
 	    csr_addr_stval:      m_csr_value = tagged Valid rg_stval;
 	    csr_addr_sip:        m_csr_value = tagged Valid (csr_mip.fv_sip_read);
@@ -787,7 +787,11 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 				       rg_sscratch <= result;
 				    end
 	       csr_addr_sepc:       begin
-				       result       = wordxl;
+`ifdef ISA_C
+				       result   = (wordxl & (~ 1));    // sepc [0] always zero
+`else
+				       result   = (wordxl & (~ 3));    // sepc [1:0] always zero
+`endif
 				       rg_sepc     <= result;
 				    end
 	       csr_addr_scause:     begin
