@@ -257,10 +257,14 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
 
 	 // Compute MTVAL in case of traps
 	 let tval = 0;
-	 if (alu_outputs.exc_code == exc_code_ILLEGAL_INSTRUCTION)
-	    tval = (rg_stage_input.is_i32_not_i16
-		    ? zeroExtend (rg_stage_input.instr)
-		    : zeroExtend (rg_stage_input.instr_C));    // The instruction
+	 if (alu_outputs.exc_code == exc_code_ILLEGAL_INSTRUCTION) begin
+	    // The instruction
+`ifdef ISA_C
+	    tval = (rg_stage_input.is_i32_not_i16 ? zeroExtend (rg_stage_input.instr) : zeroExtend (rg_stage_input.instr_C));
+`else
+	    tval = zeroExtend (rg_stage_input.instr);
+`endif
+	 end
 	 else if (alu_outputs.exc_code == exc_code_INSTR_ADDR_MISALIGNED)
 	    tval = alu_outputs.addr;                           // The branch target pc
 	 else if (alu_outputs.exc_code == exc_code_BREAKPOINT)
