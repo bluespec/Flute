@@ -656,7 +656,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 	    csr_addr_mcounteren: m_csr_value = tagged Valid (mcounteren_to_word (rg_mcounteren));
 
 	    csr_addr_mscratch:   m_csr_value = tagged Valid rg_mscratch;
-	    csr_addr_mepc:       m_csr_value = tagged Valid rg_mepc;
+	    csr_addr_mepc:       m_csr_value = tagged Valid ((misa.c == 1'b1) ? rg_mepc : (rg_mepc & (~ 2)));
 	    csr_addr_mcause:     m_csr_value = tagged Valid (mcause_to_word (rg_mcause));
 	    csr_addr_mtval:      m_csr_value = tagged Valid rg_mtval;
 	    csr_addr_mip:        m_csr_value = tagged Valid (csr_mip.fv_read);
@@ -845,7 +845,11 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 				       rg_mscratch <= result;
 				    end
 	       csr_addr_mepc:       begin
-				       result   = wordxl;
+`ifdef ISA_C
+				       result   = (wordxl & (~ 1));    // mepc [0] always zero
+`else
+				       result   = (wordxl & (~ 3));    // mepc [1:0] always zero
+`endif
 				       rg_mepc <= result;
 				    end
 	       csr_addr_mcause:     begin
