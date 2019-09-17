@@ -24,9 +24,14 @@ compile: build_dir
 SIM_EXE_FILE = exe_HW_sim
 
 BSC_C_FLAGS += \
-	-Xc++  -D_GLIBCXX_USE_CXX11_ABI=0 \
 	-Xl -v \
 	-Xc -O3 -Xc++ -O3 \
+
+
+# The following was needed with earlier versions of bsc
+# where the linker would complain with messages like this:
+# Error: dlopen: ./exe_HW_sim.so: undefined symbol: _Z27dollar_test_dollar_plusargsP9tSimStatePKcPKSs
+#	-Xc++  -D_GLIBCXX_USE_CXX11_ABI=0 \
 
 .PHONY: simulator
 simulator:
