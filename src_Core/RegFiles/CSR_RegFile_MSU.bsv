@@ -632,7 +632,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 	    csr_addr_scounteren: m_csr_value = tagged Valid 0;
 
 	    csr_addr_sscratch:   m_csr_value = tagged Valid rg_sscratch;
-	    csr_addr_sepc:       m_csr_value = tagged Valid rg_sepc;
+	    csr_addr_sepc:       m_csr_value = tagged Valid ((misa.c == 1'b1) ? rg_sepc : (rg_sepc & (~ 2)));
 	    csr_addr_scause:     m_csr_value = tagged Valid (mcause_to_word (rg_scause));
 	    csr_addr_stval:      m_csr_value = tagged Valid rg_stval;
 	    csr_addr_sip:        m_csr_value = tagged Valid (csr_mip.fv_sip_read);
@@ -656,7 +656,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 	    csr_addr_mcounteren: m_csr_value = tagged Valid (mcounteren_to_word (rg_mcounteren));
 
 	    csr_addr_mscratch:   m_csr_value = tagged Valid rg_mscratch;
-	    csr_addr_mepc:       m_csr_value = tagged Valid rg_mepc;
+	    csr_addr_mepc:       m_csr_value = tagged Valid ((misa.c == 1'b1) ? rg_mepc : (rg_mepc & (~ 2)));
 	    csr_addr_mcause:     m_csr_value = tagged Valid (mcause_to_word (rg_mcause));
 	    csr_addr_mtval:      m_csr_value = tagged Valid rg_mtval;
 	    csr_addr_mip:        m_csr_value = tagged Valid (csr_mip.fv_read);
@@ -756,9 +756,17 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 				       rg_frm <= wordxl [2:0];
 				    end
 	       csr_addr_fcsr:       begin
+				       // Update fcsr itself
 				       result     = zeroExtend (wordxl [7:0]);
 				       rg_fflags <= wordxl [4:0];
 				       rg_frm    <= wordxl [7:5];
+
+				       // Update mstatus.fs to 'dirty'
+				       let old_mstatus = csr_mstatus.fv_read;
+				       let new_mstatus = fv_assign_bits (old_mstatus,
+									 fromInteger (mstatus_fs_bitpos),
+									 fs_xs_dirty);
+				       csr_mstatus.fa_write (misa, new_mstatus);
 				    end
 `endif
 
@@ -787,7 +795,11 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 				       rg_sscratch <= result;
 				    end
 	       csr_addr_sepc:       begin
-				       result       = wordxl;
+`ifdef ISA_C
+				       result   = (wordxl & (~ 1));    // sepc [0] always zero
+`else
+				       result   = (wordxl & (~ 3));    // sepc [1:0] always zero
+`endif
 				       rg_sepc     <= result;
 				    end
 	       csr_addr_scause:     begin
@@ -845,7 +857,11 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 				       rg_mscratch <= result;
 				    end
 	       csr_addr_mepc:       begin
-				       result   = wordxl;
+`ifdef ISA_C
+				       result   = (wordxl & (~ 1));    // mepc [0] always zero
+`else
+				       result   = (wordxl & (~ 3));    // mepc [1:0] always zero
+`endif
 				       rg_mepc <= result;
 				    end
 	       csr_addr_mcause:     begin
@@ -1202,7 +1218,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
    method ActionValue #(Tuple3 #(Addr, Priv_Mode, Word)) csr_ret_actions (Priv_Mode from_priv);
       match { .new_mstatus, .to_priv } = fv_new_mstatus_on_ret (misa, csr_mstatus.fv_read, from_priv);
       csr_mstatus.fa_write (misa, new_mstatus);
-      WordXL next_pc = rg_mepc;
+      WordXL next_pc = ((misa.c == 1'b1) ? rg_mepc : (rg_mepc & (~ 2)));
 `ifdef ISA_PRIV_S
       if (from_priv != m_Priv_Mode)
 	 next_pc = rg_sepc;
