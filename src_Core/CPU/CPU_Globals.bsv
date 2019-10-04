@@ -367,27 +367,21 @@ typedef struct {
    RegName    rd;
    Addr       addr;     // Branch, jump: newPC
                         // Mem ops and AMOs: mem addr
-`ifdef ISA_D
-   // When D is enabled, the val from Stage1 to Stage2 should be sized to
-   // max (sizeOf (WordXL), sizeOf (WordFL))
-   // Using lower-level Bit types here as the data in vals always be raw bit
-   // data
-   WordFL     val1;     // OP_Stage2_ALU: rd_val
-                        // OP_Stage2_M and OP_Stage2_FD: arg1
-
-   WordFL     val2;     // OP_Stage2_ST: store-val;
-                        // OP_Stage2_M and OP_Stage2_FD: arg2
-`else
    WordXL     val1;     // OP_Stage2_ALU: rd_val
                         // OP_Stage2_M and OP_Stage2_FD: arg1
 
    WordXL     val2;     // OP_Stage2_ST: store-val;
                         // OP_Stage2_M and OP_Stage2_FD: arg2
-`endif
-
+                        // Floating point specific fields
 `ifdef ISA_F
-   WordFL     val3;     // OP_Stage2_FD: arg3
+   WordFL     fval1;    // OP_Stage2_ALU: rd_val
+                        // OP_Stage2_M and OP_Stage2_FD: arg1
+
+   WordFL     fval2;    // OP_Stage2_ST: store-val;
+                        // OP_Stage2_M and OP_Stage2_FD: arg2
+   WordFL     fval3;    // OP_Stage2_FD: arg3
    Bool       rd_in_fpr;// The rd should update into FPR
+   Bool       rs_frm_fpr;// The rs is from FPR (FP stores)
    Bit #(3)   rounding_mode;    // rounding mode from fcsr_frm or instr.rm
 `endif
 
@@ -401,12 +395,11 @@ instance FShow #(Data_Stage1_to_Stage2);
    function Fmt fshow (Data_Stage1_to_Stage2 x);
       Fmt fmt =   $format ("data_to_Stage 2 {pc:%h  instr:%h  priv:%0d\n", x.pc, x.instr, x.priv);
       fmt = fmt + $format ("            op_stage2:", fshow (x.op_stage2), "  rd:%0d\n", x.rd);
-`ifdef ISA_F
-      fmt = fmt + $format ("            addr:%h  val1:%h  val2:%h  val3:%h}",
-			   x.addr, x.val1, x.val2, x.val3);
-`else
       fmt = fmt + $format ("            addr:%h  val1:%h  val2:%h}",
 			   x.addr, x.val1, x.val2);
+`ifdef ISA_F
+      fmt = fmt + $format ("            fval1:%h  fval2:%h  fval3:%h}",
+			   x.fval1, x.fval2, x.fval3);
 `endif
       return fmt;
    endfunction
@@ -459,20 +452,13 @@ typedef struct {
 
    Bool      rd_valid;
    RegName   rd;
+   WordXL    rd_val;
 
 `ifdef ISA_F
    Bool      upd_flags;
    Bool      rd_in_fpr;
    Bit #(5)  fpr_flags;
-`endif
-`ifdef ISA_D
-   // When FP is enabled, the rd_val from Stage2 to Stage3 should be sized to
-   // max (sizeOf (WordXL), sizeOf (WordFL))
-   // Using lower-level Bit types here as the data in rd_val always be raw
-   // bit data
-   WordFL    rd_val;
-`else
-   WordXL    rd_val;
+   WordFL    frd_val;
 `endif
    } Data_Stage2_to_Stage3
 deriving (Bits);
@@ -487,7 +473,7 @@ instance FShow #(Data_Stage2_to_Stage3);
          fmt = fmt + $format ("  fflags: %05b", fshow (x.fpr_flags));
 
       if (x.rd_in_fpr)
-         fmt = fmt + $format ("  frd:%0d  rd_val:%h\n", x.rd, x.rd_val);
+         fmt = fmt + $format ("  frd:%0d  rd_val:%h\n", x.rd, x.frd_val);
       else
 `endif
          fmt = fmt + $format ("  grd:%0d  rd_val:%h\n", x.rd, x.rd_val);

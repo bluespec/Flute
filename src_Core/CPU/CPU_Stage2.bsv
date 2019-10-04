@@ -126,26 +126,13 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 
    let bypass_base = Bypass {bypass_state: BYPASS_RD_NONE,
 			     rd:           rg_stage2.rd,
-`ifdef ISA_D
-			     // TODO: is this ifdef necessary? Can't we always truncate?
-			     rd_val:       truncate (rg_stage2.val1)
-`else
 			     rd_val:       rg_stage2.val1
-`endif
 			     };
 
 `ifdef ISA_F
    let fbypass_base = FBypass {bypass_state: BYPASS_RD_NONE,
 			       rd:           rg_stage2.rd,
-`ifdef ISA_D
-			       rd_val:       rg_stage2.val1
-`else
-`ifdef RV64
-			       rd_val:       extend (rg_stage2.val1)
-`else
-			       rd_val:       rg_stage2.val1
-`endif
-`endif
+			       rd_val:       rg_stage2.fval1
 			       };
 `endif
 
@@ -156,6 +143,7 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
                                                     rd_in_fpr: False,
                                                     upd_flags: False,
                                                     fpr_flags: 0,
+                                                    frd_val  : rg_stage2.fval1,
 `endif
 						    rd_valid:  False,
 						    rd:        rg_stage2.rd,
@@ -262,27 +250,17 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
                if (funct3 == f3_FLW)
 `ifdef ISA_D
                   // needs nan-boxing when destined for a DP register file
-                  data_to_stage3.rd_val = fv_nanbox (dcache.word64);
+                  data_to_stage3.frd_val = fv_nanbox (dcache.word64);
 `else
-                  data_to_stage3.rd_val = result;
+                  data_to_stage3.frd_val = result;
 `endif
                // A FLD result
                else
-                  data_to_stage3.rd_val = dcache.word64;
+                  data_to_stage3.frd_val = dcache.word64;
             end
 
-            // A GPR load in a FD system
-            else
-`ifdef ISA_D
-               // rd_val is 64-bit to handle FP values
-               data_to_stage3.rd_val   = dcache.word64;
-`else
-               data_to_stage3.rd_val   = result;
-`endif
-`else
             // A GPR load in a non-FD system
 	    data_to_stage3.rd_val   = result;
-`endif
 
             // Update the bypass channel, if not trapping (NONPIPE)
 	    let bypass = bypass_base;
@@ -304,7 +282,7 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 		  // Option 1: longer critical path, since the data is bypassed back into previous stage.
 		  // We use data_to_stage3.rd_val since nanboxing has been done.
 		  // fbypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
-		  // fbypass.rd_val       = data_to_stage3.rd_val;
+		  // fbypass.rd_val       = data_to_stage3.frd_val;
 
 		  // Option 2: shorter critical path, since the data is not bypassed into previous stage,
 		  // (the bypassing is effectively delayed until the next stage).
@@ -325,8 +303,8 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 		  bypass.bypass_state = BYPASS_RD;
 	       end
 `else
-               // Bypassing GPR value in a non-FD system. LD result meant for GPR
-	       if (rg_stage2.rd != 0) begin    // TODO: is this test necessary?
+               // Bypassing GPR value in a non-FD system
+               if (rg_stage2.rd != 0) begin    // TODO: is this test necessary?
 		  // Choose one of the following two options
 
 		  // Option 1: longer critical path, since the data is bypassed back into previous stage.
@@ -394,11 +372,7 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 
 	 let data_to_stage3 = data_to_stage3_base;
 	 data_to_stage3.rd_valid = (ostatus == OSTATUS_PIPE);
-`ifdef ISA_D
-	 data_to_stage3.rd_val   = extend (result);
-`else
 	 data_to_stage3.rd_val   = result;
-`endif
 
 	 let bypass = bypass_base;
 	 bypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
@@ -430,11 +404,7 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 
 	 let data_to_stage3 = data_to_stage3_base;
 	 data_to_stage3.rd_valid = (ostatus == OSTATUS_PIPE);
-`ifdef ISA_D
-	 data_to_stage3.rd_val   = extend (result);
-`else
 	 data_to_stage3.rd_val   = result;
-`endif
 
 	 let bypass = bypass_base;
 	 bypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
@@ -468,7 +438,11 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 
 	 let data_to_stage3      = data_to_stage3_base;
 	 data_to_stage3.rd_valid = (ostatus == OSTATUS_PIPE);
-	 data_to_stage3.rd_val   = value;
+`ifdef ISA_D
+	 data_to_stage3.frd_val  = value;
+`else
+	 data_to_stage3.frd_val  = truncate (value);
+`endif
          data_to_stage3.rd_in_fpr= rg_stage2.rd_in_fpr;
          data_to_stage3.upd_flags= True;
          data_to_stage3.fpr_flags= fflags;
@@ -492,8 +466,10 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
                                                                : BYPASS_RD);
 `ifdef RV64
             bypass.rd_val           = (value);
+            data_to_stage3.rd_val   = value;
 `else
             bypass.rd_val           = truncate (value);
+            data_to_stage3.rd_val   = truncate (value);
 `endif
          end
 
@@ -564,11 +540,7 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 			amo_funct7,
 `endif
 			x.addr,
-`ifdef ISA_D
-			x.val2,
-`else
-			zeroExtend (x.val2),
-`endif
+			(x.rs_frm_fpr ? x.fval2 : zeroExtend (x.val2)),
 			mem_priv,
 			sstatus_SUM,
 			mstatus_MXR,
@@ -578,20 +550,7 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 `ifdef SHIFT_SERIAL
 	 // If Shifter box op, initiate it
 	 else if (x.op_stage2 == OP_Stage2_SH)
-	    shifter_box.req (unpack (funct3 [2]),
-`ifdef ISA_D
-`ifdef RV32
-			     truncate (x.val1),
-			     truncate (x.val2)
-`else
-			     x.val1,
-			     x.val2
-`endif
-`else
-			     x.val1,
-			     x.val2
-`endif
-			     );
+	    shifter_box.req (unpack (funct3 [2]), x.val1, x.val2);
 `endif
 
 `ifdef ISA_M
@@ -599,21 +558,7 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 	 else if (x.op_stage2 == OP_Stage2_M) begin
             // Instr fields required for decode for F/D opcodes
 	    Bool is_OP_not_OP_32 = (x.instr [3] == 1'b0);
-            mbox.req (is_OP_not_OP_32,
-		      funct3,
-`ifdef ISA_D
-`ifdef RV64
-		      x.val1,
-		      x.val2
-`else
-		      truncate (x.val1),
-		      truncate (x.val2)
-`endif
-`else
-		      x.val1,
-		      x.val2
-`endif
-		      );
+            mbox.req (is_OP_not_OP_32, funct3, x.val1, x.val2);
 	 end
 `endif
 
@@ -625,25 +570,14 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 	    let funct7 = instr_funct7 (x.instr);
             let rs2    = instr_rs2    (x.instr);
 
-	    fbox.req (opcode,
-		      funct7,
-		      x.rounding_mode, // rm
-		      rs2,
-`ifdef ISA_D
-		      x.val1,
-		      x.val2,
-		      x.val3 
-`else
-`ifdef RV32
-		      extend (x.val1),
-		      extend (x.val2),
-`else
-		      x.val1,
-		      x.val2,
-`endif
-		      extend (x.val3)
-`endif
-		      );
+	    fbox.req (  opcode
+		      , funct7
+		      , x.rounding_mode   // rm
+		      , rs2
+		      , extend (x.fval1)
+		      , extend (x.fval2)
+		      , extend (x.fval3) 
+		     );
          end
 `endif
       endaction

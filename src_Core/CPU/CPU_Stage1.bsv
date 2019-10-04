@@ -178,8 +178,11 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
 					       val1          : alu_outputs.val1,
 					       val2          : alu_outputs.val2,
 `ifdef ISA_F
-					       val3          : alu_outputs.val3,
+					       fval1         : alu_outputs.fval1,
+					       fval2         : alu_outputs.fval2,
+					       fval3         : alu_outputs.fval3,
 					       rd_in_fpr     : alu_outputs.rd_in_fpr,
+					       rs_frm_fpr    : alu_outputs.rs_frm_fpr,
 					       rounding_mode : alu_outputs.rm,
 `endif
 `ifdef INCLUDE_TANDEM_VERIF
@@ -212,8 +215,11 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
 						     val1:      ?,
 						     val2:      ?,
 `ifdef ISA_F
-						     val3            : ?,
+						     fval1           : ?,
+						     fval2           : ?,
+						     fval3           : ?,
 						     rd_in_fpr       : ?,
+					             rs_frm_fpr      : ?,
 						     rounding_mode   : ?,
 `endif
 `ifdef INCLUDE_TANDEM_VERIF

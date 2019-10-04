@@ -99,15 +99,65 @@ module mkAXI4_Deburster (AXI4_Deburster_IFC #(wd_id, wd_addr, wd_data, wd_user))
    // ----------------------------------------------------------------
    // Compute address for beat
 
+// function ActionValue#(Bit #(wd_addr)) fv_addr_for_beat (Bit #(wd_addr) start_addr,
+//      				     AXI4_Size      axsize,
+//      				     AXI4_Burst     axburst,
+//                                           AXI4_Len       axlen,
+//      				     AXI4_Len       beat_count);
+//
+//    actionvalue
+//    // For incrementing bursts this address is the next address
+//    Bit #(wd_addr) addr = start_addr;
+//    addr = start_addr + (1 << pack (axsize));
+//
+//    // The actual length of the burst is one more than indicated by axlen
+//    Bit #(wd_addr) burst_len = zeroExtend (axlen) + 1;
+//
+//    // find the wrap boundary bit - this becomes the mask - will only work
+//    // for burst lengths which are a power of two
+//    Bit #(wd_addr) wrap_boundary = (burst_len << pack (axsize));
+//
+//    // For wrapping bursts the wrap_mask needs to be applied to check if the
+//    // wrapping boundary has been reached
+//    if (axburst == axburst_wrap) begin
+//       $display ("%0d: %m::AXI4_Deburster: wrapping burst. boundary: (%0x). addr: (%0x)", cur_cycle, wrap_boundary, addr);
+//       // The wrapping condition
+//       if ((addr % wrap_boundary) == 0) begin
+//          // wrap the address - retain all bits except the wrap boundary bit
+//          addr = addr & (~wrap_boundary);
+//          $display ("%0d: %m::AXI4_Deburster: wrapping burst. Wrapping: addr: (%0x)", cur_cycle, addr);
+//       end
+//    end
+//    return addr;
+//    endactionvalue
+// endfunction
+
    function Bit #(wd_addr) fv_addr_for_beat (Bit #(wd_addr) start_addr,
 					     AXI4_Size      axsize,
 					     AXI4_Burst     axburst,
+                                             AXI4_Len       axlen,
 					     AXI4_Len       beat_count);
+
+      // For incrementing bursts this address is the next address
       Bit #(wd_addr) addr = start_addr;
-      if (axburst == axburst_incr)
-	 addr = start_addr + (zeroExtend (beat_count) << pack (axsize));
-      else if (axburst == axburst_wrap)
-	 addr = start_addr;    // TODO: fixup
+      addr = start_addr + (1 << pack (axsize));
+
+      // The actual length of the burst is one more than indicated by axlen
+      Bit #(wd_addr) burst_len = zeroExtend (axlen) + 1;
+
+      // find the wrap boundary bit - this becomes the mask - will only work
+      // for burst lengths which are a power of two
+      Bit #(wd_addr) wrap_boundary = (burst_len << pack (axsize));
+
+      // For wrapping bursts the wrap_mask needs to be applied to check if the
+      // wrapping boundary has been reached
+      if (axburst == axburst_wrap) begin
+         // The wrapping condition
+         if ((addr % wrap_boundary) == 0) begin
+            // wrap the address - retain all bits except the wrap boundary bit
+            addr = addr - wrap_boundary;
+         end
+      end
       return addr;
    endfunction
 
@@ -133,6 +183,7 @@ module mkAXI4_Deburster (AXI4_Deburster_IFC #(wd_id, wd_addr, wd_data, wd_user))
 
    // ----------------------------------------------------------------
    // BEHAVIOR
+   Reg #(Bit #(wd_addr)) rg_last_beat_waddr <- mkRegU;
 
    // ----------------
    // Wr requests (AW and W channels)
@@ -143,7 +194,13 @@ module mkAXI4_Deburster (AXI4_Deburster_IFC #(wd_id, wd_addr, wd_data, wd_user))
 
       // Construct output AW item
       let a_out = a_in;
-      a_out.awaddr  = fv_addr_for_beat (a_in.awaddr, a_in.awsize, a_in.awburst, rg_w_beat_count);
+      // For the first beat the address is unchanged from the address in the
+      // input request, for the remaining beats we have the update the address
+      // based on the previous address used
+      if (rg_w_beat_count != 0) begin
+         a_out.awaddr = fv_addr_for_beat (rg_last_beat_waddr, a_in.awsize, a_in.awburst, a_in.awlen, rg_w_beat_count);
+      end
+
       a_out.awlen   = 0;
       a_out.awburst = axburst_fixed; // Not necessary when awlen=1, but slave may be finicky
 
@@ -162,8 +219,9 @@ module mkAXI4_Deburster (AXI4_Deburster_IFC #(wd_id, wd_addr, wd_data, wd_user))
       if (rg_w_beat_count == 0)
 	 f_w_awlen.enq (a_in.awlen);
 
-      if (rg_w_beat_count < a_in.awlen)
+      if (rg_w_beat_count < a_in.awlen) begin
 	 rg_w_beat_count <= rg_w_beat_count + 1;
+      end
       else begin
 	 // Last beat of incoming burst; done with AW item
 	 xactor_from_master.o_wr_addr.deq;
@@ -177,6 +235,10 @@ module mkAXI4_Deburster (AXI4_Deburster_IFC #(wd_id, wd_addr, wd_data, wd_user))
 	    $display ("    ", fshow (d_in));
 	 end
       end
+
+      // Remember this beat's address for calculating the next beat address.
+      // This is necessary to support wrapping bursts
+      rg_last_beat_waddr <= a_out.awaddr;
 
       // Debugging
       if (cfg_verbosity > 0) begin
@@ -240,12 +302,20 @@ module mkAXI4_Deburster (AXI4_Deburster_IFC #(wd_id, wd_addr, wd_data, wd_user))
   // ----------------
    // Rd requests (AR channel)
 
+   Reg #(Bit #(wd_addr)) rg_last_beat_raddr <- mkRegU;
    rule rl_rd_xaction_master_to_slave;
       AXI4_Rd_Addr #(wd_id, wd_addr, wd_user) a_in = xactor_from_master.o_rd_addr.first;
 
       // Compute forwarded request for each beat, and send
       let a_out = a_in;
-      a_out.araddr  = fv_addr_for_beat (a_in.araddr, a_in.arsize, a_in.arburst, rg_ar_beat_count);
+
+      // For the first beat the address is unchanged from the address in the
+      // input request, for the remaining beats we have the update the address
+      // based on the previous address used
+      if (rg_ar_beat_count != 0) begin
+         a_out.araddr = fv_addr_for_beat (rg_last_beat_raddr, a_in.arsize, a_in.arburst, a_in.arlen, rg_ar_beat_count);
+      end
+
       a_out.arlen   = 0;
       a_out.arburst = axburst_fixed; // Not necessary when arlen=1, but slave may be finicky
       xactor_to_slave.i_rd_addr.enq (a_out);
@@ -254,23 +324,29 @@ module mkAXI4_Deburster (AXI4_Deburster_IFC #(wd_id, wd_addr, wd_data, wd_user))
       if (rg_ar_beat_count == 0)
 	 f_r_arlen.enq (a_in.arlen);
 
-      if (rg_ar_beat_count < a_in.arlen)
+      if (rg_ar_beat_count < a_in.arlen) begin
 	 rg_ar_beat_count <= rg_ar_beat_count + 1;
+      end
       else begin
 	 // Last beat sent; done with AR item
 	 xactor_from_master.o_rd_addr.deq;
 	 rg_ar_beat_count <= 0;
       end
 
+      // Remember this beat's address for calculating the next beat address.
+      // This is necessary to support wrapping bursts
+      rg_last_beat_raddr <= a_out.araddr;
+
       // Debugging
       if (cfg_verbosity > 0) begin
-	 $display ("%0d: %m::AXI4_Deburster.rl_rd_xaction_master_to_slave: m -> s, beat %0d",
-		   cur_cycle, rg_ar_beat_count);
+	 $display ("%0d: %m::AXI4_Deburster.rl_rd_xaction_master_to_slave: m -> s, addr %08x beat %0d",
+		   cur_cycle, a_out.araddr, rg_ar_beat_count);
 	 if (rg_ar_beat_count == 0)
 	    $display ("    a_in:  ", fshow (a_in));
 	 if ((rg_ar_beat_count == 0) || (cfg_verbosity > 1))
 	    $display ("    a_out: ", fshow (a_out));
       end
+
    endrule: rl_rd_xaction_master_to_slave
 
    // ----------------
