@@ -362,6 +362,12 @@ RegName reg_s10  = 26; RegName reg_s11 = 27;
 RegName reg_t3   = 28; RegName reg_t4  = 29; RegName reg_t5 = 30; RegName reg_t6 = 31;
 
 // ================================================================
+// Kinds of memory access (excluding AMOs)
+
+typedef enum { Access_RWX_R, Access_RWX_W, Access_RWX_X } Access_RWX
+deriving (Eq, Bits, FShow);
+
+// ================================================================
 // Data sizes for LOAD/STORE
 
 typedef enum {BITS8,
