@@ -33,7 +33,7 @@ import Cur_Cycle :: *;
 // ================================================================
 // Project imports
 
-import ISA_Decls       :: *;
+import ISA_Decls :: *;
 
 import AXI4_Types  :: *;
 import Fabric_Defs :: *;
