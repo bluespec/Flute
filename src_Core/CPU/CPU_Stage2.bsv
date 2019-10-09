@@ -243,40 +243,40 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 
 	    let data_to_stage3 = data_to_stage3_base;
 	    data_to_stage3.rd_valid = (ostatus == OSTATUS_PIPE);
+
 `ifdef ISA_F
+            data_to_stage3.rd_in_fpr = rg_stage2.rd_in_fpr;
             // A FPR load
             if (rg_stage2.rd_in_fpr) begin
+`ifdef ISA_D
+               // Both FLW and FLD are legal instructions
                // A FLW result
                if (funct3 == f3_FLW)
-`ifdef ISA_D
                   // needs nan-boxing when destined for a DP register file
                   data_to_stage3.frd_val = fv_nanbox (dcache.word64);
-`else
-                  data_to_stage3.frd_val = result;
-`endif
+
                // A FLD result
                else
                   data_to_stage3.frd_val = dcache.word64;
+`else
+               // Only FLW is a legal instruction
+               data_to_stage3.frd_val = truncate (dcache.word64);
+`endif
             end
-
-            // A GPR load in a non-FD system
+`endif
+            // GPR loads
 	    data_to_stage3.rd_val   = result;
 
             // Update the bypass channel, if not trapping (NONPIPE)
 	    let bypass = bypass_base;
 `ifdef ISA_F
-            // In a system with FD, the LD result may be meant for FPR or GPR
-            // Check before updating the appropriate bypass channel
-            let upd_fpr = rg_stage2.rd_in_fpr;
 	    let fbypass = fbypass_base;
 `endif
 
 	    if (ostatus != OSTATUS_NONPIPE) begin
 `ifdef ISA_F
-               data_to_stage3.rd_in_fpr= upd_fpr;
-
                // Bypassing FPR value.
-               if (upd_fpr) begin
+               if (rg_stage2.rd_in_fpr) begin
 		  // Choose one of the following two options
 
 		  // Option 1: longer critical path, since the data is bypassed back into previous stage.
@@ -288,22 +288,9 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 		  // (the bypassing is effectively delayed until the next stage).
 		  fbypass.bypass_state = BYPASS_RD;
                end
+`endif
 
-               // Bypassing GPR value in a FD system
-               else if (rg_stage2.rd != 0) begin    // TODO: is this test necessary?
-		  // Choose one of the following two options
-
-		  // Option 1: longer critical path, since the data is bypassed back into previous stage.
-		  // We use data_to_stage3.rd_val since nanboxing has been done.
-		  // bypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
-		  // bypass.rd_val       = result;
-
-		  // Option 2: shorter critical path, since the data is not bypassed into previous stage,
-		  // (the bypassing is effectively delayed until the next stage).
-		  bypass.bypass_state = BYPASS_RD;
-	       end
-`else
-               // Bypassing GPR value in a non-FD system
+               // Bypassing GPR values
                if (rg_stage2.rd != 0) begin    // TODO: is this test necessary?
 		  // Choose one of the following two options
 
@@ -316,7 +303,6 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 		  // (the bypassing is effectively delayed until the next stage).
 		  bypass.bypass_state = BYPASS_RD;
 	       end
-`endif
 	    end
 
 	    let trace_data   = ?;
@@ -346,7 +332,6 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 	 let data_to_stage3 = data_to_stage3_base;
 	 data_to_stage3.rd_valid = (ostatus == OSTATUS_PIPE);
 	 data_to_stage3.rd       = 0;
-	 data_to_stage3.rd_val   = ?;
 
 	 let trace_data   = ?;
 `ifdef INCLUDE_TANDEM_VERIF
@@ -534,13 +519,31 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 	    else if (x.op_stage2 == OP_Stage2_AMO) cache_op = CACHE_AMO;
 `endif
 
+            // Prepare the store value
+`ifdef RV64
+            Bit# (64) wdata_from_gpr = x.val2;
+`else
+            Bit# (64) wdata_from_gpr = zeroExtend (x.val2);
+`endif
+
+`ifdef ISA_F
+`ifdef ISA_D
+            Bit# (64) wdata_from_fpr = x.fval2;
+`else
+            Bit# (64) wdata_from_fpr = zeroExtend (x.fval2);
+`endif
+`endif
 	    dcache.req (cache_op,
 			instr_funct3 (x.instr),
 `ifdef ISA_A
 			amo_funct7,
 `endif
 			x.addr,
-			(x.rs_frm_fpr ? x.fval2 : zeroExtend (x.val2)),
+`ifdef ISA_F
+			(x.rs_frm_fpr ? wdata_from_fpr : wdata_from_gpr),
+`else
+			wdata_from_gpr,
+`endif
 			mem_priv,
 			sstatus_SUM,
 			mstatus_MXR,
@@ -603,7 +606,7 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
       fa_enq (x);
 
       if (verbosity > 1)
-	 $display ("    CPU_Stage2.enq (Data_Stage1_to_Stage2)");
+	 $display ("    CPU_Stage2.enq (Data_Stage1_to_Stage2) ", fshow (x));
    endmethod
 
    method Action set_full (Bool full);

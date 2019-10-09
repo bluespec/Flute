@@ -701,7 +701,7 @@ function ALU_Outputs fv_ST (ALU_Inputs inputs);
       legal_FP_ST = (fv_mstatus_fs (inputs.mstatus) != fs_xs_off);
 
       // note that the source data register for this store is in the FPR
-      alu_outputs.rs_frm_fpr = (opcode == op_LOAD_FP);
+      alu_outputs.rs_frm_fpr = True;
    end
 `endif
 
@@ -904,9 +904,15 @@ function ALU_Outputs fv_FP (ALU_Inputs inputs);
    // The first operand may be from the FPR or GPR
    let val1_from_gpr     = fv_fp_val1_from_gpr (opcode, funct7, rs2);
 
-   // extension may be required if FLEN > XLEN
+`ifdef ISA_D
+   // FLEN >= XLEN. An extend covers both cases
    alu_outputs.fval1     = val1_from_gpr  ? extend (inputs.rs1_val)
                                           : inputs.frs1_val;
+`else
+   // XLEN >= FLEN. A truncate covers both cases
+   alu_outputs.fval1     = val1_from_gpr  ? truncate (inputs.rs1_val)
+                                          : inputs.frs1_val;
+`endif
 
    // Second and third operands (when used) are always from the FPR
    alu_outputs.fval2     = inputs.frs2_val;
