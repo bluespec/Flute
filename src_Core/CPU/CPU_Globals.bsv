@@ -361,28 +361,25 @@ deriving (Eq, Bits, FShow);
 typedef struct {
    Priv_Mode  priv;
    Addr       pc;
-   Instr      instr;    // For debugging. Just funct3, funct7 are enough for
-                        // functionality.
+   Instr      instr;             // For debugging. Just funct3, funct7 are
+                                 // enough for functionality.
    Op_Stage2  op_stage2;
    RegName    rd;
-   Addr       addr;     // Branch, jump: newPC
-                        // Mem ops and AMOs: mem addr
-   WordXL     val1;     // OP_Stage2_ALU: rd_val
-                        // OP_Stage2_M and OP_Stage2_FD: arg1
+   Addr       addr;              // Branch, jump: newPC
+                                 // Mem ops and AMOs: mem addr
+   WordXL     val1;              // OP_Stage2_ALU: rd_val
+                                 // OP_Stage2_M
 
-   WordXL     val2;     // OP_Stage2_ST: store-val;
-                        // OP_Stage2_M and OP_Stage2_FD: arg2
-                        // Floating point specific fields
+   WordXL     val2;              // OP_Stage2_ST: store-val;
+                                 // OP_Stage2_M and OP_Stage2_FD: arg2
+                                 // Floating point specific fields
 `ifdef ISA_F
-   WordFL     fval1;    // OP_Stage2_ALU: rd_val
-                        // OP_Stage2_M and OP_Stage2_FD: arg1
-
-   WordFL     fval2;    // OP_Stage2_ST: store-val;
-                        // OP_Stage2_M and OP_Stage2_FD: arg2
-   WordFL     fval3;    // OP_Stage2_FD: arg3
-   Bool       rd_in_fpr;// The rd should update into FPR
-   Bool       rs_frm_fpr;// The rs is from FPR (FP stores)
-   Bit #(3)   rounding_mode;    // rounding mode from fcsr_frm or instr.rm
+   WordFL     fval1;             // OP_Stage2_FD: arg1
+   WordFL     fval2;             // OP_Stage2_FD: arg2
+   WordFL     fval3;             // OP_Stage2_FD: arg3
+   Bool       rd_in_fpr;         // The rd should update into FPR
+   Bool       rs_frm_fpr;        // The rs is from FPR (FP stores)
+   Bit #(3)   rounding_mode;     // rounding mode from fcsr_frm or instr.rm
 `endif
 
 `ifdef INCLUDE_TANDEM_VERIF
@@ -398,6 +395,7 @@ instance FShow #(Data_Stage1_to_Stage2);
       fmt = fmt + $format ("            addr:%h  val1:%h  val2:%h}",
 			   x.addr, x.val1, x.val2);
 `ifdef ISA_F
+      fmt = fmt + $format ("\n");
       fmt = fmt + $format ("            fval1:%h  fval2:%h  fval3:%h}",
 			   x.fval1, x.fval2, x.fval3);
 `endif
