@@ -98,6 +98,7 @@ typedef struct {
    WordFL     fval3;          // OP_Stage2_FD: arg3
    Bool       rd_in_fpr;      // result to be written to fpr
    Bool       rs_frm_fpr;     // src register is in fpr (for stores)
+   Bool       val1_frm_gpr;   // first operand is in gpr (for some FP instrns)
    Bit #(3)   rm;             // rounding mode
 `endif
 
@@ -119,6 +120,7 @@ ALU_Outputs alu_outputs_base
 	       fval3       : ?,
 	       rd_in_fpr   : False,
 	       rs_frm_fpr  : False,
+               val1_frm_gpr: False,
 	       rm          : ?,
 `endif
 	       trace_data  : ?};
@@ -893,28 +895,34 @@ function ALU_Outputs fv_FP (ALU_Inputs inputs);
 						rs2,
 						opcode));
 
-   let alu_outputs = alu_outputs_base;
-   alu_outputs.control   = ((inst_is_legal && rm_is_legal)  ? CONTROL_STRAIGHT
-                                                            : CONTROL_TRAP);
-   alu_outputs.op_stage2 = OP_Stage2_FD;
-   alu_outputs.rd        = inputs.decoded_instr.rd;
-   alu_outputs.rm        = rm;
+   let alu_outputs         = alu_outputs_base;
+   alu_outputs.control     = ((inst_is_legal && rm_is_legal) ? CONTROL_STRAIGHT
+                                                             : CONTROL_TRAP);
+   alu_outputs.op_stage2   = OP_Stage2_FD;
+   alu_outputs.rd          = inputs.decoded_instr.rd;
+   alu_outputs.rm          = rm;
 
    // Operand values
    // The first operand may be from the FPR or GPR
-   let val1_from_gpr     = fv_fp_val1_from_gpr (opcode, funct7, rs2);
+   alu_outputs.val1_frm_gpr= fv_fp_val1_from_gpr (opcode, funct7, rs2);
+
 
 `ifdef ISA_D
    // FLEN >= XLEN. An extend covers both cases
-   alu_outputs.fval1     = val1_from_gpr  ? extend (inputs.rs1_val)
-                                          : inputs.frs1_val;
+// alu_outputs.fval1       = val1_from_gpr ? extend (inputs.rs1_val)
+ //                                        : inputs.frs1_val;
 `else
    // XLEN >= FLEN. A truncate covers both cases
-   alu_outputs.fval1     = val1_from_gpr  ? truncate (inputs.rs1_val)
-                                          : inputs.frs1_val;
+// alu_outputs.fval1       = val1_from_gpr ? truncate (inputs.rs1_val)
+ //                                        : inputs.frs1_val;
 `endif
 
-   // Second and third operands (when used) are always from the FPR
+   // Just copy the rs1_val values from inputs to outputs as whenever val1 is
+   // from GPR this value
+   alu_outputs.val1     = inputs.rs1_val;
+
+   // Just copy the frs*_val values from inputs to outputs
+   alu_outputs.fval1     = inputs.frs1_val;
    alu_outputs.fval2     = inputs.frs2_val;
    alu_outputs.fval3     = inputs.frs3_val;
 

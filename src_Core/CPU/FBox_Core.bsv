@@ -401,8 +401,6 @@ module mkFBox_Core #(Bit #(4) verbosity) (FBox_Core_IFC);
    rule doFCVT_S_L ( validReq && isFCVT_S_L );
       if (verbosity > 1)
          $display ("%0d: FBox_Core.doFCVT_S_L ", cur_cycle);
-      if (verbosity > 2)
-         $display ("v1 = %08x, rmd = ", v1, fshow (rmd));
 
       Int#(64) v = unpack ( v1 );
       match {.f, .e} = Tuple2#(FSingle, FloatingPoint::Exception)'(vFixedToFloat( v, 6'd0, rmd));
@@ -410,6 +408,11 @@ module mkFBox_Core #(Bit #(4) verbosity) (FBox_Core_IFC);
       let fcsr = exception_to_fcsr(e);
       resultR     <= tagged Valid (tuple2 (res, fcsr));
       stateR      <= FBOX_RSP;
+
+      if (verbosity > 2) begin
+         $display ("v1 = %08x, rmd = ", v1, fshow (rmd));
+         $display ("    Result: (%08x, %05b)", res, fcsr);
+      end
    endrule
 
    rule doFCVT_S_LU ( validReq && isFCVT_S_LU );

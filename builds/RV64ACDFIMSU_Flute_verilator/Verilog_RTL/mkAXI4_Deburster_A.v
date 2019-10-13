@@ -662,8 +662,8 @@ module mkAXI4_Deburster_A(CLK,
   // synopsys translate_off
   reg [31 : 0] v__h2538;
   reg [31 : 0] v__h1445;
-  reg [31 : 0] v__h1439;
   reg [31 : 0] v__h2532;
+  reg [31 : 0] v__h1439;
   // synopsys translate_on
 
   // remaining internal signals

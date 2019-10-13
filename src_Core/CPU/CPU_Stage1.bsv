@@ -183,6 +183,7 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
 					       fval3         : alu_outputs.fval3,
 					       rd_in_fpr     : alu_outputs.rd_in_fpr,
 					       rs_frm_fpr    : alu_outputs.rs_frm_fpr,
+					       val1_frm_gpr  : alu_outputs.val1_frm_gpr,
 					       rounding_mode : alu_outputs.rm,
 `endif
 `ifdef INCLUDE_TANDEM_VERIF
@@ -220,6 +221,7 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
 						     fval3           : ?,
 						     rd_in_fpr       : ?,
 					             rs_frm_fpr      : ?,
+					             val1_frm_gpr    : ?,
 						     rounding_mode   : ?,
 `endif
 `ifdef INCLUDE_TANDEM_VERIF

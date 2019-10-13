@@ -379,6 +379,7 @@ typedef struct {
    WordFL     fval3;             // OP_Stage2_FD: arg3
    Bool       rd_in_fpr;         // The rd should update into FPR
    Bool       rs_frm_fpr;        // The rs is from FPR (FP stores)
+   Bool       val1_frm_gpr;      // The val1 is from GPR for a FP instruction
    Bit #(3)   rounding_mode;     // rounding mode from fcsr_frm or instr.rm
 `endif
 

@@ -7,7 +7,7 @@
 // Ports:
 // Name                         I/O  size props
 // result_valid                   O     1
-// result_value                   O   128
+// result_value                   O   128 reg
 // CLK                            I     1 clock
 // RST_N                          I     1 reset
 // put_args_x_is_signed           I     1
@@ -74,8 +74,9 @@ module mkIntMul_64(CLK,
   wire m_rg_signed$D_IN, m_rg_signed$EN;
 
   // register m_rg_state
-  reg m_rg_state;
-  wire m_rg_state$D_IN, m_rg_state$EN;
+  reg [1 : 0] m_rg_state;
+  wire [1 : 0] m_rg_state$D_IN;
+  wire m_rg_state$EN;
 
   // register m_rg_x
   reg [127 : 0] m_rg_x;
@@ -105,43 +106,43 @@ module mkIntMul_64(CLK,
   wire [63 : 0] MUX_m_rg_y$write_1__VAL_1, MUX_m_rg_y$write_1__VAL_2;
 
   // remaining internal signals
-  wire [127 : 0] xy___1__h648;
-  wire [63 : 0] _theResult___fst__h488,
-		_theResult___fst__h491,
-		_theResult___fst__h533,
-		_theResult___fst__h536,
-		_theResult___snd_fst__h528;
-  wire IF_put_args_x_is_signed_THEN_put_args_x_BIT_63_ETC___d29;
+  wire [127 : 0] x__h271, x__h364, xy___1__h288;
+  wire [63 : 0] _theResult___fst__h525,
+		_theResult___fst__h528,
+		_theResult___fst__h570,
+		_theResult___fst__h573,
+		_theResult___snd_fst__h565;
+  wire IF_put_args_x_is_signed_THEN_put_args_x_BIT_63_ETC___d34;
 
   // action method put_args
   assign CAN_FIRE_put_args = 1'd1 ;
   assign WILL_FIRE_put_args = EN_put_args ;
 
   // value method result_valid
-  assign result_valid = m_rg_state && m_rg_y == 64'd0 ;
+  assign result_valid = m_rg_state == 2'd2 ;
 
   // value method result_value
-  assign result_value = m_rg_isNeg ? xy___1__h648 : m_rg_xy ;
+  assign result_value = m_rg_xy ;
 
   // rule RL_m_compute
-  assign CAN_FIRE_RL_m_compute = m_rg_y != 64'd0 && m_rg_state ;
+  assign CAN_FIRE_RL_m_compute = m_rg_state == 2'd1 ;
   assign WILL_FIRE_RL_m_compute = CAN_FIRE_RL_m_compute ;
 
   // inputs to muxes for submodule ports
-  assign MUX_m_rg_x$write_1__VAL_1 = { 64'd0, _theResult___fst__h488 } ;
+  assign MUX_m_rg_x$write_1__VAL_1 = { 64'd0, _theResult___fst__h525 } ;
   assign MUX_m_rg_x$write_1__VAL_2 = { m_rg_x[126:0], 1'd0 } ;
-  assign MUX_m_rg_xy$write_1__VAL_2 = m_rg_xy + m_rg_x ;
+  assign MUX_m_rg_xy$write_1__VAL_2 = (m_rg_y == 64'd0) ? x__h271 : x__h364 ;
   assign MUX_m_rg_y$write_1__VAL_1 =
 	     (put_args_x_is_signed && put_args_y_is_signed) ?
-	       _theResult___fst__h536 :
-	       _theResult___snd_fst__h528 ;
+	       _theResult___fst__h573 :
+	       _theResult___snd_fst__h565 ;
   assign MUX_m_rg_y$write_1__VAL_2 = { 1'd0, m_rg_y[63:1] } ;
 
   // register m_rg_isNeg
   assign m_rg_isNeg$D_IN =
 	     (put_args_x_is_signed && put_args_y_is_signed) ?
 	       put_args_x[63] != put_args_y[63] :
-	       IF_put_args_x_is_signed_THEN_put_args_x_BIT_63_ETC___d29 ;
+	       IF_put_args_x_is_signed_THEN_put_args_x_BIT_63_ETC___d34 ;
   assign m_rg_isNeg$EN = EN_put_args ;
 
   // register m_rg_signed
@@ -149,41 +150,48 @@ module mkIntMul_64(CLK,
   assign m_rg_signed$EN = 1'b0 ;
 
   // register m_rg_state
-  assign m_rg_state$D_IN = 1'd1 ;
-  assign m_rg_state$EN = EN_put_args ;
+  assign m_rg_state$D_IN = EN_put_args ? 2'd1 : 2'd2 ;
+  assign m_rg_state$EN =
+	     WILL_FIRE_RL_m_compute && m_rg_y == 64'd0 || EN_put_args ;
 
   // register m_rg_x
   assign m_rg_x$D_IN =
 	     EN_put_args ?
 	       MUX_m_rg_x$write_1__VAL_1 :
 	       MUX_m_rg_x$write_1__VAL_2 ;
-  assign m_rg_x$EN = EN_put_args || WILL_FIRE_RL_m_compute ;
+  assign m_rg_x$EN =
+	     WILL_FIRE_RL_m_compute && m_rg_y != 64'd0 || EN_put_args ;
 
   // register m_rg_xy
   assign m_rg_xy$D_IN = EN_put_args ? 128'd0 : MUX_m_rg_xy$write_1__VAL_2 ;
-  assign m_rg_xy$EN = WILL_FIRE_RL_m_compute && m_rg_y[0] || EN_put_args ;
+  assign m_rg_xy$EN =
+	     WILL_FIRE_RL_m_compute && (m_rg_y == 64'd0 || m_rg_y[0]) ||
+	     EN_put_args ;
 
   // register m_rg_y
   assign m_rg_y$D_IN =
 	     EN_put_args ?
 	       MUX_m_rg_y$write_1__VAL_1 :
 	       MUX_m_rg_y$write_1__VAL_2 ;
-  assign m_rg_y$EN = WILL_FIRE_RL_m_compute || EN_put_args ;
+  assign m_rg_y$EN =
+	     WILL_FIRE_RL_m_compute && m_rg_y != 64'd0 || EN_put_args ;
 
   // remaining internal signals
-  assign IF_put_args_x_is_signed_THEN_put_args_x_BIT_63_ETC___d29 =
+  assign IF_put_args_x_is_signed_THEN_put_args_x_BIT_63_ETC___d34 =
 	     put_args_x_is_signed ?
 	       put_args_x[63] :
 	       put_args_y_is_signed && put_args_y[63] ;
-  assign _theResult___fst__h488 =
-	     put_args_x_is_signed ? _theResult___fst__h491 : put_args_x ;
-  assign _theResult___fst__h491 = put_args_x[63] ? -put_args_x : put_args_x ;
-  assign _theResult___fst__h533 =
-	     put_args_y_is_signed ? _theResult___fst__h536 : put_args_y ;
-  assign _theResult___fst__h536 = put_args_y[63] ? -put_args_y : put_args_y ;
-  assign _theResult___snd_fst__h528 =
-	     put_args_x_is_signed ? put_args_y : _theResult___fst__h533 ;
-  assign xy___1__h648 = -m_rg_xy ;
+  assign _theResult___fst__h525 =
+	     put_args_x_is_signed ? _theResult___fst__h528 : put_args_x ;
+  assign _theResult___fst__h528 = put_args_x[63] ? -put_args_x : put_args_x ;
+  assign _theResult___fst__h570 =
+	     put_args_y_is_signed ? _theResult___fst__h573 : put_args_y ;
+  assign _theResult___fst__h573 = put_args_y[63] ? -put_args_y : put_args_y ;
+  assign _theResult___snd_fst__h565 =
+	     put_args_x_is_signed ? put_args_y : _theResult___fst__h570 ;
+  assign x__h271 = m_rg_isNeg ? xy___1__h288 : m_rg_xy ;
+  assign x__h364 = m_rg_xy + m_rg_x ;
+  assign xy___1__h288 = -m_rg_xy ;
 
   // handling of inlined registers
 
@@ -191,7 +199,7 @@ module mkIntMul_64(CLK,
   begin
     if (RST_N == `BSV_RESET_VALUE)
       begin
-        m_rg_state <= `BSV_ASSIGNMENT_DELAY 1'd0;
+        m_rg_state <= `BSV_ASSIGNMENT_DELAY 2'd0;
       end
     else
       begin
@@ -212,7 +220,7 @@ module mkIntMul_64(CLK,
   begin
     m_rg_isNeg = 1'h0;
     m_rg_signed = 1'h0;
-    m_rg_state = 1'h0;
+    m_rg_state = 2'h2;
     m_rg_x = 128'hAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA;
     m_rg_xy = 128'hAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA;
     m_rg_y = 64'hAAAAAAAAAAAAAAAA;
