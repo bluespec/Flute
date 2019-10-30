@@ -49,7 +49,7 @@ interface Branch_Predictor_IFC;
    method Action  predict_req (WordXL pc, Maybe #(WordXL) m_old_pc);
 
    (* always_ready *)
-   method WordXL  predict_rsp;
+   method WordXL  predict_rsp (Bool is_i32_not_i16);
 endinterface
 
 // ================================================================
@@ -155,7 +155,7 @@ module mkBranch_Predictor (Branch_Predictor_IFC);
       rg_pc <= pc;
    endmethod
 
-   method WordXL  predict_rsp ();
+   method WordXL  predict_rsp (Bool is_i32_not_i16);
       WordXL pred_pc = 1;    // default: no prediction, invalid PC
 
       let cache_entry = bramcore2.a.read;
@@ -166,7 +166,7 @@ module mkBranch_Predictor (Branch_Predictor_IFC);
       end
       else begin
 	 // Miss: do default prediction
-	 pred_pc = rg_pc + 4;
+	 pred_pc = rg_pc + (is_i32_not_i16 ? 4 : 2);
       end
       return pred_pc;
    endmethod

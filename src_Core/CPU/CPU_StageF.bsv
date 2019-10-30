@@ -101,7 +101,7 @@ module mkCPU_StageF #(Bit #(4)  verbosity,
 				     exc_code:        imem.exc_code,
 				     tval:            imem.tval,
 				     instr:           imem.instr,
-				     pred_pc:         branch_predictor.predict_rsp};
+				     pred_pc:         branch_predictor.predict_rsp (imem.is_i32_not_i16)};
 
       let ostatus = (  (! rg_full) ? OSTATUS_EMPTY
 		     : (  (! imem.valid) ? OSTATUS_BUSY
