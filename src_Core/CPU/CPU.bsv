@@ -215,14 +215,6 @@ module mkCPU (CPU_IFC);
    CPU_StageF_IFC  stageF <- mkCPU_StageF (cur_verbosity, imem);
 
    // ----------------
-   // FIFO from Stage1 back to StageF.  Each (e, pc1, pc2) says:
-   //  - pc1 was followed by pc2, and was mis-predicted to something other than pc2.
-   //        (so StageF must be fetching from the wrong pc)
-   //  - re-start fetching from pc2, with new epoch e.
-
-   FIFOF #(Tuple3 #(Epoch, WordXL, WordXL)) f_redirects <- mkFIFOF;
-
-   // ----------------
    // Interrupt pending based on current priv, mstatus.ie, mie and mip registers
 
    Bool interrupt_pending = (   isValid (csr_regfile.interrupt_pending (rg_cur_priv))
@@ -647,6 +639,14 @@ module mkCPU (CPU_IFC);
       Bool stageF_full = (stageF.out.ostatus != OSTATUS_EMPTY);
 
       // ----------------
+      // Signal from Stage1 back to StageF. Valid (e, pc1, pc2) says:
+      //  - pc1 was followed by pc2, and was mis-predicted to something other than pc2.
+      //        (so StageF must be fetching from the wrong pc)
+      //  - re-start fetching from pc2, with new epoch e.
+
+      Maybe #(Tuple3 #(Epoch, WordXL, WordXL)) redirect = Invalid;
+
+      // ----------------
       // Stage3 sink (does regfile writebacks)
 
       if (stage3.out.ostatus == OSTATUS_PIPE) begin
@@ -694,9 +694,9 @@ module mkCPU (CPU_IFC);
 
 	       if (stage1.out.redirect) begin
 		  let new_epoch <- fav_update_epoch;
-		  f_redirects.enq (tuple3 (new_epoch,
-					   stage1.out.data_to_stage2.pc,
-					   stage1.out.next_pc));
+		  redirect = tagged Valid (tuple3 (new_epoch,
+						   stage1.out.data_to_stage2.pc,
+						   stage1.out.next_pc));
 	       end
 	    end
 	 end
@@ -730,8 +730,7 @@ module mkCPU (CPU_IFC);
 	    Maybe #(WordXL)  m_old_pc = tagged Invalid;
 
 	    // Override, if stage1 is redirecting
-	    if (f_redirects.notEmpty) begin
-	       match { .e, .pc1, .pc2 } <- pop (f_redirects);
+	    if (redirect matches tagged Valid { .e, .pc1, .pc2 }) begin
 	       epoch   = e;
 	       next_pc = pc2;
 	       m_old_pc = tagged Valid pc1;
