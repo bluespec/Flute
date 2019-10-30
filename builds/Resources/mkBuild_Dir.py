@@ -247,7 +247,7 @@ def make_build_dir (repo, repobase, arch, sim, debug, tv):
         arch_flags = arch_flags + "  -D ISA_FD_DIV"
     else:
         if ("I" in arch): arch_flags = arch_flags + "  -D ISA_I"
-        if ("I" in arch): arch_flags = arch_flags + "  -D ISA_M"
+        if ("M" in arch): arch_flags = arch_flags + "  -D ISA_M"
         if ("A" in arch): arch_flags = arch_flags + "  -D ISA_A"
         if ("F" in arch): arch_flags = arch_flags + "  -D ISA_F"
         if ("D" in arch): arch_flags = arch_flags + "  -D ISA_D"

@@ -1218,11 +1218,13 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
    method ActionValue #(Tuple3 #(Addr, Priv_Mode, Word)) csr_ret_actions (Priv_Mode from_priv);
       match { .new_mstatus, .to_priv } = fv_new_mstatus_on_ret (misa, csr_mstatus.fv_read, from_priv);
       csr_mstatus.fa_write (misa, new_mstatus);
-      WordXL next_pc = ((misa.c == 1'b1) ? rg_mepc : (rg_mepc & (~ 2)));
+      WordXL next_pc = rg_mepc;
 `ifdef ISA_PRIV_S
       if (from_priv != m_Priv_Mode)
 	 next_pc = rg_sepc;
 `endif
+      if (misa.c == 1'b0)
+	 next_pc = next_pc & (~ 2);
       return tuple3 (next_pc, to_priv, new_mstatus);
    endmethod
 
