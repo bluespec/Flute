@@ -42,7 +42,66 @@ deriving (Eq, Bits, FShow);
 // ================================================================
 // Branch-prediction info
 
+// ----------------
+// Epoch is a wrap-around counter that ticks every time there is a
+// control-flow redirection due (e.g., due to a mispredict).
+// Number of bits should be large enough to accommodate wrap-around.
+
 typedef Bit #(2)  Epoch;
+
+// ----------------
+// Ctrl_Info is sent from the execute stage on all control transfers
+// and is used by the fetch stage to improve branch prediction.
+
+// cf. RISC-V Unprivileged ISA Spec Section 2.5 on JAL/JALR for
+// interpretation of the 'link' fields below.
+
+typedef struct {
+   Bool    is_BR;          // True only for BRANCH instrs
+   Bool    is_J;           // True only for JAL/JALR instrs
+
+   WordXL  from_PC;
+   Bool    taken;
+   WordXL  fallthru_PC;
+   WordXL  target_PC;
+
+   Bool    rd_is_link;     // Rd is x1 or x5
+   Bool    rs1_is_link;    // Rs1 is x1 or x5
+   Bool    eq_rd_rs1;      // Rd == Rs1
+   } Ctrl_Info
+deriving (Bits);
+
+instance FShow #(Ctrl_Info);
+   function Fmt fshow (Ctrl_Info x);
+
+      let fmt_empty = $format ("");
+      Fmt fmt = fmt_empty;
+
+      if (x.is_BR || x.is_J) begin
+	 fmt = $format ("Ctrl_{");
+	 if (x.is_BR) begin
+	    fmt = fmt + $format ("BR ");
+	    fmt = fmt + $format (x.taken ? "taken " : "fallthru ");
+	    fmt = fmt + $format ("[%h->%h %h]", x.from_PC, x.fallthru_PC, x.target_PC);
+	 end
+	 else begin
+	    fmt = fmt + $format ("J [%h->%h/%h]", x.from_PC, x.target_PC, x.fallthru_PC);
+	    fmt = fmt + $format (" link rd %0d rs1 %0d eq %0d", x.rd_is_link, x.rs1_is_link, x.eq_rd_rs1);
+	 end
+
+	 fmt = fmt + $format ("}");
+      end
+
+      return fmt;
+   endfunction
+endinstance
+
+// ----------------
+// Is 'r' a standard register for PC save/restore on call/return?
+
+function Bool fn_is_link (RegName   r);
+   return ((r == x1) || (r == x5));
+endfunction
 
 // ================================================================
 // Bypass information
@@ -298,6 +357,8 @@ typedef struct {
    Bool                   redirect;
    WordXL                 next_pc;
 
+   Ctrl_Info              ctrl_info;
+
    // feedforward data
    Data_Stage1_to_Stage2  data_to_stage2;
    } Output_Stage1
@@ -316,8 +377,9 @@ instance FShow #(Output_Stage1);
 	    fmt = fmt + $format (" ", fshow (x.control));
 	    fmt = fmt + $format (" ", fshow (x.trap_info));
 	 end
-	 else
-	    fmt = fmt + $format (" PIPE: ", fshow (x.control), " ", fshow (x.data_to_stage2));
+	 else begin
+	    fmt = fmt + $format (" PIPE: ", fshow (x.control), " ", fshow (x.ctrl_info), fshow (x.data_to_stage2));
+	 end
 
 	 if (x.redirect)
 	    fmt = fmt + $format ("\n        redirect next_pc:%h", x.next_pc);

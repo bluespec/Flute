@@ -303,6 +303,10 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
    endmethod
 
    method Action deq ();
+      /*
+      if (alu_outputs.ctrl_info.is_BR || alu_outputs.ctrl_info.is_J)
+	 $display ("%0d: Control Transfer ", cur_cycle, fshow (alu_outputs.ctrl_info));
+      */
    endmethod
 
    // ---- Input
