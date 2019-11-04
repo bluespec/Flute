@@ -907,18 +907,8 @@ function ALU_Outputs fv_FP (ALU_Inputs inputs);
    alu_outputs.val1_frm_gpr= fv_fp_val1_from_gpr (opcode, funct7, rs2);
 
 
-`ifdef ISA_D
-   // FLEN >= XLEN. An extend covers both cases
-// alu_outputs.fval1       = val1_from_gpr ? extend (inputs.rs1_val)
- //                                        : inputs.frs1_val;
-`else
-   // XLEN >= FLEN. A truncate covers both cases
-// alu_outputs.fval1       = val1_from_gpr ? truncate (inputs.rs1_val)
- //                                        : inputs.frs1_val;
-`endif
-
-   // Just copy the rs1_val values from inputs to outputs as whenever val1 is
-   // from GPR this value
+   // Just copy the rs1_val values from inputs to outputs this covers cases
+   // whenever val1 is from GPR
    alu_outputs.val1     = inputs.rs1_val;
 
    // Just copy the frs*_val values from inputs to outputs
