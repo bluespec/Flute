@@ -190,15 +190,18 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 
       // This stage is empty
       if (! rg_full) begin
-	 output_stage2 = Output_Stage2 {ostatus:         OSTATUS_EMPTY,
-					trap_info:       ?,
-					data_to_stage3:  ?,
-					bypass:          no_bypass,
+	 output_stage2 = Output_Stage2 {
+              ostatus         : OSTATUS_EMPTY
+            , trap_info       : ?
+            , data_to_stage3  : ?
+            , bypass          : no_bypass
 `ifdef ISA_F
-					fbypass:         no_fbypass,
+            , fbypass         : no_fbypass
 `endif
-					trace_data:      ?
-					};
+`ifdef INCLUDE_TANDEM_VERIF
+	    , trace_data      : ?
+`endif
+	 };
       end
 
       // This stage is just relaying ALU results from previous stage to next stage
@@ -209,19 +212,22 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 	 let bypass = bypass_base;
 	 bypass.bypass_state = BYPASS_RD_RDVAL;
 
-	 let trace_data   = ?;
 `ifdef INCLUDE_TANDEM_VERIF
-	 trace_data = rg_stage2.trace_data;
+	 let trace_data = rg_stage2.trace_data;
 `endif
 
-	 output_stage2 = Output_Stage2 {ostatus:         OSTATUS_PIPE,
-					trap_info:       ?,
-					data_to_stage3:  data_to_stage3,
-					bypass:          bypass,
+	 output_stage2 = Output_Stage2 {
+              ostatus         : OSTATUS_PIPE
+            , trap_info       : ?
+            , data_to_stage3  : data_to_stage3
+            , bypass          : bypass
 `ifdef ISA_F
-					fbypass:         no_fbypass,
+            , fbypass         : no_fbypass
 `endif
-					trace_data:      trace_data};
+`ifdef INCLUDE_TANDEM_VERIF
+            , trace_data      : trace_data
+`endif
+         };
       end
 
       // This stage is doing a LOAD or AMO
@@ -305,20 +311,30 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 	       end
 	    end
 
-	    let trace_data   = ?;
 `ifdef INCLUDE_TANDEM_VERIF
-	    trace_data   = rg_stage2.trace_data;
-`endif
-	    trace_data.word1 = result;
-
-	    output_stage2 = Output_Stage2 {ostatus:         ostatus,
-					   trap_info:       trap_info_dmem,
-					   data_to_stage3:  data_to_stage3,
-					   bypass:          bypass,
+	    let trace_data   = rg_stage2.trace_data;
 `ifdef ISA_F
-					   fbypass:         fbypass,
+            if (rg_stage2.rd_in_fpr) begin
+               trace_data.word5 = data_to_stage3.frd_val;
+
+               // Update MSTATUS.FS in trace packet
+               trace_data = fv_trace_update_mstatus_fs (trace_data, fs_xs_dirty);
+            end else
 `endif
-					   trace_data:      trace_data};
+               trace_data.word1 = data_to_stage3.rd_val;
+`endif
+            output_stage2 = Output_Stage2 {
+                 ostatus         : ostatus
+               , trap_info       : trap_info_dmem
+               , data_to_stage3  : data_to_stage3
+               , bypass          : bypass
+`ifdef ISA_F
+               , fbypass         : fbypass
+`endif
+`ifdef INCLUDE_TANDEM_VERIF
+               , trace_data      : trace_data
+`endif
+            };
 	 end
 
       // This stage is doing a STORE
@@ -333,19 +349,22 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 	 data_to_stage3.rd_valid = (ostatus == OSTATUS_PIPE);
 	 data_to_stage3.rd       = 0;
 
-	 let trace_data   = ?;
 `ifdef INCLUDE_TANDEM_VERIF
-	 trace_data   = rg_stage2.trace_data;
+	 let trace_data   = rg_stage2.trace_data;
 `endif
 
-	 output_stage2 = Output_Stage2 {ostatus:        ostatus,
-					trap_info:      trap_info_dmem,
-					data_to_stage3: data_to_stage3,
-					bypass:         no_bypass,
+	 output_stage2 = Output_Stage2 {
+              ostatus         : ostatus
+            , trap_info       : trap_info_dmem
+            , data_to_stage3  : data_to_stage3
+            , bypass          : no_bypass
 `ifdef ISA_F
-					fbypass:        no_fbypass,
+            , fbypass         : no_fbypass
 `endif
-					trace_data:     trace_data};
+`ifdef INCLUDE_TANDEM_VERIF
+            , trace_data      : trace_data
+`endif
+         };
       end
 
 `ifdef SHIFT_SERIAL
@@ -363,20 +382,23 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 	 bypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
 	 bypass.rd_val       = result;
 
-	 let trace_data   = ?;
 `ifdef INCLUDE_TANDEM_VERIF
-	 trace_data   = rg_stage2.trace_data;
-`endif
+	 let trace_data   = rg_stage2.trace_data;
 	 trace_data.word1 = result;
-
-	 output_stage2 = Output_Stage2 {ostatus:         ostatus,
-					trap_info:       ?,
-					data_to_stage3:  data_to_stage3,
-					bypass:          bypass,
-`ifdef ISA_F
-					fbypass:         no_fbypass,
 `endif
-					trace_data:      trace_data};
+
+	 output_stage2 = Output_Stage2 {
+              ostatus         : ostatus
+            , trap_info       : ?
+            , data_to_stage3  : data_to_stage3
+            , bypass          : bypass
+`ifdef ISA_F
+            , fbypass         : no_fbypass
+`endif
+`ifdef INCLUDE_TANDEM_VERIF
+            , trace_data      : trace_data
+`endif
+         };
       end
 `endif
 
@@ -395,20 +417,23 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 	 bypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
 	 bypass.rd_val       = result;
 
-	 let trace_data   = ?;
 `ifdef INCLUDE_TANDEM_VERIF
-	 trace_data   = rg_stage2.trace_data;
-`endif
+	 let trace_data   = rg_stage2.trace_data;
 	 trace_data.word1 = result;
-
-	 output_stage2 = Output_Stage2 {ostatus:         ostatus,
-					trap_info:       ?,
-					data_to_stage3:  data_to_stage3,
-					bypass:          bypass,
-`ifdef ISA_F
-					fbypass:         no_fbypass,
 `endif
-					trace_data:      trace_data};
+
+	 output_stage2 = Output_Stage2 {
+              ostatus         : ostatus
+            , trap_info       : ?
+            , data_to_stage3  : data_to_stage3
+            , bypass          : bypass
+`ifdef ISA_F
+            , fbypass         : no_fbypass
+`endif
+`ifdef INCLUDE_TANDEM_VERIF
+            , trace_data      : trace_data
+`endif
+         };
       end
 `endif
 
@@ -419,7 +444,6 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 
          // Extract fields from FBOX result
 	 match {.value, .fflags} = fbox.word;
-         let upd_fpr             = rg_stage2.rd_in_fpr;
 
 	 let data_to_stage3      = data_to_stage3_base;
 	 data_to_stage3.rd_valid = (ostatus == OSTATUS_PIPE);
@@ -435,7 +459,7 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
          // result is meant for a FPR
 	 let bypass              = bypass_base;
          let fbypass             = fbypass_base;
-         if (upd_fpr) begin
+         if (rg_stage2.rd_in_fpr) begin
             fbypass.bypass_state    = ((ostatus==OSTATUS_PIPE) ? BYPASS_RD_RDVAL
                                                                : BYPASS_RD);
 `ifdef ISA_D
@@ -459,22 +483,33 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
          end
 
          // -----
-	 let trace_data = ?;
 `ifdef INCLUDE_TANDEM_VERIF
-	 trace_data = rg_stage2.trace_data;
-`endif
-         // XXX Revisit. word1 should be sized similar to val (always 64-bit) if
-         // FPU is enabled
-	 trace_data.word1 = truncate (value);
+	 let trace_data = rg_stage2.trace_data;
 
-	 output_stage2 = Output_Stage2 {ostatus:         ostatus,
-					trap_info:       trap_info_fbox,
-					data_to_stage3:  data_to_stage3,
-					bypass:          bypass,
-`ifdef ISA_F
-					fbypass:         fbypass,
+         if (rg_stage2.rd_in_fpr) begin
+            trace_data.word5 = data_to_stage3.frd_val;
+         end else begin
+            trace_data.word1 = data_to_stage3.rd_val;
+         end
+
+         // Update MSTATUS.FS and FCSR.FFLAGS in trace packet
+         trace_data = fv_trace_update_mstatus_fs (trace_data, fs_xs_dirty);
+         trace_data = fv_trace_update_fcsr_fflags (trace_data, fflags);
+
 `endif
-					trace_data:      trace_data};
+
+	 output_stage2 = Output_Stage2 {
+              ostatus         : ostatus
+            , trap_info       : trap_info_fbox
+            , data_to_stage3  : data_to_stage3
+            , bypass          : bypass
+`ifdef ISA_F
+            , fbypass         : fbypass
+`endif
+`ifdef INCLUDE_TANDEM_VERIF
+            , trace_data      : trace_data
+`endif
+         };
       end
 `endif
 

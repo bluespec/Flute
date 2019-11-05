@@ -33,9 +33,9 @@ typedef enum {// These are not from instruction flow and do not have a PC or ins
 
 	      // These are from instruction flow and have a PC and instruction
 	      TRACE_OTHER,
-	      TRACE_I_RD,   TRACE_F_RD,
+	      TRACE_I_RD,   TRACE_F_GRD,   TRACE_F_FRD,
  	      TRACE_I_LOAD,  TRACE_F_LOAD,
-	      TRACE_STORE,
+	      TRACE_I_STORE, TRACE_F_STORE,
 	      TRACE_AMO,
 	      TRACE_TRAP,
 	      TRACE_RET,
@@ -56,6 +56,9 @@ typedef struct {
    WordXL     word2;
    Bit #(64)  word3;    // Wider than WordXL because can contain paddr (in RV32, paddr can be 34 bits)
    WordXL     word4;
+`ifdef ISA_F
+   WordFL     word5;
+`endif
    } Trace_Data
 deriving (Bits);
 
@@ -139,19 +142,39 @@ function Trace_Data mkTrace_I_RD (WordXL pc, ISize isize, Bit #(32) instr, RegNa
    return td;
 endfunction
 
-// F_RD
-// op    pc    instr_sz    instr    rd    word1    word2    word3    word4
-// x     x     x           x        x     rdval
-function Trace_Data mkTrace_F_RD (WordXL pc, ISize isize, Bit #(32) instr, RegName rd, WordXL rdval);
+`ifdef ISA_F
+// F_FRD
+// op    pc    instr_sz    instr    rd    word1    word2    word3    word4    word5
+// x     x     x           x        x              fflags            mstatus  rdval
+function Trace_Data mkTrace_F_FRD (WordXL pc, ISize isize, Bit #(32) instr, RegName rd, WordFL rdval, Bit#(5) fflags, WordXL mstatus);
    Trace_Data td = ?;
-   td.op       = TRACE_F_RD;
+   td.op       = TRACE_F_FRD;
+   td.pc       = pc;
+   td.instr_sz = isize;
+   td.instr    = instr;
+   td.rd       = rd;
+   td.word2    = extend (fflags);
+   td.word4    = mstatus;
+   td.word5    = rdval;
+   return td;
+endfunction
+
+// F_GRD
+// op    pc    instr_sz    instr    rd    word1    word2    word3    word4    word5
+// x     x     x           x        x     rdval    fflags            mstatus
+function Trace_Data mkTrace_F_GRD (WordXL pc, ISize isize, Bit #(32) instr, RegName rd, WordXL rdval, Bit#(5) fflags, WordXL mstatus);
+   Trace_Data td = ?;
+   td.op       = TRACE_F_GRD;
    td.pc       = pc;
    td.instr_sz = isize;
    td.instr    = instr;
    td.rd       = rd;
    td.word1    = rdval;
+   td.word2    = extend (fflags);
+   td.word4    = mstatus;
    return td;
 endfunction
+`endif
 
 // I_LOAD
 // op    pc    instr_sz    instr    rd    word1    word2    word3    word4
@@ -168,27 +191,12 @@ function Trace_Data mkTrace_I_LOAD (WordXL pc, ISize isize, Bit #(32) instr, Reg
    return td;
 endfunction
 
-// F_LOAD
-// op    pc    instr_sz    instr    rd    word1    word2    word3    word4
-// x     x     x           x        x     rdval             eaddr
-function Trace_Data mkTrace_F_LOAD (WordXL pc, ISize isize, Bit #(32) instr, RegName rd, WordXL rdval, WordXL eaddr);
-   Trace_Data td = ?;
-   td.op       = TRACE_F_LOAD;
-   td.pc       = pc;
-   td.instr_sz = isize;
-   td.instr    = instr;
-   td.rd       = rd;
-   td.word1    = rdval;
-   td.word3    = zeroExtend (eaddr);
-   return td;
-endfunction
-
 // STORE
 // op    pc    instr_sz    instr    rd    word1    word2    word3    word4
 // x     x     x           x                       stval    eaddr
-function Trace_Data mkTrace_STORE (WordXL pc, ISize isize, Bit #(32) instr, WordXL stval, WordXL eaddr);
+function Trace_Data mkTrace_I_STORE (WordXL pc, ISize isize, Bit #(32) instr, WordXL stval, WordXL eaddr);
    Trace_Data td = ?;
-   td.op       = TRACE_STORE;
+   td.op       = TRACE_I_STORE;
    td.pc       = pc;
    td.instr_sz = isize;
    td.instr    = instr;
@@ -196,6 +204,50 @@ function Trace_Data mkTrace_STORE (WordXL pc, ISize isize, Bit #(32) instr, Word
    td.word3    = zeroExtend (eaddr);
    return td;
 endfunction
+
+`ifdef ISA_F
+// F_LOAD
+// op    pc    instr_sz    instr    rd    word1    word2    word3    word4    word5
+// x     x     x           x        x                       eaddr    mstatus  rdval
+function Trace_Data mkTrace_F_LOAD (WordXL pc, ISize isize, Bit #(32) instr, RegName rd, WordFL rdval, WordXL eaddr, WordXL mstatus);
+   Trace_Data td = ?;
+   td.op       = TRACE_F_LOAD;
+   td.pc       = pc;
+   td.instr_sz = isize;
+   td.instr    = instr;
+   td.rd       = rd;
+   td.word3    = zeroExtend (eaddr);
+   td.word4    = mstatus;
+   td.word5    = rdval;
+   return td;
+endfunction
+
+// F_STORE
+// op    pc    instr_sz    instr    rd    word1    word2    word3    word4    word5
+// x     x     x           x                                eaddr             stval
+function Trace_Data mkTrace_F_STORE (WordXL pc, ISize isize, Bit #(32) instr, WordFL stval, WordXL eaddr);
+   Trace_Data td = ?;
+   td.op       = TRACE_F_STORE;
+   td.pc       = pc;
+   td.instr_sz = isize;
+   td.instr    = instr;
+   td.word3    = zeroExtend (eaddr);
+   td.word5    = stval;
+   return td;
+endfunction
+
+function Trace_Data fv_trace_update_mstatus_fs (Trace_Data td, Bit #(2) fs);
+   let ntd = td;
+   ntd.word4 = fv_assign_bits (td.word4, fromInteger (mstatus_fs_bitpos), fs);
+   return (ntd);
+endfunction
+
+function Trace_Data fv_trace_update_fcsr_fflags (Trace_Data td, Bit #(5) fflags);
+   let ntd = td;
+   ntd.word2 = (td.word2 | extend (fflags));
+   return (ntd);
+endfunction
+`endif
 
 // AMO
 // op    pc    instr_sz    instr    rd    word1    word2    word3    word4
@@ -305,14 +357,27 @@ instance FShow #(Trace_Data);
 	 if (td.op != TRACE_INTR)
 	    fmt = fmt + $format (" instr.%0d %0h:", pack (td.instr_sz), td.instr);
 
-	 if ((td.op == TRACE_I_RD) || (td.op == TRACE_F_RD))
+	 if (td.op == TRACE_I_RD)
 	    fmt = fmt + $format (" rd %0d  rdval %0h", td.rd, td.word1);
+`ifdef ISA_F
+	 else if (td.op == TRACE_F_FRD)
+	    fmt = fmt + $format (" rd %0d  rdval %0h  fflags %05b", td.rd, td.word5, td.word2);
 
-	 else if ((td.op == TRACE_I_LOAD) || (td.op == TRACE_F_LOAD))
+	 else if (td.op == TRACE_F_GRD)
+	    fmt = fmt + $format (" rd %0d  rdval %0h  fflags %05b", td.rd, td.word1, td.word2);
+
+	 else if (td.op == TRACE_F_LOAD)
+	    fmt = fmt + $format (" rd %0d  rdval %0h  eaddr %0h",
+				 td.rd, td.word5, td.word3);
+
+	 else if (td.op == TRACE_F_STORE)
+	    fmt = fmt + $format (" stval %0h  eaddr %0h", td.word5, td.word3);
+`endif
+	 else if (td.op == TRACE_I_LOAD)
 	    fmt = fmt + $format (" rd %0d  rdval %0h  eaddr %0h",
 				 td.rd, td.word1, td.word3);
 
-	 else if (td.op == TRACE_STORE)
+	 else if (td.op == TRACE_I_STORE)
 	    fmt = fmt + $format (" stval %0h  eaddr %0h", td.word2, td.word3);
 
 	 else if (td.op == TRACE_AMO)

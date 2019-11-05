@@ -65,6 +65,10 @@ interface CSR_RegFile_IFC;
    (* always_ready *)
    method Bit #(3) read_frm;
 
+   // Read FRM
+   (* always_ready *)
+   method Bit #(5) read_fflags;
+
    // Update FCSR.FFLAGS
    (* always_ready *)
    method Action ma_update_fcsr_fflags (Bit #(5) flags);
@@ -1085,6 +1089,10 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
    // Read FCSR.FRM
    method Bit# (3) read_frm;
       return rg_frm;
+   endmethod
+
+   method Bit# (5) read_fflags;
+      return rg_fflags;
    endmethod
 
    // Update FCSR.FFLAGS

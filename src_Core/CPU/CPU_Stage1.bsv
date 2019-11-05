@@ -163,7 +163,10 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
 				frs1_val       : frs1_val_bypassed,
 				frs2_val       : frs2_val_bypassed,
 				frs3_val       : frs3_val_bypassed,
-				fcsr_frm       : csr_regfile.read_frm,
+				frm            : csr_regfile.read_frm,
+`ifdef INCLUDE_TANDEM_VERIF
+                                fflags         : csr_regfile.read_fflags,
+`endif
 `endif
 				mstatus        : csr_regfile.read_mstatus,
 				misa           : csr_regfile.read_misa };

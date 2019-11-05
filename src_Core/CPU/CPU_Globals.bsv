@@ -419,8 +419,9 @@ typedef struct {
 
    // feedforward data
    Data_Stage2_to_Stage3  data_to_stage3;
-
+`ifdef INCLUDE_TANDEM_VERIF
    Trace_Data             trace_data;
+`endif
    } Output_Stage2
 deriving (Bits);
 
