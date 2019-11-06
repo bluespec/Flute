@@ -131,7 +131,7 @@ endfunction
 // ================================================================
 
 (* synthesize *)
-module mkFBox_Core (FBox_Core_IFC);
+module mkFBox_Core #(Bit #(4) verbosity) (FBox_Core_IFC);
 
    FIFOF #(Token)          resetReqsF           <- mkFIFOF;
    FIFOF #(Token)          resetRspsF           <- mkFIFOF;
@@ -296,55 +296,75 @@ module mkFBox_Core (FBox_Core_IFC);
    // Single precision operations
    let cmpres_s = compareFP ( sV1, sV2 );
    rule doFADD_S ( validReq && isFADD_S );
+      if (verbosity > 1) 
+         $display ("%0d: FBox_Core.doFADD: ", cur_cycle);
       fpu.server_core.request.put (tuple5 (tagged S sV1, tagged S sV2, ?, rmd, FPAdd));
 
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFSUB_S ( validReq && isFSUB_S );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFSUB: ", cur_cycle);
       fpu.server_core.request.put (tuple5 (tagged S sV1, tagged S sV2, ?, rmd, FPSub));
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFMUL_S ( validReq && isFMUL_S );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFMUL: ", cur_cycle);
       fpu.server_core.request.put (tuple5 (tagged S sV1, tagged S sV2, ?, rmd, FPMul));
 
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFMADD_S ( validReq && isFMADD_S );
-      fpu.server_core.request.put( tuple5( tagged S sV1, tagged S sV2, tagged S sV3, rmd, FPMAdd ) );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFMADD_S ", cur_cycle);
+      fpu.server_core.request.put( tuple5( tagged S sV1, tagged S sV2, tagged S sV3, rmd, FPMAdd ));
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFMSUB_S ( validReq && isFMSUB_S );
-      fpu.server_core.request.put( tuple5( tagged S sV1, tagged S sV2, tagged S sV3, rmd, FPMSub ) );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFMSUB_S ", cur_cycle);
+      fpu.server_core.request.put( tuple5( tagged S sV1, tagged S sV2, tagged S sV3, rmd, FPMSub ));
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFNMADD_S ( validReq && isFNMADD_S );
-      fpu.server_core.request.put( tuple5( tagged S sV1, tagged S sV2, tagged S sV3, rmd, FPNMAdd ) );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFNMADD_S ", cur_cycle);
+      fpu.server_core.request.put( tuple5( tagged S sV1, tagged S sV2, tagged S sV3, rmd, FPNMAdd ));
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFNMSUB_S ( validReq && isFNMSUB_S );
-      fpu.server_core.request.put( tuple5( tagged S sV1, tagged S sV2, tagged S sV3, rmd, FPNMSub ) );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFNMSUB_S ", cur_cycle);
+      fpu.server_core.request.put( tuple5( tagged S sV1, tagged S sV2, tagged S sV3, rmd, FPNMSub ));
       stateR <= FBOX_BUSY;
    endrule
 
 `ifdef ISA_FD_DIV
    rule doFDIV_S ( validReq && isFDIV_S );
-      fpu.server_core.request.put( tuple5( tagged S sV1, tagged S sV2, ?, rmd, FPDiv) );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFDIV_S ", cur_cycle);
+      fpu.server_core.request.put( tuple5( tagged S sV1, tagged S sV2, ?, rmd, FPDiv ));
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFSQRT_S ( validReq && isFSQRT_S );
-      fpu.server_core.request.put( tuple5( tagged S sV1, ?, ?, rmd, FPSqrt) );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFSQRT_S ", cur_cycle);
+      fpu.server_core.request.put( tuple5( tagged S sV1, ?, ?, rmd, FPSqrt ));
       stateR <= FBOX_BUSY;
    endrule
 `endif
 
    rule doFSGNJ_S ( validReq && isFSGNJ_S );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFSGNJ_S ", cur_cycle);
       let r1 = FSingle {  sign: sV2.sign
                         , exp:  sV1.exp
                         , sfd:  sV1.sfd};
@@ -355,6 +375,8 @@ module mkFBox_Core (FBox_Core_IFC);
    endrule
 
    rule doFSGNJN_S ( validReq && isFSGNJN_S );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFSGNJN_S ", cur_cycle);
       FSingle r1 = FSingle {sign: !sV2.sign,
                             exp:   sV1.exp,
                             sfd:   sV1.sfd};
@@ -365,6 +387,8 @@ module mkFBox_Core (FBox_Core_IFC);
    endrule
 
    rule doFSGNJX_S ( validReq && isFSGNJX_S );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFSGNJX_S ", cur_cycle);
       FSingle r1 = FSingle {sign:  (sV1.sign != sV2.sign),
                             exp:   sV1.exp,
                             sfd:   sV1.sfd};
@@ -375,15 +399,25 @@ module mkFBox_Core (FBox_Core_IFC);
 
 `ifdef RV64
    rule doFCVT_S_L ( validReq && isFCVT_S_L );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFCVT_S_L ", cur_cycle);
+
       Int#(64) v = unpack ( v1 );
       match {.f, .e} = Tuple2#(FSingle, FloatingPoint::Exception)'(vFixedToFloat( v, 6'd0, rmd));
       Bit #(64) res = fv_nanbox (extend (pack ( f )));
       let fcsr = exception_to_fcsr(e);
       resultR     <= tagged Valid (tuple2 (res, fcsr));
       stateR      <= FBOX_RSP;
+
+      if (verbosity > 2) begin
+         $display ("v1 = %08x, rmd = ", v1, fshow (rmd));
+         $display ("    Result: (%08x, %05b)", res, fcsr);
+      end
    endrule
 
    rule doFCVT_S_LU ( validReq && isFCVT_S_LU );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFCVT_S_LU ", cur_cycle);
       UInt#(64) v = unpack ( v1 );
       match {.f, .e} = Tuple2#(FSingle, FloatingPoint::Exception)'(vFixedToFloat( v, 6'd0, rmd));
       Bit #(64) res = fv_nanbox (extend (pack ( f )));
@@ -394,6 +428,8 @@ module mkFBox_Core (FBox_Core_IFC);
 `endif
 
    rule doFCVT_S_W ( validReq && isFCVT_S_W );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFCVT_S_W ", cur_cycle);
       Int#(32) v = unpack (truncate ( v1 ));
       match {.f, .e} = Tuple2#(FSingle, FloatingPoint::Exception)'(vFixedToFloat( v, 6'd0, rmd));
       Bit #(64) res = fv_nanbox (extend (pack ( f )));
@@ -403,6 +439,8 @@ module mkFBox_Core (FBox_Core_IFC);
    endrule
 
    rule doFCVT_S_WU ( validReq && isFCVT_S_WU );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFCVT_S_WU ", cur_cycle);
       UInt#(32) v = unpack (truncate ( v1 ));
       match {.f, .e} = Tuple2#(FSingle, FloatingPoint::Exception)'(vFixedToFloat( v, 6'd0, rmd));
       Bit #(64) res = fv_nanbox (extend (pack ( f )));
@@ -413,6 +451,8 @@ module mkFBox_Core (FBox_Core_IFC);
 
 `ifdef RV64
    rule doFCVT_L_S ( validReq && isFCVT_L_S );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFCVT_L_S ", cur_cycle);
       FSingle f = sV1;
       match {.v, .e} = Tuple2#(Int#(64),FloatingPoint::Exception)'(vFloatToFixed( 6'd0, f, rmd));
 
@@ -428,6 +468,8 @@ module mkFBox_Core (FBox_Core_IFC);
    endrule
 
    rule doFCVT_LU_S ( validReq && isFCVT_LU_S );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFCVT_LU_S ", cur_cycle);
       FSingle f = sV1;
 
       // Handle negative operands separately. Pass the absolute value to the
@@ -459,6 +501,8 @@ module mkFBox_Core (FBox_Core_IFC);
 `endif
 
    rule doFCVT_W_S ( validReq && isFCVT_W_S );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFCVT_W_S ", cur_cycle);
       FSingle f = sV1;
       match {.v, .e} = Tuple2#(Int#(32),FloatingPoint::Exception)'(vFloatToFixed( 6'd0, f, rmd ));
 
@@ -474,6 +518,8 @@ module mkFBox_Core (FBox_Core_IFC);
    endrule
 
    rule doFCVT_WU_S ( validReq && isFCVT_WU_S );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFCVT_WU_S ", cur_cycle);
       FSingle f = sV1;
 
       // Handle negative operands separately. Pass the absolute value to the
@@ -506,6 +552,8 @@ module mkFBox_Core (FBox_Core_IFC);
    endrule
 
    rule doFMIN_S ( validReq && isFMIN_S );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFMIN_S ", cur_cycle);
       Bit #(64) res = ?;
       let rs1IsPos0 = fv_FSingleIsPositiveZero (sV1);
       let rs2IsPos0 = fv_FSingleIsPositiveZero (sV2);
@@ -542,6 +590,8 @@ module mkFBox_Core (FBox_Core_IFC);
    endrule
 
    rule doFMAX_S ( validReq && isFMAX_S );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFMAX_S ", cur_cycle);
       Bit #(64) res = ?;
       let rs1IsPos0 = fv_FSingleIsPositiveZero (sV1);
       let rs2IsPos0 = fv_FSingleIsPositiveZero (sV2);
@@ -579,12 +629,16 @@ module mkFBox_Core (FBox_Core_IFC);
    endrule
 
    rule doFMV_W_X ( validReq && isFMV_W_X );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFMV_W_X ", cur_cycle);
       Bit #(64) res = fv_nanbox (pack ( v1 ));
       resultR     <= tagged Valid (tuple2 (res, 0));
       stateR      <= FBOX_RSP;
    endrule
 
    rule doFMV_X_W ( validReq && isFMV_X_W );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFMV_X_W ", cur_cycle);
       // The FMV treats the data in the FPR and GPR as raw data and does not
       // interpret it. So for this instruction we use the raw bits coming from
       // the FPR
@@ -595,6 +649,8 @@ module mkFBox_Core (FBox_Core_IFC);
    endrule
 
    rule doFEQ_S ( validReq && isFEQ_S );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFEQ_S ", cur_cycle);
       // Generate the results
       Bit #(64) res = ?;
       
@@ -615,6 +671,8 @@ module mkFBox_Core (FBox_Core_IFC);
    endrule
 
    rule doFLT_S ( validReq && isFLT_S );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFLT_S ", cur_cycle);
       // Generate the results
       Bit #(64) res = ?;
       
@@ -635,6 +693,8 @@ module mkFBox_Core (FBox_Core_IFC);
    endrule
 
    rule doFLE_S ( validReq && isFLE_S );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFLE_S ", cur_cycle);
       // Generate the results
       Bit #(64) res = ?;
       
@@ -655,6 +715,8 @@ module mkFBox_Core (FBox_Core_IFC);
    endrule
 
    rule doFCLASS_S ( validReq && isFCLASS_S );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFCLASS_S ", cur_cycle);
       Bit #(64) res = 1;
       if (isNaN(sV1)) begin
 	 res = isQNaN(sV1) ? (res << 9) : (res << 8);
@@ -681,55 +743,75 @@ module mkFBox_Core (FBox_Core_IFC);
    // Double precision operations
    let cmpres_d = compareFP ( dV1, dV2 );
    rule doFADD_D ( validReq && isFADD_D );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFADD_D ", cur_cycle);
       fpu.server_core.request.put (tuple5 (tagged D dV1, tagged D dV2, ?, rmd, FPAdd));
 
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFSUB_D ( validReq && isFSUB_D );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFSUB_D ", cur_cycle);
       fpu.server_core.request.put (tuple5 (tagged D dV1, tagged D dV2, ?, rmd, FPSub));
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFMUL_D ( validReq && isFMUL_D );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFMUL_D ", cur_cycle);
       fpu.server_core.request.put (tuple5 (tagged D dV1, tagged D dV2, ?, rmd, FPMul));
 
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFMADD_D ( validReq && isFMADD_D );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFMADD_D ", cur_cycle);
       fpu.server_core.request.put( tuple5( tagged D dV1, tagged D dV2, tagged D dV3, rmd, FPMAdd ) );
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFMSUB_D ( validReq && isFMSUB_D );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFMSUB_D ", cur_cycle);
       fpu.server_core.request.put( tuple5( tagged D dV1, tagged D dV2, tagged D dV3, rmd, FPMSub ) );
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFNMADD_D ( validReq && isFNMADD_D );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFNMADD_D ", cur_cycle);
       fpu.server_core.request.put( tuple5( tagged D dV1, tagged D dV2, tagged D dV3, rmd, FPNMAdd ) );
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFNMSUB_D ( validReq && isFNMSUB_D );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFNMSUB_D ", cur_cycle);
       fpu.server_core.request.put( tuple5( tagged D dV1, tagged D dV2, tagged D dV3, rmd, FPNMSub ) );
       stateR <= FBOX_BUSY;
    endrule
 
 `ifdef ISA_FD_DIV
    rule doFDIV_D ( validReq && isFDIV_D );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFDIV_D ", cur_cycle);
       fpu.server_core.request.put( tuple5( tagged D dV1, tagged D dV2, ?, rmd, FPDiv) );
       stateR <= FBOX_BUSY;
    endrule
 
    rule doFSQRT_D ( validReq && isFSQRT_D );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFSQRT_D ", cur_cycle);
       fpu.server_core.request.put( tuple5( tagged D dV1, ?, ?, rmd, FPSqrt) );
       stateR <= FBOX_BUSY;
    endrule
 `endif
 
    rule doFSGNJ_D ( validReq && isFSGNJ_D );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFSGNJ_D ", cur_cycle);
       let r1 = FDouble {  sign: dV2.sign
                         , exp:  dV1.exp
                         , sfd:  dV1.sfd};
@@ -740,6 +822,8 @@ module mkFBox_Core (FBox_Core_IFC);
    endrule
 
    rule doFSGNJN_D ( validReq && isFSGNJN_D );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFSGNJN_D ", cur_cycle);
       let r1 = FDouble {  sign: !dV2.sign
                         , exp:   dV1.exp
                         , sfd:   dV1.sfd};
@@ -750,6 +834,8 @@ module mkFBox_Core (FBox_Core_IFC);
    endrule
 
    rule doFSGNJX_D ( validReq && isFSGNJX_D );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFSGNJX_D ", cur_cycle);
       let r1 = FDouble {  sign:  (dV1.sign != dV2.sign)
                         , exp:   dV1.exp
                         , sfd:   dV1.sfd};
@@ -759,6 +845,8 @@ module mkFBox_Core (FBox_Core_IFC);
    endrule
 
    rule doFCVT_D_W ( validReq && isFCVT_D_W );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFCVT_D_W ", cur_cycle);
       Int#(32) v = unpack (truncate ( v1 ));
       match {.f, .e} = Tuple2#(FDouble, FloatingPoint::Exception)'(vFixedToFloat( v, 6'd0, rmd ));
       Bit #(64) res = pack ( f );
@@ -768,6 +856,8 @@ module mkFBox_Core (FBox_Core_IFC);
    endrule
 
    rule doFCVT_D_WU ( validReq && isFCVT_D_WU );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFCVT_D_WU ", cur_cycle);
       UInt#(32) v = unpack (truncate ( v1 ));
       match {.f, .e} = Tuple2#(FDouble, FloatingPoint::Exception)'(vFixedToFloat( v, 6'd0, rmd ));
       Bit #(64) res = pack ( f );
@@ -777,6 +867,8 @@ module mkFBox_Core (FBox_Core_IFC);
    endrule
 
    rule doFCVT_W_D ( validReq && isFCVT_W_D );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFCVT_W_D ", cur_cycle);
       FDouble f = dV1;
       match {.v, .e} = Tuple2#(Int#(32),FloatingPoint::Exception)'(vFloatToFixed( 6'd0, f, rmd ));
 
@@ -792,6 +884,8 @@ module mkFBox_Core (FBox_Core_IFC);
    endrule
 
    rule doFCVT_WU_D ( validReq && isFCVT_WU_D );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFCVT_WU_D ", cur_cycle);
       FDouble f = dV1;
 
       // Handle negative operands separately. Pass the absolute value to the
@@ -825,6 +919,8 @@ module mkFBox_Core (FBox_Core_IFC);
 
 `ifdef RV64
    rule doFCVT_D_L ( validReq && isFCVT_D_L );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFCVT_D_L ", cur_cycle);
       Int#(64) v = unpack ( v1 );
       match {.f, .e} = Tuple2#(FDouble, FloatingPoint::Exception)'(vFixedToFloat( v, 6'd0, rmd ));
       Bit #(64) res = pack ( f );
@@ -834,6 +930,8 @@ module mkFBox_Core (FBox_Core_IFC);
    endrule
 
    rule doFCVT_D_LU ( validReq && isFCVT_D_LU );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFCVT_D_LU ", cur_cycle);
       UInt#(64) v = unpack ( v1 );
       match {.f, .e} = Tuple2#(FDouble, FloatingPoint::Exception)'(vFixedToFloat( v, 6'd0, rmd ));
       Bit #(64) res = pack ( f );
@@ -843,6 +941,8 @@ module mkFBox_Core (FBox_Core_IFC);
    endrule
 
    rule doFCVT_L_D ( validReq && isFCVT_L_D );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFCVT_L_D ", cur_cycle);
       FDouble f = dV1;
       match {.v, .e} = Tuple2#(Int#(64),FloatingPoint::Exception)'(vFloatToFixed( 6'd0, f, rmd ));
 
@@ -858,6 +958,8 @@ module mkFBox_Core (FBox_Core_IFC);
    endrule
 
    rule doFCVT_LU_D ( validReq && isFCVT_LU_D );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFCVT_LU_D ", cur_cycle);
       FDouble f = dV1;
 
       // Handle negative operands separately. Pass the absolute value to the
@@ -889,6 +991,8 @@ module mkFBox_Core (FBox_Core_IFC);
 `endif
 
    rule doFCVT_S_D ( validReq && isFCVT_S_D );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFCVT_S_D ", cur_cycle);
       Bit #(64) res;
       Tuple2#(FSingle,FloatingPoint::Exception) f = convert( dV1 , rmd , False );
 
@@ -906,6 +1010,8 @@ module mkFBox_Core (FBox_Core_IFC);
    endrule
 
    rule doFCVT_D_S ( validReq && isFCVT_D_S );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFCVT_D_S ", cur_cycle);
       Bit #(64) res;
       Tuple2#(FDouble,FloatingPoint::Exception) f = convert( sV1 , rmd , False );
 
@@ -923,6 +1029,8 @@ module mkFBox_Core (FBox_Core_IFC);
    endrule
 
    rule doFMIN_D ( validReq && isFMIN_D );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFMIN_D ", cur_cycle);
       // One or both of the values are NaNs
       Bit #(64) res = ?;
       let rs1IsPos0 = fv_FDoubleIsPositiveZero (dV1);
@@ -959,6 +1067,8 @@ module mkFBox_Core (FBox_Core_IFC);
    endrule
 
    rule doFMAX_D ( validReq && isFMAX_D );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFMAX_D ", cur_cycle);
       // One or both of the values are NaNs
       Bit #(64) res = ?;
       let rs1IsPos0 = fv_FDoubleIsPositiveZero (dV1);
@@ -995,6 +1105,8 @@ module mkFBox_Core (FBox_Core_IFC);
    endrule
 
    rule doFEQ_D ( validReq && isFEQ_D );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFEQ_D ", cur_cycle);
       // Generate the results
       Bit #(64) res = ?;
       
@@ -1015,6 +1127,8 @@ module mkFBox_Core (FBox_Core_IFC);
    endrule
 
    rule doFLT_D ( validReq && isFLT_D );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFLT_D ", cur_cycle);
       // Generate the results
       Bit #(64) res = ?;
       
@@ -1035,6 +1149,8 @@ module mkFBox_Core (FBox_Core_IFC);
    endrule
 
    rule doFLE_D ( validReq && isFLE_D );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFLE_D ", cur_cycle);
       // Generate the results
       Bit #(64) res = ?;
       
@@ -1055,18 +1171,24 @@ module mkFBox_Core (FBox_Core_IFC);
    endrule
 
    rule doFMV_D_X ( validReq && isFMV_D_X );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFMV_D_X ", cur_cycle);
       Bit #(64) res = pack ( v1 );
       resultR     <= tagged Valid (tuple2 (res, 0));
       stateR      <= FBOX_RSP;
    endrule
 
    rule doFMV_X_D ( validReq && isFMV_X_D );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFMV_X_D ", cur_cycle);
       Bit #(64) res = pack ( dV1 );
       resultR     <= tagged Valid (tuple2 (res, 0));
       stateR      <= FBOX_RSP;
    endrule
 
    rule doFCLASS_D ( validReq && isFCLASS_D );
+      if (verbosity > 1)
+         $display ("%0d: FBox_Core.doFCLASS_D ", cur_cycle);
       Bit #(64) res = 1;
       if (isNaN(dV1)) begin
 	 res = isQNaN(dV1) ? (res << 9) : (res << 8);

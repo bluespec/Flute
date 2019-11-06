@@ -10,7 +10,7 @@
 // RDY_cpu_reset_server_request_put  O     1 reg
 // cpu_reset_server_response_get  O     1 reg
 // RDY_cpu_reset_server_response_get  O     1 reg
-// cpu_imem_master_awvalid        O     1
+// cpu_imem_master_awvalid        O     1 reg
 // cpu_imem_master_awid           O     4 reg
 // cpu_imem_master_awaddr         O    64 reg
 // cpu_imem_master_awlen          O     8 reg
@@ -21,12 +21,12 @@
 // cpu_imem_master_awprot         O     3 reg
 // cpu_imem_master_awqos          O     4 reg
 // cpu_imem_master_awregion       O     4 reg
-// cpu_imem_master_wvalid         O     1
+// cpu_imem_master_wvalid         O     1 reg
 // cpu_imem_master_wdata          O    64 reg
 // cpu_imem_master_wstrb          O     8 reg
 // cpu_imem_master_wlast          O     1 reg
-// cpu_imem_master_bready         O     1
-// cpu_imem_master_arvalid        O     1
+// cpu_imem_master_bready         O     1 reg
+// cpu_imem_master_arvalid        O     1 reg
 // cpu_imem_master_arid           O     4 reg
 // cpu_imem_master_araddr         O    64 reg
 // cpu_imem_master_arlen          O     8 reg
@@ -37,7 +37,7 @@
 // cpu_imem_master_arprot         O     3 reg
 // cpu_imem_master_arqos          O     4 reg
 // cpu_imem_master_arregion       O     4 reg
-// cpu_imem_master_rready         O     1
+// cpu_imem_master_rready         O     1 reg
 // cpu_dmem_master_awvalid        O     1 reg
 // cpu_dmem_master_awid           O     4 reg
 // cpu_dmem_master_awaddr         O    64 reg
@@ -114,11 +114,7 @@
 // EN_cpu_reset_server_request_put  I     1
 // EN_cpu_reset_server_response_get  I     1
 //
-// Combinational paths from inputs to outputs:
-//   (cpu_imem_master_awready, cpu_imem_master_wready) -> cpu_imem_master_bready
-//   (cpu_imem_master_awready,
-//    cpu_imem_master_wready,
-//    cpu_imem_master_arready) -> cpu_imem_master_rready
+// No combinational paths from inputs to outputs
 //
 //
 

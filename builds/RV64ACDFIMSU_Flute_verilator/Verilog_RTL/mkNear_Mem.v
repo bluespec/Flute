@@ -15,7 +15,7 @@
 // imem_exc                       O     1
 // imem_exc_code                  O     4 reg
 // imem_tval                      O    64 reg
-// imem_master_awvalid            O     1
+// imem_master_awvalid            O     1 reg
 // imem_master_awid               O     4 reg
 // imem_master_awaddr             O    64 reg
 // imem_master_awlen              O     8 reg
@@ -26,12 +26,12 @@
 // imem_master_awprot             O     3 reg
 // imem_master_awqos              O     4 reg
 // imem_master_awregion           O     4 reg
-// imem_master_wvalid             O     1
+// imem_master_wvalid             O     1 reg
 // imem_master_wdata              O    64 reg
 // imem_master_wstrb              O     8 reg
 // imem_master_wlast              O     1 reg
-// imem_master_bready             O     1
-// imem_master_arvalid            O     1
+// imem_master_bready             O     1 reg
+// imem_master_arvalid            O     1 reg
 // imem_master_arid               O     4 reg
 // imem_master_araddr             O    64 reg
 // imem_master_arlen              O     8 reg
@@ -42,13 +42,13 @@
 // imem_master_arprot             O     3 reg
 // imem_master_arqos              O     4 reg
 // imem_master_arregion           O     4 reg
-// imem_master_rready             O     1
+// imem_master_rready             O     1 reg
 // dmem_valid                     O     1
 // dmem_word64                    O    64
 // dmem_st_amo_val                O    64
 // dmem_exc                       O     1
 // dmem_exc_code                  O     4 reg
-// dmem_master_awvalid            O     1
+// dmem_master_awvalid            O     1 reg
 // dmem_master_awid               O     4 reg
 // dmem_master_awaddr             O    64 reg
 // dmem_master_awlen              O     8 reg
@@ -59,12 +59,12 @@
 // dmem_master_awprot             O     3 reg
 // dmem_master_awqos              O     4 reg
 // dmem_master_awregion           O     4 reg
-// dmem_master_wvalid             O     1
+// dmem_master_wvalid             O     1 reg
 // dmem_master_wdata              O    64 reg
 // dmem_master_wstrb              O     8 reg
 // dmem_master_wlast              O     1 reg
-// dmem_master_bready             O     1
-// dmem_master_arvalid            O     1
+// dmem_master_bready             O     1 reg
+// dmem_master_arvalid            O     1 reg
 // dmem_master_arid               O     4 reg
 // dmem_master_araddr             O    64 reg
 // dmem_master_arlen              O     8 reg
@@ -75,7 +75,7 @@
 // dmem_master_arprot             O     3 reg
 // dmem_master_arqos              O     4 reg
 // dmem_master_arregion           O     4 reg
-// dmem_master_rready             O     1
+// dmem_master_rready             O     1 reg
 // RDY_server_fence_i_request_put  O     1
 // RDY_server_fence_i_response_get  O     1
 // RDY_server_fence_request_put   O     1 reg
@@ -131,22 +131,7 @@
 // EN_server_fence_response_get   I     1
 // EN_sfence_vma                  I     1
 //
-// Combinational paths from inputs to outputs:
-//   (imem_master_awready, imem_master_wready) -> imem_valid
-//   (imem_master_awready, imem_master_wready) -> imem_instr
-//   (imem_master_awready, imem_master_wready) -> imem_master_bready
-//   (imem_master_awready,
-//    imem_master_wready,
-//    imem_master_arready,
-//    EN_imem_req) -> imem_master_rready
-//   (dmem_master_awready, dmem_master_wready) -> dmem_valid
-//   (dmem_master_awready, dmem_master_wready) -> dmem_word64
-//   (dmem_master_awready, dmem_master_wready) -> dmem_st_amo_val
-//   (dmem_master_awready, dmem_master_wready) -> dmem_master_bready
-//   (dmem_master_awready,
-//    dmem_master_wready,
-//    dmem_master_arready,
-//    EN_dmem_req) -> dmem_master_rready
+// No combinational paths from inputs to outputs
 //
 //
 

@@ -96,30 +96,15 @@ module mkCPU_Stage3 #(Bit #(4)         verbosity,
 
    let bypass_base = Bypass {bypass_state: BYPASS_RD_NONE,
 			     rd:           rg_stage3.rd,
-`ifdef ISA_D
-			     // WordXL        WordFL (64)
-			     rd_val:       truncate (rg_stage3.rd_val)
-`else
 			     // WordXL        WordXL
 			     rd_val:       rg_stage3.rd_val
-`endif
 			     };
 
 `ifdef ISA_F
    let fbypass_base = FBypass {bypass_state: BYPASS_RD_NONE,
 			       rd:           rg_stage3.rd,
-`ifdef ISA_D
 			       // WordFL        WordFL
-			       rd_val:       rg_stage3.rd_val
-`else
-`ifdef RV64
-			       // WordFL (32)   WordXL (64)
-			       rd_val:       truncate (rg_stage3.rd_val)
-`else
-			       // WordFL (32)   WordXL (32)
-			       rd_val:       rg_stage3.rd_val
-`endif
-`endif
+			       rd_val:       rg_stage3.frd_val
 			       };
 `endif
 
@@ -169,19 +154,11 @@ module mkCPU_Stage3 #(Bit #(4)         verbosity,
 `ifdef ISA_F
             // Write to FPR
             if (rg_stage3.rd_in_fpr)
-`ifdef ISA_D
-               fpr_regfile.write_rd (rg_stage3.rd, rg_stage3.rd_val);
-`else
-               fpr_regfile.write_rd (rg_stage3.rd, truncate (rg_stage3.rd_val));
-`endif
-            // Write to GPR in a FD system
+               fpr_regfile.write_rd (rg_stage3.rd, rg_stage3.frd_val);
+
             else
-`ifdef RV64
+               // Write to GPR
                gpr_regfile.write_rd (rg_stage3.rd, rg_stage3.rd_val);
-`endif
-`ifdef RV32
-               gpr_regfile.write_rd (rg_stage3.rd, truncate (rg_stage3.rd_val));
-`endif
 `else
             // Write to GPR in a non-FD system
             gpr_regfile.write_rd (rg_stage3.rd, rg_stage3.rd_val);
@@ -191,7 +168,7 @@ module mkCPU_Stage3 #(Bit #(4)         verbosity,
 `ifdef ISA_F
                if (rg_stage3.rd_in_fpr)
                   $display ("    S3.fa_deq: write FRd 0x%0h, rd_val 0x%0h",
-                            rg_stage3.rd, rg_stage3.rd_val);
+                            rg_stage3.rd, rg_stage3.frd_val);
                else
 `endif
                   $display ("    S3.fa_deq: write GRd 0x%0h, rd_val 0x%0h",

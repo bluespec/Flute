@@ -97,6 +97,30 @@ module mkTLB(CLK,
   reg tlb0_valids_1;
   wire tlb0_valids_1$D_IN, tlb0_valids_1$EN;
 
+  // register tlb0_valids_10
+  reg tlb0_valids_10;
+  wire tlb0_valids_10$D_IN, tlb0_valids_10$EN;
+
+  // register tlb0_valids_11
+  reg tlb0_valids_11;
+  wire tlb0_valids_11$D_IN, tlb0_valids_11$EN;
+
+  // register tlb0_valids_12
+  reg tlb0_valids_12;
+  wire tlb0_valids_12$D_IN, tlb0_valids_12$EN;
+
+  // register tlb0_valids_13
+  reg tlb0_valids_13;
+  wire tlb0_valids_13$D_IN, tlb0_valids_13$EN;
+
+  // register tlb0_valids_14
+  reg tlb0_valids_14;
+  wire tlb0_valids_14$D_IN, tlb0_valids_14$EN;
+
+  // register tlb0_valids_15
+  reg tlb0_valids_15;
+  wire tlb0_valids_15$D_IN, tlb0_valids_15$EN;
+
   // register tlb0_valids_2
   reg tlb0_valids_2;
   wire tlb0_valids_2$D_IN, tlb0_valids_2$EN;
@@ -104,6 +128,30 @@ module mkTLB(CLK,
   // register tlb0_valids_3
   reg tlb0_valids_3;
   wire tlb0_valids_3$D_IN, tlb0_valids_3$EN;
+
+  // register tlb0_valids_4
+  reg tlb0_valids_4;
+  wire tlb0_valids_4$D_IN, tlb0_valids_4$EN;
+
+  // register tlb0_valids_5
+  reg tlb0_valids_5;
+  wire tlb0_valids_5$D_IN, tlb0_valids_5$EN;
+
+  // register tlb0_valids_6
+  reg tlb0_valids_6;
+  wire tlb0_valids_6$D_IN, tlb0_valids_6$EN;
+
+  // register tlb0_valids_7
+  reg tlb0_valids_7;
+  wire tlb0_valids_7$D_IN, tlb0_valids_7$EN;
+
+  // register tlb0_valids_8
+  reg tlb0_valids_8;
+  wire tlb0_valids_8$D_IN, tlb0_valids_8$EN;
+
+  // register tlb0_valids_9
+  reg tlb0_valids_9;
+  wire tlb0_valids_9$D_IN, tlb0_valids_9$EN;
 
   // register tlb1_valids_0
   reg tlb1_valids_0;
@@ -121,9 +169,25 @@ module mkTLB(CLK,
   reg tlb1_valids_3;
   wire tlb1_valids_3$D_IN, tlb1_valids_3$EN;
 
+  // register tlb1_valids_4
+  reg tlb1_valids_4;
+  wire tlb1_valids_4$D_IN, tlb1_valids_4$EN;
+
+  // register tlb1_valids_5
+  reg tlb1_valids_5;
+  wire tlb1_valids_5$D_IN, tlb1_valids_5$EN;
+
+  // register tlb1_valids_6
+  reg tlb1_valids_6;
+  wire tlb1_valids_6$D_IN, tlb1_valids_6$EN;
+
+  // register tlb1_valids_7
+  reg tlb1_valids_7;
+  wire tlb1_valids_7$D_IN, tlb1_valids_7$EN;
+
   // ports of submodule tlb0_entries
-  wire [102 : 0] tlb0_entries$D_IN, tlb0_entries$D_OUT_1;
-  wire [1 : 0] tlb0_entries$ADDR_1,
+  wire [100 : 0] tlb0_entries$D_IN, tlb0_entries$D_OUT_1;
+  wire [3 : 0] tlb0_entries$ADDR_1,
 	       tlb0_entries$ADDR_2,
 	       tlb0_entries$ADDR_3,
 	       tlb0_entries$ADDR_4,
@@ -132,8 +196,8 @@ module mkTLB(CLK,
   wire tlb0_entries$WE;
 
   // ports of submodule tlb1_entries
-  wire [92 : 0] tlb1_entries$D_IN, tlb1_entries$D_OUT_1;
-  wire [1 : 0] tlb1_entries$ADDR_1,
+  wire [91 : 0] tlb1_entries$D_IN, tlb1_entries$D_OUT_1;
+  wire [2 : 0] tlb1_entries$ADDR_1,
 	       tlb1_entries$ADDR_2,
 	       tlb1_entries$ADDR_3,
 	       tlb1_entries$ADDR_4,
@@ -152,25 +216,40 @@ module mkTLB(CLK,
   // inputs to muxes for submodule ports
   wire MUX_tlb0_valids_0$write_1__SEL_1,
        MUX_tlb0_valids_1$write_1__SEL_1,
+       MUX_tlb0_valids_10$write_1__SEL_1,
+       MUX_tlb0_valids_11$write_1__SEL_1,
+       MUX_tlb0_valids_12$write_1__SEL_1,
+       MUX_tlb0_valids_13$write_1__SEL_1,
+       MUX_tlb0_valids_14$write_1__SEL_1,
+       MUX_tlb0_valids_15$write_1__SEL_1,
        MUX_tlb0_valids_2$write_1__SEL_1,
        MUX_tlb0_valids_3$write_1__SEL_1,
+       MUX_tlb0_valids_4$write_1__SEL_1,
+       MUX_tlb0_valids_5$write_1__SEL_1,
+       MUX_tlb0_valids_6$write_1__SEL_1,
+       MUX_tlb0_valids_7$write_1__SEL_1,
+       MUX_tlb0_valids_8$write_1__SEL_1,
+       MUX_tlb0_valids_9$write_1__SEL_1,
        MUX_tlb1_valids_0$write_1__SEL_1,
        MUX_tlb1_valids_1$write_1__SEL_1,
        MUX_tlb1_valids_2$write_1__SEL_1,
-       MUX_tlb1_valids_3$write_1__SEL_1;
+       MUX_tlb1_valids_3$write_1__SEL_1,
+       MUX_tlb1_valids_4$write_1__SEL_1,
+       MUX_tlb1_valids_5$write_1__SEL_1,
+       MUX_tlb1_valids_6$write_1__SEL_1,
+       MUX_tlb1_valids_7$write_1__SEL_1;
 
   // remaining internal signals
-  reg SEL_ARR_tlb0_valids_0_4_tlb0_valids_1_5_tlb0_v_ETC___d30,
-      SEL_ARR_tlb1_valids_0_tlb1_valids_1_tlb1_valid_ETC___d8;
-  wire [67 : 0] IF_NOT_SEL_ARR_tlb1_valids_0_tlb1_valids_1_tlb_ETC___d62;
-  wire [27 : 0] tag__h2330, tag__h2574;
-  wire [17 : 0] tag__h2210, tag__h2585;
-  wire NOT_SEL_ARR_tlb1_valids_0_tlb1_valids_1_tlb1_v_ETC___d23,
-       SEL_ARR_tlb0_valids_0_4_tlb0_valids_1_5_tlb0_v_ETC___d41,
-       tlb0_entries_sub_lookup_vpn_BITS_1_TO_0_9_1_BI_ETC___d33,
-       tlb0_entries_sub_lookup_vpn_BITS_1_TO_0_9_1_BI_ETC___d40,
-       tlb1_entries_sub_lookup_vpn_BITS_11_TO_10_0_BI_ETC___d12,
-       tlb1_entries_sub_lookup_vpn_BITS_11_TO_10_0_BI_ETC___d21;
+  reg SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d20,
+      SEL_ARR_tlb1_valids_0_2_tlb1_valids_1_3_tlb1_v_ETC___d42;
+  wire [67 : 0] IF_SEL_ARR_tlb1_valids_0_2_tlb1_valids_1_3_tlb_ETC___d63;
+  wire [33 : 0] IF_SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_va_ETC___d58;
+  wire [31 : 0] IF_SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_va_ETC___d56;
+  wire [25 : 0] tag__h5280, tag__h5720;
+  wire [16 : 0] tag__h5477, tag__h5731;
+  wire SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d26,
+       SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d54,
+       SEL_ARR_tlb1_valids_0_2_tlb1_valids_1_3_tlb1_v_ETC___d48;
 
   // action method flush
   assign RDY_flush = 1'd1 ;
@@ -179,17 +258,11 @@ module mkTLB(CLK,
 
   // value method lookup
   assign lookup =
-	     { NOT_SEL_ARR_tlb1_valids_0_tlb1_valids_1_tlb1_v_ETC___d23 &&
-	       SEL_ARR_tlb0_valids_0_4_tlb0_valids_1_5_tlb0_v_ETC___d41 ||
-	       SEL_ARR_tlb1_valids_0_tlb1_valids_1_tlb1_valid_ETC___d8 &&
-	       (tlb1_entries_sub_lookup_vpn_BITS_11_TO_10_0_BI_ETC___d12 ||
-		tlb1_entries$D_OUT_1[39]) &&
-	       tlb1_entries_sub_lookup_vpn_BITS_11_TO_10_0_BI_ETC___d21 &&
-	       (!SEL_ARR_tlb0_valids_0_4_tlb0_valids_1_5_tlb0_v_ETC___d30 ||
-		!tlb0_entries_sub_lookup_vpn_BITS_1_TO_0_9_1_BI_ETC___d33 &&
-		!tlb0_entries$D_OUT_1[39] ||
-		!tlb0_entries_sub_lookup_vpn_BITS_1_TO_0_9_1_BI_ETC___d40),
-	       IF_NOT_SEL_ARR_tlb1_valids_0_tlb1_valids_1_tlb_ETC___d62 } ;
+	     { SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d54,
+	       { IF_SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_va_ETC___d56,
+		 2'd0,
+		 IF_SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_va_ETC___d58 } |
+	       IF_SEL_ARR_tlb1_valids_0_2_tlb1_valids_1_3_tlb_ETC___d63 } ;
   assign RDY_lookup = !rg_flushing ;
 
   // action method insert
@@ -198,29 +271,29 @@ module mkTLB(CLK,
   assign WILL_FIRE_insert = EN_insert ;
 
   // submodule tlb0_entries
-  RegFile #(.addr_width(32'd2),
-	    .data_width(32'd103),
-	    .lo(2'h0),
-	    .hi(2'd3)) tlb0_entries(.CLK(CLK),
-				    .ADDR_1(tlb0_entries$ADDR_1),
-				    .ADDR_2(tlb0_entries$ADDR_2),
-				    .ADDR_3(tlb0_entries$ADDR_3),
-				    .ADDR_4(tlb0_entries$ADDR_4),
-				    .ADDR_5(tlb0_entries$ADDR_5),
-				    .ADDR_IN(tlb0_entries$ADDR_IN),
-				    .D_IN(tlb0_entries$D_IN),
-				    .WE(tlb0_entries$WE),
-				    .D_OUT_1(tlb0_entries$D_OUT_1),
-				    .D_OUT_2(),
-				    .D_OUT_3(),
-				    .D_OUT_4(),
-				    .D_OUT_5());
+  RegFile #(.addr_width(32'd4),
+	    .data_width(32'd101),
+	    .lo(4'h0),
+	    .hi(4'd15)) tlb0_entries(.CLK(CLK),
+				     .ADDR_1(tlb0_entries$ADDR_1),
+				     .ADDR_2(tlb0_entries$ADDR_2),
+				     .ADDR_3(tlb0_entries$ADDR_3),
+				     .ADDR_4(tlb0_entries$ADDR_4),
+				     .ADDR_5(tlb0_entries$ADDR_5),
+				     .ADDR_IN(tlb0_entries$ADDR_IN),
+				     .D_IN(tlb0_entries$D_IN),
+				     .WE(tlb0_entries$WE),
+				     .D_OUT_1(tlb0_entries$D_OUT_1),
+				     .D_OUT_2(),
+				     .D_OUT_3(),
+				     .D_OUT_4(),
+				     .D_OUT_5());
 
   // submodule tlb1_entries
-  RegFile #(.addr_width(32'd2),
-	    .data_width(32'd93),
-	    .lo(2'h0),
-	    .hi(2'd3)) tlb1_entries(.CLK(CLK),
+  RegFile #(.addr_width(32'd3),
+	    .data_width(32'd92),
+	    .lo(3'h0),
+	    .hi(3'd7)) tlb1_entries(.CLK(CLK),
 				    .ADDR_1(tlb1_entries$ADDR_1),
 				    .ADDR_2(tlb1_entries$ADDR_2),
 				    .ADDR_3(tlb1_entries$ADDR_3),
@@ -241,21 +314,53 @@ module mkTLB(CLK,
 
   // inputs to muxes for submodule ports
   assign MUX_tlb0_valids_0$write_1__SEL_1 =
-	     EN_insert && insert_vpn[1:0] == 2'd0 && insert_level == 2'd0 ;
+	     EN_insert && insert_vpn[3:0] == 4'd0 && insert_level == 2'd0 ;
   assign MUX_tlb0_valids_1$write_1__SEL_1 =
-	     EN_insert && insert_vpn[1:0] == 2'd1 && insert_level == 2'd0 ;
+	     EN_insert && insert_vpn[3:0] == 4'd1 && insert_level == 2'd0 ;
+  assign MUX_tlb0_valids_10$write_1__SEL_1 =
+	     EN_insert && insert_vpn[3:0] == 4'd10 && insert_level == 2'd0 ;
+  assign MUX_tlb0_valids_11$write_1__SEL_1 =
+	     EN_insert && insert_vpn[3:0] == 4'd11 && insert_level == 2'd0 ;
+  assign MUX_tlb0_valids_12$write_1__SEL_1 =
+	     EN_insert && insert_vpn[3:0] == 4'd12 && insert_level == 2'd0 ;
+  assign MUX_tlb0_valids_13$write_1__SEL_1 =
+	     EN_insert && insert_vpn[3:0] == 4'd13 && insert_level == 2'd0 ;
+  assign MUX_tlb0_valids_14$write_1__SEL_1 =
+	     EN_insert && insert_vpn[3:0] == 4'd14 && insert_level == 2'd0 ;
+  assign MUX_tlb0_valids_15$write_1__SEL_1 =
+	     EN_insert && insert_vpn[3:0] == 4'd15 && insert_level == 2'd0 ;
   assign MUX_tlb0_valids_2$write_1__SEL_1 =
-	     EN_insert && insert_vpn[1:0] == 2'd2 && insert_level == 2'd0 ;
+	     EN_insert && insert_vpn[3:0] == 4'd2 && insert_level == 2'd0 ;
   assign MUX_tlb0_valids_3$write_1__SEL_1 =
-	     EN_insert && insert_vpn[1:0] == 2'd3 && insert_level == 2'd0 ;
+	     EN_insert && insert_vpn[3:0] == 4'd3 && insert_level == 2'd0 ;
+  assign MUX_tlb0_valids_4$write_1__SEL_1 =
+	     EN_insert && insert_vpn[3:0] == 4'd4 && insert_level == 2'd0 ;
+  assign MUX_tlb0_valids_5$write_1__SEL_1 =
+	     EN_insert && insert_vpn[3:0] == 4'd5 && insert_level == 2'd0 ;
+  assign MUX_tlb0_valids_6$write_1__SEL_1 =
+	     EN_insert && insert_vpn[3:0] == 4'd6 && insert_level == 2'd0 ;
+  assign MUX_tlb0_valids_7$write_1__SEL_1 =
+	     EN_insert && insert_vpn[3:0] == 4'd7 && insert_level == 2'd0 ;
+  assign MUX_tlb0_valids_8$write_1__SEL_1 =
+	     EN_insert && insert_vpn[3:0] == 4'd8 && insert_level == 2'd0 ;
+  assign MUX_tlb0_valids_9$write_1__SEL_1 =
+	     EN_insert && insert_vpn[3:0] == 4'd9 && insert_level == 2'd0 ;
   assign MUX_tlb1_valids_0$write_1__SEL_1 =
-	     EN_insert && insert_vpn[11:10] == 2'd0 && insert_level == 2'd1 ;
+	     EN_insert && insert_vpn[12:10] == 3'd0 && insert_level == 2'd1 ;
   assign MUX_tlb1_valids_1$write_1__SEL_1 =
-	     EN_insert && insert_vpn[11:10] == 2'd1 && insert_level == 2'd1 ;
+	     EN_insert && insert_vpn[12:10] == 3'd1 && insert_level == 2'd1 ;
   assign MUX_tlb1_valids_2$write_1__SEL_1 =
-	     EN_insert && insert_vpn[11:10] == 2'd2 && insert_level == 2'd1 ;
+	     EN_insert && insert_vpn[12:10] == 3'd2 && insert_level == 2'd1 ;
   assign MUX_tlb1_valids_3$write_1__SEL_1 =
-	     EN_insert && insert_vpn[11:10] == 2'd3 && insert_level == 2'd1 ;
+	     EN_insert && insert_vpn[12:10] == 3'd3 && insert_level == 2'd1 ;
+  assign MUX_tlb1_valids_4$write_1__SEL_1 =
+	     EN_insert && insert_vpn[12:10] == 3'd4 && insert_level == 2'd1 ;
+  assign MUX_tlb1_valids_5$write_1__SEL_1 =
+	     EN_insert && insert_vpn[12:10] == 3'd5 && insert_level == 2'd1 ;
+  assign MUX_tlb1_valids_6$write_1__SEL_1 =
+	     EN_insert && insert_vpn[12:10] == 3'd6 && insert_level == 2'd1 ;
+  assign MUX_tlb1_valids_7$write_1__SEL_1 =
+	     EN_insert && insert_vpn[12:10] == 3'd7 && insert_level == 2'd1 ;
 
   // register rg_flushing
   assign rg_flushing$D_IN = EN_flush ;
@@ -264,139 +369,303 @@ module mkTLB(CLK,
   // register tlb0_valids_0
   assign tlb0_valids_0$D_IN = MUX_tlb0_valids_0$write_1__SEL_1 ;
   assign tlb0_valids_0$EN =
-	     EN_insert && insert_vpn[1:0] == 2'd0 && insert_level == 2'd0 ||
+	     EN_insert && insert_vpn[3:0] == 4'd0 && insert_level == 2'd0 ||
 	     rg_flushing ;
 
   // register tlb0_valids_1
   assign tlb0_valids_1$D_IN = MUX_tlb0_valids_1$write_1__SEL_1 ;
   assign tlb0_valids_1$EN =
-	     EN_insert && insert_vpn[1:0] == 2'd1 && insert_level == 2'd0 ||
+	     EN_insert && insert_vpn[3:0] == 4'd1 && insert_level == 2'd0 ||
+	     rg_flushing ;
+
+  // register tlb0_valids_10
+  assign tlb0_valids_10$D_IN = MUX_tlb0_valids_10$write_1__SEL_1 ;
+  assign tlb0_valids_10$EN =
+	     EN_insert && insert_vpn[3:0] == 4'd10 && insert_level == 2'd0 ||
+	     rg_flushing ;
+
+  // register tlb0_valids_11
+  assign tlb0_valids_11$D_IN = MUX_tlb0_valids_11$write_1__SEL_1 ;
+  assign tlb0_valids_11$EN =
+	     EN_insert && insert_vpn[3:0] == 4'd11 && insert_level == 2'd0 ||
+	     rg_flushing ;
+
+  // register tlb0_valids_12
+  assign tlb0_valids_12$D_IN = MUX_tlb0_valids_12$write_1__SEL_1 ;
+  assign tlb0_valids_12$EN =
+	     EN_insert && insert_vpn[3:0] == 4'd12 && insert_level == 2'd0 ||
+	     rg_flushing ;
+
+  // register tlb0_valids_13
+  assign tlb0_valids_13$D_IN = MUX_tlb0_valids_13$write_1__SEL_1 ;
+  assign tlb0_valids_13$EN =
+	     EN_insert && insert_vpn[3:0] == 4'd13 && insert_level == 2'd0 ||
+	     rg_flushing ;
+
+  // register tlb0_valids_14
+  assign tlb0_valids_14$D_IN = MUX_tlb0_valids_14$write_1__SEL_1 ;
+  assign tlb0_valids_14$EN =
+	     EN_insert && insert_vpn[3:0] == 4'd14 && insert_level == 2'd0 ||
+	     rg_flushing ;
+
+  // register tlb0_valids_15
+  assign tlb0_valids_15$D_IN = MUX_tlb0_valids_15$write_1__SEL_1 ;
+  assign tlb0_valids_15$EN =
+	     EN_insert && insert_vpn[3:0] == 4'd15 && insert_level == 2'd0 ||
 	     rg_flushing ;
 
   // register tlb0_valids_2
   assign tlb0_valids_2$D_IN = MUX_tlb0_valids_2$write_1__SEL_1 ;
   assign tlb0_valids_2$EN =
-	     EN_insert && insert_vpn[1:0] == 2'd2 && insert_level == 2'd0 ||
+	     EN_insert && insert_vpn[3:0] == 4'd2 && insert_level == 2'd0 ||
 	     rg_flushing ;
 
   // register tlb0_valids_3
   assign tlb0_valids_3$D_IN = MUX_tlb0_valids_3$write_1__SEL_1 ;
   assign tlb0_valids_3$EN =
-	     EN_insert && insert_vpn[1:0] == 2'd3 && insert_level == 2'd0 ||
+	     EN_insert && insert_vpn[3:0] == 4'd3 && insert_level == 2'd0 ||
+	     rg_flushing ;
+
+  // register tlb0_valids_4
+  assign tlb0_valids_4$D_IN = MUX_tlb0_valids_4$write_1__SEL_1 ;
+  assign tlb0_valids_4$EN =
+	     EN_insert && insert_vpn[3:0] == 4'd4 && insert_level == 2'd0 ||
+	     rg_flushing ;
+
+  // register tlb0_valids_5
+  assign tlb0_valids_5$D_IN = MUX_tlb0_valids_5$write_1__SEL_1 ;
+  assign tlb0_valids_5$EN =
+	     EN_insert && insert_vpn[3:0] == 4'd5 && insert_level == 2'd0 ||
+	     rg_flushing ;
+
+  // register tlb0_valids_6
+  assign tlb0_valids_6$D_IN = MUX_tlb0_valids_6$write_1__SEL_1 ;
+  assign tlb0_valids_6$EN =
+	     EN_insert && insert_vpn[3:0] == 4'd6 && insert_level == 2'd0 ||
+	     rg_flushing ;
+
+  // register tlb0_valids_7
+  assign tlb0_valids_7$D_IN = MUX_tlb0_valids_7$write_1__SEL_1 ;
+  assign tlb0_valids_7$EN =
+	     EN_insert && insert_vpn[3:0] == 4'd7 && insert_level == 2'd0 ||
+	     rg_flushing ;
+
+  // register tlb0_valids_8
+  assign tlb0_valids_8$D_IN = MUX_tlb0_valids_8$write_1__SEL_1 ;
+  assign tlb0_valids_8$EN =
+	     EN_insert && insert_vpn[3:0] == 4'd8 && insert_level == 2'd0 ||
+	     rg_flushing ;
+
+  // register tlb0_valids_9
+  assign tlb0_valids_9$D_IN = MUX_tlb0_valids_9$write_1__SEL_1 ;
+  assign tlb0_valids_9$EN =
+	     EN_insert && insert_vpn[3:0] == 4'd9 && insert_level == 2'd0 ||
 	     rg_flushing ;
 
   // register tlb1_valids_0
   assign tlb1_valids_0$D_IN = MUX_tlb1_valids_0$write_1__SEL_1 ;
   assign tlb1_valids_0$EN =
-	     EN_insert && insert_vpn[11:10] == 2'd0 && insert_level == 2'd1 ||
+	     EN_insert && insert_vpn[12:10] == 3'd0 && insert_level == 2'd1 ||
 	     rg_flushing ;
 
   // register tlb1_valids_1
   assign tlb1_valids_1$D_IN = MUX_tlb1_valids_1$write_1__SEL_1 ;
   assign tlb1_valids_1$EN =
-	     EN_insert && insert_vpn[11:10] == 2'd1 && insert_level == 2'd1 ||
+	     EN_insert && insert_vpn[12:10] == 3'd1 && insert_level == 2'd1 ||
 	     rg_flushing ;
 
   // register tlb1_valids_2
   assign tlb1_valids_2$D_IN = MUX_tlb1_valids_2$write_1__SEL_1 ;
   assign tlb1_valids_2$EN =
-	     EN_insert && insert_vpn[11:10] == 2'd2 && insert_level == 2'd1 ||
+	     EN_insert && insert_vpn[12:10] == 3'd2 && insert_level == 2'd1 ||
 	     rg_flushing ;
 
   // register tlb1_valids_3
   assign tlb1_valids_3$D_IN = MUX_tlb1_valids_3$write_1__SEL_1 ;
   assign tlb1_valids_3$EN =
-	     EN_insert && insert_vpn[11:10] == 2'd3 && insert_level == 2'd1 ||
+	     EN_insert && insert_vpn[12:10] == 3'd3 && insert_level == 2'd1 ||
+	     rg_flushing ;
+
+  // register tlb1_valids_4
+  assign tlb1_valids_4$D_IN = MUX_tlb1_valids_4$write_1__SEL_1 ;
+  assign tlb1_valids_4$EN =
+	     EN_insert && insert_vpn[12:10] == 3'd4 && insert_level == 2'd1 ||
+	     rg_flushing ;
+
+  // register tlb1_valids_5
+  assign tlb1_valids_5$D_IN = MUX_tlb1_valids_5$write_1__SEL_1 ;
+  assign tlb1_valids_5$EN =
+	     EN_insert && insert_vpn[12:10] == 3'd5 && insert_level == 2'd1 ||
+	     rg_flushing ;
+
+  // register tlb1_valids_6
+  assign tlb1_valids_6$D_IN = MUX_tlb1_valids_6$write_1__SEL_1 ;
+  assign tlb1_valids_6$EN =
+	     EN_insert && insert_vpn[12:10] == 3'd6 && insert_level == 2'd1 ||
+	     rg_flushing ;
+
+  // register tlb1_valids_7
+  assign tlb1_valids_7$D_IN = MUX_tlb1_valids_7$write_1__SEL_1 ;
+  assign tlb1_valids_7$EN =
+	     EN_insert && insert_vpn[12:10] == 3'd7 && insert_level == 2'd1 ||
 	     rg_flushing ;
 
   // submodule tlb0_entries
-  assign tlb0_entries$ADDR_1 = lookup_vpn[1:0] ;
-  assign tlb0_entries$ADDR_2 = 2'h0 ;
-  assign tlb0_entries$ADDR_3 = 2'h0 ;
-  assign tlb0_entries$ADDR_4 = 2'h0 ;
-  assign tlb0_entries$ADDR_5 = 2'h0 ;
-  assign tlb0_entries$ADDR_IN = insert_vpn[1:0] ;
+  assign tlb0_entries$ADDR_1 = lookup_vpn[3:0] ;
+  assign tlb0_entries$ADDR_2 = 4'h0 ;
+  assign tlb0_entries$ADDR_3 = 4'h0 ;
+  assign tlb0_entries$ADDR_4 = 4'h0 ;
+  assign tlb0_entries$ADDR_5 = 4'h0 ;
+  assign tlb0_entries$ADDR_IN = insert_vpn[3:0] ;
   assign tlb0_entries$D_IN =
-	     { insert_asid, tag__h2574, insert_pte, insert_pte_pa } ;
+	     { insert_asid, tag__h5720, insert_pte, insert_pte_pa } ;
   assign tlb0_entries$WE = EN_insert && insert_level == 2'd0 ;
 
   // submodule tlb1_entries
-  assign tlb1_entries$ADDR_1 = lookup_vpn[11:10] ;
-  assign tlb1_entries$ADDR_2 = 2'h0 ;
-  assign tlb1_entries$ADDR_3 = 2'h0 ;
-  assign tlb1_entries$ADDR_4 = 2'h0 ;
-  assign tlb1_entries$ADDR_5 = 2'h0 ;
-  assign tlb1_entries$ADDR_IN = insert_vpn[11:10] ;
+  assign tlb1_entries$ADDR_1 = lookup_vpn[12:10] ;
+  assign tlb1_entries$ADDR_2 = 3'h0 ;
+  assign tlb1_entries$ADDR_3 = 3'h0 ;
+  assign tlb1_entries$ADDR_4 = 3'h0 ;
+  assign tlb1_entries$ADDR_5 = 3'h0 ;
+  assign tlb1_entries$ADDR_IN = insert_vpn[12:10] ;
   assign tlb1_entries$D_IN =
-	     { insert_asid, tag__h2585, insert_pte, insert_pte_pa } ;
+	     { insert_asid, tag__h5731, insert_pte, insert_pte_pa } ;
   assign tlb1_entries$WE = EN_insert && insert_level == 2'd1 ;
 
   // remaining internal signals
-  assign IF_NOT_SEL_ARR_tlb1_valids_0_tlb1_valids_1_tlb_ETC___d62 =
-	     (NOT_SEL_ARR_tlb1_valids_0_tlb1_valids_1_tlb1_v_ETC___d23 &&
-	      SEL_ARR_tlb0_valids_0_4_tlb0_valids_1_5_tlb0_v_ETC___d41) ?
-	       { tlb0_entries$D_OUT_1[65:34],
-		 2'd0,
-		 tlb0_entries$D_OUT_1[33:0] } :
+  assign IF_SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_va_ETC___d56 =
+	     (SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d26 &&
+	      tlb0_entries$D_OUT_1[91:66] == tag__h5280) ?
+	       tlb0_entries$D_OUT_1[65:34] :
+	       32'd0 ;
+  assign IF_SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_va_ETC___d58 =
+	     (SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d26 &&
+	      tlb0_entries$D_OUT_1[91:66] == tag__h5280) ?
+	       tlb0_entries$D_OUT_1[33:0] :
+	       34'd0 ;
+  assign IF_SEL_ARR_tlb1_valids_0_2_tlb1_valids_1_3_tlb_ETC___d63 =
+	     (SEL_ARR_tlb1_valids_0_2_tlb1_valids_1_3_tlb1_v_ETC___d48 &&
+	      tlb1_entries$D_OUT_1[82:66] == tag__h5477) ?
 	       { tlb1_entries$D_OUT_1[65:34],
 		 2'd1,
-		 tlb1_entries$D_OUT_1[33:0] } ;
-  assign NOT_SEL_ARR_tlb1_valids_0_tlb1_valids_1_tlb1_v_ETC___d23 =
-	     !SEL_ARR_tlb1_valids_0_tlb1_valids_1_tlb1_valid_ETC___d8 ||
-	     !tlb1_entries_sub_lookup_vpn_BITS_11_TO_10_0_BI_ETC___d12 &&
-	     !tlb1_entries$D_OUT_1[39] ||
-	     !tlb1_entries_sub_lookup_vpn_BITS_11_TO_10_0_BI_ETC___d21 ;
-  assign SEL_ARR_tlb0_valids_0_4_tlb0_valids_1_5_tlb0_v_ETC___d41 =
-	     SEL_ARR_tlb0_valids_0_4_tlb0_valids_1_5_tlb0_v_ETC___d30 &&
-	     (tlb0_entries_sub_lookup_vpn_BITS_1_TO_0_9_1_BI_ETC___d33 ||
-	      tlb0_entries$D_OUT_1[39]) &&
-	     tlb0_entries_sub_lookup_vpn_BITS_1_TO_0_9_1_BI_ETC___d40 ;
-  assign tag__h2210 = { 10'd0, lookup_vpn[19:12] } ;
-  assign tag__h2330 = { 10'd0, lookup_vpn[19:2] } ;
-  assign tag__h2574 = { 10'd0, insert_vpn[19:2] } ;
-  assign tag__h2585 = { 10'd0, insert_vpn[19:12] } ;
-  assign tlb0_entries_sub_lookup_vpn_BITS_1_TO_0_9_1_BI_ETC___d33 =
-	     tlb0_entries$D_OUT_1[102:94] == lookup_asid ;
-  assign tlb0_entries_sub_lookup_vpn_BITS_1_TO_0_9_1_BI_ETC___d40 =
-	     tlb0_entries$D_OUT_1[93:66] == tag__h2330 ;
-  assign tlb1_entries_sub_lookup_vpn_BITS_11_TO_10_0_BI_ETC___d12 =
-	     tlb1_entries$D_OUT_1[92:84] == lookup_asid ;
-  assign tlb1_entries_sub_lookup_vpn_BITS_11_TO_10_0_BI_ETC___d21 =
-	     tlb1_entries$D_OUT_1[83:66] == tag__h2210 ;
+		 tlb1_entries$D_OUT_1[33:0] } :
+	       68'd0 ;
+  assign SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d26 =
+	     SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d20 &&
+	     (tlb0_entries$D_OUT_1[100:92] == lookup_asid ||
+	      tlb0_entries$D_OUT_1[39]) ;
+  assign SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d54 =
+	     (SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d26 &&
+	      tlb0_entries$D_OUT_1[91:66] == tag__h5280) |
+	     (SEL_ARR_tlb1_valids_0_2_tlb1_valids_1_3_tlb1_v_ETC___d48 &&
+	      tlb1_entries$D_OUT_1[82:66] == tag__h5477) ;
+  assign SEL_ARR_tlb1_valids_0_2_tlb1_valids_1_3_tlb1_v_ETC___d48 =
+	     SEL_ARR_tlb1_valids_0_2_tlb1_valids_1_3_tlb1_v_ETC___d42 &&
+	     (tlb1_entries$D_OUT_1[91:83] == lookup_asid ||
+	      tlb1_entries$D_OUT_1[39]) ;
+  assign tag__h5280 = { 10'd0, lookup_vpn[19:4] } ;
+  assign tag__h5477 = { 10'd0, lookup_vpn[19:13] } ;
+  assign tag__h5720 = { 10'd0, insert_vpn[19:4] } ;
+  assign tag__h5731 = { 10'd0, insert_vpn[19:13] } ;
   always@(lookup_vpn or
-	  tlb1_valids_0 or tlb1_valids_1 or tlb1_valids_2 or tlb1_valids_3)
+	  tlb0_valids_0 or
+	  tlb0_valids_1 or
+	  tlb0_valids_2 or
+	  tlb0_valids_3 or
+	  tlb0_valids_4 or
+	  tlb0_valids_5 or
+	  tlb0_valids_6 or
+	  tlb0_valids_7 or
+	  tlb0_valids_8 or
+	  tlb0_valids_9 or
+	  tlb0_valids_10 or
+	  tlb0_valids_11 or
+	  tlb0_valids_12 or
+	  tlb0_valids_13 or tlb0_valids_14 or tlb0_valids_15)
   begin
-    case (lookup_vpn[11:10])
-      2'd0:
-	  SEL_ARR_tlb1_valids_0_tlb1_valids_1_tlb1_valid_ETC___d8 =
-	      tlb1_valids_0;
-      2'd1:
-	  SEL_ARR_tlb1_valids_0_tlb1_valids_1_tlb1_valid_ETC___d8 =
-	      tlb1_valids_1;
-      2'd2:
-	  SEL_ARR_tlb1_valids_0_tlb1_valids_1_tlb1_valid_ETC___d8 =
-	      tlb1_valids_2;
-      2'd3:
-	  SEL_ARR_tlb1_valids_0_tlb1_valids_1_tlb1_valid_ETC___d8 =
-	      tlb1_valids_3;
+    case (lookup_vpn[3:0])
+      4'd0:
+	  SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d20 =
+	      tlb0_valids_0;
+      4'd1:
+	  SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d20 =
+	      tlb0_valids_1;
+      4'd2:
+	  SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d20 =
+	      tlb0_valids_2;
+      4'd3:
+	  SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d20 =
+	      tlb0_valids_3;
+      4'd4:
+	  SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d20 =
+	      tlb0_valids_4;
+      4'd5:
+	  SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d20 =
+	      tlb0_valids_5;
+      4'd6:
+	  SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d20 =
+	      tlb0_valids_6;
+      4'd7:
+	  SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d20 =
+	      tlb0_valids_7;
+      4'd8:
+	  SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d20 =
+	      tlb0_valids_8;
+      4'd9:
+	  SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d20 =
+	      tlb0_valids_9;
+      4'd10:
+	  SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d20 =
+	      tlb0_valids_10;
+      4'd11:
+	  SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d20 =
+	      tlb0_valids_11;
+      4'd12:
+	  SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d20 =
+	      tlb0_valids_12;
+      4'd13:
+	  SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d20 =
+	      tlb0_valids_13;
+      4'd14:
+	  SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d20 =
+	      tlb0_valids_14;
+      4'd15:
+	  SEL_ARR_tlb0_valids_0_tlb0_valids_1_tlb0_valid_ETC___d20 =
+	      tlb0_valids_15;
     endcase
   end
   always@(lookup_vpn or
-	  tlb0_valids_0 or tlb0_valids_1 or tlb0_valids_2 or tlb0_valids_3)
+	  tlb1_valids_0 or
+	  tlb1_valids_1 or
+	  tlb1_valids_2 or
+	  tlb1_valids_3 or
+	  tlb1_valids_4 or tlb1_valids_5 or tlb1_valids_6 or tlb1_valids_7)
   begin
-    case (lookup_vpn[1:0])
-      2'd0:
-	  SEL_ARR_tlb0_valids_0_4_tlb0_valids_1_5_tlb0_v_ETC___d30 =
-	      tlb0_valids_0;
-      2'd1:
-	  SEL_ARR_tlb0_valids_0_4_tlb0_valids_1_5_tlb0_v_ETC___d30 =
-	      tlb0_valids_1;
-      2'd2:
-	  SEL_ARR_tlb0_valids_0_4_tlb0_valids_1_5_tlb0_v_ETC___d30 =
-	      tlb0_valids_2;
-      2'd3:
-	  SEL_ARR_tlb0_valids_0_4_tlb0_valids_1_5_tlb0_v_ETC___d30 =
-	      tlb0_valids_3;
+    case (lookup_vpn[12:10])
+      3'd0:
+	  SEL_ARR_tlb1_valids_0_2_tlb1_valids_1_3_tlb1_v_ETC___d42 =
+	      tlb1_valids_0;
+      3'd1:
+	  SEL_ARR_tlb1_valids_0_2_tlb1_valids_1_3_tlb1_v_ETC___d42 =
+	      tlb1_valids_1;
+      3'd2:
+	  SEL_ARR_tlb1_valids_0_2_tlb1_valids_1_3_tlb1_v_ETC___d42 =
+	      tlb1_valids_2;
+      3'd3:
+	  SEL_ARR_tlb1_valids_0_2_tlb1_valids_1_3_tlb1_v_ETC___d42 =
+	      tlb1_valids_3;
+      3'd4:
+	  SEL_ARR_tlb1_valids_0_2_tlb1_valids_1_3_tlb1_v_ETC___d42 =
+	      tlb1_valids_4;
+      3'd5:
+	  SEL_ARR_tlb1_valids_0_2_tlb1_valids_1_3_tlb1_v_ETC___d42 =
+	      tlb1_valids_5;
+      3'd6:
+	  SEL_ARR_tlb1_valids_0_2_tlb1_valids_1_3_tlb1_v_ETC___d42 =
+	      tlb1_valids_6;
+      3'd7:
+	  SEL_ARR_tlb1_valids_0_2_tlb1_valids_1_3_tlb1_v_ETC___d42 =
+	      tlb1_valids_7;
     endcase
   end
 
@@ -417,10 +686,34 @@ module mkTLB(CLK,
       tlb0_valids_0 <= `BSV_ASSIGNMENT_DELAY tlb0_valids_0$D_IN;
     if (tlb0_valids_1$EN)
       tlb0_valids_1 <= `BSV_ASSIGNMENT_DELAY tlb0_valids_1$D_IN;
+    if (tlb0_valids_10$EN)
+      tlb0_valids_10 <= `BSV_ASSIGNMENT_DELAY tlb0_valids_10$D_IN;
+    if (tlb0_valids_11$EN)
+      tlb0_valids_11 <= `BSV_ASSIGNMENT_DELAY tlb0_valids_11$D_IN;
+    if (tlb0_valids_12$EN)
+      tlb0_valids_12 <= `BSV_ASSIGNMENT_DELAY tlb0_valids_12$D_IN;
+    if (tlb0_valids_13$EN)
+      tlb0_valids_13 <= `BSV_ASSIGNMENT_DELAY tlb0_valids_13$D_IN;
+    if (tlb0_valids_14$EN)
+      tlb0_valids_14 <= `BSV_ASSIGNMENT_DELAY tlb0_valids_14$D_IN;
+    if (tlb0_valids_15$EN)
+      tlb0_valids_15 <= `BSV_ASSIGNMENT_DELAY tlb0_valids_15$D_IN;
     if (tlb0_valids_2$EN)
       tlb0_valids_2 <= `BSV_ASSIGNMENT_DELAY tlb0_valids_2$D_IN;
     if (tlb0_valids_3$EN)
       tlb0_valids_3 <= `BSV_ASSIGNMENT_DELAY tlb0_valids_3$D_IN;
+    if (tlb0_valids_4$EN)
+      tlb0_valids_4 <= `BSV_ASSIGNMENT_DELAY tlb0_valids_4$D_IN;
+    if (tlb0_valids_5$EN)
+      tlb0_valids_5 <= `BSV_ASSIGNMENT_DELAY tlb0_valids_5$D_IN;
+    if (tlb0_valids_6$EN)
+      tlb0_valids_6 <= `BSV_ASSIGNMENT_DELAY tlb0_valids_6$D_IN;
+    if (tlb0_valids_7$EN)
+      tlb0_valids_7 <= `BSV_ASSIGNMENT_DELAY tlb0_valids_7$D_IN;
+    if (tlb0_valids_8$EN)
+      tlb0_valids_8 <= `BSV_ASSIGNMENT_DELAY tlb0_valids_8$D_IN;
+    if (tlb0_valids_9$EN)
+      tlb0_valids_9 <= `BSV_ASSIGNMENT_DELAY tlb0_valids_9$D_IN;
     if (tlb1_valids_0$EN)
       tlb1_valids_0 <= `BSV_ASSIGNMENT_DELAY tlb1_valids_0$D_IN;
     if (tlb1_valids_1$EN)
@@ -429,6 +722,14 @@ module mkTLB(CLK,
       tlb1_valids_2 <= `BSV_ASSIGNMENT_DELAY tlb1_valids_2$D_IN;
     if (tlb1_valids_3$EN)
       tlb1_valids_3 <= `BSV_ASSIGNMENT_DELAY tlb1_valids_3$D_IN;
+    if (tlb1_valids_4$EN)
+      tlb1_valids_4 <= `BSV_ASSIGNMENT_DELAY tlb1_valids_4$D_IN;
+    if (tlb1_valids_5$EN)
+      tlb1_valids_5 <= `BSV_ASSIGNMENT_DELAY tlb1_valids_5$D_IN;
+    if (tlb1_valids_6$EN)
+      tlb1_valids_6 <= `BSV_ASSIGNMENT_DELAY tlb1_valids_6$D_IN;
+    if (tlb1_valids_7$EN)
+      tlb1_valids_7 <= `BSV_ASSIGNMENT_DELAY tlb1_valids_7$D_IN;
   end
 
   // synopsys translate_off
@@ -439,12 +740,28 @@ module mkTLB(CLK,
     rg_flushing = 1'h0;
     tlb0_valids_0 = 1'h0;
     tlb0_valids_1 = 1'h0;
+    tlb0_valids_10 = 1'h0;
+    tlb0_valids_11 = 1'h0;
+    tlb0_valids_12 = 1'h0;
+    tlb0_valids_13 = 1'h0;
+    tlb0_valids_14 = 1'h0;
+    tlb0_valids_15 = 1'h0;
     tlb0_valids_2 = 1'h0;
     tlb0_valids_3 = 1'h0;
+    tlb0_valids_4 = 1'h0;
+    tlb0_valids_5 = 1'h0;
+    tlb0_valids_6 = 1'h0;
+    tlb0_valids_7 = 1'h0;
+    tlb0_valids_8 = 1'h0;
+    tlb0_valids_9 = 1'h0;
     tlb1_valids_0 = 1'h0;
     tlb1_valids_1 = 1'h0;
     tlb1_valids_2 = 1'h0;
     tlb1_valids_3 = 1'h0;
+    tlb1_valids_4 = 1'h0;
+    tlb1_valids_5 = 1'h0;
+    tlb1_valids_6 = 1'h0;
+    tlb1_valids_7 = 1'h0;
   end
   `endif // BSV_NO_INITIAL_BLOCKS
   // synopsys translate_on

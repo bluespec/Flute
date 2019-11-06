@@ -58,9 +58,9 @@ endinterface
 // ================================================================
 
 (* synthesize *)
-module mkFBox_Top (FBox_Top_IFC);
+module mkFBox_Top #(Bit #(4) verbosity) (FBox_Top_IFC);
 
-   FBox_Core_IFC           fbox_core            <- mkFBox_Core;
+   FBox_Core_IFC           fbox_core            <- mkFBox_Core (verbosity);
 
    // =============================================================
    // INTERFACE
