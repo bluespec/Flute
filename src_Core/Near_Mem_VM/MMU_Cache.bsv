@@ -403,8 +403,8 @@ endfunction
 function Reg #(t) fn_genNullRegIfc (t x) provisos (Literal#(t));
    return (
       interface Reg;
-         method _read = 0;
-         method _write (x) = noAction;
+         method _read = x;
+         method _write (y) = noAction;
       endinterface
    );
 endfunction
@@ -477,7 +477,7 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
 `else
    // VM-SYNTH-OPT
    // Dummy registers in non-VM mode
-   Priv_Mode x = ?;
+   Priv_Mode x = m_Priv_Mode;
    Reg #(Priv_Mode)  rg_priv        = fn_genNullRegIfc (x);
 
    Bit #(1) y = ?;
@@ -1133,10 +1133,12 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
    // ****************************************************************
 
    // TODO: should this rule be merged into rl_probe_and_immed_rsp, to avoid losing a cycle?
+   //       or does that worsen critical path?
 
    rule rl_start_tlb_refill ((rg_state == PTW_START) && (ctr_wr_rsps_pending.value == 0));
 
 `ifdef RV32
+
       // RV32.Sv32: Page Table top is at Level 1
 
       if (cfg_verbosity > 1)
@@ -1152,6 +1154,7 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
       rg_pte_pa <= lev_1_pte_pa;
       rg_state  <= PTW_LEVEL_1;
 `elsif SV39    // ifdef RV32
+
       // RV64.Sv39: Page Table top is at Level 2
 
       if (cfg_verbosity > 1)
@@ -1865,9 +1868,9 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
 		       WordXL     satp);    // { VM_Mode, ASID, PPN_for_page_table }
 
       if (cfg_verbosity > 1) begin
-	 $display ("%0d: %s.req: op:", cur_cycle, d_or_i, fshow (op),
-		   " f3:%0d addr:0x%0h st_value:0x%0h priv:",
-		   f3,    addr,      st_value,      fshow_Priv_Mode (priv),
+	 $display ("%0d: %m.req: op:", cur_cycle, fshow (op),
+		   " f3:%0d addr:0x%0h st_value:0x%0h", f3, addr, st_value);
+	 $display ("    priv:", fshow_Priv_Mode (priv),
 		   " sstatus_SUM:%0d mstatus_MXR:%0d satp:0x%0h",
 		   sstatus_SUM,    mstatus_MXR,    satp);
 `ifdef ISA_A
@@ -1953,7 +1956,7 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
 `endif
    endmethod
 
-   // Fabric interface
+   // Fabric master interface
    interface mem_master = master_xactor.axi_side;
 endmodule: mkMMU_Cache
 

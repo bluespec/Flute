@@ -68,8 +68,6 @@ module mkCPU_StageD #(Bit #(4)  verbosity, MISA misa)
    FIFOF #(Token)  f_reset_reqs <- mkFIFOF;
    FIFOF #(Token)  f_reset_rsps <- mkFIFOF;
 
-   Wire #(Bool)  dw_redirecting <- mkDWire (False);
-
    Reg #(Bool)                   rg_full <- mkReg (False);
    Reg #(Data_StageF_to_StageD)  rg_data <- mkRegU;
 

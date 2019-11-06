@@ -174,8 +174,9 @@ module mkCPU (CPU_IFC);
    // Save next_pc across split-phase FENCE.I and other split-phase ops. This
    // register is also used for initiating fetches on a trap or external
    // interrupt
-   Reg #(WordXL) rg_next_pc  <- mkRegU;
+   Reg #(WordXL) rg_next_pc <- mkRegU;
 
+   // Save CSR info in CSRRx istrs to handle in separate rules
    Reg #(WordXL) rg_csr_pc   <- mkRegU;
    Reg #(WordXL) rg_csr_val1 <- mkRegU;
 
@@ -212,14 +213,6 @@ module mkCPU (CPU_IFC);
    CPU_StageD_IFC  stageD <- mkCPU_StageD (cur_verbosity, misa);
 
    CPU_StageF_IFC  stageF <- mkCPU_StageF (cur_verbosity, imem);
-
-   // ----------------
-   // FIFO from Stage1 back to StageF.  Each (e, pc1, pc2) says:
-   //  - pc1 was followed by pc2, and was mis-predicted to something other than pc2.
-   //        (so StageF must be fetching from the wrong pc)
-   //  - re-start fetching from pc2, with new epoch e.
-
-   FIFOF #(Tuple3 #(Epoch, WordXL, WordXL)) f_redirects <- mkFIFOF;
 
    // ----------------
    // Interrupt pending based on current priv, mstatus.ie, mie and mip registers
@@ -646,6 +639,14 @@ module mkCPU (CPU_IFC);
       Bool stageF_full = (stageF.out.ostatus != OSTATUS_EMPTY);
 
       // ----------------
+      // Signal from Stage1 back to StageF. Valid (e, pc1, pc2) says:
+      //  - pc1 was followed by pc2, and was mis-predicted to something other than pc2.
+      //        (so StageF must be fetching from the wrong pc)
+      //  - re-start fetching from pc2, with new epoch e.
+
+      Maybe #(Tuple3 #(Epoch, WordXL, WordXL)) redirect = Invalid;
+
+      // ----------------
       // Stage3 sink (does regfile writebacks)
 
       if (stage3.out.ostatus == OSTATUS_PIPE) begin
@@ -693,9 +694,9 @@ module mkCPU (CPU_IFC);
 
 	       if (stage1.out.redirect) begin
 		  let new_epoch <- fav_update_epoch;
-		  f_redirects.enq (tuple3 (new_epoch,
-					   stage1.out.data_to_stage2.pc,
-					   stage1.out.next_pc));
+		  redirect = tagged Valid (tuple3 (new_epoch,
+						   stage1.out.data_to_stage2.pc,
+						   stage1.out.next_pc));
 	       end
 	    end
 	 end
@@ -729,8 +730,7 @@ module mkCPU (CPU_IFC);
 	    Maybe #(WordXL)  m_old_pc = tagged Invalid;
 
 	    // Override, if stage1 is redirecting
-	    if (f_redirects.notEmpty) begin
-	       match { .e, .pc1, .pc2 } <- pop (f_redirects);
+	    if (redirect matches tagged Valid { .e, .pc1, .pc2 }) begin
 	       epoch   = e;
 	       next_pc = pc2;
 	       m_old_pc = tagged Valid pc1;
@@ -924,9 +924,9 @@ module mkCPU (CPU_IFC);
                                       exc_code: exc_code_ILLEGAL_INSTRUCTION,
                                       tval:     stage1.out.trap_info.tval};
       rg_trap_interrupt <= False;
-      rg_trap_instr     <= stage1.out.data_to_stage2.instr;    // TODO: this is also used for successful CSRRW
+      rg_trap_instr     <= stage1.out.data_to_stage2.instr;    // Also used in successful CSSRW
 `ifdef INCLUDE_TANDEM_VERIF
-      rg_trap_trace_data <= stage1.out.data_to_stage2.trace_data;    // TODO: this is also used for successful CSRRW
+      rg_trap_trace_data <= stage1.out.data_to_stage2.trace_data;
 `endif
 
       rg_state <= CPU_CSRRW_2;
@@ -963,9 +963,11 @@ module mkCPU (CPU_IFC);
 	 // Read the CSR only if Rd is not 0
 	 WordXL csr_val = ?;
 	 if (rd != 0) begin
-	    // Note: csr_regfile.read should become ActionValue if it acquires side effects
-	    let m_csr_val = csr_regfile.read_csr (csr_addr);
-	    csr_val   = fromMaybe (?, m_csr_val);
+	    begin
+	       // Note: csr_regfile.read should become ActionValue if it acquires side effects
+	       let m_csr_val = csr_regfile.read_csr (csr_addr);
+	       csr_val   = fromMaybe (?, m_csr_val);
+	    end
 	 end
 
 	 // Writeback to GPR file
@@ -973,7 +975,10 @@ module mkCPU (CPU_IFC);
 	 gpr_regfile.write_rd (rd, new_rd_val);
 
 	 // Writeback to CSR file
-	 let new_csr_val <- csr_regfile.mav_csr_write (csr_addr, rs1_val);
+	 WordXL new_csr_val = ?;
+         begin
+	    new_csr_val <- csr_regfile.mav_csr_write (csr_addr, rs1_val);
+	 end
 
 	 // Accounting
 	 csr_regfile.csr_minstret_incr;
@@ -1069,9 +1074,12 @@ module mkCPU (CPU_IFC);
       end
       else begin
 	 // Read the CSR
-	 // Note: csr_regfile.read should become ActionValue if it acquires side effects
-	 let m_csr_val  = csr_regfile.read_csr (csr_addr);
-	 WordXL csr_val = fromMaybe (?, m_csr_val);
+	 WordXL csr_val = ?;
+	 begin
+	    // Note: csr_regfile.read should become ActionValue if it acquires side effects
+	    let m_csr_val  = csr_regfile.read_csr (csr_addr);
+	    csr_val = fromMaybe (?, m_csr_val);
+	 end
 
 	 // Writeback to GPR file
 	 let new_rd_val = csr_val;
@@ -1084,7 +1092,9 @@ module mkCPU (CPU_IFC);
 
 	 WordXL new_csr_val = ?;
 	 if (rs1 != 0) begin
-	    new_csr_val <- csr_regfile.mav_csr_write (csr_addr, x);
+	    begin
+	       new_csr_val <- csr_regfile.mav_csr_write (csr_addr, x);
+	    end
 	 end
 
 	 // Accounting
@@ -1593,7 +1603,6 @@ module mkCPU (CPU_IFC);
 
       rg_state           <= CPU_TRAP;
    endrule: rl_stage1_interrupt
-
 
    // ================================================================
    // Stage1: Handle debugger stop-request and dcsr.step step-request while running
