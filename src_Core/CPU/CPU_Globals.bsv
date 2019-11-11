@@ -50,58 +50,56 @@ deriving (Eq, Bits, FShow);
 typedef Bit #(2)  Epoch;
 
 // ----------------
-// Ctrl_Info is sent from the execute stage on all control transfers
-// and is used by the fetch stage to improve branch prediction.
+// CF_Info ("control flow information") is sent from the execute stage
+// on all control-flow instructions and is used by the fetch stage to
+// improve branch prediction.
 
 // cf. RISC-V Unprivileged ISA Spec Section 2.5 on JAL/JALR for
 // interpretation of the 'link' fields below.
 
+typedef enum {CF_BR,
+	      CF_JAL,
+	      CF_JALR,
+	      // TODO: extend to ECALL/traps and xRET?
+	      CF_None
+   } CF_Op
+deriving (Eq, Bits, FShow);
+
 typedef struct {
-   Bool    is_BR;          // True only for BRANCH instrs
-   Bool    is_J;           // True only for JAL/JALR instrs
-
+   CF_Op   cf_op;
    WordXL  from_PC;
-   Bool    taken;
-   WordXL  fallthru_PC;
-   WordXL  target_PC;
-
-   Bool    rd_is_link;     // Rd is x1 or x5
-   Bool    rs1_is_link;    // Rs1 is x1 or x5
-   Bool    eq_rd_rs1;      // Rd == Rs1
-   } Ctrl_Info
+   Bool    taken;            // Relevant for BR
+   WordXL  fallthru_PC;      // for BR; return-PC for JAL/JALR
+   WordXL  taken_PC;         // target PC for taken BR and for JAL/JALR
+   } CF_Info
 deriving (Bits);
 
-instance FShow #(Ctrl_Info);
-   function Fmt fshow (Ctrl_Info x);
+CF_Info cf_info_none = CF_Info{cf_op:       CF_None,
+			       from_PC:     ?,
+			       taken:       ?,
+			       fallthru_PC: ?,
+			       taken_PC:    ?};
 
-      let fmt_empty = $format ("");
-      Fmt fmt = fmt_empty;
+instance FShow #(CF_Info);
+   function Fmt fshow (CF_Info x);
+      Fmt fmt = $format ("{");
 
-      if (x.is_BR || x.is_J) begin
-	 fmt = $format ("Ctrl_{");
-	 if (x.is_BR) begin
-	    fmt = fmt + $format ("BR ");
-	    fmt = fmt + $format (x.taken ? "taken " : "fallthru ");
-	    fmt = fmt + $format ("[%h->%h %h]", x.from_PC, x.fallthru_PC, x.target_PC);
-	 end
-	 else begin
-	    fmt = fmt + $format ("J [%h->%h/%h]", x.from_PC, x.target_PC, x.fallthru_PC);
-	    fmt = fmt + $format (" link rd %0d rs1 %0d eq %0d", x.rd_is_link, x.rs1_is_link, x.eq_rd_rs1);
-	 end
-
-	 fmt = fmt + $format ("}");
+      if (x.cf_op == CF_None)
+	 fmt = fmt + $format ("CF_None");
+      else if (x.cf_op == CF_BR) begin
+	 fmt = fmt + $format ("BR ");
+	 fmt = fmt + $format (x.taken ? "taken " : "fallthru ");
+	 fmt = fmt + $format ("[%h->%h %h]", x.from_PC, x.fallthru_PC, x.taken_PC);
       end
+      else if (x.cf_op == CF_JAL)
+	 fmt = fmt + $format ("JAL [%h->%h/%h]", x.from_PC, x.taken_PC, x.fallthru_PC);
+      else if (x.cf_op == CF_JALR)
+	 fmt = fmt + $format ("JALR [%h->%h/%h]", x.from_PC, x.taken_PC, x.fallthru_PC);
 
+      fmt = fmt + $format ("}");
       return fmt;
    endfunction
 endinstance
-
-// ----------------
-// Is 'r' a standard register for PC save/restore on call/return?
-
-function Bool fn_is_link (RegName   r);
-   return ((r == x1) || (r == x5));
-endfunction
 
 // ================================================================
 // Bypass information
@@ -356,8 +354,7 @@ typedef struct {
    // feedback
    Bool                   redirect;
    WordXL                 next_pc;
-
-   Ctrl_Info              ctrl_info;
+   CF_Info                cf_info;
 
    // feedforward data
    Data_Stage1_to_Stage2  data_to_stage2;
@@ -378,7 +375,7 @@ instance FShow #(Output_Stage1);
 	    fmt = fmt + $format (" ", fshow (x.trap_info));
 	 end
 	 else begin
-	    fmt = fmt + $format (" PIPE: ", fshow (x.control), " ", fshow (x.ctrl_info), fshow (x.data_to_stage2));
+	    fmt = fmt + $format (" PIPE: ", fshow (x.control), " ", fshow (x.cf_info), fshow (x.data_to_stage2));
 	 end
 
 	 if (x.redirect)
@@ -434,8 +431,9 @@ typedef struct {
 
    WordXL     val2;              // OP_Stage2_ST: store-val;
                                  // OP_Stage2_M and OP_Stage2_FD: arg2
-                                 // Floating point specific fields
+
 `ifdef ISA_F
+   // Floating point fields
    WordFL     fval1;             // OP_Stage2_FD: arg1
    WordFL     fval2;             // OP_Stage2_FD: arg2
    WordFL     fval3;             // OP_Stage2_FD: arg3

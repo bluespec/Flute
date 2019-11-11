@@ -361,6 +361,13 @@ RegName reg_s10  = 26; RegName reg_s11 = 27;
 
 RegName reg_t3   = 28; RegName reg_t4  = 29; RegName reg_t5 = 30; RegName reg_t6 = 31;
 
+// ----------------
+// Is 'r' a standard register for PC save/restore on call/return?
+
+function Bool fn_reg_is_link (RegName  r);
+   return ((r == x1) || (r == x5));
+endfunction
+
 // ================================================================
 // Kinds of memory access (excluding AMOs)
 

@@ -130,11 +130,23 @@ module mkCPU (CPU_IFC);
 `endif
 
    CSR_RegFile_IFC  csr_regfile  <- mkCSR_RegFile;
+
+   // ----------------
+   // Some commonly used CSR values
    let mcycle   = csr_regfile.read_csr_mcycle;
    let mstatus  = csr_regfile.read_mstatus;
    let misa     = csr_regfile.read_misa;
    let minstret = csr_regfile.read_csr_minstret;
 
+   // MSTATUS.MXR and SSTATUS.SUM for Virtual Memory access control
+   Bit #(1) mstatus_MXR = mstatus [19];
+`ifdef ISA_PRIV_S
+   Bit #(1) sstatus_SUM = (csr_regfile.read_sstatus) [18];
+`else
+   Bit #(1) sstatus_SUM = 0;
+`endif
+
+   // ----------------
    // Near mem (caches or TCM, for example)
    Near_Mem_IFC  near_mem <- mkNear_Mem;
 
@@ -328,16 +340,14 @@ module mkCPU (CPU_IFC);
    // ================================================================
    // Feed a new PC into StageF (instruction fetch)
 
-   function Action fa_start_ifetch (Epoch epoch,
-				    Maybe #(WordXL)  m_old_pc,
-				    WordXL  next_pc,
-				    Priv_Mode priv,
-				    Bit #(1) mstatus_MXR,
-				    Bit #(1) sstatus_SUM);
+   function Action fa_start_ifetch (Epoch      epoch,
+				    WordXL     next_pc,
+				    Priv_Mode  priv,
+				    Bit #(1)   mstatus_MXR,
+				    Bit #(1)   sstatus_SUM);
       action
 	 // Initiate the fetch
 	 stageF.enq (epoch,
-		     m_old_pc,
 		     next_pc,
 		     priv,
 		     sstatus_SUM,
@@ -352,18 +362,8 @@ module mkCPU (CPU_IFC);
 
    function Action fa_restart (Addr resume_pc);
       action
-	 // MSTATUS.MXR and SSTATUS.SUM for initiating FETCH
-	 Bit #(1) mstatus_MXR = mstatus [19];
-`ifdef ISA_PRIV_S
-	 Bit #(1) sstatus_SUM = (csr_regfile.read_sstatus) [18];
-`else
-	 Bit #(1) sstatus_SUM = 0;
-`endif
-
 	 let new_epoch <- fav_update_epoch;
-	 Maybe #(WordXL) m_old_pc = tagged Invalid;
 	 fa_start_ifetch (new_epoch,
-			  m_old_pc,
 			  resume_pc,
 			  rg_cur_priv,
 			  mstatus_MXR,
@@ -639,14 +639,6 @@ module mkCPU (CPU_IFC);
       Bool stageF_full = (stageF.out.ostatus != OSTATUS_EMPTY);
 
       // ----------------
-      // Signal from Stage1 back to StageF. Valid (e, pc1, pc2) says:
-      //  - pc1 was followed by pc2, and was mis-predicted to something other than pc2.
-      //        (so StageF must be fetching from the wrong pc)
-      //  - re-start fetching from pc2, with new epoch e.
-
-      Maybe #(Tuple3 #(Epoch, WordXL, WordXL)) redirect = Invalid;
-
-      // ----------------
       // Stage3 sink (does regfile writebacks)
 
       if (stage3.out.ostatus == OSTATUS_PIPE) begin
@@ -691,13 +683,6 @@ module mkCPU (CPU_IFC);
 	    else if ((! stage1.out.redirect) || (stageF.out.ostatus != OSTATUS_BUSY)) begin
 	       stage2.enq (stage1.out.data_to_stage2);  stage2_full = True;
 	       stage1.deq;                              stage1_full = False;
-
-	       if (stage1.out.redirect) begin
-		  let new_epoch <- fav_update_epoch;
-		  redirect = tagged Valid (tuple3 (new_epoch,
-						   stage1.out.data_to_stage2.pc,
-						   stage1.out.next_pc));
-	       end
 	    end
 	 end
 	  
@@ -724,32 +709,34 @@ module mkCPU (CPU_IFC);
       if (   (! stageF_full)
 	  && (stageF.out.ostatus == OSTATUS_PIPE))
 	 begin
-	    // Straight-line case
-	    Epoch            epoch    = stageF.out.data_to_stageD.epoch;
-	    WordXL           next_pc  = stageF.out.data_to_stageD.pred_pc;    // Predicted
-	    Maybe #(WordXL)  m_old_pc = tagged Invalid;
+	    // No-redirect case (use current epoch, predicted PC)
+	    Epoch   epoch    = stageF.out.data_to_stageD.epoch;
+	    WordXL  next_pc  = stageF.out.data_to_stageD.pred_pc;
 
 	    // Override, if stage1 is redirecting
-	    if (redirect matches tagged Valid { .e, .pc1, .pc2 }) begin
-	       epoch   = e;
-	       next_pc = pc2;
-	       m_old_pc = tagged Valid pc1;
+	    Bool redirect = (   (stage1.out.ostatus == OSTATUS_PIPE)
+			     && (stage1.out.control != CONTROL_DISCARD)
+			     && stage1.out.redirect);
+	    if (redirect) begin
+	       epoch <- fav_update_epoch;
+	       next_pc  = stage1.out.next_pc;
 	    end
-
-            // MSTATUS.MXR and SSTATUS.SUM for initiating FETCH
-            Bit #(1) mstatus_MXR = mstatus [19];
-`ifdef ISA_PRIV_S
-            Bit #(1) sstatus_SUM = (csr_regfile.read_sstatus) [18];
-`else
-            Bit #(1) sstatus_SUM = 0;
-`endif
+	    CF_Info cf_info = cf_info_none;
+	    if (   (stage1.out.ostatus == OSTATUS_PIPE)
+		&& (stage1.out.control != CONTROL_DISCARD))
+	       cf_info = stage1.out.cf_info;
 
 	    fa_start_ifetch (epoch,
-			     m_old_pc,
 			     next_pc,
 			     rg_cur_priv,
 			     mstatus_MXR,
 			     sstatus_SUM);
+
+	    // Train the branch predictor
+	    stageF.bp_train (stageF.out.data_to_stageD.pc,
+			     stageF.out.data_to_stageD.is_i32_not_i16,
+			     stageF.out.data_to_stageD.instr,
+			     cf_info);
 	    stageF_full = True;
 	 end
 
@@ -840,12 +827,8 @@ module mkCPU (CPU_IFC);
       rg_next_pc  <= next_pc;
 
       // Note old MSTATUS.MXR and SSTATUS.SUM for initiating FETCH in next phase
-      rg_mstatus_MXR <= mstatus [19];
-`ifdef ISA_PRIV_S
-      rg_sstatus_SUM <= (csr_regfile.read_sstatus) [18];
-`else
-      rg_sstatus_SUM <= 0;
-`endif
+      rg_mstatus_MXR <= mstatus_MXR;
+      rg_sstatus_SUM <= sstatus_SUM;
 
       rg_state <= CPU_START_TRAP_HANDLER;
 
@@ -1133,18 +1116,8 @@ module mkCPU (CPU_IFC);
 				       && (stageF.out.ostatus != OSTATUS_BUSY));
       let next_pc    = stage1.out.next_pc;
       let new_epoch <- fav_update_epoch;
-      let m_old_pc   = tagged Invalid;
-
-      // MSTATUS.MXR and SSTATUS.SUM for initiating FETCH
-      Bit #(1) mstatus_MXR = mstatus [19];
-`ifdef ISA_PRIV_S
-      Bit #(1) sstatus_SUM = (csr_regfile.read_sstatus) [18];
-`else
-      Bit #(1) sstatus_SUM = 0;
-`endif
 
       fa_start_ifetch (new_epoch,
-		       m_old_pc,
 		       next_pc,
 		       rg_cur_priv,
 		       mstatus_MXR,
@@ -1183,13 +1156,9 @@ module mkCPU (CPU_IFC);
       rg_cur_priv <= new_priv;
       rg_next_pc  <= next_pc;
 
-      // Note MSTATUS.MXR and SSTATUS.SUM for initiating FETCH
-      rg_mstatus_MXR <= mstatus [19];
-`ifdef ISA_PRIV_S
-      rg_sstatus_SUM <= (csr_regfile.read_sstatus) [18];
-`else
-      rg_sstatus_SUM <= 0;
-`endif
+      // Note old MSTATUS.MXR and SSTATUS.SUM for initiating FETCH in next phase
+      rg_mstatus_MXR <= mstatus_MXR;
+      rg_sstatus_SUM <= sstatus_SUM;
 
       rg_state <= CPU_START_TRAP_HANDLER;    // TODO: bad naming; this is not starting the trap handler
 
@@ -1253,20 +1222,10 @@ module mkCPU (CPU_IFC);
       // Await mem system FENCE.I completion
       let dummy <- near_mem.server_fence_i.response.get;
 
-      // MSTATUS.MXR and SSTATUS.SUM for initiating FETCH
-      Bit #(1) mstatus_MXR = mstatus [19];
-`ifdef ISA_PRIV_S
-      Bit #(1) sstatus_SUM = (csr_regfile.read_sstatus) [18];
-`else
-      Bit #(1) sstatus_SUM = 0;
-`endif
-
       // Resume pipe
       rg_state <= CPU_RUNNING;
       let new_epoch <- fav_update_epoch;
-      let m_old_pc   = tagged Invalid;
       fa_start_ifetch (new_epoch,
-		       m_old_pc,
 		       rg_next_pc,
 		       rg_cur_priv,
 		       mstatus_MXR,
@@ -1320,20 +1279,10 @@ module mkCPU (CPU_IFC);
       // Await mem system FENCE completion
       let dummy <- near_mem.server_fence.response.get;
 
-      // MSTATUS.MXR and SSTATUS.SUM for initiating FETCH
-      Bit #(1) mstatus_MXR = mstatus [19];
-`ifdef ISA_PRIV_S
-      Bit #(1) sstatus_SUM = (csr_regfile.read_sstatus) [18];
-`else
-      Bit #(1) sstatus_SUM = 0;
-`endif
-
       // Resume pipe
       rg_state <= CPU_RUNNING;
       let new_epoch <- fav_update_epoch;
-      let m_old_pc   = tagged Invalid;
       fa_start_ifetch (new_epoch,
-		       m_old_pc,
 		       rg_next_pc,
 		       rg_cur_priv,
 		       mstatus_MXR,
@@ -1395,19 +1344,10 @@ module mkCPU (CPU_IFC);
 
       // Note: Await mem system SFENCE.VMA completion, if SFENCE.VMA becomes split-phase
 
-      Bit #(1) mstatus_MXR = mstatus [19];
-`ifdef ISA_PRIV_S
-      Bit #(1) sstatus_SUM = (csr_regfile.read_sstatus) [18];
-`else
-      Bit #(1) sstatus_SUM = 0;
-`endif
-
       // Resume pipe
       rg_state <= CPU_RUNNING;
       let new_epoch <- fav_update_epoch;
-      let m_old_pc   = tagged Invalid;
       fa_start_ifetch (new_epoch,
-		       m_old_pc,
 		       rg_next_pc,
 		       rg_cur_priv,
 		       mstatus_MXR,
@@ -1458,14 +1398,6 @@ module mkCPU (CPU_IFC);
 		       && (stageF.out.ostatus != OSTATUS_BUSY));
       if (cur_verbosity > 1) $display ("%0d: %m.rl_WFI_resume", mcycle);
 
-      // MSTATUS.MXR and SSTATUS.SUM for initiating FETCH
-      Bit #(1) mstatus_MXR = mstatus [19];
-`ifdef ISA_PRIV_S
-      Bit #(1) sstatus_SUM = (csr_regfile.read_sstatus) [18];
-`else
-      Bit #(1) sstatus_SUM = 0;
-`endif
-
       // Debug
       if (cur_verbosity >= 1)
 	 $display ("    WFI resume");
@@ -1474,9 +1406,7 @@ module mkCPU (CPU_IFC);
       rg_state <= CPU_RUNNING;
 
       let new_epoch <- fav_update_epoch;
-      let m_old_pc   = tagged Invalid;
       fa_start_ifetch (new_epoch,
-		       m_old_pc,
 		       rg_next_pc,
 		       rg_cur_priv,
 		       mstatus_MXR,
@@ -1503,9 +1433,7 @@ module mkCPU (CPU_IFC);
 
    rule rl_trap_fetch (rg_state == CPU_START_TRAP_HANDLER);
       let new_epoch <- fav_update_epoch;
-      let m_old_pc   = tagged Invalid;
       fa_start_ifetch (new_epoch,
-		       m_old_pc,
 		       rg_next_pc,
 		       rg_cur_priv,
 		       rg_mstatus_MXR,

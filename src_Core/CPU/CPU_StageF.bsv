@@ -49,7 +49,6 @@ interface CPU_StageF_IFC;
    // ---- Input
    (* always_ready *)
    method Action enq (Epoch            epoch,
-		      Maybe #(WordXL)  m_old_pc,
 		      WordXL           pc,
 		      Priv_Mode        priv,
 		      Bit #(1)         sstatus_SUM,
@@ -57,8 +56,13 @@ interface CPU_StageF_IFC;
 		      WordXL           satp);
 
    (* always_ready *)
-   method Action set_full (Bool full);
+   method Action bp_train (WordXL   pc,
+			   Bool     is_i32_not_i16,
+			   Instr    instr,
+			   CF_Info  cf_info);
 
+   (* always_ready *)
+   method Action set_full (Bool full);
 endinterface
 
 // ================================================================
@@ -93,6 +97,7 @@ module mkCPU_StageF #(Bit #(4)  verbosity,
    // Combinational output function
 
    function Output_StageF fv_out;
+      let pred_pc = branch_predictor.predict_rsp (imem.is_i32_not_i16, imem.instr);
       let d = Data_StageF_to_StageD {pc:              imem.pc,
 				     epoch:           rg_epoch,
 				     priv:            rg_priv,
@@ -101,7 +106,7 @@ module mkCPU_StageF #(Bit #(4)  verbosity,
 				     exc_code:        imem.exc_code,
 				     tval:            imem.tval,
 				     instr:           imem.instr,
-				     pred_pc:         branch_predictor.predict_rsp (imem.is_i32_not_i16)};
+				     pred_pc:         pred_pc};
 
       let ostatus = (  (! rg_full) ? OSTATUS_EMPTY
 		     : (  (! imem.valid) ? OSTATUS_BUSY
@@ -129,23 +134,30 @@ module mkCPU_StageF #(Bit #(4)  verbosity,
 
    // ---- Input
    method Action enq (Epoch            epoch,
-		      Maybe #(WordXL)  m_old_pc,
 		      WordXL           pc,
 		      Priv_Mode        priv,
 		      Bit #(1)         sstatus_SUM,
 		      Bit #(1)         mstatus_MXR,
 		      WordXL           satp);
       if (verbosity > 1) begin
-	 $write   ("    CPU_StageF.enq:  pc:0x%0h  epoch:%0d  priv:%0d", pc, epoch, priv);
-	 $display ("  sstatus_SUM:%0d  mstatus_MXR:%0d  satp:0x%0h  m_old_pc:",
-		   sstatus_SUM, mstatus_MXR, satp, fshow (m_old_pc));
+	 $write ("    %m.enq:  pc:0x%0h  epoch:%0d  priv:%0d",     pc, epoch, priv);
+	 $write ("  sstatus_SUM:%0d  mstatus_MXR:%0d  satp:0x%0h",
+		 sstatus_SUM, mstatus_MXR, satp);
+	 $display ("");
       end
 
       imem.req (f3_LW, pc, priv, sstatus_SUM, mstatus_MXR, satp);
-      branch_predictor.predict_req (pc, m_old_pc);    // TODO: ASID.VA vs PA?
+      branch_predictor.predict_req (pc);    // TODO: ASID.VA vs PA?
 
       rg_epoch <= epoch;
       rg_priv  <= priv;
+   endmethod
+
+   method Action bp_train (WordXL   pc,
+			   Bool     is_i32_not_i16,
+			   Instr    instr,
+			   CF_Info  cf_info);
+      branch_predictor.bp_train (pc, is_i32_not_i16, instr, cf_info);
    endmethod
 
    method Action set_full (Bool full);
