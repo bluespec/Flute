@@ -271,7 +271,9 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
 	 if (alu_outputs.exc_code == exc_code_ILLEGAL_INSTRUCTION) begin
 	    // The instruction
 `ifdef ISA_C
-	    tval = (rg_stage_input.is_i32_not_i16 ? zeroExtend (rg_stage_input.instr) : zeroExtend (rg_stage_input.instr_C));
+	    tval = (rg_stage_input.is_i32_not_i16
+		    ? zeroExtend (rg_stage_input.instr)
+		    : zeroExtend (rg_stage_input.instr_C));
 `else
 	    tval = zeroExtend (rg_stage_input.instr);
 `endif
@@ -296,6 +298,7 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
 	 output_stage1.trap_info      = trap_info;
 	 output_stage1.redirect       = redirect;
 	 output_stage1.next_pc        = next_pc;
+	 output_stage1.cf_info        = alu_outputs.cf_info;
 	 output_stage1.data_to_stage2 = data_to_stage2;
       end
 
@@ -314,10 +317,6 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
    endmethod
 
    method Action deq ();
-      /*
-      if (alu_outputs.ctrl_info.is_BR || alu_outputs.ctrl_info.is_J)
-	 $display ("%0d: Control Transfer ", cur_cycle, fshow (alu_outputs.ctrl_info));
-      */
    endmethod
 
    // ---- Input

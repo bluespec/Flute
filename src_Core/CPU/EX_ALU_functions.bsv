@@ -105,48 +105,41 @@ typedef struct {
    Bit #(3)   rm;             // rounding mode
 `endif
 
-   Ctrl_Info  ctrl_info;    // For redirection and branch predictor
+   CF_Info    cf_info;        // For redirection and branch predictor
+
 `ifdef INCLUDE_TANDEM_VERIF
    Trace_Data trace_data;
 `endif
    } ALU_Outputs
 deriving (Bits, FShow);
 
-Ctrl_Info ctrl_info_base
-= Ctrl_Info {is_BR       : False,
-	     is_J        : False,
-
-	     from_PC     : ?,
-	     taken       : ?,
-	     fallthru_PC : ?,
-	     target_PC   : ?,
-
-	     rd_is_link  : ?,
-	     rs1_is_link : ?,
-	     eq_rd_rs1   : ?};
+CF_Info cf_info_base = CF_Info {cf_op       : CF_None,
+				from_PC     : ?,
+				taken       : ?,
+				fallthru_PC : ?,
+				taken_PC    : ?};
 
 ALU_Outputs alu_outputs_base
-= ALU_Outputs {
-     control     : CONTROL_STRAIGHT
-   , exc_code    : exc_code_ILLEGAL_INSTRUCTION
-   , op_stage2   : ?
-   , rd          : ?
-   , addr        : ?
-   , val1        : ?
-   , val2        : ?
+= ALU_Outputs {control     : CONTROL_STRAIGHT,
+	       exc_code    : exc_code_ILLEGAL_INSTRUCTION,
+	       op_stage2   : ?,
+	       rd          : ?,
+	       addr        : ?,
+	       val1        : ?,
+	       val2        : ?,
 `ifdef ISA_F
-   , fval1       : ?
-   , fval2       : ?
-   , fval3       : ?
-   , rd_in_fpr   : False
-   , rs_frm_fpr  : False
-   , val1_frm_gpr: False
-   , rm          : ?
+	       fval1       : ?,
+	       fval2       : ?,
+	       fval3       : ?,
+	       rd_in_fpr   : False,
+	       rs_frm_fpr  : False,
+	       val1_frm_gpr: False,
+	       rm          : ?,
 `endif
-   , ctrl_info   : ctrl_info_base
+	       cf_info     : cf_info_base
 
 `ifdef INCLUDE_TANDEM_VERIF
-   , trace_data  : ?
+	     , trace_data  : ?
 `endif
 };
 
@@ -265,18 +258,11 @@ function ALU_Outputs fv_BRANCH (ALU_Inputs inputs);
       exc_code = exc_code_INSTR_ADDR_MISALIGNED;
    end
 
-   let ctrl_info   = Ctrl_Info {is_BR       : True,
-				is_J        : False,
-
-				from_PC     : inputs.pc,
-				taken       : branch_taken,
-				fallthru_PC : fall_through_pc (inputs),
-				target_PC   : branch_target,
-
-				rd_is_link  : ?,
-				rs1_is_link : ?,
-				eq_rd_rs1   : ?
-				};
+   let cf_info   = CF_Info {cf_op       : CF_BR,
+			    from_PC     : inputs.pc,
+			    taken       : branch_taken,
+			    fallthru_PC : fall_through_pc (inputs),
+			    taken_PC    : branch_target };
 
    let alu_outputs = alu_outputs_base;
    let next_pc     = (branch_taken ? branch_target : fall_through_pc (inputs));
@@ -287,7 +273,7 @@ function ALU_Outputs fv_BRANCH (ALU_Inputs inputs);
    alu_outputs.addr      = next_pc;
    alu_outputs.val2      = extend (branch_target);    // For tandem verifier only
 
-   alu_outputs.ctrl_info = ctrl_info;
+   alu_outputs.cf_info   = cf_info;
 `ifdef INCLUDE_TANDEM_VERIF
    // Normal trace output (if no trap)
    alu_outputs.trace_data = mkTrace_OTHER (next_pc,
@@ -310,18 +296,11 @@ function ALU_Outputs fv_JAL (ALU_Inputs inputs);
    misaligned_target = False;
 `endif
 
-   let ctrl_info   = Ctrl_Info {is_BR       : False,
-				is_J        : True,
-
-				from_PC     : inputs.pc,
-				taken       : True,
-				fallthru_PC : ret_pc,
-				target_PC   : next_pc,
-
-				rd_is_link  : fn_is_link (inputs.decoded_instr.rd),
-				rs1_is_link : fn_is_link (inputs.decoded_instr.rs1),
-				eq_rd_rs1   : (inputs.decoded_instr.rd == inputs.decoded_instr.rs1)
-				};
+   let cf_info   = CF_Info {cf_op       : CF_JAL,
+			    from_PC     : inputs.pc,
+			    taken       : True,
+			    fallthru_PC : ret_pc,
+			    taken_PC    : next_pc };
 
    let alu_outputs = alu_outputs_base;
    alu_outputs.control   = (misaligned_target ? CONTROL_TRAP : CONTROL_BRANCH);
@@ -330,7 +309,7 @@ function ALU_Outputs fv_JAL (ALU_Inputs inputs);
    alu_outputs.rd        = inputs.decoded_instr.rd;
    alu_outputs.addr      = next_pc;
    alu_outputs.val1      = extend (ret_pc);
-   alu_outputs.ctrl_info = ctrl_info;
+   alu_outputs.cf_info   = cf_info;
 
 `ifdef INCLUDE_TANDEM_VERIF
    // Normal trace output (if no trap)
@@ -365,18 +344,11 @@ function ALU_Outputs fv_JALR (ALU_Inputs inputs);
    misaligned_target = False;
 `endif
 
-   let ctrl_info   = Ctrl_Info {is_BR       : False,
-				is_J        : True,
-
-				from_PC     : inputs.pc,
-				taken       : True,
-				fallthru_PC : ret_pc,
-				target_PC   : next_pc,
-
-				rd_is_link  : fn_is_link (inputs.decoded_instr.rd),
-				rs1_is_link : fn_is_link (inputs.decoded_instr.rs1),
-				eq_rd_rs1   : (inputs.decoded_instr.rd == inputs.decoded_instr.rs1)
-				};
+   let cf_info   = CF_Info {cf_op       : CF_JALR,
+			    from_PC     : inputs.pc,
+			    taken       : True,
+			    fallthru_PC : ret_pc,
+			    taken_PC    : next_pc };
 
    let alu_outputs = alu_outputs_base;
    alu_outputs.control   = (misaligned_target ? CONTROL_TRAP : CONTROL_BRANCH);
@@ -385,7 +357,7 @@ function ALU_Outputs fv_JALR (ALU_Inputs inputs);
    alu_outputs.rd        = inputs.decoded_instr.rd;
    alu_outputs.addr      = next_pc;
    alu_outputs.val1      = extend (ret_pc);
-   alu_outputs.ctrl_info = ctrl_info;
+   alu_outputs.cf_info   = cf_info;
 
 `ifdef INCLUDE_TANDEM_VERIF
    // Normal trace output (if no trap)

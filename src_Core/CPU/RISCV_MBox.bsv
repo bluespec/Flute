@@ -268,6 +268,24 @@ module mkRISCV_MBox (RISCV_MBox_IFC);
 endmodule
 
 // ================================================================
+// ================================================================
+// ================================================================
+// Multiplication functions
+
+// Below, ifdef RV32 versions of each function also work for RV64.
+// However, there is a bug in Vivado synthesis when XLEN==64. Then,
+// the code involves a 128b x 128b -> 128b multiply expression, for
+// which Vivado produces buggy code and crashes on synthesis.
+
+// The alternative forms (in ifdef RV64) only involve 64b x 64b -> 64b
+// multiplication expressions, which Vivado seems to synthesize
+// correctly to DSP code.
+
+// TODO: Once Vivado fixes their bug, remove the 'ifdef RV64' code,
+// and remove the 'ifdef RV32' brackets.
+
+// ================================================================
+// MUL
 
 function ActionValue #(WordXL) fav_MUL (WordXL v_rs1, WordXL v_rs2);
    actionvalue
@@ -279,6 +297,11 @@ function ActionValue #(WordXL) fav_MUL (WordXL v_rs1, WordXL v_rs2);
       return v_rd;
    endactionvalue
 endfunction
+
+// ================================================================
+// MULH: signed XLEN x signed XLEN -> signed [2 x XLEN], return upper XLEN
+
+`ifdef RV32
 
 function ActionValue #(WordXL) fav_MULH (WordXL v_rs1, WordXL v_rs2);
    actionvalue
@@ -294,6 +317,31 @@ function ActionValue #(WordXL) fav_MULH (WordXL v_rs1, WordXL v_rs2);
    endactionvalue
 endfunction
 
+`endif
+
+`ifdef RV64
+
+function ActionValue #(Bit #(64)) fav_MULH (Bit #(64) v_rs1, Bit #(64) v_rs2);
+   actionvalue
+      match { .neg1, .val1_64 } = fn_isneg_and_absval (v_rs1);
+      match { .neg2, .val2_64 } = fn_isneg_and_absval (v_rs2);
+
+      Bit #(128) prod = fn_unsigned_mul_64_64 (val1_64, val2_64);
+      if (neg1 != neg2)
+	 prod = fn_twos_comp (prod);
+
+      Bit #(64) v_rd = prod [127:64];
+      return v_rd;
+   endactionvalue
+endfunction
+
+`endif
+
+// ================================================================
+// MULHU: unsigned XLEN x unsigned XLEN -> unsigned [2 x XLEN], return upper XLEN
+
+`ifdef RV32
+
 function ActionValue #(WordXL) fav_MULHU (WordXL v_rs1, WordXL v_rs2);
    actionvalue
       Bit #(XLEN_2) v1     = extend (v_rs1);
@@ -303,6 +351,25 @@ function ActionValue #(WordXL) fav_MULHU (WordXL v_rs1, WordXL v_rs2);
       return v_rd;
    endactionvalue
 endfunction
+
+`endif
+
+`ifdef RV64
+
+function ActionValue #(Bit #(64)) fav_MULHU (Bit #(64) v_rs1, Bit #(64) v_rs2);
+   actionvalue
+      Bit #(128) prod = fn_unsigned_mul_64_64 (v_rs1, v_rs2);
+      Bit #(64) v_rd = prod [127:64];
+      return v_rd;
+   endactionvalue
+endfunction
+
+`endif
+
+// ================================================================
+// MULHSU: signed XLEN x unsigned XLEN -> signed [2 x XLEN], return upper XLEN
+
+`ifdef RV32
 
 function ActionValue #(WordXL) fav_MULHSU (WordXL v_rs1, WordXL v_rs2);
    actionvalue
@@ -317,6 +384,29 @@ function ActionValue #(WordXL) fav_MULHSU (WordXL v_rs1, WordXL v_rs2);
    endactionvalue
 endfunction
 
+`endif
+
+`ifdef RV64
+
+function ActionValue #(Bit #(64)) fav_MULHSU (Bit #(64) v_rs1, Bit #(64) v_rs2);
+   actionvalue
+      match { .neg1, .val1_64 } = fn_isneg_and_absval (v_rs1);
+      match { .neg2, .val2_64 } = tuple2 (False, v_rs2);
+
+      Bit #(128) prod = fn_unsigned_mul_64_64 (val1_64, val2_64);
+      if (neg1 != neg2)
+	 prod = fn_twos_comp (prod);
+
+      Bit #(64) v_rd = prod [127:64];
+      return v_rd;
+   endactionvalue
+endfunction
+
+`endif
+
+// ================================================================
+// MULW
+
 `ifdef RV64
 function ActionValue #(WordXL) fav_MULW (WordXL v_rs1, WordXL v_rs2);
    actionvalue
@@ -330,6 +420,34 @@ function ActionValue #(WordXL) fav_MULW (WordXL v_rs1, WordXL v_rs2);
    endactionvalue
 endfunction
 `endif
+
+// ================================================================
+// Help-functions for Vivado work-around codes above
+
+function Tuple2 #(Bool, Bit #(64)) fn_isneg_and_absval (Bit #(64) x);
+   return (  (x[63] == 0)
+	   ? tuple2 (False, x)
+	   : tuple2 (True,  fn_twos_comp (x)));
+endfunction
+
+function Bit #(n) fn_twos_comp (Bit #(n) x);
+   return (~ x) + 1;
+endfunction
+
+function Bit #(128) fn_unsigned_mul_64_64 (Bit #(64) v1, Bit #(64) v2);
+   let zero_32b = 32'h0;
+   let zero_64b = 64'h0;
+
+   Bit #(64) ll = { zero_32b, v1 [31: 0]} * { zero_32b, v2 [31: 0]};
+   Bit #(64) lh = { zero_32b, v1 [31: 0]} * { zero_32b, v2 [63:32]};
+   Bit #(64) hl = { zero_32b, v1 [63:32]} * { zero_32b, v2 [31: 0]};
+   Bit #(64) hh = { zero_32b, v1 [63:32]} * { zero_32b, v2 [63:32]};
+   Bit #(128) result = (  {    hh,    zero_64b }
+			+ { zero_32b, lh, zero_32b }
+			+ { zero_32b, hl, zero_32b }
+			+ { zero_64b, ll });
+   return result;
+endfunction
 
 // ================================================================
 
