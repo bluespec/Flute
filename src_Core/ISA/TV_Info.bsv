@@ -193,13 +193,14 @@ endfunction
 
 // STORE
 // op    pc    instr_sz    instr    rd    word1    word2    word3    word4
-// x     x     x           x                       stval    eaddr
-function Trace_Data mkTrace_I_STORE (WordXL pc, ISize isize, Bit #(32) instr, WordXL stval, WordXL eaddr);
+// x     x     x           x              funct3   stval    eaddr
+function Trace_Data mkTrace_I_STORE (WordXL pc, Bit #(3) funct3, ISize isize, Bit #(32) instr, WordXL stval, WordXL eaddr);
    Trace_Data td = ?;
    td.op       = TRACE_I_STORE;
    td.pc       = pc;
    td.instr_sz = isize;
    td.instr    = instr;
+   td.word1    = zeroExtend (funct3);
    td.word2    = stval;
    td.word3    = zeroExtend (eaddr);
    return td;
@@ -224,8 +225,8 @@ endfunction
 
 // F_STORE
 // op    pc    instr_sz    instr    rd    word1    word2    word3    word4    word5
-// x     x     x           x                                eaddr             stval
-function Trace_Data mkTrace_F_STORE (WordXL pc, ISize isize, Bit #(32) instr, WordFL stval, WordXL eaddr);
+// x     x     x           x              funct3            eaddr             stval
+function Trace_Data mkTrace_F_STORE (WordXL pc, Bit #(3) funct3, ISize isize, Bit #(32) instr, WordFL stval, WordXL eaddr);
    Trace_Data td = ?;
    td.op       = TRACE_F_STORE;
    td.pc       = pc;
@@ -251,8 +252,8 @@ endfunction
 
 // AMO
 // op    pc    instr_sz    instr    rd    word1    word2    word3    word4
-// x     x     x           x        x     rdval    stval    eaddr
-function Trace_Data mkTrace_AMO (WordXL pc, ISize isize, Bit #(32) instr,
+// x     x     x           x        x     rdval    stval    eaddr    funct3
+function Trace_Data mkTrace_AMO (WordXL pc, Bit #(3) funct3, ISize isize, Bit #(32) instr,
 				 RegName rd, WordXL rdval, WordXL stval, WordXL eaddr);
    Trace_Data td = ?;
    td.op       = TRACE_AMO;
@@ -263,6 +264,7 @@ function Trace_Data mkTrace_AMO (WordXL pc, ISize isize, Bit #(32) instr,
    td.word1    = rdval;
    td.word2    = stval;
    td.word3    = zeroExtend (eaddr);
+   td.word4    = zeroExtend (funct3);
    return td;
 endfunction
 

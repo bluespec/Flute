@@ -782,20 +782,20 @@ function ALU_Outputs fv_ST (ALU_Inputs inputs);
    // Normal trace output (if no trap)
 `ifdef ISA_F
    if (opcode == op_STORE_FP)
-      alu_outputs.trace_data = mkTrace_F_STORE (
-           fall_through_pc (inputs)
-         , fv_trace_isize (inputs)
-         , fv_trace_instr (inputs)
-         , alu_outputs.fval2
-         , eaddr);
+      alu_outputs.trace_data = mkTrace_F_STORE (fall_through_pc (inputs),
+						funct3,
+						fv_trace_isize (inputs),
+						fv_trace_instr (inputs),
+						alu_outputs.fval2,
+						eaddr);
    else
 `endif
-      alu_outputs.trace_data = mkTrace_I_STORE (
-           fall_through_pc (inputs)
-         , fv_trace_isize (inputs)
-         , fv_trace_instr (inputs)
-         , (alu_outputs.val2)
-         , eaddr);
+      alu_outputs.trace_data = mkTrace_I_STORE (fall_through_pc (inputs),
+						funct3,
+						fv_trace_isize (inputs),
+						fv_trace_instr (inputs),
+						(alu_outputs.val2),
+						eaddr);
 `endif
 	
    return alu_outputs;
@@ -1051,6 +1051,7 @@ function ALU_Outputs fv_AMO (ALU_Inputs inputs);
 `ifdef INCLUDE_TANDEM_VERIF
    // Normal trace output (if no trap)
    alu_outputs.trace_data = mkTrace_AMO (fall_through_pc (inputs),
+					 funct3,
 					 fv_trace_isize (inputs),
 					 fv_trace_instr (inputs),
 					 inputs.decoded_instr.rd, ?,
