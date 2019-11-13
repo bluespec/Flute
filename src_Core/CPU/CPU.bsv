@@ -639,6 +639,12 @@ module mkCPU (CPU_IFC);
       Bool stageF_full = (stageF.out.ostatus != OSTATUS_EMPTY);
 
       // ----------------
+      // Signal from Stage1 back to StageF. Valid (e, pc2) says:
+      //  - re-start fetching from pc2, with new epoch e.
+
+      Maybe #(Tuple2 #(Epoch, WordXL)) redirect = tagged Invalid;
+
+      // ----------------
       // Stage3 sink (does regfile writebacks)
 
       if (stage3.out.ostatus == OSTATUS_PIPE) begin
@@ -683,6 +689,12 @@ module mkCPU (CPU_IFC);
 	    else if ((! stage1.out.redirect) || (stageF.out.ostatus != OSTATUS_BUSY)) begin
 	       stage2.enq (stage1.out.data_to_stage2);  stage2_full = True;
 	       stage1.deq;                              stage1_full = False;
+
+	       if (stage1.out.redirect) begin
+		  let new_epoch <- fav_update_epoch;
+		  redirect = tagged Valid (tuple2 (new_epoch,
+						   stage1.out.next_pc));
+	       end
 	    end
 	 end
 	  
@@ -714,13 +726,11 @@ module mkCPU (CPU_IFC);
 	    WordXL  next_pc  = stageF.out.data_to_stageD.pred_pc;
 
 	    // Override, if stage1 is redirecting
-	    Bool redirect = (   (stage1.out.ostatus == OSTATUS_PIPE)
-			     && (stage1.out.control != CONTROL_DISCARD)
-			     && stage1.out.redirect);
-	    if (redirect) begin
-	       epoch <- fav_update_epoch;
-	       next_pc  = stage1.out.next_pc;
+	    if (redirect matches tagged Valid { .e, .pc2 }) begin
+	       epoch   = e;
+	       next_pc = pc2;
 	    end
+
 	    CF_Info cf_info = cf_info_none;
 	    if (   (stage1.out.ostatus == OSTATUS_PIPE)
 		&& (stage1.out.control != CONTROL_DISCARD))
