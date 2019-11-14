@@ -1,0 +1,83 @@
+Note on MMU_Cache.bsv on 2019-11-14.
+
+2019-03-14: we introduced some code as a work-around for a
+    mysterious behavior that we think was a Vivado bug (Vivado
+    2017.4).  See the comment in the code below for details (needed a
+    11-cycle stall on next cache request after an SB or an SH).
+
+2019-11-14: we removed the workaround code and synthesized with Vivado
+    2019.x, and no longer saw that strange behavior.
+
+The following is a git-diff of the removal.
+
+>================================================================
+
+--09:58:13--danube: ~/git_clones/Flute
+$ git diff src_Core/Near_Mem_VM/MMU_Cache.bsv 
+diff --git a/src_Core/Near_Mem_VM/MMU_Cache.bsv b/src_Core/Near_Mem_VM/MMU_Cache.bsv
+index 13585a0..4aeadd2 100644
+--- a/src_Core/Near_Mem_VM/MMU_Cache.bsv
++++ b/src_Core/Near_Mem_VM/MMU_Cache.bsv
+@@ -833,37 +833,6 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
+    endrule
+ 
+    // ----------------------------------------------------------------
+-   // 2019-03-14: Temporary work-around based on mysterious behavior
+-   // where, after consecutive SBs/SHs (which hit in the cache), a
+-   // subsequent LW got stale data.  Experiments showed that insertion
+-   // of 11 no-ops after the last SB/SH made it work.  This is
+-   // probably a Xilinx synthesis issue, but we don't know for sure.
+-
+-   // Workdaround: after an SB or SW, hold off any subsequent loads
+-   // for at least 11 cycles.  On an SB/SW, we load the following
+-   // register with all 1's.  On every cycle, we shift it right by 1
+-   // (so it becomes 0 and remains 0 after 11 cycles) We add a
+-   // condition to rl_probe_and_immed_rsp to stall it if the request
+-   // is a load and this register is non-zero.
+-
+-   Reg #(Bit #(11)) crg_sb_to_load_delay [2] <- mkCReg (2, 0);
+-
+-   (* no_implicit_conditions, fire_when_enabled *)
+-   rule rl_shift_sb_to_load_delay;
+-      crg_sb_to_load_delay [0] <= (crg_sb_to_load_delay [0] >> 1);
+-   endrule
+-
+-   Bool load_stall = (   ((rg_op == CACHE_LD) || is_AMO_LR)
+-                     && (crg_sb_to_load_delay [1] != 0));
+-
+-   function Action fa_arm_the_load_stall (Bit #(3) f3);
+-      action
+-        if ((f3 == f3_SB) || (f3 == f3_SH))
+-           crg_sb_to_load_delay [1] <= '1;
+-      endaction
+-   endfunction
+-
+-   // ----------------------------------------------------------------
+    // This rule probes the MMU and provides an immediate response for
+    // memory (non-IO) requests, if possible, i.e., if
+    //     VM off, LD or AMO_LR, cache hit
+@@ -875,7 +844,7 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
+    (* descending_urgency = "rl_probe_and_immed_rsp, rl_writeback_updated_PTE" *)
+ `endif
+ 
+-   rule rl_probe_and_immed_rsp ((rg_state == MODULE_RUNNING) && (! load_stall));
++   rule rl_probe_and_immed_rsp (rg_state == MODULE_RUNNING);
+ 
+       // Print some initial information for debugging
+       if (cfg_verbosity > 1) begin
+@@ -1035,7 +1004,6 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
+                     // Update cache line in cache
+                     let new_word64_set = fn_update_word64_set (word64_set, way_hit, vm_xlate_result.pa, rg_f3, rg_st_amo_val);
+                     ram_word64_set.a.put (bram_cmd_write, word64_set_in_cache, new_word64_set);
+-                    fa_arm_the_load_stall (rg_f3);
+ 
+                     if (cfg_verbosity > 1) begin
+                        $display ("        Write-Cache-Hit: pa 0x%0h word64 0x%0h", vm_xlate_result.pa, rg_st_amo_val);
+@@ -1094,7 +1062,6 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
+                  // Update cache line in cache
+                  let new_word64_set = fn_update_word64_set (word64_set, way_hit, vm_xlate_result.pa, rg_f3, new_st_val);
+                  ram_word64_set.a.put (bram_cmd_write, word64_set_in_cache, new_word64_set);
+-                 fa_arm_the_load_stall (rg_f3);
+ 
+                  if (cfg_verbosity > 1) begin
+                     $display ("          0x%0h  op  0x%0h -> 0x%0h", word64, word64, new_st_val);
