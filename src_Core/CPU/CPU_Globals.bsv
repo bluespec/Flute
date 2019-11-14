@@ -177,10 +177,10 @@ FBypass no_fbypass = FBypass {bypass_state: BYPASS_RD_NONE,
 // 'busy' means that the RegName is valid and matches, but the value is not available yet
 
 function Tuple2 #(Bool, Word) fn_gpr_bypass (Bypass bypass, RegName rd, Word rd_val);
-   Bool busy = ((bypass.bypass_state == BYPASS_RD) && (bypass.rd == rd));
-   WordXL val = (  ((bypass.bypass_state == BYPASS_RD_RDVAL) && (bypass.rd == rd))
-		 ? bypass.rd_val
-		 : rd_val);
+   Bool   busy = ((bypass.bypass_state == BYPASS_RD) && (bypass.rd == rd));
+   WordXL val  = (  ((bypass.bypass_state == BYPASS_RD_RDVAL) && (bypass.rd == rd))
+		  ? bypass.rd_val
+		  : rd_val);
    return tuple2 (busy, val);
 endfunction
 
