@@ -3,11 +3,13 @@ package JtagTap;
 
 import BUtils ::*;
 import Clocks ::*;
+import Connectable ::*;
 import DefaultValue ::*;
 import FIFOF ::*;
 import FIFOLevel ::*;
 import Reserved ::*;
 
+import ClockHacks ::*;
 import Giraffe_IFC ::*;
 
 typedef 6 ABITS;
@@ -181,13 +183,10 @@ module mkJtagTap(JtagTap_IFC);
 
    Wire#(Bit#(1)) w_tck <- mkDWire(?);
 
-   let tck_clock <- mkUngatedClock(?);
-   let tck = tck_clock.new_clk;
-
-   (* no_implicit_conditions, fire_when_enabled *)
-   rule rl_tck;
-      tck_clock.setClockValue(w_tck);
-   endrule
+   let tck_clock <- unpackClock;
+   let tck = tck_clock.clk;
+   let w_tck_crossed <- mkNullCrossing(tck, w_tck);
+   mkConnection(w_tck_crossed, tck_clock.in);
 
    let rst_tck <- mkAsyncResetFromCR(4, tck);
 
