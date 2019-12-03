@@ -1220,9 +1220,15 @@ module mkFBox_Core #(Bit #(4) verbosity) (FBox_Core_IFC);
       Bit #(64) res = ?;
 
       if (v matches tagged S .out)
-         res = fv_nanbox (extend (pack (out)));
+         if (isNaN (out))
+            res = fv_nanbox (extend (pack (canonicalNaN32)));
+         else
+            res = fv_nanbox (extend (pack (out)));
       else if (v matches tagged D .out)
-         res = extend (pack (out));
+         if (isNaN (out))
+            res = extend (pack (canonicalNaN64));
+         else
+            res = extend (pack (out));
       else
          res = 0;  // note: just ain't possible
 
