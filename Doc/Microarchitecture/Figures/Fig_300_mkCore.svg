@@ -130,7 +130,7 @@
      id="namedview185"
      showgrid="false"
      inkscape:zoom="4.7212158"
-     inkscape:cx="406.04139"
+     inkscape:cx="346.31101"
      inkscape:cy="871.60603"
      inkscape:window-x="302"
      inkscape:window-y="61"
@@ -531,7 +531,7 @@
   <path
      inkscape:connector-curvature="0"
      id="path1221"
-     d="M 485.70987,245.15014 H 314.46237 V 192.34455"
+     d="M 485.64483,245.15014 H 324.12257 v -52.80559"
      style="fill:none;stroke:#ff0000;stroke-width:0.99999994px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker1225)" />
   <text
      xml:space="preserve"
@@ -558,11 +558,11 @@
   <text
      xml:space="preserve"
      style="font-style:normal;font-weight:normal;font-size:40px;line-height:0.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
-     x="317.23199"
+     x="327.23199"
      y="242.39046"
      id="text1741"><tspan
        sodipodi:role="line"
-       x="317.23199"
+       x="327.23199"
        y="242.39046"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8px;line-height:0.25;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#ff0000"
        id="tspan1739">external</tspan></text>
@@ -574,12 +574,12 @@
   <text
      xml:space="preserve"
      style="font-style:normal;font-weight:normal;font-size:40px;line-height:0.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
-     x="323.11224"
-     y="164.39774"
+     x="317.11224"
+     y="184.39774"
      id="text2723"><tspan
        sodipodi:role="line"
-       x="323.11224"
-       y="164.39774"
+       x="317.11224"
+       y="184.39774"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.66666698px;line-height:0.25;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start"
        id="tspan2721">interrupts</tspan></text>
   <rect

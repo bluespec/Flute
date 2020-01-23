@@ -15,3 +15,4 @@ Tests/Logs
 AA_*
 symbol_table.txt
 vpi_wrapper_*
+Aux_files

@@ -585,7 +585,8 @@ uint8_t  c_debug_client_connect (const uint16_t tcp_port)
 
     fprintf (stdout, "Connected\n");
 
-    logfile_fp = NULL;    // Debugging: fopen (logfile_name, "w");
+    logfile_fp = NULL;                         // No debugging
+    // logfile_fp = fopen (logfile_name, "w");    // Debugging
     if (logfile_fp != NULL) {
 	fprintf (stdout, "    Logfile for debug client transactions is '%s'\n", logfile_name);
 	fprintf (logfile_fp, "CONNECTED on TCP port %0d\n", tcp_port);
