@@ -341,8 +341,8 @@ Fig.~\ref{Fig_200_SoC_Top} expands the {\cf mkSoC\_Top} module for more detail.
 \end{figure}
 
 At the center is an AXI4 fabric (interconnection network) that
-connects a parameterizable number of number of master ports to a
-parameterizable number of slave ports.  Two of the Master ports are
+connects a parameterizable number of master ports to a
+parameterizable number of slave ports.  Two of the master ports are
 used by {\cf mkCore} inside which is the Piccolo/Flute/Toooba CPU.
 The slave ports are connected to a Boot ROM, a memory and a UART, and
 optionally to one or more memory-mapped accelerators.
@@ -370,7 +370,7 @@ streaming bytes in and out.
 
 The core and the CPU have a ``non-maskable interrupt'' input interface
 that is not used in this SoC (in a real chip, they might be connected
-to sensors signaling power failure, temperatur overheating, etc.).
+to sensors signaling power failure, temperature overheating, etc.).
 
 There are two versions of {\cf mkCore}, one shared by Piccolo and
 Flute, and the other for Toooba.  The former is described in more
@@ -482,7 +482,7 @@ pipeline, L1 caches, PLIC (Platform Level Interrupt Controller), and
 optional Debug Module and Tandem Verification trace generator.
 
 For Piccolo and Flute, in the pre-generated Verilog directories (see
-Sec.~\ref{sec_pre_gen_Verilog}, the code is in file {\cf mkCore.v} and
+Sec.~\ref{sec_pre_gen_Verilog}), the code is in file {\cf mkCore.v} and
 other Verilog files representing the module hierarchy below it.
 
 For Toooba, in the pre-generated Verilog directories, the code is the
@@ -507,7 +507,7 @@ The interface of the core module is the same for all three CPUs:
     \item {\cf RDY\_set\_verbosity}
   \end{tightlist}
   When the {\cf RDY} output is high, the enviroment can assert the
-  {\cf EN} input and drive the other two inputs, setting the the cycle
+  {\cf EN} input and drive the other two inputs, setting the cycle
   delay after which the verbosity should change, and the verbosity
   value to which it should change.  Verbosity of 1 will print an
   instruction trace; higher values will print more detail from the CPU
@@ -520,14 +520,14 @@ The interface of the core module is the same for all three CPUs:
 
   When output {\cf RDY\_cpu\_reset\_server\_request\_put} is 1, the
   environment can request a reset by asserting {\cf
-  EN\_cpu\_reset\_server\_request\_put} and a driving 0 or 1 on {\cf
+  EN\_cpu\_reset\_server\_request\_put} and driving a 0 or 1 on {\cf
   cpu\_reset\_server\_request\_put}.  Driving a 1 specifies that,
   after the reset, the CPU should come up running (the normal case).
   Driving a 0 specifies that the CPU should come up halted in Debug
   Mode, waiting for commands from an external debugger.
 
   When output {\cf RDY\_cpu\_reset\_server\_response\_get} is 1, it
-  indicates that the core has reset itself.  The environment read {\cf
+  indicates that the core has reset itself.  The environment can read {\cf
   cpu\_reset\_server\_response\_get} to see if the core is running (1)
   or halted (0).  The environment can assert {\cf
   EN\_cpu\_reset\_server\_response\_get} to acknowledge to the core
@@ -552,7 +552,7 @@ In Fig.~\ref{Fig_100_Top_HW_Side}, {\cf mkSoC\_Top} is a basic SoC
 (System-on-a-chip).
 
 In all the repositories, in the pre-generated Verilog directories (see
-Sec.~\ref{sec_pre_gen_Verilog}, the code is in file {\cf mkSoC\_Top.v}
+Sec.~\ref{sec_pre_gen_Verilog}), the code is in file {\cf mkSoC\_Top.v}
 and other Verilog files representing the module hierarchy below it.
 The SoC contains:
 
@@ -564,12 +564,12 @@ mkCore.v} or substitute your own core with the same Verilog interface.
 
 \item An AXI4 crossbar fabric (file {\cf mkFabric\_AXI4.v}).
 
-\item An boot ROM (file {\cf mkBoot\_Rom.v}) with an AXI4 interface (without burst support).
+\item A boot ROM (file {\cf mkBoot\_Rom.v}) with an AXI4 interface (without burst support).
 
 \item A memory controller, front end for a DRAM controller (file {\cf
 mkMem\_Controller}) with and AXI4 interface (without burst support).
 
-\item an AXI4 to AXI4 slave adapter, instantiated twice, once for the
+\item An AXI4 to AXI4 slave adapter, instantiated twice, once for the
 Boot ROM and once for the memory controller (file {\cf
 mkAXI4\_Deburster\_A.v}), so that they can support burst AXI4
 requests.
@@ -604,7 +604,7 @@ MMUs.  The interface is identical for Piccolo and Flute.  In the
 figure, on the right, it has two AXI4 interfaces.  One of them goes
 straight out to the {\cf mkCore} interface for instruction access as
 the {\cf cpu\_imem\_master} interface; this is an AXI4 master.  The
-the other, for data memory and I/O access, is also an AXI4 master, but
+other, for data memory and I/O access, is also an AXI4 master, but
 it connects to a 2x3 interconnect fabric.  The 2x3 fabric has three
 AXI4 slaves:
 \begin{tightlist}
@@ -744,8 +744,8 @@ register files.
 \end{tightlist}
 The reason for the somewhat unusual naming scheme (instead of stages
 1..5), is because of the code-sharing structure with Piccolo, a
-3-stage pipeline.  Piccolo's Stage1 is essentially and expansion of
-Flute's Stage F,D and 1.  Piccolo's Stage 2 and 3 are the same as
+3-stage pipeline.  Piccolo's Stage 1 is essentially an expansion of
+Flute's Stage F, D and 1.  Piccolo's Stage 2 and 3 are the same as
 Flute's Stage 2 and 3, respectively.
 
 The GPR and FPR register files are read in Stage 1 and written back in
@@ -754,11 +754,11 @@ Stage 3.  There is bypass logic to feed back output values from Stage
 
 CSR instructions, instructions that trap, and interrupts are handled
 specially, outside normal pipeline flow.  For CSR instructions,
-interrupts and traps in Stage1, they wait in Stage 1 until the
+interrupts and traps in Stage 1, they wait in Stage 1 until the
 downstream stages (Stages 2 and 3) are empty, and are then handled in
 an FSM outside the pipeline.  For instructions that trap in Stage 2
 (e.g., memory access faults, protection faults, misaligned faults,
-unimplemented addresses), they wait until down the stream stage (Stage
+unimplemented addresses), they wait until the downstream stage (Stage
 3) is empty, and is then handled in an FSM outside the pipeline.  In
 all these cases, the Fetch stage is redirected (restarted) after the
 instruction.
@@ -774,7 +774,7 @@ There is also one input for non-maskable interrupts.
 \section{``Near Memory''}
 
 Inside {\cf mkCPU} we instantiate a ``near memory'' subsystem, {\cf
-mkNear\_Mem}.  This is a separate module that can be implement L1
+mkNear\_Mem}.  This is a separate module that implements L1
 caches, MMUs and virtual memory support, but it can be replaced by an
 alternative implementation such as a fixed latency TCM (Tightly
 Coupled Memory implemented in SRAM).
