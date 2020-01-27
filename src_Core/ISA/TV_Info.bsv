@@ -191,7 +191,7 @@ function Trace_Data mkTrace_I_LOAD (WordXL pc, ISize isize, Bit #(32) instr, Reg
    return td;
 endfunction
 
-// STORE
+// I_STORE
 // op    pc    instr_sz    instr    rd    word1    word2    word3    word4
 // x     x     x           x              funct3   stval    eaddr
 function Trace_Data mkTrace_I_STORE (WordXL pc, Bit #(3) funct3, ISize isize, Bit #(32) instr, WordXL stval, WordXL eaddr);
