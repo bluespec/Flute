@@ -73,24 +73,35 @@ module mkDM_Mem_Tap (DM_Mem_Tap_IFC);
       master_xactor.i_wr_data.enq (wr_data);
 
       // Tap
-      Bit #(64) paddr = ?;
-      Bit #(64) stval = ?;
+      Bit #(64)    paddr = ?;
+      Bit #(64)    stval = ?;
+      Integer      sh    = 0;
+      Fabric_Data  mask  = 0;
+      MemReqSize   sz    = ?;
+
+      case (wr_data.wstrb)
 `ifdef FABRIC64
-      if (wr_data.wstrb == 'h0f) begin
-	 paddr = zeroExtend (wr_addr.awaddr);
- 	 stval = (wr_data.wdata & 'h_FFFF_FFFF);
-      end
-      else if (wr_data.wstrb == 'hf0) begin
-	 paddr = zeroExtend (wr_addr.awaddr);
-	 stval = ((wr_data.wdata >> 32) & 'h_FFFF_FFFF);
-      end
-      else
-	 dynamicAssert(False, "mkDM_Mem_Tap: unsupported byte enables");
-`else
+	 'hFF: begin sh= 0; mask = 'hFFFF_FFFF_FFFF_FFFF; sz=f3_SIZE_D; end
+	 'hF0: begin sh=32; mask =           'hFFFF_FFFF; sz=f3_SIZE_W; end
+	 'hC0: begin sh=48; mask =                'hFFFF; sz=f3_SIZE_H; end
+	 'h30: begin sh=32; mask =                'hFFFF; sz=f3_SIZE_H; end
+	 'h80: begin sh=56; mask =                  'hFF; sz=f3_SIZE_B; end
+	 'h40: begin sh=48; mask =                  'hFF; sz=f3_SIZE_B; end
+	 'h20: begin sh=40; mask =                  'hFF; sz=f3_SIZE_B; end
+	 'h10: begin sh=32; mask =                  'hFF; sz=f3_SIZE_B; end
+`endif
+	 'hF:  begin sh= 0; mask =           'hFFFF_FFFF; sz=f3_SIZE_W; end
+	 'hC:  begin sh=16; mask =                'hFFFF; sz=f3_SIZE_H; end
+	 'h3:  begin sh= 0; mask =                'hFFFF; sz=f3_SIZE_H; end
+	 'h8:  begin sh=24; mask =                  'hFF; sz=f3_SIZE_B; end
+	 'h4:  begin sh=16; mask =                  'hFF; sz=f3_SIZE_B; end
+	 'h2:  begin sh= 8; mask =                  'hFF; sz=f3_SIZE_B; end
+	 'h1:  begin sh= 0; mask =                  'hFF; sz=f3_SIZE_B; end
+	 default: dynamicAssert(False, "mkDM_Mem_Tap: unsupported byte enables");
+      endcase
       paddr = zeroExtend (wr_addr.awaddr);
-      stval = zeroExtend (wr_data.wdata);
-`endif      
-      Trace_Data td = mkTrace_MEM_WRITE (f3_SIZE_W, truncate (stval), paddr);
+      stval = ((zeroExtend (wr_data.wdata) >> sh) & mask);
+      Trace_Data td = mkTrace_MEM_WRITE (sz, truncate (stval), paddr);
       f_trace_data.enq (td);
    endrule
 

@@ -6,7 +6,6 @@ package Core;
 // This package defines:
 //     Core_IFC
 //     mkCore #(Core_IFC)
-//     mkFabric_2x3    -- specialized AXI4 fabric used inside this core
 //
 // mkCore instantiates:
 //     - mkCPU (the RISC-V CPU)
@@ -48,6 +47,9 @@ import Debug_Module     :: *;
 import Core_IFC          :: *;
 import CPU_IFC           :: *;
 import CPU               :: *;
+
+import Fabric_2x3        :: *;
+
 import Near_Mem_IO_AXI4  :: *;
 import PLIC              :: *;
 import PLIC_16_2_7       :: *;
@@ -404,73 +406,5 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
 `endif
 
 endmodule: mkCore
-
-// ================================================================
-// 2x3 Fabric for this Core
-// Masters: CPU DMem, Debug Module System Bus Access, External access
-
-// ----------------
-// Fabric port numbers for masters
-
-typedef 2  Num_Masters_2x3;
-
-typedef Bit #(TLog #(Num_Masters_2x3))  Master_Num_2x3;
-
-Master_Num_2x3  cpu_dmem_master_num         = 0;
-Master_Num_2x3  debug_module_sba_master_num = 1;
-
-// ----------------
-// Fabric port numbers for slaves
-
-typedef 3  Num_Slaves_2x3;
-
-typedef Bit #(TLog #(Num_Slaves_2x3))  Slave_Num_2x3;
-
-Slave_Num_2x3  default_slave_num     = 0;
-Slave_Num_2x3  near_mem_io_slave_num = 1;
-Slave_Num_2x3  plic_slave_num        = 2;
-
-// ----------------
-// Specialization of parameterized AXI4 fabric for 2x3 Core fabric
-
-typedef AXI4_Fabric_IFC #(Num_Masters_2x3,
-			  Num_Slaves_2x3,
-			  Wd_Id,
-			  Wd_Addr,
-			  Wd_Data,
-			  Wd_User)  Fabric_2x3_IFC;
-
-// ----------------
-
-(* synthesize *)
-module mkFabric_2x3 (Fabric_2x3_IFC);
-
-   // System address map
-   SoC_Map_IFC  soc_map  <- mkSoC_Map;
-
-   // ----------------
-   // Slave address decoder
-   // Any addr is legal, and there is only one slave to service it.
-
-   function Tuple2 #(Bool, Slave_Num_2x3) fn_addr_to_slave_num_2x3  (Fabric_Addr addr);
-      if (   (soc_map.m_near_mem_io_addr_base <= addr)
-	  && (addr < soc_map.m_near_mem_io_addr_lim))
-	 return tuple2 (True, near_mem_io_slave_num);
-
-      else if (   (soc_map.m_plic_addr_base <= addr)
-	       && (addr < soc_map.m_plic_addr_lim))
-	 return tuple2 (True, plic_slave_num);
-
-      else
-	 return tuple2 (True, default_slave_num);
-   endfunction
-
-   AXI4_Fabric_IFC #(Num_Masters_2x3, Num_Slaves_2x3, Wd_Id, Wd_Addr, Wd_Data, Wd_User)
-       fabric <- mkAXI4_Fabric (fn_addr_to_slave_num_2x3);
-
-   return fabric;
-endmodule: mkFabric_2x3
-
-// ================================================================
 
 endpackage
