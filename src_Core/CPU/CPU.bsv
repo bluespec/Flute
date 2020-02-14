@@ -547,14 +547,15 @@ module mkCPU (CPU_IFC);
 				     && (stage1.out.control != CONTROL_DISCARD))
 				 || (stage1.out.ostatus == OSTATUS_NONPIPE));
 
-   // Debugger stop and step should only happen on architectural instructions
 `ifdef INCLUDE_GDB_CONTROL
-   Bool stop_step_halt = (   stage1_has_arch_instr
-			  && (   rg_stop_req
-			      || rg_step_count == 1));
+   Bool stop_step_req = (   rg_stop_req
+			 || rg_step_count == 1);
 `else
-   Bool stop_step_halt = False;
+   Bool stop_step_req = False;
 `endif
+
+   // Debugger stop and step should only happen on architectural instructions
+   Bool stop_step_halt = stage1_has_arch_instr && stop_step_req;
 
    // Halting conditions
    Bool halting = (stop_step_halt || mip_cmd_needed || (interrupt_pending && stage1_has_arch_instr));
@@ -1389,6 +1390,9 @@ module mkCPU (CPU_IFC);
       rg_next_pc <= stage1.out.next_pc;
       rg_state   <= CPU_WFI_PAUSED;
 
+      stageD.set_full (False);
+      stage1.set_full (False);    fa_step_check;
+
       // Accounting
       csr_regfile.csr_minstret_incr;
 
@@ -1407,7 +1411,8 @@ module mkCPU (CPU_IFC);
    // ----------------
 
    rule rl_WFI_resume (   (rg_state == CPU_WFI_PAUSED)
-		       && csr_regfile.wfi_resume
+		       && (   csr_regfile.wfi_resume
+			   || stop_step_req)
 		       && (stageF.out.ostatus != OSTATUS_BUSY));
       if (cur_verbosity > 1) $display ("%0d: %m.rl_WFI_resume", mcycle);
 
@@ -1425,9 +1430,7 @@ module mkCPU (CPU_IFC);
 		       mstatus_MXR,
 		       sstatus_SUM);
       stageF.set_full (True);
-
       stageD.set_full (False);
-      stage1.set_full (False);    fa_step_check;
    endrule: rl_WFI_resume
 
    // ----------------
