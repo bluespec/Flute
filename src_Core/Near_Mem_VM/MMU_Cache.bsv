@@ -599,7 +599,7 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
 			 way, way_hit);
 
 	    hit     = hit || hit_at_way;
-	    way_hit = fromInteger (way);
+	    if (hit_at_way) way_hit = fromInteger (way);
 	    word64  = (word64 | (word64_at_way & pack (replicate (hit_at_way))));
 	 end
 
