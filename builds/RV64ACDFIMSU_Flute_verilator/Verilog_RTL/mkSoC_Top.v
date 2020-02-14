@@ -1747,9 +1747,9 @@ module mkSoC_Top(CLK,
 	     core$RDY_cpu_reset_server_request_put &&
 	     rg_state == 2'd0 ;
   assign MUX_rg_state$write_1__SEL_2 =
-	     mem0_controller$RDY_set_addr_map &&
 	     mem0_controller$RDY_server_reset_response_get &&
 	     uart0$RDY_server_reset_response_get &&
+	     mem0_controller$RDY_set_addr_map &&
 	     core$RDY_cpu_reset_server_response_get &&
 	     rg_state == 2'd1 ;
 

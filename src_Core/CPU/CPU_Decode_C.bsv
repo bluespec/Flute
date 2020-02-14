@@ -240,7 +240,6 @@ function Tuple2 #(Bool, Instr) fv_decode_C_FLWSP (MISA  misa, Bit #(2)  xl, Inst
 
       Bool is_legal = ((misa.c == 1'b1)
 		       && (op == opcode_C2)
-		       && (rd != 0)
 		       && (funct3 == funct3_C_FLWSP)
 		       && (misa.f == 1'b1));
 
@@ -262,7 +261,6 @@ function Tuple2 #(Bool, Instr) fv_decode_C_FLDSP (MISA  misa,  Bit #(2) xl, Inst
 
       Bool is_legal = ((misa.c == 1'b1)
 		       && (op == opcode_C2)
-		       && (rd != 0)
 		       && (funct3 == funct3_C_FLDSP)
 		       && (misa.d == 1'b1)
 		       && (   (xl == misa_mxl_64)

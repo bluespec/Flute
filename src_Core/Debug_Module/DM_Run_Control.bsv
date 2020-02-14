@@ -393,7 +393,7 @@ module mkDM_Run_Control (DM_Run_Control_IFC);
 
    // ----------------
    // Facing Hart: Reset, Run-control, etc.
-   interface Get    hart0_reset_client    = toGPClient (f_hart0_reset_reqs, f_hart0_reset_rsps);
+   interface Client hart0_reset_client    = toGPClient (f_hart0_reset_reqs, f_hart0_reset_rsps);
    interface Client hart0_client_run_halt = toGPClient (f_hart0_run_halt_reqs, f_hart0_run_halt_rsps);
    interface Get    hart0_get_other_req   = toGet (f_hart0_other_reqs);
 
