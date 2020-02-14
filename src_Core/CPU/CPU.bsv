@@ -558,10 +558,13 @@ module mkCPU (CPU_IFC);
 
    // Halting conditions
    Bool halting = (stop_step_halt || mip_cmd_needed || (interrupt_pending && stage1_has_arch_instr));
-   // Stage1 can halt only when actually contains an instruction and downstream is empty
+   // Stage1 can halt only when actually contains an instruction, downstream is
+   // empty and, if a branch misprediction, StageF is able to be redirected.
    Bool stage1_halted = (   halting
 			 && (   (stage1.out.ostatus == OSTATUS_PIPE)
 			     || (stage1.out.ostatus == OSTATUS_NONPIPE))
+			 && (   (! stage1.out.redirect)
+			     || (stageF.out.ostatus != OSTATUS_BUSY))
 			 && (stage2.out.ostatus == OSTATUS_EMPTY)
 			 && (stage3.out.ostatus == OSTATUS_EMPTY));
 
