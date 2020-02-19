@@ -1,5 +1,8 @@
-// Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved.
 
+package MMU_Cache;
+
+// ================================================================
 // A combined MMU and L1 Cache for RISC-V.
 // The MMU is capable of handling pages, superpages and gigapages.
 // The cache is simple, in-order, blocking, and has a "write-around" policy:
@@ -34,13 +37,6 @@
 //  - Memory addrs: request goes to the cache logic
 //                      (back end of cache logic talks to fabric interface)
 //  - IO:           request does directly to fabric interface (no cacheing)
-
-// VM-SYNTH-OPT: Comments beginning with this indicate that the following state
-// elements are unused in non-VM mode, and ought to be optimized away by
-// gate-level synthesis tools. If those tools are unable to do this,
-// we might need to enclose them in ifdefs.
-
-package MMU_Cache;
 
 // ================================================================
 // BSV lib imports
@@ -475,7 +471,6 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
 
    Reg #(WordXL)     rg_satp        <- mkRegU;    // Copy of value in SATP CSR { VM_Mode, ASID, PPN }
 `else
-   // VM-SYNTH-OPT
    // Dummy registers in non-VM mode
    Priv_Mode x = m_Priv_Mode;
    Reg #(Priv_Mode)  rg_priv        = fn_genNullRegIfc (x);
@@ -808,8 +803,15 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
 	 ctr_wr_rsps_pending.clear;
       end
 
-      if (cfg_verbosity > 1)
-	 $display ("%0d: %s.rl_start_reset", cur_cycle, d_or_i);
+      $display ("%0d: %s: cache size %0d KB, associativity %0d, line size %0d bytes (= %0d XLEN words)",
+		cur_cycle, d_or_i, kb_per_cache, ways_per_cset,
+		(word64s_per_cline * 8),
+`ifdef RV32
+		(word64s_per_cline * 2)
+`else
+		(word64s_per_cline * 1)
+`endif
+		);
    endrule
 
    // This rule loops over csets, setting state of each cline in the set to EMPTY

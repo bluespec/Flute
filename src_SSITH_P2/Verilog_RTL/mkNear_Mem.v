@@ -1529,7 +1529,11 @@ module mkNear_Mem(CLK,
   assign dcache$EN_tlb_flush = EN_sfence_vma ;
 
   // submodule f_reset_rsps
-  assign f_reset_rsps$ENQ = MUX_rg_state$write_1__SEL_3 ;
+  assign f_reset_rsps$ENQ =
+	     dcache$RDY_server_reset_response_get &&
+	     icache$RDY_server_reset_response_get &&
+	     f_reset_rsps$FULL_N &&
+	     rg_state == 2'd1 ;
   assign f_reset_rsps$DEQ = EN_server_reset_response_get ;
   assign f_reset_rsps$CLR = 1'b0 ;
 

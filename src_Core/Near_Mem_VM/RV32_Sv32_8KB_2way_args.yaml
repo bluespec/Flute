@@ -1,0 +1,6 @@
+# Arguments for Gen_BSV_Cache_Decls.py for RV32.sv32
+bsv_package_name:   Cache_Decls_RV32
+Bits_per_PA:        34
+KB_per_Cache:        8
+Word64s_per_CLine:   4
+Ways_per_CSet:       2

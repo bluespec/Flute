@@ -588,17 +588,17 @@ module mkBranch_Predictor(CLK,
   always@(rf_btb_fsms$D_OUT_1)
   begin
     case (rf_btb_fsms$D_OUT_1)
-      2'b0, 2'b01: _theResult_____1_snd__h7544 = 2'b0;
-      2'b10: _theResult_____1_snd__h7544 = 2'b01;
-      2'b11: _theResult_____1_snd__h7544 = 2'b10;
+      2'b0: _theResult_____1_snd__h7500 = 2'b01;
+      2'b01: _theResult_____1_snd__h7500 = 2'b10;
+      2'b10, 2'b11: _theResult_____1_snd__h7500 = 2'b11;
     endcase
   end
   always@(rf_btb_fsms$D_OUT_1)
   begin
     case (rf_btb_fsms$D_OUT_1)
-      2'b0: _theResult_____1_snd__h7500 = 2'b01;
-      2'b01: _theResult_____1_snd__h7500 = 2'b10;
-      2'b10, 2'b11: _theResult_____1_snd__h7500 = 2'b11;
+      2'b0, 2'b01: _theResult_____1_snd__h7544 = 2'b0;
+      2'b10: _theResult_____1_snd__h7544 = 2'b01;
+      2'b11: _theResult_____1_snd__h7544 = 2'b10;
     endcase
   end
 
