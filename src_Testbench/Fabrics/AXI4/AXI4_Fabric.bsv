@@ -132,7 +132,8 @@ module mkAXI4_Fabric #(function Tuple2 #(Bool, Bit #(TLog #(tn_num_slaves)))
    // RESET
 
    rule rl_reset (rg_reset);
-      $display ("%0d: %m.rl_reset", cur_cycle);
+      if (cfg_verbosity > 0)
+	 $display ("%0d: %m.rl_reset", cur_cycle);
       for (Integer mi = 0; mi < num_masters; mi = mi + 1) begin
 	 xactors_from_masters [mi].reset;
 
@@ -220,7 +221,6 @@ module mkAXI4_Fabric #(function Tuple2 #(Bool, Bit #(TLog #(tn_num_slaves)))
    for (Integer mi = 0; mi < num_masters; mi = mi + 1)
 	 rule rl_wr_xaction_no_such_slave (fv_mi_has_wr_for_none (mi));
 	    AXI4_Wr_Addr #(wd_id, wd_addr, wd_user) a <- pop_o (xactors_from_masters [mi].o_wr_addr);
-	    AXI4_Wr_Data #(wd_data, wd_user)        d <- pop_o (xactors_from_masters [mi].o_wr_data);
 
 	    // Special value 'num_slaves' (not a legal sj) means "no such slave"
 	    v_f_wr_sjs        [mi].enq (fromInteger (num_slaves));
