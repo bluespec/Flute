@@ -1741,15 +1741,15 @@ module mkSoC_Top(CLK,
 
   // inputs to muxes for submodule ports
   assign MUX_rg_state$write_1__SEL_1 =
+	     fabric$RDY_reset &&
 	     mem0_controller$RDY_server_reset_request_put &&
 	     uart0$RDY_server_reset_request_put &&
-	     fabric$RDY_reset &&
 	     core$RDY_cpu_reset_server_request_put &&
 	     rg_state == 2'd0 ;
   assign MUX_rg_state$write_1__SEL_2 =
+	     mem0_controller$RDY_set_addr_map &&
 	     mem0_controller$RDY_server_reset_response_get &&
 	     uart0$RDY_server_reset_response_get &&
-	     mem0_controller$RDY_set_addr_map &&
 	     core$RDY_cpu_reset_server_response_get &&
 	     rg_state == 2'd1 ;
 
