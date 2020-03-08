@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Bluespec, Inc.  All Rights Reserved
+// Copyright (c) 2019-2020 Bluespec, Inc.  All Rights Reserved
 
 >================================================================
 Our BSV PLIC here follows the example of the SiFive PLIC spec
