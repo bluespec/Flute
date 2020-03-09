@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2019 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2013-2020 Bluespec, Inc. All Rights Reserved
 
 // ================================================================
 // Definition of Tandem Verifier Packets.
@@ -301,10 +301,14 @@ function Trace_Data mkTrace_RET (WordXL pc, ISize isize, Bit #(32) instr, Priv_M
 endfunction
 
 // CSRRX
-// op    pc    instr_sz    instr    rd    word1    word2    word3    word4
-// x     x     x           x        x     rdval    csrvalid csraddr  csrval
+// op    pc    instr_sz    instr    rd    word1    word2              word3    word4   word5
+// x     x     x           x        x     rdval    [1] mstatus_valid  csraddr  csrval  mstatus
+//                                                 [0] csrvalid
 function Trace_Data mkTrace_CSRRX (WordXL pc, ISize isize, Bit #(32) instr,
-				   RegName rd, WordXL rdval, Bool csrvalid, CSR_Addr csraddr, WordXL csrval);
+				   RegName rd, WordXL rdval,
+				   Bool csrvalid, CSR_Addr csraddr, WordXL csrval,
+				   Bool   mstatus_valid,
+				   WordXL mstatus);
    Trace_Data td = ?;
    td.op       = TRACE_CSRRX;
    td.pc       = pc;
@@ -312,9 +316,12 @@ function Trace_Data mkTrace_CSRRX (WordXL pc, ISize isize, Bit #(32) instr,
    td.instr    = instr;
    td.rd       = rd;
    td.word1    = rdval;
-   td.word2    = (csrvalid ? 1 : 0);
+   td.word2    = ((mstatus_valid ? 2 : 0) | (csrvalid ? 1 : 0));
    td.word3    = zeroExtend (csraddr);
    td.word4    = csrval;
+`ifdef ISA_F
+   td.word5    = mstatus;
+`endif
    return td;
 endfunction
 

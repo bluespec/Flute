@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved
 
 package CSR_RegFile_MSU;
 
@@ -10,7 +10,9 @@ package CSR_RegFile_MSU;
 // ================================================================
 // Exports
 
-export  CSR_RegFile_IFC (..),  mkCSR_RegFile;
+export  CSR_Write_Result (..);
+export  CSR_RegFile_IFC (..);
+export  mkCSR_RegFile;
 
 // ================================================================
 // BSV library imports
@@ -41,6 +43,18 @@ import CSR_MIP     :: *;
 import CSR_MIE     :: *;
 
 // ================================================================
+// Writing a CSR can update multiple CSRs (e.g., writing
+// FRM/FFLAGS/FCSR also updates MSTATUS.FS and MSTATUS.SD
+
+typedef struct {
+   WordXL           new_csr_value;
+   Maybe #(WordXL)  m_new_csr_value2;
+   }
+CSR_Write_Result
+deriving (Bits, FShow);
+
+// ================================================================
+// INTERFACE
 
 interface CSR_RegFile_IFC;
    // Reset
@@ -58,7 +72,7 @@ interface CSR_RegFile_IFC;
 
    // CSR write (returning new value)
    (* always_ready *)
-   method ActionValue #(WordXL) mav_csr_write (CSR_Addr csr_addr, WordXL word);
+   method ActionValue #(CSR_Write_Result) mav_csr_write (CSR_Addr csr_addr, WordXL word);
 
 `ifdef ISA_F
    // Read FRM
@@ -728,157 +742,175 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
    // transformation is to ignore the attempted write-value and return the hardwired value.
    // The value returned is conceptually the value you'd read if you did a subsequent CSR read.
 
-   function ActionValue #(WordXL) fav_csr_write (CSR_Addr csr_addr, WordXL wordxl);
+   function ActionValue #(CSR_Write_Result) fav_csr_write (CSR_Addr csr_addr, WordXL wordxl);
       actionvalue
-	 Bool    success = True;
-	 WordXL  result  = ?;
+	 Bool            success = True;
+	 WordXL          new_csr_value  = ?;
+	 Maybe #(WordXL) m_new_csr_value2 = tagged Invalid;
 
 	 if ((csr_addr_mhpmcounter3 <= csr_addr) && (csr_addr <= csr_addr_mhpmcounter31))
 	    begin
-	       result = 0;    // hardwired
+	       new_csr_value = 0;    // hardwired
 	    end
 `ifdef RV32
 	 else if ((csr_addr_mhpmcounter3h <= csr_addr) && (csr_addr <= csr_addr_mhpmcounter31h))
 	    begin
-	       result = 0;    // hardwired
+	       new_csr_value = 0;    // hardwired
 	    end
 `endif
 	 else if ((csr_addr_mhpmevent3 <= csr_addr) && (csr_addr <= csr_addr_mhpmevent31))
 	    begin
-	       result = 0;    // hardwired
+	       new_csr_value = 0;    // hardwired
 	    end
 	 else
 	    case (csr_addr)
 	       // User mode csrs
 `ifdef ISA_F
 	       csr_addr_fflags:     begin
-				       result     = zeroExtend (wordxl [4:0]);
-				       rg_fflags <= wordxl [4:0];
+				       new_csr_value = zeroExtend (wordxl [4:0]);
+				       rg_fflags    <= wordxl [4:0];
+
+				       // Update mstatus.fs to 'dirty'
+				       let old_mstatus  = csr_mstatus.fv_read;
+				       let new_mstatus1 = fv_assign_bits (old_mstatus,
+									  fromInteger (mstatus_fs_bitpos),
+									  fs_xs_dirty);
+				       let new_mstatus2 <- csr_mstatus.fav_write (misa, new_mstatus1);
+				       m_new_csr_value2 = tagged Valid new_mstatus2;
 				    end
 	       csr_addr_frm:        begin
-				       result  = zeroExtend (wordxl [2:0]);
-				       rg_frm <= wordxl [2:0];
+				       new_csr_value = zeroExtend (wordxl [2:0]);
+				       rg_frm       <= wordxl [2:0];
+
+				       // Update mstatus.fs to 'dirty'
+				       let old_mstatus  = csr_mstatus.fv_read;
+				       let new_mstatus1 = fv_assign_bits (old_mstatus,
+									  fromInteger (mstatus_fs_bitpos),
+									  fs_xs_dirty);
+				       let new_mstatus2 <- csr_mstatus.fav_write (misa, new_mstatus1);
+				       m_new_csr_value2 = tagged Valid new_mstatus2;
 				    end
 	       csr_addr_fcsr:       begin
 				       // Update fcsr itself
-				       result     = zeroExtend (wordxl [7:0]);
-				       rg_fflags <= wordxl [4:0];
-				       rg_frm    <= wordxl [7:5];
+				       new_csr_value = zeroExtend (wordxl [7:0]);
+				       rg_fflags    <= wordxl [4:0];
+				       rg_frm       <= wordxl [7:5];
 
 				       // Update mstatus.fs to 'dirty'
-				       let old_mstatus = csr_mstatus.fv_read;
-				       let new_mstatus = fv_assign_bits (old_mstatus,
+				       let old_mstatus  = csr_mstatus.fv_read;
+				       let new_mstatus1 = fv_assign_bits (old_mstatus,
 									 fromInteger (mstatus_fs_bitpos),
 									 fs_xs_dirty);
-				       csr_mstatus.fa_write (misa, new_mstatus);
+				       let new_mstatus2 <- csr_mstatus.fav_write (misa, new_mstatus1);
+				       m_new_csr_value2 = tagged Valid new_mstatus2;
 				    end
 `endif
 
 `ifdef ISA_PRIV_S
 	       csr_addr_sstatus:    begin
-				       result <- csr_mstatus.fav_sstatus_write (misa, wordxl);
+				       new_csr_value <- csr_mstatus.fav_sstatus_write (misa, wordxl);
 				    end
 	       csr_addr_sedeleg:    begin
-				       result = 0;               // Hardwired to 0 (no delegation)
+				       new_csr_value = 0;               // Hardwired to 0 (no delegation)
 				    end
 	       csr_addr_sideleg:    begin
-				       result = 0;               // Hardwired to 0 (no delegation)
+				       new_csr_value = 0;               // Hardwired to 0 (no delegation)
 				    end
 	       csr_addr_sie:        begin
-				       result <- csr_mie.fav_sie_write (misa, wordxl);
+				       new_csr_value <- csr_mie.fav_sie_write (misa, wordxl);
 				    end
 	       csr_addr_stvec:      begin
-				       let mtvec = word_to_mtvec (wordxl);
-				       result    = mtvec_to_word (mtvec);
-				       rg_stvec <= mtvec;
+				       let mtvec     = word_to_mtvec (wordxl);
+				       new_csr_value = mtvec_to_word (mtvec);
+				       rg_stvec     <= mtvec;
 				    end
-	       csr_addr_scounteren: result = 0;    // Hardwired to zero
+	       csr_addr_scounteren: new_csr_value = 0;    // Hardwired to zero
 
 	       csr_addr_sscratch:   begin
-				       result       = wordxl;
-				       rg_sscratch <= result;
+				       new_csr_value = wordxl;
+				       rg_sscratch  <= new_csr_value;
 				    end
 	       csr_addr_sepc:       begin
 `ifdef ISA_C
-				       result   = (wordxl & (~ 1));    // sepc [0] always zero
+				       new_csr_value = (wordxl & (~ 1));    // sepc [0] always zero
 `else
-				       result   = (wordxl & (~ 3));    // sepc [1:0] always zero
+				       new_csr_value = (wordxl & (~ 3));    // sepc [1:0] always zero
 `endif
-				       rg_sepc     <= result;
+				       rg_sepc      <= new_csr_value;
 				    end
 	       csr_addr_scause:     begin
-				       let mcause   = word_to_mcause (wordxl);
-				       result       = mcause_to_word (mcause);
-				       rg_scause   <= mcause;
+				       let mcause    = word_to_mcause (wordxl);
+				       new_csr_value = mcause_to_word (mcause);
+				       rg_scause    <= mcause;
 				    end
 	       csr_addr_stval:      begin
-				       result    = wordxl;
-				       rg_stval <= result;
+				       new_csr_value = wordxl;
+				       rg_stval     <= new_csr_value;
 				    end
 	       csr_addr_sip:        begin
-				       result <- csr_mip.fav_sip_write (misa, wordxl);
+				       new_csr_value <- csr_mip.fav_sip_write (misa, wordxl);
 				    end
 	       csr_addr_satp:       begin
-				       result   = wordxl;
-				       rg_satp <= result;
+				       new_csr_value = wordxl;
+				       rg_satp      <= new_csr_value;
 				    end
 	       csr_addr_medeleg:    begin
-				       result      = (wordxl & 'h_B3FF);  // 16 bits relevant and some are 0
-				       rg_medeleg <= truncate (result);
+				       new_csr_value = (wordxl & 'h_B3FF);  // 16 bits relevant and some are 0
+				       rg_medeleg   <= truncate (new_csr_value);
 				    end
 	       csr_addr_mideleg:    begin
-				       result      = (wordxl & 'h_0FFF);  // 12 bits relevant
-				       rg_mideleg <= truncate (result);
+				       new_csr_value = (wordxl & 'h_0FFF);  // 12 bits relevant
+				       rg_mideleg   <= truncate (new_csr_value);
 				    end
 `endif
 
 	       // Machine mode
-	       csr_addr_mvendorid:  result = mvendorid;    // hardwired
-	       csr_addr_marchid:    result = marchid;      // hardwired
-	       csr_addr_mimpid:     result = mimpid;       // hardwired
-	       csr_addr_mhartid:    result = mhartid;      // hardwired
+	       csr_addr_mvendorid:  new_csr_value = mvendorid;    // hardwired
+	       csr_addr_marchid:    new_csr_value = marchid;      // hardwired
+	       csr_addr_mimpid:     new_csr_value = mimpid;       // hardwired
+	       csr_addr_mhartid:    new_csr_value = mhartid;      // hardwired
 	       csr_addr_mstatus:    begin
-				      result <- csr_mstatus.fav_write (misa, wordxl);
+				      new_csr_value <- csr_mstatus.fav_write (misa, wordxl);
 				    end
 	       csr_addr_misa:       begin
-				       result = misa_to_word (misa);
+				       new_csr_value = misa_to_word (misa);
 				    end
 	       csr_addr_mie:        begin
-				       result <- csr_mie.fav_write (misa, wordxl);
+				       new_csr_value <- csr_mie.fav_write (misa, wordxl);
 				    end
 	       csr_addr_mtvec:      begin
-				       let mtvec = word_to_mtvec (wordxl);
-				       result    = mtvec_to_word (mtvec);
-				       rg_mtvec <= mtvec;
+				       let mtvec     = word_to_mtvec (wordxl);
+				       new_csr_value = mtvec_to_word (mtvec);
+				       rg_mtvec     <= mtvec;
 				    end
 	       csr_addr_mcounteren: begin
 				       let mcounteren = word_to_mcounteren(wordxl);
-				       result         = mcounteren_to_word (mcounteren);
+				       new_csr_value  = mcounteren_to_word (mcounteren);
 				       rg_mcounteren <= mcounteren;
 				    end
 	       csr_addr_mscratch:   begin
-				       result       = wordxl;
-				       rg_mscratch <= result;
+				       new_csr_value = wordxl;
+				       rg_mscratch  <= new_csr_value;
 				    end
 	       csr_addr_mepc:       begin
 `ifdef ISA_C
-				       result   = (wordxl & (~ 1));    // mepc [0] always zero
+				       new_csr_value = (wordxl & (~ 1));    // mepc [0] always zero
 `else
-				       result   = (wordxl & (~ 3));    // mepc [1:0] always zero
+				       new_csr_value = (wordxl & (~ 3));    // mepc [1:0] always zero
 `endif
-				       rg_mepc <= result;
+				       rg_mepc      <= new_csr_value;
 				    end
 	       csr_addr_mcause:     begin
-				       let mcause = word_to_mcause (wordxl);
-				       result     = mcause_to_word (mcause);
-				       rg_mcause <= mcause;
+				       let mcause    = word_to_mcause (wordxl);
+				       new_csr_value = mcause_to_word (mcause);
+				       rg_mcause    <= mcause;
 				    end
 	       csr_addr_mtval:      begin
-				       result    = wordxl;
-				       rg_mtval <= result;
+				       new_csr_value = wordxl;
+				       rg_mtval     <= new_csr_value;
 				    end
 	       csr_addr_mip:        begin
-				       result <- csr_mip.fav_write (misa, wordxl);
+				       new_csr_value <- csr_mip.fav_write (misa, wordxl);
 				    end
 	       // TODO: PMPs
 	       // csr_pmpcfg0:   rf_pmpcfg.upd (0, wordxl);
@@ -905,51 +937,51 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 
 `ifdef RV32
 	       csr_addr_mcycle:     begin
-				       result = wordxl;
-				       rw_mcycle.wset   ({ rg_mcycle   [63:32], wordxl });
+				       new_csr_value = wordxl;
+				       rw_mcycle.wset ({ rg_mcycle   [63:32], wordxl });
 				    end
 	       csr_addr_minstret:   begin
-				       result = wordxl;
+				       new_csr_value = wordxl;
 				       rw_minstret.wset ({ rg_minstret [63:32], wordxl });
 				    end
 	       csr_addr_mcycleh:    begin
-				       result = wordxl;
-				       rw_mcycle.wset   ({ wordxl, rg_mcycle   [31:0] });
+				       new_csr_value = wordxl;
+				       rw_mcycle.wset ({ wordxl, rg_mcycle   [31:0] });
 				    end
 	       csr_addr_minstreth:  begin
-				       result = wordxl;
+				       new_csr_value = wordxl;
 				       rw_minstret.wset ({ wordxl, rg_minstret [31:0] });
 				    end
 `else
 	       csr_addr_mcycle:     begin
-				       result = wordxl;
-				       rw_mcycle.wset (result);
+				       new_csr_value = wordxl;
+				       rw_mcycle.wset (new_csr_value);
 				    end
 	       csr_addr_minstret:   begin
-				       result = wordxl;
-				       rw_minstret.wset (result);
+				       new_csr_value = wordxl;
+				       rw_minstret.wset (new_csr_value);
 				    end
 `endif
 	       csr_addr_tselect:   begin
 				      // Until we implement trigger functionality,
 				      // return tselect always contains 0
-				      result      = 0;    // wordxl
-				      rg_tselect <= result;
+				      new_csr_value = 0;    // wordxl
+				      rg_tselect   <= new_csr_value;
 				   end
 	       csr_addr_tdata1:    begin
 				      // Until we implement trigger functionality,
 				      // force 'type' field ([xlen-1:xlen-4]) to zero
 				      // meaning: 'There is no trigger at this tselect'
-				      result     = (wordxl & ('1 >> 4));
-				      rg_tdata1 <= result;
+				      new_csr_value = (wordxl & ('1 >> 4));
+				      rg_tdata1    <= new_csr_value;
 				   end
 	       csr_addr_tdata2:    begin
-				      result     = wordxl;
-				      rg_tdata2 <= result;
+				      new_csr_value = wordxl;
+				      rg_tdata2    <= new_csr_value;
 				   end
 	       csr_addr_tdata3:    begin
-				      result     = wordxl;
-				      rg_tdata3 <= result;
+				      new_csr_value = wordxl;
+				      rg_tdata3    <= new_csr_value;
 				   end
 
 `ifdef INCLUDE_GDB_CONTROL
@@ -965,20 +997,20 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 					  rg_dcsr [3],       // nmip: read-only
 					  wordxl  [2],       // step
 					  wordxl  [1:0]};    // prv
-				       result   = zeroExtend (new_dcsr);
-				       rg_dcsr <= new_dcsr;
+				       new_csr_value = zeroExtend (new_dcsr);
+				       rg_dcsr      <= new_dcsr;
 				    end
 	       csr_addr_dpc:        begin
-				       result  = wordxl;
-				       rg_dpc <= result;
+				       new_csr_value = wordxl;
+				       rg_dpc       <= new_csr_value;
 				    end
 	       csr_addr_dscratch0:  begin
-				       result        = wordxl;
-				       rg_dscratch0 <= result;
+				       new_csr_value = wordxl;
+				       rg_dscratch0 <= new_csr_value;
 				    end
 	       csr_addr_dscratch1:  begin
-				       result        = wordxl;
-				       rg_dscratch1 <= result;
+				       new_csr_value = wordxl;
+				       rg_dscratch1 <= new_csr_value;
 				    end
 `endif
 
@@ -989,7 +1021,8 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 	    $display ("%0d: ERROR: CSR-write addr 0x%0h val 0x%0h not successful", rg_mcycle,
 		      csr_addr, wordxl);
 
-	 return result;
+	 return CSR_Write_Result {new_csr_value:    new_csr_value,
+				  m_new_csr_value2: m_new_csr_value2};
       endactionvalue
    endfunction: fav_csr_write
 
@@ -1075,7 +1108,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
    endmethod
 
    // CSR write
-   method ActionValue #(WordXL) mav_csr_write (CSR_Addr csr_addr, WordXL word);
+   method ActionValue #(CSR_Write_Result) mav_csr_write (CSR_Addr csr_addr, WordXL word);
       let result <- fav_csr_write (csr_addr, word);
       return result;
    endmethod
@@ -1298,7 +1331,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
    endmethod
 
    method Action timer_interrupt_req (Bool set_not_clear);
-      csr_mip.timer_interrupt_req  (set_not_clear);     
+      csr_mip.timer_interrupt_req  (set_not_clear);
       if (cfg_verbosity > 1)
 	 $display ("%0d: CSR_RegFile: timer_interrupt_req: %x", rg_mcycle, set_not_clear);
    endmethod

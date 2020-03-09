@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2019 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2013-2020 Bluespec, Inc. All Rights Reserved
 
 // ================================================================
 // ISA defs for UC Berkeley RISC V
@@ -363,6 +363,7 @@ RegName reg_t3   = 28; RegName reg_t4  = 29; RegName reg_t5 = 30; RegName reg_t6
 
 // ----------------
 // Is 'r' a standard register for PC save/restore on call/return?
+// This function is used in branch-predictors for managing the return-address stack.
 
 function Bool fn_reg_is_link (RegName  r);
    return ((r == x1) || (r == x5));

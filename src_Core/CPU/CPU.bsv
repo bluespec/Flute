@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved
 
 package CPU;
 
@@ -446,7 +446,7 @@ module mkCPU (CPU_IFC);
 	 $display (" (RV32)");
       else
 	 $display (" (RV64)");
-      $display ("Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved.");
+      $display ("Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved.");
       $display ("================================================================");
 
       gpr_regfile.server_reset.request.put (?);
@@ -972,10 +972,9 @@ module mkCPU (CPU_IFC);
 	 gpr_regfile.write_rd (rd, new_rd_val);
 
 	 // Writeback to CSR file
-	 WordXL new_csr_val = ?;
-         begin
-	    new_csr_val <- csr_regfile.mav_csr_write (csr_addr, rs1_val);
-	 end
+	 let csr_write_result <- csr_regfile.mav_csr_write (csr_addr, rs1_val);
+	 let new_csr_val       = csr_write_result.new_csr_value;
+	 let m_new_mstatus     = csr_write_result.m_new_csr_value2;
 
 	 // Accounting
 	 csr_regfile.csr_minstret_incr;
@@ -985,14 +984,16 @@ module mkCPU (CPU_IFC);
 
 `ifdef INCLUDE_TANDEM_VERIF
 	 // Trace data
-	 let trace_data = rg_trap_trace_data;
-	 trace_data.op = TRACE_CSRRX;
-	 // trace_data.pc, instr_sz and instr    should already be set
-	 trace_data.rd = rd;
-	 trace_data.word1 = new_rd_val;
-	 trace_data.word2 = 1;                        // whether we've written csr or not
-	 trace_data.word3 = zeroExtend (csr_addr);
-	 trace_data.word4 = new_csr_val;
+	 let trace_data = mkTrace_CSRRX (rg_trap_trace_data.pc,
+					 rg_trap_trace_data.instr_sz,
+					 rg_trap_trace_data.instr,
+					 rd,
+					 new_rd_val,
+					 True,    // updated-CSR info is valid
+					 csr_addr,
+					 new_csr_val,
+					 isValid (m_new_mstatus),
+					 fromMaybe (?, m_new_mstatus));
 	 f_trace_data.enq (trace_data);
 `endif
 
@@ -1083,15 +1084,16 @@ module mkCPU (CPU_IFC);
 	 gpr_regfile.write_rd (rd, new_rd_val);
 
 	 // Writeback to CSR file, but only if rs1 != 0
-	 let x = (  ((funct3 == f3_CSRRS) || (funct3 == f3_CSRRSI))
-		  ? (csr_val | rs1_val)                // CSRRS, CSRRSI
-		  : csr_val & (~ rs1_val));            // CSRRC, CSRRCI
-
-	 WordXL new_csr_val = ?;
+	 WordXL          new_csr_val = ?;
+	 Maybe #(WordXL) m_new_mstatus = tagged Invalid;
 	 if (rs1 != 0) begin
-	    begin
-	       new_csr_val <- csr_regfile.mav_csr_write (csr_addr, x);
-	    end
+	    let x = (  ((funct3 == f3_CSRRS) || (funct3 == f3_CSRRSI))
+		     ? (csr_val | rs1_val)                // CSRRS, CSRRSI
+		     : csr_val & (~ rs1_val));            // CSRRC, CSRRCI
+
+	    let csr_write_result <- csr_regfile.mav_csr_write (csr_addr, x);
+	    new_csr_val           = csr_write_result.new_csr_value;
+	    m_new_mstatus         = csr_write_result.m_new_csr_value2;
 	 end
 
 	 // Accounting
@@ -1102,14 +1104,16 @@ module mkCPU (CPU_IFC);
 
 `ifdef INCLUDE_TANDEM_VERIF
 	 // Trace data
-	 let trace_data = rg_trap_trace_data;
-	 trace_data.op = TRACE_CSRRX;
-	 // trace_data.pc, instr_sz and instr    should already be set
-	 trace_data.rd = rd;
-	 trace_data.word1 = new_rd_val;
-	 trace_data.word2 = ((rs1 != 0) ? 1 : 0);    // whether we've written csr or not
-	 trace_data.word3 = zeroExtend (csr_addr);
-	 trace_data.word4 = new_csr_val;
+	 let trace_data = mkTrace_CSRRX (rg_trap_trace_data.pc,
+					 rg_trap_trace_data.instr_sz,
+					 rg_trap_trace_data.instr,
+					 rd,
+					 new_rd_val,
+					 (rs1 != 0),    // whether we've written csr or not
+					 csr_addr,
+					 new_csr_val,
+					 isValid (m_new_mstatus),
+					 fromMaybe (?, m_new_mstatus));
 	 f_trace_data.enq (trace_data);
 `endif
 
