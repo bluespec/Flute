@@ -85,9 +85,13 @@ interface CSR_RegFile_IFC;
 
    // Update FCSR.FFLAGS
    (* always_ready *)
+   method Bit #(5) mv_update_fcsr_fflags (Bit #(5) flags);
+   (* always_ready *)
    method Action ma_update_fcsr_fflags (Bit #(5) flags);
 
    // Update MSTATUS.FS
+   (* always_ready *)
+   method WordXL mv_update_mstatus_fs (Bit #(2) fs);
    (* always_ready *)
    method Action ma_update_mstatus_fs (Bit #(2) fs);
 `endif
@@ -378,8 +382,8 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
    Reg #(Bool)    rg_nmi <- mkReg (False);
    Reg #(WordXL)  rg_nmi_vector <- mkRegU;
 
-   // ----------------------------------------------------------------
-   // Reset.
+   // ================================================================
+   // BEHAVIOR: RESET
    // Initialize some CSRs.
 
    rule rl_reset_start (rg_state == RF_RESET_START);
@@ -441,6 +445,9 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 
       rg_state <= RF_RUNNING;
    endrule
+
+   // ================================================================
+   // BEHAVIOR
 
    // ----------------------------------------------------------------
    // CYCLE counter
@@ -642,10 +649,10 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 
 `ifdef ISA_PRIV_S
 	    // Supervisor mode csrs
-	    csr_addr_sstatus:    m_csr_value = tagged Valid (csr_mstatus.fv_sstatus_read);
+	    csr_addr_sstatus:    m_csr_value = tagged Valid (csr_mstatus.mv_sstatus_read);
 	    csr_addr_sedeleg:    m_csr_value = tagged Valid zeroExtend (sedeleg);
 	    csr_addr_sideleg:    m_csr_value = tagged Valid zeroExtend (sideleg);
-	    csr_addr_sie:        m_csr_value = tagged Valid (csr_mie.fv_sie_read);
+	    csr_addr_sie:        m_csr_value = tagged Valid (csr_mie.mv_sie_read);
 	    csr_addr_stvec:      m_csr_value = tagged Valid (mtvec_to_word (rg_stvec));
 	    csr_addr_scounteren: m_csr_value = tagged Valid 0;
 
@@ -653,7 +660,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 	    csr_addr_sepc:       m_csr_value = tagged Valid ((misa.c == 1'b1) ? rg_sepc : (rg_sepc & (~ 2)));
 	    csr_addr_scause:     m_csr_value = tagged Valid (mcause_to_word (rg_scause));
 	    csr_addr_stval:      m_csr_value = tagged Valid rg_stval;
-	    csr_addr_sip:        m_csr_value = tagged Valid (csr_mip.fv_sip_read);
+	    csr_addr_sip:        m_csr_value = tagged Valid (csr_mip.mv_sip_read);
 
 	    csr_addr_satp:       m_csr_value = tagged Valid rg_satp;
 
@@ -667,9 +674,9 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 	    csr_addr_mimpid:     m_csr_value = tagged Valid mimpid;
 	    csr_addr_mhartid:    m_csr_value = tagged Valid mhartid;
 
-	    csr_addr_mstatus:    m_csr_value = tagged Valid (csr_mstatus.fv_read);
+	    csr_addr_mstatus:    m_csr_value = tagged Valid (csr_mstatus.mv_read);
 	    csr_addr_misa:       m_csr_value = tagged Valid (misa_to_word (misa));
-	    csr_addr_mie:        m_csr_value = tagged Valid (csr_mie.fv_read);
+	    csr_addr_mie:        m_csr_value = tagged Valid (csr_mie.mv_read);
 	    csr_addr_mtvec:      m_csr_value = tagged Valid (mtvec_to_word (rg_mtvec));
 	    csr_addr_mcounteren: m_csr_value = tagged Valid (mcounteren_to_word (rg_mcounteren));
 
@@ -677,7 +684,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 	    csr_addr_mepc:       m_csr_value = tagged Valid ((misa.c == 1'b1) ? rg_mepc : (rg_mepc & (~ 2)));
 	    csr_addr_mcause:     m_csr_value = tagged Valid (mcause_to_word (rg_mcause));
 	    csr_addr_mtval:      m_csr_value = tagged Valid rg_mtval;
-	    csr_addr_mip:        m_csr_value = tagged Valid (csr_mip.fv_read);
+	    csr_addr_mip:        m_csr_value = tagged Valid (csr_mip.mv_read);
 
 	    // TODO: Phys Mem Protection regs
 	    // csr_pmpcfg0:   m_csr_value = tagged Valid rf_pmpcfg.sub (0);
@@ -771,11 +778,11 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 				       rg_fflags    <= wordxl [4:0];
 
 				       // Update mstatus.fs to 'dirty'
-				       let old_mstatus  = csr_mstatus.fv_read;
+				       let old_mstatus  = csr_mstatus.mv_read;
 				       let new_mstatus1 = fv_assign_bits (old_mstatus,
 									  fromInteger (mstatus_fs_bitpos),
 									  fs_xs_dirty);
-				       let new_mstatus2 <- csr_mstatus.fav_write (misa, new_mstatus1);
+				       let new_mstatus2 <- csr_mstatus.mav_write (misa, new_mstatus1);
 				       m_new_csr_value2 = tagged Valid new_mstatus2;
 				    end
 	       csr_addr_frm:        begin
@@ -783,11 +790,11 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 				       rg_frm       <= wordxl [2:0];
 
 				       // Update mstatus.fs to 'dirty'
-				       let old_mstatus  = csr_mstatus.fv_read;
+				       let old_mstatus  = csr_mstatus.mv_read;
 				       let new_mstatus1 = fv_assign_bits (old_mstatus,
 									  fromInteger (mstatus_fs_bitpos),
 									  fs_xs_dirty);
-				       let new_mstatus2 <- csr_mstatus.fav_write (misa, new_mstatus1);
+				       let new_mstatus2 <- csr_mstatus.mav_write (misa, new_mstatus1);
 				       m_new_csr_value2 = tagged Valid new_mstatus2;
 				    end
 	       csr_addr_fcsr:       begin
@@ -797,18 +804,18 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 				       rg_frm       <= wordxl [7:5];
 
 				       // Update mstatus.fs to 'dirty'
-				       let old_mstatus  = csr_mstatus.fv_read;
+				       let old_mstatus  = csr_mstatus.mv_read;
 				       let new_mstatus1 = fv_assign_bits (old_mstatus,
 									 fromInteger (mstatus_fs_bitpos),
 									 fs_xs_dirty);
-				       let new_mstatus2 <- csr_mstatus.fav_write (misa, new_mstatus1);
+				       let new_mstatus2 <- csr_mstatus.mav_write (misa, new_mstatus1);
 				       m_new_csr_value2 = tagged Valid new_mstatus2;
 				    end
 `endif
 
 `ifdef ISA_PRIV_S
 	       csr_addr_sstatus:    begin
-				       new_csr_value <- csr_mstatus.fav_sstatus_write (misa, wordxl);
+				       new_csr_value <- csr_mstatus.mav_sstatus_write (misa, wordxl);
 				    end
 	       csr_addr_sedeleg:    begin
 				       new_csr_value = 0;               // Hardwired to 0 (no delegation)
@@ -817,7 +824,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 				       new_csr_value = 0;               // Hardwired to 0 (no delegation)
 				    end
 	       csr_addr_sie:        begin
-				       new_csr_value <- csr_mie.fav_sie_write (misa, wordxl);
+				       new_csr_value <- csr_mie.mav_sie_write (misa, wordxl);
 				    end
 	       csr_addr_stvec:      begin
 				       let mtvec     = word_to_mtvec (wordxl);
@@ -848,7 +855,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 				       rg_stval     <= new_csr_value;
 				    end
 	       csr_addr_sip:        begin
-				       new_csr_value <- csr_mip.fav_sip_write (misa, wordxl);
+				       new_csr_value <- csr_mip.mav_sip_write (misa, wordxl);
 				    end
 	       csr_addr_satp:       begin
 				       new_csr_value = wordxl;
@@ -870,13 +877,13 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 	       csr_addr_mimpid:     new_csr_value = mimpid;       // hardwired
 	       csr_addr_mhartid:    new_csr_value = mhartid;      // hardwired
 	       csr_addr_mstatus:    begin
-				      new_csr_value <- csr_mstatus.fav_write (misa, wordxl);
+				      new_csr_value <- csr_mstatus.mav_write (misa, wordxl);
 				    end
 	       csr_addr_misa:       begin
 				       new_csr_value = misa_to_word (misa);
 				    end
 	       csr_addr_mie:        begin
-				       new_csr_value <- csr_mie.fav_write (misa, wordxl);
+				       new_csr_value <- csr_mie.mav_write (misa, wordxl);
 				    end
 	       csr_addr_mtvec:      begin
 				       let mtvec     = word_to_mtvec (wordxl);
@@ -910,7 +917,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 				       rg_mtval     <= new_csr_value;
 				    end
 	       csr_addr_mip:        begin
-				       new_csr_value <- csr_mip.fav_write (misa, wordxl);
+				       new_csr_value <- csr_mip.mav_write (misa, wordxl);
 				    end
 	       // TODO: PMPs
 	       // csr_pmpcfg0:   rf_pmpcfg.upd (0, wordxl);
@@ -1033,7 +1040,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
       Bool priv_ok = priv >= csr_addr [9:8];      // Accessible at current privilege?
 
       // TVM fault: cannot access SATP if MSTATUS.TVM is set
-      Bool tvm_fault = ((csr_addr == csr_addr_satp) && (csr_mstatus.fv_read [mstatus_tvm_bitpos] == 1'b1));
+      Bool tvm_fault = ((csr_addr == csr_addr_satp) && (csr_mstatus.mv_read [mstatus_tvm_bitpos] == 1'b1));
 
       // TODO: MxDELEG fault: MIDELEG and MEDELEG do not exist in
       //     systems with only m_Priv and systems with m_Priv and u_Priv but
@@ -1073,6 +1080,20 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
    // ================================================================
    // INTERFACE
 
+   // ----------------------------------------------------------------
+   // Help functions for interface methods
+
+   function Bit #(5) fv_update_fcsr_fflags (Bit #(5) flags);
+      return (rg_fflags | flags);
+   endfunction
+
+   function WordXL fv_update_mstatus_fs (Bit #(2) fs);
+      let old_mstatus = csr_mstatus.mv_read;
+      let new_mstatus = fv_assign_bits (old_mstatus, fromInteger (mstatus_fs_bitpos), fs);
+      return csr_mstatus.mv_write (misa, new_mstatus);
+   endfunction
+
+   // ----------------------------------------------------------------
    // Reset
    interface Server server_reset;
       interface Put request;
@@ -1129,34 +1150,41 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
    endmethod
 
    // Update FCSR.FFLAGS
+   method Bit #(5) mv_update_fcsr_fflags (Bit #(5) flags);
+      return fv_update_fcsr_fflags (flags);
+   endmethod
    method Action ma_update_fcsr_fflags (Bit#(5) flags);
-      rg_fflags <= rg_fflags | flags;
+      rg_fflags <= fv_update_fcsr_fflags (flags);
    endmethod
 
    // Update MSTATUS.FS
+   method WordXL mv_update_mstatus_fs (Bit #(2) fs);
+      return fv_update_mstatus_fs (fs);
+   endmethod
+
    method Action ma_update_mstatus_fs (Bit #(2) fs);
-      let old_mstatus = csr_mstatus.fv_read;
+      let old_mstatus = csr_mstatus.mv_read;
       let new_mstatus = fv_assign_bits (old_mstatus, fromInteger (mstatus_fs_bitpos), fs);
-      csr_mstatus.fa_write (misa, new_mstatus);
+      csr_mstatus.ma_write (misa, new_mstatus);
    endmethod
 `endif
 
    // Read MSTATUS
    method WordXL read_mstatus;
-      return  csr_mstatus.fv_read;
+      return  csr_mstatus.mv_read;
    endmethod
 
 `ifdef ISA_PRIV_S
    // Read SSTATUS
    method WordXL read_sstatus;
-      return  csr_mstatus.fv_sstatus_read;
+      return  csr_mstatus.mv_sstatus_read;
    endmethod
 `endif
 
 `ifdef ISA_PRIV_U
    // Read USTATUS
    method WordXL read_ustatus;
-      return  csr_mstatus.fv_ustatus_read;
+      return  csr_mstatus.mv_ustatus_read;
    endmethod
 `endif
 
@@ -1183,12 +1211,12 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 	 $display ("    from priv %0d  pc 0x%0h  interrupt %0d  exc_code %0d  xtval 0x%0h",
 		   from_priv, pc, pack (interrupt), exc_code, xtval);
 `ifdef ISA_PRIV_S
-	 fa_show_trap_csrs (s_Priv_Mode, csr_mip.fv_read, csr_mie.fv_read, 0, 0, rg_scause,
-			    csr_mstatus.fv_sstatus_read,
+	 fa_show_trap_csrs (s_Priv_Mode, csr_mip.mv_read, csr_mie.mv_read, 0, 0, rg_scause,
+			    csr_mstatus.mv_sstatus_read,
 			    rg_stvec, rg_sepc, rg_stval);
 `endif
-	 fa_show_trap_csrs (m_Priv_Mode, csr_mip.fv_read, csr_mie.fv_read, rg_medeleg, rg_mideleg, rg_mcause,
-			    csr_mstatus.fv_read,
+	 fa_show_trap_csrs (m_Priv_Mode, csr_mip.mv_read, csr_mie.mv_read, rg_medeleg, rg_mideleg, rg_mcause,
+			    csr_mstatus.mv_read,
 			    rg_mtvec, rg_mepc, rg_mtval);
       end
 
@@ -1202,8 +1230,8 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 						     rg_mideleg,
 						     sedeleg,
 						     sideleg));
-      let new_mstatus  = fv_new_mstatus_on_exception (csr_mstatus.fv_read, from_priv, new_priv);
-      let new_status  <- csr_mstatus.fav_write (misa, new_mstatus);
+      let new_mstatus  = fv_new_mstatus_on_exception (csr_mstatus.mv_read, from_priv, new_priv);
+      let new_status  <- csr_mstatus.mav_write (misa, new_mstatus);
 
       let  xcause      = (nmi
 			  ? MCause {interrupt: 0, exc_code: 0 }
@@ -1257,8 +1285,8 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 
    // CSR RET actions (return from exception)
    method ActionValue #(Tuple3 #(Addr, Priv_Mode, Word)) csr_ret_actions (Priv_Mode from_priv);
-      match { .new_mstatus, .to_priv } = fv_new_mstatus_on_ret (misa, csr_mstatus.fv_read, from_priv);
-      csr_mstatus.fa_write (misa, new_mstatus);
+      match { .new_mstatus, .to_priv } = fv_new_mstatus_on_ret (misa, csr_mstatus.mv_read, from_priv);
+      csr_mstatus.ma_write (misa, new_mstatus);
       WordXL next_pc = rg_mepc;
 `ifdef ISA_PRIV_S
       if (from_priv != m_Priv_Mode)
@@ -1314,7 +1342,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 
    // Read MIP
    method WordXL csr_mip_read;
-      return csr_mip.fv_read;
+      return csr_mip.mv_read;
    endmethod
 
    // Interrupts
@@ -1344,9 +1372,9 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 
    method Maybe #(Exc_Code) interrupt_pending (Priv_Mode cur_priv);
       return fv_interrupt_pending (misa,
-				   csr_mstatus.fv_read,
-				   csr_mip.fv_read,
-				   csr_mie.fv_read,
+				   csr_mstatus.mv_read,
+				   csr_mip.mv_read,
+				   csr_mie.mv_read,
 				   rg_mideleg,
 				   sideleg,
 				   cur_priv);
@@ -1354,8 +1382,8 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 
    // WFI ignores mstatus ies and ideleg regs
    method Bool wfi_resume;
-      WordXL mip = csr_mip.fv_read;
-      WordXL mie = csr_mie.fv_read;
+      WordXL mip = csr_mip.mv_read;
+      WordXL mie = csr_mie.mv_read;
       return ((mip & mie) != 0);
    endmethod
 
@@ -1410,17 +1438,17 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
    // Debugging this module
 
    method Action debug;
-      $display ("mstatus = 0x%0h", csr_mstatus.fv_read);
+      $display ("mstatus = 0x%0h", csr_mstatus.mv_read);
 `ifdef ISA_PRIV_S
-      $display ("sstatus = 0x%0h", csr_mstatus.fv_sstatus_read);
+      $display ("sstatus = 0x%0h", csr_mstatus.mv_sstatus_read);
 `endif
-      $display ("mip     = 0x%0h", csr_mip.fv_read);
+      $display ("mip     = 0x%0h", csr_mip.mv_read);
 `ifdef ISA_PRIV_S
-      $display ("sip     = 0x%0h", csr_mip.fv_sip_read);
+      $display ("sip     = 0x%0h", csr_mip.mv_sip_read);
 `endif
-      $display ("mie     = 0x%0h", csr_mie.fv_read);
+      $display ("mie     = 0x%0h", csr_mie.mv_read);
 `ifdef ISA_PRIV_S
-      $display ("sie     = 0x%0h", csr_mie.fv_sie_read);
+      $display ("sie     = 0x%0h", csr_mie.mv_sie_read);
 `endif
    endmethod      
 endmodule

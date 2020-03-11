@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved
 
 package CSR_MSTATUS;
 
@@ -26,26 +26,27 @@ import ISA_Decls :: *;
 interface CSR_MSTATUS_IFC;
    method Action reset (MISA misa_reset_value);
 
-   method WordXL fv_read;
+   method WordXL mv_read;
 
    // Fixup wordxl and write to reg
-   method Action fa_write (MISA  misa, WordXL  wordxl);
+   method WordXL mv_write (MISA  misa, WordXL  wordxl);
+   method Action ma_write (MISA  misa, WordXL  wordxl);
 
    // Fixup wordxl and write, and return actual value written
-   method ActionValue #(WordXL) fav_write (MISA  misa, WordXL  wordxl);
+   method ActionValue #(WordXL) mav_write (MISA  misa, WordXL  wordxl);
 
 `ifdef ISA_PRIV_U
    // UStatus is a view of MStatus, when 'U' extension is implemented.
-   method WordXL fv_ustatus_read;
-   method Action fa_ustatus_write (MISA  misa, WordXL  wordxl);
-   method ActionValue #(WordXL) fav_ustatus_write (MISA  misa, WordXL  wordxl);
+   method WordXL mv_ustatus_read;
+   method Action ma_ustatus_write (MISA  misa, WordXL  wordxl);
+   method ActionValue #(WordXL) mav_ustatus_write (MISA  misa, WordXL  wordxl);
 `endif
 
 `ifdef ISA_PRIV_S
    // SStatus is a view of MStatus, when 'S' extension is implemented.
-   method WordXL fv_sstatus_read;
-   method Action fa_sstatus_write (MISA  misa, WordXL  wordxl);
-   method ActionValue #(WordXL) fav_sstatus_write (MISA  misa, WordXL  wordxl);
+   method WordXL mv_sstatus_read;
+   method Action ma_sstatus_write (MISA  misa, WordXL  wordxl);
+   method ActionValue #(WordXL) mav_sstatus_write (MISA  misa, WordXL  wordxl);
 `endif
 endinterface
 
@@ -66,15 +67,18 @@ module mkCSR_MSTATUS #(parameter MISA misa_reset_value) (CSR_MSTATUS_IFC);
       rg_mstatus <= fv_mstatus_reset_value (misa_reset_value);
    endmethod
 
-   method WordXL fv_read;
+   method WordXL mv_read;
       return rg_mstatus;
    endmethod
 
-   method Action fa_write (MISA  misa, WordXL  wordxl);
+   method WordXL mv_write (MISA  misa, WordXL  wordxl);
+      return fv_fixup_mstatus (misa, wordxl);
+   endmethod
+   method Action ma_write (MISA  misa, WordXL  wordxl);
       rg_mstatus <= fv_fixup_mstatus (misa, wordxl);
    endmethod
 
-   method ActionValue #(WordXL) fav_write (MISA misa,  WordXL wordxl);
+   method ActionValue #(WordXL) mav_write (MISA misa,  WordXL wordxl);
       let wordxl1 = fv_fixup_mstatus (misa, wordxl);
       rg_mstatus <= wordxl1;
       return wordxl1;
@@ -82,18 +86,18 @@ module mkCSR_MSTATUS #(parameter MISA misa_reset_value) (CSR_MSTATUS_IFC);
 
 `ifdef ISA_PRIV_S
    // SStatus is a view of MStatus, when 'S' extension is implemented.
-   method WordXL fv_sstatus_read;
+   method WordXL mv_sstatus_read;
       return fv_mstatus_to_sstatus (rg_mstatus);
    endmethod
 
-   method Action fa_sstatus_write (MISA  misa, WordXL  wordxl);
+   method Action ma_sstatus_write (MISA  misa, WordXL  wordxl);
       rg_mstatus <= fv_fixup_mstatus (misa,
 				      fv_sstatus_to_mstatus (misa,
 							     rg_mstatus,
 							     wordxl));
    endmethod
 
-   method ActionValue #(WordXL) fav_sstatus_write (MISA misa,  WordXL wordxl);
+   method ActionValue #(WordXL) mav_sstatus_write (MISA misa,  WordXL wordxl);
       let new_mstatus = fv_fixup_mstatus (misa,
 					  fv_sstatus_to_mstatus (misa,
 								 rg_mstatus,
@@ -105,18 +109,18 @@ module mkCSR_MSTATUS #(parameter MISA misa_reset_value) (CSR_MSTATUS_IFC);
 
 `ifdef ISA_PRIV_U
    // UStatus is a view of MStatus, when 'U' extension is implemented.
-   method WordXL fv_ustatus_read;
+   method WordXL mv_ustatus_read;
       return fv_mstatus_to_ustatus (rg_mstatus);
    endmethod
 
-   method Action fa_ustatus_write (MISA  misa, WordXL  wordxl);
+   method Action ma_ustatus_write (MISA  misa, WordXL  wordxl);
       rg_mstatus <= fv_fixup_mstatus (misa,
 				      fv_ustatus_to_mstatus (misa,
 							     rg_mstatus,
 							     wordxl));
    endmethod
 
-   method ActionValue #(WordXL) fav_ustatus_write (MISA misa,  WordXL wordxl);
+   method ActionValue #(WordXL) mav_ustatus_write (MISA misa,  WordXL wordxl);
       let wordxl1 = fv_fixup_mstatus (misa,
 				      fv_ustatus_to_mstatus (misa,
 							     rg_mstatus,

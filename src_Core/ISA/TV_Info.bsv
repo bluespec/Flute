@@ -237,9 +237,9 @@ function Trace_Data mkTrace_F_STORE (WordXL pc, Bit #(3) funct3, ISize isize, Bi
    return td;
 endfunction
 
-function Trace_Data fv_trace_update_mstatus_fs (Trace_Data td, Bit #(2) fs);
+function Trace_Data fv_trace_update_mstatus_fs (Trace_Data td, WordXL new_mstatus);
    let ntd = td;
-   ntd.word4 = fv_assign_bits (td.word4, fromInteger (mstatus_fs_bitpos), fs);
+   ntd.word4 = new_mstatus;
    return (ntd);
 endfunction
 

@@ -1,22 +1,16 @@
-// Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved
 
 package CPU_Stage3;
 
 // ================================================================
 // This is Stage 3 of the CPU.
 // It is the WB ("Write Back") stage:
-// - Writes back a GPR register value (if the instr has an Rd)
+// - Writes back a GPR register value (if the instr has a GPR Rd)
+// - Writes back an FPR register value (if the instr has an FPR Rd)
 // - Updates CSR INSTRET
 //     Note: this instr cannot be a CSRRx updating INSTRET, since
-//           CSRRx is done completely in Stage1.
-
-
-// Note: $displays are indented by (stage num x 4) spaces.
-// for traditional pipeline display
-//     IF
-//         DM
-//             WB
-// i.e., 12 spaces for this stage.
+//           CSRRx is done completely off-pipe.
+// = Optionaally: sends a TandemVerification trace packet
 
 // ================================================================
 // Exports
@@ -48,6 +42,10 @@ import FPR_RegFile :: *;
 `endif
 import CSR_RegFile :: *;
 import CPU_Globals :: *;
+
+`ifdef INCLUDE_TANDEM_VERIF
+import TV_Info     :: *;
+`endif
 
 // ================================================================
 // Interface
@@ -136,10 +134,27 @@ module mkCPU_Stage3 #(Bit #(4)         verbosity,
                                                             : BYPASS_RD_NONE;
 `endif
 
+`ifdef INCLUDE_TANDEM_VERIF
+      let trace_data = rg_stage3.trace_data;
+
+      if (rg_stage3.upd_flags) begin
+	 let fflags = csr_regfile.mv_update_fcsr_fflags (rg_stage3.fpr_flags);
+	 trace_data = fv_trace_update_fcsr_fflags (trace_data, fflags);
+      end
+
+      if (rg_stage3.upd_flags || rg_stage3.rd_in_fpr) begin
+	 let new_mstatus = csr_regfile.mv_update_mstatus_fs (fs_xs_dirty);
+	 trace_data = fv_trace_update_mstatus_fs (trace_data, new_mstatus);
+      end
+`endif
+
       return Output_Stage3 {ostatus: (rg_full ? OSTATUS_PIPE : OSTATUS_EMPTY),
 			    bypass : bypass
 `ifdef ISA_F
 			    , fbypass: fbypass
+`endif
+`ifdef INCLUDE_TANDEM_VERIF
+			    , trace_data: trace_data
 `endif
 			    };
    endfunction

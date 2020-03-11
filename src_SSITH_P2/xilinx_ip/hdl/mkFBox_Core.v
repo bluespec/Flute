@@ -405,7 +405,6 @@ module mkFBox_Core(verbosity,
   reg [31 : 0] v__h209197;
   reg [31 : 0] v__h209344;
   reg [31 : 0] v__h209496;
-  reg [31 : 0] v__h3508;
   reg [31 : 0] v__h1767;
   reg [31 : 0] v__h1107;
   reg [31 : 0] v__h1578;
@@ -417,6 +416,7 @@ module mkFBox_Core(verbosity,
   reg [31 : 0] v__h2974;
   reg [31 : 0] v__h3162;
   reg [31 : 0] v__h3340;
+  reg [31 : 0] v__h3508;
   reg [31 : 0] v__h3688;
   reg [31 : 0] v__h15019;
   reg [31 : 0] v__h25642;

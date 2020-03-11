@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved
 
 package CSR_MIP;
 
@@ -28,26 +28,26 @@ interface CSR_MIP_IFC;
    method Action reset;
 
    (* always_ready *)
-   method WordXL fv_read;
+   method WordXL mv_read;
 
    // Fixup wordxl and write, and return actual value written
    (* always_ready *)
-   method ActionValue #(WordXL) fav_write (MISA  misa, WordXL  wordxl);
+   method ActionValue #(WordXL) mav_write (MISA  misa, WordXL  wordxl);
 
 `ifdef ISA_PRIV_S
    // SIP is a view of MIP, when 'S' extension is implemented.
    (* always_ready *)
-   method WordXL fv_sip_read;
+   method WordXL mv_sip_read;
    (* always_ready *)
-   method ActionValue #(WordXL) fav_sip_write (MISA  misa, WordXL  wordxl);
+   method ActionValue #(WordXL) mav_sip_write (MISA  misa, WordXL  wordxl);
 `endif
 
 `ifdef ISA_N
    // UIP is a view of MIP, when 'N' extension is implemented.
    (* always_ready *)
-   method WordXL fv_uip_read;
+   method WordXL mv_uip_read;
    (* always_ready *)
-   method ActionValue #(WordXL) fav_uip_write (MISA  misa, WordXL  wordxl);
+   method ActionValue #(WordXL) mav_uip_write (MISA  misa, WordXL  wordxl);
 `endif
 
    (* always_ready, always_enabled *)
@@ -94,14 +94,14 @@ module mkCSR_MIP (CSR_MIP_IFC);
       rg_msip <= 0;    rg_ssip <= 0;    rg_usip <= 0;
    endmethod
 
-   method WordXL fv_read;
+   method WordXL mv_read;
       Bit #(12) new_mip = {rg_meip, 1'b0, rg_seip, rg_ueip,
 			   rg_mtip, 1'b0, rg_stip, rg_utip,
 			   rg_msip, 1'b0, rg_ssip, rg_usip};
       return zeroExtend (new_mip);
    endmethod
 
-   method ActionValue #(WordXL) fav_write (MISA misa,  WordXL wordxl);
+   method ActionValue #(WordXL) mav_write (MISA misa,  WordXL wordxl);
       // External-interrupt enables
       Bit #(1) seip = ((misa.s == 1) ? wordxl [mip_seip_bitpos] : 0);
       Bit #(1) ueip = ((misa.n == 1) ? wordxl [mip_ueip_bitpos] : 0);
@@ -127,14 +127,14 @@ module mkCSR_MIP (CSR_MIP_IFC);
 
 `ifdef ISA_PRIV_S
    // SIP is a view of MIP, when 'S' extension is implemented.
-   method WordXL fv_sip_read;
+   method WordXL mv_sip_read;
       Bit #(12) sip = {2'b0, rg_seip, rg_ueip,
 		       2'b0, rg_stip, rg_utip,
 		       2'b0, rg_ssip, rg_usip};
       return zeroExtend (sip);
    endmethod
 
-   method ActionValue #(WordXL) fav_sip_write (MISA  misa, WordXL  wordxl);
+   method ActionValue #(WordXL) mav_sip_write (MISA  misa, WordXL  wordxl);
       // Spec: "All bits besides SSIP, USIP and UEIP in the SIP register are read-only"
       let ueip = ((misa.n == 1) ? wordxl [mip_ueip_bitpos] : 0);
       let ssip = ((misa.s == 1) ? wordxl [mip_ssip_bitpos] : 0);
@@ -153,11 +153,11 @@ module mkCSR_MIP (CSR_MIP_IFC);
 
 `ifdef ISA_N
    // UIP is a view of MIP, when 'U' extension is implemented.
-   method WordXL fv_uip_read;
+   method WordXL mv_uip_read;
       return zeroExtend (fv_mip_to_uip (rg_mip));
    endmethod
 
-   method ActionValue #(WordXL) fav_uip_write (MISA misa,  WordXL wordxl);
+   method ActionValue #(WordXL) mav_uip_write (MISA misa,  WordXL wordxl);
       // All UIP bits are read-only
 
       Bit #(12) new_uip = {3'b0, rg_ueip,

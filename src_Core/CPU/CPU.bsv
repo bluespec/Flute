@@ -653,6 +653,12 @@ module mkCPU (CPU_IFC);
 
       if (stage3.out.ostatus == OSTATUS_PIPE) begin
 	 stage3.deq; stage3_full = False;
+
+`ifdef INCLUDE_TANDEM_VERIF
+	 // To Verifier
+	 let trace_data = stage3.out.trace_data;
+	 f_trace_data.enq (trace_data);
+`endif
       end
 
       // ----------------
@@ -661,12 +667,6 @@ module mkCPU (CPU_IFC);
       if ((! stage3_full) && (stage2.out.ostatus == OSTATUS_PIPE)) begin
 	 stage3.enq (stage2.out.data_to_stage3);  stage3_full = True;
 	 stage2.deq;                              stage2_full = False;
-
-`ifdef INCLUDE_TANDEM_VERIF
-	 // To Verifier
-	 let trace_data = stage2.out.trace_data;
-	 f_trace_data.enq (trace_data);
-`endif
 
 	 // Increment csr_INSTRET.
 	 // Note: this instr cannot be a CSRRx updating INSTRET, since
@@ -775,7 +775,7 @@ module mkCPU (CPU_IFC);
       rg_trap_interrupt  <= False;
       rg_trap_instr      <= stage2.out.data_to_stage3.instr;
 `ifdef INCLUDE_TANDEM_VERIF
-      rg_trap_trace_data <= stage2.out.trace_data;
+      rg_trap_trace_data <= stage2.out.data_to_stage3.trace_data;
 `endif
 
       rg_state           <= CPU_TRAP;

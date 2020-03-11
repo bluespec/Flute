@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved
 
 package CPU_Stage2;
 
@@ -136,18 +136,23 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 			       };
 `endif
 
-   let data_to_stage3_base = Data_Stage2_to_Stage3 {priv:      rg_stage2.priv,
-						    pc:        rg_stage2.pc,
-						    instr:     rg_stage2.instr,
+   let data_to_stage3_base = Data_Stage2_to_Stage3 {priv:       rg_stage2.priv,
+						    pc:         rg_stage2.pc,
+						    instr:      rg_stage2.instr,
+
+						    rd_valid:   False,
+						    rd:         rg_stage2.rd,
+						    rd_val:     rg_stage2.val1,
 `ifdef ISA_F
-                                                    rd_in_fpr: False,
-                                                    upd_flags: False,
-                                                    fpr_flags: 0,
-                                                    frd_val  : rg_stage2.fval1,
+                                                    rd_in_fpr:  False,
+                                                    upd_flags:  False,
+                                                    fpr_flags:  0,
+                                                    frd_val:    rg_stage2.fval1
 `endif
-						    rd_valid:  False,
-						    rd:        rg_stage2.rd,
-						    rd_val:    rg_stage2.val1};
+`ifdef INCLUDE_TANDEM_VERIF
+						    , trace_data: rg_stage2.trace_data
+`endif
+						    };
 
    let  trap_info_dmem = Trap_Info {epc:      rg_stage2.pc,
 				    exc_code: dcache.exc_code,
@@ -190,18 +195,14 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 
       // This stage is empty
       if (! rg_full) begin
-	 output_stage2 = Output_Stage2 {
-              ostatus         : OSTATUS_EMPTY
-            , trap_info       : ?
-            , data_to_stage3  : ?
-            , bypass          : no_bypass
+	 output_stage2 = Output_Stage2 {ostatus         : OSTATUS_EMPTY,
+					trap_info       : ?,
+					data_to_stage3  : ?,
+					bypass          : no_bypass
 `ifdef ISA_F
-            , fbypass         : no_fbypass
+					, fbypass       : no_fbypass
 `endif
-`ifdef INCLUDE_TANDEM_VERIF
-	    , trace_data      : ?
-`endif
-	 };
+					};
       end
 
       // This stage is just relaying ALU results from previous stage to next stage
@@ -212,22 +213,14 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 	 let bypass = bypass_base;
 	 bypass.bypass_state = BYPASS_RD_RDVAL;
 
-`ifdef INCLUDE_TANDEM_VERIF
-	 let trace_data = rg_stage2.trace_data;
-`endif
-
-	 output_stage2 = Output_Stage2 {
-              ostatus         : OSTATUS_PIPE
-            , trap_info       : ?
-            , data_to_stage3  : data_to_stage3
-            , bypass          : bypass
+	 output_stage2 = Output_Stage2 {ostatus         : OSTATUS_PIPE,
+					trap_info       : ?,
+					data_to_stage3  : data_to_stage3,
+					bypass          : bypass
 `ifdef ISA_F
-            , fbypass         : no_fbypass
+					, fbypass       : no_fbypass
 `endif
-`ifdef INCLUDE_TANDEM_VERIF
-            , trace_data      : trace_data
-`endif
-         };
+					};
       end
 
       // This stage is doing a LOAD or AMO
@@ -312,29 +305,29 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 	    end
 
 `ifdef INCLUDE_TANDEM_VERIF
-	    let trace_data   = rg_stage2.trace_data;
+	    let trace_data = rg_stage2.trace_data;
 `ifdef ISA_F
             if (rg_stage2.rd_in_fpr) begin
                trace_data.word5 = data_to_stage3.frd_val;
 
                // Update MSTATUS.FS in trace packet
-               trace_data = fv_trace_update_mstatus_fs (trace_data, fs_xs_dirty);
+	       let new_mstatus = csr_regfile.mv_update_mstatus_fs (fs_xs_dirty);
+               trace_data = fv_trace_update_mstatus_fs (trace_data, new_mstatus);
             end else
 `endif
                trace_data.word1 = data_to_stage3.rd_val;
+
+            data_to_stage3.trace_data = trace_data;
 `endif
-            output_stage2 = Output_Stage2 {
-                 ostatus         : ostatus
-               , trap_info       : trap_info_dmem
-               , data_to_stage3  : data_to_stage3
-               , bypass          : bypass
+
+            output_stage2 = Output_Stage2 {ostatus         : ostatus,
+					   trap_info       : trap_info_dmem,
+					   data_to_stage3  : data_to_stage3,
+					   bypass          : bypass
 `ifdef ISA_F
-               , fbypass         : fbypass
+					   , fbypass       : fbypass
 `endif
-`ifdef INCLUDE_TANDEM_VERIF
-               , trace_data      : trace_data
-`endif
-            };
+					   };
 	 end
 
       // This stage is doing a STORE
@@ -349,22 +342,14 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 	 data_to_stage3.rd_valid = (ostatus == OSTATUS_PIPE);
 	 data_to_stage3.rd       = 0;
 
-`ifdef INCLUDE_TANDEM_VERIF
-	 let trace_data   = rg_stage2.trace_data;
-`endif
-
-	 output_stage2 = Output_Stage2 {
-              ostatus         : ostatus
-            , trap_info       : trap_info_dmem
-            , data_to_stage3  : data_to_stage3
-            , bypass          : no_bypass
+	 output_stage2 = Output_Stage2 {ostatus         : ostatus,
+					trap_info       : trap_info_dmem,
+					data_to_stage3  : data_to_stage3,
+					bypass          : no_bypass
 `ifdef ISA_F
-            , fbypass         : no_fbypass
+					, fbypass       : no_fbypass
 `endif
-`ifdef INCLUDE_TANDEM_VERIF
-            , trace_data      : trace_data
-`endif
-         };
+					};
       end
 
 `ifdef SHIFT_SERIAL
@@ -383,22 +368,19 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 	 bypass.rd_val       = result;
 
 `ifdef INCLUDE_TANDEM_VERIF
-	 let trace_data   = rg_stage2.trace_data;
-	 trace_data.word1 = result;
+	 let trace_data            = rg_stage2.trace_data;
+	 trace_data.word1          = result;
+	 data_to_stage3.trace_data = trace_data;
 `endif
 
-	 output_stage2 = Output_Stage2 {
-              ostatus         : ostatus
-            , trap_info       : ?
-            , data_to_stage3  : data_to_stage3
-            , bypass          : bypass
+	 output_stage2 = Output_Stage2 {ostatus         : ostatus,
+					trap_info       : ?,
+					data_to_stage3  : data_to_stage3,
+					bypass          : bypass
 `ifdef ISA_F
-            , fbypass         : no_fbypass
+					, fbypass         : no_fbypass
 `endif
-`ifdef INCLUDE_TANDEM_VERIF
-            , trace_data      : trace_data
-`endif
-         };
+					};
       end
 `endif
 
@@ -418,22 +400,19 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 	 bypass.rd_val       = result;
 
 `ifdef INCLUDE_TANDEM_VERIF
-	 let trace_data   = rg_stage2.trace_data;
-	 trace_data.word1 = result;
+	 let trace_data            = rg_stage2.trace_data;
+	 trace_data.word1          = result;
+	 data_to_stage3.trace_data = trace_data;
 `endif
 
-	 output_stage2 = Output_Stage2 {
-              ostatus         : ostatus
-            , trap_info       : ?
-            , data_to_stage3  : data_to_stage3
-            , bypass          : bypass
+	 output_stage2 = Output_Stage2 {ostatus         : ostatus,
+					trap_info       : ?,
+					data_to_stage3  : data_to_stage3,
+					bypass          : bypass
 `ifdef ISA_F
-            , fbypass         : no_fbypass
+					, fbypass         : no_fbypass
 `endif
-`ifdef INCLUDE_TANDEM_VERIF
-            , trace_data      : trace_data
-`endif
-         };
+					};
       end
 `endif
 
@@ -492,22 +471,15 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
             trace_data.word1 = data_to_stage3.rd_val;
          end
 
-         // Update MSTATUS.FS and FCSR.FFLAGS in trace packet
-         trace_data = fv_trace_update_mstatus_fs (trace_data, fs_xs_dirty);
-         trace_data = fv_trace_update_fcsr_fflags (trace_data, fflags);
-
+	 data_to_stage3.trace_data = trace_data;
 `endif
 
-	 output_stage2 = Output_Stage2 {
-              ostatus         : ostatus
-            , trap_info       : trap_info_fbox
-            , data_to_stage3  : data_to_stage3
-            , bypass          : bypass
+	 output_stage2 = Output_Stage2 {ostatus         : ostatus,
+					trap_info       : trap_info_fbox,
+					data_to_stage3  : data_to_stage3,
+					bypass          : bypass
 `ifdef ISA_F
-            , fbypass         : fbypass
-`endif
-`ifdef INCLUDE_TANDEM_VERIF
-            , trace_data      : trace_data
+					, fbypass       : fbypass
 `endif
          };
       end
@@ -610,14 +582,13 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
             Bit #(64) val1 = x.val1_frm_gpr ? extend (x.val1)
                                             : extend (x.fval1);
 
-	    fbox.req (  opcode
-		      , funct7
-		      , x.rounding_mode   // rm
-		      , rs2
-		      , val1
-		      , extend (x.fval2)
-		      , extend (x.fval3) 
-		     );
+	    fbox.req (opcode,
+		      funct7,
+		      x.rounding_mode,   // rm
+		      rs2,
+		      val1,
+		      extend (x.fval2),
+		      extend (x.fval3));
          end
 `endif
       endaction

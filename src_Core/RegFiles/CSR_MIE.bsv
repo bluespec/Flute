@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved
 
 package CSR_MIE;
 
@@ -28,26 +28,26 @@ interface CSR_MIE_IFC;
    method Action reset;
 
    (* always_ready *)
-   method WordXL fv_read;
+   method WordXL mv_read;
 
    // Fixup wordxl and write, and return actual value written
    (* always_ready *)
-   method ActionValue #(WordXL) fav_write (MISA  misa, WordXL  wordxl);
+   method ActionValue #(WordXL) mav_write (MISA  misa, WordXL  wordxl);
 
 `ifdef ISA_PRIV_S
    // SIE is a view of MIE, when 'S' extension is implemented.
    (* always_ready *)
-   method WordXL fv_sie_read;
+   method WordXL mv_sie_read;
    (* always_ready *)
-   method ActionValue #(WordXL) fav_sie_write (MISA  misa, WordXL  wordxl);
+   method ActionValue #(WordXL) mav_sie_write (MISA  misa, WordXL  wordxl);
 `endif
 
 `ifdef ISA_N
    // UIE is a view of MIE, when 'N' extension is implemented.
    (* always_ready *)
-   method WordXL fv_uie_read;
+   method WordXL mv_uie_read;
    (* always_ready *)
-   method ActionValue #(WordXL) fav_uie_write (MISA  misa, WordXL  wordxl);
+   method ActionValue #(WordXL) mav_uie_write (MISA  misa, WordXL  wordxl);
 `endif
 endinterface
 
@@ -66,11 +66,11 @@ module mkCSR_MIE (CSR_MIE_IFC);
       rg_mie <= mie_reset_value;
    endmethod
 
-   method WordXL fv_read;
+   method WordXL mv_read;
       return zeroExtend (rg_mie);
    endmethod
 
-   method ActionValue #(WordXL) fav_write (MISA misa,  WordXL wordxl);
+   method ActionValue #(WordXL) mav_write (MISA misa,  WordXL wordxl);
       let mie = fv_fixup_mie (misa, truncate (wordxl));
       rg_mie <= mie;
       return zeroExtend (mie);
@@ -78,11 +78,11 @@ module mkCSR_MIE (CSR_MIE_IFC);
 
 `ifdef ISA_PRIV_S
    // SIE is a view of MIE, when 'S' extension is implemented.
-   method WordXL fv_sie_read;
+   method WordXL mv_sie_read;
       return zeroExtend (fv_mie_to_sie (rg_mie));
    endmethod
 
-   method ActionValue #(WordXL) fav_sie_write (MISA  misa, WordXL  wordxl);
+   method ActionValue #(WordXL) mav_sie_write (MISA  misa, WordXL  wordxl);
       let new_mie = fv_fixup_mie (misa,
 				  fv_sie_to_mie (misa,
 						 rg_mie,
@@ -96,11 +96,11 @@ module mkCSR_MIE (CSR_MIE_IFC);
 
 `ifdef ISA_N
    // UIE is a view of MIE, when 'U' extension is implemented.
-   method WordXL fv_uie_read;
+   method WordXL mv_uie_read;
       return zeroExtend (fv_mie_to_uie (rg_mie));
    endmethod
 
-   method ActionValue #(WordXL) fav_uie_write (MISA misa,  WordXL wordxl);
+   method ActionValue #(WordXL) mav_uie_write (MISA misa,  WordXL wordxl);
       let new_mie = fv_fixup_mie (misa,
 				  fv_uie_to_mie (misa,
 						 rg_mie,
