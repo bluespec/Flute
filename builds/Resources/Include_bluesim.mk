@@ -24,7 +24,6 @@ compile: build_dir
 SIM_EXE_FILE = exe_HW_sim
 
 BSC_C_FLAGS += \
-	-Xc++  -D_GLIBCXX_USE_CXX11_ABI=0 \
 	-Xl -v \
 	-Xc -O3 -Xc++ -O3 \
 

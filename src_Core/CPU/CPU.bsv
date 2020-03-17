@@ -183,9 +183,8 @@ module mkCPU (CPU_IFC);
    Reg #(Trace_Data) rg_trap_trace_data <- mkRegU;
 `endif
 
-   // Save next_pc across split-phase FENCE.I and other split-phase ops. This
-   // register is also used for initiating fetches on a trap or external
-   // interrupt
+   // rg_next_pc is used for redirections (branches, non-pipe
+   // instructions, traps, interrupts)
    Reg #(WordXL) rg_next_pc <- mkRegU;
 
    // Save CSR info in CSRRx istrs to handle in separate rules
@@ -325,57 +324,38 @@ module mkCPU (CPU_IFC);
    endfunction
 
    // ================================================================
-   // Update epoch and return new value
-
-   function ActionValue #(Epoch) fav_update_epoch ();
-      actionvalue
-	 let new_epoch = rg_epoch + 1;
-	 rg_epoch     <= new_epoch;
-	 if (cfg_verbosity > 1)
-	    $display ("%0d: fav_update_epoch: %0d -> %0d", mcycle, rg_epoch, new_epoch);
-	 return new_epoch;
-      endactionvalue
-   endfunction
-
-   // ================================================================
-   // Feed a new PC into StageF (instruction fetch)
-
-   function Action fa_start_ifetch (Epoch      epoch,
-				    WordXL     next_pc,
-				    Priv_Mode  priv,
-				    Bit #(1)   mstatus_MXR,
-				    Bit #(1)   sstatus_SUM);
-      action
-	 // Initiate the fetch
-	 stageF.enq (epoch,
-		     next_pc,
-		     priv,
-		     sstatus_SUM,
-		     mstatus_MXR,
-		     csr_regfile.read_satp);
-      endaction
-   endfunction
-
-   // ================================================================
    // Actions to restart from Debug Mode (e.g., GDB 'continue' after a breakpoint)
    // We re-initialize CPI_instrs and CPI_cycles.
 
-   function Action fa_restart (Addr resume_pc);
+   function Action fa_stageF_redirect (Addr new_pc);
       action
-	 let new_epoch <- fav_update_epoch;
-	 fa_start_ifetch (new_epoch,
-			  resume_pc,
-			  rg_cur_priv,
-			  mstatus_MXR,
-			  sstatus_SUM);
+	 // Update epoch
+	 let new_epoch = rg_epoch + 1;
+	 rg_epoch     <= new_epoch;
+
+	 stageF.enq (new_epoch,
+		     new_pc,
+		     rg_cur_priv,
+		     sstatus_SUM,
+		     mstatus_MXR,
+		     csr_regfile.read_satp);
 	 stageF.set_full (True);
-
-	 stageD.set_full (False);
-	 stage1.set_full (False);
-	 stage2.set_full (False);
-	 stage3.set_full (False);
-
 	 rg_state <= CPU_RUNNING;
+
+	 if (cur_verbosity > 1)
+	    $display ("    fa_stageF_redirect: minstret:%0d  new_pc:%0x  cur_priv:%0d, epoch %0d->%0d",
+		      mcycle, minstret, new_pc, rg_cur_priv, rg_epoch, new_epoch);
+      endaction
+   endfunction
+
+   function Action fa_restart_from_halt (Addr resume_pc);
+      action
+	 stage3.set_full (False);
+	 stage2.set_full (False);
+	 stage1.set_full (False);
+	 stageD.set_full (False);
+
+	 fa_stageF_redirect (resume_pc);
 
 	 rg_start_CPI_cycles <= mcycle;
 	 rg_start_CPI_instrs <= minstret;
@@ -466,9 +446,6 @@ module mkCPU (CPU_IFC);
       rg_state    <= CPU_RESET2;
       rg_epoch    <= 0;
 
-      if (cur_verbosity != 0)
-	 $display ("%0d: %m.rl_reset_start", mcycle);
-
 `ifdef INCLUDE_GDB_CONTROL
       rg_stop_req   <= False;
       rg_step_count <= 0;
@@ -487,7 +464,7 @@ module mkCPU (CPU_IFC);
 `ifdef ISA_C
    // TODO: analyze this carefully; added to resolve a blockage.
    // imem_rl_fetch_next_32b is in CPU_Fetch_C.bsv, and calls imem32.req (near_mem.imem_req).
-   // fa_restart calls stageF.enq which also calls imem.req which calls imem32.req.
+   // fa_stageF_redirect calls stageF.enq which also calls imem.req which calls imem32.req.
    // But cond_i32_odd_fetch_next should make these rules mutually exclusive; why doesn't bsc realize this?
    (* descending_urgency = "imem_rl_fetch_next_32b, rl_reset_complete" *)
 `endif
@@ -511,8 +488,8 @@ module mkCPU (CPU_IFC);
       f_reset_rsps.enq (rg_run_on_reset);
 
       if (rg_run_on_reset) begin
-	 fa_restart (dpc);
 	 $display ("%0d: %m.rl_reset_complete: restart at PC = 0x%0h", mcycle, dpc);
+	 fa_restart_from_halt (dpc);
       end
       else begin
 	 rg_state <= CPU_DEBUG_MODE;
@@ -624,7 +601,7 @@ module mkCPU (CPU_IFC);
 `ifdef ISA_C
    // TODO: analyze this carefully; added to resolve a blockage
    // imem_rl_fetch_next_32b is in CPU_Fetch_C.bsv, and calls imem32.req (near_mem.imem_req).
-   // fa_restart calls stageF.enq which also calls imem.req which calls imem32.req.
+   // fa_stageF_redirect calls stageF.enq which also calls imem.req which calls imem32.req.
    // But cond_i32_odd_fetch_next should make these rules mutually exclusive; why doesn't bsc realize this?
    (* descending_urgency = "imem_rl_fetch_next_32b, rl_pipe" *)
 `endif
@@ -641,12 +618,7 @@ module mkCPU (CPU_IFC);
       Bool stage1_full = (stage1.out.ostatus != OSTATUS_EMPTY);
       Bool stageD_full = (stageD.out.ostatus != OSTATUS_EMPTY);
       Bool stageF_full = (stageF.out.ostatus != OSTATUS_EMPTY);
-
-      // ----------------
-      // Signal from Stage1 back to StageF. Valid (e, pc2) says:
-      //  - re-start fetching from pc2, with new epoch e.
-
-      Maybe #(Tuple2 #(Epoch, WordXL)) redirect = tagged Invalid;
+      Bool redirect    = False;
 
       // ----------------
       // Stage3 sink (does regfile writebacks)
@@ -695,9 +667,8 @@ module mkCPU (CPU_IFC);
 	       stage1.deq;                              stage1_full = False;
 
 	       if (stage1.out.redirect) begin
-		  let new_epoch <- fav_update_epoch;
-		  redirect = tagged Valid (tuple2 (new_epoch,
-						   stage1.out.next_pc));
+		  rg_next_pc <= stage1.out.next_pc;
+		  redirect    = True;
 	       end
 	    end
 	 end
@@ -725,33 +696,28 @@ module mkCPU (CPU_IFC);
       if (   (! stageF_full)
 	  && (stageF.out.ostatus == OSTATUS_PIPE))
 	 begin
-	    // No-redirect case (use current epoch, predicted PC)
-	    Epoch   epoch    = stageF.out.data_to_stageD.epoch;
-	    WordXL  next_pc  = stageF.out.data_to_stageD.pred_pc;
-
-	    // Override, if stage1 is redirecting
-	    if (redirect matches tagged Valid { .e, .pc2 }) begin
-	       epoch   = e;
-	       next_pc = pc2;
-	    end
-
 	    CF_Info cf_info = cf_info_none;
 	    if (   (stage1.out.ostatus == OSTATUS_PIPE)
 		&& (stage1.out.control != CONTROL_DISCARD))
 	       cf_info = stage1.out.cf_info;
 
-	    fa_start_ifetch (epoch,
-			     next_pc,
-			     rg_cur_priv,
-			     mstatus_MXR,
-			     sstatus_SUM);
+	    if (redirect)
+	       rg_state <= CPU_START_TRAP_HANDLER;
+	    else begin
+	       stageF.enq (stageF.out.data_to_stageD.epoch,
+			   stageF.out.data_to_stageD.pred_pc,
+			   rg_cur_priv,
+			   sstatus_SUM,
+			   mstatus_MXR,
+			   csr_regfile.read_satp);
+	       stageF_full = True;
+	    end
 
-	    // Train the branch predictor
+	    // Train branch predictor
 	    stageF.bp_train (stageF.out.data_to_stageD.pc,
 			     stageF.out.data_to_stageD.is_i32_not_i16,
 			     stageF.out.data_to_stageD.instr,
 			     cf_info);
-	    stageF_full = True;
 	 end
 
       stage3.set_full (stage3_full);
@@ -980,7 +946,8 @@ module mkCPU (CPU_IFC);
 	 csr_regfile.csr_minstret_incr;
 
 	 // Restart the pipe
-	 rg_state <= CPU_CSRRX_RESTART;
+	 rg_state   <= CPU_CSRRX_RESTART;
+	 rg_next_pc <= stage1.out.next_pc;
 
 `ifdef INCLUDE_TANDEM_VERIF
 	 // Trace data
@@ -1100,7 +1067,8 @@ module mkCPU (CPU_IFC);
 	 csr_regfile.csr_minstret_incr;
 
 	 // Restart the pipe
-	 rg_state <= CPU_CSRRX_RESTART;
+	 rg_state   <= CPU_CSRRX_RESTART;
+	 rg_next_pc <= stage1.out.next_pc;
 
 `ifdef INCLUDE_TANDEM_VERIF
 	 // Trace data
@@ -1132,23 +1100,12 @@ module mkCPU (CPU_IFC);
 
    rule rl_stage1_restart_after_csrrx (   (rg_state == CPU_CSRRX_RESTART)
 				       && (stageF.out.ostatus != OSTATUS_BUSY));
-      let next_pc    = stage1.out.next_pc;
-      let new_epoch <- fav_update_epoch;
+      if (cur_verbosity > 1)
+	 $display ("%0d: %m.rl_stage1_restart_after_csrrx", mcycle);
 
-      fa_start_ifetch (new_epoch,
-		       next_pc,
-		       rg_cur_priv,
-		       mstatus_MXR,
-		       sstatus_SUM);
-
-      stageF.set_full (True);
       stageD.set_full (False);
       stage1.set_full (False);    fa_step_check;
-
-      rg_state <= CPU_RUNNING;
-      if (cur_verbosity > 1)
-	 $display ("%0d: rl_stage1_restart_after_csrrx: minstret:%0d  pc:%0x  cur_priv:%0d  epoch:%0d",
-		   mcycle, minstret, next_pc, rg_cur_priv, new_epoch);
+      fa_stageF_redirect (rg_next_pc);
    endrule
 
    // ================================================================
@@ -1241,17 +1198,9 @@ module mkCPU (CPU_IFC);
       let dummy <- near_mem.server_fence_i.response.get;
 
       // Resume pipe
-      rg_state <= CPU_RUNNING;
-      let new_epoch <- fav_update_epoch;
-      fa_start_ifetch (new_epoch,
-		       rg_next_pc,
-		       rg_cur_priv,
-		       mstatus_MXR,
-		       sstatus_SUM);
-
-      stageF.set_full (True);
       stageD.set_full (False);
       stage1.set_full (False);    fa_step_check;
+      fa_stageF_redirect (rg_next_pc);
 
       if (cur_verbosity > 1)
 	 $display ("    CPU.rl_finish_FENCE_I");
@@ -1298,17 +1247,9 @@ module mkCPU (CPU_IFC);
       let dummy <- near_mem.server_fence.response.get;
 
       // Resume pipe
-      rg_state <= CPU_RUNNING;
-      let new_epoch <- fav_update_epoch;
-      fa_start_ifetch (new_epoch,
-		       rg_next_pc,
-		       rg_cur_priv,
-		       mstatus_MXR,
-		       sstatus_SUM);
-      stageF.set_full (True);
-
       stageD.set_full (False);
       stage1.set_full (False);    fa_step_check;
+      fa_stageF_redirect (rg_next_pc);
 
       if (cur_verbosity > 1)
 	 $display ("    CPU.rl_finish_FENCE");
@@ -1320,7 +1261,7 @@ module mkCPU (CPU_IFC);
 `ifdef ISA_C
    // TODO: analyze this carefully; added to resolve a blockage
    // imem_rl_fetch_next_32b is in CPU_Fetch_C.bsv, and calls imem32.req (near_mem.imem_req).
-   // fa_restart calls stageF.enq which also calls imem.req which calls imem32.req.
+   // fa_stageF_redirect calls stageF.enq which also calls imem.req which calls imem32.req.
    // But cond_i32_odd_fetch_next should make these rules mutually exclusive; why doesn't bsc realize this?
    (* descending_urgency = "imem_rl_fetch_next_32b, rl_stage1_SFENCE_VMA" *)
 `endif
@@ -1363,17 +1304,9 @@ module mkCPU (CPU_IFC);
       // Note: Await mem system SFENCE.VMA completion, if SFENCE.VMA becomes split-phase
 
       // Resume pipe
-      rg_state <= CPU_RUNNING;
-      let new_epoch <- fav_update_epoch;
-      fa_start_ifetch (new_epoch,
-		       rg_next_pc,
-		       rg_cur_priv,
-		       mstatus_MXR,
-		       sstatus_SUM);
-      stageF.set_full (True);
-
       stageD.set_full (False);
       stage1.set_full (False);    fa_step_check;
+      fa_stageF_redirect (rg_next_pc);
 
       if (cur_verbosity > 1)
 	 $display ("    CPU.rl_finish_SFENCE_VMA");
@@ -1418,23 +1351,12 @@ module mkCPU (CPU_IFC);
 		       && (   csr_regfile.wfi_resume
 			   || stop_step_req)
 		       && (stageF.out.ostatus != OSTATUS_BUSY));
-      if (cur_verbosity > 1) $display ("%0d: %m.rl_WFI_resume", mcycle);
-
-      // Debug
-      if (cur_verbosity >= 1)
-	 $display ("    WFI resume");
+      if (cur_verbosity > 1)
+	 $display ("%0d: %m.rl_WFI_resume", mcycle);
 
       // Resume pipe (it will handle the interrupt, if one is pending)
-      rg_state <= CPU_RUNNING;
-
-      let new_epoch <- fav_update_epoch;
-      fa_start_ifetch (new_epoch,
-		       rg_next_pc,
-		       rg_cur_priv,
-		       mstatus_MXR,
-		       sstatus_SUM);
-      stageF.set_full (True);
       stageD.set_full (False);
+      fa_stageF_redirect (rg_next_pc);
    endrule: rl_WFI_resume
 
    // ----------------
@@ -1451,17 +1373,11 @@ module mkCPU (CPU_IFC);
    // external interrupt and RET rules. Separated to break long timing
    // paths from stage2 and stage3 status to IFetch
 
-   rule rl_trap_fetch (rg_state == CPU_START_TRAP_HANDLER);
-      let new_epoch <- fav_update_epoch;
-      fa_start_ifetch (new_epoch,
-		       rg_next_pc,
-		       rg_cur_priv,
-		       rg_mstatus_MXR,
-		       rg_sstatus_SUM);
-      stageF.set_full (True);
+   rule rl_trap_fetch ((rg_state == CPU_START_TRAP_HANDLER)
+		       && (stageF.out.ostatus != OSTATUS_BUSY));
       stageD.set_full (False);
-      rg_state <= CPU_RUNNING;
-   endrule : rl_trap_fetch
+      fa_stageF_redirect (rg_next_pc);
+   endrule: rl_trap_fetch
 
    // ================================================================
    // Stage1: nonpipe trap: BREAK into Debug Mode when dcsr.ebreakm/s/u is set
@@ -1599,20 +1515,17 @@ module mkCPU (CPU_IFC);
 
 `ifdef INCLUDE_GDB_CONTROL
    rule rl_debug_run ((f_run_halt_reqs.first == True) && (rg_state == CPU_DEBUG_MODE));
-      if (cur_verbosity > 1) $display ("%0d: %m.rl_debug_run", mcycle);
+      if (cur_verbosity > 1)
+	 $display ("%0d: %m.rl_debug_run", mcycle);
 
       f_run_halt_reqs.deq;
 
       // Debugger 'resume' request (e.g., GDB 'continue' command)
       let dpc = csr_regfile.read_dpc;
-      fa_restart (dpc);
-      $display ("%0d: %m.rl_debug_run: restart at PC = 0x%0h", mcycle, dpc);
+      fa_restart_from_halt (dpc);
 
       // Notify debugger that we've started running
       f_run_halt_rsps.enq (True);
-
-      if (cur_verbosity > 1)
-	 $display ("%0d: %m.rl_debug_run: 'run' from dpc 0x%0h", mcycle, dpc);
    endrule
 
    (* descending_urgency = "rl_debug_run_redundant, rl_pipe" *)
