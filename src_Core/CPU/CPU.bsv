@@ -918,7 +918,7 @@ module mkCPU (CPU_IFC);
 
 	 // Debug
 	 if (cur_verbosity > 1) begin
-	    $display ("    rl_stage1_CSRR_W: Trap on CSR permissions: Rs1 %0d Rs1_val 0x%0h csr 0x%0h Rd %0d",
+	    $display ("    Trap on CSR permissions: Rs1 %0d Rs1_val 0x%0h csr 0x%0h Rd %0d",
 		      rs1, rs1_val, csr_addr, rd);
 	 end
       end
@@ -947,7 +947,6 @@ module mkCPU (CPU_IFC);
 
 	 // Restart the pipe
 	 rg_state   <= CPU_CSRRX_RESTART;
-	 rg_next_pc <= stage1.out.next_pc;
 
 `ifdef INCLUDE_TANDEM_VERIF
 	 // Trace data
@@ -1033,7 +1032,7 @@ module mkCPU (CPU_IFC);
 
 	 // Debug
 	 if (cur_verbosity > 1) begin
-	    $display ("    rl_stage1_CSRR_S_or_C: Trap on CSR permissions: Rs1 %0d Rs1_val 0x%0h csr 0x%0h Rd %0d",
+	    $display ("    Trap on CSR permissions: Rs1 %0d Rs1_val 0x%0h csr 0x%0h Rd %0d",
 		      rs1, rs1_val, csr_addr, rd);
 	 end
       end
@@ -1068,7 +1067,6 @@ module mkCPU (CPU_IFC);
 
 	 // Restart the pipe
 	 rg_state   <= CPU_CSRRX_RESTART;
-	 rg_next_pc <= stage1.out.next_pc;
 
 `ifdef INCLUDE_TANDEM_VERIF
 	 // Trace data
