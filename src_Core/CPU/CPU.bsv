@@ -536,13 +536,10 @@ module mkCPU (CPU_IFC);
 
    // Halting conditions
    Bool halting = (stop_step_halt || mip_cmd_needed || (interrupt_pending && stage1_has_arch_instr));
-   // Stage1 can halt only when actually contains an instruction, downstream is
-   // empty and, if a branch misprediction, StageF is able to be redirected.
+   // Stage1 can halt only when actually contains an instruction and downstream is empty
    Bool stage1_halted = (   halting
 			 && (   (stage1.out.ostatus == OSTATUS_PIPE)
 			     || (stage1.out.ostatus == OSTATUS_NONPIPE))
-			 && (   (! stage1.out.redirect)
-			     || (stageF.out.ostatus != OSTATUS_BUSY))
 			 && (stage2.out.ostatus == OSTATUS_EMPTY)
 			 && (stage3.out.ostatus == OSTATUS_EMPTY));
 
@@ -553,7 +550,9 @@ module mkCPU (CPU_IFC);
 
    // ================================================================
    // Every time an instruction finishes stage 1
-   //    (i.e., stage1.set_full () is invoked, and Stage 1 has an architectural instruction)
+   //    (i.e., stage1.set_full () is invoked, Stage 1 has an architectural
+   //    instruction and, if a branch misprediction, Stage F is able to be
+   //    redirected)
    // this function checks if this is a 'stepped' instruction
    //    (i.e., dcsr.step is set and rg_step_count == 0)
    // If so, set rg_step_count <= 1 so the stage will halt on the next
@@ -563,6 +562,8 @@ module mkCPU (CPU_IFC);
       action
 `ifdef INCLUDE_GDB_CONTROL
 	 if (   stage1_has_arch_instr
+	    && (   (! stage1.out.redirect)
+		|| (stageF.out.ostatus != OSTATUS_BUSY))
 	    && csr_regfile.read_dcsr_step
 	    && (rg_step_count == 0)) begin
 
