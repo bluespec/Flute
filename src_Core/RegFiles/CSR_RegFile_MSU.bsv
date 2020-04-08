@@ -1082,10 +1082,11 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 
    // ----------------------------------------------------------------
    // Help functions for interface methods
-
+`ifdef ISA_F
    function Bit #(5) fv_update_fcsr_fflags (Bit #(5) flags);
       return (rg_fflags | flags);
    endfunction
+`endif
 
    function WordXL fv_update_mstatus_fs (Bit #(2) fs);
       let old_mstatus = csr_mstatus.mv_read;

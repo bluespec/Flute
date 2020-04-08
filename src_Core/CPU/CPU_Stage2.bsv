@@ -136,21 +136,21 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 			       };
 `endif
 
-   let data_to_stage3_base = Data_Stage2_to_Stage3 {priv:       rg_stage2.priv,
-						    pc:         rg_stage2.pc,
-						    instr:      rg_stage2.instr,
-
-						    rd_valid:   False,
-						    rd:         rg_stage2.rd,
-						    rd_val:     rg_stage2.val1,
+   let data_to_stage3_base = Data_Stage2_to_Stage3 {
+        priv:       rg_stage2.priv
+      , pc:         rg_stage2.pc
+      , instr:      rg_stage2.instr
+      , rd_valid:   False
+      , rd:         rg_stage2.rd
+      , rd_val:     rg_stage2.val1
 `ifdef ISA_F
-                                                    rd_in_fpr:  False,
-                                                    upd_flags:  False,
-                                                    fpr_flags:  0,
-                                                    frd_val:    rg_stage2.fval1
+      , rd_in_fpr:  False
+      , upd_flags:  False
+      , fpr_flags:  0
+      , frd_val:    rg_stage2.fval1
 `endif
 `ifdef INCLUDE_TANDEM_VERIF
-						    , trace_data: rg_stage2.trace_data
+      , trace_data: rg_stage2.trace_data
 `endif
 						    };
 
