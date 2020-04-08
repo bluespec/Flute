@@ -57,7 +57,7 @@ typedef struct {
    Bit #(64)  word3;    // Wider than WordXL because can contain paddr (in RV32, paddr can be 34 bits)
    WordXL     word4;
 `ifdef ISA_F
-   WordFL     word5;
+   Bit #(64)  word5;    // In order to accomodate RV64 MSTATUS in ISA_F system
 `endif
    } Trace_Data
 deriving (Bits);
@@ -155,7 +155,11 @@ function Trace_Data mkTrace_F_FRD (WordXL pc, ISize isize, Bit #(32) instr, RegN
    td.rd       = rd;
    td.word2    = extend (fflags);
    td.word4    = mstatus;
+`ifdef ISA_D
    td.word5    = rdval;
+`else
+   td.word5    = extend (rdval);
+`endif
    return td;
 endfunction
 
@@ -219,7 +223,11 @@ function Trace_Data mkTrace_F_LOAD (WordXL pc, ISize isize, Bit #(32) instr, Reg
    td.rd       = rd;
    td.word3    = zeroExtend (eaddr);
    td.word4    = mstatus;
+`ifdef ISA_D
    td.word5    = rdval;
+`else
+   td.word5    = extend (rdval);
+`endif
    return td;
 endfunction
 
@@ -233,7 +241,11 @@ function Trace_Data mkTrace_F_STORE (WordXL pc, Bit #(3) funct3, ISize isize, Bi
    td.instr_sz = isize;
    td.instr    = instr;
    td.word3    = zeroExtend (eaddr);
+`ifdef ISA_D
    td.word5    = stval;
+`else
+   td.word5    = extend (stval);
+`endif
    return td;
 endfunction
 
@@ -320,7 +332,11 @@ function Trace_Data mkTrace_CSRRX (WordXL pc, ISize isize, Bit #(32) instr,
    td.word3    = zeroExtend (csraddr);
    td.word4    = csrval;
 `ifdef ISA_F
+`ifdef RV32
+   td.word5    = extend (mstatus);
+`else
    td.word5    = mstatus;
+`endif
 `endif
    return td;
 endfunction
