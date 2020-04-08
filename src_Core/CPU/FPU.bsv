@@ -24,7 +24,11 @@ typedef union tagged {
 typedef Tuple5#( FloatU,FloatU,FloatU,RoundMode,FpuOp) Fpu_Req;
 typedef Tuple2#( FloatU, FloatingPoint::Exception )       Fpu_Rsp;
 
+`ifdef ISA_D
 typedef Tuple2#( FDouble, FloatingPoint::Exception )      FpuR;
+`else
+typedef Tuple2#( FSingle, FloatingPoint::Exception )      FpuR;
+`endif
 
 interface FPU_IFC;
    interface Server #( Fpu_Req, Fpu_Rsp ) server_core;
@@ -44,7 +48,11 @@ module mkFPU ( FPU_IFC );
    Server#( Tuple2#(FDouble,RoundMode),                 FpuR ) fpu_sqr64  <- mkFloatingPointSquareRooter(_sqrt);
 `endif
 
+`ifdef ISA_D
    Server#( Tuple4#(Maybe#(FDouble),FDouble,FDouble,RoundMode), FpuR ) fpu_madd   <- mkFloatingPointFusedMultiplyAccumulate;
+`else
+   Server#( Tuple4#(Maybe#(FSingle),FSingle,FSingle,RoundMode), FpuR ) fpu_madd   <- mkFloatingPointFusedMultiplyAccumulate;
+`endif
 
    FIFOF #(Token)          resetReqsF           <- mkFIFOF;
    FIFOF #(Token)          resetRspsF           <- mkFIFOF;
@@ -52,7 +60,9 @@ module mkFPU ( FPU_IFC );
    FIFOF#( Fpu_Req )  iFifo        <- mkFIFOF; // TODO: bypass fifos?
    FIFOF#( Fpu_Rsp )  oFifo        <- mkFIFOF; // TODO: bypass fifos?
    FIFOF#( RoundMode ) rmdFifo     <- mkFIFOF; // TODO: bypass fifos?
+`ifdef ISA_D
    FIFOF#( Bool )     isDoubleFifo <- mkFIFOF; // TODO: bypass fifos?
+`endif
    FIFOF#( Bool )     isNegateFifo <- mkFIFOF; // TODO: bypass fifos?
    Reg#(FpuR)         resWire      <- mkWire;
 
@@ -74,14 +84,22 @@ module mkFPU ( FPU_IFC );
    let rmd  = tpl_4(x);
    let iop  = tpl_5(x);
 
+`ifdef ISA_D
    FDouble opd1 = toDouble(op1, rmd);
    FDouble opd2 = toDouble(op2, rmd);
    FDouble opd3 = toDouble(op3, rmd);
+`else
+   FSingle opd1 = op1.S;
+   FSingle opd2 = op2.S;
+   FSingle opd3 = op3.S;
+`endif
 
    rule start_op;
       iFifo.deq();
+`ifdef ISA_D
       if (op1 matches tagged D .val) isDoubleFifo.enq(True);
       else                           isDoubleFifo.enq(False);
+`endif
 
       if      (iop == FPNMAdd)    isNegateFifo.enq(True);
       else if (iop == FPNMSub)    isNegateFifo.enq(True);
@@ -124,8 +142,10 @@ module mkFPU ( FPU_IFC );
    endrule
 
    rule passResult;
+`ifdef ISA_D
       isDoubleFifo.deq();
       let is64Bits = isDoubleFifo.first();
+`endif
 
       isNegateFifo.deq();
       let negateResult = isNegateFifo.first();
@@ -133,6 +153,7 @@ module mkFPU ( FPU_IFC );
       rmdFifo.deq();
       let rmode = rmdFifo.first();
 
+`ifdef ISA_D
       if (is64Bits) begin
          FDouble   v  = tpl_1(resWire);
          FloatingPoint::Exception ex = tpl_2(resWire);
@@ -150,6 +171,14 @@ module mkFPU ( FPU_IFC );
          FloatU res = tagged S v;
          oFifo.enq( tuple2( res, ex ) );
       end
+`else
+      FSingle   v  = tpl_1(resWire);
+      FloatingPoint::Exception ex = tpl_2(resWire);
+      if (negateResult)
+         v = negate( v );
+      FloatU res = tagged S v;
+      oFifo.enq( tuple2( res, ex ) );
+`endif
    endrule
 
    rule rl_reset;
@@ -157,7 +186,9 @@ module mkFPU ( FPU_IFC );
       iFifo.clear;
       oFifo.clear;
       rmdFifo.clear;
+`ifdef ISA_D
       isDoubleFifo.clear;
+`endif
       isNegateFifo.clear;
       resetRspsF.enq (?);
    endrule
