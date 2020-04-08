@@ -15,7 +15,7 @@
 // imem_exc                       O     1
 // imem_exc_code                  O     4 reg
 // imem_tval                      O    64 reg
-// imem_master_awvalid            O     1
+// imem_master_awvalid            O     1 reg
 // imem_master_awid               O     4 reg
 // imem_master_awaddr             O    64 reg
 // imem_master_awlen              O     8 reg
@@ -26,13 +26,12 @@
 // imem_master_awprot             O     3 reg
 // imem_master_awqos              O     4 reg
 // imem_master_awregion           O     4 reg
-// imem_master_wvalid             O     1
-// imem_master_wid                O     4 reg
+// imem_master_wvalid             O     1 reg
 // imem_master_wdata              O    64 reg
 // imem_master_wstrb              O     8 reg
 // imem_master_wlast              O     1 reg
-// imem_master_bready             O     1
-// imem_master_arvalid            O     1
+// imem_master_bready             O     1 reg
+// imem_master_arvalid            O     1 reg
 // imem_master_arid               O     4 reg
 // imem_master_araddr             O    64 reg
 // imem_master_arlen              O     8 reg
@@ -43,13 +42,13 @@
 // imem_master_arprot             O     3 reg
 // imem_master_arqos              O     4 reg
 // imem_master_arregion           O     4 reg
-// imem_master_rready             O     1
+// imem_master_rready             O     1 reg
 // dmem_valid                     O     1
 // dmem_word64                    O    64
 // dmem_st_amo_val                O    64
 // dmem_exc                       O     1
 // dmem_exc_code                  O     4 reg
-// dmem_master_awvalid            O     1
+// dmem_master_awvalid            O     1 reg
 // dmem_master_awid               O     4 reg
 // dmem_master_awaddr             O    64 reg
 // dmem_master_awlen              O     8 reg
@@ -60,13 +59,12 @@
 // dmem_master_awprot             O     3 reg
 // dmem_master_awqos              O     4 reg
 // dmem_master_awregion           O     4 reg
-// dmem_master_wvalid             O     1
-// dmem_master_wid                O     4 reg
+// dmem_master_wvalid             O     1 reg
 // dmem_master_wdata              O    64 reg
 // dmem_master_wstrb              O     8 reg
 // dmem_master_wlast              O     1 reg
-// dmem_master_bready             O     1
-// dmem_master_arvalid            O     1
+// dmem_master_bready             O     1 reg
+// dmem_master_arvalid            O     1 reg
 // dmem_master_arid               O     4 reg
 // dmem_master_araddr             O    64 reg
 // dmem_master_arlen              O     8 reg
@@ -77,7 +75,7 @@
 // dmem_master_arprot             O     3 reg
 // dmem_master_arqos              O     4 reg
 // dmem_master_arregion           O     4 reg
-// dmem_master_rready             O     1
+// dmem_master_rready             O     1 reg
 // RDY_server_fence_i_request_put  O     1
 // RDY_server_fence_i_response_get  O     1
 // RDY_server_fence_request_put   O     1 reg
@@ -133,22 +131,7 @@
 // EN_server_fence_response_get   I     1
 // EN_sfence_vma                  I     1
 //
-// Combinational paths from inputs to outputs:
-//   (imem_master_awready, imem_master_wready) -> imem_valid
-//   (imem_master_awready, imem_master_wready) -> imem_instr
-//   (imem_master_awready, imem_master_wready) -> imem_master_bready
-//   (imem_master_awready,
-//    imem_master_wready,
-//    imem_master_arready,
-//    EN_imem_req) -> imem_master_rready
-//   (dmem_master_awready, dmem_master_wready) -> dmem_valid
-//   (dmem_master_awready, dmem_master_wready) -> dmem_word64
-//   (dmem_master_awready, dmem_master_wready) -> dmem_st_amo_val
-//   (dmem_master_awready, dmem_master_wready) -> dmem_master_bready
-//   (dmem_master_awready,
-//    dmem_master_wready,
-//    dmem_master_arready,
-//    EN_dmem_req) -> dmem_master_rready
+// No combinational paths from inputs to outputs
 //
 //
 
@@ -221,8 +204,6 @@ module mkNear_Mem(CLK,
 		  imem_master_awready,
 
 		  imem_master_wvalid,
-
-		  imem_master_wid,
 
 		  imem_master_wdata,
 
@@ -316,8 +297,6 @@ module mkNear_Mem(CLK,
 		  dmem_master_awready,
 
 		  dmem_master_wvalid,
-
-		  dmem_master_wid,
 
 		  dmem_master_wdata,
 
@@ -462,9 +441,6 @@ module mkNear_Mem(CLK,
   // value method imem_master_m_wvalid
   output imem_master_wvalid;
 
-  // value method imem_master_m_wid
-  output [3 : 0] imem_master_wid;
-
   // value method imem_master_m_wdata
   output [63 : 0] imem_master_wdata;
 
@@ -603,9 +579,6 @@ module mkNear_Mem(CLK,
   // value method dmem_master_m_wvalid
   output dmem_master_wvalid;
 
-  // value method dmem_master_m_wid
-  output [3 : 0] dmem_master_wid;
-
   // value method dmem_master_m_wdata
   output [63 : 0] dmem_master_wdata;
 
@@ -724,7 +697,6 @@ module mkNear_Mem(CLK,
 	       dmem_master_awid,
 	       dmem_master_awqos,
 	       dmem_master_awregion,
-	       dmem_master_wid,
 	       imem_exc_code,
 	       imem_master_arcache,
 	       imem_master_arid,
@@ -733,8 +705,7 @@ module mkNear_Mem(CLK,
 	       imem_master_awcache,
 	       imem_master_awid,
 	       imem_master_awqos,
-	       imem_master_awregion,
-	       imem_master_wid;
+	       imem_master_awregion;
   wire [2 : 0] dmem_master_arprot,
 	       dmem_master_arsize,
 	       dmem_master_awprot,
@@ -811,7 +782,6 @@ module mkNear_Mem(CLK,
 	       dcache$mem_master_awregion,
 	       dcache$mem_master_bid,
 	       dcache$mem_master_rid,
-	       dcache$mem_master_wid,
 	       dcache$set_verbosity_verbosity;
   wire [2 : 0] dcache$mem_master_arprot,
 	       dcache$mem_master_arsize,
@@ -886,7 +856,6 @@ module mkNear_Mem(CLK,
 	       icache$mem_master_awregion,
 	       icache$mem_master_bid,
 	       icache$mem_master_rid,
-	       icache$mem_master_wid,
 	       icache$set_verbosity_verbosity;
   wire [2 : 0] icache$mem_master_arprot,
 	       icache$mem_master_arsize,
@@ -983,10 +952,10 @@ module mkNear_Mem(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h1675;
-  reg [31 : 0] v__h1826;
-  reg [31 : 0] v__h1669;
-  reg [31 : 0] v__h1820;
+  reg [31 : 0] v__h1659;
+  reg [31 : 0] v__h1810;
+  reg [31 : 0] v__h1653;
+  reg [31 : 0] v__h1804;
   // synopsys translate_on
 
   // remaining internal signals
@@ -1066,9 +1035,6 @@ module mkNear_Mem(CLK,
 
   // value method imem_master_m_wvalid
   assign imem_master_wvalid = icache$mem_master_wvalid ;
-
-  // value method imem_master_m_wid
-  assign imem_master_wid = icache$mem_master_wid ;
 
   // value method imem_master_m_wdata
   assign imem_master_wdata = icache$mem_master_wdata ;
@@ -1192,9 +1158,6 @@ module mkNear_Mem(CLK,
 
   // value method dmem_master_m_wvalid
   assign dmem_master_wvalid = dcache$mem_master_wvalid ;
-
-  // value method dmem_master_m_wid
-  assign dmem_master_wid = dcache$mem_master_wid ;
 
   // value method dmem_master_m_wdata
   assign dmem_master_wdata = dcache$mem_master_wdata ;
@@ -1353,7 +1316,6 @@ module mkNear_Mem(CLK,
 					     .mem_master_awqos(dcache$mem_master_awqos),
 					     .mem_master_awregion(dcache$mem_master_awregion),
 					     .mem_master_wvalid(dcache$mem_master_wvalid),
-					     .mem_master_wid(dcache$mem_master_wid),
 					     .mem_master_wdata(dcache$mem_master_wdata),
 					     .mem_master_wstrb(dcache$mem_master_wstrb),
 					     .mem_master_wlast(dcache$mem_master_wlast),
@@ -1435,7 +1397,6 @@ module mkNear_Mem(CLK,
 					     .mem_master_awqos(icache$mem_master_awqos),
 					     .mem_master_awregion(icache$mem_master_awregion),
 					     .mem_master_wvalid(icache$mem_master_wvalid),
-					     .mem_master_wid(icache$mem_master_wid),
 					     .mem_master_wdata(icache$mem_master_wdata),
 					     .mem_master_wstrb(icache$mem_master_wstrb),
 					     .mem_master_wlast(icache$mem_master_wlast),
@@ -1637,23 +1598,23 @@ module mkNear_Mem(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset && NOT_cfg_verbosity_read_ULE_1___d9)
 	begin
-	  v__h1675 = $stime;
+	  v__h1659 = $stime;
 	  #0;
 	end
-    v__h1669 = v__h1675 / 32'd10;
+    v__h1653 = v__h1659 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset && NOT_cfg_verbosity_read_ULE_1___d9)
-	$display("%0d: Near_Mem.rl_reset", v__h1669);
+	$display("%0d: Near_Mem.rl_reset", v__h1653);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset_complete && NOT_cfg_verbosity_read_ULE_1___d9)
 	begin
-	  v__h1826 = $stime;
+	  v__h1810 = $stime;
 	  #0;
 	end
-    v__h1820 = v__h1826 / 32'd10;
+    v__h1804 = v__h1810 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset_complete && NOT_cfg_verbosity_read_ULE_1___d9)
-	$display("%0d: Near_Mem.rl_reset_complete", v__h1820);
+	$display("%0d: Near_Mem.rl_reset_complete", v__h1804);
   end
   // synopsys translate_on
 endmodule  // mkNear_Mem

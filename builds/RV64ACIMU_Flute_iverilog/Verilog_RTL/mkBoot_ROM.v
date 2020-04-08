@@ -34,7 +34,6 @@
 // slave_awqos                    I     4 reg
 // slave_awregion                 I     4 reg
 // slave_wvalid                   I     1
-// slave_wid                      I     4 reg
 // slave_wdata                    I    64 reg
 // slave_wstrb                    I     8 reg
 // slave_wlast                    I     1 reg
@@ -93,7 +92,6 @@ module mkBoot_ROM(CLK,
 		  slave_awready,
 
 		  slave_wvalid,
-		  slave_wid,
 		  slave_wdata,
 		  slave_wstrb,
 		  slave_wlast,
@@ -160,7 +158,6 @@ module mkBoot_ROM(CLK,
 
   // action method slave_m_wvalid
   input  slave_wvalid;
-  input  [3 : 0] slave_wid;
   input  [63 : 0] slave_wdata;
   input  [7 : 0] slave_wstrb;
   input  slave_wlast;
@@ -269,7 +266,7 @@ module mkBoot_ROM(CLK,
        slave_xactor_f_wr_addr$FULL_N;
 
   // ports of submodule slave_xactor_f_wr_data
-  wire [76 : 0] slave_xactor_f_wr_data$D_IN;
+  wire [72 : 0] slave_xactor_f_wr_data$D_IN;
   wire slave_xactor_f_wr_data$CLR,
        slave_xactor_f_wr_data$DEQ,
        slave_xactor_f_wr_data$EMPTY_N,
@@ -305,13 +302,13 @@ module mkBoot_ROM(CLK,
   // declarations used by system tasks
   // synopsys translate_off
   reg [31 : 0] v__h808;
-  reg [31 : 0] v__h8928;
-  reg [31 : 0] v__h9221;
-  reg [31 : 0] v__h9331;
+  reg [31 : 0] v__h8925;
+  reg [31 : 0] v__h9218;
+  reg [31 : 0] v__h9328;
   reg [31 : 0] v__h802;
-  reg [31 : 0] v__h8922;
-  reg [31 : 0] v__h9215;
-  reg [31 : 0] v__h9325;
+  reg [31 : 0] v__h8919;
+  reg [31 : 0] v__h9212;
+  reg [31 : 0] v__h9322;
   // synopsys translate_on
 
   // remaining internal signals
@@ -415,7 +412,7 @@ module mkBoot_ROM(CLK,
 								  .EMPTY_N(slave_xactor_f_wr_addr$EMPTY_N));
 
   // submodule slave_xactor_f_wr_data
-  FIFO2 #(.width(32'd77), .guarded(32'd1)) slave_xactor_f_wr_data(.RST(RST_N),
+  FIFO2 #(.width(32'd73), .guarded(32'd1)) slave_xactor_f_wr_data(.RST(RST_N),
 								  .CLK(CLK),
 								  .D_IN(slave_xactor_f_wr_data$D_IN),
 								  .ENQ(slave_xactor_f_wr_data$ENQ),
@@ -510,7 +507,7 @@ module mkBoot_ROM(CLK,
 
   // submodule slave_xactor_f_wr_data
   assign slave_xactor_f_wr_data$D_IN =
-	     { slave_wid, slave_wdata, slave_wstrb, slave_wlast } ;
+	     { slave_wdata, slave_wstrb, slave_wlast } ;
   assign slave_xactor_f_wr_data$ENQ =
 	     slave_wvalid && slave_xactor_f_wr_data$FULL_N ;
   assign slave_xactor_f_wr_data$DEQ = CAN_FIRE_RL_rl_process_wr_req ;
@@ -2022,15 +2019,15 @@ module mkBoot_ROM(CLK,
       if (WILL_FIRE_RL_rl_process_wr_req &&
 	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
 	begin
-	  v__h8928 = $stime;
+	  v__h8925 = $stime;
 	  #0;
 	end
-    v__h8922 = v__h8928 / 32'd10;
+    v__h8919 = v__h8925 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req &&
 	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
 	$display("%0d: ERROR: Boot_ROM.rl_process_wr_req: unrecognized addr",
-		 v__h8922);
+		 v__h8919);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req &&
 	  NOT_slave_xactor_f_wr_addr_first__208_BITS_31__ETC___d1218)
@@ -2130,26 +2127,26 @@ module mkBoot_ROM(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_set_addr_map && set_addr_map_addr_base[2:0] != 3'd0)
 	begin
-	  v__h9221 = $stime;
+	  v__h9218 = $stime;
 	  #0;
 	end
-    v__h9215 = v__h9221 / 32'd10;
+    v__h9212 = v__h9218 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_set_addr_map && set_addr_map_addr_base[2:0] != 3'd0)
 	$display("%0d: WARNING: Boot_ROM.set_addr_map: addr_base 0x%0h is not 4-Byte-aligned",
-		 v__h9215,
+		 v__h9212,
 		 set_addr_map_addr_base);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_set_addr_map && set_addr_map_addr_lim[2:0] != 3'd0)
 	begin
-	  v__h9331 = $stime;
+	  v__h9328 = $stime;
 	  #0;
 	end
-    v__h9325 = v__h9331 / 32'd10;
+    v__h9322 = v__h9328 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_set_addr_map && set_addr_map_addr_lim[2:0] != 3'd0)
 	$display("%0d: WARNING: Boot_ROM.set_addr_map: addr_lim 0x%0h is not 4-Byte-aligned",
-		 v__h9325,
+		 v__h9322,
 		 set_addr_map_addr_lim);
   end
   // synopsys translate_on

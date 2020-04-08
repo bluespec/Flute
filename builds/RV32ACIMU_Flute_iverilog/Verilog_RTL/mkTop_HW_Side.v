@@ -48,7 +48,9 @@ module mkTop_HW_Side(CLK,
   wire [255 : 0] soc_top$to_raw_mem_response_put;
   wire [63 : 0] soc_top$set_verbosity_logdelay,
 		soc_top$set_watch_tohost_tohost_addr;
-  wire [7 : 0] soc_top$get_to_console_get, soc_top$put_from_console_put;
+  wire [7 : 0] soc_top$get_to_console_get,
+	       soc_top$put_from_console_put,
+	       soc_top$status;
   wire [3 : 0] soc_top$set_verbosity_verbosity;
   wire soc_top$EN_get_to_console_get,
        soc_top$EN_put_from_console_put,
@@ -66,15 +68,19 @@ module mkTop_HW_Side(CLK,
        CAN_FIRE_RL_memCnx_ClientServerResponse,
        CAN_FIRE_RL_rl_relay_console_out,
        CAN_FIRE_RL_rl_step0,
+       CAN_FIRE_RL_rl_terminate,
        WILL_FIRE_RL_memCnx_ClientServerRequest,
        WILL_FIRE_RL_memCnx_ClientServerResponse,
        WILL_FIRE_RL_rl_relay_console_out,
-       WILL_FIRE_RL_rl_step0;
+       WILL_FIRE_RL_rl_step0,
+       WILL_FIRE_RL_rl_terminate;
 
   // declarations used by system tasks
   // synopsys translate_off
   reg TASK_testplusargs___d12;
   reg TASK_testplusargs___d11;
+  reg [31 : 0] v__h536;
+  reg [31 : 0] v__h530;
   // synopsys translate_on
 
   // submodule mem_model
@@ -109,11 +115,16 @@ module mkTop_HW_Side(CLK,
 		    .get_to_console_get(soc_top$get_to_console_get),
 		    .RDY_get_to_console_get(soc_top$RDY_get_to_console_get),
 		    .RDY_put_from_console_put(),
+		    .status(soc_top$status),
 		    .RDY_set_watch_tohost());
 
   // rule RL_rl_step0
   assign CAN_FIRE_RL_rl_step0 = !rg_banner_printed ;
   assign WILL_FIRE_RL_rl_step0 = CAN_FIRE_RL_rl_step0 ;
+
+  // rule RL_rl_terminate
+  assign CAN_FIRE_RL_rl_terminate = soc_top$status != 8'd0 ;
+  assign WILL_FIRE_RL_rl_terminate = CAN_FIRE_RL_rl_terminate ;
 
   // rule RL_rl_relay_console_out
   assign CAN_FIRE_RL_rl_relay_console_out = soc_top$RDY_get_to_console_get ;
@@ -218,6 +229,21 @@ module mkTop_HW_Side(CLK,
 	  TASK_testplusargs___d11 = $test$plusargs("v2");
 	  #0;
 	end
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_terminate)
+	begin
+	  v__h536 = $stime;
+	  #0;
+	end
+    v__h530 = v__h536 / 32'd10;
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_terminate)
+	$display("%0d: %m:.rl_terminate: soc_top status is 0x%0h (= 0d%0d)",
+		 v__h530,
+		 soc_top$status,
+		 soc_top$status);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_terminate) $finish(32'd0);
     if (RST_N != `BSV_RESET_VALUE)
       if (soc_top$RDY_get_to_console_get)
 	$write("%c", soc_top$get_to_console_get);

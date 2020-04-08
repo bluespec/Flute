@@ -575,7 +575,7 @@ module mkFBox_Core(verbosity,
 		res__h156884,
 		res__h158796,
 		res__h159850,
-		res__h160006,
+		res__h160049,
 		res__h19532,
 		res__h19769,
 		res__h25279,
@@ -6380,7 +6380,7 @@ module mkFBox_Core(verbosity,
 	       64'd1 :
 	       64'd0 ;
   assign res__h159850 = requestR[191] ? 64'd2 : 64'd64 ;
-  assign res__h160006 = { 32'hFFFFFFFF, fpu$server_core_response_get[36:5] } ;
+  assign res__h160049 = { 32'hFFFFFFFF, fpu$server_core_response_get[36:5] } ;
   assign res__h19532 =
 	     { 32'hFFFFFFFF,
 	       requestR_3_BITS_127_TO_96_6_EQ_0xFFFFFFFF_7_AN_ETC___d42 } ;
@@ -6668,8 +6668,14 @@ module mkFBox_Core(verbosity,
 		  IF_requestR_3_BITS_190_TO_180_689_EQ_0_700_AND_ETC___d3983) ;
   assign x__h159973 =
 	     fpu$server_core_response_get[69] ?
-	       res__h160006 :
-	       fpu$server_core_response_get[68:5] ;
+	       ((fpu$server_core_response_get[35:28] == 8'd255 &&
+		 fpu$server_core_response_get[27:5] != 23'd0) ?
+		  64'hFFFFFFFF7FC00000 :
+		  res__h160049) :
+	       ((fpu$server_core_response_get[67:57] == 11'd2047 &&
+		 fpu$server_core_response_get[56:5] != 52'd0) ?
+		  64'h7FF8000000000000 :
+		  fpu$server_core_response_get[68:5]) ;
   assign x__h16122 =
 	     { 2'd0,
 	       NOT_requestR_3_BITS_159_TO_128_72_EQ_0_73_74_A_ETC___d830,

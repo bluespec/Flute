@@ -6,23 +6,23 @@
 //
 // Ports:
 // Name                         I/O  size props
-// fv_read                        O    32
-// fav_write                      O    32
-// fv_sie_read                    O    32
-// fav_sie_write                  O    32
+// mv_read                        O    32
+// mav_write                      O    32
+// mv_sie_read                    O    32
+// mav_sie_write                  O    32
 // CLK                            I     1 clock
 // RST_N                          I     1 reset
-// fav_write_misa                 I    28
-// fav_write_wordxl               I    32
-// fav_sie_write_misa             I    28
-// fav_sie_write_wordxl           I    32
+// mav_write_misa                 I    28
+// mav_write_wordxl               I    32
+// mav_sie_write_misa             I    28
+// mav_sie_write_wordxl           I    32
 // EN_reset                       I     1
-// EN_fav_write                   I     1
-// EN_fav_sie_write               I     1
+// EN_mav_write                   I     1
+// EN_mav_sie_write               I     1
 //
 // Combinational paths from inputs to outputs:
-//   (fav_write_misa, fav_write_wordxl) -> fav_write
-//   (fav_sie_write_misa, fav_sie_write_wordxl) -> fav_sie_write
+//   (mav_write_misa, mav_write_wordxl) -> mav_write
+//   (mav_sie_write_misa, mav_sie_write_wordxl) -> mav_sie_write
 //
 //
 
@@ -44,45 +44,45 @@ module mkCSR_MIE(CLK,
 
 		 EN_reset,
 
-		 fv_read,
+		 mv_read,
 
-		 fav_write_misa,
-		 fav_write_wordxl,
-		 EN_fav_write,
-		 fav_write,
+		 mav_write_misa,
+		 mav_write_wordxl,
+		 EN_mav_write,
+		 mav_write,
 
-		 fv_sie_read,
+		 mv_sie_read,
 
-		 fav_sie_write_misa,
-		 fav_sie_write_wordxl,
-		 EN_fav_sie_write,
-		 fav_sie_write);
+		 mav_sie_write_misa,
+		 mav_sie_write_wordxl,
+		 EN_mav_sie_write,
+		 mav_sie_write);
   input  CLK;
   input  RST_N;
 
   // action method reset
   input  EN_reset;
 
-  // value method fv_read
-  output [31 : 0] fv_read;
+  // value method mv_read
+  output [31 : 0] mv_read;
 
-  // actionvalue method fav_write
-  input  [27 : 0] fav_write_misa;
-  input  [31 : 0] fav_write_wordxl;
-  input  EN_fav_write;
-  output [31 : 0] fav_write;
+  // actionvalue method mav_write
+  input  [27 : 0] mav_write_misa;
+  input  [31 : 0] mav_write_wordxl;
+  input  EN_mav_write;
+  output [31 : 0] mav_write;
 
-  // value method fv_sie_read
-  output [31 : 0] fv_sie_read;
+  // value method mv_sie_read
+  output [31 : 0] mv_sie_read;
 
-  // actionvalue method fav_sie_write
-  input  [27 : 0] fav_sie_write_misa;
-  input  [31 : 0] fav_sie_write_wordxl;
-  input  EN_fav_sie_write;
-  output [31 : 0] fav_sie_write;
+  // actionvalue method mav_sie_write
+  input  [27 : 0] mav_sie_write_misa;
+  input  [31 : 0] mav_sie_write_wordxl;
+  input  EN_mav_sie_write;
+  output [31 : 0] mav_sie_write;
 
   // signals for module outputs
-  wire [31 : 0] fav_sie_write, fav_write, fv_read, fv_sie_read;
+  wire [31 : 0] mav_sie_write, mav_write, mv_read, mv_sie_read;
 
   // register rg_mie
   reg [11 : 0] rg_mie;
@@ -90,11 +90,11 @@ module mkCSR_MIE(CLK,
   wire rg_mie$EN;
 
   // rule scheduling signals
-  wire CAN_FIRE_fav_sie_write,
-       CAN_FIRE_fav_write,
+  wire CAN_FIRE_mav_sie_write,
+       CAN_FIRE_mav_write,
        CAN_FIRE_reset,
-       WILL_FIRE_fav_sie_write,
-       WILL_FIRE_fav_write,
+       WILL_FIRE_mav_sie_write,
+       WILL_FIRE_mav_write,
        WILL_FIRE_reset;
 
   // inputs to muxes for submodule ports
@@ -119,21 +119,21 @@ module mkCSR_MIE(CLK,
   assign CAN_FIRE_reset = 1'd1 ;
   assign WILL_FIRE_reset = EN_reset ;
 
-  // value method fv_read
-  assign fv_read = { 20'd0, rg_mie } ;
+  // value method mv_read
+  assign mv_read = { 20'd0, rg_mie } ;
 
-  // actionvalue method fav_write
-  assign fav_write = { 20'd0, mie__h92 } ;
-  assign CAN_FIRE_fav_write = 1'd1 ;
-  assign WILL_FIRE_fav_write = EN_fav_write ;
+  // actionvalue method mav_write
+  assign mav_write = { 20'd0, mie__h92 } ;
+  assign CAN_FIRE_mav_write = 1'd1 ;
+  assign WILL_FIRE_mav_write = EN_mav_write ;
 
-  // value method fv_sie_read
-  assign fv_sie_read = { 20'd0, x__h458 } ;
+  // value method mv_sie_read
+  assign mv_sie_read = { 20'd0, x__h458 } ;
 
-  // actionvalue method fav_sie_write
-  assign fav_sie_write = { 20'd0, x__h883 } ;
-  assign CAN_FIRE_fav_sie_write = 1'd1 ;
-  assign WILL_FIRE_fav_sie_write = EN_fav_sie_write ;
+  // actionvalue method mav_sie_write
+  assign mav_sie_write = { 20'd0, x__h883 } ;
+  assign CAN_FIRE_mav_sie_write = 1'd1 ;
+  assign WILL_FIRE_mav_sie_write = EN_mav_sie_write ;
 
   // inputs to muxes for submodule ports
   assign MUX_rg_mie$write_1__VAL_3 =
@@ -151,43 +151,43 @@ module mkCSR_MIE(CLK,
 	       usie__h537 } ;
 
   // register rg_mie
-  always@(EN_fav_write or
+  always@(EN_mav_write or
 	  mie__h92 or
-	  EN_reset or EN_fav_sie_write or MUX_rg_mie$write_1__VAL_3)
+	  EN_reset or EN_mav_sie_write or MUX_rg_mie$write_1__VAL_3)
   case (1'b1)
-    EN_fav_write: rg_mie$D_IN = mie__h92;
+    EN_mav_write: rg_mie$D_IN = mie__h92;
     EN_reset: rg_mie$D_IN = 12'd0;
-    EN_fav_sie_write: rg_mie$D_IN = MUX_rg_mie$write_1__VAL_3;
+    EN_mav_sie_write: rg_mie$D_IN = MUX_rg_mie$write_1__VAL_3;
     default: rg_mie$D_IN = 12'b101010101010 /* unspecified value */ ;
   endcase
-  assign rg_mie$EN = EN_fav_write || EN_fav_sie_write || EN_reset ;
+  assign rg_mie$EN = EN_mav_write || EN_mav_sie_write || EN_reset ;
 
   // remaining internal signals
   assign mie__h92 =
-	     { fav_write_wordxl[11],
+	     { mav_write_wordxl[11],
 	       1'b0,
 	       seie__h123,
 	       ueie__h122,
-	       fav_write_wordxl[7],
+	       mav_write_wordxl[7],
 	       1'b0,
 	       stie__h120,
 	       utie__h119,
-	       fav_write_wordxl[3],
+	       mav_write_wordxl[3],
 	       1'b0,
 	       ssie__h117,
 	       usie__h116 } ;
-  assign seie__h123 = fav_write_misa[18] && fav_write_wordxl[9] ;
-  assign seie__h544 = fav_sie_write_misa[18] && fav_sie_write_wordxl[9] ;
-  assign ssie__h117 = fav_write_misa[18] && fav_write_wordxl[1] ;
-  assign ssie__h538 = fav_sie_write_misa[18] && fav_sie_write_wordxl[1] ;
-  assign stie__h120 = fav_write_misa[18] && fav_write_wordxl[5] ;
-  assign stie__h541 = fav_sie_write_misa[18] && fav_sie_write_wordxl[5] ;
-  assign ueie__h122 = fav_write_misa[13] && fav_write_wordxl[8] ;
-  assign ueie__h543 = fav_sie_write_misa[13] && fav_sie_write_wordxl[8] ;
-  assign usie__h116 = fav_write_misa[13] && fav_write_wordxl[0] ;
-  assign usie__h537 = fav_sie_write_misa[13] && fav_sie_write_wordxl[0] ;
-  assign utie__h119 = fav_write_misa[13] && fav_write_wordxl[4] ;
-  assign utie__h540 = fav_sie_write_misa[13] && fav_sie_write_wordxl[4] ;
+  assign seie__h123 = mav_write_misa[18] && mav_write_wordxl[9] ;
+  assign seie__h544 = mav_sie_write_misa[18] && mav_sie_write_wordxl[9] ;
+  assign ssie__h117 = mav_write_misa[18] && mav_write_wordxl[1] ;
+  assign ssie__h538 = mav_sie_write_misa[18] && mav_sie_write_wordxl[1] ;
+  assign stie__h120 = mav_write_misa[18] && mav_write_wordxl[5] ;
+  assign stie__h541 = mav_sie_write_misa[18] && mav_sie_write_wordxl[5] ;
+  assign ueie__h122 = mav_write_misa[13] && mav_write_wordxl[8] ;
+  assign ueie__h543 = mav_sie_write_misa[13] && mav_sie_write_wordxl[8] ;
+  assign usie__h116 = mav_write_misa[13] && mav_write_wordxl[0] ;
+  assign usie__h537 = mav_sie_write_misa[13] && mav_sie_write_wordxl[0] ;
+  assign utie__h119 = mav_write_misa[13] && mav_write_wordxl[4] ;
+  assign utie__h540 = mav_sie_write_misa[13] && mav_sie_write_wordxl[4] ;
   assign x__h458 =
 	     { 2'd0, rg_mie[9:8], 2'd0, rg_mie[5:4], 2'd0, rg_mie[1:0] } ;
   assign x__h883 =

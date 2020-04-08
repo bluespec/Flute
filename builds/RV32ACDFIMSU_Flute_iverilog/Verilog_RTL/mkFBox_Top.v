@@ -11,6 +11,7 @@
 // valid                          O     1
 // word_fst                       O    64
 // word_snd                       O     5
+// verbosity                      I     4
 // CLK                            I     1 clock
 // RST_N                          I     1 reset
 // req_opcode                     I     7
@@ -41,7 +42,8 @@
   `define BSV_RESET_EDGE negedge
 `endif
 
-module mkFBox_Top(CLK,
+module mkFBox_Top(verbosity,
+		  CLK,
 		  RST_N,
 
 		  EN_server_reset_request_put,
@@ -64,6 +66,7 @@ module mkFBox_Top(CLK,
 		  word_fst,
 
 		  word_snd);
+  input  [3 : 0] verbosity;
   input  CLK;
   input  RST_N;
 
@@ -150,7 +153,8 @@ module mkFBox_Top(CLK,
   assign word_snd = fbox_core$word_snd ;
 
   // submodule fbox_core
-  mkFBox_Core fbox_core(.CLK(CLK),
+  mkFBox_Core fbox_core(.verbosity(verbosity),
+			.CLK(CLK),
 			.RST_N(RST_N),
 			.req_f7(fbox_core$req_f7),
 			.req_opcode(fbox_core$req_opcode),
