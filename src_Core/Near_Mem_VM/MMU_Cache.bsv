@@ -1281,7 +1281,7 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
 	 PA           lev_0_pte_pa        = lev_0_PTN_pa + vpn_0_pa;
 	 PA           lev_0_pte_pa_w64    = { lev_0_pte_pa [pa_sz - 1 : 3], 3'b0 };    // 64b-aligned addr
 	 Fabric_Addr  lev_0_pte_pa_w64_fa = fn_PA_to_Fabric_Addr (lev_0_pte_pa_w64);
-`ifdef Sv32
+`ifdef SV32
 	 AXI4_Size    axi4_size           = axsize_4;
 `else
 	 AXI4_Size    axi4_size           = axsize_8;
