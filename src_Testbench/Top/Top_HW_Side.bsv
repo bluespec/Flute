@@ -1,21 +1,10 @@
-// Copyright (c) 2013-2019 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2013-2020 Bluespec, Inc. All Rights Reserved.
 
 package Top_HW_Side;
 
 // ================================================================
 // mkTop_HW_Side is the top-level system for simulation.
 // mkMem_Model is a memory model.
-
-// **** CAVEAT FOR IVERILOG USERS: The 'C_Imports' sections below are
-// disabled for IVerilog until we find a clean solution.  They depend
-// on imported C which is non-trivial in IVerilog because IVerilog
-// still depends on the older Verilog VPI standard instead of the
-// newer DPI-C standard.  C-imported functions are used for:
-//     UART input polling and character-reading
-//     Writing tandem-verfication encoded trace data
-
-// (Note: UART output does not depend on C-imported functions and so
-// will work ok even in IVerilog)
 
 // ================================================================
 // BSV lib imports
@@ -39,16 +28,10 @@ import SoC_Top        :: *;
 import Mem_Controller :: *;
 import Mem_Model      :: *;
 import Fabric_Defs    :: *;
+import PLIC           :: *;
 
-import PLIC :: *;
-
-`ifndef IVERILOG
-import C_Imports      :: *;
-`endif
-
-`ifdef INCLUDE_GDB_CONTROL
+import C_Imports        :: *;
 import External_Control :: *;
-`endif
 
 // ================================================================
 // Top-level module.
@@ -87,28 +70,21 @@ module mkTop_HW_Side (Empty) ;
 
       // ----------------
       // Load tohost addr from symbol-table file
-`ifndef IVERILOG
-      // Note: see 'CAVEAT FOR IVERILOG USERS' above
       Bool watch_tohost <- $test$plusargs ("tohost");
       let tha <- c_get_symbol_val ("tohost");
       Fabric_Addr tohost_addr = truncate (tha);
       $display ("INFO: watch_tohost = %0d, tohost_addr = 0x%0h",
 		pack (watch_tohost), tohost_addr);
       soc_top.set_watch_tohost (watch_tohost, tohost_addr);
-`endif
 
       // ----------------
       // Start timing the simulation
-`ifndef IVERILOG
       Bit #(32) cycle_num <- cur_cycle;
       c_start_timing (zeroExtend (cycle_num));
-`endif
 
       // ----------------
       // Open file for Tandem Verification trace output
 `ifdef INCLUDE_TANDEM_VERIF
-`ifndef IVERILOG
-      // Note: see 'CAVEAT FOR IVERILOG USERS' above
       let success <- c_trace_file_open ('h_AA);
       if (success == 0) begin
 	 $display ("ERROR: Top_HW_Side.rl_step0: error opening trace file.");
@@ -117,25 +93,17 @@ module mkTop_HW_Side (Empty) ;
       end
       else
 	 $display ("Top_HW_Side.rl_step0: opened trace file.");
-`else
-      $display ("Warning: tandem verification output logs not available in IVerilog");
-`endif
 `endif
 
       // ----------------
       // Open connection to remote debug client
 `ifdef INCLUDE_GDB_CONTROL
-`ifndef IVERILOG
-      // Note: see 'CAVEAT FOR IVERILOG USERS' above
       let dmi_status <- c_debug_client_connect (dmi_default_tcp_port);
       if (dmi_status != dmi_status_ok) begin
 	 $display ("ERROR: Top_HW_Side.rl_step0: error opening debug client connection.");
 	 $display ("    Aborting.");
 	 $finish (1);
       end
-`else
-      $display ("Warning: Debug client connection not available in IVerilog");
-`endif
 `endif
 
    endrule: rl_step0
@@ -148,11 +116,8 @@ module mkTop_HW_Side (Empty) ;
 		cur_cycle, soc_top.status, soc_top.status);
 
       // End timing the simulation
-`ifndef IVERILOG
       Bit #(32) cycle_num <- cur_cycle;
       c_end_timing (zeroExtend (cycle_num));
-`endif
-
       $finish (0);
    endrule
 
@@ -165,7 +130,6 @@ module mkTop_HW_Side (Empty) ;
       let n  = tv_info.num_bytes;
       let vb = tv_info.vec_bytes;
 
-`ifndef IVERILOG
       Bit #(32) success = 1;
 
       for (Bit #(32) j = 0; j < fromInteger (valueOf (TV_VB_SIZE)); j = j + 8) begin
@@ -185,7 +149,6 @@ module mkTop_HW_Side (Empty) ;
       if (success == 0) begin
 	 $finish (1);
       end
-`endif
    endrule
 `endif
 
@@ -202,9 +165,6 @@ module mkTop_HW_Side (Empty) ;
 
    // Poll terminal input and relay any chars into system console input.
    // Note: rg_console_in_poll is used to poll only every N cycles, whenever it wraps around to 0.
-   // Note: see 'CAVEAT FOR IVERILOG USERS' above for why this is ifdef'd out for iVerilog users.
-
-`ifndef IVERILOG
 
    Reg #(Bit #(12)) rg_console_in_poll <- mkReg (0);
 
@@ -222,8 +182,6 @@ module mkTop_HW_Side (Empty) ;
       end
       rg_console_in_poll <= rg_console_in_poll + 1;
    endrule
-
-`endif
 
    // ================================================================
    // Interaction with remote debug client
@@ -260,11 +218,8 @@ module mkTop_HW_Side (Empty) ;
 	    $display ("Top_HW_Side.rl_debug_client_request_recv: SHUTDOWN");
 
 	    // End timing the simulation and print simulation speed stats
-`ifndef IVERILOG
 	    Bit #(32) cycle_num <- cur_cycle;
 	    c_end_timing (zeroExtend (cycle_num));
-`endif
-
 	    $finish (0);
 	 end
 	 else if (op == dmi_op_start_command) begin    // For debugging only

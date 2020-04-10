@@ -42,6 +42,7 @@ import sys
 import os
 import stat
 import subprocess
+import shutil
 
 import multiprocessing
 
@@ -321,6 +322,16 @@ def do_worker (worker_num, args_dict):
     elif not os.path.isdir (tmpdir):
         sys.stdout.write ("ERROR: Worker {0}: {1} exists but is not a dir".format (worker_num, tmpdir))
         return
+
+    # For iverilog simulations, copy the 'directc' files into the worker dir
+    # This is necessary because it seems that iverilog assumes these are in
+    # the current working dir.
+    if os.path.exists ("./directc_mkTop_HW_Side.so"):
+        sys.stdout.write ("Copying ./directc_mkTop_HW_Side.so to dir {0}\n".format (tmpdir))
+        shutil.copy ("./directc_mkTop_HW_Side.so", tmpdir);
+    if os.path.exists ("./directc_mkTop_HW_Side.sft"):
+        sys.stdout.write ("Copying ./directc_mkTop_HW_Side.sft to dir {0}\n".format (tmpdir))
+        shutil.copy ("./directc_mkTop_HW_Side.sft", tmpdir);
 
     os.chdir (tmpdir)
     sys.stdout.write ("Worker {0} using dir: {1}\n".format (worker_num, tmpdir))

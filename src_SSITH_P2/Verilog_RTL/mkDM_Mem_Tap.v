@@ -968,12 +968,16 @@ module mkDM_Mem_Tap(CLK,
 	       slave_arregion } ;
   assign slave_xactor_f_rd_addr$ENQ =
 	     slave_arvalid && slave_xactor_f_rd_addr$FULL_N ;
-  assign slave_xactor_f_rd_addr$DEQ = CAN_FIRE_RL_rl_connect ;
+  assign slave_xactor_f_rd_addr$DEQ =
+	     master_xactor_f_rd_addr$FULL_N &&
+	     slave_xactor_f_rd_addr$EMPTY_N ;
   assign slave_xactor_f_rd_addr$CLR = 1'b0 ;
 
   // submodule slave_xactor_f_rd_data
   assign slave_xactor_f_rd_data$D_IN = master_xactor_f_rd_data$D_OUT ;
-  assign slave_xactor_f_rd_data$ENQ = CAN_FIRE_RL_rl_connect_2 ;
+  assign slave_xactor_f_rd_data$ENQ =
+	     slave_xactor_f_rd_data$FULL_N &&
+	     master_xactor_f_rd_data$EMPTY_N ;
   assign slave_xactor_f_rd_data$DEQ =
 	     slave_rready && slave_xactor_f_rd_data$EMPTY_N ;
   assign slave_xactor_f_rd_data$CLR = 1'b0 ;
@@ -992,7 +996,9 @@ module mkDM_Mem_Tap(CLK,
 	       slave_awregion } ;
   assign slave_xactor_f_wr_addr$ENQ =
 	     slave_awvalid && slave_xactor_f_wr_addr$FULL_N ;
-  assign slave_xactor_f_wr_addr$DEQ = CAN_FIRE_RL_write_reqs ;
+  assign slave_xactor_f_wr_addr$DEQ =
+	     slave_xactor_f_wr_addr$EMPTY_N &&
+	     slave_xactor_f_wr_data_i_notEmpty_AND_master_x_ETC___d8 ;
   assign slave_xactor_f_wr_addr$CLR = 1'b0 ;
 
   // submodule slave_xactor_f_wr_data
@@ -1000,12 +1006,16 @@ module mkDM_Mem_Tap(CLK,
 	     { slave_wdata, slave_wstrb, slave_wlast } ;
   assign slave_xactor_f_wr_data$ENQ =
 	     slave_wvalid && slave_xactor_f_wr_data$FULL_N ;
-  assign slave_xactor_f_wr_data$DEQ = CAN_FIRE_RL_write_reqs ;
+  assign slave_xactor_f_wr_data$DEQ =
+	     slave_xactor_f_wr_addr$EMPTY_N &&
+	     slave_xactor_f_wr_data_i_notEmpty_AND_master_x_ETC___d8 ;
   assign slave_xactor_f_wr_data$CLR = 1'b0 ;
 
   // submodule slave_xactor_f_wr_resp
   assign slave_xactor_f_wr_resp$D_IN = master_xactor_f_wr_resp$D_OUT ;
-  assign slave_xactor_f_wr_resp$ENQ = CAN_FIRE_RL_rl_connect_1 ;
+  assign slave_xactor_f_wr_resp$ENQ =
+	     slave_xactor_f_wr_resp$FULL_N &&
+	     master_xactor_f_wr_resp$EMPTY_N ;
   assign slave_xactor_f_wr_resp$DEQ =
 	     slave_bready && slave_xactor_f_wr_resp$EMPTY_N ;
   assign slave_xactor_f_wr_resp$CLR = 1'b0 ;
@@ -1024,16 +1034,6 @@ module mkDM_Mem_Tap(CLK,
   always@(slave_xactor_f_wr_data$D_OUT)
   begin
     case (slave_xactor_f_wr_data$D_OUT[8:1])
-      8'h03, 8'h0C, 8'h30, 8'hC0: sz__h1638 = 2'b01;
-      8'h0F, 8'hF0: sz__h1638 = 2'b10;
-      8'h10, 8'h20, 8'h40, 8'h80: sz__h1638 = 2'b0;
-      8'hFF: sz__h1638 = 2'b11;
-      default: sz__h1638 = 2'b0;
-    endcase
-  end
-  always@(slave_xactor_f_wr_data$D_OUT)
-  begin
-    case (slave_xactor_f_wr_data$D_OUT[8:1])
       8'h02: CASE_slave_xactor_f_wr_dataD_OUT_BITS_8_TO_1__ETC__q1 = 32'd8;
       8'h03, 8'h0F, 8'hFF:
 	  CASE_slave_xactor_f_wr_dataD_OUT_BITS_8_TO_1__ETC__q1 = 32'd0;
@@ -1047,6 +1047,16 @@ module mkDM_Mem_Tap(CLK,
 	  CASE_slave_xactor_f_wr_dataD_OUT_BITS_8_TO_1__ETC__q1 = 32'd48;
       8'h80: CASE_slave_xactor_f_wr_dataD_OUT_BITS_8_TO_1__ETC__q1 = 32'd56;
       default: CASE_slave_xactor_f_wr_dataD_OUT_BITS_8_TO_1__ETC__q1 = 32'd0;
+    endcase
+  end
+  always@(slave_xactor_f_wr_data$D_OUT)
+  begin
+    case (slave_xactor_f_wr_data$D_OUT[8:1])
+      8'h03, 8'h0C, 8'h30, 8'hC0: sz__h1638 = 2'b01;
+      8'h0F, 8'hF0: sz__h1638 = 2'b10;
+      8'h10, 8'h20, 8'h40, 8'h80: sz__h1638 = 2'b0;
+      8'hFF: sz__h1638 = 2'b11;
+      default: sz__h1638 = 2'b0;
     endcase
   end
   always@(slave_xactor_f_wr_data$D_OUT)

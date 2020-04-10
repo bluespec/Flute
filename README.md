@@ -12,11 +12,11 @@ This is one of a family of free, open-source RISC-V CPUs created by Bluespec, In
   64-bit operation, an MMU (Virtual Memory) and more performance than
   Piccolo-class processors.
 
-- [Bassoon](https://github.com/bluespec/Bassoon): deep, out-of-order pipeline [Coming!]
+- [Toooba](https://github.com/bluespec/Toooba): superscalar, deep, out-of-order pipeline, using MIT's RISCY-OOO core.
 
 The three repo structures are nearly identical, and the ways to build
 and run are identical.  This README is identical--please substitute
-"Piccolo" or "Flute" or "Basoon" below wherever you see <CPU>.
+"Piccolo" or "Flute" or "Toooba" below wherever you see `<CPU>`.
 
 
 ### About the source codes (in BSV and Verilog)
@@ -29,7 +29,7 @@ adequate to boot a Linux kernel.
 The pre-generated synthesizable Verilog RTL source files in this
 repository are for a few specific configurations:
 
-1. RV32ACIMU:    **(DARPA SSITH users: this is the "P1" processor)**
+1. RV32ACIMU:    **(DARPA SSITH users: with Piccolo this is the "P1" processor)**
     - RV32I: base RV32 integer instructions
     - 'A' extension: atomic memory ops
     - 'C' extension: compressed instructions
@@ -39,7 +39,7 @@ repository are for a few specific configurations:
     - Passes all riscv-isa tests for RV32ACIMU
     - Boots FreeRTOS
 
-2. RV64ACDFIMSU
+2. RV64ACDFIMSU    **(DARPA SSITH users: with Flute this is the "P2" processor)**
     - RV64I: base RV64 integer instructions
     - 'A' extension: atomic memory ops
     - 'C' extension: compressed instructions
@@ -47,13 +47,14 @@ repository are for a few specific configurations:
     - 'F' extension: single-precision floating point instructions
     - 'M' extension: integer multiply/divide instructions
     - Privilege levels M (machine), S (Supervisor) and U (user)
+    - Supports Sv39 virtual memory
     - Supports external, timer, software and non-maskable interrupts
     - Passes all riscv-isa tests for RV64ACDFIMSU
     - Boots the Linux kernel
 
-If you want to generate other Verilog variants, you'll need a Bluespec
-`bsc` compiler [Note: Bluespec, Inc. provides free licenses to
-academia and for non-profit research].
+If you want to generate other Verilog variants, you'll need the free
+and open-source `bsc` compiler, which you can find
+[here](https://github.com/B-Lang-org).
 
 The BSV source code supports:
 
@@ -64,7 +65,7 @@ The BSV source code supports:
 
 - Hardware implementation option: serial shifter (smaller hardware, slower) or barrel shifter (more HW, faster) for shift instructions
 - Hardware implementation option: serial integer multiplier (smaller hardware, slower) or synthesized (more HW, faster)
-- AXI4-Lite Fabric interfaces, with optional 32-bit or 64-bit datapaths (independent of RV32/RV64 choice)
+- AXI4 Fabric interfaces, with optional 32-bit or 64-bit datapaths (independent of RV32/RV64 choice)
 - and several other localized options
 
 ### Testbench included
@@ -72,13 +73,9 @@ The BSV source code supports:
 This repository contains a simple testbench (a small SoC) with which
 one can run RISC-V binaries in simulation by loading standard mem hex
 files and executing in Bluespec's Bluesim, Verilator simulation or
-iVerilog simulation.  The testbench contains an AXI4-Lite interconnect
+iVerilog simulation.  The testbench contains an AXI4 interconnect
 fabric that connects the CPU to models of a boot ROM, a memory, a
 timer and a UART for console I/O.
-
-[Note: **iverilog functionality is currently limited** because we are
-still working out robust mechanisms to import C code, which is used in
-parts of the testbench.]
 
 This repository contains several sample build directories, to build
 RV32ACIMU or RV64ACDFIMSU simulators, using Bluespec Bluesim
@@ -114,10 +111,13 @@ The RTL represents RISC-V CPU RTL, plus a rudimentary surrounding SoC
 enabling immediate simulation here, and which is rich enough to enable
 booting a Linux kernel.  Users are free to use the CPU RTL in their
 own Verilog system designs.  The top-level module for the CPU RTL is
-`Verilog_RTL/mkBRVF_Core.v`.  The top-level module for the surrounding
-SoC is `Verilog_RTL/mkTop_HW_Side.v`.  The SoC has an AXI4-Lite
-fabric, a timer, a software-interrupt device, and a UART.  Additional
-library RTL can be found in the directory `src_bsc_lib_RTL`.
+`Verilog_RTL/mkCore.v`.  The top-level module for the surrounding SoC
+is `Verilog_RTL/mkTop_HW_Side.v`.  The SoC has an AXI4 fabric, a
+timer, a software-interrupt device, and a UART.  Additional library
+RTL can be found in the directory `src_bsc_lib_RTL`.  There is a
+sketch of the module hierarchy in this document:
+
+        Doc/Microarchitecture/Microarchitecture.pdf
 
 **Bluespec BSV** source code (which was used to generate the Verilog RTL) can be found in:
 
@@ -141,7 +141,7 @@ library RTL can be found in the directory `src_bsc_lib_RTL`.
    - `SoC/`: An interconnect, a boot ROM, a memory controller, a timer
        and software-interrupt device, and a UART for console tty I/O.
 
-   - `Fabrics/`: Generic AXI4-Lite code for the SoC fabric.
+   - `Fabrics/`: Generic AXI4 code for the SoC fabric.
 
 The BSV source code has a rich set of parameters, mentioned above. The
 provided RTL source has been generated from the BSV source
@@ -150,7 +150,8 @@ sets of choices for the various parameters.  The generated RTL is not
 parameterized.
 
 To generate Verilog variants with other parameter choices, the user
-will need Bluespec's `bsc` compiler.  See the next section for
+will need the free and open-source [`bsc`
+compiler](https://github.com/B-Lang-org).  See the next section for
 examples of how the build is configured for different ISA features.
 
 In fact the CPU also supports a "Tandem Verifier" that produces an
@@ -204,10 +205,17 @@ problems with earlier versions of both tools.
         $ verilator --version
         Verilator 3.922 2018-03-17 rev verilator_3_920-32-gdf3d1a4
 
+Note: we provide a setup for iVerilog because it is well-known and
+widely used. However, it is _much_ slower than Bluesim or
+Verilator. For example, on a particular x86 Ubuntu platform, running
+through all ISA tests takes 53 minutes with iVerilog but hardly 1
+minute with Bluesim or Verilator.
+
 ----------------------------------------------------------------
 ### What you can build and run if you have Bluespec's `bsc` compiler
 
-[Note: Bluespec, Inc. provides free licenses to academia and for non-profit research].
+The free and open-source `bsc` compiler is available
+[here](https://github.com/B-Lang-org).
 
 Note: even without Bluespec's `bsc` compiler, you can use the Verilog
 sources in any of the `builds/<ARCH>_<CPU>_verilator/Verilog_RTL`

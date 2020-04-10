@@ -24,16 +24,26 @@ compile:  build_dir  Verilog_RTL
 # ================================================================
 # Compile and link Verilog RTL sources into an iverilog executable
 
+VSIM ?= iverilog
 SIM_EXE_FILE = exe_HW_sim
+
+# BSCPATH_V = -p ./src_BSV:%/Prelude:%/Libraries
 
 .PHONY: simulator
 simulator:
 	@echo INFO: iVerilog linking start ...
-	iverilog  -o ./$(SIM_EXE_FILE) \
-		-y  Verilog_RTL \
-		-y  $(REPO)/src_bsc_lib_RTL \
-		-DTOP=$(TOPMODULE) \
-		$(REPO)/src_bsc_lib_RTL/main.v
+	bsc -verilog -vsim $(VSIM) -keep-fires \
+		$(RTL_GEN_DIRS) \
+		-p $(BSC_PATH) \
+		-e $(TOPMODULE) -o $(SIM_EXE_FILE) \
+		$(BSC_C_FLAGS) \
+		$(REPO)/src_Testbench/Top/C_Imported_Functions.c
 	@echo INFO: iVerilog linking finished
+
+#	iverilog  -o ./$(SIM_EXE_FILE) \
+#		-y  Verilog_RTL \
+#		-y  $(REPO)/src_bsc_lib_RTL \
+#		-DTOP=$(TOPMODULE) \
+#		$(REPO)/src_bsc_lib_RTL/main.v
 
 # ================================================================
