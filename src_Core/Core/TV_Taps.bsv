@@ -165,7 +165,7 @@ endmodule: mkDM_GPR_Tap
 // ================================================================
 // DM-to-CPU FPR tap (for writes to FPRs)
 
-`ifdef ISA_F_OR_D
+`ifdef ISA_F
 
 interface DM_FPR_Tap_IFC;
    interface Client #(DM_CPU_Req #(5,  XLEN), DM_CPU_Rsp #(XLEN)) client;

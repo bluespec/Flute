@@ -107,13 +107,15 @@ endfunction
 // FLEN and related constants, for floating point data
 // Can have one or two fpu sizes (should they be merged sooner than later ?).
 
-// Cannot define ISA_D unless ISA_F is also defined
+// ISA_D => ISA_F (ISA_D implies ISA_F)
+// The combination ISA_D and !ISA_F is not permitted
+
 // ISA_F - 32 bit FPU
 // ISA_D - 64 bit FPU
 
 `ifdef ISA_F
 
-`ifdef ISA_D   // ISA_D precludes ISA_F
+`ifdef ISA_D
 typedef 64 FLEN;
 Bool hasFpu32 = False;
 Bool hasFpu64 = True;
@@ -131,12 +133,6 @@ typedef  TLog #(Bytes_per_WordFL)              Bits_per_Byte_in_WordFL;
 typedef  Bit #(Bits_per_Byte_in_WordFL)        Byte_in_WordFL;
 typedef  Vector #(Bytes_per_WordFL, Byte)      WordFL_B;
 
-`endif
-
-`ifdef ISA_F
-`ifdef ISA_D
-`define ISA_F_AND_D
-`endif
 `endif
 
 // ================================================================

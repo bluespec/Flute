@@ -136,7 +136,7 @@ module mkCPU_Stage3 #(Bit #(4)         verbosity,
 
 `ifdef INCLUDE_TANDEM_VERIF
       let trace_data = rg_stage3.trace_data;
-
+`ifdef ISA_F
       if (rg_stage3.upd_flags) begin
 	 let fflags = csr_regfile.mv_update_fcsr_fflags (rg_stage3.fpr_flags);
 	 trace_data = fv_trace_update_fcsr_fflags (trace_data, fflags);
@@ -146,6 +146,7 @@ module mkCPU_Stage3 #(Bit #(4)         verbosity,
 	 let new_mstatus = csr_regfile.mv_update_mstatus_fs (fs_xs_dirty);
 	 trace_data = fv_trace_update_mstatus_fs (trace_data, new_mstatus);
       end
+`endif
 `endif
 
       return Output_Stage3 {ostatus: (rg_full ? OSTATUS_PIPE : OSTATUS_EMPTY),

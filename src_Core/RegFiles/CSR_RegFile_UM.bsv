@@ -193,9 +193,13 @@ function MISA misa_reset_value;
    ms.m = 1'b1;
 `endif
 
-`ifdef ISA_FD
-   // Single- and Double-precision Floating Point
+`ifdef ISA_F
+   // Single-precision Floating Point
    ms.f = 1'b1;
+`endif
+
+`ifdef ISA_D
+   // Double-precision Floating Point
    ms.d = 1'b1;
 `endif
 
@@ -237,7 +241,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 
    // CSRs
    // User-mode CSRs
-`ifdef ISA_FD
+`ifdef ISA_F
    Reg #(Bit #(5)) rg_fflags <- mkRegU;    // floating point flags
    Reg #(Bit #(3)) rg_frm    <- mkRegU;    // floating point rounding mode
 `endif
@@ -322,7 +326,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
       f_si_reqs.clear;
 
       // User-level CSRs
-`ifdef ISA_FD
+`ifdef ISA_F
       rg_fflags <= 0;
       rg_frm    <= 0;
 `endif
@@ -429,7 +433,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
       else begin
 	 case (csr_addr)
 	    // User mode csrs
-`ifdef ISA_FD
+`ifdef ISA_F
 	    csr_fflags:    m_csr_value = tagged Valid ({ 0, rg_fflags });
 	    csr_frm:       m_csr_value = tagged Valid ({ 0, rg_frm });
 	    csr_fcsr:      m_csr_value = tagged Valid ({ 0, rg_frm, rg_fflags });
@@ -558,7 +562,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 	 else
 	    case (csr_addr)
 	       // User mode csrs
-`ifdef ISA_FD
+`ifdef ISA_F
 	       csr_fflags:     rg_fflags <= word [4:0];
 	       csr_frm:        rg_frm    <= word [7:5];
 	       csr_fcsr:       begin
