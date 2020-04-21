@@ -181,8 +181,10 @@ module mkFBox_Core #(Bit #(4) verbosity) (FBox_Core_IFC);
    let isFADD_D      = (opc == op_FP) && (f7 == f7_FADD_D); 
    let isFSUB_D      = (opc == op_FP) && (f7 == f7_FSUB_D);
    let isFMUL_D      = (opc == op_FP) && (f7 == f7_FMUL_D);
-`ifdef ISA_FD_DIV
+`ifdef INCLUDE_FDIV
    let isFDIV_D      = (opc == op_FP) && (f7 == f7_FDIV_D);
+`endif
+`ifdef INCLUDE_FSQRT
    let isFSQRT_D     = (opc == op_FP) && (f7 == f7_FSQRT_D);
 `endif
    let isFSGNJ_D     = (opc == op_FP) && (f7 == f7_FSGNJ_D) && (rm == 0);
@@ -219,8 +221,10 @@ module mkFBox_Core #(Bit #(4) verbosity) (FBox_Core_IFC);
    let isFADD_S      = (opc == op_FP) && (f7 == f7_FADD_S); 
    let isFSUB_S      = (opc == op_FP) && (f7 == f7_FSUB_S);
    let isFMUL_S      = (opc == op_FP) && (f7 == f7_FMUL_S);
-`ifdef ISA_FD_DIV
+`ifdef INCLUDE_FDIV
    let isFDIV_S      = (opc == op_FP) && (f7 == f7_FDIV_S);
+`endif
+`ifdef INCLUDE_FSQRT
    let isFSQRT_S     = (opc == op_FP) && (f7 == f7_FSQRT_S);
 `endif
    let isFSGNJ_S     = (opc == op_FP) && (f7 == f7_FSGNJ_S) && (rm == 0);
@@ -346,14 +350,16 @@ module mkFBox_Core #(Bit #(4) verbosity) (FBox_Core_IFC);
       stateR <= FBOX_BUSY;
    endrule
 
-`ifdef ISA_FD_DIV
+`ifdef INCLUDE_FDIV
    rule doFDIV_S ( validReq && isFDIV_S );
       if (verbosity > 1)
          $display ("%0d: FBox_Core.doFDIV_S ", cur_cycle);
       fpu.server_core.request.put( tuple5( tagged S sV1, tagged S sV2, ?, rmd, FPDiv ));
       stateR <= FBOX_BUSY;
    endrule
+`endif
 
+`ifdef INCLUDE_FSQRT
    rule doFSQRT_S ( validReq && isFSQRT_S );
       if (verbosity > 1)
          $display ("%0d: FBox_Core.doFSQRT_S ", cur_cycle);
@@ -793,14 +799,16 @@ module mkFBox_Core #(Bit #(4) verbosity) (FBox_Core_IFC);
       stateR <= FBOX_BUSY;
    endrule
 
-`ifdef ISA_FD_DIV
+`ifdef INCLUDE_FDIV
    rule doFDIV_D ( validReq && isFDIV_D );
       if (verbosity > 1)
          $display ("%0d: FBox_Core.doFDIV_D ", cur_cycle);
       fpu.server_core.request.put( tuple5( tagged D dV1, tagged D dV2, ?, rmd, FPDiv) );
       stateR <= FBOX_BUSY;
    endrule
+`endif
 
+`ifdef INCLUDE_FSQRT
    rule doFSQRT_D ( validReq && isFSQRT_D );
       if (verbosity > 1)
          $display ("%0d: FBox_Core.doFSQRT_D ", cur_cycle);

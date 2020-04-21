@@ -39,12 +39,13 @@ endinterface
 
 (* synthesize *)
 module mkFPU ( FPU_IFC );
-`ifdef ISA_FD_DIV
-   // XXX: Incomplete
+`ifdef INCLUDE_FDIV
    Server#(Tuple2#(UInt#(114),UInt#(57)),Tuple2#(UInt#(57),UInt#(57))) _div <- mkNonPipelinedDivider(2);
-   Server#(UInt#(116),Tuple2#(UInt#(116),Bool)) _sqrt                       <- mkNonPipelinedSquareRooter(2);
-
    Server#( Tuple3#(FDouble,FDouble,RoundMode),         FpuR ) fpu_div64  <- mkFloatingPointDivider(_div);
+`endif
+
+`ifdef INCLUDE_FSQRT
+   Server#(UInt#(116),Tuple2#(UInt#(116),Bool)) _sqrt                       <- mkNonPipelinedSquareRooter(2);
    Server#( Tuple2#(FDouble,RoundMode),                 FpuR ) fpu_sqr64  <- mkFloatingPointSquareRooter(_sqrt);
 `endif
 
@@ -111,8 +112,10 @@ module mkFPU ( FPU_IFC );
          FPAdd:   fpu_madd.request.put(  tuple4(Valid(opd1), opd2,         one(False), rmd) );
          FPSub:   fpu_madd.request.put(  tuple4(Valid(opd1), negate(opd2), one(False), rmd) );
          FPMul:   fpu_madd.request.put(  tuple4(Invalid,     opd1,         opd2,       rmd) );
-`ifdef ISA_FD_DIV
+`ifdef INCLUDE_FDIV
          FPDiv:   fpu_div64.request.put( tuple3(opd1, opd2,         rmd) );
+`endif
+`ifdef INCLUDE_FSQRT
          FPSqrt:  fpu_sqr64.request.put( tuple2(opd1,               rmd) );
 `endif
          FPMAdd:  fpu_madd.request.put(  tuple4(Valid(opd3),         opd1, opd2, rmd) );
@@ -123,23 +126,25 @@ module mkFPU ( FPU_IFC );
 
    endrule
 
-`ifdef ISA_FD_DIV
-   (* mutually_exclusive = "getResDiv, getResSqr, getResMAdd" *)
-   rule getResDiv;
-      let res <- fpu_div64.response.get();
-      resWire <= res;
-   endrule
+   // rule generator for handling responses from multi-cycle pipes
+   function Rules fn_genMultCycResRules (Server #(req, FpuR) pipe);
+      return (rules 
+         rule getResFromPipe;
+            let res <- pipe.response.get ();
+            resWire <= res;
+         endrule
+      endrules);
+   endfunction
 
-   rule getResSqr;
-      let res <- fpu_sqr64.response.get();
-      resWire <= res;
-   endrule
+   let rl_resRules = emptyRules;
+   rl_resRules = rJoin (rl_resRules, fn_genMultCycResRules (fpu_madd));
+`ifdef INCLUDE_FDIV
+   rl_resRules = rJoinMutuallyExclusive (rl_resRules, fn_genMultCycResRules (fpu_div64));
 `endif
-
-   rule getResMAdd;
-      let res <- fpu_madd.response.get();
-      resWire <= res;
-   endrule
+`ifdef INCLUDE_FSQRT
+   rl_resRules = rJoinMutuallyExclusive (rl_resRules, fn_genMultCycResRules (fpu_sqr64));
+`endif
+   addRules (rl_resRules);
 
    rule passResult;
 `ifdef ISA_D

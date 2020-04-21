@@ -840,8 +840,10 @@ function Bool fv_is_fp_instr_legal (
       if (    (f7 == f7_FADD_S)  
           ||  (f7 == f7_FSUB_S)  
           ||  (f7 == f7_FMUL_S)  
-`ifdef ISA_FD_DIV
+`ifdef INCLUDE_FDIV
           ||  (f7 == f7_FDIV_S)  
+`endif
+`ifdef INCLUDE_FSQRT
           ||  (f7 == f7_FSQRT_S) 
 `endif
           || ((f7 == f7_FSGNJ_S)  && ( rm == 0))
@@ -871,8 +873,10 @@ function Bool fv_is_fp_instr_legal (
           ||  (f7 == f7_FADD_D)  
           ||  (f7 == f7_FSUB_D)  
           ||  (f7 == f7_FMUL_D)  
-`ifdef ISA_FD_DIV
+`ifdef INCLUDE_FDIV
           ||  (f7 == f7_FDIV_D)  
+`endif
+`ifdef INCLUDE_FSQRT
           ||  (f7 == f7_FSQRT_D) 
 `endif
           || ((f7 == f7_FSGNJ_D)  && ( rm == 0))
