@@ -40,19 +40,39 @@ endinterface
 (* synthesize *)
 module mkFPU ( FPU_IFC );
 `ifdef INCLUDE_FDIV
-   Server#(Tuple2#(UInt#(114),UInt#(57)),Tuple2#(UInt#(57),UInt#(57))) _div <- mkNonPipelinedDivider(2);
-   Server#( Tuple3#(FDouble,FDouble,RoundMode),         FpuR ) fpu_div64  <- mkFloatingPointDivider(_div);
+`ifdef ISA_D
+   Server# (Tuple2# (UInt# (114), UInt# (57))
+          , Tuple2# (UInt# (57) , UInt# (57))) _div <- mkNonPipelinedDivider(2);
+   Server# (Tuple3#(FDouble, FDouble, RoundMode)
+          , FpuR) fpu_div  <- mkFloatingPointDivider(_div);
+`else
+   Server# (Tuple2# (UInt #(56), UInt #(28))
+          , Tuple2# (UInt #(28), UInt #(28))) _div <- mkNonPipelinedDivider(2);
+   Server# (Tuple3# (FSingle, FSingle, RoundMode)
+          , FpuR) fpu_div <- mkFloatingPointDivider(_div);
+`endif
 `endif
 
 `ifdef INCLUDE_FSQRT
-   Server#(UInt#(116),Tuple2#(UInt#(116),Bool)) _sqrt                       <- mkNonPipelinedSquareRooter(2);
-   Server#( Tuple2#(FDouble,RoundMode),                 FpuR ) fpu_sqr64  <- mkFloatingPointSquareRooter(_sqrt);
+`ifdef ISA_D
+   Server# (UInt# (116)
+          , Tuple2# (UInt# (116), Bool)) _sqrt <- mkNonPipelinedSquareRooter(2);
+   Server# (Tuple2# (FDouble, RoundMode)
+          , FpuR) fpu_sqr <- mkFloatingPointSquareRooter(_sqrt);
+`else
+   Server# (UInt# (60)
+          , Tuple2# (UInt# (60), Bool)) _sqrt <- mkNonPipelinedSquareRooter(2);
+   Server# (Tuple2# (FSingle, RoundMode)
+          , FpuR) fpu_sqr <- mkFloatingPointSquareRooter(_sqrt);
+`endif
 `endif
 
 `ifdef ISA_D
-   Server#( Tuple4#(Maybe#(FDouble),FDouble,FDouble,RoundMode), FpuR ) fpu_madd   <- mkFloatingPointFusedMultiplyAccumulate;
+   Server# (Tuple4# (Maybe# (FDouble), FDouble, FDouble, RoundMode)
+          , FpuR ) fpu_madd <- mkFloatingPointFusedMultiplyAccumulate;
 `else
-   Server#( Tuple4#(Maybe#(FSingle),FSingle,FSingle,RoundMode), FpuR ) fpu_madd   <- mkFloatingPointFusedMultiplyAccumulate;
+   Server# (Tuple4# (Maybe# (FSingle), FSingle, FSingle, RoundMode)
+          , FpuR ) fpu_madd <- mkFloatingPointFusedMultiplyAccumulate;
 `endif
 
    FIFOF #(Token)          resetReqsF           <- mkFIFOF;
@@ -109,14 +129,14 @@ module mkFPU ( FPU_IFC );
       rmdFifo.enq(rmd);
 
       case ( iop )
-         FPAdd:   fpu_madd.request.put(  tuple4(Valid(opd1), opd2,         one(False), rmd) );
-         FPSub:   fpu_madd.request.put(  tuple4(Valid(opd1), negate(opd2), one(False), rmd) );
-         FPMul:   fpu_madd.request.put(  tuple4(Invalid,     opd1,         opd2,       rmd) );
+         FPAdd:   fpu_madd.request.put (tuple4(Valid(opd1), opd2,         one(False), rmd) );
+         FPSub:   fpu_madd.request.put (tuple4(Valid(opd1), negate(opd2), one(False), rmd) );
+         FPMul:   fpu_madd.request.put (tuple4(Invalid,     opd1,         opd2,       rmd) );
 `ifdef INCLUDE_FDIV
-         FPDiv:   fpu_div64.request.put( tuple3(opd1, opd2,         rmd) );
+         FPDiv:   fpu_div.request.put (tuple3 (opd1, opd2, rmd) );
 `endif
 `ifdef INCLUDE_FSQRT
-         FPSqrt:  fpu_sqr64.request.put( tuple2(opd1,               rmd) );
+         FPSqrt:  fpu_sqr.request.put (tuple2(opd1, rmd) );
 `endif
          FPMAdd:  fpu_madd.request.put(  tuple4(Valid(opd3),         opd1, opd2, rmd) );
          FPMSub:  fpu_madd.request.put(  tuple4(Valid(negate(opd3)), opd1, opd2, rmd) );
@@ -139,10 +159,10 @@ module mkFPU ( FPU_IFC );
    let rl_resRules = emptyRules;
    rl_resRules = rJoin (rl_resRules, fn_genMultCycResRules (fpu_madd));
 `ifdef INCLUDE_FDIV
-   rl_resRules = rJoinMutuallyExclusive (rl_resRules, fn_genMultCycResRules (fpu_div64));
+   rl_resRules = rJoinMutuallyExclusive (rl_resRules, fn_genMultCycResRules (fpu_div));
 `endif
 `ifdef INCLUDE_FSQRT
-   rl_resRules = rJoinMutuallyExclusive (rl_resRules, fn_genMultCycResRules (fpu_sqr64));
+   rl_resRules = rJoinMutuallyExclusive (rl_resRules, fn_genMultCycResRules (fpu_sqr));
 `endif
    addRules (rl_resRules);
 
