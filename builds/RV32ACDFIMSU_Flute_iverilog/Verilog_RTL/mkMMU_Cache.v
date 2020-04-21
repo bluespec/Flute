@@ -1859,7 +1859,7 @@ module mkMMU_Cache(CLK,
   assign MUX_f_fabric_write_reqs$enq_1__VAL_4 =
 	     { rg_f3, rg_pa, rg_st_amo_val } ;
   assign MUX_master_xactor_f_rd_addr$enq_1__VAL_1 =
-	     { 4'd0, lev_0_pte_pa_w64_fa__h29412, 29'd851968 } ;
+	     { 4'd0, lev_0_pte_pa_w64_fa__h29412, 29'd589824 } ;
   assign MUX_master_xactor_f_rd_addr$enq_1__VAL_2 =
 	     { 4'd0, fabric_addr__h36020, 8'd0, value__h36149, 18'd65536 } ;
   assign MUX_master_xactor_f_rd_addr$enq_1__VAL_3 =
@@ -5728,7 +5728,7 @@ module mkMMU_Cache(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_ptw_level_1 &&
 	  master_xactor_f_rd_data_first__33_BITS_2_TO_1__ETC___d982)
-	$write("'h%h", 3'b011);
+	$write("'h%h", 3'b010);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_ptw_level_1 &&
 	  master_xactor_f_rd_data_first__33_BITS_2_TO_1__ETC___d982)
