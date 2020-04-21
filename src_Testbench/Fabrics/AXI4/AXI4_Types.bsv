@@ -48,6 +48,20 @@ AXI4_Size  axsize_32  = 3'b_101;
 AXI4_Size  axsize_64  = 3'b_110;
 AXI4_Size  axsize_128 = 3'b_111;
 
+function Bit #(8) fv_axsize_to_num_bytes (AXI4_Size  axi4_size);
+   return (case (axi4_size)
+	      axsize_1:     1;
+	      axsize_2:     2;
+	      axsize_4:     4;
+	      axsize_8:     8;
+	      axsize_16:   16;
+	      axsize_32:   32;
+	      axsize_64:   64;
+	      axsize_128: 128;
+	      default:    '1;
+	   endcase);
+endfunction
+
 // AxBURST
 typedef Bit #(2)  AXI4_Burst;
 
