@@ -67,7 +67,7 @@ endfunction
 // ----------------
 // 32b version
 
-function Tuple3 #(Bool,                // 
+function Tuple3 #(Bool,                // err: misaligned, or bad data_width
 		  Bit #(4),            // strobe
 		  Bit #(32))           // lane-adjusted data
          fn_lane_adjust_32b (Bit #(32) addr, Bit #(3) dw, Bit #(32) data);

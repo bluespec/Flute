@@ -48,17 +48,21 @@ AXI4_Size  axsize_32  = 3'b_101;
 AXI4_Size  axsize_64  = 3'b_110;
 AXI4_Size  axsize_128 = 3'b_111;
 
-function Bit #(8) fv_axsize_to_num_bytes (AXI4_Size  axi4_size);
-   return (case (axi4_size)
-	      axsize_1:     1;
-	      axsize_2:     2;
-	      axsize_4:     4;
-	      axsize_8:     8;
-	      axsize_16:   16;
-	      axsize_32:   32;
-	      axsize_64:   64;
-	      axsize_128: 128;
-	      default:    '1;
+function Bit #(8) fv_AXI4_Size_to_num_bytes (AXI4_Size  axi4_size);
+   return (1 << axi4_size);
+endfunction
+
+function AXI4_Size fv_num_bytes_to_AXI4_Size (Bit #(8) num_bytes);
+   return (case (num_bytes)
+	      1:   axsize_1;
+	      2:   axsize_2;
+	      4:   axsize_4;
+	      8:   axsize_8;
+	      16:  axsize_16;
+	      32:  axsize_32;
+	      64:  axsize_64;
+	      128: axsize_128;
+	      default: axsize_128;    // Bogus
 	   endcase);
 endfunction
 
