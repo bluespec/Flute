@@ -145,18 +145,14 @@ module mkAXI4_Deburster (AXI4_Deburster_IFC #(wd_id, wd_addr, wd_data, wd_user))
       // The actual length of the burst is one more than indicated by axlen
       Bit #(wd_addr) burst_len = zeroExtend (axlen) + 1;
 
-      // find the wrap boundary bit - this becomes the mask - will only work
-      // for burst lengths which are a power of two
-      Bit #(wd_addr) wrap_boundary = (burst_len << pack (axsize));
+      // Compute the mask used to wrap the address, given that burst lenths are
+      // always powers of two
+      Bit #(wd_addr) wrap_mask = (burst_len << pack (axsize)) - 1;
 
-      // For wrapping bursts the wrap_mask needs to be applied to check if the
-      // wrapping boundary has been reached
+      // For wrapping bursts the wrap_mask needs to be applied to wrap the
+      // address round when it reaaches the boundary
       if (axburst == axburst_wrap) begin
-         // The wrapping condition
-         if ((addr % wrap_boundary) == 0) begin
-            // wrap the address - retain all bits except the wrap boundary bit
-            addr = addr - wrap_boundary;
-         end
+         addr = (start_addr & (~ wrap_mask)) | (addr & wrap_mask);
       end
       return addr;
    endfunction
