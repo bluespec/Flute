@@ -26,6 +26,10 @@ import ClientServer  :: *;
 import AXI4_Types   :: *;
 import Fabric_Defs  :: *;
 
+`ifdef INCLUDE_DMEM_SLAVE
+import AXI4_Lite_Types :: *;
+`endif
+
 // External interrupt request interface
 import PLIC  :: *;
 
@@ -61,6 +65,13 @@ interface Core_IFC #(numeric type t_n_interrupt_sources);
 
    // CPU DMem to Fabric master interface
    interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) cpu_dmem_master;
+
+   // ----------------------------------------------------------------
+   // Optional AXI4-Lite D-cache slave interface
+
+`ifdef INCLUDE_DMEM_SLAVE
+   interface AXI4_Lite_Slave_IFC #(Wd_Addr, Wd_Data, Wd_User) cpu_dmem_slave;
+`endif
 
    // ----------------------------------------------------------------
    // External interrupt sources

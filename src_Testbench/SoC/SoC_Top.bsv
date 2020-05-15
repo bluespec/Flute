@@ -36,6 +36,10 @@ import AXI4_Types     :: *;
 import AXI4_Fabric    :: *;
 import AXI4_Deburster :: *;
 
+`ifdef INCLUDE_DMEM_SLAVE
+import AXI4_Lite_Types :: *;
+`endif
+
 import Fabric_Defs :: *;
 import SoC_Map     :: *;
 import SoC_Fabric  :: *;
@@ -192,6 +196,19 @@ module mkSoC_Top (SoC_Top_IFC);
    AXI4_Slave_IFC#(Wd_Id, Wd_Addr, Wd_Data, Wd_User) htif <- mkAxi4LRegFile(bytes_per_htif);
 
    mkConnection (fabric.v_to_slaves [htif_slave_num], htif);
+`endif
+
+   // ----------------------------------------------------------------
+   // Optional AXI4-Lite D-cache slave interface tie-off (not used)
+
+`ifdef INCLUDE_DMEM_SLAVE
+   rule rl_always_dmem_slave (True);
+      core.cpu_dmem_slave.m_arvalid (False, ?, ?, ?);
+      core.cpu_dmem_slave.m_rready (False);
+      core.cpu_dmem_slave.m_awvalid (False, ?, ?, ?);
+      core.cpu_dmem_slave.m_wvalid (False, ?, ?);
+      core.cpu_dmem_slave.m_bready (False);
+   endrule
 `endif
 
    // ----------------

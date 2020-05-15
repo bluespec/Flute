@@ -40,6 +40,10 @@ import AXI4_Fabric  :: *;
 import Fabric_Defs  :: *;    // for Wd_Id, Wd_Addr, Wd_Data, Wd_User
 import SoC_Map      :: *;
 
+`ifdef INCLUDE_DMEM_SLAVE
+import AXI4_Lite_Types :: *;
+`endif
+
 `ifdef INCLUDE_GDB_CONTROL
 import Debug_Module     :: *;
 `endif
@@ -363,6 +367,13 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
 
    // DMem to Fabric master interface
    interface AXI4_Master_IFC  cpu_dmem_master = fabric_2x3.v_to_slaves [default_slave_num];
+
+   // ----------------------------------------------------------------
+   // Optional AXI4-Lite D-cache slave interface
+
+`ifdef INCLUDE_DMEM_SLAVE
+   interface AXI4_Lite_Slave_IFC  cpu_dmem_slave = cpu.dmem_slave;
+`endif
 
    // ----------------------------------------------------------------
    // External interrupt sources
