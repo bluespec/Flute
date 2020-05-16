@@ -38,6 +38,10 @@ import Semi_FIFOF :: *;
 
 import AXI4_Types :: *;
 
+`ifdef INCLUDE_DMEM_SLAVE
+import AXI4_Lite_Types :: *;
+`endif
+
 import ISA_Decls :: *;
 
 import TV_Info   :: *;
@@ -1693,6 +1697,13 @@ module mkCPU (CPU_IFC);
 
    // DMem to fabric master interface
    interface  dmem_master = near_mem.dmem_master;
+
+   // ----------------------------------------------------------------
+   // Optional AXI4-Lite D-cache slave interface
+
+`ifdef INCLUDE_DMEM_SLAVE
+   interface  dmem_slave = near_mem.dmem_slave;
+`endif
 
    // ----------------
    // External interrupts

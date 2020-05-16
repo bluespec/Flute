@@ -38,6 +38,10 @@ import ISA_Decls :: *;
 import AXI4_Types  :: *;
 import Fabric_Defs :: *;
 
+`ifdef INCLUDE_DMEM_SLAVE
+import AXI4_Lite_Types :: *;
+`endif
+
 // ================================================================
 
 interface Near_Mem_IFC;
@@ -61,6 +65,13 @@ interface Near_Mem_IFC;
 
    // Fabric side
    interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) dmem_master;
+
+   // ----------------------------------------------------------------
+   // Optional AXI4-Lite DMem slave interface
+
+`ifdef INCLUDE_DMEM_SLAVE
+   interface AXI4_Lite_Slave_IFC #(Wd_Addr, Wd_Data, Wd_User) dmem_slave;
+`endif
 
    // ----------------
    // Fences

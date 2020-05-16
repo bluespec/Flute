@@ -37,7 +37,7 @@ module mkCreditCounter (CreditCounter_IFC #(w));
 
    method UInt #(w) value = crg [1];
 
-   method Action incr;
+   method Action incr if (crg [0] != maxBound);
       if (crg [0] == maxBound) begin
 	 $display ("%0d: ERROR: CreditCounter: overflow", cur_cycle);
 	 $finish (1);    // Assertion failure
