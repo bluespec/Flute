@@ -1,0 +1,2 @@
+$imported_c_get_symbol_val vpiSysFuncSized 64 unsigned
+$imported_c_trygetchar vpiSysFuncSized 8 unsigned

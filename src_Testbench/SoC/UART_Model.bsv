@@ -235,7 +235,7 @@ module mkUART (UART_IFC);
    // Virtual read-only register IIR
 
    function Bit #(8) fn_iir ();
-      Bit #(8) iir = 0;
+      Bit #(8) iir = uart_iir_none;
 
       if (   ((rg_ier & uart_ier_erbfi) != 0)    // Rx interrupt enabled
 	  && ((rg_lsr & uart_lsr_dr)    != 0))   // data ready
