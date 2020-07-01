@@ -59,8 +59,9 @@ import CreditCounter :: *;
 // ================================================================
 // Project imports
 
-import ISA_Decls    :: *;
-import Near_Mem_IFC :: *;
+import ISA_Decls        :: *;
+import Near_Mem_IFC     :: *;
+import MMU_Cache_Common :: *;
 
 `ifdef ISA_PRIV_S
 import TLB          :: *;
@@ -193,17 +194,6 @@ deriving (Bits, FShow);
 `endif
 
 // ================================================================
-// Check if addr is aligned
-
-function Bool fn_is_aligned (Bit #(3) f3, Bit #(n) addr);
-   return (    (f3 [1:0] == 2'b00)                                // B, BU
-	   || ((f3 [1:0] == 2'b01) && (addr [0] == 1'b0))         // H, HU
-	   || ((f3 [1:0] == 2'b10) && (addr [1:0] == 2'b00))      // W, WU
-	   || ((f3 [1:0] == 2'b11) && (addr [2:0] == 3'b000))     // D
-	   );
-endfunction
-
-// ================================================================
 // Convert RISC-V funct3 code into AXI4_Size code (number of bytes in a beat)
 
 function AXI4_Size fn_funct3_to_AXI4_Size (Bit #(3) funct3);
@@ -324,11 +314,11 @@ endfunction: fn_update_word64_set
 
 // ================================================================
 // ALU for AMO ops.
-// Returns the value to be stored back to mem.
+// Args: ld_val (64b from mem) and st_val (64b from CPU reg Rs2)
+// Result: (final_ld_val, final_st_val)
 
-`ifdef ISA_A
 function Tuple2 #(Bit #(64),
-		  Bit #(64)) fn_amo_op (Bit #(3)   funct3,    // encodes data size (.W or .D)
+		  Bit #(64)) fv_amo_op (Bit #(3)   funct3,    // encodes data size (.W or .D)
 					Bit #(7)   funct7,    // encodes the AMO op
 					WordXL     addr,      // lsbs indicate which 32b W in 64b D (.W)
 					Bit #(64)  ld_val,    // 64b value loaded from mem
@@ -362,8 +352,7 @@ function Tuple2 #(Bit #(64),
       new_st_val = zeroExtend (new_st_val [31:0]);
 
    return tuple2 (truncate (pack (i1)), new_st_val);
-endfunction: fn_amo_op
-`endif
+endfunction: fv_amo_op
 
 // ================================================================
 // Displays, for debugging
@@ -451,8 +440,8 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
 										  config_output_register);
 
    // Data RAM
-   BRAM_DUAL_PORT #(Word64_Set_in_Cache, Word64_Set) ram_word64_set <- mkBRAMCore2 (word64_sets_per_cache,
-										    config_output_register);
+   BRAM_DUAL_PORT #(CSet_Word64_in_Cache, Word64_Set) ram_word64_set <- mkBRAMCore2 (cset_word64s_per_cache,
+										     config_output_register);
 
    // Registers holding incoming request args
    Reg #(CacheOp)    rg_op          <- mkRegU;    // CACHE_LD, CACHE_ST, CACHE_AMO
@@ -498,10 +487,10 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
    Offset  offset = fn_Addr_to_Offset (rg_addr);
 `endif
 
-   CSet_in_Cache        cset_in_cache       = fn_Addr_to_CSet_in_Cache   (rg_addr);
-   Word64_Set_in_Cache  word64_set_in_cache = fn_Addr_to_Word64_Set_in_Cache (rg_addr);
-   Word64_in_CLine      word64_in_cline     = fn_Addr_to_Word64_in_CLine (rg_addr);
-   Bit #(3)             byte_in_word64      = fn_Addr_to_Byte_in_Word64  (rg_addr);
+   CSet_in_Cache         cset_in_cache       = fn_Addr_to_CSet_in_Cache   (rg_addr);
+   CSet_Word64_in_Cache  word64_set_in_cache = fn_Addr_to_CSet_Word64_in_Cache (rg_addr);
+   Word64_in_CLine       word64_in_cline     = fn_Addr_to_Word64_in_CLine (rg_addr);
+   Bit #(3)              byte_in_word64      = fn_Addr_to_Byte_in_Word64  (rg_addr);
 
 `ifdef ISA_PRIV_S
    // Derivations from rg_satp
@@ -536,9 +525,9 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
    Reg #(CSet_in_Cache)  rg_cset_in_cache   <- mkReg (0);
 
    // These regs are used in the cache refill loop for ram_State_and_CTag_CSet
-   // and ram_Word64_Set
-   Reg #(Word64_Set_in_Cache) rg_word64_set_in_cache <- mkRegU;
-   Reg #(Bool)                rg_error_during_refill <- mkRegU;
+   // and ram_word64_set
+   Reg #(CSet_Word64_in_Cache) rg_word64_set_in_cache <- mkRegU;
+   Reg #(Bool)                 rg_error_during_refill <- mkRegU;
    // In 32b fabrics, these hold the lower word32 while we're fetching the upper word32 of a word64
    Reg #(Bool)      rg_lower_word32_full <- mkReg (False);
    Reg #(Bit #(32)) rg_lower_word32      <- mkRegU;
@@ -558,7 +547,7 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
 	 ram_state_and_ctag_cset.b.put (bram_cmd_read, cset_in_cache,    ?);
 
 	 // Request data RAM
-	 let word64_set_in_cache = fn_Addr_to_Word64_Set_in_Cache (addr);
+	 let word64_set_in_cache = fn_Addr_to_CSet_Word64_in_Cache (addr);
 	 ram_word64_set.b.put          (bram_cmd_read, word64_set_in_cache, ?);
 
 	 if (cfg_verbosity > 1)
@@ -1056,7 +1045,7 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
 
 		  // Do the AMO op on the loaded value and the store value
 		  match {.new_ld_val,
-			 .new_st_val} = fn_amo_op (rg_f3, rg_amo_funct7, rg_addr, word64, rg_st_amo_val);
+			 .new_st_val} = fv_amo_op (rg_f3, rg_amo_funct7, rg_addr, word64, rg_st_amo_val);
 
 		  // Update cache line in cache
 		  let new_word64_set = fn_update_word64_set (word64_set, way_hit, vm_xlate_result.pa, rg_f3, new_st_val);
@@ -1747,7 +1736,7 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
 
 	 // Do the AMO op on the loaded value and the store value
 	 match {.new_ld_val,
-		.new_st_val} = fn_amo_op (rg_f3, rg_amo_funct7, rg_addr, ld_val, rg_st_amo_val);
+		.new_st_val} = fv_amo_op (rg_f3, rg_amo_funct7, rg_addr, ld_val, rg_st_amo_val);
 
 	 // Write back new st_val to fabric
 	 fa_fabric_send_write_req (rg_f3, rg_pa, new_st_val);

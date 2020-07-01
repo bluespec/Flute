@@ -426,7 +426,10 @@ module mkSoC_Top (SoC_Top_IFC);
 
    // For ISA tests: watch memory writes to <tohost> addr
    method Action set_watch_tohost (Bool  watch_tohost, Fabric_Addr  tohost_addr);
+`ifdef WATCH_TOHOST
+      core.set_watch_tohost (watch_tohost, tohost_addr);
       mem0_controller.set_watch_tohost (watch_tohost, tohost_addr);
+`endif
    endmethod
 endmodule: mkSoC_Top
 

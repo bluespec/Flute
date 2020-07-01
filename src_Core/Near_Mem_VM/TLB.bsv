@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2019 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2018-2020 Bluespec, Inc. All Rights Reserved
 
 package TLB;
 
@@ -34,11 +34,12 @@ export VM_Xlate_Outcome (..), VM_Xlate_Result (..);
 //    ASID:   Address space identifier
 //    VPN:    Virtual Page Number
 //    PPN:    Physical Page Number
+//    VA:     Virtual Address
 //    PA:     Physical Address    (= { PPN, 12'b_Offset }
-//    PTE:    Page Table Entries
+//    PTE:    Page Table Entry
 
 // Abbreviations (other)
-//    TLB:    Translation Lookaside Buffer (a cache mapping {ASID,VPN}->PPN
+//    TLB:    Translation Lookaside Buffer (a cache mapping {ASID,VPN}->PPN)
 
 // ================================================================
 // TLB interface
@@ -80,7 +81,7 @@ endinterface
 // When we do a TLB lookup for a VA, we don't know whether it'll be in
 // a page, megapage or gigapage, or is unmapped.
 
-// Thus our "TLB" is acually multiple sub-TLBs, one each for ordinary,
+// Thus our "TLB" is actually multiple sub-TLBs, one each for ordinary,
 // mega and giga pages.
 
 // These are probed concurrently (at most one should HIT).

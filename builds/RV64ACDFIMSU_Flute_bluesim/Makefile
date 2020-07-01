@@ -7,6 +7,12 @@
 REPO ?= ../..
 ARCH ?= RV64ACDFIMSU
 
+
+# The following line should be:
+#    Commented        for an L1 with write-through policy
+#    Uncommented      for an L1 with write-back policy
+# L1_CACHE_POLICY=WRITEBACK
+
 # ================================================================
 # RISC-V config macros passed into Bluespec 'bsc' compiler
 
@@ -20,6 +26,7 @@ BSC_COMPILATION_FLAGS += \
 	-D MULT_SYNTH    \
 	-D Near_Mem_Caches    \
 	-D FABRIC64    \
+	-D WATCH_TOHOST    \
 
 
 # Default ISA test

@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# Copyright (c) 2018-2019 Bluespec, Inc.
+# Copyright (c) 2018-2020 Bluespec, Inc.
 # See LICENSE for license details
 
 # ================================================================
@@ -272,6 +272,9 @@ def make_build_dir (repo, repobase, arch, sim, debug, tv):
 
     # Bluespec HW implementation choice for fabric data width
     fo.write ("\t-D FABRIC64    \\\n")
+
+    # Bluespec testing: observe writes to <tohost> and terminate when non-zero
+    fo.write ("\t-D WATCH_TOHOST    \\\n")
 
     # Support for RISC-V Debug Module
     if (debug != ""):

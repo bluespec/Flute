@@ -380,6 +380,7 @@ endfunction
 
 // ----------------
 // Check PTE A and D bits
+// Note: implementation choice to fault on PTA.A=0 or (store and PTE.D=0)
 
 function Bool is_pte_A_D_fault (Bool read_not_write, PTE pte);
    return (   (fn_PTE_to_A (pte) == 0)

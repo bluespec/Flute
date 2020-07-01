@@ -37,11 +37,12 @@ import GetPut_Aux :: *;
 // ================================================================
 // Project imports
 
-import ISA_Decls    :: *;
-import Near_Mem_IFC :: *;
-import MMU_Cache    :: *;
-import AXI4_Types   :: *;
-import Fabric_Defs  :: *;
+import ISA_Decls        :: *;
+import Near_Mem_IFC     :: *;
+import MMU_Cache_Common :: *;
+import MMU_Cache        :: *;
+import AXI4_Types       :: *;
+import Fabric_Defs      :: *;
 
 `ifdef INCLUDE_DMEM_SLAVE
 import MMU_Cache_Arbiter           :: *;
@@ -111,6 +112,21 @@ module mkNear_Mem (Near_Mem_IFC);
       if (cfg_verbosity > 1)
 	 $display ("%0d: Near_Mem.rl_reset_complete", cur_cycle);
    endrule
+
+   // ----------------
+   // SFENCE_VMA
+
+`ifdef ISA_PRIV_S
+   FIFOF #(Token) f_sfence_vma_reqs <- mkFIFOF;
+   FIFOF #(Token) f_sfence_vma_rsps <- mkFIFOF;
+
+   rule rl_sfence_vma;
+      let tok <- pop (f_sfence_vma_reqs);
+      icache.tlb_flush;
+      dcache.tlb_flush;
+      f_sfence_vma_rsps.enq (tok);
+   endrule
+`endif
 
    // ----------------------------------------------------------------
    // INTERFACE
@@ -247,10 +263,9 @@ module mkNear_Mem (Near_Mem_IFC);
    // ----------------
    // SFENCE_VMA: flush TLBs
 
-   method Action sfence_vma;
-      icache.tlb_flush;
-      dcache.tlb_flush;
-   endmethod
+`ifdef ISA_PRIV_S
+   interface Server sfence_vma_server = toGPServer (f_sfence_vma_reqs, f_sfence_vma_rsps);
+`endif
 endmodule
 
 // ================================================================

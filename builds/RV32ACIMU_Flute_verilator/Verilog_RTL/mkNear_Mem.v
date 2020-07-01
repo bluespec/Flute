@@ -80,7 +80,7 @@
 // RDY_server_fence_i_response_get  O     1
 // RDY_server_fence_request_put   O     1 reg
 // RDY_server_fence_response_get  O     1
-// RDY_sfence_vma                 O     1 const
+// RDY_set_watch_tohost           O     1 const
 // CLK                            I     1 clock
 // RST_N                          I     1 reset
 // imem_req_f3                    I     3
@@ -121,6 +121,8 @@
 // dmem_master_rresp              I     2 reg
 // dmem_master_rlast              I     1 reg
 // server_fence_request_put       I     8 unused
+// set_watch_tohost_watch_tohost  I     1 unused
+// set_watch_tohost_tohost_addr   I    64 unused
 // EN_server_reset_request_put    I     1
 // EN_server_reset_response_get   I     1
 // EN_imem_req                    I     1
@@ -129,7 +131,7 @@
 // EN_server_fence_i_response_get  I     1
 // EN_server_fence_request_put    I     1
 // EN_server_fence_response_get   I     1
-// EN_sfence_vma                  I     1 unused
+// EN_set_watch_tohost            I     1 unused
 //
 // No combinational paths from inputs to outputs
 //
@@ -357,8 +359,10 @@ module mkNear_Mem(CLK,
 		  EN_server_fence_response_get,
 		  RDY_server_fence_response_get,
 
-		  EN_sfence_vma,
-		  RDY_sfence_vma);
+		  set_watch_tohost_watch_tohost,
+		  set_watch_tohost_tohost_addr,
+		  EN_set_watch_tohost,
+		  RDY_set_watch_tohost);
   input  CLK;
   input  RST_N;
 
@@ -666,9 +670,11 @@ module mkNear_Mem(CLK,
   input  EN_server_fence_response_get;
   output RDY_server_fence_response_get;
 
-  // action method sfence_vma
-  input  EN_sfence_vma;
-  output RDY_sfence_vma;
+  // action method set_watch_tohost
+  input  set_watch_tohost_watch_tohost;
+  input  [63 : 0] set_watch_tohost_tohost_addr;
+  input  EN_set_watch_tohost;
+  output RDY_set_watch_tohost;
 
   // signals for module outputs
   wire [63 : 0] dmem_master_araddr,
@@ -722,7 +728,7 @@ module mkNear_Mem(CLK,
        RDY_server_fence_response_get,
        RDY_server_reset_request_put,
        RDY_server_reset_response_get,
-       RDY_sfence_vma,
+       RDY_set_watch_tohost,
        dmem_exc,
        dmem_master_arlock,
        dmem_master_arvalid,
@@ -919,7 +925,7 @@ module mkNear_Mem(CLK,
        CAN_FIRE_server_fence_response_get,
        CAN_FIRE_server_reset_request_put,
        CAN_FIRE_server_reset_response_get,
-       CAN_FIRE_sfence_vma,
+       CAN_FIRE_set_watch_tohost,
        WILL_FIRE_RL_rl_reset,
        WILL_FIRE_RL_rl_reset_complete,
        WILL_FIRE_dmem_master_m_arready,
@@ -940,7 +946,7 @@ module mkNear_Mem(CLK,
        WILL_FIRE_server_fence_response_get,
        WILL_FIRE_server_reset_request_put,
        WILL_FIRE_server_reset_response_get,
-       WILL_FIRE_sfence_vma;
+       WILL_FIRE_set_watch_tohost;
 
   // inputs to muxes for submodule ports
   wire MUX_rg_state$write_1__SEL_2, MUX_rg_state$write_1__SEL_3;
@@ -1251,10 +1257,10 @@ module mkNear_Mem(CLK,
 	     dcache$RDY_server_flush_response_get ;
   assign WILL_FIRE_server_fence_response_get = EN_server_fence_response_get ;
 
-  // action method sfence_vma
-  assign RDY_sfence_vma = 1'd1 ;
-  assign CAN_FIRE_sfence_vma = 1'd1 ;
-  assign WILL_FIRE_sfence_vma = EN_sfence_vma ;
+  // action method set_watch_tohost
+  assign RDY_set_watch_tohost = 1'd1 ;
+  assign CAN_FIRE_set_watch_tohost = 1'd1 ;
+  assign WILL_FIRE_set_watch_tohost = EN_set_watch_tohost ;
 
   // submodule dcache
   mkMMU_Cache #(.dmem_not_imem(1'd1)) dcache(.CLK(CLK),
@@ -1510,7 +1516,7 @@ module mkNear_Mem(CLK,
 	     EN_server_fence_i_request_put || EN_server_fence_request_put ;
   assign dcache$EN_server_flush_response_get =
 	     EN_server_fence_i_response_get || EN_server_fence_response_get ;
-  assign dcache$EN_tlb_flush = EN_sfence_vma ;
+  assign dcache$EN_tlb_flush = 1'b0 ;
 
   // submodule f_reset_rsps
   assign f_reset_rsps$ENQ = MUX_rg_state$write_1__SEL_3 ;
@@ -1546,7 +1552,7 @@ module mkNear_Mem(CLK,
   assign icache$EN_server_flush_request_put = EN_server_fence_i_request_put ;
   assign icache$EN_server_flush_response_get =
 	     EN_server_fence_i_response_get ;
-  assign icache$EN_tlb_flush = EN_sfence_vma ;
+  assign icache$EN_tlb_flush = 1'b0 ;
 
   // submodule soc_map
   assign soc_map$m_is_IO_addr_addr = 64'h0 ;

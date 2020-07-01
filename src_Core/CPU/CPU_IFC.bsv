@@ -107,6 +107,13 @@ interface CPU_IFC;
    interface Server #(DM_CPU_Req #(12, XLEN), DM_CPU_Rsp #(XLEN)) hart0_csr_mem_server;
 `endif
 
+   // ----------------------------------------------------------------
+   // For ISA tests: watch memory writes to <tohost> addr
+
+`ifdef WATCH_TOHOST
+   method Action set_watch_tohost (Bool watch_tohost, Bit #(64) tohost_addr);
+`endif
+
 endinterface
 
 // ================================================================

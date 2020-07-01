@@ -481,6 +481,23 @@ Bit #(5)    f5_AMO_MAX    = 5'b10100;
 Bit #(5)    f5_AMO_MINU   = 5'b11000;
 Bit #(5)    f5_AMO_MAXU   = 5'b11100;
 
+function Fmt fshow_f5_AMO_op (Bit #(5) op);
+   Fmt fmt = case (op)
+		f5_AMO_LR: $format ("LR");
+		f5_AMO_SC: $format ("SC");
+		f5_AMO_ADD: $format ("ADD");
+		f5_AMO_SWAP: $format ("SWAP");
+		f5_AMO_XOR: $format ("XOR");
+		f5_AMO_AND: $format ("AND");
+		f5_AMO_OR: $format ("OR");
+		f5_AMO_MIN: $format ("MIN");
+		f5_AMO_MAX: $format ("MAX");
+		f5_AMO_MINU: $format ("MINU");
+		f5_AMO_MAXU: $format ("MAXU");
+	     endcase;
+   return fmt;
+endfunction
+
 Bit #(10) f10_LR_W       = 10'b00010_00_010;
 Bit #(10) f10_SC_W       = 10'b00011_00_010;
 Bit #(10) f10_AMOADD_W   = 10'b00000_00_010;

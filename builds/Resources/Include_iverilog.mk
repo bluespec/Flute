@@ -27,8 +27,6 @@ compile:  build_dir  Verilog_RTL
 VSIM ?= iverilog
 SIM_EXE_FILE = exe_HW_sim
 
-# BSCPATH_V = -p ./src_BSV:%/Prelude:%/Libraries
-
 .PHONY: simulator
 simulator:
 	@echo INFO: iVerilog linking start ...

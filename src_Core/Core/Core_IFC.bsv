@@ -109,6 +109,14 @@ interface Core_IFC #(numeric type t_n_interrupt_sources);
 
    interface Client #(Bool, Bool) ndm_reset_client;
 `endif
+
+   // ----------------------------------------------------------------
+   // For ISA tests: watch memory writes to <tohost> addr
+
+`ifdef WATCH_TOHOST
+   method Action set_watch_tohost (Bool watch_tohost, Bit #(64) tohost_addr);
+`endif
+
 endinterface
 
 // ================================================================

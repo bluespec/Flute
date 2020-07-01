@@ -197,7 +197,7 @@ def compute_derived_values (items):
                    int (sel (items, "Bytes_per_Cache") / sel (items, "Bytes_per_CSet")),
                    "Bytes_per_Cache / Bytes_per_CSet"))
 
-    items.append (("Word64_Sets_per_Cache",
+    items.append (("CSet_Word64s_per_Cache",
                    sel (items, "CSets_per_Cache") * sel (items, "Word64s_per_CLine"),
                    "CSets_per_Cache * Word64s_per_CLine"))
 
@@ -213,7 +213,7 @@ def compute_derived_values (items):
                    int (math.log2 (sel (items, "CSets_per_Cache"))),
                    "log2 (CSets_per_Cache)"))
 
-    items.append (("Bits_per_Word64_Set_in_Cache",
+    items.append (("Bits_per_CSet_Word64_in_Cache",
                    sel (items, "Bits_per_CSet_in_Cache") + sel (items, "Bits_per_Word64_in_CLine"),
                    "Bits_per_CSet_in_Cache + Bits_per_Word64_in_CLine"))
 
@@ -242,13 +242,13 @@ def compute_derived_values (items):
                    sel (items, "addr_lo_cset_in_cache") + sel (items, "Bits_per_CSet_in_Cache") - 1,
                    "addr_lo_cset_in_cache + Bits_per_CSet_in_Cache - 1"))
 
-    items.append (("addr_lo_word64_set_in_cache",
+    items.append (("addr_lo_cset_word64_in_cache",
                    addr_hi_byte_in_word64 + 1,
                    "addr_hi_byte_in_word64 + 1"))
 
-    items.append (("addr_hi_word64_set_in_cache",
-                   sel (items, "addr_lo_word64_set_in_cache") + sel (items, "Bits_per_Word64_Set_in_Cache") - 1,
-                   "addr_lo_word64_set_in_cache + Bits_per_Word64_Set_in_Cache - 1"))
+    items.append (("addr_hi_cset_word64_in_cache",
+                   sel (items, "addr_lo_cset_word64_in_cache") + sel (items, "Bits_per_CSet_Word64_in_Cache") - 1,
+                   "addr_lo_cset_word64_in_cache + Bits_per_CSet_Word64_in_Cache - 1"))
 
     items.append (("addr_lo_ctag",
                    sel (items, "addr_hi_cset_in_cache") + 1,
@@ -308,7 +308,7 @@ def generate_BSV_file (BSV_package_name, items):
                 "typedef Bit #(Bits_per_Word64_in_CLine)           Word64_in_CLine;\n" +
                 "typedef Bit #(Bits_per_Way_in_CSet)               Way_in_CSet;\n" +
                 "typedef Bit #(Bits_per_CSet_in_Cache)             CSet_in_Cache;\n" +
-                "typedef Bit #(Bits_per_Word64_Set_in_Cache)       Word64_Set_in_Cache;\n")
+                "typedef Bit #(Bits_per_CSet_Word64_in_Cache)      CSet_Word64_in_Cache;\n")
 
     fout.write ("\n" +
                 "// ================================================================\n" +
@@ -330,8 +330,8 @@ def generate_BSV_file (BSV_package_name, items):
                 "endfunction\n")
 
     fout.write ("\n" +
-                "function  Word64_Set_in_Cache  fn_Addr_to_Word64_Set_in_Cache (Bit #(n)  addr);\n" +
-                "   return  addr [addr_hi_word64_set_in_cache : addr_lo_word64_set_in_cache ];\n" +
+                "function  CSet_Word64_in_Cache  fn_Addr_to_CSet_Word64_in_Cache (Bit #(n)  addr);\n" +
+                "   return  addr [addr_hi_cset_word64_in_cache : addr_lo_cset_word64_in_cache ];\n" +
                 "endfunction\n")
 
     fout.write ("\n" +
@@ -379,18 +379,18 @@ def gen_decls (fout, size_not_val, items):
     fout.write ("\n" +
                 "// Cache ----------------\n" +
                 "\n")
-    gen_decl (fout, size_not_val, "KB_per_Cache",                 sel2 (items, "KB_per_Cache"))
-    gen_decl (fout, size_not_val, "Bytes_per_Cache",              sel2 (items, "Bytes_per_Cache"))
-    gen_decl (fout, size_not_val, "Word64s_per_Cache",            sel2 (items, "Word64s_per_Cache"))
-    gen_decl (fout, size_not_val, "CLines_per_Cache",             sel2 (items, "CLines_per_Cache"))
+    gen_decl (fout, size_not_val, "KB_per_Cache",                  sel2 (items, "KB_per_Cache"))
+    gen_decl (fout, size_not_val, "Bytes_per_Cache",               sel2 (items, "Bytes_per_Cache"))
+    gen_decl (fout, size_not_val, "Word64s_per_Cache",             sel2 (items, "Word64s_per_Cache"))
+    gen_decl (fout, size_not_val, "CLines_per_Cache",              sel2 (items, "CLines_per_Cache"))
     fout.write ("\n")
-    gen_decl (fout, size_not_val, "CSets_per_Cache",              sel2 (items, "CSets_per_Cache"))
-    gen_decl (fout, size_not_val, "Bits_per_CSet_in_Cache",       sel2 (items, "Bits_per_CSet_in_Cache"))
+    gen_decl (fout, size_not_val, "CSets_per_Cache",               sel2 (items, "CSets_per_Cache"))
+    gen_decl (fout, size_not_val, "Bits_per_CSet_in_Cache",        sel2 (items, "Bits_per_CSet_in_Cache"))
     fout.write ("\n")
-    gen_decl (fout, size_not_val, "Word64_Sets_per_Cache",        sel2 (items, "Word64_Sets_per_Cache"))
-    gen_decl (fout, size_not_val, "Bits_per_Word64_Set_in_Cache", sel2 (items, "Bits_per_Word64_Set_in_Cache"))
+    gen_decl (fout, size_not_val, "CSet_Word64s_per_Cache",        sel2 (items, "CSet_Word64s_per_Cache"))
+    gen_decl (fout, size_not_val, "Bits_per_CSet_Word64_in_Cache", sel2 (items, "Bits_per_CSet_Word64_in_Cache"))
 
-    gen_decl (fout, size_not_val, "Bits_per_CTag",                sel2 (items, "Bits_per_CTag"))
+    gen_decl (fout, size_not_val, "Bits_per_CTag",                 sel2 (items, "Bits_per_CTag"))
 
     if not size_not_val:
         fout.write ("\n" +
@@ -402,8 +402,8 @@ def gen_decls (fout, size_not_val, items):
         gen_decl (fout, size_not_val, "addr_lo_cset_in_cache", sel2 (items, "addr_lo_cset_in_cache"))
         gen_decl (fout, size_not_val, "addr_hi_cset_in_cache", sel2 (items, "addr_hi_cset_in_cache"))
         fout.write ("\n")
-        gen_decl (fout, size_not_val, "addr_lo_word64_set_in_cache", sel2 (items, "addr_lo_word64_set_in_cache"))
-        gen_decl (fout, size_not_val, "addr_hi_word64_set_in_cache", sel2 (items, "addr_hi_word64_set_in_cache"))
+        gen_decl (fout, size_not_val, "addr_lo_cset_word64_in_cache", sel2 (items, "addr_lo_cset_word64_in_cache"))
+        gen_decl (fout, size_not_val, "addr_hi_cset_word64_in_cache", sel2 (items, "addr_hi_cset_word64_in_cache"))
         fout.write ("\n")
         gen_decl (fout, size_not_val, "addr_lo_ctag", sel2 (items, "addr_lo_ctag"))
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2019 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2018-2020 Bluespec, Inc. All Rights Reserved.
 
 package Core;
 
@@ -413,6 +413,15 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
 
    // Non-Debug-Module Reset (reset all except DM)
    interface Client ndm_reset_client = debug_module.ndm_reset_client;
+`endif
+
+   // ----------------------------------------------------------------
+   // For ISA tests: watch memory writes to <tohost> addr
+
+`ifdef WATCH_TOHOST
+   method Action set_watch_tohost (Bool watch_tohost, Bit #(64) tohost_addr);
+      cpu.set_watch_tohost (watch_tohost, tohost_addr);
+   endmethod
 `endif
 
 endmodule: mkCore
