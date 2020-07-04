@@ -34,8 +34,10 @@ all: compile  simulator
 # ================================================================
 # Search path for bsc for .bsv files
 
-ifeq ($(L1_CACHE_POLICY),WRITEBACK)
+ifeq ($(CACHES),WB_L1)
   NEAR_MEM_VM_DIR=Near_Mem_VM_WB
+else ifeq ($(CACHES),WB_L1_L2)
+  NEAR_MEM_VM_DIR=Near_Mem_VM_WB_L1_L2
 else
   NEAR_MEM_VM_DIR=Near_Mem_VM
 endif

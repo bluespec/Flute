@@ -345,8 +345,9 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
 	 // See NOTE: "tohost" above.
 	 if (rg_watch_tohost
 	     && valid
-	     && (final_st_val != 0)
-	     && (rg_pa == zeroExtend (rg_tohost_addr)))
+	     && (rg_req.op == CACHE_ST)
+	     && (rg_pa == zeroExtend (rg_tohost_addr))
+	     && (final_st_val != 0))
 	    begin					      
 	       let test_num = (final_st_val >> 1);
 	       $display ("****************************************************************");

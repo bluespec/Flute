@@ -9,9 +9,11 @@ ARCH ?= RV64ACDFIMSU
 
 
 # The following line should be:
-#    Commented        for an L1 with write-through policy
-#    Uncommented      for an L1 with write-back policy
-# L1_CACHE_POLICY=WRITEBACK
+#    WB_L1        L1 with write-back policy
+#    WB_L1_L2     L1 and L2 with write-back policy
+#    -            L1 with write-through policy
+CACHES=WB_L1
+# CACHES=WB_L1_L2
 
 # ================================================================
 # RISC-V config macros passed into Bluespec 'bsc' compiler
