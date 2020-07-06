@@ -35,7 +35,7 @@
 
 
 // Multi-ported Register File
-module RegFile(CLK,
+(* blackbox *) module RegFile(CLK,
                ADDR_IN, D_IN, WE,
                ADDR_1, D_OUT_1,
                ADDR_2, D_OUT_2,

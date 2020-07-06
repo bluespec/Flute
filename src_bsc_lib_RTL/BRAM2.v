@@ -27,7 +27,7 @@
 `endif
 
 // Dual-Ported BRAM (WRITE FIRST)
-module BRAM2(CLKA,
+(* blackbox *) module BRAM2(CLKA,
              ENA,
              WEA,
              ADDRA,
