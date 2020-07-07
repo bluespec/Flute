@@ -83,9 +83,8 @@ import SoC_Map      :: *;
 
 import MMU_Cache_Common :: *;
 
-import TLB :: *;
-
 `ifdef ISA_PRIV_S
+import TLB :: *;
 import PTW :: *;
 `endif
 
@@ -273,8 +272,11 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
 
    Reg #(FSM_MAIN_State)   rg_fsm_main_state   <- mkReg (FSM_MAIN_IDLE);
    Reg #(FSM_Flush_State)  rg_fsm_flush_state  <- mkReg (FSM_FLUSH_IDLE);
+
+`ifdef ISA_PRIV_S
    Reg #(FSM_PTW_State)    rg_fsm_ptw_state    <- mkReg (FSM_PTW_IDLE);
    Reg #(FSM_PTE_WB_State) rg_fsm_pte_wb_state <- mkReg (FSM_PTE_WB_IDLE);
+`endif
 
    // SoC_Map is needed for method 'm_is_mem_addr' to distinguish mem
    // (cached) and other (non-cached) addrs
@@ -346,7 +348,7 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
 	 if (rg_watch_tohost
 	     && valid
 	     && (rg_req.op == CACHE_ST)
-	     && (rg_pa == zeroExtend (rg_tohost_addr))
+	     && (zeroExtend (rg_pa) == rg_tohost_addr)
 	     && (final_st_val != 0))
 	    begin					      
 	       let test_num = (final_st_val >> 1);
@@ -429,20 +431,26 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
 						      pa:      rg_req.va};
 `endif
 
-   // Note: PTW and PTE Writebacks from I_MMU_Cache arrive
-   // asynchronously w.r.t. data stream, and may be occupying the
-   // cache.  The latter two conditions below stall this rule if so.
-
    Reg #(Bit #(4)) rg_ctr <- mkRegU;
    rule rl_count;
       rg_ctr <= rg_ctr + 1;
    endrule
 
+`ifdef ISA_PRIV_S
+   // Note: PTW and PTE Writebacks from I_MMU_Cache arrive
+   // asynchronously w.r.t. data stream, and may be occupying the
+   // cache.  The following condition stalls this rule if so.
+
+   Bool pt_idle = ((rg_fsm_ptw_state == FSM_PTW_IDLE)
+		   && (rg_fsm_pte_wb_state == FSM_PTE_WB_IDLE));
+`else
+   Bool pt_idle = True;
+`endif
+
    rule rl_fsm_main_PA ((rg_fsm_main_state == FSM_MAIN_PA)
 			&& (rg_ctr != 0)
 			&& (rg_fsm_flush_state == FSM_FLUSH_IDLE)
-			&& (rg_fsm_ptw_state == FSM_PTW_IDLE)
-			&& (rg_fsm_pte_wb_state == FSM_PTE_WB_IDLE));
+			&& pt_idle);
       if (verbosity >= 2)
 	 $display ("%0d: %m.rl_fsm_main_PA:\n    ", cur_cycle, fshow_MMU_Cache_Req (rg_req));
 
@@ -668,7 +676,7 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
 		   cur_cycle, ptw_mem_req.pte_pa);
 
       // Start the cache RAM probe with "va" (= pte_pa)
-      cache.ma_request_va (ptw_mem_req.pte_pa);
+      cache.ma_request_va (truncate (ptw_mem_req.pte_pa));
       rg_ptw_mem_req   <= ptw_mem_req;
       rg_fsm_ptw_state <= FSM_PTW_MEM_REQ_PA;
    endrule
@@ -677,7 +685,7 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
    rule rl_fsm_ptw_mem_req_PA (rg_fsm_ptw_state == FSM_PTW_MEM_REQ_PA);
       let req = MMU_Cache_Req {op:          CACHE_LD,
 			       f3:          ((xlen == 32) ? 3'b010 : 3'b011),
-			       va:          rg_ptw_mem_req.pte_pa,
+			       va:          truncate (rg_ptw_mem_req.pte_pa),
 			       st_value:    ?,
 			       amo_funct7:  0,
 			       priv:        m_Priv_Mode,
@@ -694,7 +702,7 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
 	 $display ("    ", fshow_Cache_Result (cache_result));
       
       if (cache_result.outcome == CACHE_READ_HIT) begin
-	 let ptw_mem_rsp = PTW_Mem_Rsp {ok: True, pte: cache_result.final_ld_val};
+	 let ptw_mem_rsp = PTW_Mem_Rsp {ok: True, pte: truncate (cache_result.final_ld_val)};
 	 ptw.mem_client.response.put (ptw_mem_rsp);
 	 rg_valid         <= False;
 	 rg_fsm_ptw_state <= FSM_PTW_IDLE;
@@ -752,7 +760,7 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
 		   cur_cycle, pte_writeback_pa, pte_writeback_pte);
 
       // Start the cache probe
-      cache.ma_request_va (pte_writeback_pa);
+      cache.ma_request_va (truncate (pte_writeback_pa));
       rg_fsm_pte_wb_state <= FSM_PTE_WB_PA;
    endrule
    
@@ -760,8 +768,8 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
    rule rl_fsm_pte_wb_req_PA (rg_fsm_pte_wb_state == FSM_PTE_WB_PA);
       let req = MMU_Cache_Req {op:          CACHE_ST,
 			       f3:          ((xlen == 32) ? 3'b010 : 3'b011),
-			       va:          pte_writeback_pa,
-			       st_value:    pte_writeback_pte,
+			       va:          truncate (pte_writeback_pa),
+			       st_value:    zeroExtend (pte_writeback_pte),
 			       amo_funct7:  0,
 			       priv:        m_Priv_Mode,
 			       sstatus_SUM: 0,

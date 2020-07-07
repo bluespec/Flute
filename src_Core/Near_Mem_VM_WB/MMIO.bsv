@@ -91,7 +91,7 @@ module mkMMIO (MMIO_IFC);
 	 Bit #(64) data       = (st_value << shamt_bits);
 
 	 let req = Single_Req {is_read:   False,
-			       addr:      rg_pa,
+			       addr:      zeroExtend (rg_pa),
 			       size_code: rg_req.f3 [1:0]};
 	 f_single_reqs.enq (req);
 	 f_write_data.enq (data);
@@ -109,7 +109,7 @@ module mkMMIO (MMIO_IFC);
 	 $display ("%0d: %m.rl_read_req: f3 %0h vaddr %0h  paddr %0h",
 		   cur_cycle, rg_req.f3, rg_req.va, rg_pa);
       let req = Single_Req {is_read:   True,
-			    addr:      rg_pa,
+			    addr:      zeroExtend (rg_pa),
 			    size_code: rg_req.f3 [1:0]};
       f_single_reqs.enq (req);
       rg_fsm_state <= FSM_READ_RSP;
@@ -138,7 +138,7 @@ module mkMMIO (MMIO_IFC);
 
       // Successful read
       else begin
-	 Bit #(64) ld_val_bits = fv_from_byte_lanes (rg_pa, rg_req.f3 [1:0], read_data.data);
+	 Bit #(64) ld_val_bits = fv_from_byte_lanes (zeroExtend (rg_pa), rg_req.f3 [1:0], read_data.data);
 
 	 // Loads and LR
 	 if ((rg_req.op == CACHE_LD) || fv_is_AMO_LR (rg_req)) begin
@@ -179,7 +179,7 @@ module mkMMIO (MMIO_IFC);
 	 $display ("%0d: %m.rl_write_req; f3 %0h  vaddr %0h  paddr %0h  word64 %0h",
 		   cur_cycle, rg_req.f3, rg_req.va, rg_pa, rg_req.st_value);
 
-      Bit #(64) data = fv_to_byte_lanes (rg_pa, rg_req.f3 [1:0], rg_req.st_value);
+      Bit #(64) data = fv_to_byte_lanes (zeroExtend (rg_pa), rg_req.f3 [1:0], rg_req.st_value);
 
       fa_mem_single_write (data);
 

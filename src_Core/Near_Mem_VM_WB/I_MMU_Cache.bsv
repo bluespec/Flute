@@ -67,9 +67,8 @@ import SoC_Map      :: *;
 
 import MMU_Cache_Common :: *;
 
-import TLB :: *;
-
 `ifdef ISA_PRIV_S
+import TLB :: *;
 import PTW :: *;
 `endif
 
@@ -218,9 +217,11 @@ module mkI_MMU_Cache (I_MMU_Cache_IFC);
    // Phys addr (initially taken from rg_req.va; VM xlation may replace it)
    Reg #(PA)  rg_pa <- mkRegU;
 
+`ifdef ISA_PRIV_S
    // PTW requests and responses
    FIFOF #(PTW_Req) f_ptw_reqs <- mkFIFOF;    // To D_MMU_Cache
    FIFOF #(PTW_Rsp) f_ptw_rsps <- mkFIFOF;    // From D_MMU_Cache
+`endif
 
    // Writebacks to mem of PTEs whose PTE.A and/or PTE.D have been modified
    FIFOF #(Tuple2 #(PA, WordXL)) f_pte_writebacks <- mkFIFOF;

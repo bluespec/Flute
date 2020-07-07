@@ -9,14 +9,6 @@ package Cache;
 //      - If the cache line is MODIFIED, it is written back ("writeback")
 //      - The required cache line is loaded ("refill")
 
-// Parameters of the cache (cache size, associativity, line size, phys addr width)
-// are specified in YAML files from which a Python program
-// 'Gen_BSV_Cache_Decls.py' is used to generate files
-// 'Cache_Decls_RV32.bsv' or 'Cache_Decls_RV64.bsv' which is imported
-// here to configure the cache.  Common choices for cache line size are:
-//     For RV32, a cache line is 8 x 32b words.
-//     For RV64, a cache line is 8 x 64b words.
-
 // Storage is in two separate SRAMs, the tag-ram and the data ram.
 // Each tag ram address holds a set of tags (set-associativity)
 // Each data RAM address holds 64b (exploiting RAM-internal muxes) for 64-bit read/write.
@@ -47,9 +39,19 @@ import ISA_Decls    :: *;
 import Near_Mem_IFC :: *;
 
 `ifdef RV32
-import Cache_Decls_RV32 :: *;
-`elsif RV64
-import Cache_Decls_RV64 :: *;
+`ifdef SV32
+import Cache_Decls_RV32_Sv32_8KB_2way :: *;
+`else
+import Cache_Decls_RV32_8KB_2way :: *;
+`endif
+`endif
+
+`ifdef RV64
+`ifdef SV39
+import Cache_Decls_RV64_Sv39_8KB_2way :: *;
+`else
+import Cache_Decls_RV64_8KB_2way :: *;
+`endif
 `endif
 
 import MMU_Cache_Common :: *;
@@ -463,7 +465,7 @@ module mkCache #(parameter Bit #(3) verbosity)
    // ****************************************************************
    // ****************************************************************
    // Write actions on a cache hit
-   function Action fa_write (PA pa, Bit #(3) f3, WordXL st_value);
+   function Action fa_write (PA pa, Bit #(3) f3, Bit #(64) st_value);
       action
 	 let hit_miss_info = fv_ram_A_hit_miss (pa);
 	 let way           = hit_miss_info.way;
@@ -517,7 +519,7 @@ module mkCache #(parameter Bit #(3) verbosity)
 	 PA  wb_cline_pa = {ram_cset_meta.a.read [way_in_cset].ctag,
 			    cset_in_cache,
 			    byte_in_cline };
-	 f_line_reqs.enq (Line_Req {is_read: False, addr: wb_cline_pa});
+	 f_line_reqs.enq (Line_Req {is_read: False, addr: zeroExtend (wb_cline_pa)});
 	 if (verbosity >= 1)
 	    $display ("    line addr: %0h", wb_cline_pa);
 
@@ -572,7 +574,7 @@ module mkCache #(parameter Bit #(3) verbosity)
    // On a miss, do a replace (cache-line writeback followed by refill)
    rule rl_replace (rg_fsm_state == FSM_REPLACE_START);
       if (verbosity >= 1)
-	 $display ("%0d: %m.rl_writeback_start", cur_cycle);
+	 $display ("%0d: %m.rl_replace", cur_cycle);
 
       let victim_way = fv_choose_victim_way (ram_A_cset_meta, rg_victim_way);
       // Record state, for future victim selection
@@ -622,7 +624,7 @@ module mkCache #(parameter Bit #(3) verbosity)
 
       // Send read-burst request into fabric for full cache line
       PA cline_pa = fn_align_Addr_to_CLine (rg_pa);
-      f_line_reqs.enq (Line_Req {is_read: True, addr: cline_pa});
+      f_line_reqs.enq (Line_Req {is_read: True, addr: zeroExtend (cline_pa)});
 
       // Request read of first CSet_Word64 in CLine (BRAM port B)
       // for cset_word64 read-modify-write
@@ -910,7 +912,7 @@ module mkCache #(parameter Bit #(3) verbosity)
 	 // Debugging only: can do $displays inside fa_ram_A_hit_miss (req, pa);
 
 	 let hit_miss_info = fv_ram_A_hit_miss (pa);
-	 let data = fv_from_byte_lanes (req.va, req.f3 [1:0], hit_miss_info.data);
+	 let data = fv_from_byte_lanes (zeroExtend (req.va), req.f3 [1:0], hit_miss_info.data);
 	 data = fv_extend (req.f3, data);
 
 	 dynamicAssert ((! hit_miss_info.multi_way_hit), "INCONSISTENT: cache hit in > 1 way");
@@ -1002,7 +1004,7 @@ module mkCache #(parameter Bit #(3) verbosity)
 	       end
 
 	       let size_code  = req.f3 [1:0];
-	       let cache_data = fv_from_byte_lanes (req.va, size_code, hit_miss_info.data);
+	       let cache_data = fv_from_byte_lanes (zeroExtend (req.va), size_code, hit_miss_info.data);
 	       // Do the AMO op on the loaded value and the store value
 	       match {.new_ld_val,
 		      .new_st_val} = fv_amo_op (size_code, req.amo_funct7 [6:2], cache_data, req.st_value);

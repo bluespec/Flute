@@ -40,7 +40,11 @@ import GetPut_Aux :: *;
 import ISA_Decls        :: *;
 import Near_Mem_IFC     :: *;
 import MMU_Cache_Common :: *;
+
+`ifdef ISA_PRIV_S
 import PTW              :: *;
+`endif
+
 import D_MMU_Cache      :: *;
 import I_MMU_Cache      :: *;
 
@@ -81,8 +85,10 @@ module mkNear_Mem (Near_Mem_IFC);
    // ----------------------------------------------------------------
    // Connections from IMem to DMem (servicing PTW requests and PTE-writebacks)
 
+`ifdef ISA_PRIV_S
    mkConnection (i_mmu_cache.ptw_client,      d_mmu_cache.imem_ptw_server);
    mkConnection (i_mmu_cache.pte_writeback_g, d_mmu_cache.imem_pte_writeback_p);
+`endif
 
    // ----------------------------------------------------------------
    // BEHAVIOR

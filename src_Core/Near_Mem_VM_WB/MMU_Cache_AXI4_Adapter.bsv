@@ -42,11 +42,19 @@ import Semi_FIFOF    :: *;
 // Project imports
 
 `ifdef RV32
-import Cache_Decls_RV32  :: *;
+`ifdef SV32
+import Cache_Decls_RV32_Sv32_8KB_2way :: *;
+`else
+import Cache_Decls_RV32_8KB_2way :: *;
+`endif
 `endif
 
 `ifdef RV64
-import Cache_Decls_RV64  :: *;
+`ifdef SV39
+import Cache_Decls_RV64_Sv39_8KB_2way :: *;
+`else
+import Cache_Decls_RV64_8KB_2way :: *;
+`endif
 `endif
 
 import MMU_Cache_Common :: *;
@@ -111,7 +119,8 @@ endfunction
 // ----------------------------------------------------------------
 // Check if addr is cache-line-aligned
 
-Bit #(64) byte_in_line_mask = 'h3F;    // 6 bits (64 bytes per cache-line)
+Bit #(64) byte_in_line_mask = fromInteger (bytes_per_cline - 1);
+// Bit #(64) byte_in_line_mask = 'h3F;    // 6 bits (64 bytes per cache-line)
 
 function Bool fv_is_line_aligned (Bit #(64) addr);
    return ((addr & byte_in_line_mask) == 0);

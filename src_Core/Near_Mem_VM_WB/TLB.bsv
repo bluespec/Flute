@@ -22,13 +22,13 @@ import Cur_Cycle  :: *;
 // ================================================================
 // Project imports
 
-import ISA_Decls :: *;
+import ISA_Decls        :: *;
+import MMU_Cache_Common :: *;
 
 // ================================================================
 
-export  fshow_VM_Xlate_Result;
 export  TLB_IFC (..), mkTLB;
-export  VM_Xlate_Outcome (..), VM_Xlate_Result (..);
+export  VM_Xlate_Outcome (..);
 
 // ================================================================
 // Abbreviations (from ISA spec)
@@ -79,66 +79,6 @@ typedef struct {
    PA        pte_pa;         // PA from which PTE was loaded, for writeback if A,D bits are updated
    } TLB_Lookup_Result
 deriving (Bits, FShow);
-
-// ================================================================
-// Final result of VM translation.
-
-// There are two versions below: the actual version when we support S
-// Privilege Mode and a 'dummy' version when we don't.
-
-`ifdef ISA_PRIV_S
-
-typedef enum { VM_XLATE_OK, VM_XLATE_TLB_MISS, VM_XLATE_EXCEPTION } VM_Xlate_Outcome
-deriving (Bits, Eq, FShow);
-
-typedef struct {
-   VM_Xlate_Outcome  outcome;
-   PA                pa;            // phys addr, if VM_XLATE_OK
-   Exc_Code          exc_code;      // if VM_XLATE_EXC
-
-   // Information needed to write back updated PTE (A,D bits) to TLB and mem
-   Bool              pte_modified;  // if VM_XLATE_OK and pte's A or D bits were modified
-   PTE               pte;           // PTE (with possible A,D updates)
-   Bit #(2)          pte_level;     // Level of leaf PTE for this translation
-   PA                pte_pa;        // PA from which PTE was loaded
-   } VM_Xlate_Result
-deriving (Bits, FShow);
-
-function Fmt fshow_VM_Xlate_Result (VM_Xlate_Result  r);
-   Fmt fmt = $format ("VM_Xlate_Result{");
-   fmt = fmt + fshow (r.outcome);
-   if (r.outcome == VM_XLATE_OK) begin
-      fmt = fmt + $format (" pa:%0h", r.pa);
-      if (r.pte_modified)
-	 fmt = fmt + $format (" pte (modified) %0h", r.pte);
-   end
-   else if (r.outcome == VM_XLATE_TLB_MISS) begin
-   end
-   else // exception
-      fmt = fmt + $format (" ", fshow_trap_Exc_Code (r.exc_code));
-   fmt = fmt + $format ("}");
-   return fmt;
-endfunction
-
-// ----------------
-
-`else // of ifdef ISA_PRIV_S
-
-typedef enum { VM_XLATE_OK } VM_Xlate_Outcome
-deriving (Bits, Eq, FShow);
-
-typedef struct {
-   VM_Xlate_Outcome   outcome;
-   PA                 pa;            // phys addr, if VM_XLATE_OK
-   } VM_Xlate_Result
-deriving (Bits, FShow);
-
-function Fmt fshow_VM_Xlate_Result (VM_Xlate_Result  r);
-   Fmt fmt = $format ("VM_Xlate_Result{VM_XLATE_OK, pa:%0h}", r.pa);
-   return fmt;
-endfunction
-
-`endif
 
 // ================================================================
 // This function does all the translation work, based on result of TLB probe
