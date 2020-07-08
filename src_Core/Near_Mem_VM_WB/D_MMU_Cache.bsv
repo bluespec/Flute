@@ -431,16 +431,16 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
 						      pa:      rg_req.va};
 `endif
 
+   // Note: PTW and PTE Writebacks from I_MMU_Cache arrive
+   // asynchronously w.r.t. data stream, and may be occupying the
+   // cache.  The latter two conditions below stall this rule if so.
+
    Reg #(Bit #(4)) rg_ctr <- mkRegU;
    rule rl_count;
       rg_ctr <= rg_ctr + 1;
    endrule
 
 `ifdef ISA_PRIV_S
-   // Note: PTW and PTE Writebacks from I_MMU_Cache arrive
-   // asynchronously w.r.t. data stream, and may be occupying the
-   // cache.  The following condition stalls this rule if so.
-
    Bool pt_idle = ((rg_fsm_ptw_state == FSM_PTW_IDLE)
 		   && (rg_fsm_pte_wb_state == FSM_PTE_WB_IDLE));
 `else

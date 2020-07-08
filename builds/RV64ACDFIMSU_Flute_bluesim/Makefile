@@ -7,13 +7,9 @@
 REPO ?= ../..
 ARCH ?= RV64ACDFIMSU
 
-
-# The following line should be:
-#    WB_L1        L1 with write-back policy
-#    WB_L1_L2     L1 and L2 with write-back policy
-#    -            L1 with write-through policy
-CACHES=WB_L1
-# CACHES=WB_L1_L2
+# Alternative cache organizations:
+# Default (no definition for CACHES)    L1 only, write-through policy
+# Define  CACHES=WB_L1                  L1 only, with write-back policy
 
 # ================================================================
 # RISC-V config macros passed into Bluespec 'bsc' compiler

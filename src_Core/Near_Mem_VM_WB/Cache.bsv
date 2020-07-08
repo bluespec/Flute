@@ -100,12 +100,12 @@ interface Cache_IFC;
 
    // ----------------
    // Cache flush request/response
-   // Bit #(1) request specifies new meta-state: 0=INVALID, 1=CLEAN
+   // Bit #(1) request specifies new meta-state: 0=INVALID, 1=SHARED
 
    interface Server #(Bit #(1), Token) flush_server;
 
    // ----------------
-   // Memory interface (for refills, writebacks)
+   // Interface to next level (for refills, writebacks)
 
    interface Get #(Line_Req)  g_mem_req;
    interface Get #(Bit #(64)) g_write_data;
@@ -140,10 +140,6 @@ deriving (Bits, Eq, FShow);
 // ================================================================
 // Cache entries and sets
 // A cache entry is: meta information (state, ctag) and data
-
-// FUTURE: CLEAN -> EXCLUSIVE/SHARED
-typedef enum { META_INVALID, META_CLEAN, META_MODIFIED } Meta_State
-deriving (Bits, Eq, FShow);
 
 typedef struct {
    Meta_State  state;
@@ -212,7 +208,7 @@ function Way_in_CSet fv_choose_victim_way (CSet_Meta    cset_meta,
    end
 
    // If no EMPTY way found, increment old_way.
-   // Note: this victim may be CLEAN or MODIFIED.
+   // Note: this victim may be SHARED or MODIFIED.
    if (! victim_found)
       victim_way = fn_incr_way (old_way);
 
@@ -227,8 +223,8 @@ endfunction
 
 typedef struct {
    Bool                 hit;
-   Bit #(64)            data;    // valid if hit
-   Way_in_CSet          way;     // valid if hit, for subsequent updates
+   Bit #(64)            data;         // valid if hit
+   Way_in_CSet          way;          // valid if hit, for subsequent updates
 
    // Assertion error if multi-way hit (at most one way should hit)
    Bool                 multi_way_hit;
@@ -402,45 +398,6 @@ module mkCache #(parameter Bit #(3) verbosity)
 			    multi_way_hit: multi_way_hit};    // Assertion error if true
    endfunction
 
-   // Debugging only: Action version of fv_ram_A_hit_miss allows $displays inside
-   /*
-   function Action fa_ram_A_hit_miss (MMU_Cache_Req req, PA pa);
-      action
-	 Bool         hit           = False;
-	 Bool         multi_way_hit = False;
-	 Way_in_CSet  way_hit       = 0;
-	 Bit #(64)    word64        = 0;
-
-	 CTag  pa_ctag = fn_PA_to_CTag (pa);
-
-	 for (Integer way = 0; way < ways_per_cset; way = way + 1) begin
-	    let hit_at_way  = (   (ram_A_cset_meta [way].state != META_INVALID)
-			       && (ram_A_cset_meta [way].ctag  == pa_ctag));
-
-	    if (hit && hit_at_way) multi_way_hit = True;
-
-	    let word64_at_way = ram_A_cset_word64 [way];
-
-	    hit = hit || hit_at_way;
-	    if (hit_at_way) way_hit = fromInteger (way);
-	    word64  = (word64 | (word64_at_way & pack (replicate (hit_at_way))));
-	 end
-
-	 let hit_miss_info = Hit_Miss_Info {hit:           hit,
-					    data:          word64,
-					    way:           way_hit,           // For possible subsequent update
-					    multi_way_hit: multi_way_hit};    // Assertion error if true
-
-	 if (verbosity >= 2) begin
-	    $display ("    fa_ram_A_hit_miss: va %0h pa %0h, pa_ctag %0h", req.va, pa, pa_ctag);
-	    let cset_in_cache = fn_Addr_to_CSet_in_Cache (req.va);
-	    $display ("    ", fshow_cset_meta (cset_in_cache, ram_A_cset_meta));
-	    $display ("    ", fshow (hit_miss_info));
-	 end
-      endaction
-   endfunction
-   */
-
    // ****************************************************************
    // ****************************************************************
    // Request RAMs (on request methods, and when returning to IDLE
@@ -470,9 +427,16 @@ module mkCache #(parameter Bit #(3) verbosity)
 	 let hit_miss_info = fv_ram_A_hit_miss (pa);
 	 let way           = hit_miss_info.way;
 
-	 // Assert: current mv_response is VALID (hit)
+	 // Assert: current mv_response is SHARED/MODIFIED
 	 // Writes data into that currently probed cache line
-	 dynamicAssert (hit_miss_info.hit, "cache ma_write on a miss");
+	 if (! hit_miss_info.hit)
+	    begin
+	       $display ("%0d: %m.fa_write: INTERNAL_ERROR", cur_cycle);
+	       $display ("    va_cset_word64_in_cache %0h way %0d pa %0h f3 %0d st_value %0h",
+			 va_cset_word64_in_cache, way, pa, f3, st_value);
+	       $display ("    Cache write on a miss (need SHARED/MODIFIED)");
+	       $finish (1);
+	    end
 
 	 // Update cache line data
 	 let new_cset_word64 = fn_update_cset_word64 (ram_A_cset_word64,
@@ -614,11 +578,11 @@ module mkCache #(parameter Bit #(3) verbosity)
 	 $display ("%0d: %m.rl_refill_start: cset %0h way %0h", cur_cycle,
 		   rg_cset_in_cache, rg_way_in_cset);
 
-      // Update meta-data to CLEAN, optimistically.
+      // Update meta-data to SHARED, optimistically.
       // If any bus response during the refill is an error-response,
       // we'll change the meta-data to INVALID at the end of the refill.
       let new_ram_A_cset_meta = ram_A_cset_meta;
-      new_ram_A_cset_meta [rg_way_in_cset] = Meta {state: META_CLEAN,
+      new_ram_A_cset_meta [rg_way_in_cset] = Meta {state: META_SHARED,
 						   ctag:  fn_PA_to_CTag (rg_pa)};
       ram_cset_meta.b.put (bram_cmd_write, va_cset_in_cache, new_ram_A_cset_meta);
 
@@ -652,7 +616,7 @@ module mkCache #(parameter Bit #(3) verbosity)
    // Loop that receives responses from the fabric with fabric-words of the cline (from mem).
    // Update word64 in cset_word64 ram, and
    // initiate read of next cset_word64 from ram.
-   // On last word64, update meta state to CLEAN (normal case)
+   // On last word64, update meta state to SHARED (normal case)
    //     or INVALID (if there was a fabric error on refill).
 
    rule rl_refill_loop (rg_fsm_state == FSM_REFILL_LOOP);
@@ -732,7 +696,7 @@ module mkCache #(parameter Bit #(3) verbosity)
    // BEHAVIOR: FLUSH
    // Visits all lines, writing back those that are MODIFIED.
    // If flush_req is 0, new meta-state is INVALID
-   // If flush_req is 1, new meta-state is CLEAN
+   // If flush_req is 1, new meta-state is SHARED
 
    FIFOF #(Bit #(1))  f_flush_reqs <- mkFIFOF;
    FIFOF #(Token)     f_flush_rsps <- mkFIFOF;
@@ -740,7 +704,7 @@ module mkCache #(parameter Bit #(3) verbosity)
    Bool last_cset_and_way = (   (rg_cset_in_cache == fromInteger (csets_per_cache - 1))
 			     && (rg_way_in_cset   == fromInteger (ways_per_cset - 1)));
 
-   // New meta state is CLEAN or INVALID, depending on type of flush required
+   // New meta state is SHARED or INVALID, depending on type of flush required
    Reg #(Meta_State) rg_new_meta_state <- mkRegU;
    // This reg holds the current cset_meta as we iterate across its associative ways
    Reg #(CSet_Meta)  rg_new_cset_meta  <- mkRegU;
@@ -752,7 +716,7 @@ module mkCache #(parameter Bit #(3) verbosity)
       let new_state_code <- pop (f_flush_reqs);
       rg_cset_in_cache   <= 0;
       rg_way_in_cset     <= 0;
-      rg_new_meta_state  <= ((new_state_code == 0) ? META_INVALID : META_CLEAN);
+      rg_new_meta_state  <= ((new_state_code == 0) ? META_INVALID : META_SHARED);
       rg_fsm_state       <= FSM_FLUSH_LOOP;
 
       // Initiate RAM read of first CSet
@@ -814,7 +778,7 @@ module mkCache #(parameter Bit #(3) verbosity)
 	 rg_writeback_sequel <= FSM_FLUSH_LOOP_WRITEBACK_SEQUEL;
 	 rg_fsm_state        <= FSM_WRITEBACK_LOOP;
       end
-      else begin // EMPTY or CLEAN
+      else begin // EMPTY or SHARED
 	 if (verbosity >= 2)
 	    $display ("    Line cstate: ", fshow (line_state));
 
@@ -909,13 +873,18 @@ module mkCache #(parameter Bit #(3) verbosity)
 	 Cache_Result result = ?;
 	 rg_pa <= pa;
 
-	 // Debugging only: can do $displays inside fa_ram_A_hit_miss (req, pa);
-
 	 let hit_miss_info = fv_ram_A_hit_miss (pa);
 	 let data = fv_from_byte_lanes (zeroExtend (req.va), req.f3 [1:0], hit_miss_info.data);
 	 data = fv_extend (req.f3, data);
 
-	 dynamicAssert ((! hit_miss_info.multi_way_hit), "INCONSISTENT: cache hit in > 1 way");
+	 if (hit_miss_info.multi_way_hit) begin
+	    // Assertion failure: # cannot match more than 1 item in a set
+	    $display ("%0d: %m.mav_request_pa: INTERNAL ERROR", cur_cycle);
+	    $display ("    ", fshow (req.op), " va %0h pa %0h", req.va, pa);
+	    $display ("    # of hits in set > 1 (should be 0 or 1)");
+	    $display (fshow_cset_meta (fn_Addr_to_CSet_in_Cache (rg_va), ram_A_cset_meta));
+	    $finish (1);
+	 end
 
 	 if (! hit_miss_info.hit) begin
 	    if (verbosity >= 1) begin

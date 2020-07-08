@@ -120,7 +120,6 @@ endfunction
 // Check if addr is cache-line-aligned
 
 Bit #(64) byte_in_line_mask = fromInteger (bytes_per_cline - 1);
-// Bit #(64) byte_in_line_mask = 'h3F;    // 6 bits (64 bytes per cache-line)
 
 function Bool fv_is_line_aligned (Bit #(64) addr);
    return ((addr & byte_in_line_mask) == 0);

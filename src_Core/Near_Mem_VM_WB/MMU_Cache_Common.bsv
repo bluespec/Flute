@@ -179,14 +179,31 @@ function Bool fv_is_AMO_RMW (MMU_Cache_Req req);
 endfunction
 
 // ================================================================
+// Cache-line states (also used in coherence protocol): MESI
+
+typedef enum { META_INVALID, META_SHARED, META_MODIFIED } Meta_State
+deriving (Bits, Eq);
+
+instance FShow #(Meta_State);
+   function Fmt fshow (Meta_State s);
+      Fmt fmt = $format ("Meta_State_UNKNOWN");
+      case (s)
+	 META_INVALID:   $format ("INVALID");
+	 META_SHARED:    $format ("SHARED");
+	 META_MODIFIED:  $format ("MODIFIED");
+      endcase
+   endfunction
+endinstance
+
+// ================================================================
 // Requests and responses between:
-//     Cache <-> MMU_Cache_AXI4_Adapter
-//     MMIO  <-> MMU_Cache_AXI4_Adapter
+//     L1_Cache <-> L2_Cache/MMU_Cache_AXI4_Adapter
+//     MMIO     <-> MMU_Cache_AXI4_Adapter
 
 // Line requests' addr represent a full line read/write.
 // For now: we line-align the address, expect write data to start from
 // offset 0, and return read-data from offset 0.
-// Future: do 'wrapping' bursts, starting with actual line-offset of 'addr'
+// TODO: 'wrapping' bursts, starting with actual line-offset of 'addr'
 
 typedef struct {
    Bool       is_read;
@@ -201,6 +218,8 @@ typedef struct {
    Bit #(2)   size_code;    // 2'b00=1 (B), 01=2 (H), 10=4 (W), 11=8 (D) bytes
    } Single_Req
 deriving (Bits, FShow);
+
+// Response from L2
 
 typedef struct {
    Bool       ok;
