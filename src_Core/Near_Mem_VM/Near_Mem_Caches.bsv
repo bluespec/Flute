@@ -173,7 +173,7 @@ module mkNear_Mem (Near_Mem_IFC);
       method Bool     valid          = icache.valid;
       method Bool     is_i32_not_i16 = True;
       method WordXL   pc             = icache.addr;
-      method Instr    instr          = truncate (icache.word64);
+      method Instr    instr          = truncate (icache.cword);
       method Bool     exc            = icache.exc;
       method Exc_Code exc_code       = icache.exc_code;
       method WordXL   tval           = icache.addr;
@@ -209,7 +209,7 @@ module mkNear_Mem (Near_Mem_IFC);
 
       // CPU side: DMem response
       method Bool       valid      = dcache.valid;
-      method Bit #(64)  word64     = dcache.word64;
+      method Bit #(64)  word64     = dcache.cword;
 `ifdef ISA_A
       method Bit #(64)  st_amo_val = dcache.st_amo_val;
 `endif
