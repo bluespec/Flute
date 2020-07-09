@@ -174,7 +174,7 @@ Bits_per_Byte = 8
 def compute_derived_values (items):
     items.append (("Bytes_per_CWord",
                    int (sel (items, "Bits_per_CWord") / Bits_per_Byte),
-                   "Bytes_per_CWord / 8"))
+                   "Bits_per_CWord / 8"))
 
     items.append (("Bits_per_Byte_in_CWord",
                    int (math.log2 (sel (items, "Bytes_per_CWord"))),
@@ -186,7 +186,7 @@ def compute_derived_values (items):
 
     items.append (("Bytes_per_CLine",
                    int (sel (items, "Bits_per_CLine") / Bits_per_Byte),
-                   "Bytes_per_CLine / 8"))
+                   "Bits_per_CLine / 8"))
 
     items.append (("Bytes_per_CSet",
                    sel (items, "Ways_per_CSet") * sel (items, "Bytes_per_CLine"),

@@ -20,7 +20,7 @@ package Cache_Decls_RV64;
 // Basic ----------------
 
 typedef        64   Bits_per_CWord;    // (basic)
-typedef         8   Bytes_per_CWord;    // Bytes_per_CWord / 8
+typedef         8   Bytes_per_CWord;    // Bits_per_CWord / 8
 typedef         3   Bits_per_Byte_in_CWord;    // log2 (Bytes_per_CWord)
 
 // Cache Lines ----------------
@@ -28,7 +28,7 @@ typedef         3   Bits_per_Byte_in_CWord;    // log2 (Bytes_per_CWord)
 typedef         8   CWords_per_CLine;    // (basic)
 typedef         3   Bits_per_CWord_in_CLine;    // log2 (CWords_per_CLine)
 
-typedef        64   Bytes_per_CLine;    // Bytes_per_CLine / 8
+typedef        64   Bytes_per_CLine;    // Bits_per_CLine / 8
 typedef         6   Bits_per_Byte_in_CLine;    // log2 (Bytes_per_CLine)
 
 typedef       512   Bits_per_CLine;    // CWords_per_CLine * Bits_per_CWord
@@ -60,7 +60,7 @@ typedef        52   Bits_per_CTag;    // Bits_per_PA - (Bits_per_CSet_in_Cache +
 // Basic ----------------
 
 Integer                bits_per_cword =       64;    // (basic)
-Integer               bytes_per_cword =        8;    // Bytes_per_CWord / 8
+Integer               bytes_per_cword =        8;    // Bits_per_CWord / 8
 Integer        bits_per_byte_in_cword =        3;    // log2 (Bytes_per_CWord)
 
 // Cache Lines ----------------
@@ -68,7 +68,7 @@ Integer        bits_per_byte_in_cword =        3;    // log2 (Bytes_per_CWord)
 Integer              cwords_per_cline =        8;    // (basic)
 Integer       bits_per_cword_in_cline =        3;    // log2 (CWords_per_CLine)
 
-Integer               bytes_per_cline =       64;    // Bytes_per_CLine / 8
+Integer               bytes_per_cline =       64;    // Bits_per_CLine / 8
 Integer        bits_per_byte_in_cline =        6;    // log2 (Bytes_per_CLine)
 
 Integer                bits_per_cline =      512;    // CWords_per_CLine * Bits_per_CWord
