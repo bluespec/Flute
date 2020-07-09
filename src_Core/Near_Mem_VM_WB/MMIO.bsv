@@ -61,7 +61,7 @@ deriving (Bits, Eq, FShow);
 (* synthesize *)
 module mkMMIO (MMIO_IFC);
    
-   Integer verbosity = 10;
+   Integer verbosity = 0;
 
    Reg #(FSM_State) rg_fsm_state <- mkReg (FSM_IDLE);
 
