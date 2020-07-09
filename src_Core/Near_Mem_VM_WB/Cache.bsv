@@ -896,12 +896,14 @@ module mkCache #(parameter Bit #(3) verbosity)
 				   final_ld_val: ?,
 				   final_st_val: ?};
 
+`ifdef ISA_A
 	    // If the line being replaced contains the LRSC reserved addr,
 	    // cancel the reservation.
 	    Bool cancel = (hit_miss_info.hit
 			   && (ram_A_cset_meta [hit_miss_info.way].ctag == fn_PA_to_CTag (rg_lrsc_pa)));
 	    if (cancel)
 	       rg_lrsc_valid <= False;
+`endif
 	 end
 	 else begin
 	    // Hit
@@ -922,10 +924,12 @@ module mkCache #(parameter Bit #(3) verbosity)
 	       fa_write (pa, req.f3, req.st_value);
 	       result = Cache_Result {outcome: CACHE_WRITE_HIT, final_ld_val: 0, final_st_val: req.st_value};
 
+`ifdef ISA_A
 	       // Cancel LR/SC reservation if this store is for this addr
 	       // TODO: should we cancel it on ANY store?
 	       if (rg_lrsc_pa == pa)
 		  rg_lrsc_valid <= False;
+`endif
 	    end
 
 `ifdef ISA_A
