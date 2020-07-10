@@ -217,23 +217,25 @@ module mkPTW (PTW_IFC);
       if (verbosity >= 1) $display ("    Sv32: mem_req level 1 PTE");
       PA           vpn_1_pa            = (zeroExtend (vpn_1) << bits_per_byte_in_wordxl);
       PA           lev_1_pte_pa        = satp_pa + vpn_1_pa;
-      PA           lev_1_pte_pa_w64    = { lev_1_pte_pa [pa_sz - 1 : 3], 3'b0 };    // 64b-aligned addr
-      let mem_req = PTW_Mem_Req {pte_pa: lev_1_pte_pa_w64};
+      let mem_req = PTW_Mem_Req {pte_pa: lev_1_pte_pa};
       f_mem_reqs.enq (mem_req);
       rg_pte_pa <= lev_1_pte_pa;
       rg_state  <= FSM_LEVEL_1;
+
+      if (verbosity >= 1)
+	 $display ("    Mem req lev_1_pte_pa %0h", lev_1_pte_pa);
 
 `elsif SV39
       if (verbosity >= 1) $display ("    Sv39/Sv48: mem_req level 2 PTE");
       PA           vpn_2_pa            = (zeroExtend (vpn_2) << bits_per_byte_in_wordxl);
       PA           lev_2_pte_pa        = satp_pa + vpn_2_pa;
-      PA           lev_2_pte_pa_w64    = { lev_2_pte_pa [pa_sz - 1 : 3], 3'b0 };    // 64b-aligned addr
-      if (verbosity >= 1)
-	 $display ("    f_mem_reqs.enq (addr %0h)", lev_2_pte_pa_w64);
-      let mem_req = PTW_Mem_Req {pte_pa: lev_2_pte_pa_w64};
+      let mem_req = PTW_Mem_Req {pte_pa: lev_2_pte_pa};
       f_mem_reqs.enq (mem_req);
       rg_pte_pa <= lev_2_pte_pa;
       rg_state  <= FSM_LEVEL_2;
+
+      if (verbosity >= 1)
+	 $display ("    Mem req lev_2_pte_pa %0h", lev_2_pte_pa);
 `endif
    endrule
 
@@ -329,7 +331,7 @@ module mkPTW (PTW_IFC);
       if (! ok) begin
 	 let ptw_rsp = PTW_Rsp {result: PTW_ACCESS_FAULT, pte: pte, level: 1, pte_pa: rg_pte_pa};
 	 ptw_rsp_enq (ptw_rsp);
-	 rg_state      <= FSM_IDLE;
+	 rg_state <= FSM_IDLE;
 	 if (verbosity >= 1)
 	    $display ("    ACCESS FAULT: fabric response error");
       end
@@ -338,7 +340,7 @@ module mkPTW (PTW_IFC);
       else if (is_invalid_pte (pte)) begin
 	 let ptw_rsp = PTW_Rsp {result: PTW_PAGE_FAULT, pte: pte, level: 1, pte_pa: rg_pte_pa};
 	 ptw_rsp_enq (ptw_rsp);
-	 rg_state      <= FSM_IDLE;
+	 rg_state <= FSM_IDLE;
 
 	 if (verbosity >= 1)
 	    $display ("    pte %0h: PAGE FAULT: invalid PTE", pte);
