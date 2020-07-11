@@ -47,7 +47,7 @@ module mkFPU ( FPU_IFC );
           , FpuR) fpu_div  <- mkFloatingPointDivider(_div);
 `else
    Server# (Tuple2# (UInt #(56), UInt #(28))
-          , Tuple2# (UInt #(28), UInt #(28))) _div <- mkNonPipelinedDivider(2);
+          , Tuple2# (UInt #(28), UInt #(28))) _div <- mkDivider(1);
    Server# (Tuple3# (FSingle, FSingle, RoundMode)
           , FpuR) fpu_div <- mkFloatingPointDivider(_div);
 `endif
