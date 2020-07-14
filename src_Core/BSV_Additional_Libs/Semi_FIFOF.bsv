@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2019 Bluespec, Inc.  All Rights Reserved
+// Copyright (c) 2017-2020 Bluespec, Inc.  All Rights Reserved
 
 package Semi_FIFOF;
 
@@ -186,6 +186,35 @@ FIFOF_O #(t) dummy_FIFOF_O = interface FIFOF_O;
 				endmethod
 			     endinterface;
 
+
+// ================================================================
+// Clients and Servers with Semi_FIFOF interfaces instead of Get/Put
+
+interface Client_Semi_FIFOF #(type req_t, type rsp_t);
+   interface FIFOF_O #(req_t)  request;
+   interface FIFOF_I #(rsp_t)  response;
+endinterface
+
+interface Server_Semi_FIFOF #(type req_t, type rsp_t);
+   interface FIFOF_I #(req_t)  request;
+   interface FIFOF_O #(rsp_t)  response;
+endinterface
+
+function Client_Semi_FIFOF #(req_t, rsp_t) fifofs_to_Client_Semi_FIFOF (FIFOF #(req_t) f_reqs,
+									FIFOF #(rsp_t) f_rsps);
+   return interface Client_Semi_FIFOF;
+	     interface request  = to_FIFOF_O (f_reqs);
+	     interface response = to_FIFOF_I (f_rsps);
+	  endinterface;
+endfunction
+
+function Server_Semi_FIFOF #(req_t, rsp_t) fifofs_to_Server_Semi_FIFOF (FIFOF #(req_t) f_reqs,
+									FIFOF #(rsp_t) f_rsps);
+   return interface Server_Semi_FIFOF;
+	     interface request  = to_FIFOF_I (f_reqs);
+	     interface response = to_FIFOF_O (f_rsps);
+	  endinterface;
+endfunction
 
 // ================================================================
 
