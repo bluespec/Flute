@@ -222,7 +222,7 @@ module mkCPU_Fetch_C #(IMem_IFC  imem32) (IMem_IFC);
 	  && (addr_of_b32 == imem32.pc)
 	  && is_32b_instr (imem32.instr [31:16]))
 	 begin
-	    addr_of_b32 = addr_of_b32 + 4;
+	    addr_of_b32 = imem32.pc + 4;
 	 end
 
       imem32.req (f3, addr_of_b32, priv, sstatus_SUM, mstatus_MXR, satp);
