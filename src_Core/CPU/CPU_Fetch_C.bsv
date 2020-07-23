@@ -97,13 +97,22 @@ module mkCPU_Fetch_C #(IMem_IFC  imem32) (IMem_IFC);
    // Holds a faulting address
    Reg #(WordXL)    rg_tval        <- mkRegU;
 
+   // There are only two locations where rg_pc is written or
+   // a request is made to imem, and both are in this file.
+   // It is proved at each of those locations that we can know
+   // whether the property
+   // imem32.pc == rg_pc + 2     (1)
+   // will hold the next time imem32.valid is True.
+   // This register tells you whether property (1) is True or False
+   Reg #(Bool) rg_imem_pc_is_rg_pc_plus_2 <- mkRegU;
+
    // ----------------------------------------------------------------
    // Conditions for selecting 16b and 32b instruction
 
    // Condition: 32b instr from {imem [15:0], rg_cache_b16}
    Bool cond_i32_odd = (   is_addr_odd16 (rg_pc)
 			&& eq_b32_addr (rg_pc, rg_cache_addr)
-			&& (imem32.pc == rg_pc + 2)
+			&& rg_imem_pc_is_rg_pc_plus_2
 			&& is_32b_instr (rg_cache_b16));
 
    // Condition: 32b instr from imem [31:0]
@@ -173,6 +182,13 @@ module mkCPU_Fetch_C #(IMem_IFC  imem32) (IMem_IFC);
    // ================================================================
    // When imem32.instr [31:15] has lower half of 32b instr, cache it and fetch next 32 bits
 
+   // This rule is dependent on cond_i32_odd_fetch_next, which relies on
+   // eq_b32_addr(imem32.pc, rg_pc) and on is_addr_odd(rg_pc).
+   // The combination of these means that when we run this rule, we know that
+   // rg_pc = imem32.pc + 2
+   // We then make a request to imem32 with the address imem32.pc + 4, meaning the next
+   // time that imem32.valid is True we will have
+   // imem32.pc = rg_pc + 2
    (* no_implicit_conditions, fire_when_enabled *)
    rule rl_fetch_next_32b (imem32.valid && cond_i32_odd_fetch_next);
       Addr next_b32_addr = imem32.pc + 4;
@@ -180,6 +196,7 @@ module mkCPU_Fetch_C #(IMem_IFC  imem32) (IMem_IFC);
       rg_cache_addr <= imem32.pc;
       rg_cache_b16  <= imem32.instr [31:16];
       rg_tval       <= next_b32_addr;
+      rg_imem_pc_is_rg_pc_plus_2 <= True;
 
       if (verbosity != 0)
 	 $display ("%0d: CPU_Fetch_C.rl_fetch_next_32b:  imem32.pc 0x%0h  next_b32_addr 0x%0h",
@@ -223,7 +240,23 @@ module mkCPU_Fetch_C #(IMem_IFC  imem32) (IMem_IFC);
 	  && is_32b_instr (imem32.instr [31:16]))
 	 begin
 	    addr_of_b32 = imem32.pc + 4;
+            // Here, we know that addr[0:1] == 2'b10 (from is_addr_odd16).
+            // We also know that addr_of_b32 = addr with the bottom 2 bits set to 2'b0
+            // ie addr_of_b32 = addr - 2       (1)
+            // Since after this if statement we make a request to imem32.req with the
+            // address addr_of_b32, the next time imem32.valid is True we will have
+            // imem32.pc = addr_of_b32 + 4     (2)
+            // so we will have imem32.pc = addr + 2     using (1) and (2)
+            // since we set rg_pc = addr above, we then get
+            // imem32.pc = rg_pc + 2
+            rg_imem_pc_is_rg_pc_plus_2 <= True;
 	 end
+         else begin
+            // This is similar to the first branch of this if statement, but we get either
+            // imem32.pc = rg_pc  or  imem32.pc = rg_pc - 2
+            // In either case we can assert this to be False
+            rg_imem_pc_is_rg_pc_plus_2 <= False;
+         end
 
       imem32.req (f3, addr_of_b32, priv, sstatus_SUM, mstatus_MXR, satp);
       if (verbosity > 0) begin
