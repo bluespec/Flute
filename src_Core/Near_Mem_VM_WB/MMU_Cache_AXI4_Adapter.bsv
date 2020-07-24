@@ -569,6 +569,7 @@ module mkMMU_Cache_AXI4_Adapter #(parameter Bit #(3) verbosity)
       rg_wr_rsps_pending <= rg_wr_rsps_pending + 1;
 
       // Debugging
+      if (verbosity >= 1)
 	 $display ("%0d: %m.rl_single_write_req: AXI4_Wr_Addr{awaddr %0h awlen %0d burst-length %0d ",
 		   cur_cycle,
 		   fabric_addr,
