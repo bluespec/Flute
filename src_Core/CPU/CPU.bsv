@@ -296,10 +296,11 @@ module mkCPU (CPU_IFC);
    // ================================================================
    // Debugging: print instruction trace info
 
-   function fa_emit_instr_trace (instret, pc, instr, priv);
+   function Action fa_emit_instr_trace (Bit #(64) instret, WordXL pc, Instr instr, Priv_Mode priv);
       action
 	 if (cur_verbosity >= 1)
-	    $display ("instret:%0d  PC:0x%0h  instr:0x%0h  priv:%0d", instret, pc, instr, priv);
+	    $display ("instret:%0d  PC:0x%0h  instr:0x%0h  priv:%0d",
+		      instret, pc, instr, priv);
       endaction
    endfunction
 
@@ -1174,24 +1175,10 @@ module mkCPU (CPU_IFC);
 			   && (stageF.out.ostatus != OSTATUS_BUSY));
       if (cur_verbosity > 1) $display ("%0d: %m.rl_stage1_FENCE_I", mcycle);
 
-      // Save stage1.out.next_pc since it will be destroyed by FENCE.I op
+      // Save stage1.out.next_pc since it can be destroyed by FENCE.I op
       rg_next_pc <= stage1.out.next_pc;
       near_mem.server_fence_i.request.put (?);
       rg_state <= CPU_FENCE_I;
-
-      // Accounting
-      csr_regfile.csr_minstret_incr;
-
-`ifdef INCLUDE_TANDEM_VERIF
-      // Trace data
-      let trace_data = stage1.out.data_to_stage2.trace_data;
-      f_trace_data.enq (trace_data);
-`endif
-
-      // Debug
-      fa_emit_instr_trace (minstret, stage1.out.data_to_stage2.pc, stage1.out.data_to_stage2.instr, rg_cur_priv);
-      if (cur_verbosity > 1)
-	 $display ("%0d: %m.rl_stage1_FENCE_I", mcycle);
    endrule
 
    // ----------------
@@ -1203,13 +1190,21 @@ module mkCPU (CPU_IFC);
       // Await mem system FENCE.I completion
       let dummy <- near_mem.server_fence_i.response.get;
 
+      // Accounting
+      csr_regfile.csr_minstret_incr;
+      // Debug
+      fa_emit_instr_trace (minstret,
+			   stage1.out.data_to_stage2.pc,
+			   stage1.out.data_to_stage2.instr,
+			   rg_cur_priv);
+`ifdef INCLUDE_TANDEM_VERIF
+      let trace_data = stage1.out.data_to_stage2.trace_data;
+      f_trace_data.enq (trace_data);
+`endif
       // Resume pipe
       stageD.set_full (False);
       stage1.set_full (False);    fa_step_check;
       fa_stageF_redirect (rg_next_pc);
-
-      if (cur_verbosity > 1)
-	 $display ("    CPU.rl_finish_FENCE_I");
    endrule: rl_finish_FENCE_I
 
    // ================================================================
@@ -1224,27 +1219,13 @@ module mkCPU (CPU_IFC);
 			 && (stageF.out.ostatus != OSTATUS_BUSY));
       if (cur_verbosity > 1) $display ("%0d: %m.rl_stage1_FENCE", mcycle);
 
+      // Save stage1.out.next_pc since it can be destroyed by FENCE op
       rg_next_pc <= stage1.out.next_pc;
       near_mem.server_fence.request.put (?);
       rg_state <= CPU_FENCE;
-
-      // Accounting
-      csr_regfile.csr_minstret_incr;
-
-`ifdef INCLUDE_TANDEM_VERIF
-      // Trace data
-      let trace_data = stage1.out.data_to_stage2.trace_data;
-      f_trace_data.enq (trace_data);
-`endif
-
-      // Debug
-      fa_emit_instr_trace (minstret, stage1.out.data_to_stage2.pc, stage1.out.data_to_stage2.instr, rg_cur_priv);
-      if (cur_verbosity > 1)
-	 $display ("%0d: %m.rl_stage1_FENCE", mcycle);
-   endrule
+   endrule: rl_stage1_FENCE
 
    // ----------------
-   // Finish FENCE
 
    rule rl_finish_FENCE (rg_state == CPU_FENCE);
       if (cur_verbosity > 1) $display ("%0d: %m.rl_finish_FENCE", mcycle);
@@ -1252,13 +1233,22 @@ module mkCPU (CPU_IFC);
       // Await mem system FENCE completion
       let dummy <- near_mem.server_fence.response.get;
 
+      // Accounting
+      csr_regfile.csr_minstret_incr;
+      // Debug
+      fa_emit_instr_trace (minstret, stage1.out.data_to_stage2.pc,
+			   stage1.out.data_to_stage2.instr,
+			   rg_cur_priv);
+`ifdef INCLUDE_TANDEM_VERIF
+      // Trace data
+      let trace_data = stage1.out.data_to_stage2.trace_data;
+      f_trace_data.enq (trace_data);
+`endif
+
       // Resume pipe
       stageD.set_full (False);
       stage1.set_full (False);    fa_step_check;
       fa_stageF_redirect (rg_next_pc);
-
-      if (cur_verbosity > 1)
-	 $display ("    CPU.rl_finish_FENCE");
    endrule: rl_finish_FENCE
 
    // ================================================================
@@ -1282,28 +1272,13 @@ module mkCPU (CPU_IFC);
 			      && (stageF.out.ostatus != OSTATUS_BUSY));
       if (cur_verbosity > 1) $display ("%0d: %m.rl_stage1_SFENCE_VMA", mcycle);
 
+      // Save stage1.out.next_pc since it can be destroyed by FENCE op
       rg_next_pc <= stage1.out.next_pc;
-      // Tell Near_Mem to do its SFENCE_VMA
       near_mem.sfence_vma_server.request.put (?);
       rg_state <= CPU_SFENCE_VMA;
-
-      // Accounting
-      csr_regfile.csr_minstret_incr;
-
-`ifdef INCLUDE_TANDEM_VERIF
-      // Trace data
-      let trace_data = stage1.out.data_to_stage2.trace_data;
-      f_trace_data.enq (trace_data);
-`endif
-
-      // Debug
-      fa_emit_instr_trace (minstret, stage1.out.data_to_stage2.pc, stage1.out.data_to_stage2.instr, rg_cur_priv);
-      if (cur_verbosity > 1)
-	 $display ("%0d: %m.rl_stage1_SFENCE_VMA", mcycle);
    endrule: rl_stage1_SFENCE_VMA
 
    // ----------------
-   // Finish SFENCE.VMA
 
    rule rl_finish_SFENCE_VMA (rg_state == CPU_SFENCE_VMA);
       if (cur_verbosity > 1) $display ("%0d: %m.rl_finish_SFENCE_VMA", mcycle);
@@ -1311,13 +1286,22 @@ module mkCPU (CPU_IFC);
       // Await SFENCE.VMA completion
       let dummy <- near_mem.sfence_vma_server.response.get;
 
+      // Accounting
+      csr_regfile.csr_minstret_incr;
+      // Debug
+      fa_emit_instr_trace (minstret,
+			   stage1.out.data_to_stage2.pc,
+			   stage1.out.data_to_stage2.instr,
+			   rg_cur_priv);
+`ifdef INCLUDE_TANDEM_VERIF
+      // Trace data
+      let trace_data = stage1.out.data_to_stage2.trace_data;
+      f_trace_data.enq (trace_data);
+`endif
       // Resume pipe
       stageD.set_full (False);
       stage1.set_full (False);    fa_step_check;
       fa_stageF_redirect (rg_next_pc);
-
-      if (cur_verbosity > 1)
-	 $display ("    CPU.rl_finish_SFENCE_VMA");
    endrule: rl_finish_SFENCE_VMA
 `endif
 

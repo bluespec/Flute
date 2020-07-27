@@ -391,6 +391,14 @@ def do_isa_test (args_dict, full_filename):
     if (args_dict ['verbosity'] == 1): command2.append ("+v1")
     elif (args_dict ['verbosity'] == 2): command2.append ("+v2")
 
+    # ---- These are useful for identifying a test that hangs
+    # command1_string = "    TEMPORARY: Exec:"
+    # for x in command1:
+    #    command1_string += " {0}".format (x)
+    # command1_string += "\n"
+    # sys.stdout.write (command1_string)
+    # sys.stdout.flush ()
+
     message = message + "    Exec:"
     for x in command1:
         message = message + (" {0}".format (x))
