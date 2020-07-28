@@ -32,15 +32,22 @@ help:
 all: compile  simulator
 
 # ================================================================
-# Search path for bsc for .bsv files
+# Near-mem (Cache and optional MMU for VM)
+# WT = Write-through; WB = write-back
+# L1 = L1 only; L1_L2 = L1 + coherent L2
+
+CACHES ?= WT_L1
 
 ifeq ($(CACHES),WB_L1)
-  NEAR_MEM_VM_DIR=Near_Mem_VM_WB
+  NEAR_MEM_VM_DIR=Near_Mem_VM_WB_L1
 else ifeq ($(CACHES),WB_L1_L2)
   NEAR_MEM_VM_DIR=Near_Mem_VM_WB_L1_L2
 else
-  NEAR_MEM_VM_DIR=Near_Mem_VM
+  NEAR_MEM_VM_DIR=Near_Mem_VM_WT_L1
 endif
+
+# ================================================================
+# Search path for bsc for .bsv files
 
 CORE_DIRS = $(REPO)/src_Core/CPU:$(REPO)/src_Core/ISA:$(REPO)/src_Core/RegFiles:$(REPO)/src_Core/Core:$(REPO)/src_Core/Cache_Config:$(REPO)/src_Core/$(NEAR_MEM_VM_DIR):$(REPO)/src_Core/PLIC:$(REPO)/src_Core/Near_Mem_IO:$(REPO)/src_Core/Debug_Module:$(REPO)/src_Core/BSV_Additional_Libs
 
@@ -103,6 +110,6 @@ clean:
 
 .PHONY: full_clean
 full_clean: clean
-	rm -r -f  $(SIM_EXE_FILE)*  *.log  *.vcd  *.hex  Logs/
+	rm -r -f  $(SIM_EXE_FILE)*  *.log  *.vcd  *.hex  Logs/  worker_*
 
 # ================================================================
