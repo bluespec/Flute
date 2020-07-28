@@ -62,16 +62,19 @@ import CreditCounter :: *;
 import ISA_Decls        :: *;
 import Near_Mem_IFC     :: *;
 import MMU_Cache_Common :: *;
+import Cache_Decls      :: *;
 
 `ifdef ISA_PRIV_S
-import TLB          :: *;
+import TLB :: *;
 `endif
 
+/* DELETE
 `ifdef RV32
 import Cache_Decls_RV32 :: *;
 `elsif RV64
 import Cache_Decls_RV64 :: *;
 `endif
+*/
 
 import SoC_Map      :: *;
 import AXI4_Types   :: *;

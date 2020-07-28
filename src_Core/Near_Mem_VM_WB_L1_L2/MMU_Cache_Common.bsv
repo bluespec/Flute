@@ -262,9 +262,9 @@ deriving (Bits, FShow);
 function Fmt fshow_L2_to_L1_Rsp (L2_to_L1_Rsp rsp);
    Fmt fmt = $format ("L2_to_L1_Rsp %0h -> ", rsp.addr, fshow (rsp.to_state));
    if (rsp.m_cline matches tagged Valid .cline) begin
-      Vector #(Word64s_per_CLine, Bit #(64)) v_word64 = unpack (cline);
-      for (Integer j = 0; j < word64s_per_cline; j = j + 1)
-	 fmt = fmt + $format ("\n        [%0d]  %016h", j, v_word64 [j]);
+      Vector #(CWords_per_CLine, Bit #(64)) v_cword = unpack (cline);
+      for (Integer j = 0; j < cwords_per_cline; j = j + 1)
+	 fmt = fmt + $format ("\n        [%0d]  %016h", j, v_cword [j]);
    end
    else
       fmt = fmt + $format (" <no line>");
@@ -304,9 +304,9 @@ deriving (Bits, FShow);
 function Fmt fshow_L1_to_L2_Rsp (L1_to_L2_Rsp rsp);
    Fmt fmt = $format ("L1_to_L2_Rsp %0h -> ", rsp.addr, fshow (rsp.to_state));
    if (rsp.m_cline matches tagged Valid .cline) begin
-      Vector #(Word64s_per_CLine, Bit #(64)) v_word64 = unpack (cline);
-      for (Integer j = 0; j < word64s_per_cline; j = j + 1)
-	 fmt = fmt + $format ("\n        [%0d]  %016h", j, v_word64 [j]);
+      Vector #(CWords_per_CLine, Bit #(64)) v_cword = unpack (cline);
+      for (Integer j = 0; j < cwords_per_cline; j = j + 1)
+	 fmt = fmt + $format ("\n        [%0d]  %016h", j, v_cword [j]);
    end
    else
       fmt = fmt + $format (" <no line>");

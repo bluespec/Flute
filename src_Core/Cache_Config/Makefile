@@ -1,12 +1,14 @@
 .PHONY: help
 help:
-	@echo "Running 'make <target>' will generate one a BSV file"
-	@echo "containing cache type, constant and functiion declarations"
-	@echo "using info from configs specified in .yaml files"
+	@echo "Running an individual 'make <target>' will generate a BSV file"
+	@echo "containing cache type, constant and function declarations"
+	@echo "using config info specified in <target>_args.yaml file"
 	@echo "(generated BSV package/file name, cache size, associativity,"
-	@echo " line size, phys addr size in bits)."
+	@echo " basic cache word size, line size, phys addr size in bits)."
 	@echo ""
 	@echo "The generated BSV files are imported by BSV cache codes."
+	@echo ""
+	@echo "Running 'make all' will do it for each of the standard targets in this dir."
 	@echo ""
 	@echo "For other configs, create your own yaml files similar to"
 	@echo "the yaml files in this directory,"

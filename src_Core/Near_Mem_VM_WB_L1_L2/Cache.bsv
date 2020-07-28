@@ -137,8 +137,8 @@ deriving (Bits, FShow);
 // A CSet of Meta information
 typedef Vector #(Ways_per_CSet, Meta)  CSet_Meta;
 
-// A CSet of Word64s
-typedef Vector #(Ways_per_CSet, Bit #(64)) CSet_Word64;
+// A CSet of CWords
+typedef Vector #(Ways_per_CSet, Bit #(64)) CSet_CWord;
 
 function PA fn_cline_pa_from_tag_and_cset_in_cache (CTag  ctag, CSet_in_Cache  cset_in_cache);
    Byte_in_CLine byte_in_cline = 0;
@@ -160,12 +160,12 @@ function Fmt fshow_cset_meta (CSet_in_Cache  cset_in_cache,
    return fmt;
 endfunction
 
-function Fmt fshow_cset_word64 (CSet_Word64 cset_word64);
-   Fmt fmt = $format ("CSet_word64 {");
+function Fmt fshow_cset_cword (CSet_CWord cset_cword);
+   Fmt fmt = $format ("CSet_Cword {");
    for (Integer j = 0; j < ways_per_cset; j = j + 1) begin
       if (j != 0)
 	 fmt = fmt + $format (", ");
-      fmt = fmt + $format ("%0h", cset_word64 [j]);
+      fmt = fmt + $format ("%0h", cset_cword [j]);
    end
    fmt = fmt + $format ("}");
    return fmt;
@@ -224,54 +224,54 @@ typedef struct {
 deriving (Bits, Eq, FShow);
 
 // ----------------------------------------------------------------
-// Update a byte, halfword, word or doubleword in a Word64 at Way in a CSet_Word64
+// Update a byte, halfword, word or doubleword in a CWord at Way in a CSet_CWord
 
-function CSet_Word64 fn_update_cset_word64 (CSet_Word64   old_cset_word64,
-					    Way_in_CSet   way,
-					    Bit #(n)      addr,
-					    Bit #(3)      f3,
-					    Bit #(64)     word64);
-   let old_word64     = old_cset_word64 [way];
-   let old_B0         = old_word64 [7:0];
-   let old_B1         = old_word64 [15:8];
-   let old_B2         = old_word64 [23:16];
-   let old_B3         = old_word64 [31:24];
-   let old_B4         = old_word64 [39:32];
-   let old_B5         = old_word64 [47:40];
-   let old_B6         = old_word64 [55:48];
-   let old_B7         = old_word64 [63:56];
+function CSet_CWord fn_update_cset_cword (CSet_CWord   old_cset_cword,
+					  Way_in_CSet   way,
+					  Bit #(n)      addr,
+					  Bit #(3)      f3,
+					  Bit #(64)     cword);
+   let old_cword = old_cset_cword [way];
+   let old_B0    = old_cword [7:0];
+   let old_B1    = old_cword [15:8];
+   let old_B2    = old_cword [23:16];
+   let old_B3    = old_cword [31:24];
+   let old_B4    = old_cword [39:32];
+   let old_B5    = old_cword [47:40];
+   let old_B6    = old_cword [55:48];
+   let old_B7    = old_cword [63:56];
 
-   let new_cset_word64 = old_cset_word64;
-   let new_word64     = old_word64;
+   let new_cset_cword = old_cset_cword;
+   let new_cword      = old_cword;
    Bit #(3) addr_lsbs = addr [2:0];
 
-   // Replace relevant bytes in new_word64
+   // Replace relevant bytes in new_cword
    case (f3)
       f3_SB:  case (addr_lsbs)
-		 'h0 : new_word64 [ 7:0 ] = word64 [7:0];
-		 'h1 : new_word64 [15:8 ] = word64 [7:0];
-		 'h2 : new_word64 [23:16] = word64 [7:0];
-		 'h3 : new_word64 [31:24] = word64 [7:0];
-		 'h4 : new_word64 [39:32] = word64 [7:0];
-		 'h5 : new_word64 [47:40] = word64 [7:0];
-		 'h6 : new_word64 [55:48] = word64 [7:0];
-		 'h7 : new_word64 [63:56] = word64 [7:0];
+		 'h0 : new_cword [ 7:0 ] = cword [7:0];
+		 'h1 : new_cword [15:8 ] = cword [7:0];
+		 'h2 : new_cword [23:16] = cword [7:0];
+		 'h3 : new_cword [31:24] = cword [7:0];
+		 'h4 : new_cword [39:32] = cword [7:0];
+		 'h5 : new_cword [47:40] = cword [7:0];
+		 'h6 : new_cword [55:48] = cword [7:0];
+		 'h7 : new_cword [63:56] = cword [7:0];
 	      endcase
       f3_SH:  case (addr_lsbs)
-		 'h0 : new_word64 [15:0 ] = word64 [15:0];
-		 'h2 : new_word64 [31:16] = word64 [15:0];
-		 'h4 : new_word64 [47:32] = word64 [15:0];
-		 'h6 : new_word64 [63:48] = word64 [15:0];
+		 'h0 : new_cword [15:0 ] = cword [15:0];
+		 'h2 : new_cword [31:16] = cword [15:0];
+		 'h4 : new_cword [47:32] = cword [15:0];
+		 'h6 : new_cword [63:48] = cword [15:0];
 	      endcase
       f3_SW:  case (addr_lsbs)
-		 'h0 : new_word64 [31:0]  = word64 [31:0];
-		 'h4 : new_word64 [63:32] = word64 [31:0];
+		 'h0 : new_cword [31:0]  = cword [31:0];
+		 'h4 : new_cword [63:32] = cword [31:0];
 	      endcase
-      f3_SD:  new_word64 = word64;
+      f3_SD:  new_cword = cword;
    endcase
-   new_cset_word64 [way] = new_word64;
-   return new_cset_word64;
-endfunction: fn_update_cset_word64
+   new_cset_cword [way] = new_cword;
+   return new_cset_cword;
+endfunction: fn_update_cset_cword
 
 // ================================================================
 // MODULE IMPLEMENTATION
@@ -311,10 +311,10 @@ module mkCache #(parameter Bool      dcache_not_icache,
 		    CSet_Meta)     ram_cset_meta   <- mkBRAMCore2 (csets_per_cache,
 								   bram_with_output_reg);
    // Data RAM
-   // Note: a cset_word64 is addressed by { cset_in_cache, word64_in_cline },
-   BRAM_DUAL_PORT #(CSet_Word64_in_Cache,
-		    CSet_Word64)          ram_cset_word64 <- mkBRAMCore2 (cset_word64s_per_cache,
-									  bram_with_output_reg);
+   // Note: a cset_cword is addressed by { cset_in_cache, cword_in_cline },
+   BRAM_DUAL_PORT #(CSet_CWord_in_Cache,
+		    CSet_CWord)         ram_cset_cword <- mkBRAMCore2 (cset_cwords_per_cache,
+								       bram_with_output_reg);
 
    // ----------------
    // Reservation regs for AMO LR/SC (Load-Reserved/Store-Conditional)
@@ -333,10 +333,10 @@ module mkCache #(parameter Bool      dcache_not_icache,
 
    // ----------------
    // Loop-control index registers
-   // These are used to loop over csets, ways, and word64-in-lines.
-   Reg #(CSet_in_Cache)   rg_cset_in_cache   <- mkReg (0);    // ready for initialization loop
-   Reg #(Word64_in_CLine) rg_word64_in_cline <- mkRegU;
-   Reg #(Way_in_CSet)     rg_way_in_cset     <- mkRegU;
+   // These are used to loop over csets, ways, and cword-in-lines.
+   Reg #(CSet_in_Cache)  rg_cset_in_cache  <- mkReg (0);    // ready for initialization loop
+   Reg #(CWord_in_CLine) rg_cword_in_cline <- mkRegU;
+   Reg #(Way_in_CSet)    rg_way_in_cset    <- mkRegU;
 
    // Record if there was a fabric error during any beats of a refill
    Reg #(Bool) rg_error_during_refill <- mkRegU;
@@ -348,7 +348,7 @@ module mkCache #(parameter Bool      dcache_not_icache,
    FIFOF #(L2_to_L1_Rsp)  f_L2_to_L1_rsps <- mkFIFOF;
 
    // Buffer to hold a cache line from next-level during refill
-   Reg #(Vector #(Word64s_per_CLine, Bit #(64))) rg_read_cline_buf <- mkRegU;
+   Reg #(Vector #(CWords_per_CLine, Bit #(64))) rg_read_cline_buf <- mkRegU;
 
    // ----------------
    // Requests/responses from next-level cache or Memory (for downgrades and writebacks)
@@ -357,7 +357,7 @@ module mkCache #(parameter Bool      dcache_not_icache,
    FIFOF #(L1_to_L2_Rsp)  f_L1_to_L2_rsps <- mkFIFOF;
 
    // Buffer to hold a cache line to next-level during writeback
-   Reg #(Vector #(Word64s_per_CLine, Bit #(64))) rg_write_cline_buf <- mkRegU;
+   Reg #(Vector #(CWords_per_CLine, Bit #(64))) rg_write_cline_buf <- mkRegU;
 
    // ****************************************************************
    // ****************************************************************
@@ -369,14 +369,14 @@ module mkCache #(parameter Bool      dcache_not_icache,
    // ----------------
    // Continuous values derived from rg_va
 
-   let va_cset_in_cache        = fn_Addr_to_CSet_in_Cache (rg_va);
-   let va_word64_in_cline      = fn_Addr_to_Word64_in_CLine (rg_va);
-   let va_cset_word64_in_cache = fn_Addr_to_CSet_Word64_in_Cache (rg_va);
+   let va_cset_in_cache       = fn_Addr_to_CSet_in_Cache (rg_va);
+   let va_cword_in_cline      = fn_Addr_to_CWord_in_CLine (rg_va);
+   let va_cset_cword_in_cache = fn_Addr_to_CSet_CWord_in_Cache (rg_va);
 
    // ----------------
    // Continuous output values from RAM ports A
-   let ram_A_cset_meta   = ram_cset_meta.a.read;
-   let ram_A_cset_word64 = ram_cset_word64.a.read;
+   let ram_A_cset_meta  = ram_cset_meta.a.read;
+   let ram_A_cset_cword = ram_cset_cword.a.read;
 
    // ----------------
    // Valid_Info is a pure combinational function of the A-outputs of
@@ -388,7 +388,7 @@ module mkCache #(parameter Bool      dcache_not_icache,
       Bit #(2)     num_valids  = 0;
       Meta_State   valid_state = META_INVALID;    // M, E, S, I
       Way_in_CSet  way_hit     = 0;
-      Bit #(64)    word64      = 0;
+      Bit #(64)    cword       = 0;
 
       CTag  pa_ctag = fn_PA_to_CTag (pa);
 
@@ -401,13 +401,13 @@ module mkCache #(parameter Bool      dcache_not_icache,
 	    way_hit     = fromInteger (way);
 	 end
 
-	 let word64_at_way = ram_A_cset_word64 [way];
-	 word64  = (word64 | (word64_at_way & pack (replicate (hit_at_way))));
+	 let cword_at_way = ram_A_cset_cword [way];
+	 cword  = (cword | (cword_at_way & pack (replicate (hit_at_way))));
       end
 
       return Valid_Info {num_valids:  num_valids,
 			 valid_state: valid_state,
-			 data:        word64,
+			 data:        cword,
 			 way:         way_hit};    // For possible subsequent update
    endfunction
 
@@ -423,12 +423,12 @@ module mkCache #(parameter Bool      dcache_not_icache,
 	 ram_cset_meta.a.put (bram_cmd_read, cset_in_cache, ?);
 
 	 // Request data RAM
-	 let cset_word64_in_cache = fn_Addr_to_CSet_Word64_in_Cache (va);
-	 ram_cset_word64.a.put (bram_cmd_read, cset_word64_in_cache, ?);
+	 let cset_cword_in_cache = fn_Addr_to_CSet_CWord_in_Cache (va);
+	 ram_cset_cword.a.put (bram_cmd_read, cset_cword_in_cache, ?);
 
 	 if (verbosity >= 2)
-	    $display ("    fa_req_rams_A %0h cset_in_cache %0h, cset_word64_in_cache %0h",
-		      va, cset_in_cache, cset_word64_in_cache);
+	    $display ("    fa_req_rams_A %0h cset_in_cache %0h, cset_cword_in_cache %0h",
+		      va, cset_in_cache, cset_cword_in_cache);
       endaction
    endfunction
 
@@ -446,24 +446,24 @@ module mkCache #(parameter Bool      dcache_not_icache,
 	     || (valid_info.valid_state < META_SHARED))
 	    begin
 	       $display ("%0d: %m.fa_write: INTERNAL_ERROR", cur_cycle);
-	       $display ("    va_cset_word64_in_cache %0h way %0d pa %0h f3 %0d st_value %0h",
-			 va_cset_word64_in_cache, way, pa, f3, st_value);
+	       $display ("    va_cset_cword_in_cache %0h way %0d pa %0h f3 %0d st_value %0h",
+			 va_cset_cword_in_cache, way, pa, f3, st_value);
 	       $display ("    Cache write on a miss (need EXCLUSIVE)");
 	       $finish (1);
 	    end
 
 	 // Update cache line data
-	 let new_cset_word64 = fn_update_cset_word64 (ram_A_cset_word64,
-						      way,
-						      pa,
-						      f3,
-						      st_value);
-	 ram_cset_word64.b.put (bram_cmd_write, va_cset_word64_in_cache, new_cset_word64);
+	 let new_cset_cword = fn_update_cset_cword (ram_A_cset_cword,
+						    way,
+						    pa,
+						    f3,
+						    st_value);
+	 ram_cset_cword.b.put (bram_cmd_write, va_cset_cword_in_cache, new_cset_cword);
 	 if (verbosity >= 1) begin
-	    $display ("      cache.fa_write: va_cset_word64_in_cache %0h way %0d pa %0h f3 %0d st_value %0h",
-		      va_cset_word64_in_cache, way, pa, f3, st_value);
-	    $display ("      from: ", fshow_cset_word64 (ram_A_cset_word64));
-	    $display ("      to:   ", fshow_cset_word64 (new_cset_word64));
+	    $display ("      cache.fa_write: va_cset_cword_in_cache %0h way %0d pa %0h f3 %0d st_value %0h",
+		      va_cset_cword_in_cache, way, pa, f3, st_value);
+	    $display ("      from: ", fshow_cset_cword (ram_A_cset_cword));
+	    $display ("      to:   ", fshow_cset_cword (new_cset_cword));
 	 end
 
 	 // Update cache meta info to MODIFIED
@@ -501,37 +501,37 @@ module mkCache #(parameter Bool      dcache_not_icache,
 	 rg_post_wb_meta_state <= post_wb_meta_state;
 	 rg_post_wb_fsm_state  <= post_wb_fsm_state;
 
-	 // Request data RAM A for first CSet_Word64 for this line
-	 Word64_in_CLine       word64_in_cline = 0;
-	 CSet_Word64_in_Cache  cset_word64_in_cache = { cset_in_cache, word64_in_cline };
-	 ram_cset_word64.a.put (bram_cmd_read, cset_word64_in_cache, ?);
+	 // Request data RAM A for first CSet_CWord for this line
+	 CWord_in_CLine       cword_in_cline      = 0;
+	 CSet_CWord_in_Cache  cset_cword_in_cache = { cset_in_cache, cword_in_cline };
+	 ram_cset_cword.a.put (bram_cmd_read, cset_cword_in_cache, ?);
 
-	 rg_word64_in_cline <= word64_in_cline;
+	 rg_cword_in_cline <= cword_in_cline;
       endaction
    endfunction
 
    // ----------------
    // rl_writeback_loop:
    // Assume proper setup of loop index regs, rg_post_wb_meta_state, rg_post_wb_fsm_state
-   // and that a word64_cset has been requested from data RAM B
+   // and that a cword_cset has been requested from data RAM B
 
    rule rl_writeback_loop (rg_fsm_state == FSM_WRITEBACK_LOOP);
-      // Accumulate a word64 into rg_write_cline_buf
-      CSet_Word64 cset_word64 = ram_cset_word64.a.read;
-      Bit #(64)   word64      = cset_word64 [rg_way_in_cset];
-      Vector #(Word64s_per_CLine, Bit #(64)) v_word64 = shiftInAtN (rg_write_cline_buf, word64);
-      rg_write_cline_buf <= v_word64;
+      // Accumulate a cword into rg_write_cline_buf
+      CSet_CWord cset_cword = ram_cset_cword.a.read;
+      Bit #(64)   cword     = cset_cword [rg_way_in_cset];
+      Vector #(CWords_per_CLine, Bit #(64)) v_cword = shiftInAtN (rg_write_cline_buf, cword);
+      rg_write_cline_buf <= v_cword;
 
-      if (   ((verbosity >= 1) && (rg_word64_in_cline == 0))
+      if (   ((verbosity >= 1) && (rg_cword_in_cline == 0))
 	  || (verbosity >= 2))
 	 begin
 	    $display ("%0d: %m.rl_writeback_loop", cur_cycle);
-	    $display ("    cset %0h way %0h word64 %0h data %0h",
-		      rg_cset_in_cache, rg_way_in_cset, rg_word64_in_cline, word64);
+	    $display ("    cset %0h way %0h cword %0h data %0h",
+		      rg_cset_in_cache, rg_way_in_cset, rg_cword_in_cline, cword);
 	 end
 
-      // If last cset_word64 in cline, return to continuation
-      Bool last = (rg_word64_in_cline == fromInteger (word64s_per_cline - 1));
+      // If last cset_cword in cline, return to continuation
+      Bool last = (rg_cword_in_cline == fromInteger (cwords_per_cline - 1));
       if (last) begin
 	 // Send write-request to L2/mem
 	 PA wb_cline_pa = fn_cline_pa_from_tag_and_cset_in_cache
@@ -539,24 +539,24 @@ module mkCache #(parameter Bool      dcache_not_icache,
 			       rg_cset_in_cache);
 	 f_L1_to_L2_rsps.enq (L1_to_L2_Rsp {addr:     zeroExtend (wb_cline_pa),
 					    to_state: rg_post_wb_meta_state,
-					    m_cline:  tagged Valid (pack (v_word64)) });
+					    m_cline:  tagged Valid (pack (v_cword)) });
 	 rg_fsm_state <= rg_post_wb_fsm_state;
 	 if (verbosity >= 1) begin
 	    $display ("%0d: %m.rl_writeback_loop", cur_cycle);
 	    $display ("    Done; writeback cline @ %0h", wb_cline_pa, " -> ", fshow (rg_post_wb_fsm_state));
-	    for (Integer j = 0; j < word64s_per_cline; j = j + 1)
-	       $display ("        [%0d]  %016h", j, v_word64 [j]);
+	    for (Integer j = 0; j < cwords_per_cline; j = j + 1)
+	       $display ("        [%0d]  %016h", j, v_cword [j]);
 	 end
       end
       else begin
-	 // Request next cset_word64 from data RAM B to be accumulated, and increment index
-	 Word64_in_CLine       word64_in_cline      = rg_word64_in_cline + 1;
-	 CSet_Word64_in_Cache  cset_word64_in_cache = { rg_cset_in_cache, word64_in_cline };
-	 ram_cset_word64.a.put (bram_cmd_read, cset_word64_in_cache, ?);
+	 // Request next cset_cword from data RAM B to be accumulated, and increment index
+	 CWord_in_CLine       cword_in_cline      = rg_cword_in_cline + 1;
+	 CSet_CWord_in_Cache  cset_cword_in_cache = { rg_cset_in_cache, cword_in_cline };
+	 ram_cset_cword.a.put (bram_cmd_read, cset_cword_in_cache, ?);
 
-	 rg_word64_in_cline <= word64_in_cline;
+	 rg_cword_in_cline <= cword_in_cline;
 	 if (verbosity >= 2)
-	    $display ("    Requested word64_in_cline %0d", word64_in_cline);
+	    $display ("    Requested cword_in_cline %0d", cword_in_cline);
       end
    endrule
 
@@ -649,24 +649,24 @@ module mkCache #(parameter Bool      dcache_not_icache,
 					 to_state:    to_state,
 					 can_up_to_E: dcache_not_icache});
 
-      // Request read of first CSet_Word64 in CLine (BRAM port B)
-      // for cset_word64 read-modify-write
-      let                  word64_in_cline       = 0;
-      CSet_Word64_in_Cache cset_word64_in_cache  = { rg_cset_in_cache, word64_in_cline };
-      ram_cset_word64.a.put (bram_cmd_read, cset_word64_in_cache, ?);
+      // Request read of first CSet_CWord in CLine (BRAM port B)
+      // for cset_cword read-modify-write
+      let                 cword_in_cline       = 0;
+      CSet_CWord_in_Cache cset_cword_in_cache  = { rg_cset_in_cache, cword_in_cline };
+      ram_cset_cword.a.put (bram_cmd_read, cset_cword_in_cache, ?);
 
       // Enter cache refill loop, awaiting refill responses from mem
       // Note: loop-control index regs rg_cset_in_cache and rg_way_in_cset
       // were initialized in rl_writeback_start, whether or not
       // a writeback was needed.
 
-      rg_word64_in_cline     <= 0;
+      rg_cword_in_cline      <= 0;
       rg_fsm_state           <= FSM_UPGRADE_REFILL;
       rg_error_during_refill <= False;
 
       if (verbosity >= 2) begin
 	 $display ("    Requesting cline at mem addr %0h", cline_pa);
-	 $display ("    Requesting ram_cset_word64.a: word64-in-cache: 0x%0h", cset_word64_in_cache);
+	 $display ("    Requesting ram_cset_cword.a: cword-in-cache: 0x%0h", cset_cword_in_cache);
 	 $display ("    -> FSM_UPGRADE_REFILL");
       end
    endrule: rl_refill_start
@@ -678,25 +678,25 @@ module mkCache #(parameter Bool      dcache_not_icache,
    // If S->E upgrade, response has no cache line, and the loop exits immediately.
 
    // Otherwise, response has a cache line, which we buffer, and loop
-   // to write word64s into the data RAM.
-   // - update word64 in cset_word64 ram, and
-   // - initiate read of next cset_word64 from ram for read-modify-write of cset
+   // to write cwords into the data RAM.
+   // - update cword in cset_cword ram, and
+   // - initiate read of next cset_cword from ram for read-modify-write of cset
 
    rule rl_refill_loop (rg_fsm_state == FSM_UPGRADE_REFILL);
       if (   (verbosity >= 2)
-	  || ((rg_word64_in_cline == 0) && (verbosity >= 1)))
+	  || ((rg_cword_in_cline == 0) && (verbosity >= 1)))
 	 begin
 	    $display ("%0d: %m.rl_refill_loop", cur_cycle);
 	    $display ("    addr %0h  (cset %0h way %0d word %0d)",
-		      rg_pa, rg_cset_in_cache, rg_way_in_cset, rg_word64_in_cline);
+		      rg_pa, rg_cset_in_cache, rg_way_in_cset, rg_cword_in_cline);
 	 end
 
       Bool  update_data = True;
 
       // On iteration 0, cline comes from f_L2_to_L1_rsps and is registered in rg_read_cline_buf
       // On subsequent iterations, cline comes from rg_read_cline_buf
-      Vector #(Word64s_per_CLine, Bit #(64)) v_word64 = ?;
-      if (rg_word64_in_cline == 0) begin
+      Vector #(CWords_per_CLine, Bit #(64)) v_cword = ?;
+      if (rg_cword_in_cline == 0) begin
 	 let cline_rsp <- pop (f_L2_to_L1_rsps);
 
 	 // Update cline meta-data
@@ -707,43 +707,43 @@ module mkCache #(parameter Bool      dcache_not_icache,
 	 if (verbosity >= 1)
 	    $display ("    -> ", fshow (cline_rsp.to_state));
 	 if (cline_rsp.m_cline matches tagged Valid .cline) begin
-	    v_word64 = unpack (cline);
+	    v_cword = unpack (cline);
 	    if (verbosity >= 1) begin
-	       for (Integer j = 0; j < word64s_per_cline; j = j + 1)
-		  $display ("        [%0d]  %016h", j, v_word64 [j]);
+	       for (Integer j = 0; j < cwords_per_cline; j = j + 1)
+		  $display ("        [%0d]  %016h", j, v_cword [j]);
 	    end
 	 end
 	 else
 	    update_data = False;
       end
       else
-	 v_word64 = rg_read_cline_buf;
+	 v_cword = rg_read_cline_buf;
 
-      rg_read_cline_buf <= shiftInAtN (v_word64, ?);
+      rg_read_cline_buf <= shiftInAtN (v_cword, ?);
 
       if (update_data) begin
-	 // Next word64 is at index 0 of cline viewed as vector of word64s
-	 let word64 = v_word64 [0];
+	 // Next cword is at index 0 of cline viewed as vector of cwords
+	 let cword = v_cword [0];
 
-	 // Update the CSet_Word64 (BRAM port B)
-	 let new_cset_word64 = ram_cset_word64.a.read; 
-	 new_cset_word64 [rg_way_in_cset] = word64;
-	 let cset_word64_in_cache = { va_cset_in_cache, rg_word64_in_cline };
-	 ram_cset_word64.b.put (bram_cmd_write, cset_word64_in_cache, new_cset_word64);
+	 // Update the CSet_CWord (BRAM port B)
+	 let new_cset_cword              = ram_cset_cword.a.read; 
+	 new_cset_cword [rg_way_in_cset] = cword;
+	 let cset_cword_in_cache         = { va_cset_in_cache, rg_cword_in_cline };
+	 ram_cset_cword.b.put (bram_cmd_write, cset_cword_in_cache, new_cset_cword);
       end
 
       Bool final_iter = (   (! update_data)
-			 || (rg_word64_in_cline == fromInteger (word64s_per_cline - 1)));
+			 || (rg_cword_in_cline == fromInteger (cwords_per_cline - 1)));
       if (final_iter) begin
 	 if (verbosity >= 1)
 	    $display ("%0d: %m.rl_refill_loop: done", cur_cycle);
 
 	 // Re-request the cset from the RAMs.
 	 // cept: if the memory request is for the last
-	 // word64-in-cline (which is written in this rule) re-request
+	 // cword-in-cline (which is written in this rule) re-request
 	 // after a 1-cycle delay to allow this write to propagate in
 	 // the SRAM.
-	 if ((va_word64_in_cline == fromInteger (word64s_per_cline - 1))
+	 if ((va_cword_in_cline == fromInteger (cwords_per_cline - 1))
 	     || (! update_data))
 	    rg_fsm_state <= FSM_REFILL_FINAL_DELAY;
 	 else begin
@@ -752,15 +752,15 @@ module mkCache #(parameter Bool      dcache_not_icache,
 	 end
       end
       else begin
-	 // Not last word64 in line; initiate RAM read for next word64_set
+	 // Not last cword in line; initiate RAM read for next cword_set
 	 // for read-modify-write of cset
-	 let next_word64_in_cline      = rg_word64_in_cline + 1;
-	 let next_cset_word64_in_cache = { va_cset_in_cache, next_word64_in_cline };
-	 ram_cset_word64.a.put (bram_cmd_read, next_cset_word64_in_cache, ?);
-	 rg_word64_in_cline <= next_word64_in_cline;
+	 let next_cword_in_cline      = rg_cword_in_cline + 1;
+	 let next_cset_cword_in_cache = { va_cset_in_cache, next_cword_in_cline };
+	 ram_cset_cword.a.put (bram_cmd_read, next_cset_cword_in_cache, ?);
+	 rg_cword_in_cline <= next_cword_in_cline;
 	 if (verbosity >= 2)
-	    $display ("    Requesting ram_cset_word64.a word64-in-cache: 0x%0h",
-		      next_cset_word64_in_cache);
+	    $display ("    Requesting ram_cset_cword.a cword-in-cache: 0x%0h",
+		      next_cset_cword_in_cache);
       end
    endrule: rl_refill_loop
 
@@ -1023,11 +1023,11 @@ module mkCache #(parameter Bool      dcache_not_icache,
 
 	 $display ("%0d: INFO: %m.rl_initialize", cur_cycle);
 	 $display ("    Size %0d KB, Associativity %0d, CLine size %0d bytes (= %0d XLEN words)",
-		   kb_per_cache, ways_per_cset, (word64s_per_cline * 8),
+		   kb_per_cache, ways_per_cset, (cwords_per_cline * 8),
 `ifdef RV32
-		   (word64s_per_cline * 2)
+		   (cwords_per_cline * 2)
 `else
-		   (word64s_per_cline * 1)
+		   (cwords_per_cline * 1)
 `endif
 		   );
 	 if (verbosity >= 1)
@@ -1156,7 +1156,7 @@ module mkCache #(parameter Bool      dcache_not_icache,
 	       $display ("    AMO-HIT: va %0h pa %0h data %0h", req.va, pa, req.st_value);
 	       $display ("    f3 %3b AMO ", req.f3, fmt_op);
 	       $display ("    va %0h  pa %0h  st_value %0h", req.va, pa, req.st_value);
-	       $display ("    Cache word64 %0h, load-result %0h",
+	       $display ("    Cache cword %0h, load-result %0h",
 			 valid_info.data, valid_info.data);
 	    end
 
@@ -1199,7 +1199,7 @@ module mkCache #(parameter Bool      dcache_not_icache,
 						  can_up_to_E: dcache_not_icache});
 	       rg_cset_in_cache       <= va_cset_in_cache;
 	       rg_way_in_cset         <= valid_info.way;
-	       rg_word64_in_cline     <= 0;
+	       rg_cword_in_cline      <= 0;
 	       rg_error_during_refill <= False;
 	       rg_fsm_state           <= FSM_UPGRADE_REFILL;
 

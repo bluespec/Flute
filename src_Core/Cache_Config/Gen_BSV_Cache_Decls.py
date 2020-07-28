@@ -14,11 +14,12 @@
 # do not often make the inter-relationships clear; and it is easy to
 # make a mistake and produce inconsistent size declarations.
 
-# This program is given just 4 basic, independent sizes:
-#    Bit per PA         (bits in a physical address)
-#    KB per cache       (total cache memory size)
-#    word64s per cline  (64b words per cache line)
-#    ways per set       (set associativity)
+# This program is given just 5 basic, independent sizes:
+#    Bit per PA          (bits in a physical address)
+#    KB per cache        (total cache memory size)
+#    bit per cache word  (bits in a cache word)
+#    cwords per cline    (cache words per cache line)
+#    ways per set        (set associativity)
 # and generates declarations for all the sized elements of interest in BSV
 # source code as a BSV package. Each declaration shows the actual size
 # and, as a comment, the formula used, if it is derived from other
@@ -68,16 +69,17 @@ def process_program_args ():
     sys.stdout.write ("Use  --help  for help\n")
 
     # ---- defaults
-    default_yaml_file      = 'RV32_Sv32_args.yaml'
-    bsv_package_name       = 'Cache_Decls_RV32'
-    item_Bits_per_PA       = 34
-    item_KB_per_Cache      = 4
-    item_Word64s_per_CLine = 4
-    item_Ways_per_CSet     = 1
+    default_yaml_file     = 'RV32_Sv32_args.yaml'
+    bsv_package_name      = 'Cache_Decls_RV32'
+    item_Bits_per_PA      = 34
+    item_KB_per_Cache     = 4
+    item_Bits_per_CWord   = 64
+    item_CWords_per_CLine = 4
+    item_Ways_per_CSet    = 1
 
     # ---- Parse command-line arguments
     parser = argparse.ArgumentParser (description = "Generate BSV declarations for a cache module.",
-                                      epilog = "Priority command-line args > yaml file > defaults")
+                                      epilog = "Priority: command-line args > yaml file > defaults")
     parser.add_argument ('--yaml_file',
                          help = "YAML file containing the basic sizes (default {0})".format (default_yaml_file))
     parser.add_argument ('--bsv_package_name',
@@ -86,8 +88,10 @@ def process_program_args ():
                          help = "Bits per Physical Address (default = {0})".format (item_Bits_per_PA))
     parser.add_argument ('--KB_per_Cache' ,
                          help = "Total size of cache in kilobytes (default = {0})".format (item_KB_per_Cache))
-    parser.add_argument ('--Word64s_per_CLine',
-                         help = "# of data Word64s in a cache line (default = {0})".format (item_Word64s_per_CLine))
+    parser.add_argument ('--Bits_per_CWord',
+                         help = "Bits per cache word (default = {0})".format (item_Bits_per_CWord))
+    parser.add_argument ('--CWords_per_CLine',
+                         help = "# of cache words in a cache line (default = {0})".format (item_CWords_per_CLine))
     parser.add_argument ('--Ways_per_CSet',
                          help = "Set associativity of cache (# of ways in a cache set; default {0})".format (item_Ways_per_CSet))
     args = parser.parse_args ()
@@ -114,24 +118,27 @@ def process_program_args ():
 
     # Over-ride from yaml file
     if (args_yaml != None):
-        if (args_yaml ['bsv_package_name']  != None): bsv_package_name       = args_yaml ['bsv_package_name']
-        if (args_yaml ['Bits_per_PA']       != None): item_Bits_per_PA       = int (args_yaml ['Bits_per_PA'])
-        if (args_yaml ['KB_per_Cache']      != None): item_KB_per_Cache      = int (args_yaml ['KB_per_Cache'])
-        if (args_yaml ['Word64s_per_CLine'] != None): item_Word64s_per_CLine = int (args_yaml ['Word64s_per_CLine'])
-        if (args_yaml ['Ways_per_CSet']     != None): item_Ways_per_CSet     = int (args_yaml ['Ways_per_CSet'])
+        if (args_yaml ['bsv_package_name'] != None): bsv_package_name      = args_yaml ['bsv_package_name']
+        if (args_yaml ['Bits_per_PA']      != None): item_Bits_per_PA      = int (args_yaml ['Bits_per_PA'])
+        if (args_yaml ['KB_per_Cache']     != None): item_KB_per_Cache     = int (args_yaml ['KB_per_Cache'])
+        if (args_yaml ['Bits_per_CWord']   != None): item_Bits_per_CWord   = int (args_yaml ['Bits_per_CWord'])
+        if (args_yaml ['CWords_per_CLine'] != None): item_CWords_per_CLine = int (args_yaml ['CWords_per_CLine'])
+        if (args_yaml ['Ways_per_CSet']    != None): item_Ways_per_CSet    = int (args_yaml ['Ways_per_CSet'])
 
     # Over-ride from command-line arguments
     # ---- Create 'items' data structure with all values
-    if (args.bsv_package_name  != None): bsv_package_name       = args.bsv_package_name
-    if (args.Bits_per_PA       != None): item_Bits_per_PA       = int (args.Bits_per_PA)
-    if (args.KB_per_Cache      != None): item_KB_per_Cache      = int (args.KB_per_Cache)
-    if (args.Word64s_per_CLine != None): item_Word64s_per_CLine = int (args.Word64s_per_CLine)
-    if (args.Ways_per_CSet     != None): item_Ways_per_CSet     = int (args.Ways_per_CSet)
+    if (args.bsv_package_name  != None): bsv_package_name      = args.bsv_package_name
+    if (args.Bits_per_PA       != None): item_Bits_per_PA      = int (args.Bits_per_PA)
+    if (args.KB_per_Cache      != None): item_KB_per_Cache     = int (args.KB_per_Cache)
+    if (args.Bits_per_CWord    != None): item_Bits_per_CWord   = int (args.Bits_per_CWord)
+    if (args.CWords_per_CLine  != None): item_CWords_per_CLine = int (args.CWords_per_CLine)
+    if (args.Ways_per_CSet     != None): item_Ways_per_CSet    = int (args.Ways_per_CSet)
 
-    items = [ ("Bits_per_PA",         item_Bits_per_PA,       "(basic)"),
-              ("KB_per_Cache",        item_KB_per_Cache,      "(basic)"),
-              ("Word64s_per_CLine",   item_Word64s_per_CLine, "(basic)"),
-              ("Ways_per_CSet",       item_Ways_per_CSet,     "(basic; associativity)") ]
+    items = [ ("Bits_per_PA",      item_Bits_per_PA,      "(basic)"),
+              ("KB_per_Cache",     item_KB_per_Cache,     "(basic)"),
+              ("Bits_per_CWord",   item_Bits_per_CWord,   "(basic)"),
+              ("CWords_per_CLine", item_CWords_per_CLine, "(basic)"),
+              ("Ways_per_CSet",    item_Ways_per_CSet,    "(basic; associativity)") ]
 
     return (bsv_package_name, items)
 
@@ -162,20 +169,24 @@ def sel2 (items, name):
 # ================================================================
 # Compute derived values
 
-Bits_per_Byte           = 8
-Bytes_per_Word64        = 8
-Bits_per_Byte_in_Word64 = 3
-addr_lo_byte_in_word64  = 0
-addr_hi_byte_in_word64  = 2
+Bits_per_Byte = 8
 
 def compute_derived_values (items):
-    items.append (("Bytes_per_CLine",
-                   sel (items, "Word64s_per_CLine") * Bytes_per_Word64,
-                   "Word64s_per_CLine * Bytes_per_Word64"))
+    items.append (("Bytes_per_CWord",
+                   int (sel (items, "Bits_per_CWord") / Bits_per_Byte),
+                   "Bits_per_CWord / 8"))
+
+    items.append (("Bits_per_Byte_in_CWord",
+                   int (math.log2 (sel (items, "Bytes_per_CWord"))),
+                   "log2 (Bytes_per_CWord)"))
 
     items.append (("Bits_per_CLine",
-                   sel (items, "Bytes_per_CLine") * Bits_per_Byte,
-                   "Bytes_per_CLine * 8"))
+                   sel (items, "CWords_per_CLine") * sel (items, "Bits_per_CWord"),
+                   "CWords_per_CLine * Bits_per_CWord"))
+
+    items.append (("Bytes_per_CLine",
+                   int (sel (items, "Bits_per_CLine") / Bits_per_Byte),
+                   "Bits_per_CLine / 8"))
 
     items.append (("Bytes_per_CSet",
                    sel (items, "Ways_per_CSet") * sel (items, "Bytes_per_CLine"),
@@ -185,9 +196,9 @@ def compute_derived_values (items):
                    sel (items, "KB_per_Cache") * 1024,
                    "KB_per_Cache * 1024"))
 
-    items.append (("Word64s_per_Cache",
-                   int (sel (items, "Bytes_per_Cache") / Bytes_per_Word64),
-                   "Bytes_per_Cache / Bytes_per_Word64"))
+    items.append (("CWords_per_Cache",
+                   int (sel (items, "Bytes_per_Cache") / sel (items, "Bytes_per_CWord")),
+                   "Bytes_per_Cache / Bytes_per_CWord"))
 
     items.append (("CLines_per_Cache",
                    int (sel (items, "Bytes_per_Cache") / sel (items, "Bytes_per_CLine")),
@@ -197,13 +208,13 @@ def compute_derived_values (items):
                    int (sel (items, "Bytes_per_Cache") / sel (items, "Bytes_per_CSet")),
                    "Bytes_per_Cache / Bytes_per_CSet"))
 
-    items.append (("CSet_Word64s_per_Cache",
-                   sel (items, "CSets_per_Cache") * sel (items, "Word64s_per_CLine"),
-                   "CSets_per_Cache * Word64s_per_CLine"))
+    items.append (("CSet_CWords_per_Cache",
+                   sel (items, "CSets_per_Cache") * sel (items, "CWords_per_CLine"),
+                   "CSets_per_Cache * CWords_per_CLine"))
 
-    items.append (("Bits_per_Word64_in_CLine",
-                   int (math.log2 (sel (items, "Word64s_per_CLine"))),
-                   "log2 (Word64s_per_CLine)"))
+    items.append (("Bits_per_CWord_in_CLine",
+                   int (math.log (sel (items, "CWords_per_CLine"), 2)),
+                   "log2 (CWords_per_CLine)"))
 
     items.append (("Bits_per_Byte_in_CLine",
                    int (math.log2 (sel (items, "Bytes_per_CLine"))),
@@ -213,9 +224,9 @@ def compute_derived_values (items):
                    int (math.log2 (sel (items, "CSets_per_Cache"))),
                    "log2 (CSets_per_Cache)"))
 
-    items.append (("Bits_per_CSet_Word64_in_Cache",
-                   sel (items, "Bits_per_CSet_in_Cache") + sel (items, "Bits_per_Word64_in_CLine"),
-                   "Bits_per_CSet_in_Cache + Bits_per_Word64_in_CLine"))
+    items.append (("Bits_per_CSet_CWord_in_Cache",
+                   sel (items, "Bits_per_CSet_in_Cache") + sel (items, "Bits_per_CWord_in_CLine"),
+                   "Bits_per_CSet_in_Cache + Bits_per_CWord_in_CLine"))
 
     items.append (("Bits_per_CTag",
                    sel (items, "Bits_per_PA") - (sel (items, "Bits_per_CSet_in_Cache")
@@ -226,29 +237,29 @@ def compute_derived_values (items):
                    int (math.log2 (sel (items, "Ways_per_CSet"))),
                    "log2 (Ways_per_CSet)"))
 
-    items.append (("addr_lo_word64_in_cline",
-                   addr_hi_byte_in_word64 + 1,
-                   "addr_hi_byte_in_word64 + 1"))
+    items.append (("addr_lo_cword_in_cline",
+                   int (math.log2 (sel (items, "Bytes_per_CWord"))),
+                   "log2 (Bytes_per_CWord)"))
 
-    items.append (("addr_hi_word64_in_cline",
-                   sel (items, "addr_lo_word64_in_cline") + sel (items, "Bits_per_Word64_in_CLine") - 1,
-                   "addr_lo_word64_in_cline + Bits_per_Word64_in_CLine - 1"))
+    items.append (("addr_hi_cword_in_cline",
+                   sel (items, "addr_lo_cword_in_cline") + sel (items, "Bits_per_CWord_in_CLine") - 1,
+                   "addr_lo_cword_in_cline + Bits_per_CWord_in_CLine - 1"))
 
     items.append (("addr_lo_cset_in_cache",
-                   sel (items, "addr_hi_word64_in_cline") + 1,
-                   "addr_hi_word64_in_cline + 1"))
+                   sel (items, "addr_hi_cword_in_cline") + 1,
+                   "addr_hi_cword_in_cline + 1"))
 
     items.append (("addr_hi_cset_in_cache",
                    sel (items, "addr_lo_cset_in_cache") + sel (items, "Bits_per_CSet_in_Cache") - 1,
                    "addr_lo_cset_in_cache + Bits_per_CSet_in_Cache - 1"))
 
-    items.append (("addr_lo_cset_word64_in_cache",
-                   addr_hi_byte_in_word64 + 1,
-                   "addr_hi_byte_in_word64 + 1"))
+    items.append (("addr_lo_cset_cword_in_cache",
+                   int (math.log2 (sel (items, "Bytes_per_CWord"))),
+                   "log2 (Bytes_per_CWord)"))
 
-    items.append (("addr_hi_cset_word64_in_cache",
-                   sel (items, "addr_lo_cset_word64_in_cache") + sel (items, "Bits_per_CSet_Word64_in_Cache") - 1,
-                   "addr_lo_cset_word64_in_cache + Bits_per_CSet_Word64_in_Cache - 1"))
+    items.append (("addr_hi_cset_cword_in_cache",
+                   sel (items, "addr_lo_cset_cword_in_cache") + sel (items, "Bits_per_CSet_CWord_in_Cache") - 1,
+                   "addr_lo_cword_set_in_cache + Bits_per_CWord_Set_in_Cache - 1"))
 
     items.append (("addr_lo_ctag",
                    sel (items, "addr_hi_cset_in_cache") + 1,
@@ -275,13 +286,15 @@ def generate_BSV_file (BSV_package_name, items):
                 "// Basic sizes, from which everything else is derived\n" +
                 "\n")
 
-    fout.write ("// Bits_per_PA       = {0:2d}    (= 0x{1:02x})    (bits per physical addr)\n".format (
+    fout.write ("// Bits_per_PA      = {0:3d}    (= 0x{1:02x})    (bits per physical addr)\n".format (
                 sel (items, "Bits_per_PA"), sel (items, "Bits_per_PA")))
-    fout.write ("// KB_per_Cache      = {0:2d}    (= 0x{1:02x})    (cache size)\n".format (
+    fout.write ("// KB_per_Cache     = {0:3d}    (= 0x{1:02x})    (cache size)\n".format (
                 sel (items, "KB_per_Cache"), sel (items, "KB_per_Cache")))
-    fout.write ("// Word64s_per_CLine = {0:2d}    (= 0x{1:02x})    (cache line size in word64s)\n".format (
-                sel (items, "Word64s_per_CLine"), sel (items, "Word64s_per_CLine")))
-    fout.write ("// Ways_per_CSet     = {0:2d}    (= 0x{1:02x})    (associativity)\n".format (
+    fout.write ("// Bits_per_CWord   = {0:3d}    (= 0x{1:02x})    (bits per cache words)\n".format (
+                sel (items, "Bits_per_CWord"), sel (items, "Bits_per_CWord")))
+    fout.write ("// CWords_per_CLine = {0:3d}    (= 0x{1:02x})    (cache line size in cache words)\n".format (
+                sel (items, "CWords_per_CLine"), sel (items, "CWords_per_CLine")))
+    fout.write ("// Ways_per_CSet    = {0:3d}    (= 0x{1:02x})    (associativity)\n".format (
                 sel (items, "Ways_per_CSet"), sel (items, "Ways_per_CSet")))
 
     fout.write ("\n" +
@@ -302,26 +315,29 @@ def generate_BSV_file (BSV_package_name, items):
 
     fout.write ("\n" +
                 "// Local synonyms (for use in this package)\n" +
-                "typedef Bit #(Bits_per_CLine)                     CLine;\n" +
-                "typedef Bit #(Bits_per_CTag)                      CTag;\n" +
-                "typedef Bit #(Bits_per_Byte_in_CLine)             Byte_in_CLine;\n" +
-                "typedef Bit #(Bits_per_Word64_in_CLine)           Word64_in_CLine;\n" +
-                "typedef Bit #(Bits_per_Way_in_CSet)               Way_in_CSet;\n" +
-                "typedef Bit #(Bits_per_CSet_in_Cache)             CSet_in_Cache;\n" +
-                "typedef Bit #(Bits_per_CSet_Word64_in_Cache)      CSet_Word64_in_Cache;\n")
+                "typedef Bit #(Bits_per_CWord)               CWord;\n" +
+                "typedef Bit #(Bits_per_CLine)               CLine;\n" +
+                "typedef Bit #(Bits_per_CTag)                CTag;\n" +
+                "typedef Bit #(Bits_per_Byte_in_CLine)       Byte_in_CLine;\n" +
+                "typedef Bit #(Bits_per_CWord_in_CLine)      CWord_in_CLine;\n" +
+                "typedef Bit #(Bits_per_Way_in_CSet)         Way_in_CSet;\n" +
+                "typedef Bit #(Bits_per_CSet_in_Cache)       CSet_in_Cache;\n" +
+                "typedef Bit #(Bits_per_CSet_CWord_in_Cache) CSet_CWord_in_Cache;\n")
 
     fout.write ("\n" +
                 "// ================================================================\n" +
                 "// Address-decode functions\n")
 
     fout.write ("\n" +
-                "function  Bit #(3)  fn_Addr_to_Byte_in_Word64 (Bit #(n)  addr);\n" +
-                "   return  addr [2:0];\n" +
+                "function  Bit #({:0d})  fn_Addr_to_Byte_in_CWord (Bit #(n)  addr);\n"
+                .format (int (math.log2 (sel (items, "Bytes_per_CWord")))) +
+                "   return  addr [{:0d}:0];\n"
+                .format (int (math.log2 (sel (items, "Bytes_per_CWord"))) - 1) +
                 "endfunction\n")
 
     fout.write ("\n" +
-                "function  Word64_in_CLine  fn_Addr_to_Word64_in_CLine (Bit #(n)  addr);\n" +
-                "   return  addr [addr_hi_word64_in_cline : addr_lo_word64_in_cline ];\n" +
+                "function  CWord_in_CLine  fn_Addr_to_CWord_in_CLine (Bit #(n)  addr);\n" +
+                "   return  addr [addr_hi_cword_in_cline : addr_lo_cword_in_cline ];\n" +
                 "endfunction\n")
 
     fout.write ("\n" +
@@ -330,8 +346,8 @@ def generate_BSV_file (BSV_package_name, items):
                 "endfunction\n")
 
     fout.write ("\n" +
-                "function  CSet_Word64_in_Cache  fn_Addr_to_CSet_Word64_in_Cache (Bit #(n)  addr);\n" +
-                "   return  addr [addr_hi_cset_word64_in_cache : addr_lo_cset_word64_in_cache ];\n" +
+                "function  CSet_CWord_in_Cache  fn_Addr_to_CSet_CWord_in_Cache (Bit #(n)  addr);\n" +
+                "   return  addr [addr_hi_cset_cword_in_cache : addr_lo_cset_cword_in_cache ];\n" +
                 "endfunction\n")
 
     fout.write ("\n" +
@@ -358,10 +374,17 @@ def generate_BSV_file (BSV_package_name, items):
 
 def gen_decls (fout, size_not_val, items):
     fout.write ("\n" +
+                "// Basic ----------------\n" +
+                "\n")
+    gen_decl (fout, size_not_val, "Bits_per_CWord", sel2 (items, "Bits_per_CWord"))
+    gen_decl (fout, size_not_val, "Bytes_per_CWord", sel2 (items, "Bytes_per_CWord"))
+    gen_decl (fout, size_not_val, "Bits_per_Byte_in_CWord", sel2 (items, "Bits_per_Byte_in_CWord"))
+
+    fout.write ("\n" +
                 "// Cache Lines ----------------\n" +
                 "\n")
-    gen_decl (fout, size_not_val, "Word64s_per_CLine", sel2 (items, "Word64s_per_CLine"))
-    gen_decl (fout, size_not_val, "Bits_per_Word64_in_CLine", sel2 (items, "Bits_per_Word64_in_CLine"))
+    gen_decl (fout, size_not_val, "CWords_per_CLine", sel2 (items, "CWords_per_CLine"))
+    gen_decl (fout, size_not_val, "Bits_per_CWord_in_CLine", sel2 (items, "Bits_per_CWord_in_CLine"))
     fout.write ("\n")
     gen_decl (fout, size_not_val, "Bytes_per_CLine",   sel2 (items, "Bytes_per_CLine"))
     gen_decl (fout, size_not_val, "Bits_per_Byte_in_CLine",  sel2 (items, "Bits_per_Byte_in_CLine"))
@@ -379,16 +402,16 @@ def gen_decls (fout, size_not_val, items):
     fout.write ("\n" +
                 "// Cache ----------------\n" +
                 "\n")
-    gen_decl (fout, size_not_val, "KB_per_Cache",                  sel2 (items, "KB_per_Cache"))
-    gen_decl (fout, size_not_val, "Bytes_per_Cache",               sel2 (items, "Bytes_per_Cache"))
-    gen_decl (fout, size_not_val, "Word64s_per_Cache",             sel2 (items, "Word64s_per_Cache"))
-    gen_decl (fout, size_not_val, "CLines_per_Cache",              sel2 (items, "CLines_per_Cache"))
+    gen_decl (fout, size_not_val, "KB_per_Cache",                 sel2 (items, "KB_per_Cache"))
+    gen_decl (fout, size_not_val, "Bytes_per_Cache",              sel2 (items, "Bytes_per_Cache"))
+    gen_decl (fout, size_not_val, "CWords_per_Cache",             sel2 (items, "CWords_per_Cache"))
+    gen_decl (fout, size_not_val, "CLines_per_Cache",             sel2 (items, "CLines_per_Cache"))
     fout.write ("\n")
     gen_decl (fout, size_not_val, "CSets_per_Cache",               sel2 (items, "CSets_per_Cache"))
     gen_decl (fout, size_not_val, "Bits_per_CSet_in_Cache",        sel2 (items, "Bits_per_CSet_in_Cache"))
     fout.write ("\n")
-    gen_decl (fout, size_not_val, "CSet_Word64s_per_Cache",        sel2 (items, "CSet_Word64s_per_Cache"))
-    gen_decl (fout, size_not_val, "Bits_per_CSet_Word64_in_Cache", sel2 (items, "Bits_per_CSet_Word64_in_Cache"))
+    gen_decl (fout, size_not_val, "CSet_CWords_per_Cache",          sel2 (items, "CSet_CWords_per_Cache"))
+    gen_decl (fout, size_not_val, "Bits_per_CSet_CWord_in_Cache",   sel2 (items, "Bits_per_CSet_CWord_in_Cache"))
 
     gen_decl (fout, size_not_val, "Bits_per_CTag",                 sel2 (items, "Bits_per_CTag"))
 
@@ -396,14 +419,14 @@ def gen_decls (fout, size_not_val, items):
         fout.write ("\n" +
                     "// Addrs ----------------\n" +
                     "\n")
-        gen_decl (fout, size_not_val, "addr_lo_word64_in_cline", sel2 (items, "addr_lo_word64_in_cline"))
-        gen_decl (fout, size_not_val, "addr_hi_word64_in_cline", sel2 (items, "addr_hi_word64_in_cline"))
+        gen_decl (fout, size_not_val, "addr_lo_cword_in_cline", sel2 (items, "addr_lo_cword_in_cline"))
+        gen_decl (fout, size_not_val, "addr_hi_cword_in_cline", sel2 (items, "addr_hi_cword_in_cline"))
         fout.write ("\n")
         gen_decl (fout, size_not_val, "addr_lo_cset_in_cache", sel2 (items, "addr_lo_cset_in_cache"))
         gen_decl (fout, size_not_val, "addr_hi_cset_in_cache", sel2 (items, "addr_hi_cset_in_cache"))
         fout.write ("\n")
-        gen_decl (fout, size_not_val, "addr_lo_cset_word64_in_cache", sel2 (items, "addr_lo_cset_word64_in_cache"))
-        gen_decl (fout, size_not_val, "addr_hi_cset_word64_in_cache", sel2 (items, "addr_hi_cset_word64_in_cache"))
+        gen_decl (fout, size_not_val, "addr_lo_cset_cword_in_cache", sel2 (items, "addr_lo_cset_cword_in_cache"))
+        gen_decl (fout, size_not_val, "addr_hi_cset_cword_in_cache", sel2 (items, "addr_hi_cset_cword_in_cache"))
         fout.write ("\n")
         gen_decl (fout, size_not_val, "addr_lo_ctag", sel2 (items, "addr_lo_ctag"))
 

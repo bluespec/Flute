@@ -8,23 +8,30 @@ package Cache_Decls_RV64_4KB_1way;
 // ================================================================
 // Basic sizes, from which everything else is derived
 
-// Bits_per_PA       = 64    (= 0x40)    (bits per physical addr)
-// KB_per_Cache      =  4    (= 0x04)    (cache size)
-// Word64s_per_CLine =  8    (= 0x08)    (cache line size in word64s)
-// Ways_per_CSet     =  1    (= 0x01)    (associativity)
+// Bits_per_PA      =  64    (= 0x40)    (bits per physical addr)
+// KB_per_Cache     =   4    (= 0x04)    (cache size)
+// Bits_per_CWord   =  64    (= 0x40)    (bits per cache words)
+// CWords_per_CLine =   8    (= 0x08)    (cache line size in cache words)
+// Ways_per_CSet    =   1    (= 0x01)    (associativity)
 
 // ================================================================
 // Type decls
 
+// Basic ----------------
+
+typedef        64   Bits_per_CWord;    // (basic)
+typedef         8   Bytes_per_CWord;    // Bits_per_CWord / 8
+typedef         3   Bits_per_Byte_in_CWord;    // log2 (Bytes_per_CWord)
+
 // Cache Lines ----------------
 
-typedef         8   Word64s_per_CLine;    // (basic)
-typedef         3   Bits_per_Word64_in_CLine;    // log2 (Word64s_per_CLine)
+typedef         8   CWords_per_CLine;    // (basic)
+typedef         3   Bits_per_CWord_in_CLine;    // log2 (CWords_per_CLine)
 
-typedef        64   Bytes_per_CLine;    // Word64s_per_CLine * Bytes_per_Word64
+typedef        64   Bytes_per_CLine;    // Bits_per_CLine / 8
 typedef         6   Bits_per_Byte_in_CLine;    // log2 (Bytes_per_CLine)
 
-typedef       512   Bits_per_CLine;    // Bytes_per_CLine * 8
+typedef       512   Bits_per_CLine;    // CWords_per_CLine * Bits_per_CWord
 
 // Cache Sets ----------------
 
@@ -37,28 +44,34 @@ typedef        64   Bytes_per_CSet;    // Ways_per_CSet * Bytes_per_CLine
 
 typedef         4   KB_per_Cache;    // (basic)
 typedef      4096   Bytes_per_Cache;    // KB_per_Cache * 1024
-typedef       512   Word64s_per_Cache;    // Bytes_per_Cache / Bytes_per_Word64
+typedef       512   CWords_per_Cache;    // Bytes_per_Cache / Bytes_per_CWord
 typedef        64   CLines_per_Cache;    // Bytes_per_Cache / Bytes_per_CLine
 
 typedef        64   CSets_per_Cache;    // Bytes_per_Cache / Bytes_per_CSet
 typedef         6   Bits_per_CSet_in_Cache;    // log2 (CSets_per_Cache)
 
-typedef       512   CSet_Word64s_per_Cache;    // CSets_per_Cache * Word64s_per_CLine
-typedef         9   Bits_per_CSet_Word64_in_Cache;    // Bits_per_CSet_in_Cache + Bits_per_Word64_in_CLine
+typedef       512   CSet_CWords_per_Cache;    // CSets_per_Cache * CWords_per_CLine
+typedef         9   Bits_per_CSet_CWord_in_Cache;    // Bits_per_CSet_in_Cache + Bits_per_CWord_in_CLine
 typedef        52   Bits_per_CTag;    // Bits_per_PA - (Bits_per_CSet_in_Cache + Bits_per_Byte_in_CLine)
 
 // ================================================================
 // Integer decls
 
+// Basic ----------------
+
+Integer                bits_per_cword =       64;    // (basic)
+Integer               bytes_per_cword =        8;    // Bits_per_CWord / 8
+Integer        bits_per_byte_in_cword =        3;    // log2 (Bytes_per_CWord)
+
 // Cache Lines ----------------
 
-Integer             word64s_per_cline =        8;    // (basic)
-Integer      bits_per_word64_in_cline =        3;    // log2 (Word64s_per_CLine)
+Integer              cwords_per_cline =        8;    // (basic)
+Integer       bits_per_cword_in_cline =        3;    // log2 (CWords_per_CLine)
 
-Integer               bytes_per_cline =       64;    // Word64s_per_CLine * Bytes_per_Word64
+Integer               bytes_per_cline =       64;    // Bits_per_CLine / 8
 Integer        bits_per_byte_in_cline =        6;    // log2 (Bytes_per_CLine)
 
-Integer                bits_per_cline =      512;    // Bytes_per_CLine * 8
+Integer                bits_per_cline =      512;    // CWords_per_CLine * Bits_per_CWord
 
 // Cache Sets ----------------
 
@@ -71,26 +84,26 @@ Integer                bytes_per_cset =       64;    // Ways_per_CSet * Bytes_pe
 
 Integer                  kb_per_cache =        4;    // (basic)
 Integer               bytes_per_cache =     4096;    // KB_per_Cache * 1024
-Integer             word64s_per_cache =      512;    // Bytes_per_Cache / Bytes_per_Word64
+Integer              cwords_per_cache =      512;    // Bytes_per_Cache / Bytes_per_CWord
 Integer              clines_per_cache =       64;    // Bytes_per_Cache / Bytes_per_CLine
 
 Integer               csets_per_cache =       64;    // Bytes_per_Cache / Bytes_per_CSet
 Integer        bits_per_cset_in_cache =        6;    // log2 (CSets_per_Cache)
 
-Integer        cset_word64s_per_cache =      512;    // CSets_per_Cache * Word64s_per_CLine
-Integer  bits_per_cset_word64_in_cache =        9;    // Bits_per_CSet_in_Cache + Bits_per_Word64_in_CLine
+Integer         cset_cwords_per_cache =      512;    // CSets_per_Cache * CWords_per_CLine
+Integer  bits_per_cset_cword_in_cache =        9;    // Bits_per_CSet_in_Cache + Bits_per_CWord_in_CLine
 Integer                 bits_per_ctag =       52;    // Bits_per_PA - (Bits_per_CSet_in_Cache + Bits_per_Byte_in_CLine)
 
 // Addrs ----------------
 
-Integer       addr_lo_word64_in_cline =        3;    // addr_hi_byte_in_word64 + 1
-Integer       addr_hi_word64_in_cline =        5;    // addr_lo_word64_in_cline + Bits_per_Word64_in_CLine - 1
+Integer        addr_lo_cword_in_cline =        3;    // log2 (Bytes_per_CWord)
+Integer        addr_hi_cword_in_cline =        5;    // addr_lo_cword_in_cline + Bits_per_CWord_in_CLine - 1
 
-Integer         addr_lo_cset_in_cache =        6;    // addr_hi_word64_in_cline + 1
+Integer         addr_lo_cset_in_cache =        6;    // addr_hi_cword_in_cline + 1
 Integer         addr_hi_cset_in_cache =       11;    // addr_lo_cset_in_cache + Bits_per_CSet_in_Cache - 1
 
-Integer  addr_lo_cset_word64_in_cache =        3;    // addr_hi_byte_in_word64 + 1
-Integer  addr_hi_cset_word64_in_cache =       11;    // addr_lo_cset_word64_in_cache + Bits_per_CSet_Word64_in_Cache - 1
+Integer   addr_lo_cset_cword_in_cache =        3;    // log2 (Bytes_per_CWord)
+Integer   addr_hi_cset_cword_in_cache =       11;    // addr_lo_cword_set_in_cache + Bits_per_CWord_Set_in_Cache - 1
 
 Integer                  addr_lo_ctag =       12;    // addr_hi_cset_in_cache + 1
 
@@ -98,31 +111,32 @@ Integer                  addr_lo_ctag =       12;    // addr_hi_cset_in_cache + 
 // Addresses and address-fields
 
 // Local synonyms (for use in this package)
-typedef Bit #(Bits_per_CLine)                     CLine;
-typedef Bit #(Bits_per_CTag)                      CTag;
-typedef Bit #(Bits_per_Byte_in_CLine)             Byte_in_CLine;
-typedef Bit #(Bits_per_Word64_in_CLine)           Word64_in_CLine;
-typedef Bit #(Bits_per_Way_in_CSet)               Way_in_CSet;
-typedef Bit #(Bits_per_CSet_in_Cache)             CSet_in_Cache;
-typedef Bit #(Bits_per_CSet_Word64_in_Cache)      CSet_Word64_in_Cache;
+typedef Bit #(Bits_per_CWord)               CWord;
+typedef Bit #(Bits_per_CLine)               CLine;
+typedef Bit #(Bits_per_CTag)                CTag;
+typedef Bit #(Bits_per_Byte_in_CLine)       Byte_in_CLine;
+typedef Bit #(Bits_per_CWord_in_CLine)      CWord_in_CLine;
+typedef Bit #(Bits_per_Way_in_CSet)         Way_in_CSet;
+typedef Bit #(Bits_per_CSet_in_Cache)       CSet_in_Cache;
+typedef Bit #(Bits_per_CSet_CWord_in_Cache) CSet_CWord_in_Cache;
 
 // ================================================================
 // Address-decode functions
 
-function  Bit #(3)  fn_Addr_to_Byte_in_Word64 (Bit #(n)  addr);
+function  Bit #(3)  fn_Addr_to_Byte_in_CWord (Bit #(n)  addr);
    return  addr [2:0];
 endfunction
 
-function  Word64_in_CLine  fn_Addr_to_Word64_in_CLine (Bit #(n)  addr);
-   return  addr [addr_hi_word64_in_cline : addr_lo_word64_in_cline ];
+function  CWord_in_CLine  fn_Addr_to_CWord_in_CLine (Bit #(n)  addr);
+   return  addr [addr_hi_cword_in_cline : addr_lo_cword_in_cline ];
 endfunction
 
 function  CSet_in_Cache  fn_Addr_to_CSet_in_Cache (Bit #(n)  addr);
    return  addr [addr_hi_cset_in_cache : addr_lo_cset_in_cache ];
 endfunction
 
-function  CSet_Word64_in_Cache  fn_Addr_to_CSet_Word64_in_Cache (Bit #(n)  addr);
-   return  addr [addr_hi_cset_word64_in_cache : addr_lo_cset_word64_in_cache ];
+function  CSet_CWord_in_Cache  fn_Addr_to_CSet_CWord_in_Cache (Bit #(n)  addr);
+   return  addr [addr_hi_cset_cword_in_cache : addr_lo_cset_cword_in_cache ];
 endfunction
 
 function  CTag  fn_PA_to_CTag (Bit #(n)  pa);
