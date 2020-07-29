@@ -376,77 +376,76 @@ module mkI_MMU_Cache (I_MMU_Cache_IFC);
 	 crg_exc_code [0]            <= vm_xlate_result.exc_code;
 	 crg_mmu_cache_req_state [0] <= REQ_STATE_EMPTY;
       end
+`endif
 
       // ---- TLB success
-      else
-`endif
-	 begin
-	    dynamicAssert ((vm_xlate_result.outcome == VM_XLATE_OK), "FAIL: unknown vm_xlate result");
+      else begin
+	 dynamicAssert ((vm_xlate_result.outcome == VM_XLATE_OK), "FAIL: unknown vm_xlate result");
 
 `ifdef ISA_PRIV_S
-	    // If PTE A, D bits modified ...
-	    if (vm_xlate_result.pte_modified) begin
-	       // Update the TLB
-	       ASID asid = fn_satp_to_ASID (mmu_cache_req.satp);
-	       VPN  vpn  = fn_Addr_to_VPN  (mmu_cache_req.va);
-	       tlb.ma_insert (asid,
-			      vpn,
-			      vm_xlate_result.pte,
-			      vm_xlate_result.pte_level,
-			      vm_xlate_result.pte_pa);
-	       // Writeback the modified PTE to memory	
-	       // Enqueue it to be written back to memory
-	       f_imem_pte_writebacks.enq (tuple2 (vm_xlate_result.pte_pa, vm_xlate_result.pte));
-	       if (verbosity >= 3)
-		  $display ("    Writeback updated PTE: pa %0h pte %0h",
-			    vm_xlate_result.pte_pa,
-			    vm_xlate_result.pte);
-	    end
+	 // If PTE A, D bits modified ...
+	 if (vm_xlate_result.pte_modified) begin
+	    // Update the TLB
+	    ASID asid = fn_satp_to_ASID (mmu_cache_req.satp);
+	    VPN  vpn  = fn_Addr_to_VPN  (mmu_cache_req.va);
+	    tlb.ma_insert (asid,
+			   vpn,
+			   vm_xlate_result.pte,
+			   vm_xlate_result.pte_level,
+			   vm_xlate_result.pte_pa);
+	    // Writeback the modified PTE to memory
+	    // Enqueue it to be written back to memory
+	    f_imem_pte_writebacks.enq (tuple2 (vm_xlate_result.pte_pa, vm_xlate_result.pte));
+	    if (verbosity >= 3)
+	       $display ("    Writeback updated PTE: pa %0h pte %0h",
+			 vm_xlate_result.pte_pa,
+			 vm_xlate_result.pte);
+	 end
 `endif
-	    // Triage cached (memory) vs. uncached (IO, other non-mem) addresses
-	    let is_mem_addr = soc_map.m_is_mem_addr (fv_PA_to_Fabric_Addr (vm_xlate_result.pa));
+	 // Triage cached (memory) vs. uncached (IO, other non-mem) addresses
+	 let is_mem_addr = soc_map.m_is_mem_addr (fv_PA_to_Fabric_Addr (vm_xlate_result.pa));
 
-	    // Address is for memory (cacheable)
-	    if (is_mem_addr) begin
-	       // Cache operation (lookup)
-	       let cache_result <- cache.mav_request_pa (mmu_cache_req, vm_xlate_result.pa);
+	 // Address is for memory (cacheable)
+	 if (is_mem_addr) begin
+	    // Cache operation (lookup)
+	    let cache_result <- cache.mav_request_pa (mmu_cache_req, vm_xlate_result.pa);
 
-	       if (cache_result.outcome == CACHE_MISS) begin
-		  crg_valid [0] <= False;
-		  crg_state [0] <= STATE_MAIN_CACHE_WAIT;
-		  if (verbosity >= 3)
-		     $display ("    Cache Miss: waiting for refill -> STATE_MAIN_CACHE_WAIT");
-	       end
-	       else begin    // Cache hit
-		  crg_exc [0]          <= False;
-		  crg_ld_val [0]       <= cache_result.final_ld_val;
-
-		  if (cache_result.outcome == CACHE_READ_HIT) begin
-		     // Consume request and drive response immediately
-		     crg_valid [0]               <= True;
-		     crg_mmu_cache_req_state [0] <= REQ_STATE_EMPTY;
-		     if (verbosity >= 3)
-			$display ("    Cache Read-hit: final_ld_val %0h; remain in STATE_MAIN",
-				  cache_result.final_ld_val);
-		  end
-		  else if (cache_result.outcome == CACHE_WRITE_HIT) begin
-		     $display ("%0d: %m.rl_CPU_req_B", cur_cycle);
-		     $display ("    INTERNAL ERROR: Impossible CACHE_WRITE_HIT in IMem", cur_cycle);
-		     $display ("    ", cur_cycle, fshow_MMU_Cache_Req (mmu_cache_req));
-		     $finish (1);
-		  end
-	       end
-	    end
-
-	    // Address is for non-memory (I/O, non-cacheable)
-	    else begin
+	    if (cache_result.outcome == CACHE_MISS) begin
 	       crg_valid [0] <= False;
-	       mmio.start (vm_xlate_result.pa);
-	       crg_state [0] <= STATE_MAIN_MMIO_WAIT;
+	       crg_state [0] <= STATE_MAIN_CACHE_WAIT;
 	       if (verbosity >= 3)
-		  $display ("    MMIO started; -> STATE_MAIN_MMIO_WAIT");
+		  $display ("    Cache Miss: waiting for refill -> STATE_MAIN_CACHE_WAIT");
+	    end
+	    else begin    // Cache hit
+	       crg_exc [0]          <= False;
+	       crg_ld_val [0]       <= cache_result.final_ld_val;
+
+	       if (cache_result.outcome == CACHE_READ_HIT) begin
+		  // Consume request and drive response immediately
+		  crg_valid [0]               <= True;
+		  crg_mmu_cache_req_state [0] <= REQ_STATE_EMPTY;
+		  if (verbosity >= 3)
+		     $display ("    Cache Read-hit: final_ld_val %0h; remain in STATE_MAIN",
+			       cache_result.final_ld_val);
+	       end
+	       else if (cache_result.outcome == CACHE_WRITE_HIT) begin
+		  $display ("%0d: %m.rl_CPU_req_B", cur_cycle);
+		  $display ("    INTERNAL ERROR: Impossible CACHE_WRITE_HIT in IMem", cur_cycle);
+		  $display ("    ", cur_cycle, fshow_MMU_Cache_Req (mmu_cache_req));
+		  $finish (1);
+	       end
 	    end
 	 end
+
+	 // Address is for non-memory (I/O, non-cacheable)
+	 else begin
+	    crg_valid [0] <= False;
+	    mmio.start (vm_xlate_result.pa);
+	    crg_state [0] <= STATE_MAIN_MMIO_WAIT;
+	    if (verbosity >= 3)
+	       $display ("    MMIO started; -> STATE_MAIN_MMIO_WAIT");
+	 end
+      end
    endrule: rl_CPU_req_B
 
    // ================================================================

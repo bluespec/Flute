@@ -600,7 +600,7 @@ module mkCache #(parameter Bool      dcache_not_icache,
 	    $display (": evict->INVALID (no writeback, notify downgrade to L2)");
 	    $display ("    -> REFILL_START");
 	 end
-	 let msg = L1_to_L2_Rsp {addr:     victim_cline_pa,
+	 let msg = L1_to_L2_Rsp {addr:     zeroExtend (victim_cline_pa),
 				 to_state: META_INVALID,
 				 m_cline:  tagged Invalid};
 	 f_L1_to_L2_rsps.enq (msg);
@@ -925,7 +925,7 @@ module mkCache #(parameter Bool      dcache_not_icache,
       end
 
       // Probe RAMs
-      fa_req_rams_A (l2_to_l1_req.addr);
+      fa_req_rams_A (truncate (l2_to_l1_req.addr));
       rg_fsm_state <= FSM_DOWNGRADE_B;
    endrule: rl_downgrade_req_from_L2_A
 
@@ -938,12 +938,13 @@ module mkCache #(parameter Bool      dcache_not_icache,
 
       let l2_to_l1_req <- pop (f_L2_to_L1_reqs);
       let addr          = l2_to_l1_req.addr;
+      PA  pa            = truncate (addr);
       let cset_in_cache = fn_Addr_to_CSet_in_Cache (addr);
 
       if (verbosity >= 1)
 	 $write ("    ", fshow_cset_meta (cset_in_cache, ram_A_cset_meta));
 
-      let valid_info = fv_ram_A_valid_info (addr);
+      let valid_info = fv_ram_A_valid_info (truncate (addr));
       if (verbosity >= 1)
 	 $display ("    valid_info = ", fshow (valid_info));
 
@@ -965,7 +966,7 @@ module mkCache #(parameter Bool      dcache_not_icache,
       // Update meta to <to_state>
       let new_ram_A_cset_meta = ram_A_cset_meta;
       new_ram_A_cset_meta [valid_info.way] = Meta {state: l2_to_l1_req.to_state,
-						   ctag:  fn_PA_to_CTag (addr)};
+						   ctag:  fn_PA_to_CTag (pa)};
       ram_cset_meta.b.put (bram_cmd_write, cset_in_cache, new_ram_A_cset_meta);
       if (verbosity >= 1)
 	 $display ("    Update meta state to ", fshow (l2_to_l1_req.to_state));
@@ -983,7 +984,7 @@ module mkCache #(parameter Bool      dcache_not_icache,
       else begin
 	 // Victim was MODIFIED: writeback and done
 	 //    (writeback will send L1_to_L2_Rsp with the cache line)
-	 fa_cache_writeback_loop_prequel (fn_PA_to_CTag (addr),
+	 fa_cache_writeback_loop_prequel (fn_PA_to_CTag (pa),
 					  cset_in_cache,
 					  valid_info.way,
 					  l2_to_l1_req.to_state,
@@ -1193,7 +1194,8 @@ module mkCache #(parameter Bool      dcache_not_icache,
 `endif
 			       );
 	    if (upgrade) begin
-	       f_L1_to_L2_reqs.enq (L1_to_L2_Req {addr:        fn_align_Addr_to_CLine (pa),
+	       let cline_addr = zeroExtend (fn_align_Addr_to_CLine (pa));
+	       f_L1_to_L2_reqs.enq (L1_to_L2_Req {addr:        cline_addr,
 						  from_state:  META_SHARED,
 						  to_state:    META_EXCLUSIVE,
 						  can_up_to_E: dcache_not_icache});
