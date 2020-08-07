@@ -44,6 +44,16 @@ import AXI4_Lite_Types :: *;
 `endif
 
 // ================================================================
+// Near-Mem parameters (statically defined)
+
+// Id of requestor for 'coherent DMA' port into (optional) L2 cache
+
+typedef 6    Wd_Id_Dma;
+typedef 64   Wd_Addr_Dma;
+typedef 512  Wd_Data_Dma;
+typedef 0    Wd_User_Dma;
+
+// ================================================================
 
 interface Near_Mem_IFC;
    // Reset
@@ -84,6 +94,11 @@ interface Near_Mem_IFC;
 `ifdef ISA_PRIV_S
    interface Server #(Token, Token) sfence_vma_server;
 `endif
+
+   // ----------------------------------------------------------------
+   // Interface to 'coherent DMA' port of optional L2 cache
+
+   interface AXI4_Slave_IFC #(Wd_Id_Dma, Wd_Addr_Dma, Wd_Data_Dma, Wd_User_Dma)  dma_server;
 
    // ----------------------------------------------------------------
    // For ISA tests: watch memory writes to <tohost> addr

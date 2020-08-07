@@ -138,7 +138,7 @@ module mkMMIO #(parameter Bit #(3)  verbosity)
 
       // Successful read
       else begin
-	 Bit #(64) ld_val_bits = fv_from_byte_lanes (zeroExtend (rg_pa), rg_req.f3 [1:0], rsp.data);
+	 Bit #(64) ld_val_bits = rsp.data;
 
 	 // Loads and LR
 	 if ((rg_req.op == CACHE_LD) || fv_is_AMO_LR (rg_req)) begin
@@ -175,7 +175,7 @@ module mkMMIO #(parameter Bit #(3)  verbosity)
    // Store requests
 
    rule rl_write_req ((rg_fsm_state == FSM_START) && (rg_req.op == CACHE_ST));
-      if (verbosity >= 2)
+      if (verbosity >= 1)
 	 $display ("%0d: %m.rl_write_req; f3 %0h  vaddr %0h  paddr %0h  word64 %0h",
 		   cur_cycle, rg_req.f3, rg_req.va, rg_pa, rg_req.st_value);
 
@@ -186,7 +186,7 @@ module mkMMIO #(parameter Bit #(3)  verbosity)
       rg_final_st_val <= rg_req.st_value;
       rg_fsm_state    <= FSM_IDLE;
 
-      if (verbosity >= 3)
+      if (verbosity >= 2)
 	 $display ("    goto MMIO_DONE");
    endrule
 

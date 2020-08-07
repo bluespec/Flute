@@ -15,6 +15,7 @@ import ISA_Decls       :: *;
 
 import AXI4_Types  :: *;
 import Fabric_Defs :: *;
+import Near_Mem_IFC :: *;    // For Wd_Id/Addr/Data/User_Dma
 
 `ifdef INCLUDE_DMEM_SLAVE
 import AXI4_Lite_Types :: *;
@@ -52,6 +53,12 @@ interface CPU_IFC;
 `endif
 
    // ----------------
+   // Interface to 'coherent DMA' port of optional L2 cache
+
+   interface AXI4_Slave_IFC #(Wd_Id_Dma, Wd_Addr_Dma, Wd_Data_Dma, Wd_User_Dma)  dma_server;
+
+   // ----------------------------------------------------------------
+
    // External interrupts
 
    (* always_ready, always_enabled *)

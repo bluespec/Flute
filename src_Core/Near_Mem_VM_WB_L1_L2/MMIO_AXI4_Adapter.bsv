@@ -219,15 +219,17 @@ module mkMMIO_AXI4_Adapter #(parameter Bit #(3) verbosity)
 	 // Adjust alignment of B,H,W data
 	 // addr [1:0] is non-zero only for B, H, W (so, single-beat, so data is in [31:0])
 	 if (rd_arsize != axsize_8) begin
+	    Bit #(6) shamt_bits = ?;
 	    if (valueOf (Wd_Data) == 32)
-	       word64 = (word64 >> rd_addr_lsbs [1:0]);
+	       shamt_bits = { 1'b0, rd_addr_lsbs [1:0], 3'b000 };
 	    else if (valueOf (Wd_Data) == 64)
-	       word64 = (word64 >> rd_addr_lsbs [2:0]);
+	       shamt_bits = { rd_addr_lsbs [2:0], 3'b000 };
 	    else begin
 	       $display ("%0d: INTERNAL ERROR: %m.rl_rd_data", cur_cycle);
 	       $display ("    Unsupported fabric width %0d", valueOf (Wd_Data));
 	       $finish (1);
 	    end
+	    word64 = (word64 >> shamt_bits);
 	 end
 	 let rsp = Single_Rsp {ok: ok, data: word64};
 	 v_f_rsps [rd_client_id].enq (rsp);
@@ -314,6 +316,7 @@ module mkMMIO_AXI4_Adapter #(parameter Bit #(3) verbosity)
 					     awregion: fabric_default_region,
 					     awuser:   fabric_default_user};
 	 master_xactor.i_wr_addr.enq (mem_req_wr_addr);
+	 rg_wr_rsps_pending <= rg_wr_rsps_pending + 1;
 
 	 // Debugging
 	 if (verbosity >= 1) begin

@@ -1,8 +1,7 @@
 // Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved.
 
-// Near_Mem_IFC is an abstraction of two alternatives: caches or TCM
-// (TCM = Tightly Coupled Memory).  Both are memories that are
-// 'near' the CPU (1-cycle access in common case).
+// Near_Mem_IFC is an abstraction the 'near' memory subsystem (TCMs
+// (Tightly Coupled Memories), MMUs, L1 Caches, L2 caches, etc.
 
 // On the CPU side it directly services instruction fetches and DMem
 // reads and writes.
@@ -14,8 +13,9 @@
 // address range of Near_Mem.  There are two Client interfaces to
 // accommodate IMem and DMem requests concurrently.
 
-// This implementation of Near_Mem contains an IMem (MMU+Cache) and a DMem (MMU+Cache)
-//        Fabric-side Server interface is not used (no back door to caches).
+// This implementation of Near_Mem contains an IMem (MMU+L1-Cache) and
+// a DMem (MMU+L1-Cache) and a unified L2 cache, with coherent L1s and
+// L2.
 
 package Near_Mem_Caches;
 
@@ -43,6 +43,13 @@ import ISA_Decls        :: *;
 import Near_Mem_IFC     :: *;
 import Cache_Decls      :: *;
 import MMU_Cache_Common :: *;
+import CPU_IFC          :: *;    // For Wd_Id/Addr/User/Data_Dma
+
+import AXI4_Types   :: *;
+import Fabric_Defs  :: *;
+
+// System address map and pc_reset value
+import SoC_Map :: *;
 
 `ifdef ISA_PRIV_S
 import PTW :: *;
@@ -51,20 +58,15 @@ import PTW :: *;
 import D_MMU_Cache :: *;
 import I_MMU_Cache :: *;
 
-import LLCache_Aux :: *;
-import CacheUtils  :: *;
-import CCTypes     :: *;
-import LLCache     :: *;
-import L1LLConnect :: *;
+import LLCache_Aux   :: *;
+import CacheUtils    :: *;
+import CCTypes       :: *;
+import LLCache       :: *;
+import L1LLConnect   :: *;
 
-import LLC_AXI4_Adapter  :: *;
-import MMIO_AXI4_Adapter :: *;
-
-import AXI4_Types   :: *;
-import Fabric_Defs  :: *;
-
-// System address map and pc_reset value
-import SoC_Map :: *;
+import LLC_AXI4_Adapter     :: *;
+import MMIO_AXI4_Adapter    :: *;
+import LLC_DMA_AXI4_Adapter :: *;
 
 // ================================================================
 // Exports
@@ -77,6 +79,7 @@ export mkNear_Mem;
 // 0-1: quiet; 2 show L1-to-L2 and L2-to-L1 messages
 Integer verbosity_L1_L2             = 0;
 
+// 0=quiet, 1 = rule firings
 Integer verbosity_mmio_axi4_adapter = 0;
 
 // ================================================================
@@ -228,6 +231,12 @@ module mkNear_Mem (Near_Mem_IFC);
    // last level cache
    LLCache llc <- mkLLCache;
 
+   // Adapter for llc's 'coherent DMA interface'
+   AXI4_Slave_IFC #(Wd_Id_Dma,
+		    Wd_Addr_Dma,
+		    Wd_Data_Dma,
+		    Wd_User_Dma)  llc_dma_axi4_adapter <- mkLLC_DMA_AXI4_Adapter (llc.dma);
+
    // Adapter for back-side of LLC to AXI4
    LLC_AXI4_Adapter_IFC  llc_axi4_adapter <- mkLLC_AXi4_Adapter (llc.to_mem);
 
@@ -300,10 +309,10 @@ module mkNear_Mem (Near_Mem_IFC);
       endinterface
    endinterface
 
-   // ----------------
-   // IMem
+   // ----------------------------------------------------------------
+   // CPU side interfaces
 
-   // CPU side
+   // IMem
    interface IMem_IFC imem;
       // CPU side: IMem request
       method Action  req (Bit #(3) f3,
@@ -326,10 +335,7 @@ module mkNear_Mem (Near_Mem_IFC);
       method WordXL   tval           = i_mmu_cache.addr;
    endinterface
 
-   // ----------------
    // DMem
-
-   // CPU side
    interface DMem_IFC dmem;
       // CPU side: DMem request
       method Action  req (CacheOp op,
@@ -359,9 +365,7 @@ module mkNear_Mem (Near_Mem_IFC);
       method Exc_Code   exc_code   = d_mmu_cache.exc_code;
    endinterface
 
-   // ----------------
-   // FENCE.I: flush both IMem and DMem
-
+   // FENCE.I (potentially flush both IMem and DMem)
    interface Server server_fence_i;
       interface Put request;
 	 method Action put (Token t);
@@ -378,9 +382,7 @@ module mkNear_Mem (Near_Mem_IFC);
       endinterface
    endinterface
 
-   // ----------------
-   // FENCE: flush DMem
-
+   // FENCE (potentially flush DMem)
    interface Server server_fence;
       interface Put request;
 	 method Action put (Fence_Ordering t);
@@ -395,10 +397,8 @@ module mkNear_Mem (Near_Mem_IFC);
       endinterface
    endinterface
 
-   // ----------------
-   // SFENCE_VMA: flush TLBs and DMem
-
 `ifdef ISA_PRIV_S
+   // SFENCE_VMA (potentially flush TLBs and DMem)
    interface Server sfence_vma_server;
       interface Put request;
 	 method Action put (Token t);
@@ -415,14 +415,15 @@ module mkNear_Mem (Near_Mem_IFC);
 `endif
 
    // ----------------------------------------------------------------
-   // Fabric master interface for memory (from LLC)
+   // Fabric side
 
+   interface imem_master = mmio_axi4_adapter.mem_master;
    interface dmem_master = llc_axi4_adapter.mem_master;
 
    // ----------------------------------------------------------------
-   // Fabric master interface for MMIO
+   // Interface to 'coherent DMA' port of optional L2 cache
 
-   interface imem_master = mmio_axi4_adapter.mem_master;    // TODO
+   interface dma_server = llc_dma_axi4_adapter;
 
    // ----------------------------------------------------------------
    // For ISA tests: watch memory writes to <tohost> addr

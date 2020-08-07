@@ -189,10 +189,10 @@ endfunction
 module mkI_MMU_Cache (I_MMU_Cache_IFC);
 
    // For debugging
-   Integer verbosity       = 0;    // 0: quiet; 1: Requests and responses; 2: rules; 3: detail
-   Integer verbosity_tlb   = 0;    // 0: quiet; 2: rules; 3: detail
-   Integer verbosity_cache = 0;    // 0: quiet; 1 rules; 2: more detail
-   Integer verbosity_mmio  = 0;
+   Integer verbosity       = 0;    // 1: Requests and responses; 2: rules; 3: detail
+   Integer verbosity_tlb   = 0;    // 2: rules; 3: detail
+   Integer verbosity_cache = 0;    // 1 rules; 2: more detail
+   Integer verbosity_mmio  = 0;    // 1: rules
 
    // ----------------------------------------------------------------
    // Major sub-modules

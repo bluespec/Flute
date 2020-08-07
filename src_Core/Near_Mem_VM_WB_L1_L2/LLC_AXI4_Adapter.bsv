@@ -1,4 +1,10 @@
+// Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved.
+
 package LLC_AXI4_Adapter;
+
+// ================================================================
+// This adapter converts the mem-side interface of the LLC to an AXI4
+// interface.
 
 // ================================================================
 // BSV lib imports

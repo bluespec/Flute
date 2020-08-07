@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved.
 
 package SoC_Top;
 
@@ -46,9 +46,10 @@ import SoC_Fabric  :: *;
 
 // SoC components (CPU, mem, and IPs)
 
-import Core_IFC :: *;
-import Core     :: *;
-import PLIC     :: *;    // For interface to PLIC interrupt sources, in Core_IFC
+import Near_Mem_IFC :: *;    // For Wd_{Id,Addr,Data,User}_Dma
+import Core_IFC     :: *;
+import Core         :: *;
+import PLIC         :: *;    // For interface to PLIC interrupt sources, in Core_IFC
 
 import Boot_ROM       :: *;
 import Mem_Controller :: *;
@@ -166,6 +167,11 @@ module mkSoC_Top (SoC_Top_IFC);
 
    // CPU DMem master to fabric
    mkConnection (core.cpu_dmem_master,  fabric.v_from_masters [dmem_master_num]);
+
+   // Tie-off unused 'coherent DMA port' into optional L2 cache (LLC, Last Level Cache)
+   AXI4_Master_IFC #(Wd_Id_Dma, Wd_Addr_Dma, Wd_Data_Dma, Wd_User_Dma)
+                   dummy_master = dummy_AXI4_Master_ifc;
+   mkConnection (dummy_master, core.dma_server);
 
 `ifdef INCLUDE_ACCEL0
    // accel_aes0 to fabric

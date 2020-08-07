@@ -54,6 +54,7 @@ import CPU               :: *;
 
 import Fabric_2x3        :: *;
 
+import Near_Mem_IFC      :: *;    // For Wd_{Id,Addr,Data,User}_Dma
 import Near_Mem_IO_AXI4  :: *;
 import PLIC              :: *;
 import PLIC_16_2_7       :: *;
@@ -374,6 +375,11 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
 `ifdef INCLUDE_DMEM_SLAVE
    interface AXI4_Lite_Slave_IFC  cpu_dmem_slave = cpu.dmem_slave;
 `endif
+
+   // ----------------------------------------------------------------
+   // Interface to 'coherent DMA' port of optional L2 cache
+
+   interface AXI4_Slave_IFC  dma_server = cpu.dma_server;
 
    // ----------------------------------------------------------------
    // External interrupt sources

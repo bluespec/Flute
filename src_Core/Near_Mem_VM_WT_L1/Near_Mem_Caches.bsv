@@ -266,6 +266,22 @@ module mkNear_Mem (Near_Mem_IFC);
 `ifdef ISA_PRIV_S
    interface Server sfence_vma_server = toGPServer (f_sfence_vma_reqs, f_sfence_vma_rsps);
 `endif
+
+   // ----------------------------------------------------------------
+   // Interface to 'coherent DMA' port of optional L2 cache
+   // Tied off: no L2 cache in WT_L1
+
+   interface AXI4_Slave_IFC dma_server = dummy_AXI4_Slave_ifc;
+
+   // ----------------------------------------------------------------
+   // For ISA tests: watch memory writes to <tohost> addr
+
+`ifdef WATCH_TOHOST
+   method Action set_watch_tohost (Bool watch_tohost, Bit #(64) tohost_addr);
+      noAction;
+   endmethod
+`endif
+
 endmodule
 
 // ================================================================

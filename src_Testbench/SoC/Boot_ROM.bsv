@@ -120,7 +120,7 @@ module mkBoot_ROM (Boot_ROM_IFC);
 	 if (valueOf (Wd_Data) == 64)
 	    data64 = { d1, 0 };
       end
-	 
+
       Bit #(Wd_Data) rdata  = truncate (data64);
       let rdr = AXI4_Rd_Data {rid:   rda.arid,
 			      rdata: rdata,

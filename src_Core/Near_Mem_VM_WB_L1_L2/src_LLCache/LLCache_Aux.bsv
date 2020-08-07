@@ -10,39 +10,17 @@ package LLCache_Aux;
 
 `include "ProcConfig.bsv"
 
+// ----------------
+// From RISCY-OOO
+
 import Types::*;
 import ProcTypes::*;
 import CCTypes::*;
 
-// ================================================================
-// From TlbTypes.bsv
+// ----------------
+// From Piccolo/Flute
 
-typedef `L2TLB_REQ_NUM L2TlbReqNum;
-typedef Bit#(TLog#(L2TlbReqNum)) L2TlbReqIdx;
-
-// ================================================================
-// From L2Tlb.bsv
-
-typedef L2TlbReqIdx TlbMemReqId;
-
-// ================================================================
-// From MemLoader.bsv
-
-typedef void MemLoaderMemReqId;
-
-// ================================================================
-// From LLCDmaConnect.bsv
-
-typedef struct {
-    CoreId core;
-    TlbMemReqId id;
-    LineDataOffset dataSel;
-} TlbDmaReqId deriving(Bits, Eq, FShow);
-
-typedef union tagged {
-    MemLoaderMemReqId MemLoader;
-    TlbDmaReqId Tlb;
-} LLCDmaReqId deriving(Bits, Eq, FShow);
+import Near_Mem_IFC :: *;    // For Wd_Id_Dma
 
 // ================================================================
 // From L1CoCache.bsv
@@ -50,6 +28,12 @@ typedef union tagged {
 typedef TMul#(CoreNum, 2) L1Num;
 typedef `LOG_L1_WAYS LgL1WayNum;
 typedef Bit#(LgL1WayNum) L1Way;
+
+// ================================================================
+// Id for LLC's coherent cache port
+// This is simply the AXI4 awid/arid
+
+typedef Bit #(Wd_Id_Dma) LLCDmaReqId;
 
 // ================================================================
 
