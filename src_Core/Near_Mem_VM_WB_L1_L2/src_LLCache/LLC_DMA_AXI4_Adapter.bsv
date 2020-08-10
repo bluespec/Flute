@@ -52,6 +52,7 @@ module mkLLC_DMA_AXI4_Adapter #(DmaServer#(LLCDmaReqId) llc)
 						Wd_Data_Dma,
 						Wd_User_Dma));
 
+   // 0: quiet    1: rules
    Integer verbosity = 0;
 
    // Slave transactor for requests from external DMA
@@ -73,8 +74,9 @@ module mkLLC_DMA_AXI4_Adapter #(DmaServer#(LLCDmaReqId) llc)
 					id:     wr_addr.awid};
       llc.memReq.enq (req);
       if(verbosity >= 1) begin
-         $display("%0d: %m.rl_wr_req", cur_cycle);
-         $display("    ", fshow(req));
+         $display("%0d: %m.mkLLC_DMA_AXI4_Adapter.rl_wr_req", cur_cycle);
+	 $display("    ", fshow (wr_addr));
+	 $display("    ", fshow (wr_data));
       end
    endrule
 
@@ -90,7 +92,7 @@ module mkLLC_DMA_AXI4_Adapter #(DmaServer#(LLCDmaReqId) llc)
       axi4_slave_xactor.i_wr_resp.enq (wr_resp);
 
       if(verbosity >= 1) begin
-         $display("%0d: %m.rl_wr_rsp", cur_cycle);
+         $display("%0d: %m.mkLLC_DMA_AXI4_Adapter.rl_wr_rsp", cur_cycle);
          $display("    ", fshow(wr_resp));
       end
    endrule
@@ -104,8 +106,8 @@ module mkLLC_DMA_AXI4_Adapter #(DmaServer#(LLCDmaReqId) llc)
 					 id:     rd_addr.arid};
       llc.memReq.enq (req);
       if(verbosity >= 1) begin
-         $display("%0d: %m.rl_rd_req", cur_cycle);
-         $display("    ", fshow(req));
+         $display("%0d: %m.mkLLC_DMA_AXI4_Adapter.rl_rd_req", cur_cycle);
+         $display("    ", fshow(rd_addr));
       end
    endrule
 
@@ -123,7 +125,7 @@ module mkLLC_DMA_AXI4_Adapter #(DmaServer#(LLCDmaReqId) llc)
       axi4_slave_xactor.i_rd_data.enq (rd_data);
 
       if(verbosity >= 1) begin
-         $display("%0d: %m.rl_rd_rsp", cur_cycle);
+         $display("%0d: %m.mkLLC_DMA_AXI4_Adapter.rl_rd_rsp", cur_cycle);
          $display("    ", fshow(rd_data));
       end
    endrule

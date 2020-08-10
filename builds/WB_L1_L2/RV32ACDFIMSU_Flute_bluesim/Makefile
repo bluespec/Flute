@@ -14,6 +14,8 @@ ARCH ?= RV32ACDFIMSU
 
 CACHES=WB_L1_L2
 
+SRC_CORE ?= $(REPO)/src_Core/Core_v2
+
 # ================================================================
 # RISC-V config macros passed into Bluespec 'bsc' compiler
 

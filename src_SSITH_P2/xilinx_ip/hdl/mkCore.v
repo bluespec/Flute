@@ -6,7 +6,6 @@
 //
 // Ports:
 // Name                         I/O  size props
-// RDY_set_verbosity              O     1 const
 // RDY_cpu_reset_server_request_put  O     1 reg
 // cpu_reset_server_response_get  O     1 reg
 // RDY_cpu_reset_server_response_get  O     1 reg
@@ -38,34 +37,45 @@
 // cpu_imem_master_arqos          O     4 reg
 // cpu_imem_master_arregion       O     4 reg
 // cpu_imem_master_rready         O     1 reg
-// cpu_dmem_master_awvalid        O     1 reg
-// cpu_dmem_master_awid           O     4 reg
-// cpu_dmem_master_awaddr         O    64 reg
-// cpu_dmem_master_awlen          O     8 reg
-// cpu_dmem_master_awsize         O     3 reg
-// cpu_dmem_master_awburst        O     2 reg
-// cpu_dmem_master_awlock         O     1 reg
-// cpu_dmem_master_awcache        O     4 reg
-// cpu_dmem_master_awprot         O     3 reg
-// cpu_dmem_master_awqos          O     4 reg
-// cpu_dmem_master_awregion       O     4 reg
-// cpu_dmem_master_wvalid         O     1 reg
-// cpu_dmem_master_wdata          O    64 reg
-// cpu_dmem_master_wstrb          O     8 reg
-// cpu_dmem_master_wlast          O     1 reg
-// cpu_dmem_master_bready         O     1 reg
-// cpu_dmem_master_arvalid        O     1 reg
-// cpu_dmem_master_arid           O     4 reg
-// cpu_dmem_master_araddr         O    64 reg
-// cpu_dmem_master_arlen          O     8 reg
-// cpu_dmem_master_arsize         O     3 reg
-// cpu_dmem_master_arburst        O     2 reg
-// cpu_dmem_master_arlock         O     1 reg
-// cpu_dmem_master_arcache        O     4 reg
-// cpu_dmem_master_arprot         O     3 reg
-// cpu_dmem_master_arqos          O     4 reg
-// cpu_dmem_master_arregion       O     4 reg
-// cpu_dmem_master_rready         O     1 reg
+// core_mem_master_awvalid        O     1 reg
+// core_mem_master_awid           O     4 reg
+// core_mem_master_awaddr         O    64 reg
+// core_mem_master_awlen          O     8 reg
+// core_mem_master_awsize         O     3 reg
+// core_mem_master_awburst        O     2 reg
+// core_mem_master_awlock         O     1 reg
+// core_mem_master_awcache        O     4 reg
+// core_mem_master_awprot         O     3 reg
+// core_mem_master_awqos          O     4 reg
+// core_mem_master_awregion       O     4 reg
+// core_mem_master_wvalid         O     1 reg
+// core_mem_master_wdata          O    64 reg
+// core_mem_master_wstrb          O     8 reg
+// core_mem_master_wlast          O     1 reg
+// core_mem_master_bready         O     1 reg
+// core_mem_master_arvalid        O     1 reg
+// core_mem_master_arid           O     4 reg
+// core_mem_master_araddr         O    64 reg
+// core_mem_master_arlen          O     8 reg
+// core_mem_master_arsize         O     3 reg
+// core_mem_master_arburst        O     2 reg
+// core_mem_master_arlock         O     1 reg
+// core_mem_master_arcache        O     4 reg
+// core_mem_master_arprot         O     3 reg
+// core_mem_master_arqos          O     4 reg
+// core_mem_master_arregion       O     4 reg
+// core_mem_master_rready         O     1 reg
+// dma_server_awready             O     1 const
+// dma_server_wready              O     1 const
+// dma_server_bvalid              O     1 const
+// dma_server_bid                 O     6 const
+// dma_server_bresp               O     2 const
+// dma_server_arready             O     1 const
+// dma_server_rvalid              O     1 const
+// dma_server_rid                 O     6 const
+// dma_server_rdata               O   512 const
+// dma_server_rresp               O     2 const
+// dma_server_rlast               O     1 const
 // tv_verifier_info_get_get       O   608 reg
 // RDY_tv_verifier_info_get_get   O     1 reg
 // RDY_dm_dmi_read_addr           O     1
@@ -75,10 +85,11 @@
 // ndm_reset_client_request_get   O     1 reg
 // RDY_ndm_reset_client_request_get  O     1 reg
 // RDY_ndm_reset_client_response_put  O     1 reg
+// RDY_set_verbosity              O     1 const
+// RDY_ma_ddr4_ready              O     1 const
+// mv_status                      O     8
 // CLK                            I     1 clock
 // RST_N                          I     1 reset
-// set_verbosity_verbosity        I     4
-// set_verbosity_logdelay         I    64 reg
 // cpu_reset_server_request_put   I     1 reg
 // cpu_imem_master_awready        I     1
 // cpu_imem_master_wready         I     1
@@ -91,17 +102,45 @@
 // cpu_imem_master_rdata          I    64 reg
 // cpu_imem_master_rresp          I     2 reg
 // cpu_imem_master_rlast          I     1 reg
-// cpu_dmem_master_awready        I     1
-// cpu_dmem_master_wready         I     1
-// cpu_dmem_master_bvalid         I     1
-// cpu_dmem_master_bid            I     4 reg
-// cpu_dmem_master_bresp          I     2 reg
-// cpu_dmem_master_arready        I     1
-// cpu_dmem_master_rvalid         I     1
-// cpu_dmem_master_rid            I     4 reg
-// cpu_dmem_master_rdata          I    64 reg
-// cpu_dmem_master_rresp          I     2 reg
-// cpu_dmem_master_rlast          I     1 reg
+// core_mem_master_awready        I     1
+// core_mem_master_wready         I     1
+// core_mem_master_bvalid         I     1
+// core_mem_master_bid            I     4 reg
+// core_mem_master_bresp          I     2 reg
+// core_mem_master_arready        I     1
+// core_mem_master_rvalid         I     1
+// core_mem_master_rid            I     4 reg
+// core_mem_master_rdata          I    64 reg
+// core_mem_master_rresp          I     2 reg
+// core_mem_master_rlast          I     1 reg
+// dma_server_awvalid             I     1 unused
+// dma_server_awid                I     6 unused
+// dma_server_awaddr              I    64 unused
+// dma_server_awlen               I     8 unused
+// dma_server_awsize              I     3 unused
+// dma_server_awburst             I     2 unused
+// dma_server_awlock              I     1 unused
+// dma_server_awcache             I     4 unused
+// dma_server_awprot              I     3 unused
+// dma_server_awqos               I     4 unused
+// dma_server_awregion            I     4 unused
+// dma_server_wvalid              I     1 unused
+// dma_server_wdata               I   512 unused
+// dma_server_wstrb               I    64 unused
+// dma_server_wlast               I     1 unused
+// dma_server_bready              I     1 unused
+// dma_server_arvalid             I     1 unused
+// dma_server_arid                I     6 unused
+// dma_server_araddr              I    64 unused
+// dma_server_arlen               I     8 unused
+// dma_server_arsize              I     3 unused
+// dma_server_arburst             I     2 unused
+// dma_server_arlock              I     1 unused
+// dma_server_arcache             I     4 unused
+// dma_server_arprot              I     3 unused
+// dma_server_arqos               I     4 unused
+// dma_server_arregion            I     4 unused
+// dma_server_rready              I     1 unused
 // core_external_interrupt_sources_0_m_interrupt_req_set_not_clear  I     1
 // core_external_interrupt_sources_1_m_interrupt_req_set_not_clear  I     1
 // core_external_interrupt_sources_2_m_interrupt_req_set_not_clear  I     1
@@ -123,11 +162,14 @@
 // dm_dmi_write_dm_addr           I     7
 // dm_dmi_write_dm_word           I    32
 // ndm_reset_client_response_put  I     1 reg
-// EN_set_verbosity               I     1
+// set_verbosity_verbosity        I     4
+// set_verbosity_logdelay         I    64 reg
 // EN_cpu_reset_server_request_put  I     1
 // EN_dm_dmi_read_addr            I     1
 // EN_dm_dmi_write                I     1
 // EN_ndm_reset_client_response_put  I     1
+// EN_set_verbosity               I     1
+// EN_ma_ddr4_ready               I     1
 // EN_cpu_reset_server_response_get  I     1
 // EN_tv_verifier_info_get_get    I     1
 // EN_dm_dmi_read_data            I     1
@@ -156,11 +198,6 @@
 
 module mkCore(CLK,
 	      RST_N,
-
-	      set_verbosity_verbosity,
-	      set_verbosity_logdelay,
-	      EN_set_verbosity,
-	      RDY_set_verbosity,
 
 	      cpu_reset_server_request_put,
 	      EN_cpu_reset_server_request_put,
@@ -242,77 +279,132 @@ module mkCore(CLK,
 
 	      cpu_imem_master_rready,
 
-	      cpu_dmem_master_awvalid,
+	      core_mem_master_awvalid,
 
-	      cpu_dmem_master_awid,
+	      core_mem_master_awid,
 
-	      cpu_dmem_master_awaddr,
+	      core_mem_master_awaddr,
 
-	      cpu_dmem_master_awlen,
+	      core_mem_master_awlen,
 
-	      cpu_dmem_master_awsize,
+	      core_mem_master_awsize,
 
-	      cpu_dmem_master_awburst,
+	      core_mem_master_awburst,
 
-	      cpu_dmem_master_awlock,
+	      core_mem_master_awlock,
 
-	      cpu_dmem_master_awcache,
+	      core_mem_master_awcache,
 
-	      cpu_dmem_master_awprot,
+	      core_mem_master_awprot,
 
-	      cpu_dmem_master_awqos,
+	      core_mem_master_awqos,
 
-	      cpu_dmem_master_awregion,
+	      core_mem_master_awregion,
 
-	      cpu_dmem_master_awready,
+	      core_mem_master_awready,
 
-	      cpu_dmem_master_wvalid,
+	      core_mem_master_wvalid,
 
-	      cpu_dmem_master_wdata,
+	      core_mem_master_wdata,
 
-	      cpu_dmem_master_wstrb,
+	      core_mem_master_wstrb,
 
-	      cpu_dmem_master_wlast,
+	      core_mem_master_wlast,
 
-	      cpu_dmem_master_wready,
+	      core_mem_master_wready,
 
-	      cpu_dmem_master_bvalid,
-	      cpu_dmem_master_bid,
-	      cpu_dmem_master_bresp,
+	      core_mem_master_bvalid,
+	      core_mem_master_bid,
+	      core_mem_master_bresp,
 
-	      cpu_dmem_master_bready,
+	      core_mem_master_bready,
 
-	      cpu_dmem_master_arvalid,
+	      core_mem_master_arvalid,
 
-	      cpu_dmem_master_arid,
+	      core_mem_master_arid,
 
-	      cpu_dmem_master_araddr,
+	      core_mem_master_araddr,
 
-	      cpu_dmem_master_arlen,
+	      core_mem_master_arlen,
 
-	      cpu_dmem_master_arsize,
+	      core_mem_master_arsize,
 
-	      cpu_dmem_master_arburst,
+	      core_mem_master_arburst,
 
-	      cpu_dmem_master_arlock,
+	      core_mem_master_arlock,
 
-	      cpu_dmem_master_arcache,
+	      core_mem_master_arcache,
 
-	      cpu_dmem_master_arprot,
+	      core_mem_master_arprot,
 
-	      cpu_dmem_master_arqos,
+	      core_mem_master_arqos,
 
-	      cpu_dmem_master_arregion,
+	      core_mem_master_arregion,
 
-	      cpu_dmem_master_arready,
+	      core_mem_master_arready,
 
-	      cpu_dmem_master_rvalid,
-	      cpu_dmem_master_rid,
-	      cpu_dmem_master_rdata,
-	      cpu_dmem_master_rresp,
-	      cpu_dmem_master_rlast,
+	      core_mem_master_rvalid,
+	      core_mem_master_rid,
+	      core_mem_master_rdata,
+	      core_mem_master_rresp,
+	      core_mem_master_rlast,
 
-	      cpu_dmem_master_rready,
+	      core_mem_master_rready,
+
+	      dma_server_awvalid,
+	      dma_server_awid,
+	      dma_server_awaddr,
+	      dma_server_awlen,
+	      dma_server_awsize,
+	      dma_server_awburst,
+	      dma_server_awlock,
+	      dma_server_awcache,
+	      dma_server_awprot,
+	      dma_server_awqos,
+	      dma_server_awregion,
+
+	      dma_server_awready,
+
+	      dma_server_wvalid,
+	      dma_server_wdata,
+	      dma_server_wstrb,
+	      dma_server_wlast,
+
+	      dma_server_wready,
+
+	      dma_server_bvalid,
+
+	      dma_server_bid,
+
+	      dma_server_bresp,
+
+	      dma_server_bready,
+
+	      dma_server_arvalid,
+	      dma_server_arid,
+	      dma_server_araddr,
+	      dma_server_arlen,
+	      dma_server_arsize,
+	      dma_server_arburst,
+	      dma_server_arlock,
+	      dma_server_arcache,
+	      dma_server_arprot,
+	      dma_server_arqos,
+	      dma_server_arregion,
+
+	      dma_server_arready,
+
+	      dma_server_rvalid,
+
+	      dma_server_rid,
+
+	      dma_server_rdata,
+
+	      dma_server_rresp,
+
+	      dma_server_rlast,
+
+	      dma_server_rready,
 
 	      core_external_interrupt_sources_0_m_interrupt_req_set_not_clear,
 
@@ -371,15 +463,19 @@ module mkCore(CLK,
 
 	      ndm_reset_client_response_put,
 	      EN_ndm_reset_client_response_put,
-	      RDY_ndm_reset_client_response_put);
+	      RDY_ndm_reset_client_response_put,
+
+	      set_verbosity_verbosity,
+	      set_verbosity_logdelay,
+	      EN_set_verbosity,
+	      RDY_set_verbosity,
+
+	      EN_ma_ddr4_ready,
+	      RDY_ma_ddr4_ready,
+
+	      mv_status);
   input  CLK;
   input  RST_N;
-
-  // action method set_verbosity
-  input  [3 : 0] set_verbosity_verbosity;
-  input  [63 : 0] set_verbosity_logdelay;
-  input  EN_set_verbosity;
-  output RDY_set_verbosity;
 
   // action method cpu_reset_server_request_put
   input  cpu_reset_server_request_put;
@@ -502,116 +598,191 @@ module mkCore(CLK,
   // value method cpu_imem_master_m_rready
   output cpu_imem_master_rready;
 
-  // value method cpu_dmem_master_m_awvalid
-  output cpu_dmem_master_awvalid;
+  // value method core_mem_master_m_awvalid
+  output core_mem_master_awvalid;
 
-  // value method cpu_dmem_master_m_awid
-  output [3 : 0] cpu_dmem_master_awid;
+  // value method core_mem_master_m_awid
+  output [3 : 0] core_mem_master_awid;
 
-  // value method cpu_dmem_master_m_awaddr
-  output [63 : 0] cpu_dmem_master_awaddr;
+  // value method core_mem_master_m_awaddr
+  output [63 : 0] core_mem_master_awaddr;
 
-  // value method cpu_dmem_master_m_awlen
-  output [7 : 0] cpu_dmem_master_awlen;
+  // value method core_mem_master_m_awlen
+  output [7 : 0] core_mem_master_awlen;
 
-  // value method cpu_dmem_master_m_awsize
-  output [2 : 0] cpu_dmem_master_awsize;
+  // value method core_mem_master_m_awsize
+  output [2 : 0] core_mem_master_awsize;
 
-  // value method cpu_dmem_master_m_awburst
-  output [1 : 0] cpu_dmem_master_awburst;
+  // value method core_mem_master_m_awburst
+  output [1 : 0] core_mem_master_awburst;
 
-  // value method cpu_dmem_master_m_awlock
-  output cpu_dmem_master_awlock;
+  // value method core_mem_master_m_awlock
+  output core_mem_master_awlock;
 
-  // value method cpu_dmem_master_m_awcache
-  output [3 : 0] cpu_dmem_master_awcache;
+  // value method core_mem_master_m_awcache
+  output [3 : 0] core_mem_master_awcache;
 
-  // value method cpu_dmem_master_m_awprot
-  output [2 : 0] cpu_dmem_master_awprot;
+  // value method core_mem_master_m_awprot
+  output [2 : 0] core_mem_master_awprot;
 
-  // value method cpu_dmem_master_m_awqos
-  output [3 : 0] cpu_dmem_master_awqos;
+  // value method core_mem_master_m_awqos
+  output [3 : 0] core_mem_master_awqos;
 
-  // value method cpu_dmem_master_m_awregion
-  output [3 : 0] cpu_dmem_master_awregion;
+  // value method core_mem_master_m_awregion
+  output [3 : 0] core_mem_master_awregion;
 
-  // value method cpu_dmem_master_m_awuser
+  // value method core_mem_master_m_awuser
 
-  // action method cpu_dmem_master_m_awready
-  input  cpu_dmem_master_awready;
+  // action method core_mem_master_m_awready
+  input  core_mem_master_awready;
 
-  // value method cpu_dmem_master_m_wvalid
-  output cpu_dmem_master_wvalid;
+  // value method core_mem_master_m_wvalid
+  output core_mem_master_wvalid;
 
-  // value method cpu_dmem_master_m_wdata
-  output [63 : 0] cpu_dmem_master_wdata;
+  // value method core_mem_master_m_wdata
+  output [63 : 0] core_mem_master_wdata;
 
-  // value method cpu_dmem_master_m_wstrb
-  output [7 : 0] cpu_dmem_master_wstrb;
+  // value method core_mem_master_m_wstrb
+  output [7 : 0] core_mem_master_wstrb;
 
-  // value method cpu_dmem_master_m_wlast
-  output cpu_dmem_master_wlast;
+  // value method core_mem_master_m_wlast
+  output core_mem_master_wlast;
 
-  // value method cpu_dmem_master_m_wuser
+  // value method core_mem_master_m_wuser
 
-  // action method cpu_dmem_master_m_wready
-  input  cpu_dmem_master_wready;
+  // action method core_mem_master_m_wready
+  input  core_mem_master_wready;
 
-  // action method cpu_dmem_master_m_bvalid
-  input  cpu_dmem_master_bvalid;
-  input  [3 : 0] cpu_dmem_master_bid;
-  input  [1 : 0] cpu_dmem_master_bresp;
+  // action method core_mem_master_m_bvalid
+  input  core_mem_master_bvalid;
+  input  [3 : 0] core_mem_master_bid;
+  input  [1 : 0] core_mem_master_bresp;
 
-  // value method cpu_dmem_master_m_bready
-  output cpu_dmem_master_bready;
+  // value method core_mem_master_m_bready
+  output core_mem_master_bready;
 
-  // value method cpu_dmem_master_m_arvalid
-  output cpu_dmem_master_arvalid;
+  // value method core_mem_master_m_arvalid
+  output core_mem_master_arvalid;
 
-  // value method cpu_dmem_master_m_arid
-  output [3 : 0] cpu_dmem_master_arid;
+  // value method core_mem_master_m_arid
+  output [3 : 0] core_mem_master_arid;
 
-  // value method cpu_dmem_master_m_araddr
-  output [63 : 0] cpu_dmem_master_araddr;
+  // value method core_mem_master_m_araddr
+  output [63 : 0] core_mem_master_araddr;
 
-  // value method cpu_dmem_master_m_arlen
-  output [7 : 0] cpu_dmem_master_arlen;
+  // value method core_mem_master_m_arlen
+  output [7 : 0] core_mem_master_arlen;
 
-  // value method cpu_dmem_master_m_arsize
-  output [2 : 0] cpu_dmem_master_arsize;
+  // value method core_mem_master_m_arsize
+  output [2 : 0] core_mem_master_arsize;
 
-  // value method cpu_dmem_master_m_arburst
-  output [1 : 0] cpu_dmem_master_arburst;
+  // value method core_mem_master_m_arburst
+  output [1 : 0] core_mem_master_arburst;
 
-  // value method cpu_dmem_master_m_arlock
-  output cpu_dmem_master_arlock;
+  // value method core_mem_master_m_arlock
+  output core_mem_master_arlock;
 
-  // value method cpu_dmem_master_m_arcache
-  output [3 : 0] cpu_dmem_master_arcache;
+  // value method core_mem_master_m_arcache
+  output [3 : 0] core_mem_master_arcache;
 
-  // value method cpu_dmem_master_m_arprot
-  output [2 : 0] cpu_dmem_master_arprot;
+  // value method core_mem_master_m_arprot
+  output [2 : 0] core_mem_master_arprot;
 
-  // value method cpu_dmem_master_m_arqos
-  output [3 : 0] cpu_dmem_master_arqos;
+  // value method core_mem_master_m_arqos
+  output [3 : 0] core_mem_master_arqos;
 
-  // value method cpu_dmem_master_m_arregion
-  output [3 : 0] cpu_dmem_master_arregion;
+  // value method core_mem_master_m_arregion
+  output [3 : 0] core_mem_master_arregion;
 
-  // value method cpu_dmem_master_m_aruser
+  // value method core_mem_master_m_aruser
 
-  // action method cpu_dmem_master_m_arready
-  input  cpu_dmem_master_arready;
+  // action method core_mem_master_m_arready
+  input  core_mem_master_arready;
 
-  // action method cpu_dmem_master_m_rvalid
-  input  cpu_dmem_master_rvalid;
-  input  [3 : 0] cpu_dmem_master_rid;
-  input  [63 : 0] cpu_dmem_master_rdata;
-  input  [1 : 0] cpu_dmem_master_rresp;
-  input  cpu_dmem_master_rlast;
+  // action method core_mem_master_m_rvalid
+  input  core_mem_master_rvalid;
+  input  [3 : 0] core_mem_master_rid;
+  input  [63 : 0] core_mem_master_rdata;
+  input  [1 : 0] core_mem_master_rresp;
+  input  core_mem_master_rlast;
 
-  // value method cpu_dmem_master_m_rready
-  output cpu_dmem_master_rready;
+  // value method core_mem_master_m_rready
+  output core_mem_master_rready;
+
+  // action method dma_server_m_awvalid
+  input  dma_server_awvalid;
+  input  [5 : 0] dma_server_awid;
+  input  [63 : 0] dma_server_awaddr;
+  input  [7 : 0] dma_server_awlen;
+  input  [2 : 0] dma_server_awsize;
+  input  [1 : 0] dma_server_awburst;
+  input  dma_server_awlock;
+  input  [3 : 0] dma_server_awcache;
+  input  [2 : 0] dma_server_awprot;
+  input  [3 : 0] dma_server_awqos;
+  input  [3 : 0] dma_server_awregion;
+
+  // value method dma_server_m_awready
+  output dma_server_awready;
+
+  // action method dma_server_m_wvalid
+  input  dma_server_wvalid;
+  input  [511 : 0] dma_server_wdata;
+  input  [63 : 0] dma_server_wstrb;
+  input  dma_server_wlast;
+
+  // value method dma_server_m_wready
+  output dma_server_wready;
+
+  // value method dma_server_m_bvalid
+  output dma_server_bvalid;
+
+  // value method dma_server_m_bid
+  output [5 : 0] dma_server_bid;
+
+  // value method dma_server_m_bresp
+  output [1 : 0] dma_server_bresp;
+
+  // value method dma_server_m_buser
+
+  // action method dma_server_m_bready
+  input  dma_server_bready;
+
+  // action method dma_server_m_arvalid
+  input  dma_server_arvalid;
+  input  [5 : 0] dma_server_arid;
+  input  [63 : 0] dma_server_araddr;
+  input  [7 : 0] dma_server_arlen;
+  input  [2 : 0] dma_server_arsize;
+  input  [1 : 0] dma_server_arburst;
+  input  dma_server_arlock;
+  input  [3 : 0] dma_server_arcache;
+  input  [2 : 0] dma_server_arprot;
+  input  [3 : 0] dma_server_arqos;
+  input  [3 : 0] dma_server_arregion;
+
+  // value method dma_server_m_arready
+  output dma_server_arready;
+
+  // value method dma_server_m_rvalid
+  output dma_server_rvalid;
+
+  // value method dma_server_m_rid
+  output [5 : 0] dma_server_rid;
+
+  // value method dma_server_m_rdata
+  output [511 : 0] dma_server_rdata;
+
+  // value method dma_server_m_rresp
+  output [1 : 0] dma_server_rresp;
+
+  // value method dma_server_m_rlast
+  output dma_server_rlast;
+
+  // value method dma_server_m_ruser
+
+  // action method dma_server_m_rready
+  input  dma_server_rready;
 
   // action method core_external_interrupt_sources_0_m_interrupt_req
   input  core_external_interrupt_sources_0_m_interrupt_req_set_not_clear;
@@ -695,29 +866,45 @@ module mkCore(CLK,
   input  EN_ndm_reset_client_response_put;
   output RDY_ndm_reset_client_response_put;
 
+  // action method set_verbosity
+  input  [3 : 0] set_verbosity_verbosity;
+  input  [63 : 0] set_verbosity_logdelay;
+  input  EN_set_verbosity;
+  output RDY_set_verbosity;
+
+  // action method ma_ddr4_ready
+  input  EN_ma_ddr4_ready;
+  output RDY_ma_ddr4_ready;
+
+  // value method mv_status
+  output [7 : 0] mv_status;
+
   // signals for module outputs
   wire [607 : 0] tv_verifier_info_get_get;
-  wire [63 : 0] cpu_dmem_master_araddr,
-		cpu_dmem_master_awaddr,
-		cpu_dmem_master_wdata,
+  wire [511 : 0] dma_server_rdata;
+  wire [63 : 0] core_mem_master_araddr,
+		core_mem_master_awaddr,
+		core_mem_master_wdata,
 		cpu_imem_master_araddr,
 		cpu_imem_master_awaddr,
 		cpu_imem_master_wdata;
   wire [31 : 0] dm_dmi_read_data;
-  wire [7 : 0] cpu_dmem_master_arlen,
-	       cpu_dmem_master_awlen,
-	       cpu_dmem_master_wstrb,
+  wire [7 : 0] core_mem_master_arlen,
+	       core_mem_master_awlen,
+	       core_mem_master_wstrb,
 	       cpu_imem_master_arlen,
 	       cpu_imem_master_awlen,
-	       cpu_imem_master_wstrb;
-  wire [3 : 0] cpu_dmem_master_arcache,
-	       cpu_dmem_master_arid,
-	       cpu_dmem_master_arqos,
-	       cpu_dmem_master_arregion,
-	       cpu_dmem_master_awcache,
-	       cpu_dmem_master_awid,
-	       cpu_dmem_master_awqos,
-	       cpu_dmem_master_awregion,
+	       cpu_imem_master_wstrb,
+	       mv_status;
+  wire [5 : 0] dma_server_bid, dma_server_rid;
+  wire [3 : 0] core_mem_master_arcache,
+	       core_mem_master_arid,
+	       core_mem_master_arqos,
+	       core_mem_master_arregion,
+	       core_mem_master_awcache,
+	       core_mem_master_awid,
+	       core_mem_master_awqos,
+	       core_mem_master_awregion,
 	       cpu_imem_master_arcache,
 	       cpu_imem_master_arid,
 	       cpu_imem_master_arqos,
@@ -726,35 +913,38 @@ module mkCore(CLK,
 	       cpu_imem_master_awid,
 	       cpu_imem_master_awqos,
 	       cpu_imem_master_awregion;
-  wire [2 : 0] cpu_dmem_master_arprot,
-	       cpu_dmem_master_arsize,
-	       cpu_dmem_master_awprot,
-	       cpu_dmem_master_awsize,
+  wire [2 : 0] core_mem_master_arprot,
+	       core_mem_master_arsize,
+	       core_mem_master_awprot,
+	       core_mem_master_awsize,
 	       cpu_imem_master_arprot,
 	       cpu_imem_master_arsize,
 	       cpu_imem_master_awprot,
 	       cpu_imem_master_awsize;
-  wire [1 : 0] cpu_dmem_master_arburst,
-	       cpu_dmem_master_awburst,
+  wire [1 : 0] core_mem_master_arburst,
+	       core_mem_master_awburst,
 	       cpu_imem_master_arburst,
-	       cpu_imem_master_awburst;
+	       cpu_imem_master_awburst,
+	       dma_server_bresp,
+	       dma_server_rresp;
   wire RDY_cpu_reset_server_request_put,
        RDY_cpu_reset_server_response_get,
        RDY_dm_dmi_read_addr,
        RDY_dm_dmi_read_data,
        RDY_dm_dmi_write,
+       RDY_ma_ddr4_ready,
        RDY_ndm_reset_client_request_get,
        RDY_ndm_reset_client_response_put,
        RDY_set_verbosity,
        RDY_tv_verifier_info_get_get,
-       cpu_dmem_master_arlock,
-       cpu_dmem_master_arvalid,
-       cpu_dmem_master_awlock,
-       cpu_dmem_master_awvalid,
-       cpu_dmem_master_bready,
-       cpu_dmem_master_rready,
-       cpu_dmem_master_wlast,
-       cpu_dmem_master_wvalid,
+       core_mem_master_arlock,
+       core_mem_master_arvalid,
+       core_mem_master_awlock,
+       core_mem_master_awvalid,
+       core_mem_master_bready,
+       core_mem_master_rready,
+       core_mem_master_wlast,
+       core_mem_master_wvalid,
        cpu_imem_master_arlock,
        cpu_imem_master_arvalid,
        cpu_imem_master_awlock,
@@ -764,9 +954,16 @@ module mkCore(CLK,
        cpu_imem_master_wlast,
        cpu_imem_master_wvalid,
        cpu_reset_server_response_get,
+       dma_server_arready,
+       dma_server_awready,
+       dma_server_bvalid,
+       dma_server_rlast,
+       dma_server_rvalid,
+       dma_server_wready,
        ndm_reset_client_request_get;
 
   // ports of submodule cpu
+  wire [511 : 0] cpu$dma_server_rdata, cpu$dma_server_wdata;
   wire [426 : 0] cpu$trace_data_out_get;
   wire [76 : 0] cpu$hart0_csr_mem_server_request_put;
   wire [69 : 0] cpu$hart0_fpr_mem_server_request_put,
@@ -774,31 +971,37 @@ module mkCore(CLK,
   wire [64 : 0] cpu$hart0_csr_mem_server_response_get,
 		cpu$hart0_fpr_mem_server_response_get,
 		cpu$hart0_gpr_mem_server_response_get;
-  wire [63 : 0] cpu$dmem_master_araddr,
-		cpu$dmem_master_awaddr,
-		cpu$dmem_master_rdata,
-		cpu$dmem_master_wdata,
+  wire [63 : 0] cpu$dma_server_araddr,
+		cpu$dma_server_awaddr,
+		cpu$dma_server_wstrb,
 		cpu$imem_master_araddr,
 		cpu$imem_master_awaddr,
 		cpu$imem_master_rdata,
 		cpu$imem_master_wdata,
+		cpu$mem_master_araddr,
+		cpu$mem_master_awaddr,
+		cpu$mem_master_rdata,
+		cpu$mem_master_wdata,
 		cpu$set_verbosity_logdelay;
-  wire [7 : 0] cpu$dmem_master_arlen,
-	       cpu$dmem_master_awlen,
-	       cpu$dmem_master_wstrb,
+  wire [7 : 0] cpu$dma_server_arlen,
+	       cpu$dma_server_awlen,
 	       cpu$imem_master_arlen,
 	       cpu$imem_master_awlen,
-	       cpu$imem_master_wstrb;
-  wire [3 : 0] cpu$dmem_master_arcache,
-	       cpu$dmem_master_arid,
-	       cpu$dmem_master_arqos,
-	       cpu$dmem_master_arregion,
-	       cpu$dmem_master_awcache,
-	       cpu$dmem_master_awid,
-	       cpu$dmem_master_awqos,
-	       cpu$dmem_master_awregion,
-	       cpu$dmem_master_bid,
-	       cpu$dmem_master_rid,
+	       cpu$imem_master_wstrb,
+	       cpu$mem_master_arlen,
+	       cpu$mem_master_awlen,
+	       cpu$mem_master_wstrb,
+	       cpu$mv_status;
+  wire [5 : 0] cpu$dma_server_arid,
+	       cpu$dma_server_awid,
+	       cpu$dma_server_bid,
+	       cpu$dma_server_rid;
+  wire [3 : 0] cpu$dma_server_arcache,
+	       cpu$dma_server_arqos,
+	       cpu$dma_server_arregion,
+	       cpu$dma_server_awcache,
+	       cpu$dma_server_awqos,
+	       cpu$dma_server_awregion,
 	       cpu$hart0_put_other_req_put,
 	       cpu$imem_master_arcache,
 	       cpu$imem_master_arid,
@@ -810,23 +1013,41 @@ module mkCore(CLK,
 	       cpu$imem_master_awregion,
 	       cpu$imem_master_bid,
 	       cpu$imem_master_rid,
+	       cpu$mem_master_arcache,
+	       cpu$mem_master_arid,
+	       cpu$mem_master_arqos,
+	       cpu$mem_master_arregion,
+	       cpu$mem_master_awcache,
+	       cpu$mem_master_awid,
+	       cpu$mem_master_awqos,
+	       cpu$mem_master_awregion,
+	       cpu$mem_master_bid,
+	       cpu$mem_master_rid,
 	       cpu$set_verbosity_verbosity;
-  wire [2 : 0] cpu$dmem_master_arprot,
-	       cpu$dmem_master_arsize,
-	       cpu$dmem_master_awprot,
-	       cpu$dmem_master_awsize,
+  wire [2 : 0] cpu$dma_server_arprot,
+	       cpu$dma_server_arsize,
+	       cpu$dma_server_awprot,
+	       cpu$dma_server_awsize,
 	       cpu$imem_master_arprot,
 	       cpu$imem_master_arsize,
 	       cpu$imem_master_awprot,
-	       cpu$imem_master_awsize;
-  wire [1 : 0] cpu$dmem_master_arburst,
-	       cpu$dmem_master_awburst,
-	       cpu$dmem_master_bresp,
-	       cpu$dmem_master_rresp,
+	       cpu$imem_master_awsize,
+	       cpu$mem_master_arprot,
+	       cpu$mem_master_arsize,
+	       cpu$mem_master_awprot,
+	       cpu$mem_master_awsize;
+  wire [1 : 0] cpu$dma_server_arburst,
+	       cpu$dma_server_awburst,
+	       cpu$dma_server_bresp,
+	       cpu$dma_server_rresp,
 	       cpu$imem_master_arburst,
 	       cpu$imem_master_awburst,
 	       cpu$imem_master_bresp,
-	       cpu$imem_master_rresp;
+	       cpu$imem_master_rresp,
+	       cpu$mem_master_arburst,
+	       cpu$mem_master_awburst,
+	       cpu$mem_master_bresp,
+	       cpu$mem_master_rresp;
   wire cpu$EN_hart0_csr_mem_server_request_put,
        cpu$EN_hart0_csr_mem_server_response_get,
        cpu$EN_hart0_fpr_mem_server_request_put,
@@ -838,6 +1059,7 @@ module mkCore(CLK,
        cpu$EN_hart0_server_reset_response_get,
        cpu$EN_hart0_server_run_halt_request_put,
        cpu$EN_hart0_server_run_halt_response_get,
+       cpu$EN_ma_ddr4_ready,
        cpu$EN_set_verbosity,
        cpu$EN_trace_data_out_get,
        cpu$RDY_hart0_csr_mem_server_request_put,
@@ -851,20 +1073,20 @@ module mkCore(CLK,
        cpu$RDY_hart0_server_run_halt_request_put,
        cpu$RDY_hart0_server_run_halt_response_get,
        cpu$RDY_trace_data_out_get,
-       cpu$dmem_master_arlock,
-       cpu$dmem_master_arready,
-       cpu$dmem_master_arvalid,
-       cpu$dmem_master_awlock,
-       cpu$dmem_master_awready,
-       cpu$dmem_master_awvalid,
-       cpu$dmem_master_bready,
-       cpu$dmem_master_bvalid,
-       cpu$dmem_master_rlast,
-       cpu$dmem_master_rready,
-       cpu$dmem_master_rvalid,
-       cpu$dmem_master_wlast,
-       cpu$dmem_master_wready,
-       cpu$dmem_master_wvalid,
+       cpu$dma_server_arlock,
+       cpu$dma_server_arready,
+       cpu$dma_server_arvalid,
+       cpu$dma_server_awlock,
+       cpu$dma_server_awready,
+       cpu$dma_server_awvalid,
+       cpu$dma_server_bready,
+       cpu$dma_server_bvalid,
+       cpu$dma_server_rlast,
+       cpu$dma_server_rready,
+       cpu$dma_server_rvalid,
+       cpu$dma_server_wlast,
+       cpu$dma_server_wready,
+       cpu$dma_server_wvalid,
        cpu$hart0_server_reset_request_put,
        cpu$hart0_server_reset_response_get,
        cpu$hart0_server_run_halt_request_put,
@@ -884,6 +1106,20 @@ module mkCore(CLK,
        cpu$imem_master_wready,
        cpu$imem_master_wvalid,
        cpu$m_external_interrupt_req_set_not_clear,
+       cpu$mem_master_arlock,
+       cpu$mem_master_arready,
+       cpu$mem_master_arvalid,
+       cpu$mem_master_awlock,
+       cpu$mem_master_awready,
+       cpu$mem_master_awvalid,
+       cpu$mem_master_bready,
+       cpu$mem_master_bvalid,
+       cpu$mem_master_rlast,
+       cpu$mem_master_rready,
+       cpu$mem_master_rvalid,
+       cpu$mem_master_wlast,
+       cpu$mem_master_wready,
+       cpu$mem_master_wvalid,
        cpu$nmi_req_set_not_clear,
        cpu$s_external_interrupt_req_set_not_clear,
        cpu$software_interrupt_req_set_not_clear,
@@ -1558,11 +1794,11 @@ module mkCore(CLK,
        CAN_FIRE_core_external_interrupt_sources_7_m_interrupt_req,
        CAN_FIRE_core_external_interrupt_sources_8_m_interrupt_req,
        CAN_FIRE_core_external_interrupt_sources_9_m_interrupt_req,
-       CAN_FIRE_cpu_dmem_master_m_arready,
-       CAN_FIRE_cpu_dmem_master_m_awready,
-       CAN_FIRE_cpu_dmem_master_m_bvalid,
-       CAN_FIRE_cpu_dmem_master_m_rvalid,
-       CAN_FIRE_cpu_dmem_master_m_wready,
+       CAN_FIRE_core_mem_master_m_arready,
+       CAN_FIRE_core_mem_master_m_awready,
+       CAN_FIRE_core_mem_master_m_bvalid,
+       CAN_FIRE_core_mem_master_m_rvalid,
+       CAN_FIRE_core_mem_master_m_wready,
        CAN_FIRE_cpu_imem_master_m_arready,
        CAN_FIRE_cpu_imem_master_m_awready,
        CAN_FIRE_cpu_imem_master_m_bvalid,
@@ -1573,6 +1809,12 @@ module mkCore(CLK,
        CAN_FIRE_dm_dmi_read_addr,
        CAN_FIRE_dm_dmi_read_data,
        CAN_FIRE_dm_dmi_write,
+       CAN_FIRE_dma_server_m_arvalid,
+       CAN_FIRE_dma_server_m_awvalid,
+       CAN_FIRE_dma_server_m_bready,
+       CAN_FIRE_dma_server_m_rready,
+       CAN_FIRE_dma_server_m_wvalid,
+       CAN_FIRE_ma_ddr4_ready,
        CAN_FIRE_ndm_reset_client_request_get,
        CAN_FIRE_ndm_reset_client_response_put,
        CAN_FIRE_nmi_req,
@@ -1646,11 +1888,11 @@ module mkCore(CLK,
        WILL_FIRE_core_external_interrupt_sources_7_m_interrupt_req,
        WILL_FIRE_core_external_interrupt_sources_8_m_interrupt_req,
        WILL_FIRE_core_external_interrupt_sources_9_m_interrupt_req,
-       WILL_FIRE_cpu_dmem_master_m_arready,
-       WILL_FIRE_cpu_dmem_master_m_awready,
-       WILL_FIRE_cpu_dmem_master_m_bvalid,
-       WILL_FIRE_cpu_dmem_master_m_rvalid,
-       WILL_FIRE_cpu_dmem_master_m_wready,
+       WILL_FIRE_core_mem_master_m_arready,
+       WILL_FIRE_core_mem_master_m_awready,
+       WILL_FIRE_core_mem_master_m_bvalid,
+       WILL_FIRE_core_mem_master_m_rvalid,
+       WILL_FIRE_core_mem_master_m_wready,
        WILL_FIRE_cpu_imem_master_m_arready,
        WILL_FIRE_cpu_imem_master_m_awready,
        WILL_FIRE_cpu_imem_master_m_bvalid,
@@ -1661,6 +1903,12 @@ module mkCore(CLK,
        WILL_FIRE_dm_dmi_read_addr,
        WILL_FIRE_dm_dmi_read_data,
        WILL_FIRE_dm_dmi_write,
+       WILL_FIRE_dma_server_m_arvalid,
+       WILL_FIRE_dma_server_m_awvalid,
+       WILL_FIRE_dma_server_m_bready,
+       WILL_FIRE_dma_server_m_rready,
+       WILL_FIRE_dma_server_m_wvalid,
+       WILL_FIRE_ma_ddr4_ready,
        WILL_FIRE_ndm_reset_client_request_get,
        WILL_FIRE_ndm_reset_client_response_put,
        WILL_FIRE_nmi_req,
@@ -1669,21 +1917,16 @@ module mkCore(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h5108;
-  reg [31 : 0] v__h5309;
-  reg [31 : 0] v__h5677;
-  reg [31 : 0] v__h5102;
-  reg [31 : 0] v__h5303;
-  reg [31 : 0] v__h5671;
+  reg [31 : 0] v__h5471;
+  reg [31 : 0] v__h5672;
+  reg [31 : 0] v__h6040;
+  reg [31 : 0] v__h5465;
+  reg [31 : 0] v__h5666;
+  reg [31 : 0] v__h6034;
   // synopsys translate_on
 
   // remaining internal signals
   wire plic_RDY_server_reset_request_put_AND_cpu_RDY__ETC___d9;
-
-  // action method set_verbosity
-  assign RDY_set_verbosity = 1'd1 ;
-  assign CAN_FIRE_set_verbosity = 1'd1 ;
-  assign WILL_FIRE_set_verbosity = EN_set_verbosity ;
 
   // action method cpu_reset_server_request_put
   assign RDY_cpu_reset_server_request_put = f_reset_reqs$FULL_N ;
@@ -1802,109 +2045,162 @@ module mkCore(CLK,
   // value method cpu_imem_master_m_rready
   assign cpu_imem_master_rready = cpu$imem_master_rready ;
 
-  // value method cpu_dmem_master_m_awvalid
-  assign cpu_dmem_master_awvalid = fabric_2x3$v_to_slaves_0_awvalid ;
+  // value method core_mem_master_m_awvalid
+  assign core_mem_master_awvalid = fabric_2x3$v_to_slaves_0_awvalid ;
 
-  // value method cpu_dmem_master_m_awid
-  assign cpu_dmem_master_awid = fabric_2x3$v_to_slaves_0_awid ;
+  // value method core_mem_master_m_awid
+  assign core_mem_master_awid = fabric_2x3$v_to_slaves_0_awid ;
 
-  // value method cpu_dmem_master_m_awaddr
-  assign cpu_dmem_master_awaddr = fabric_2x3$v_to_slaves_0_awaddr ;
+  // value method core_mem_master_m_awaddr
+  assign core_mem_master_awaddr = fabric_2x3$v_to_slaves_0_awaddr ;
 
-  // value method cpu_dmem_master_m_awlen
-  assign cpu_dmem_master_awlen = fabric_2x3$v_to_slaves_0_awlen ;
+  // value method core_mem_master_m_awlen
+  assign core_mem_master_awlen = fabric_2x3$v_to_slaves_0_awlen ;
 
-  // value method cpu_dmem_master_m_awsize
-  assign cpu_dmem_master_awsize = fabric_2x3$v_to_slaves_0_awsize ;
+  // value method core_mem_master_m_awsize
+  assign core_mem_master_awsize = fabric_2x3$v_to_slaves_0_awsize ;
 
-  // value method cpu_dmem_master_m_awburst
-  assign cpu_dmem_master_awburst = fabric_2x3$v_to_slaves_0_awburst ;
+  // value method core_mem_master_m_awburst
+  assign core_mem_master_awburst = fabric_2x3$v_to_slaves_0_awburst ;
 
-  // value method cpu_dmem_master_m_awlock
-  assign cpu_dmem_master_awlock = fabric_2x3$v_to_slaves_0_awlock ;
+  // value method core_mem_master_m_awlock
+  assign core_mem_master_awlock = fabric_2x3$v_to_slaves_0_awlock ;
 
-  // value method cpu_dmem_master_m_awcache
-  assign cpu_dmem_master_awcache = fabric_2x3$v_to_slaves_0_awcache ;
+  // value method core_mem_master_m_awcache
+  assign core_mem_master_awcache = fabric_2x3$v_to_slaves_0_awcache ;
 
-  // value method cpu_dmem_master_m_awprot
-  assign cpu_dmem_master_awprot = fabric_2x3$v_to_slaves_0_awprot ;
+  // value method core_mem_master_m_awprot
+  assign core_mem_master_awprot = fabric_2x3$v_to_slaves_0_awprot ;
 
-  // value method cpu_dmem_master_m_awqos
-  assign cpu_dmem_master_awqos = fabric_2x3$v_to_slaves_0_awqos ;
+  // value method core_mem_master_m_awqos
+  assign core_mem_master_awqos = fabric_2x3$v_to_slaves_0_awqos ;
 
-  // value method cpu_dmem_master_m_awregion
-  assign cpu_dmem_master_awregion = fabric_2x3$v_to_slaves_0_awregion ;
+  // value method core_mem_master_m_awregion
+  assign core_mem_master_awregion = fabric_2x3$v_to_slaves_0_awregion ;
 
-  // action method cpu_dmem_master_m_awready
-  assign CAN_FIRE_cpu_dmem_master_m_awready = 1'd1 ;
-  assign WILL_FIRE_cpu_dmem_master_m_awready = 1'd1 ;
+  // action method core_mem_master_m_awready
+  assign CAN_FIRE_core_mem_master_m_awready = 1'd1 ;
+  assign WILL_FIRE_core_mem_master_m_awready = 1'd1 ;
 
-  // value method cpu_dmem_master_m_wvalid
-  assign cpu_dmem_master_wvalid = fabric_2x3$v_to_slaves_0_wvalid ;
+  // value method core_mem_master_m_wvalid
+  assign core_mem_master_wvalid = fabric_2x3$v_to_slaves_0_wvalid ;
 
-  // value method cpu_dmem_master_m_wdata
-  assign cpu_dmem_master_wdata = fabric_2x3$v_to_slaves_0_wdata ;
+  // value method core_mem_master_m_wdata
+  assign core_mem_master_wdata = fabric_2x3$v_to_slaves_0_wdata ;
 
-  // value method cpu_dmem_master_m_wstrb
-  assign cpu_dmem_master_wstrb = fabric_2x3$v_to_slaves_0_wstrb ;
+  // value method core_mem_master_m_wstrb
+  assign core_mem_master_wstrb = fabric_2x3$v_to_slaves_0_wstrb ;
 
-  // value method cpu_dmem_master_m_wlast
-  assign cpu_dmem_master_wlast = fabric_2x3$v_to_slaves_0_wlast ;
+  // value method core_mem_master_m_wlast
+  assign core_mem_master_wlast = fabric_2x3$v_to_slaves_0_wlast ;
 
-  // action method cpu_dmem_master_m_wready
-  assign CAN_FIRE_cpu_dmem_master_m_wready = 1'd1 ;
-  assign WILL_FIRE_cpu_dmem_master_m_wready = 1'd1 ;
+  // action method core_mem_master_m_wready
+  assign CAN_FIRE_core_mem_master_m_wready = 1'd1 ;
+  assign WILL_FIRE_core_mem_master_m_wready = 1'd1 ;
 
-  // action method cpu_dmem_master_m_bvalid
-  assign CAN_FIRE_cpu_dmem_master_m_bvalid = 1'd1 ;
-  assign WILL_FIRE_cpu_dmem_master_m_bvalid = 1'd1 ;
+  // action method core_mem_master_m_bvalid
+  assign CAN_FIRE_core_mem_master_m_bvalid = 1'd1 ;
+  assign WILL_FIRE_core_mem_master_m_bvalid = 1'd1 ;
 
-  // value method cpu_dmem_master_m_bready
-  assign cpu_dmem_master_bready = fabric_2x3$v_to_slaves_0_bready ;
+  // value method core_mem_master_m_bready
+  assign core_mem_master_bready = fabric_2x3$v_to_slaves_0_bready ;
 
-  // value method cpu_dmem_master_m_arvalid
-  assign cpu_dmem_master_arvalid = fabric_2x3$v_to_slaves_0_arvalid ;
+  // value method core_mem_master_m_arvalid
+  assign core_mem_master_arvalid = fabric_2x3$v_to_slaves_0_arvalid ;
 
-  // value method cpu_dmem_master_m_arid
-  assign cpu_dmem_master_arid = fabric_2x3$v_to_slaves_0_arid ;
+  // value method core_mem_master_m_arid
+  assign core_mem_master_arid = fabric_2x3$v_to_slaves_0_arid ;
 
-  // value method cpu_dmem_master_m_araddr
-  assign cpu_dmem_master_araddr = fabric_2x3$v_to_slaves_0_araddr ;
+  // value method core_mem_master_m_araddr
+  assign core_mem_master_araddr = fabric_2x3$v_to_slaves_0_araddr ;
 
-  // value method cpu_dmem_master_m_arlen
-  assign cpu_dmem_master_arlen = fabric_2x3$v_to_slaves_0_arlen ;
+  // value method core_mem_master_m_arlen
+  assign core_mem_master_arlen = fabric_2x3$v_to_slaves_0_arlen ;
 
-  // value method cpu_dmem_master_m_arsize
-  assign cpu_dmem_master_arsize = fabric_2x3$v_to_slaves_0_arsize ;
+  // value method core_mem_master_m_arsize
+  assign core_mem_master_arsize = fabric_2x3$v_to_slaves_0_arsize ;
 
-  // value method cpu_dmem_master_m_arburst
-  assign cpu_dmem_master_arburst = fabric_2x3$v_to_slaves_0_arburst ;
+  // value method core_mem_master_m_arburst
+  assign core_mem_master_arburst = fabric_2x3$v_to_slaves_0_arburst ;
 
-  // value method cpu_dmem_master_m_arlock
-  assign cpu_dmem_master_arlock = fabric_2x3$v_to_slaves_0_arlock ;
+  // value method core_mem_master_m_arlock
+  assign core_mem_master_arlock = fabric_2x3$v_to_slaves_0_arlock ;
 
-  // value method cpu_dmem_master_m_arcache
-  assign cpu_dmem_master_arcache = fabric_2x3$v_to_slaves_0_arcache ;
+  // value method core_mem_master_m_arcache
+  assign core_mem_master_arcache = fabric_2x3$v_to_slaves_0_arcache ;
 
-  // value method cpu_dmem_master_m_arprot
-  assign cpu_dmem_master_arprot = fabric_2x3$v_to_slaves_0_arprot ;
+  // value method core_mem_master_m_arprot
+  assign core_mem_master_arprot = fabric_2x3$v_to_slaves_0_arprot ;
 
-  // value method cpu_dmem_master_m_arqos
-  assign cpu_dmem_master_arqos = fabric_2x3$v_to_slaves_0_arqos ;
+  // value method core_mem_master_m_arqos
+  assign core_mem_master_arqos = fabric_2x3$v_to_slaves_0_arqos ;
 
-  // value method cpu_dmem_master_m_arregion
-  assign cpu_dmem_master_arregion = fabric_2x3$v_to_slaves_0_arregion ;
+  // value method core_mem_master_m_arregion
+  assign core_mem_master_arregion = fabric_2x3$v_to_slaves_0_arregion ;
 
-  // action method cpu_dmem_master_m_arready
-  assign CAN_FIRE_cpu_dmem_master_m_arready = 1'd1 ;
-  assign WILL_FIRE_cpu_dmem_master_m_arready = 1'd1 ;
+  // action method core_mem_master_m_arready
+  assign CAN_FIRE_core_mem_master_m_arready = 1'd1 ;
+  assign WILL_FIRE_core_mem_master_m_arready = 1'd1 ;
 
-  // action method cpu_dmem_master_m_rvalid
-  assign CAN_FIRE_cpu_dmem_master_m_rvalid = 1'd1 ;
-  assign WILL_FIRE_cpu_dmem_master_m_rvalid = 1'd1 ;
+  // action method core_mem_master_m_rvalid
+  assign CAN_FIRE_core_mem_master_m_rvalid = 1'd1 ;
+  assign WILL_FIRE_core_mem_master_m_rvalid = 1'd1 ;
 
-  // value method cpu_dmem_master_m_rready
-  assign cpu_dmem_master_rready = fabric_2x3$v_to_slaves_0_rready ;
+  // value method core_mem_master_m_rready
+  assign core_mem_master_rready = fabric_2x3$v_to_slaves_0_rready ;
+
+  // action method dma_server_m_awvalid
+  assign CAN_FIRE_dma_server_m_awvalid = 1'd1 ;
+  assign WILL_FIRE_dma_server_m_awvalid = 1'd1 ;
+
+  // value method dma_server_m_awready
+  assign dma_server_awready = cpu$dma_server_awready ;
+
+  // action method dma_server_m_wvalid
+  assign CAN_FIRE_dma_server_m_wvalid = 1'd1 ;
+  assign WILL_FIRE_dma_server_m_wvalid = 1'd1 ;
+
+  // value method dma_server_m_wready
+  assign dma_server_wready = cpu$dma_server_wready ;
+
+  // value method dma_server_m_bvalid
+  assign dma_server_bvalid = cpu$dma_server_bvalid ;
+
+  // value method dma_server_m_bid
+  assign dma_server_bid = cpu$dma_server_bid ;
+
+  // value method dma_server_m_bresp
+  assign dma_server_bresp = cpu$dma_server_bresp ;
+
+  // action method dma_server_m_bready
+  assign CAN_FIRE_dma_server_m_bready = 1'd1 ;
+  assign WILL_FIRE_dma_server_m_bready = 1'd1 ;
+
+  // action method dma_server_m_arvalid
+  assign CAN_FIRE_dma_server_m_arvalid = 1'd1 ;
+  assign WILL_FIRE_dma_server_m_arvalid = 1'd1 ;
+
+  // value method dma_server_m_arready
+  assign dma_server_arready = cpu$dma_server_arready ;
+
+  // value method dma_server_m_rvalid
+  assign dma_server_rvalid = cpu$dma_server_rvalid ;
+
+  // value method dma_server_m_rid
+  assign dma_server_rid = cpu$dma_server_rid ;
+
+  // value method dma_server_m_rdata
+  assign dma_server_rdata = cpu$dma_server_rdata ;
+
+  // value method dma_server_m_rresp
+  assign dma_server_rresp = cpu$dma_server_rresp ;
+
+  // value method dma_server_m_rlast
+  assign dma_server_rlast = cpu$dma_server_rlast ;
+
+  // action method dma_server_m_rready
+  assign CAN_FIRE_dma_server_m_rready = 1'd1 ;
+  assign WILL_FIRE_dma_server_m_rready = 1'd1 ;
 
   // action method core_external_interrupt_sources_0_m_interrupt_req
   assign CAN_FIRE_core_external_interrupt_sources_0_m_interrupt_req = 1'd1 ;
@@ -2014,20 +2310,50 @@ module mkCore(CLK,
   assign WILL_FIRE_ndm_reset_client_response_put =
 	     EN_ndm_reset_client_response_put ;
 
+  // action method set_verbosity
+  assign RDY_set_verbosity = 1'd1 ;
+  assign CAN_FIRE_set_verbosity = 1'd1 ;
+  assign WILL_FIRE_set_verbosity = EN_set_verbosity ;
+
+  // action method ma_ddr4_ready
+  assign RDY_ma_ddr4_ready = 1'd1 ;
+  assign CAN_FIRE_ma_ddr4_ready = 1'd1 ;
+  assign WILL_FIRE_ma_ddr4_ready = EN_ma_ddr4_ready ;
+
+  // value method mv_status
+  assign mv_status = cpu$mv_status ;
+
   // submodule cpu
   mkCPU cpu(.CLK(CLK),
 	    .RST_N(RST_N),
-	    .dmem_master_arready(cpu$dmem_master_arready),
-	    .dmem_master_awready(cpu$dmem_master_awready),
-	    .dmem_master_bid(cpu$dmem_master_bid),
-	    .dmem_master_bresp(cpu$dmem_master_bresp),
-	    .dmem_master_bvalid(cpu$dmem_master_bvalid),
-	    .dmem_master_rdata(cpu$dmem_master_rdata),
-	    .dmem_master_rid(cpu$dmem_master_rid),
-	    .dmem_master_rlast(cpu$dmem_master_rlast),
-	    .dmem_master_rresp(cpu$dmem_master_rresp),
-	    .dmem_master_rvalid(cpu$dmem_master_rvalid),
-	    .dmem_master_wready(cpu$dmem_master_wready),
+	    .dma_server_araddr(cpu$dma_server_araddr),
+	    .dma_server_arburst(cpu$dma_server_arburst),
+	    .dma_server_arcache(cpu$dma_server_arcache),
+	    .dma_server_arid(cpu$dma_server_arid),
+	    .dma_server_arlen(cpu$dma_server_arlen),
+	    .dma_server_arlock(cpu$dma_server_arlock),
+	    .dma_server_arprot(cpu$dma_server_arprot),
+	    .dma_server_arqos(cpu$dma_server_arqos),
+	    .dma_server_arregion(cpu$dma_server_arregion),
+	    .dma_server_arsize(cpu$dma_server_arsize),
+	    .dma_server_arvalid(cpu$dma_server_arvalid),
+	    .dma_server_awaddr(cpu$dma_server_awaddr),
+	    .dma_server_awburst(cpu$dma_server_awburst),
+	    .dma_server_awcache(cpu$dma_server_awcache),
+	    .dma_server_awid(cpu$dma_server_awid),
+	    .dma_server_awlen(cpu$dma_server_awlen),
+	    .dma_server_awlock(cpu$dma_server_awlock),
+	    .dma_server_awprot(cpu$dma_server_awprot),
+	    .dma_server_awqos(cpu$dma_server_awqos),
+	    .dma_server_awregion(cpu$dma_server_awregion),
+	    .dma_server_awsize(cpu$dma_server_awsize),
+	    .dma_server_awvalid(cpu$dma_server_awvalid),
+	    .dma_server_bready(cpu$dma_server_bready),
+	    .dma_server_rready(cpu$dma_server_rready),
+	    .dma_server_wdata(cpu$dma_server_wdata),
+	    .dma_server_wlast(cpu$dma_server_wlast),
+	    .dma_server_wstrb(cpu$dma_server_wstrb),
+	    .dma_server_wvalid(cpu$dma_server_wvalid),
 	    .hart0_csr_mem_server_request_put(cpu$hart0_csr_mem_server_request_put),
 	    .hart0_fpr_mem_server_request_put(cpu$hart0_fpr_mem_server_request_put),
 	    .hart0_gpr_mem_server_request_put(cpu$hart0_gpr_mem_server_request_put),
@@ -2046,6 +2372,17 @@ module mkCore(CLK,
 	    .imem_master_rvalid(cpu$imem_master_rvalid),
 	    .imem_master_wready(cpu$imem_master_wready),
 	    .m_external_interrupt_req_set_not_clear(cpu$m_external_interrupt_req_set_not_clear),
+	    .mem_master_arready(cpu$mem_master_arready),
+	    .mem_master_awready(cpu$mem_master_awready),
+	    .mem_master_bid(cpu$mem_master_bid),
+	    .mem_master_bresp(cpu$mem_master_bresp),
+	    .mem_master_bvalid(cpu$mem_master_bvalid),
+	    .mem_master_rdata(cpu$mem_master_rdata),
+	    .mem_master_rid(cpu$mem_master_rid),
+	    .mem_master_rlast(cpu$mem_master_rlast),
+	    .mem_master_rresp(cpu$mem_master_rresp),
+	    .mem_master_rvalid(cpu$mem_master_rvalid),
+	    .mem_master_wready(cpu$mem_master_wready),
 	    .nmi_req_set_not_clear(cpu$nmi_req_set_not_clear),
 	    .s_external_interrupt_req_set_not_clear(cpu$s_external_interrupt_req_set_not_clear),
 	    .set_verbosity_logdelay(cpu$set_verbosity_logdelay),
@@ -2054,7 +2391,6 @@ module mkCore(CLK,
 	    .timer_interrupt_req_set_not_clear(cpu$timer_interrupt_req_set_not_clear),
 	    .EN_hart0_server_reset_request_put(cpu$EN_hart0_server_reset_request_put),
 	    .EN_hart0_server_reset_response_get(cpu$EN_hart0_server_reset_response_get),
-	    .EN_set_verbosity(cpu$EN_set_verbosity),
 	    .EN_trace_data_out_get(cpu$EN_trace_data_out_get),
 	    .EN_hart0_server_run_halt_request_put(cpu$EN_hart0_server_run_halt_request_put),
 	    .EN_hart0_server_run_halt_response_get(cpu$EN_hart0_server_run_halt_response_get),
@@ -2065,6 +2401,8 @@ module mkCore(CLK,
 	    .EN_hart0_fpr_mem_server_response_get(cpu$EN_hart0_fpr_mem_server_response_get),
 	    .EN_hart0_csr_mem_server_request_put(cpu$EN_hart0_csr_mem_server_request_put),
 	    .EN_hart0_csr_mem_server_response_get(cpu$EN_hart0_csr_mem_server_response_get),
+	    .EN_set_verbosity(cpu$EN_set_verbosity),
+	    .EN_ma_ddr4_ready(cpu$EN_ma_ddr4_ready),
 	    .RDY_hart0_server_reset_request_put(cpu$RDY_hart0_server_reset_request_put),
 	    .hart0_server_reset_response_get(cpu$hart0_server_reset_response_get),
 	    .RDY_hart0_server_reset_response_get(cpu$RDY_hart0_server_reset_response_get),
@@ -2096,35 +2434,45 @@ module mkCore(CLK,
 	    .imem_master_arqos(cpu$imem_master_arqos),
 	    .imem_master_arregion(cpu$imem_master_arregion),
 	    .imem_master_rready(cpu$imem_master_rready),
-	    .dmem_master_awvalid(cpu$dmem_master_awvalid),
-	    .dmem_master_awid(cpu$dmem_master_awid),
-	    .dmem_master_awaddr(cpu$dmem_master_awaddr),
-	    .dmem_master_awlen(cpu$dmem_master_awlen),
-	    .dmem_master_awsize(cpu$dmem_master_awsize),
-	    .dmem_master_awburst(cpu$dmem_master_awburst),
-	    .dmem_master_awlock(cpu$dmem_master_awlock),
-	    .dmem_master_awcache(cpu$dmem_master_awcache),
-	    .dmem_master_awprot(cpu$dmem_master_awprot),
-	    .dmem_master_awqos(cpu$dmem_master_awqos),
-	    .dmem_master_awregion(cpu$dmem_master_awregion),
-	    .dmem_master_wvalid(cpu$dmem_master_wvalid),
-	    .dmem_master_wdata(cpu$dmem_master_wdata),
-	    .dmem_master_wstrb(cpu$dmem_master_wstrb),
-	    .dmem_master_wlast(cpu$dmem_master_wlast),
-	    .dmem_master_bready(cpu$dmem_master_bready),
-	    .dmem_master_arvalid(cpu$dmem_master_arvalid),
-	    .dmem_master_arid(cpu$dmem_master_arid),
-	    .dmem_master_araddr(cpu$dmem_master_araddr),
-	    .dmem_master_arlen(cpu$dmem_master_arlen),
-	    .dmem_master_arsize(cpu$dmem_master_arsize),
-	    .dmem_master_arburst(cpu$dmem_master_arburst),
-	    .dmem_master_arlock(cpu$dmem_master_arlock),
-	    .dmem_master_arcache(cpu$dmem_master_arcache),
-	    .dmem_master_arprot(cpu$dmem_master_arprot),
-	    .dmem_master_arqos(cpu$dmem_master_arqos),
-	    .dmem_master_arregion(cpu$dmem_master_arregion),
-	    .dmem_master_rready(cpu$dmem_master_rready),
-	    .RDY_set_verbosity(),
+	    .mem_master_awvalid(cpu$mem_master_awvalid),
+	    .mem_master_awid(cpu$mem_master_awid),
+	    .mem_master_awaddr(cpu$mem_master_awaddr),
+	    .mem_master_awlen(cpu$mem_master_awlen),
+	    .mem_master_awsize(cpu$mem_master_awsize),
+	    .mem_master_awburst(cpu$mem_master_awburst),
+	    .mem_master_awlock(cpu$mem_master_awlock),
+	    .mem_master_awcache(cpu$mem_master_awcache),
+	    .mem_master_awprot(cpu$mem_master_awprot),
+	    .mem_master_awqos(cpu$mem_master_awqos),
+	    .mem_master_awregion(cpu$mem_master_awregion),
+	    .mem_master_wvalid(cpu$mem_master_wvalid),
+	    .mem_master_wdata(cpu$mem_master_wdata),
+	    .mem_master_wstrb(cpu$mem_master_wstrb),
+	    .mem_master_wlast(cpu$mem_master_wlast),
+	    .mem_master_bready(cpu$mem_master_bready),
+	    .mem_master_arvalid(cpu$mem_master_arvalid),
+	    .mem_master_arid(cpu$mem_master_arid),
+	    .mem_master_araddr(cpu$mem_master_araddr),
+	    .mem_master_arlen(cpu$mem_master_arlen),
+	    .mem_master_arsize(cpu$mem_master_arsize),
+	    .mem_master_arburst(cpu$mem_master_arburst),
+	    .mem_master_arlock(cpu$mem_master_arlock),
+	    .mem_master_arcache(cpu$mem_master_arcache),
+	    .mem_master_arprot(cpu$mem_master_arprot),
+	    .mem_master_arqos(cpu$mem_master_arqos),
+	    .mem_master_arregion(cpu$mem_master_arregion),
+	    .mem_master_rready(cpu$mem_master_rready),
+	    .dma_server_awready(cpu$dma_server_awready),
+	    .dma_server_wready(cpu$dma_server_wready),
+	    .dma_server_bvalid(cpu$dma_server_bvalid),
+	    .dma_server_bid(cpu$dma_server_bid),
+	    .dma_server_bresp(cpu$dma_server_bresp),
+	    .dma_server_arready(cpu$dma_server_arready),
+	    .dma_server_rvalid(cpu$dma_server_rvalid),
+	    .dma_server_rid(cpu$dma_server_rid),
+	    .dma_server_rdata(cpu$dma_server_rdata),
+	    .dma_server_rresp(cpu$dma_server_rresp),
+	    .dma_server_rlast(cpu$dma_server_rlast),
 	    .trace_data_out_get(cpu$trace_data_out_get),
 	    .RDY_trace_data_out_get(cpu$RDY_trace_data_out_get),
 	    .RDY_hart0_server_run_halt_request_put(cpu$RDY_hart0_server_run_halt_request_put),
@@ -2139,7 +2487,10 @@ module mkCore(CLK,
 	    .RDY_hart0_fpr_mem_server_response_get(cpu$RDY_hart0_fpr_mem_server_response_get),
 	    .RDY_hart0_csr_mem_server_request_put(cpu$RDY_hart0_csr_mem_server_request_put),
 	    .hart0_csr_mem_server_response_get(cpu$hart0_csr_mem_server_response_get),
-	    .RDY_hart0_csr_mem_server_response_get(cpu$RDY_hart0_csr_mem_server_response_get));
+	    .RDY_hart0_csr_mem_server_response_get(cpu$RDY_hart0_csr_mem_server_response_get),
+	    .RDY_set_verbosity(),
+	    .RDY_ma_ddr4_ready(),
+	    .mv_status(cpu$mv_status));
 
   // submodule debug_module
   mkDebug_Module debug_module(.CLK(CLK),
@@ -2882,19 +3233,19 @@ module mkCore(CLK,
   assign WILL_FIRE_RL_ClientServerResponse_2 =
 	     CAN_FIRE_RL_ClientServerResponse_2 ;
 
-  // rule RL_ClientServerResponse_3
-  assign CAN_FIRE_RL_ClientServerResponse_3 =
-	     dm_fpr_tap_ifc$RDY_server_response_get &&
-	     debug_module$RDY_hart0_fpr_mem_client_response_put ;
-  assign WILL_FIRE_RL_ClientServerResponse_3 =
-	     CAN_FIRE_RL_ClientServerResponse_3 ;
-
   // rule RL_ClientServerRequest_3
   assign CAN_FIRE_RL_ClientServerRequest_3 =
 	     dm_fpr_tap_ifc$RDY_server_request_put &&
 	     debug_module$RDY_hart0_fpr_mem_client_request_get ;
   assign WILL_FIRE_RL_ClientServerRequest_3 =
 	     CAN_FIRE_RL_ClientServerRequest_3 ;
+
+  // rule RL_ClientServerResponse_3
+  assign CAN_FIRE_RL_ClientServerResponse_3 =
+	     dm_fpr_tap_ifc$RDY_server_response_get &&
+	     debug_module$RDY_hart0_fpr_mem_client_response_put ;
+  assign WILL_FIRE_RL_ClientServerResponse_3 =
+	     CAN_FIRE_RL_ClientServerResponse_3 ;
 
   // rule RL_ClientServerRequest_4
   assign CAN_FIRE_RL_ClientServerRequest_4 =
@@ -3109,17 +3460,34 @@ module mkCore(CLK,
 	     CAN_FIRE_RL_rl_cpu_hart0_reset_complete ;
 
   // submodule cpu
-  assign cpu$dmem_master_arready = fabric_2x3$v_from_masters_0_arready ;
-  assign cpu$dmem_master_awready = fabric_2x3$v_from_masters_0_awready ;
-  assign cpu$dmem_master_bid = fabric_2x3$v_from_masters_0_bid ;
-  assign cpu$dmem_master_bresp = fabric_2x3$v_from_masters_0_bresp ;
-  assign cpu$dmem_master_bvalid = fabric_2x3$v_from_masters_0_bvalid ;
-  assign cpu$dmem_master_rdata = fabric_2x3$v_from_masters_0_rdata ;
-  assign cpu$dmem_master_rid = fabric_2x3$v_from_masters_0_rid ;
-  assign cpu$dmem_master_rlast = fabric_2x3$v_from_masters_0_rlast ;
-  assign cpu$dmem_master_rresp = fabric_2x3$v_from_masters_0_rresp ;
-  assign cpu$dmem_master_rvalid = fabric_2x3$v_from_masters_0_rvalid ;
-  assign cpu$dmem_master_wready = fabric_2x3$v_from_masters_0_wready ;
+  assign cpu$dma_server_araddr = dma_server_araddr ;
+  assign cpu$dma_server_arburst = dma_server_arburst ;
+  assign cpu$dma_server_arcache = dma_server_arcache ;
+  assign cpu$dma_server_arid = dma_server_arid ;
+  assign cpu$dma_server_arlen = dma_server_arlen ;
+  assign cpu$dma_server_arlock = dma_server_arlock ;
+  assign cpu$dma_server_arprot = dma_server_arprot ;
+  assign cpu$dma_server_arqos = dma_server_arqos ;
+  assign cpu$dma_server_arregion = dma_server_arregion ;
+  assign cpu$dma_server_arsize = dma_server_arsize ;
+  assign cpu$dma_server_arvalid = dma_server_arvalid ;
+  assign cpu$dma_server_awaddr = dma_server_awaddr ;
+  assign cpu$dma_server_awburst = dma_server_awburst ;
+  assign cpu$dma_server_awcache = dma_server_awcache ;
+  assign cpu$dma_server_awid = dma_server_awid ;
+  assign cpu$dma_server_awlen = dma_server_awlen ;
+  assign cpu$dma_server_awlock = dma_server_awlock ;
+  assign cpu$dma_server_awprot = dma_server_awprot ;
+  assign cpu$dma_server_awqos = dma_server_awqos ;
+  assign cpu$dma_server_awregion = dma_server_awregion ;
+  assign cpu$dma_server_awsize = dma_server_awsize ;
+  assign cpu$dma_server_awvalid = dma_server_awvalid ;
+  assign cpu$dma_server_bready = dma_server_bready ;
+  assign cpu$dma_server_rready = dma_server_rready ;
+  assign cpu$dma_server_wdata = dma_server_wdata ;
+  assign cpu$dma_server_wlast = dma_server_wlast ;
+  assign cpu$dma_server_wstrb = dma_server_wstrb ;
+  assign cpu$dma_server_wvalid = dma_server_wvalid ;
   assign cpu$hart0_csr_mem_server_request_put =
 	     dm_csr_tap$client_request_get ;
   assign cpu$hart0_fpr_mem_server_request_put =
@@ -3145,6 +3513,17 @@ module mkCore(CLK,
   assign cpu$imem_master_rvalid = cpu_imem_master_rvalid ;
   assign cpu$imem_master_wready = cpu_imem_master_wready ;
   assign cpu$m_external_interrupt_req_set_not_clear = plic$v_targets_0_m_eip ;
+  assign cpu$mem_master_arready = fabric_2x3$v_from_masters_0_arready ;
+  assign cpu$mem_master_awready = fabric_2x3$v_from_masters_0_awready ;
+  assign cpu$mem_master_bid = fabric_2x3$v_from_masters_0_bid ;
+  assign cpu$mem_master_bresp = fabric_2x3$v_from_masters_0_bresp ;
+  assign cpu$mem_master_bvalid = fabric_2x3$v_from_masters_0_bvalid ;
+  assign cpu$mem_master_rdata = fabric_2x3$v_from_masters_0_rdata ;
+  assign cpu$mem_master_rid = fabric_2x3$v_from_masters_0_rid ;
+  assign cpu$mem_master_rlast = fabric_2x3$v_from_masters_0_rlast ;
+  assign cpu$mem_master_rresp = fabric_2x3$v_from_masters_0_rresp ;
+  assign cpu$mem_master_rvalid = fabric_2x3$v_from_masters_0_rvalid ;
+  assign cpu$mem_master_wready = fabric_2x3$v_from_masters_0_wready ;
   assign cpu$nmi_req_set_not_clear = nmi_req_set_not_clear ;
   assign cpu$s_external_interrupt_req_set_not_clear = plic$v_targets_1_m_eip ;
   assign cpu$set_verbosity_logdelay = set_verbosity_logdelay ;
@@ -3158,7 +3537,6 @@ module mkCore(CLK,
 	     WILL_FIRE_RL_rl_cpu_hart0_reset_from_dm_start ;
   assign cpu$EN_hart0_server_reset_response_get =
 	     CAN_FIRE_RL_rl_cpu_hart0_reset_complete ;
-  assign cpu$EN_set_verbosity = EN_set_verbosity ;
   assign cpu$EN_trace_data_out_get = WILL_FIRE_RL_merge_cpu_trace_data ;
   assign cpu$EN_hart0_server_run_halt_request_put =
 	     CAN_FIRE_RL_ClientServerRequest ;
@@ -3178,6 +3556,8 @@ module mkCore(CLK,
 	     CAN_FIRE_RL_ClientServerRequest_6 ;
   assign cpu$EN_hart0_csr_mem_server_response_get =
 	     CAN_FIRE_RL_ClientServerResponse_6 ;
+  assign cpu$EN_set_verbosity = EN_set_verbosity ;
+  assign cpu$EN_ma_ddr4_ready = EN_ma_ddr4_ready ;
 
   // submodule debug_module
   assign debug_module$dmi_read_addr_dm_addr = dm_dmi_read_addr_dm_addr ;
@@ -3392,34 +3772,34 @@ module mkCore(CLK,
 
   // submodule fabric_2x3
   assign fabric_2x3$set_verbosity_verbosity = 4'h0 ;
-  assign fabric_2x3$v_from_masters_0_araddr = cpu$dmem_master_araddr ;
-  assign fabric_2x3$v_from_masters_0_arburst = cpu$dmem_master_arburst ;
-  assign fabric_2x3$v_from_masters_0_arcache = cpu$dmem_master_arcache ;
-  assign fabric_2x3$v_from_masters_0_arid = cpu$dmem_master_arid ;
-  assign fabric_2x3$v_from_masters_0_arlen = cpu$dmem_master_arlen ;
-  assign fabric_2x3$v_from_masters_0_arlock = cpu$dmem_master_arlock ;
-  assign fabric_2x3$v_from_masters_0_arprot = cpu$dmem_master_arprot ;
-  assign fabric_2x3$v_from_masters_0_arqos = cpu$dmem_master_arqos ;
-  assign fabric_2x3$v_from_masters_0_arregion = cpu$dmem_master_arregion ;
-  assign fabric_2x3$v_from_masters_0_arsize = cpu$dmem_master_arsize ;
-  assign fabric_2x3$v_from_masters_0_arvalid = cpu$dmem_master_arvalid ;
-  assign fabric_2x3$v_from_masters_0_awaddr = cpu$dmem_master_awaddr ;
-  assign fabric_2x3$v_from_masters_0_awburst = cpu$dmem_master_awburst ;
-  assign fabric_2x3$v_from_masters_0_awcache = cpu$dmem_master_awcache ;
-  assign fabric_2x3$v_from_masters_0_awid = cpu$dmem_master_awid ;
-  assign fabric_2x3$v_from_masters_0_awlen = cpu$dmem_master_awlen ;
-  assign fabric_2x3$v_from_masters_0_awlock = cpu$dmem_master_awlock ;
-  assign fabric_2x3$v_from_masters_0_awprot = cpu$dmem_master_awprot ;
-  assign fabric_2x3$v_from_masters_0_awqos = cpu$dmem_master_awqos ;
-  assign fabric_2x3$v_from_masters_0_awregion = cpu$dmem_master_awregion ;
-  assign fabric_2x3$v_from_masters_0_awsize = cpu$dmem_master_awsize ;
-  assign fabric_2x3$v_from_masters_0_awvalid = cpu$dmem_master_awvalid ;
-  assign fabric_2x3$v_from_masters_0_bready = cpu$dmem_master_bready ;
-  assign fabric_2x3$v_from_masters_0_rready = cpu$dmem_master_rready ;
-  assign fabric_2x3$v_from_masters_0_wdata = cpu$dmem_master_wdata ;
-  assign fabric_2x3$v_from_masters_0_wlast = cpu$dmem_master_wlast ;
-  assign fabric_2x3$v_from_masters_0_wstrb = cpu$dmem_master_wstrb ;
-  assign fabric_2x3$v_from_masters_0_wvalid = cpu$dmem_master_wvalid ;
+  assign fabric_2x3$v_from_masters_0_araddr = cpu$mem_master_araddr ;
+  assign fabric_2x3$v_from_masters_0_arburst = cpu$mem_master_arburst ;
+  assign fabric_2x3$v_from_masters_0_arcache = cpu$mem_master_arcache ;
+  assign fabric_2x3$v_from_masters_0_arid = cpu$mem_master_arid ;
+  assign fabric_2x3$v_from_masters_0_arlen = cpu$mem_master_arlen ;
+  assign fabric_2x3$v_from_masters_0_arlock = cpu$mem_master_arlock ;
+  assign fabric_2x3$v_from_masters_0_arprot = cpu$mem_master_arprot ;
+  assign fabric_2x3$v_from_masters_0_arqos = cpu$mem_master_arqos ;
+  assign fabric_2x3$v_from_masters_0_arregion = cpu$mem_master_arregion ;
+  assign fabric_2x3$v_from_masters_0_arsize = cpu$mem_master_arsize ;
+  assign fabric_2x3$v_from_masters_0_arvalid = cpu$mem_master_arvalid ;
+  assign fabric_2x3$v_from_masters_0_awaddr = cpu$mem_master_awaddr ;
+  assign fabric_2x3$v_from_masters_0_awburst = cpu$mem_master_awburst ;
+  assign fabric_2x3$v_from_masters_0_awcache = cpu$mem_master_awcache ;
+  assign fabric_2x3$v_from_masters_0_awid = cpu$mem_master_awid ;
+  assign fabric_2x3$v_from_masters_0_awlen = cpu$mem_master_awlen ;
+  assign fabric_2x3$v_from_masters_0_awlock = cpu$mem_master_awlock ;
+  assign fabric_2x3$v_from_masters_0_awprot = cpu$mem_master_awprot ;
+  assign fabric_2x3$v_from_masters_0_awqos = cpu$mem_master_awqos ;
+  assign fabric_2x3$v_from_masters_0_awregion = cpu$mem_master_awregion ;
+  assign fabric_2x3$v_from_masters_0_awsize = cpu$mem_master_awsize ;
+  assign fabric_2x3$v_from_masters_0_awvalid = cpu$mem_master_awvalid ;
+  assign fabric_2x3$v_from_masters_0_bready = cpu$mem_master_bready ;
+  assign fabric_2x3$v_from_masters_0_rready = cpu$mem_master_rready ;
+  assign fabric_2x3$v_from_masters_0_wdata = cpu$mem_master_wdata ;
+  assign fabric_2x3$v_from_masters_0_wlast = cpu$mem_master_wlast ;
+  assign fabric_2x3$v_from_masters_0_wstrb = cpu$mem_master_wstrb ;
+  assign fabric_2x3$v_from_masters_0_wvalid = cpu$mem_master_wvalid ;
   assign fabric_2x3$v_from_masters_1_araddr = dm_mem_tap$master_araddr ;
   assign fabric_2x3$v_from_masters_1_arburst = dm_mem_tap$master_arburst ;
   assign fabric_2x3$v_from_masters_1_arcache = dm_mem_tap$master_arcache ;
@@ -3448,17 +3828,17 @@ module mkCore(CLK,
   assign fabric_2x3$v_from_masters_1_wlast = dm_mem_tap$master_wlast ;
   assign fabric_2x3$v_from_masters_1_wstrb = dm_mem_tap$master_wstrb ;
   assign fabric_2x3$v_from_masters_1_wvalid = dm_mem_tap$master_wvalid ;
-  assign fabric_2x3$v_to_slaves_0_arready = cpu_dmem_master_arready ;
-  assign fabric_2x3$v_to_slaves_0_awready = cpu_dmem_master_awready ;
-  assign fabric_2x3$v_to_slaves_0_bid = cpu_dmem_master_bid ;
-  assign fabric_2x3$v_to_slaves_0_bresp = cpu_dmem_master_bresp ;
-  assign fabric_2x3$v_to_slaves_0_bvalid = cpu_dmem_master_bvalid ;
-  assign fabric_2x3$v_to_slaves_0_rdata = cpu_dmem_master_rdata ;
-  assign fabric_2x3$v_to_slaves_0_rid = cpu_dmem_master_rid ;
-  assign fabric_2x3$v_to_slaves_0_rlast = cpu_dmem_master_rlast ;
-  assign fabric_2x3$v_to_slaves_0_rresp = cpu_dmem_master_rresp ;
-  assign fabric_2x3$v_to_slaves_0_rvalid = cpu_dmem_master_rvalid ;
-  assign fabric_2x3$v_to_slaves_0_wready = cpu_dmem_master_wready ;
+  assign fabric_2x3$v_to_slaves_0_arready = core_mem_master_arready ;
+  assign fabric_2x3$v_to_slaves_0_awready = core_mem_master_awready ;
+  assign fabric_2x3$v_to_slaves_0_bid = core_mem_master_bid ;
+  assign fabric_2x3$v_to_slaves_0_bresp = core_mem_master_bresp ;
+  assign fabric_2x3$v_to_slaves_0_bvalid = core_mem_master_bvalid ;
+  assign fabric_2x3$v_to_slaves_0_rdata = core_mem_master_rdata ;
+  assign fabric_2x3$v_to_slaves_0_rid = core_mem_master_rid ;
+  assign fabric_2x3$v_to_slaves_0_rlast = core_mem_master_rlast ;
+  assign fabric_2x3$v_to_slaves_0_rresp = core_mem_master_rresp ;
+  assign fabric_2x3$v_to_slaves_0_rvalid = core_mem_master_rvalid ;
+  assign fabric_2x3$v_to_slaves_0_wready = core_mem_master_wready ;
   assign fabric_2x3$v_to_slaves_1_arready = near_mem_io$axi4_slave_arready ;
   assign fabric_2x3$v_to_slaves_1_awready = near_mem_io$axi4_slave_awready ;
   assign fabric_2x3$v_to_slaves_1_bid = near_mem_io$axi4_slave_bid ;
@@ -3630,33 +4010,33 @@ module mkCore(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_from_soc_start)
 	begin
-	  v__h5108 = $stime;
+	  v__h5471 = $stime;
 	  #0;
 	end
-    v__h5102 = v__h5108 / 32'd10;
+    v__h5465 = v__h5471 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_from_soc_start)
-	$display("%0d: Core.rl_cpu_hart0_reset_from_soc_start", v__h5102);
+	$display("%0d: Core.rl_cpu_hart0_reset_from_soc_start", v__h5465);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_from_dm_start)
 	begin
-	  v__h5309 = $stime;
+	  v__h5672 = $stime;
 	  #0;
 	end
-    v__h5303 = v__h5309 / 32'd10;
+    v__h5666 = v__h5672 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_from_dm_start)
-	$display("%0d: Core.rl_cpu_hart0_reset_from_dm_start", v__h5303);
+	$display("%0d: Core.rl_cpu_hart0_reset_from_dm_start", v__h5666);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_complete)
 	begin
-	  v__h5677 = $stime;
+	  v__h6040 = $stime;
 	  #0;
 	end
-    v__h5671 = v__h5677 / 32'd10;
+    v__h6034 = v__h6040 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_complete)
-	$display("%0d: Core.rl_cpu_hart0_reset_complete", v__h5671);
+	$display("%0d: Core.rl_cpu_hart0_reset_complete", v__h6034);
   end
   // synopsys translate_on
 endmodule  // mkCore

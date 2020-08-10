@@ -118,6 +118,12 @@ interface I_MMU_Cache_IFC;
 
    // Fabric master interface
    interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) mem_master;
+
+   // ----------------------------------------------------------------
+   // Misc. control and status
+
+   // Signal that DDR4 has been initialized and is ready to accept requests
+   method Action ma_ddr4_ready;
 endinterface
 
 // ****************************************************************
@@ -602,6 +608,14 @@ module mkI_MMU_Cache (I_MMU_Cache_IFC);
 
    // Fabric master interface
    interface AXI4_Master_IFC mem_master = axi4_adapter.mem_master;
+
+   // ----------------------------------------------------------------
+   // Misc. control and status
+
+   // Signal that DDR4 has been initialized and is ready to accept requests
+   method Action ma_ddr4_ready;
+      axi4_adapter.ma_ddr4_ready;
+   endmethod
 endmodule: mkI_MMU_Cache
 
 // ================================================================

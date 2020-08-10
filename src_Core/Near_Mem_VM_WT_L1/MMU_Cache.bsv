@@ -124,6 +124,24 @@ interface MMU_Cache_IFC;
 
    // Fabric master interface
    interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) mem_master;
+
+   // ----------------------------------------------------------------
+   // Misc. control and status
+
+   // ----------------
+   // For ISA tests: watch memory writes to <tohost> addr
+
+`ifdef WATCH_TOHOST
+   method Action set_watch_tohost (Bool watch_tohost, Bit #(64) tohost_addr);
+`endif
+
+   // Inform core that DDR4 has been initialized and is ready to accept requests
+   method Action ma_ddr4_ready;
+
+   // Misc. status; 0 = running, no error
+   (* always_ready *)
+   method Bit #(8) mv_status;
+
 endinterface
 
 // ****************************************************************
@@ -413,7 +431,9 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
    Reg #(Bit #(4)) cfg_verbosity <- mkConfigReg (fromInteger (verbosity));
 
    // Overall state of this module
-   Reg #(Module_State)  rg_state  <- mkReg (MODULE_PRERESET);
+   Reg #(Module_State)  rg_state      <- mkReg (MODULE_PRERESET);
+   Reg #(Bool)          rg_ddr4_ready <- mkReg (False);
+   Reg #(Bool)          rg_wr_rsp_err <- mkReg (False);
 
    // SoC_Map is needed for method 'm_is_mem_addr' to distinguish mem
    // (cached) and other (non-cached) addrs
@@ -539,6 +559,14 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
    // When a CSet is full and we need to replace a cache line due to a refill,
    // the victim is picked 'randomly' according to this register
    Reg #(Way_in_CSet)  rg_victim_way <- mkRegU;
+
+`ifdef WATCH_TOHOST
+   // See NOTE: "tohost" above.
+   // "tohost" addr on which to monitor writes, for standard ISA tests.
+   // These are set by the 'set_watch_tohost' method but are otherwise read-only.
+   Reg #(Bool)      rg_watch_tohost <- mkReg (False);
+   Reg #(Bit #(64)) rg_tohost_addr  <- mkReg ('h_8000_1000);
+`endif
 
    // ----------------------------------------------------------------
    // This function initiates a read request on the 'B' ports of the rams
@@ -700,7 +728,7 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
       endaction
    endfunction
 
-   rule rl_fabric_send_write_req;
+   rule rl_fabric_send_write_req (rg_ddr4_ready);
       match { .f3, .pa, .st_val } <- pop (f_fabric_write_reqs);
 
       match {.fabric_addr,
@@ -836,7 +864,7 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
    (* descending_urgency = "rl_probe_and_immed_rsp, rl_writeback_updated_PTE" *)
 `endif
 
-   rule rl_probe_and_immed_rsp (rg_state == MODULE_RUNNING);
+   rule rl_probe_and_immed_rsp (rg_ddr4_ready && (rg_state == MODULE_RUNNING));
 
       // Print some initial information for debugging
       if (cfg_verbosity > 1) begin
@@ -1394,7 +1422,8 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
    // Pick victim way, update ctag.
    // Initiate read of cword_set in cache for read-modify-write of word64
 
-   rule rl_start_cache_refill ((rg_state == CACHE_START_REFILL) && (ctr_wr_rsps_pending.value == 0));
+   rule rl_start_cache_refill (   (rg_state == CACHE_START_REFILL)
+			       && (ctr_wr_rsps_pending.value == 0));
       if (cfg_verbosity > 1)
 	 $display ("%0d: %s.rl_start_cache_refill: ", cur_cycle, d_or_i);
 
@@ -1582,6 +1611,25 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
       dw_valid             <= True;
       dw_output_ld_val     <= zeroExtend (rg_ld_val);        // Irrelevant for ST; relevant for SC, AMO
       dw_output_st_amo_val <= zeroExtend (rg_st_amo_val);
+
+`ifdef WATCH_TOHOST
+      // ----------------
+      // "tohost" addr on which to monitor writes, for standard ISA tests.
+      // See NOTE: "tohost" above.
+      if (rg_watch_tohost
+	  && (zeroExtend (rg_pa) == rg_tohost_addr)
+	  && (rg_st_amo_val != 0))
+	 begin					      
+	    let test_num = (rg_st_amo_val >> 1);
+	    $display ("****************************************************************");
+	    if (test_num == 0) $display ("PASS:");
+	    else               $display ("FAIL <test_%0d>:", test_num);
+	    $display ("  (ISA test terminated: <tohost> va %0h pa %0h data %0h)",
+		      rg_addr, rg_pa, rg_st_amo_val);
+	    $display ("    Cycle count %0d (from %m.fa_cpu_response)", cur_cycle);
+	    $finish (0);
+	 end
+`endif
    endrule
 
    // ----------------------------------------------------------------
@@ -1772,9 +1820,10 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
       ctr_wr_rsps_pending.decr;
 
       if (wr_resp.bresp != axi4_resp_okay) begin
-	 // TODO: need to raise a non-maskable interrupt (NMI) here
+	 rg_wr_rsp_err <= True;
 	 $display ("%0d: %s.rl_discard_write_rsp: fabric response error: exit", cur_cycle, d_or_i);
 	 $display ("    ", fshow (wr_resp));
+	 // TODO: need to raise a non-maskable interrupt (NMI) here?
       end
       else if (cfg_verbosity > 1) begin
 	 $display ("%0d: %s.rl_discard_write_rsp: pending %0d ",
@@ -1920,6 +1969,31 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
 
    // Fabric master interface
    interface mem_master = master_xactor.axi_side;
+
+   // ----------------------------------------------------------------
+   // Misc. control and status
+
+   // ----------------
+   // For ISA tests: watch memory writes to <tohost> addr
+
+`ifdef WATCH_TOHOST
+   method Action set_watch_tohost (Bool watch_tohost, Bit #(64) tohost_addr);
+      rg_watch_tohost <= watch_tohost;
+      rg_tohost_addr  <= tohost_addr;
+   endmethod
+`endif
+
+   // Inform core that DDR4 has been initialized and is ready to accept requests
+   method Action ma_ddr4_ready;
+      rg_ddr4_ready <= True;
+      $display ("%0d: %m.ma_ddr4_ready: Enabling MMU_Cache", cur_cycle);
+   endmethod
+
+   // Misc. status; 0 = running, no error
+   method Bit #(8) mv_status;
+      return (rg_wr_rsp_err ? 1 : 0);
+   endmethod
+
 endmodule: mkMMU_Cache
 
 // ================================================================

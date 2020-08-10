@@ -54,6 +54,30 @@ typedef 512  Wd_Data_Dma;
 typedef 0    Wd_User_Dma;
 
 // ================================================================
+// This part of the interface is lifted out to surrounding modules.
+
+`ifdef MEM_512b
+
+typedef 16   Wd_Id_Mem;
+typedef 64   Wd_Addr_Mem;
+typedef 512  Wd_Data_Mem;
+typedef 0    Wd_User_Mem;
+
+`else
+
+typedef Wd_Id    Wd_Id_Mem;
+typedef Wd_Addr  Wd_Addr_Mem;
+typedef Wd_Data  Wd_Data_Mem;
+typedef Wd_User  Wd_User_Mem;
+
+`endif
+
+typedef AXI4_Master_IFC #(Wd_Id_Mem,
+			  Wd_Addr_Mem,
+			  Wd_Data_Mem,
+			  Wd_User_Mem)  Near_Mem_Fabric_IFC;
+
+// ================================================================
 
 interface Near_Mem_IFC;
    // Reset
@@ -75,7 +99,7 @@ interface Near_Mem_IFC;
    interface DMem_IFC  dmem;
 
    // Fabric side
-   interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) dmem_master;
+   interface Near_Mem_Fabric_IFC  mem_master;
 
    // ----------------------------------------------------------------
    // Optional AXI4-Lite DMem slave interface
@@ -101,11 +125,21 @@ interface Near_Mem_IFC;
    interface AXI4_Slave_IFC #(Wd_Id_Dma, Wd_Addr_Dma, Wd_Data_Dma, Wd_User_Dma)  dma_server;
 
    // ----------------------------------------------------------------
+   // Misc. control and status
+
+   // ----------------
    // For ISA tests: watch memory writes to <tohost> addr
 
 `ifdef WATCH_TOHOST
    method Action set_watch_tohost (Bool watch_tohost, Bit #(64) tohost_addr);
 `endif
+
+   // Inform core that DDR4 has been initialized and is ready to accept requests
+   method Action ma_ddr4_ready;
+
+   // Misc. status; 0 = running, no error
+   (* always_ready *)
+   method Bit #(8) mv_status;
 
 endinterface
    

@@ -194,7 +194,7 @@ module mkNear_Mem (Near_Mem_IFC);
    endinterface
 
    // Fabric side
-   interface dmem_master = d_mmu_cache.mem_master;
+   interface Near_Mem_Fabric_IFC  mem_master = d_mmu_cache.mem_master;
 
    // ----------------
    // FENCE.I: flush both IMem and DMem
@@ -252,6 +252,9 @@ module mkNear_Mem (Near_Mem_IFC);
 `endif
 
    // ----------------------------------------------------------------
+   // Misc. control and status
+
+   // ----------------
    // For ISA tests: watch memory writes to <tohost> addr
 
 `ifdef WATCH_TOHOST
@@ -259,6 +262,17 @@ module mkNear_Mem (Near_Mem_IFC);
       d_mmu_cache.set_watch_tohost (watch_tohost, tohost_addr);
    endmethod
 `endif
+
+   // Signal that DDR4 has been initialized and is ready to accept requests
+   method Action ma_ddr4_ready;
+      i_mmu_cache.ma_ddr4_ready;
+      d_mmu_cache.ma_ddr4_ready;
+   endmethod
+
+   // Misc. status; 0 = running, no error
+   method Bit #(8) mv_status;
+      return d_mmu_cache.mv_status;
+   endmethod
 
 endmodule
 

@@ -218,7 +218,7 @@ module mkNear_Mem (Near_Mem_IFC);
    endinterface
 
    // Fabric side
-   interface dmem_master = dcache.mem_master;
+   interface Near_Mem_Fabric_IFC  mem_master = dcache.mem_master;
 
 `ifdef INCLUDE_DMEM_SLAVE
    interface dmem_slave = dmem_slave_adapter.from_master;
@@ -274,13 +274,27 @@ module mkNear_Mem (Near_Mem_IFC);
    interface AXI4_Slave_IFC dma_server = dummy_AXI4_Slave_ifc;
 
    // ----------------------------------------------------------------
+   // Misc. control and status
+
+   // ----------------
    // For ISA tests: watch memory writes to <tohost> addr
 
 `ifdef WATCH_TOHOST
    method Action set_watch_tohost (Bool watch_tohost, Bit #(64) tohost_addr);
-      noAction;
+      dcache.set_watch_tohost (watch_tohost, tohost_addr);
    endmethod
 `endif
+
+   // Inform core that DDR4 has been initialized and is ready to accept requests
+   method Action ma_ddr4_ready;
+      icache.ma_ddr4_ready;
+      dcache.ma_ddr4_ready;
+   endmethod
+
+   // Misc. status; 0 = running, no error
+   method Bit #(8) mv_status;
+      return dcache.mv_status;
+   endmethod
 
 endmodule
 

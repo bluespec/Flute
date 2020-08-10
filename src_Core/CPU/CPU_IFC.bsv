@@ -42,8 +42,8 @@ interface CPU_IFC;
    // IMem to Fabric master interface
    interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User)  imem_master;
 
-   // DMem to Fabric master interface
-   interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User)  dmem_master;
+   // Fabric master interface to memory
+   interface Near_Mem_Fabric_IFC  mem_master;
 
    // ----------------------------------------------------------------
    // Optional AXI4-Lite D-cache slave interface
@@ -83,11 +83,6 @@ interface CPU_IFC;
    method Action  nmi_req (Bool set_not_clear);
 
    // ----------------
-   // Set core's verbosity
-
-   method Action  set_verbosity (Bit #(4)  verbosity, Bit #(64)  logdelay);
-
-   // ----------------
    // Optional interface to Tandem Verifier
 
 `ifdef INCLUDE_TANDEM_VERIF
@@ -115,11 +110,26 @@ interface CPU_IFC;
 `endif
 
    // ----------------------------------------------------------------
+   // Misc. control and status
+
+   // ----------------
+   // Debugging: set core's verbosity
+
+   method Action set_verbosity (Bit #(4)  verbosity, Bit #(64)  logdelay);
+
+   // ----------------
    // For ISA tests: watch memory writes to <tohost> addr
 
 `ifdef WATCH_TOHOST
    method Action set_watch_tohost (Bool watch_tohost, Bit #(64) tohost_addr);
 `endif
+
+   // Inform core that DDR4 has been initialized and is ready to accept requests
+   method Action ma_ddr4_ready;
+
+   // Misc. status; 0 = running, no error
+   (* always_ready *)
+   method Bit #(8) mv_status;
 
 endinterface
 

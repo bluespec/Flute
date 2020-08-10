@@ -33,10 +33,11 @@ import CacheUtils  :: *;
 import CCTypes     :: *;
 
 // ----------------
-// From Bluespec Pipes
+// From Bluespec RISC-V CPUs
 
 import AXI4_Types   :: *;
 import Fabric_Defs  :: *;
+import Near_Mem_IFC :: *;
 
 // ================================================================
 
@@ -44,7 +45,18 @@ interface LLC_AXI4_Adapter_IFC;
    method Action reset;
 
    // Fabric master interface for memory
-   interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) mem_master;
+   interface Near_Mem_Fabric_IFC  mem_master;
+
+   // ----------------------------------------------------------------
+   // Misc. control and status
+
+   // Signal that DDR4 has been initialized and is ready to accept requests
+   method Action ma_ddr4_ready;
+
+   // Misc. status; 0 = running, no error
+   (* always_ready *)
+   method Bit #(8) mv_status;
+
 endinterface
 
 // ================================================================
@@ -59,15 +71,18 @@ module mkLLC_AXi4_Adapter #(MemFifoClient #(idT, childT) llc)
 
    // Verbosity: 0: quiet; 1: LLC transactions; 2: loop detail
    Integer verbosity = 0;
-   Reg #(Bit #(4)) cfg_verbosity <- mkConfigReg (fromInteger (verbosity));
 
    // ================================================================
    // Fabric request/response
 
-   AXI4_Master_Xactor_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) master_xactor <- mkAXI4_Master_Xactor_2;
+   AXI4_Master_Xactor_IFC #(Wd_Id_Mem, Wd_Addr_Mem, Wd_Data_Mem, Wd_User_Mem)
+   master_xactor <- mkAXI4_Master_Xactor_2;
 
    // For discarding write-responses
    CreditCounter_IFC #(4) ctr_wr_rsps_pending <- mkCreditCounter; // Max 15 writes outstanding
+
+   Reg #(Bool) rg_ddr4_ready <- mkReg (False);
+   Reg #(Bool) rg_AXI4_error <- mkReg (False);
 
    // ================================================================
    // Functions to interact with the fabric
@@ -91,7 +106,7 @@ module mkLLC_AXi4_Adapter #(MemFifoClient #(idT, childT) llc)
 	 master_xactor.i_rd_addr.enq (mem_req_rd_addr);
 
 	 // Debugging
-	 if (cfg_verbosity > 1) begin
+	 if (verbosity > 1) begin
 	    $display ("    ", fshow (mem_req_rd_addr));
 	 end
       endaction
@@ -125,7 +140,7 @@ module mkLLC_AXi4_Adapter #(MemFifoClient #(idT, childT) llc)
 	 ctr_wr_rsps_pending.incr;
 
 	 // Debugging
-	 if (cfg_verbosity > 1) begin
+	 if (verbosity > 1) begin
 	    $display ("            To fabric: ", fshow (mem_req_wr_addr));
 	    $display ("                       ", fshow (mem_req_wr_data));
 	 end
@@ -144,8 +159,9 @@ module mkLLC_AXi4_Adapter #(MemFifoClient #(idT, childT) llc)
    Reg #(Bit #(512)) rg_cline <- mkRegU;
 
    rule rl_handle_read_req (llc.toM.first matches tagged Ld .ld
-			    &&& (ctr_wr_rsps_pending.value == 0));
-      if ((cfg_verbosity > 0) && (rg_rd_req_beat == 0)) begin
+			    &&& (ctr_wr_rsps_pending.value == 0)
+			    &&& rg_ddr4_ready);
+      if ((verbosity > 0) && (rg_rd_req_beat == 0)) begin
 	 $display ("%0d: LLC_AXI4_Adapter.rl_handle_read_req: Ld request from LLC to memory: beat %0d",
 		   cur_cycle, rg_rd_req_beat);
 	 $display ("    ", fshow (ld));
@@ -167,7 +183,7 @@ module mkLLC_AXi4_Adapter #(MemFifoClient #(idT, childT) llc)
    rule rl_handle_read_rsps;
       let  mem_rsp <- pop_o (master_xactor.o_rd_data);
 
-      if (cfg_verbosity > 1) begin
+      if (verbosity >= 1) begin
 	 $display ("%0d: LLC_AXI4_Adapter.rl_handle_read_rsps: beat %0d ", cur_cycle, rg_rd_rsp_beat);
 	 $display ("    ", fshow (mem_rsp));
       end
@@ -190,7 +206,7 @@ module mkLLC_AXi4_Adapter #(MemFifoClient #(idT, childT) llc)
 
 	 llc.rsFromM.enq (resp);
 
-	 if (cfg_verbosity > 1)
+	 if (verbosity >= 1)
 	    $display ("    Response to LLC: ", fshow (resp));
       end
 
@@ -207,8 +223,9 @@ module mkLLC_AXi4_Adapter #(MemFifoClient #(idT, childT) llc)
 
    FIFOF #(WbMemRs) f_pending_writes <- mkFIFOF;
 
-   rule rl_handle_write_req (llc.toM.first matches tagged Wb .wb);
-      if ((cfg_verbosity > 0) && (rg_wr_req_beat == 0)) begin
+   rule rl_handle_write_req (llc.toM.first matches tagged Wb .wb
+			     &&& rg_ddr4_ready);
+      if ((verbosity >= 1) && (rg_wr_req_beat == 0)) begin
 	 $display ("%d: LLC_AXI4_Adapter.rl_handle_write_req: Wb request from LLC to memory:", cur_cycle);
 	 $display ("    ", fshow (wb));
       end
@@ -232,30 +249,34 @@ module mkLLC_AXi4_Adapter #(MemFifoClient #(idT, childT) llc)
    endrule
 
    // ----------------
-   // Discard write-responses from the fabric
+   // Discard write-responses from the fabric (LLC does not expect write-responses)
 
    rule rl_discard_write_rsp;
       let wr_resp <- pop_o (master_xactor.o_wr_resp);
 
-      if (cfg_verbosity > 1) begin
+      if (verbosity >= 1) begin
 	 $display ("%0d: LLC_AXI4_Adapter.rl_discard_write_rsp: beat %0d ", cur_cycle, rg_wr_rsp_beat);
 	 $display ("    ", fshow (wr_resp));
       end
 
       if (ctr_wr_rsps_pending.value == 0) begin
-	 $display ("%0d: ERROR: LLC_AXI4_Adapter.rl_discard_write_rsp: unexpected Wr response (ctr_wr_rsps_pending.value == 0)",
-		   cur_cycle);
+	 rg_AXI4_error <= True;
+	 $display ("%0d: %m.rl_discard_write_rsp", cur_cycle);
+	 $display ("    INTERNAL ERROR: unexpected Wr response (ctr_wr_rsps_pending.value == 0)");
 	 $display ("    ", fshow (wr_resp));
-	 $finish (1);    // Assertion failure
+	 $finish (1);
+	 // TODO: need to raise a non-maskable interrupt (NMI) here?
       end
 
       ctr_wr_rsps_pending.decr;
 
       if (wr_resp.bresp != axi4_resp_okay) begin
-	 // TODO: need to raise a non-maskable interrupt (NMI) here
-	 $display ("%0d: LLC_AXI4_Adapter.rl_discard_write_rsp: fabric response error: exit", cur_cycle);
+	 rg_AXI4_error <= True;
+	 $display ("%0d: %m.rl_discard_write_rsp", cur_cycle);
+	 $display ("    ERROR: fabric response error: exit");
 	 $display ("    ", fshow (wr_resp));
 	 $finish (1);
+	 // TODO: need to raise a non-maskable interrupt (NMI) here?
       end
 
       if (rg_wr_rsp_beat == 7) begin
@@ -275,6 +296,21 @@ module mkLLC_AXi4_Adapter #(MemFifoClient #(idT, childT) llc)
 
    // Fabric interface for memory
    interface mem_master = master_xactor.axi_side;
+
+   // ----------------------------------------------------------------
+   // Misc. control and status
+
+   // Signal that DDR4 has been initialized and is ready to accept requests
+   method Action ma_ddr4_ready;
+      rg_ddr4_ready <= True;
+      $display ("    %0d: %m.ma_ddr4_ready: enabling all rules");
+   endmethod
+
+   // Misc. status; 0 = running, no error
+   method Bit #(8) mv_status;
+      return (rg_AXI4_error ? 1 : 0);
+   endmethod
+
 endmodule
 
 // ================================================================

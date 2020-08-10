@@ -64,7 +64,12 @@ import CCTypes       :: *;
 import LLCache       :: *;
 import L1LLConnect   :: *;
 
+`ifdef MEM_512b
+import LLC_AXI4_Adapter_2   :: *;
+`else
 import LLC_AXI4_Adapter     :: *;
+`endif
+
 import MMIO_AXI4_Adapter    :: *;
 import LLC_DMA_AXI4_Adapter :: *;
 
@@ -418,7 +423,7 @@ module mkNear_Mem (Near_Mem_IFC);
    // Fabric side
 
    interface imem_master = mmio_axi4_adapter.mem_master;
-   interface dmem_master = llc_axi4_adapter.mem_master;
+   interface mem_master  = llc_axi4_adapter.mem_master;
 
    // ----------------------------------------------------------------
    // Interface to 'coherent DMA' port of optional L2 cache
@@ -426,6 +431,9 @@ module mkNear_Mem (Near_Mem_IFC);
    interface dma_server = llc_dma_axi4_adapter;
 
    // ----------------------------------------------------------------
+   // Misc. control and status
+
+   // ----------------
    // For ISA tests: watch memory writes to <tohost> addr
 
 `ifdef WATCH_TOHOST
@@ -433,6 +441,16 @@ module mkNear_Mem (Near_Mem_IFC);
       d_mmu_cache.set_watch_tohost (watch_tohost, tohost_addr);
    endmethod
 `endif
+
+   // Inform core that DDR4 has been initialized and is ready to accept requests
+   method Action ma_ddr4_ready;
+      llc_axi4_adapter.ma_ddr4_ready;
+   endmethod
+
+   // Misc. status; 0 = running, no error
+   method Bit #(8) mv_status;
+      return llc_axi4_adapter.mv_status;
+   endmethod
 
 endmodule
 

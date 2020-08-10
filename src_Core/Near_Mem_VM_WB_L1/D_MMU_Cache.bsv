@@ -142,12 +142,22 @@ interface D_MMU_Cache_IFC;
    // Fabric master interface
    interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) mem_master;
 
-`ifdef WATCH_TOHOST
    // ----------------------------------------------------------------
+   // Misc. control and status
+
+   // ----------------
    // For ISA tests: watch memory writes to <tohost> addr (see NOTE: "tohost" above)
 
+`ifdef WATCH_TOHOST
    method Action set_watch_tohost (Bool watch_tohost, Bit #(64) tohost_addr);
 `endif
+
+   // Inform core that DDR4 has been initialized and is ready to accept requests
+   method Action ma_ddr4_ready;
+
+   // Misc. status; 0 = running, no error
+   (* always_ready *)
+   method Bit #(8) mv_status;
 
 endinterface
 
@@ -891,6 +901,9 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
    interface AXI4_Master_IFC mem_master = axi4_adapter.mem_master;
 
    // ----------------------------------------------------------------
+   // Misc. control and status
+
+   // ----------------
    // For ISA tests: watch memory writes to <tohost> addr (see NOTE: "tohost" above)
 
 `ifdef WATCH_TOHOST
@@ -899,6 +912,17 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
       rg_tohost_addr  <= tohost_addr;
    endmethod
 `endif
+
+   // Signal that DDR4 has been initialized and is ready to accept requests
+   method Action ma_ddr4_ready;
+      axi4_adapter.ma_ddr4_ready;
+   endmethod
+
+   // Misc. status; 0 = running, no error
+   method Bit #(8) mv_status;
+      // Note: currently on looking at write-errors, which only happens in DMem
+      return axi4_adapter.mv_status;
+   endmethod
 
 endmodule: mkD_MMU_Cache
 

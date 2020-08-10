@@ -98,6 +98,17 @@ interface MMU_Cache_AXI4_Adapter_IFC;
    // ----------------
    // Fabric master interface
    interface AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) mem_master;
+
+   // ----------------------------------------------------------------
+   // Misc. control and status
+
+   // Signal that DDR4 has been initialized and is ready to accept requests
+   method Action ma_ddr4_ready;
+
+   // Misc. status; 0 = running, no error
+   (* always_ready *)
+   method Bit #(8) mv_status;
+
 endinterface
 
 // ================================================================
@@ -169,6 +180,8 @@ module mkMMU_Cache_AXI4_Adapter #(parameter Bit #(3) verbosity)
    // TODO: change these to concurrent up/down counters?
    Reg #(Bit #(4)) rg_rd_rsps_pending <- mkReg (0);
    Reg #(Bit #(4)) rg_wr_rsps_pending <- mkReg (0);
+
+   Reg #(Bool) rg_ddr4_ready <- mkReg (False);
 
    // Record errors on write-responses from mem
    Reg #(Bool) rg_write_error <- mkReg (False);
@@ -261,6 +274,7 @@ module mkMMU_Cache_AXI4_Adapter #(parameter Bit #(3) verbosity)
    // BEHAVIOR: LINE READ REQUESTS
 
    rule rl_line_read_req (f_line_reqs.first.is_read
+			  && rg_ddr4_ready
 			  && (rg_rd_rsps_pending < '1)
 			  && (rg_wr_rsps_pending == 0));
       let req <- pop (f_line_reqs);
@@ -309,6 +323,7 @@ module mkMMU_Cache_AXI4_Adapter #(parameter Bit #(3) verbosity)
    // BEHAVIOR: Single read requests (not a burst)
 
    rule rl_single_read_req (f_single_reqs.first.is_read
+			    && rg_ddr4_ready
 			    && (rg_rd_rsps_pending < '1)
 			    && (rg_wr_rsps_pending == 0));
       let         req        <- pop (f_single_reqs);
@@ -397,7 +412,7 @@ module mkMMU_Cache_AXI4_Adapter #(parameter Bit #(3) verbosity)
    // Former is 2 x latter for Fabric32 for 64b line data and 64b single data.
    Reg #(Bit #(8)) rg_wr_beat <- mkReg (0);
 
-   rule rl_write_data (rg_wr_beat < wr_req_beats);
+   rule rl_write_data (rg_ddr4_ready && (rg_wr_beat < wr_req_beats));
       Bool last = (rg_wr_beat == (wr_req_beats - 1));
       if (last) begin
 	 f_wr_data_control.deq;
@@ -466,6 +481,7 @@ module mkMMU_Cache_AXI4_Adapter #(parameter Bit #(3) verbosity)
    // BEHAVIOR: Line-write requests
 
    rule rl_line_write_req ((! f_line_reqs.first.is_read)
+			   && rg_ddr4_ready
 			   && (rg_rd_rsps_pending == 0)
 			   && (rg_wr_rsps_pending < '1));
       let req <- pop (f_line_reqs);
@@ -532,6 +548,7 @@ module mkMMU_Cache_AXI4_Adapter #(parameter Bit #(3) verbosity)
    // BEHAVIOR: Single write requests (not a burst)
 
    rule rl_single_write_req ((! f_single_reqs.first.is_read)
+			     && rg_ddr4_ready
 			     && (rg_rd_rsps_pending == 0)
 			     && (rg_wr_rsps_pending < '1));
       let req <- pop (f_single_reqs);
@@ -603,6 +620,21 @@ module mkMMU_Cache_AXI4_Adapter #(parameter Bit #(3) verbosity)
    // ----------------
    // Fabric master interface
    interface mem_master = master_xactor.axi_side;
+
+   // ----------------------------------------------------------------
+   // Misc. control and status
+
+   // Signal that DDR4 has been initialized and is ready to accept requests
+   method Action ma_ddr4_ready;
+      rg_ddr4_ready <= True;
+      $display ("%0d: %0m: Enabling memory accesses", cur_cycle);
+   endmethod
+
+   // Misc. status; 0 = running, no error
+   method Bit #(8) mv_status;
+      return (rg_write_error ? 1 : 0);
+   endmethod
+
 endmodule
 
 // ================================================================
