@@ -41,22 +41,7 @@ import Semi_FIFOF    :: *;
 // ================================================================
 // Project imports
 
-`ifdef RV32
-`ifdef SV32
-import Cache_Decls_RV32_Sv32_8KB_2way :: *;
-`else
-import Cache_Decls_RV32_8KB_2way :: *;
-`endif
-`endif
-
-`ifdef RV64
-`ifdef SV39
-import Cache_Decls_RV64_Sv39_8KB_2way :: *;
-`else
-import Cache_Decls_RV64_8KB_2way :: *;
-`endif
-`endif
-
+import Cache_Decls      :: *;
 import MMU_Cache_Common :: *;
 
 import AXI4_Types  :: *;
