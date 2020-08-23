@@ -1769,6 +1769,8 @@ module mkCPU (CPU_IFC);
    method Action set_watch_tohost (Bool watch_tohost, Bit #(64) tohost_addr);
       near_mem.set_watch_tohost (watch_tohost, tohost_addr);
    endmethod
+
+   method Bit #(64) mv_tohost_value = near_mem.mv_tohost_value;
 `endif
 
    // Inform core that DDR4 has been initialized and is ready to accept requests

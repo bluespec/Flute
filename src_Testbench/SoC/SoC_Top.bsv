@@ -109,6 +109,7 @@ interface SoC_Top_IFC;
    // For ISA tests: watch memory writes to <tohost> addr
 `ifdef WATCH_TOHOST
    method Action set_watch_tohost (Bool  watch_tohost, Fabric_Addr  tohost_addr);
+   method Bit #(64) mv_tohost_value;
 `endif
 
    // ----------------
@@ -445,12 +446,18 @@ module mkSoC_Top (SoC_Top_IFC);
       core.set_verbosity (verbosity1, logdelay);
    endmethod
 
+`ifdef WATCH_TOHOST
    // For ISA tests: watch memory writes to <tohost> addr
    method Action set_watch_tohost (Bool  watch_tohost, Fabric_Addr  tohost_addr);
-`ifdef WATCH_TOHOST
       core.set_watch_tohost (watch_tohost, tohost_addr);
-`endif
    endmethod
+
+   method Bit #(64) mv_tohost_value;
+      Bit #(64) tohost_value = 0;
+      tohost_value = core.mv_tohost_value;
+      return tohost_value;
+   endmethod
+`endif
 
    method Action ma_ddr4_ready;
       core.ma_ddr4_ready;

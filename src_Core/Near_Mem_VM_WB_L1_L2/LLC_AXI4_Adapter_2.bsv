@@ -225,7 +225,7 @@ module mkLLC_AXi4_Adapter #(MemFifoClient #(idT, childT) llc)
    // Inform core that DDR4 has been initialized and is ready to accept requests
    method Action ma_ddr4_ready;
       rg_ddr4_ready <= True;
-      $display ("    %0d: %m.ma_ddr4_ready: enabling all rules");
+      $display ("%0d: %m.LLC_AXI4_Adapter.ma_ddr4_ready: enabling all rules", cur_cycle);
    endmethod
 
    // Misc. status; 0 = running, no error

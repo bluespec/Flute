@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2020 Bluespec, Inc. All Rights Reserved.
 // Author: Rishiyur S. Nikhil
 
 package AXI4_Accel_IFC;
