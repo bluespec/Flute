@@ -140,8 +140,8 @@ deriving (Bits, Eq, FShow);
 // ----------------------------------------------------------------
 // UART reg addresses should be at stride 4 or 8.
 
-// Integer address_stride = 4;
-Integer address_stride = 8;
+Integer address_stride = 4;
+// Integer address_stride = 8;
 
 // ----------------------------------------------------------------
 // Split a bus address into (offset, lsbs), based on the address
