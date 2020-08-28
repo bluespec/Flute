@@ -145,11 +145,12 @@ interface D_MMU_Cache_IFC;
    // ----------------------------------------------------------------
    // Misc. control and status
 
+`ifdef WATCH_TOHOST
    // ----------------
    // For ISA tests: watch memory writes to <tohost> addr (see NOTE: "tohost" above)
 
-`ifdef WATCH_TOHOST
    method Action set_watch_tohost (Bool watch_tohost, Bit #(64) tohost_addr);
+   method Bit #(64) mv_tohost_value;
 `endif
 
    // Inform core that DDR4 has been initialized and is ready to accept requests
@@ -323,6 +324,7 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
    // These are set by the 'set_watch_tohost' method but are otherwise read-only.
    Reg #(Bool)      rg_watch_tohost <- mkReg (False);
    Reg #(Bit #(64)) rg_tohost_addr  <- mkReg ('h_8000_1000);
+   Reg #(Bit #(64)) rg_tohost_value <- mkReg (0);
 `endif
 
    // ****************************************************************
@@ -361,14 +363,15 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
 	     && (zeroExtend (rg_pa) == rg_tohost_addr)
 	     && (final_st_val != 0))
 	    begin					      
-	       let test_num = (final_st_val >> 1);
-	       $display ("****************************************************************");
-	       if (test_num == 0) $display ("PASS:");
-	       else               $display ("FAIL <test_%0d>:", test_num);
-	       $display ("  (ISA test terminated: <tohost> va %0h pa %0h data %0h)",
-			 rg_req.va, rg_pa, final_st_val);
-	       $display ("    Cycle count %0d (from %m.fa_cpu_response)", cur_cycle);
-	       $finish (0);
+	       rg_tohost_value <= final_st_val;
+
+	       if (verbosity >= 1) begin
+		  let test_num = (final_st_val >> 1);
+		  $display ("%0d: %0m.fa_watch_tohost", cur_cycle);
+		  if (test_num == 0) $write ("    PASS");
+		  else               $write ("    FAIL <test_%0d>", test_num);
+		  $display ("  (<tohost>  addr %0h  data %0h)", rg_pa, final_st_val);
+	       end
 	    end
 `endif
       endaction
@@ -910,6 +913,12 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
    method Action set_watch_tohost (Bool watch_tohost, Bit #(64) tohost_addr);
       rg_watch_tohost <= watch_tohost;
       rg_tohost_addr  <= tohost_addr;
+      $display ("%0d: %m.set_watch_tohost: watch %0d, addr %0h",
+		cur_cycle, watch_tohost, tohost_addr);
+   endmethod
+
+   method Bit #(64) mv_tohost_value;
+      return rg_tohost_value;
    endmethod
 `endif
 

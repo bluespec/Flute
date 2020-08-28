@@ -1,8 +1,7 @@
 // Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved.
 
-// Near_Mem_IFC is an abstraction of two alternatives: caches or TCM
-// (TCM = Tightly Coupled Memory).  Both are memories that are
-// 'near' the CPU (1-cycle access in common case).
+// Near_Mem_IFC is an abstraction of the 'near' memory subsystem (TCMs
+// (Tightly Coupled Memories), MMUs, L1 Caches, L2 caches, etc.
 
 // On the CPU side it directly services instruction fetches and DMem
 // reads and writes.
@@ -14,8 +13,9 @@
 // address range of Near_Mem.  There are two Client interfaces to
 // accommodate IMem and DMem requests concurrently.
 
-// This implementation of Near_Mem contains an IMem (MMU+Cache) and a DMem (MMU+Cache)
-//        Fabric-side Server interface is not used (no back door to caches).
+// This implementation of Near_Mem contains an IMem (MMU+Cache) and a
+// DMem (MMU+Cache) Fabric-side Server interface is not used (no back
+// door to caches).
 
 package Near_Mem_Caches;
 
@@ -252,6 +252,12 @@ module mkNear_Mem (Near_Mem_IFC);
 `endif
 
    // ----------------------------------------------------------------
+   // Interface to 'coherent DMA' port of optional L2 cache
+   // This version (WB_L1) has no L2, so we stub this out.
+
+   interface AXI4_Slave_IFC dma_server = dummy_AXI4_Slave_ifc;
+
+   // ----------------------------------------------------------------
    // Misc. control and status
 
    // ----------------
@@ -261,6 +267,8 @@ module mkNear_Mem (Near_Mem_IFC);
    method Action set_watch_tohost (Bool watch_tohost, Bit #(64) tohost_addr);
       d_mmu_cache.set_watch_tohost (watch_tohost, tohost_addr);
    endmethod
+
+   method Bit #(64) mv_tohost_value = d_mmu_cache.mv_tohost_value;
 `endif
 
    // Signal that DDR4 has been initialized and is ready to accept requests

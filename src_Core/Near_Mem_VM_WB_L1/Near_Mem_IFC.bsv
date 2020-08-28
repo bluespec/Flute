@@ -48,7 +48,7 @@ import AXI4_Lite_Types :: *;
 
 // Id of requestor for 'coherent DMA' port into (optional) L2 cache
 
-typedef 6    Wd_Id_Dma;
+typedef 16   Wd_Id_Dma;
 typedef 64   Wd_Addr_Dma;
 typedef 512  Wd_Data_Dma;
 typedef 0    Wd_User_Dma;
@@ -132,6 +132,7 @@ interface Near_Mem_IFC;
 
 `ifdef WATCH_TOHOST
    method Action set_watch_tohost (Bool watch_tohost, Bit #(64) tohost_addr);
+   method Bit #(64) mv_tohost_value;
 `endif
 
    // Inform core that DDR4 has been initialized and is ready to accept requests

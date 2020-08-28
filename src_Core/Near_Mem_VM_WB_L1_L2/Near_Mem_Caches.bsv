@@ -1,6 +1,6 @@
 // Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved.
 
-// Near_Mem_IFC is an abstraction the 'near' memory subsystem (TCMs
+// Near_Mem_IFC is an abstraction of the 'near' memory subsystem (TCMs
 // (Tightly Coupled Memories), MMUs, L1 Caches, L2 caches, etc.
 
 // On the CPU side it directly services instruction fetches and DMem
@@ -41,8 +41,8 @@ import Semi_FIFOF :: *;
 
 import ISA_Decls        :: *;
 import Near_Mem_IFC     :: *;
-import Cache_Decls      :: *;
 import MMU_Cache_Common :: *;
+import Cache_Decls      :: *;
 import CPU_IFC          :: *;    // For Wd_Id/Addr/User/Data_Dma
 
 import AXI4_Types   :: *;
