@@ -85,14 +85,10 @@ module mkMMIO #(parameter Bit #(3)  verbosity)
 
    function Action fa_mem_single_write (Bit #(64) st_value);
       action
-	 // Lane-align the outgoing data
-	 Bit #(6)  shamt_bits = { rg_pa [2:0], 3'b000 };
-	 Bit #(64) data       = (st_value << shamt_bits);
-
 	 let req = Single_Req {is_read:   False,
 			       addr:      zeroExtend (rg_pa),
 			       size_code: rg_req.f3 [1:0],
-			       data:      data};
+			       data:      st_value};
 	 f_single_reqs.enq (req);
       endaction
    endfunction
@@ -179,9 +175,7 @@ module mkMMIO #(parameter Bit #(3)  verbosity)
 	 $display ("%0d: %m.rl_write_req; f3 %0h  vaddr %0h  paddr %0h  word64 %0h",
 		   cur_cycle, rg_req.f3, rg_req.va, rg_pa, rg_req.st_value);
 
-      Bit #(64) data = fv_to_byte_lanes (zeroExtend (rg_pa), rg_req.f3 [1:0], rg_req.st_value);
-
-      fa_mem_single_write (data);
+      fa_mem_single_write (rg_req.st_value);
 
       rg_final_st_val <= rg_req.st_value;
       rg_fsm_state    <= FSM_IDLE;

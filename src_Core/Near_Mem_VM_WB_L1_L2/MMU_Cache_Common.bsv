@@ -347,14 +347,6 @@ function Bit #(64) fv_size_code_to_mask (Bit #(2) size_code);
    return mask;
 endfunction
 
-function Bit #(64) fv_to_byte_lanes (Bit #(64) addr, Bit #(2) size_code, Bit #(64) data);
-   Bit #(64) data1 = (data & fv_size_code_to_mask (size_code));
-
-   Bit #(6)  shamt = { addr [2:0], 3'b0 };
-   Bit #(64) data2 = (data1 << shamt);
-   return data2;
-endfunction
-
 function Bit #(64) fv_from_byte_lanes (Bit #(64)  addr,
 				       Bit #(2)   size_code,
 				       Bit #(64)  data);
