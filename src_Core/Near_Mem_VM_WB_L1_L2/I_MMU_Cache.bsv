@@ -262,7 +262,7 @@ module mkI_MMU_Cache (I_MMU_Cache_IFC);
       // Assertion check: CPU pipe should never submit a request while
       // the previous request is still being serviced
       if (crg_mmu_cache_req_state [1] != REQ_STATE_EMPTY) begin
-	 $display ("%0d: %0m.rl_CPU_req", cur_cycle);
+	 $display ("%0d: %m.rl_CPU_req", cur_cycle);
 	 $display ("    INTERNAL ERROR: crg_mmu_cache_req_state: ",
 		   fshow (crg_mmu_cache_req_state [1]), "; expected EMPTY");
 	 $display ("    ", fshow_MMU_Cache_Req (mmu_cache_req));
@@ -302,7 +302,7 @@ module mkI_MMU_Cache (I_MMU_Cache_IFC);
       let mmu_cache_req = crg_mmu_cache_req [0];
 
       if (verbosity >= 2) begin
-	 $display ("%0d: %0m.rl_CPU_req_A", cur_cycle);
+	 $display ("%0d: %m.rl_CPU_req_A", cur_cycle);
 	 $display ("    ", fshow_MMU_Cache_Req (mmu_cache_req));
       end
 

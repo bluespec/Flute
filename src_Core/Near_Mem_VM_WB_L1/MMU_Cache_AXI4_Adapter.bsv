@@ -612,7 +612,7 @@ module mkMMU_Cache_AXI4_Adapter #(parameter Bit #(3) verbosity)
    // Signal that DDR4 has been initialized and is ready to accept requests
    method Action ma_ddr4_ready;
       rg_ddr4_ready <= True;
-      $display ("%0d: %0m: Enabling memory accesses", cur_cycle);
+      $display ("%0d: %m: Enabling memory accesses", cur_cycle);
    endmethod
 
    // Misc. status; 0 = running, no error

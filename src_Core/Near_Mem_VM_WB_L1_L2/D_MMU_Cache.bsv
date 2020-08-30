@@ -237,7 +237,7 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
 
    // For debugging
    Integer verbosity       = 0;    // 0: quiet; 1: Requests and responses; 2: rules; 3: detail
-   Integer verbosity_ptw   = 0;
+   Integer verbosity_ptw   = 0;    // 0: quiet; 1: rule firings
    Integer verbosity_cache = 0;    // 0: quiet; 1 rules; 2: detail
    Integer verbosity_mmio  = 0;
 
@@ -311,7 +311,7 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
 
 	       if (verbosity >= 1) begin
 		  let test_num = (final_st_val >> 1);
-		  $display ("%0d: %0m.fa_watch_tohost", cur_cycle);
+		  $display ("%0d: %m.fa_watch_tohost", cur_cycle);
 		  if (test_num == 0) $write ("    PASS");
 		  else               $write ("    FAIL <test_%0d>", test_num);
 		  $display ("  (<tohost>  addr %0h  data %0h)", addr, final_st_val);
@@ -343,7 +343,7 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
       // Assertion check: CPU pipe should never submit a request while
       // the previous request is still being serviced
       if (crg_mmu_cache_req_state [1] != REQ_STATE_EMPTY) begin
-	 $display ("%0d: %0m.rl_CPU_req", cur_cycle);
+	 $display ("%0d: %m.rl_CPU_req", cur_cycle);
 	 $display ("    INTERNAL ERROR: crg_mmu_cache_req_state: ",
 		   fshow (crg_mmu_cache_req_state [1]), "; expected EMPTY");
 	 $display ("    ", fshow_MMU_Cache_Req (mmu_cache_req));
@@ -383,7 +383,7 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
       let mmu_cache_req = crg_mmu_cache_req [0];
 
       if (verbosity >= 2) begin
-	 $display ("%0d: %0m.rl_CPU_req_A", cur_cycle);
+	 $display ("%0d: %m.rl_CPU_req_A", cur_cycle);
 	 $display ("    ", fshow_MMU_Cache_Req (mmu_cache_req));
       end
 

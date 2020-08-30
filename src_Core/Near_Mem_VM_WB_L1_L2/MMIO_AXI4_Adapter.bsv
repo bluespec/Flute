@@ -321,7 +321,7 @@ module mkMMIO_AXI4_Adapter #(parameter Bit #(3) verbosity)
 	 // Debugging
 	 if (verbosity >= 1) begin
 	    $display ("%0d: %m.rl_wr_req", cur_cycle);
-	    $display ("    AXI4_Wr_Addr{awaddr %0h awlen %0d awlen %0d ",
+	    $display ("    AXI4_Wr_Addr{awaddr %0h awlen %0d ",
 		      awaddr, awlen,
 		      fshow_AXI4_Size (awsize),
 		      " incr}");

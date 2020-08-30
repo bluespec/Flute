@@ -367,7 +367,7 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
 
 	       if (verbosity >= 1) begin
 		  let test_num = (final_st_val >> 1);
-		  $display ("%0d: %0m.fa_watch_tohost", cur_cycle);
+		  $display ("%0d: %m.fa_watch_tohost", cur_cycle);
 		  if (test_num == 0) $write ("    PASS");
 		  else               $write ("    FAIL <test_%0d>", test_num);
 		  $display ("  (<tohost>  addr %0h  data %0h)", rg_pa, final_st_val);

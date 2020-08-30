@@ -644,10 +644,11 @@ module mkCache #(parameter Bool      dcache_not_icache,
 			   );
       Meta_State to_state = (for_write ? META_EXCLUSIVE : META_SHARED);
 
-      f_L1_to_L2_reqs.enq (L1_to_L2_Req {addr:        zeroExtend (cline_pa),
-					 from_state:  META_INVALID,
-					 to_state:    to_state,
-					 can_up_to_E: dcache_not_icache});
+      let l1_to_l2_req = L1_to_L2_Req {addr:        zeroExtend (cline_pa),
+				       from_state:  META_INVALID,
+				       to_state:    to_state,
+				       can_up_to_E: dcache_not_icache};
+      f_L1_to_L2_reqs.enq (l1_to_l2_req);
 
       // Request read of first CSet_CWord in CLine (BRAM port B)
       // for cset_cword read-modify-write
@@ -665,8 +666,8 @@ module mkCache #(parameter Bool      dcache_not_icache,
       rg_error_during_refill <= False;
 
       if (verbosity >= 2) begin
-	 $display ("    Requesting cline at mem addr %0h", cline_pa);
-	 $display ("    Requesting ram_cset_cword.a: cword-in-cache: 0x%0h", cset_cword_in_cache);
+	 $display ("    Requesting cline: ram_cset_cword.a: cword-in-cache: 0x%0h", cset_cword_in_cache);
+	 $display ("    ", fshow (l1_to_l2_req));
 	 $display ("    -> FSM_UPGRADE_REFILL");
       end
    endrule: rl_refill_start
