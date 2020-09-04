@@ -300,6 +300,10 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
    // writes to the "tohost" address.  This is used only in certain
    // ISA and other tests, in simulation.
 
+`ifdef WATCH_TOHOST
+   Reg #(Bool) rg_pass_fail_msg_printed <- mkReg (False);
+`endif
+
    function Action fa_watch_tohost (Bit #(64) addr, Bit #(64) final_st_val);
       action
 `ifdef WATCH_TOHOST
@@ -309,12 +313,13 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
 	    begin
 	       rg_tohost_value <= final_st_val;
 
-	       if (verbosity >= 1) begin
+	       if (! rg_pass_fail_msg_printed) begin
 		  let test_num = (final_st_val >> 1);
 		  $display ("%0d: %m.fa_watch_tohost", cur_cycle);
 		  if (test_num == 0) $write ("    PASS");
 		  else               $write ("    FAIL <test_%0d>", test_num);
 		  $display ("  (<tohost>  addr %0h  data %0h)", addr, final_st_val);
+		  rg_pass_fail_msg_printed <= True;
 	       end
 	    end
 `endif
