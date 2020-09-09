@@ -82,7 +82,8 @@ export mkNear_Mem;
 // Debug verbosities
 
 // 0-1: quiet; 2 show L1-to-L2 and L2-to-L1 messages
-Integer verbosity_L1_L2             = 0;
+Integer verbosity_I_L1_L2 = 0;    // for I-Cache
+Integer verbosity_D_L1_L2 = 0;    // for D-Cache
 
 // 0=quiet, 1 = rule firings
 Integer verbosity_mmio_axi4_adapter = 0;
@@ -126,7 +127,8 @@ endfunction
 
 // ----------------
 
-module mkL1_IFC_Adapter #(Integer                                          id,
+module mkL1_IFC_Adapter #(Integer                                          verbosity_L1_L2,
+			  Integer                                          id,
 			  Client_Semi_FIFOF #(L1_to_L2_Req, L2_to_L1_Rsp)  l1_to_l2_client,
 			  Server_Semi_FIFOF #(L2_to_L1_Req, L1_to_L2_Rsp)  l2_to_l1_server)
        (ChildCacheToParent #(L1Way, void));
@@ -192,7 +194,8 @@ module mkL1_IFC_Adapter #(Integer                                          id,
 		  l2_to_l1_server.request.enq (req);
 
 		  if (verbosity_L1_L2 >= 2)
-		     $display ("%0d: L1_IFC_Adapter [%0d]: ", cur_cycle, id, fshow_L2_to_L1_Req (req));
+		     $display ("%0d: L1_IFC_Adapter [%0d]: ", cur_cycle, id,
+			       fshow_L2_to_L1_Req (req));
 	       end
 
 	    tagged PRs .prs:
@@ -203,7 +206,8 @@ module mkL1_IFC_Adapter #(Integer                                          id,
 		  l1_to_l2_client.response.enq (rsp);
 
 		  if (verbosity_L1_L2 >= 2)
-		     $display ("%0d: L1_IFC_Adapter [%0d]: ", cur_cycle, id, fshow_L2_to_L1_Rsp (rsp));
+		     $display ("%0d: L1_IFC_Adapter [%0d]: ", cur_cycle, id,
+			       fshow_L2_to_L1_Rsp (rsp));
 	       end
 	 endcase
       endmethod
@@ -261,9 +265,15 @@ module mkNear_Mem (Near_Mem_IFC);
    // connect LLC to L1 caches, creating a crossbar
 
    Vector#(L1Num, ChildCacheToParent#(L1Way, void)) l1 = ?;
-   let ifc_I_L1 <- mkL1_IFC_Adapter (0, i_mmu_cache.l1_to_l2_client, i_mmu_cache.l2_to_l1_server);
+   let ifc_I_L1 <- mkL1_IFC_Adapter (verbosity_I_L1_L2,
+				     0,
+				     i_mmu_cache.l1_to_l2_client,
+				     i_mmu_cache.l2_to_l1_server);
    l1 [0] = ifc_I_L1;
-   let ifc_D_L1 <- mkL1_IFC_Adapter (1, d_mmu_cache.l1_to_l2_client, d_mmu_cache.l2_to_l1_server);
+   let ifc_D_L1 <- mkL1_IFC_Adapter (verbosity_D_L1_L2,
+				     1,
+				     d_mmu_cache.l1_to_l2_client,
+				     d_mmu_cache.l2_to_l1_server);
    l1 [1] = ifc_D_L1;
    mkL1LLConnect (llc.to_child, l1);
 

@@ -301,7 +301,6 @@ module mkCache #(parameter Bool      dcache_not_icache,
 
    // Phys addr
    Reg #(PA)       rg_pa <- mkRegU;             // Physical addr, 1 cycle later and sustained
-   Wire #(PA)      dw_pa <- mkDWire (rg_pa);    // Physical addr on 'mav_request_pa', else rg_pa
 
    // Cache RAMs
    //     Port A used for the main hit/miss path (for MMU_Cache client)
@@ -492,10 +491,11 @@ module mkCache #(parameter Bool      dcache_not_icache,
 						    Meta_State     post_wb_meta_state,
 						    FSM_State      post_wb_fsm_state);
       action
-	 PA cline_pa = fn_CTag_and_CSet_to_CLine_PA (tag, cset_in_cache);
-	 if (verbosity >= 1)
+	 if (verbosity >= 1) begin
+	    PA cline_pa = fn_CTag_and_CSet_to_CLine_PA (tag, cset_in_cache);
 	    $display ("    fa_cache_writeback_loop_prequel @ %0h (cset %0h, way %0h)",
 		      cline_pa, cset_in_cache, way_in_cset);
+	 end
 
 	 // What to do after the loop
 	 rg_post_wb_meta_state <= post_wb_meta_state;
@@ -517,8 +517,8 @@ module mkCache #(parameter Bool      dcache_not_icache,
 
    rule rl_writeback_loop (rg_fsm_state == FSM_WRITEBACK_LOOP);
       // Accumulate a cword into rg_write_cline_buf
-      CSet_CWord cset_cword = ram_cset_cword.a.read;
-      Bit #(64)   cword     = cset_cword [rg_way_in_cset];
+      CSet_CWord  cset_cword = ram_cset_cword.a.read;
+      Bit #(64)   cword      = cset_cword [rg_way_in_cset];
       Vector #(CWords_per_CLine, Bit #(64)) v_cword = shiftInAtN (rg_write_cline_buf, cword);
       rg_write_cline_buf <= v_cword;
 
@@ -543,7 +543,8 @@ module mkCache #(parameter Bool      dcache_not_icache,
 	 rg_fsm_state <= rg_post_wb_fsm_state;
 	 if (verbosity >= 1) begin
 	    $display ("%0d: %m.rl_writeback_loop", cur_cycle);
-	    $display ("    Done; writeback cline @ %0h", wb_cline_pa, " -> ", fshow (rg_post_wb_fsm_state));
+	    $display ("    Done; writeback cline @ %0h", wb_cline_pa, " -> ",
+		      fshow (rg_post_wb_fsm_state));
 	    for (Integer j = 0; j < cwords_per_cline; j = j + 1)
 	       $display ("        [%0d]  %016h", j, v_cword [j]);
 	 end
@@ -913,68 +914,106 @@ module mkCache #(parameter Bool      dcache_not_icache,
    // BEHAVIOR: DOWNGRADE REQUEST FROM L2
    // ****************************************************************
    // ****************************************************************
+   // Note: An L2-to-L1 downgrade request for line Y can come at any
+   // time, including in the middle of an L1-to-L2 refill request for
+   // line X.
+
+   // The L2-to-L1 downgrade(Y) request may even be triggered by the
+   // L1-to-L2 refill(X) request (if X misses in the L2, L2 may choose
+   // to evict Y, which causes L2 to request L1 to downgrade Y, to
+   // maintain the inclusion property). This is like a nested callback.
+
+   // The L2-to-L1 downgrade(Y) request here may be triggered by any
+   // client (e.g., another L1) making a refill request to L2 which
+   // misses, causing L2 to evict(Y) for which it asks this L1 to
+   // downgrade(Y).  This is completely 'asynchronous'.
+
+   // Thus, we keep separate state for the downgrade process, so as
+   // not to disturb existing state. Further, some state has to be
+   // disturbed, so we need to save it before the downgrade and
+   // restore it after.
+
+   // Saved state during downgrade
+   Reg #(FSM_State)      rg_save_fsm_state      <- mkRegU;    // post-downgrade FSM state (save/restore)
+   Reg #(WordXL)         rg_save_va             <- mkRegU;
+   Reg #(PA)             rg_save_pa             <- mkRegU;
+   Reg #(CSet_in_Cache)  rg_save_cset_in_cache  <- mkRegU;
+   Reg #(CWord_in_CLine) rg_save_cword_in_cline <- mkRegU;
+   Reg #(Way_in_CSet)    rg_save_way_in_cset    <- mkRegU;
 
    // ----------------
    // Start downgrade by probing cache for downgrade addr
 
-   rule rl_downgrade_req_from_L2_A (rg_fsm_state == FSM_IDLE);
+   rule rl_downgrade_req_from_L2_A (   (rg_fsm_state == FSM_IDLE)
+				    || (rg_fsm_state == FSM_UPGRADE_REFILL));
       let l2_to_l1_req = f_L2_to_L1_reqs.first;
-
+      let addr         = l2_to_l1_req.addr;
       if (verbosity >= 1) begin
 	 $display ("%0d: %m.rl_downgrade_req_from_L2_A", cur_cycle);
 	 $display ("    Probe RAMs for: ", fshow (l2_to_l1_req));
       end
 
-      // Probe RAMs
-      fa_req_rams_A (truncate (l2_to_l1_req.addr));
-      rg_fsm_state <= FSM_DOWNGRADE_B;
+      // 'push' state for after downgrade:
+      rg_save_fsm_state           <= rg_fsm_state;
+      rg_save_va                  <= rg_va;
+      rg_save_pa                  <= rg_pa;
+      rg_save_cset_in_cache       <= rg_cset_in_cache;
+      rg_save_cword_in_cline      <= rg_cword_in_cline;
+      rg_save_way_in_cset         <= rg_way_in_cset;
+
+      // Set state for downgrade:
+      rg_fsm_state                <= FSM_DOWNGRADE_B;
+      rg_va                       <= addr;
+      rg_pa                       <= addr;
+      rg_cset_in_cache            <= fn_Addr_to_CSet_in_Cache (addr);
+      fa_req_rams_A (truncate (addr));
    endrule: rl_downgrade_req_from_L2_A
 
    // ----------------
-   // Check cline state, and set to downgrade state immediately or as part of writeback
+   // Check cline state, and set to the downgraded state immediately or as part of writeback
 
    rule rl_downgrade_req_from_L2_B (rg_fsm_state == FSM_DOWNGRADE_B);
       if (verbosity >= 1)
 	 $display ("%0d: %m.rl_downgrade_req_from_L2_B", cur_cycle);
 
-      let l2_to_l1_req <- pop (f_L2_to_L1_reqs);
-      let addr          = l2_to_l1_req.addr;
-      PA  pa            = truncate (addr);
-      let cset_in_cache = fn_Addr_to_CSet_in_Cache (addr);
+      let l2_to_l1_req  = f_L2_to_L1_reqs.first;
 
       if (verbosity >= 1)
-	 $write ("    ", fshow_cset_meta (cset_in_cache, ram_A_cset_meta));
+	 $write ("    ", fshow_cset_meta (rg_cset_in_cache, ram_A_cset_meta));
 
-      let valid_info = fv_ram_A_valid_info (truncate (addr));
+      let valid_info = fv_ram_A_valid_info (rg_pa);
       if (verbosity >= 1)
 	 $display ("    valid_info = ", fshow (valid_info));
 
       // Assertion: must have a hit
       if (valid_info.num_valids == 0) begin
-	 $display ("    INTERNAL ERROR va %0h is MISS (downgrade request from L2 must HIT)", addr);
-	 $write   (fshow_cset_meta (cset_in_cache, ram_A_cset_meta));
+	 $display ("    INTERNAL ERROR pa %0h is MISS (downgrade request from L2 must HIT)", rg_pa);
+	 $write   (fshow_cset_meta (rg_cset_in_cache, ram_A_cset_meta));
 	 $finish (1);
       end
 
       // Assertion: cannot match > 1 item in CSet
       if (valid_info.num_valids > 1) begin
-	 $display ("    INTERNAL ERROR va %0h", addr);
+	 $display ("    INTERNAL ERROR pa %0h", rg_pa);
 	 $display ("    # of valids in set: %0d    (should be 0 or 1)", valid_info.num_valids);
-	 $write   (fshow_cset_meta (cset_in_cache, ram_A_cset_meta));
+	 $write   (fshow_cset_meta (rg_cset_in_cache, ram_A_cset_meta));
 	 $finish (1);
       end
+
+      rg_way_in_cset <= valid_info.way;
 
       // Update meta to <to_state>
       let new_ram_A_cset_meta = ram_A_cset_meta;
       new_ram_A_cset_meta [valid_info.way] = Meta {state: l2_to_l1_req.to_state,
-						   ctag:  fn_PA_to_CTag (pa)};
-      ram_cset_meta.b.put (bram_cmd_write, cset_in_cache, new_ram_A_cset_meta);
+						   ctag:  fn_PA_to_CTag (rg_pa)};
+      ram_cset_meta.b.put (bram_cmd_write, rg_cset_in_cache, new_ram_A_cset_meta);
       if (verbosity >= 1)
 	 $display ("    Update meta state to ", fshow (l2_to_l1_req.to_state));
 
+      // Check if victim needs to be written back (if MODIFIED) or not (otherwise)
       if (valid_info.valid_state < META_MODIFIED) begin
 	 // Victim was SHARED/EXCLUSIVE (so, clean): respond and done
-	 let rsp = L1_to_L2_Rsp {addr:     addr,
+	 let rsp = L1_to_L2_Rsp {addr:     rg_pa,
 				 to_state: l2_to_l1_req.to_state,
 				 m_cline:  tagged Invalid};
 	 f_L1_to_L2_rsps.enq (rsp);
@@ -983,10 +1022,10 @@ module mkCache #(parameter Bool      dcache_not_icache,
 	    $display ("    Send ", fshow (rsp), " -> FSM_DOWNGRADE_C");
       end
       else begin
-	 // Victim was MODIFIED: writeback and done
-	 //    (writeback will send L1_to_L2_Rsp with the cache line)
-	 fa_cache_writeback_loop_prequel (fn_PA_to_CTag (pa),
-					  cset_in_cache,
+	 // Victim was MODIFIED: writeback first, then done
+	 //    (writeback will send L1_to_L2_Rsp with the modified cache line)
+	 fa_cache_writeback_loop_prequel (fn_PA_to_CTag (rg_pa),
+					  rg_cset_in_cache,
 					  valid_info.way,
 					  l2_to_l1_req.to_state,
 					  FSM_DOWNGRADE_C);
@@ -997,15 +1036,30 @@ module mkCache #(parameter Bool      dcache_not_icache,
    endrule: rl_downgrade_req_from_L2_B
 
    // ----------------
-   // If did a writeback for the downgrade, re-probe the rams before returning to IDLE
+   // If did a writeback for the downgrade, restore state (incl. re-probe the rams).
 
    rule rl_downgrade_req_from_L2_C (rg_fsm_state == FSM_DOWNGRADE_C);
-      fa_req_rams_A (rg_va);
-      rg_fsm_state <= FSM_IDLE;
+      let l2_to_l1_req <- pop (f_L2_to_L1_reqs);    // consume the downgrade request
+
       if (verbosity >= 1) begin
 	 $display ("%0d: %m.rl_downgrade_req_from_L2_C", cur_cycle);
-	 $display ("    writeback done; reprobe RAMs at addr %0h; -> FSM_IDLE", rg_va);
+	 $display ("    writeback done; restore and reprobe RAMs");
+	 $display ("    rg_fsm_state      <= ", fshow (rg_save_fsm_state));
+	 $display ("    rg_va             <= %0h", rg_save_va);
+	 $display ("    rg_pa             <= %0h", rg_save_pa);
+	 $display ("    rg_cset_in_cache  <= %0h", rg_save_cset_in_cache);
+	 $display ("    rg_cword_in_cline <= %0h", rg_save_cword_in_cline);
+	 $display ("    rg_way_in_cset    <= %0h", rg_save_way_in_cset);
       end
+      // 'Pop' state from before downgrade:
+      rg_fsm_state      <= rg_save_fsm_state;
+      rg_va             <= rg_save_va;
+      rg_pa             <= rg_save_pa;
+      rg_cset_in_cache  <= rg_save_cset_in_cache;
+      rg_cword_in_cline <= rg_save_cword_in_cline;
+      rg_way_in_cset    <= rg_save_way_in_cset;
+      fa_req_rams_A (rg_save_va);
+
    endrule: rl_downgrade_req_from_L2_C
 
    // ****************************************************************
@@ -1208,7 +1262,8 @@ module mkCache #(parameter Bool      dcache_not_icache,
 
 	       if (verbosity >= 1) begin
 		  $display ("    Store-hit, but need S->E upgrade");
-		  $display ("    va %0h pa %0h data %0h -> FSM_UPGRADE_REFILL", req.va, pa, req.st_value);
+		  $display ("    va %0h pa %0h data %0h -> FSM_UPGRADE_REFILL",
+			    req.va, pa, req.st_value);
 	       end
 	    end
 	    else begin
