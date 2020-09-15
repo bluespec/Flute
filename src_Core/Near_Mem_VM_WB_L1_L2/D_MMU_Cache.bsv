@@ -359,14 +359,16 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
       crg_mmu_cache_req [1] <= mmu_cache_req;
       mmio.req (mmu_cache_req);
 
-      if (crg_state [1] != STATE_MAIN)  begin
-	 if (verbosity >= 3)
+      crg_valid [1] <= False;
+
+      if ((crg_state [1] != STATE_MAIN) || (! cache.mv_is_idle)) begin
+	 if (verbosity >= 1)
 	    $display ("    Cache busy; probe later");
 
 	 crg_mmu_cache_req_state [1] <= REQ_STATE_FULL_A;
       end
       else begin
-	 if (verbosity >= 3)
+	 if (verbosity >= 1)
 	    $display ("    Probe cache (cache.ma_request_va)");
 
 	 // Start cache probe with VA
@@ -383,7 +385,8 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
 
    (* descending_urgency = "rl_CPU_req, rl_CPU_req_A" *)
    rule rl_CPU_req_A (   (crg_state [0] == STATE_MAIN)
-		      && (crg_mmu_cache_req_state [0] == REQ_STATE_FULL_A));
+		      && (crg_mmu_cache_req_state [0] == REQ_STATE_FULL_A)
+		      && cache.mv_is_idle);
 
       let mmu_cache_req = crg_mmu_cache_req [0];
 
@@ -875,7 +878,7 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
    endmethod
 
    method Bool  valid;
-      return crg_valid [1];
+      return crg_valid [0];
    endmethod
 
    method WordXL  addr;    // req addr for which this is a response
@@ -883,19 +886,19 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
    endmethod
 
    method Bit #(64)  word64;
-      return crg_ld_val [1];
+      return crg_ld_val [0];
    endmethod
 
    method Bit #(64)  st_amo_val;
-      return crg_final_st_val [1];
+      return crg_final_st_val [0];
    endmethod
 
    method Bool  exc;
-      return crg_exc [1];
+      return crg_exc [0];
    endmethod
 
    method Exc_Code  exc_code;
-      return crg_exc_code [1];
+      return crg_exc_code [0];
    endmethod
 
    // Flush request/response

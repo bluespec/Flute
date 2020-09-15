@@ -80,6 +80,12 @@ interface Cache_IFC;
    method ActionValue #(Cache_Result) mav_request_pa (MMU_Cache_Req req, PA pa);
 
    // ----------------
+   // Indicates cache is IDLE, ready for new request
+
+   (* always_ready *)
+   method Bool mv_is_idle;
+
+   // ----------------
    // Stalls until refill done and then returns ok (True) or error (False)
    method Bool mv_refill_ok ();
 
@@ -444,7 +450,7 @@ module mkCache #(parameter Bool      dcache_not_icache,
 	 if ((valid_info.num_valids != 1)
 	     || (valid_info.valid_state < META_SHARED))
 	    begin
-	       $display ("%0d: %m.fa_write: INTERNAL_ERROR", cur_cycle);
+	       $display ("%0d: %m.fa_write: INTERNAL ERROR", cur_cycle);
 	       $display ("    va_cset_cword_in_cache %0h way %0d pa %0h f3 %0d st_value %0h",
 			 va_cset_cword_in_cache, way, pa, f3, st_value);
 	       $display ("    Cache write on a miss (need EXCLUSIVE)");
@@ -877,7 +883,7 @@ module mkCache #(parameter Bool      dcache_not_icache,
 	 if (last_cset_and_way) begin
 	    // Respond ack to requestor and goto IDLE
 	    f_flush_rsps.enq (?);
-	    fa_req_rams_A (rg_va);
+	    fa_req_rams_A (rg_va);    // TODO: not necessary? should not be any rg_va in progress?
 	    rg_fsm_state <= FSM_IDLE;
 	    if (verbosity >= 2)
 	       $display ("%0d: %m.rl_flush_loop: done; -> FSM_IDLE", cur_cycle);
@@ -896,7 +902,7 @@ module mkCache #(parameter Bool      dcache_not_icache,
       if (last_cset_and_way) begin
 	 // Respond ack to requestor and goto IDLE
 	 f_flush_rsps.enq (?);
-	 fa_req_rams_A (rg_va);
+	 fa_req_rams_A (rg_va);    // TODO: not necessary? should not be any rg_va in progress?
 	 rg_fsm_state <= FSM_IDLE;
 	 if (verbosity >= 1)
 	    $display ("%0d: %m.rl_flush_writeback_sequel; flush loop done; -> FSM_IDLE", cur_cycle);
@@ -950,22 +956,29 @@ module mkCache #(parameter Bool      dcache_not_icache,
       let addr         = l2_to_l1_req.addr;
       if (verbosity >= 1) begin
 	 $display ("%0d: %m.rl_downgrade_req_from_L2_A", cur_cycle);
+	 $display ("    Save rg_va             = %0h", rg_va);
+	 $display ("    Save rg_pa             = %0h", rg_pa);
+	 $display ("    Save rg_cset_in_cache  = %0h", rg_cset_in_cache);
+	 $display ("    Save rg_cword_in_cline = %0h", rg_cword_in_cline);
+	 $display ("    Save rg_way_in_cset    = %0h", rg_way_in_cset);
+	 $display ("    Save rg_va = %0h", rg_va);
 	 $display ("    Probe RAMs for: ", fshow (l2_to_l1_req));
+	 $display ("    -> ", FSM_DOWNGRADE_B);
       end
 
       // 'push' state for after downgrade:
-      rg_save_fsm_state           <= rg_fsm_state;
-      rg_save_va                  <= rg_va;
-      rg_save_pa                  <= rg_pa;
-      rg_save_cset_in_cache       <= rg_cset_in_cache;
-      rg_save_cword_in_cline      <= rg_cword_in_cline;
-      rg_save_way_in_cset         <= rg_way_in_cset;
+      rg_save_fsm_state      <= rg_fsm_state;
+      rg_save_va             <= rg_va;
+      rg_save_pa             <= rg_pa;
+      rg_save_cset_in_cache  <= rg_cset_in_cache;
+      rg_save_cword_in_cline <= rg_cword_in_cline;
+      rg_save_way_in_cset    <= rg_way_in_cset;
 
       // Set state for downgrade:
-      rg_fsm_state                <= FSM_DOWNGRADE_B;
-      rg_va                       <= addr;
-      rg_pa                       <= addr;
-      rg_cset_in_cache            <= fn_Addr_to_CSet_in_Cache (addr);
+      rg_fsm_state     <= FSM_DOWNGRADE_B;
+      rg_va            <= addr;
+      rg_pa            <= addr;
+      rg_cset_in_cache <= fn_Addr_to_CSet_in_Cache (addr);
       fa_req_rams_A (truncate (addr));
    endrule: rl_downgrade_req_from_L2_A
 
@@ -985,13 +998,6 @@ module mkCache #(parameter Bool      dcache_not_icache,
       if (verbosity >= 1)
 	 $display ("    valid_info = ", fshow (valid_info));
 
-      // Assertion: must have a hit
-      if (valid_info.num_valids == 0) begin
-	 $display ("    INTERNAL ERROR pa %0h is MISS (downgrade request from L2 must HIT)", rg_pa);
-	 $write   (fshow_cset_meta (rg_cset_in_cache, ram_A_cset_meta));
-	 $finish (1);
-      end
-
       // Assertion: cannot match > 1 item in CSet
       if (valid_info.num_valids > 1) begin
 	 $display ("    INTERNAL ERROR pa %0h", rg_pa);
@@ -1000,38 +1006,68 @@ module mkCache #(parameter Bool      dcache_not_icache,
 	 $finish (1);
       end
 
-      rg_way_in_cset <= valid_info.way;
+      /*
+      // Assertion: must have a hit
+      // No, the line may have been evicted before this request
+      if (valid_info.num_valids == 0) begin
+	 $display ("%0d: %m.rl_downgrade_req_from_L2_B", cur_cycle);
+	 $display ("    INTERNAL ERROR pa %0h is MISS (downgrade request from L2 must HIT)",
+		   rg_pa);
+	 $write   ("    ", fshow_cset_meta (rg_cset_in_cache, ram_A_cset_meta));
+	 $finish (1);
+      end
+      */
 
-      // Update meta to <to_state>
-      let new_ram_A_cset_meta = ram_A_cset_meta;
-      new_ram_A_cset_meta [valid_info.way] = Meta {state: l2_to_l1_req.to_state,
-						   ctag:  fn_PA_to_CTag (rg_pa)};
-      ram_cset_meta.b.put (bram_cmd_write, rg_cset_in_cache, new_ram_A_cset_meta);
-      if (verbosity >= 1)
-	 $display ("    Update meta state to ", fshow (l2_to_l1_req.to_state));
+      if (valid_info.num_valids == 0) begin
+	 // MISS: equivalent to I, so the 'downgrade' is already satisfied
 
-      // Check if victim needs to be written back (if MODIFIED) or not (otherwise)
-      if (valid_info.valid_state < META_MODIFIED) begin
-	 // Victim was SHARED/EXCLUSIVE (so, clean): respond and done
+	 // TODO: do we need to respond explicitly?  L2 thought that
+	 // this L1 had this line.  A MISS means it must have been
+	 // evicted (voluntary downgrade), and the L1 must have
+	 // informed L2 already with a respond.
 	 let rsp = L1_to_L2_Rsp {addr:     rg_pa,
-				 to_state: l2_to_l1_req.to_state,
+				 to_state: META_INVALID,
 				 m_cline:  tagged Invalid};
-	 f_L1_to_L2_rsps.enq (rsp);
+	 // f_L1_to_L2_rsps.enq (rsp);
 	 rg_fsm_state <= FSM_DOWNGRADE_C;
 	 if (verbosity >= 1)
 	    $display ("    Send ", fshow (rsp), " -> FSM_DOWNGRADE_C");
       end
       else begin
-	 // Victim was MODIFIED: writeback first, then done
-	 //    (writeback will send L1_to_L2_Rsp with the modified cache line)
-	 fa_cache_writeback_loop_prequel (fn_PA_to_CTag (rg_pa),
-					  rg_cset_in_cache,
-					  valid_info.way,
-					  l2_to_l1_req.to_state,
-					  FSM_DOWNGRADE_C);
-	 rg_fsm_state <= FSM_WRITEBACK_LOOP;
+	 // HIT (valid_info.num_valids == 1)
+	 rg_way_in_cset <= valid_info.way;
+
+	 // Update meta to <to_state>
+	 let new_ram_A_cset_meta = ram_A_cset_meta;
+	 new_ram_A_cset_meta [valid_info.way] = Meta {state: l2_to_l1_req.to_state,
+						      ctag:  fn_PA_to_CTag (rg_pa)};
+	 ram_cset_meta.b.put (bram_cmd_write, rg_cset_in_cache, new_ram_A_cset_meta);
 	 if (verbosity >= 1)
-	    $display ("    -> FSM_WRITEBACK_LOOP");
+	    $display ("    Update meta state to ", fshow (l2_to_l1_req.to_state));
+
+	 // Check if victim needs to be written back (if MODIFIED) or not (otherwise)
+	 if (valid_info.valid_state < META_MODIFIED) begin
+	    // Victim was SHARED/EXCLUSIVE (so, clean): respond and done
+	    let rsp = L1_to_L2_Rsp {addr:     rg_pa,
+				    to_state: l2_to_l1_req.to_state,
+				    m_cline:  tagged Invalid};
+	    f_L1_to_L2_rsps.enq (rsp);
+	    rg_fsm_state <= FSM_DOWNGRADE_C;
+	    if (verbosity >= 1)
+	       $display ("    Send ", fshow (rsp), " -> FSM_DOWNGRADE_C");
+	 end
+	 else begin
+	    // Victim was MODIFIED: writeback first, then done
+	    //    (writeback will send L1_to_L2_Rsp with the modified cache line)
+	    fa_cache_writeback_loop_prequel (fn_PA_to_CTag (rg_pa),
+					     rg_cset_in_cache,
+					     valid_info.way,
+					     l2_to_l1_req.to_state,
+					     FSM_DOWNGRADE_C);
+	    rg_fsm_state <= FSM_WRITEBACK_LOOP;
+	    if (verbosity >= 1)
+	       $display ("    -> FSM_WRITEBACK_LOOP");
+	 end
       end
    endrule: rl_downgrade_req_from_L2_B
 
@@ -1288,7 +1324,15 @@ module mkCache #(parameter Bool      dcache_not_icache,
    endmethod: mav_request_pa
 
    // ----------------
+   // Indicates cache is IDLE, ready for new request
+
+   method Bool mv_is_idle;
+      return (rg_fsm_state == FSM_IDLE);
+   endmethod
+
+   // ----------------
    // Stalls until refill done and then returns ok (True) or error (False)
+
    method Bool mv_refill_ok () if (rg_fsm_state == FSM_IDLE);
       return (! rg_error_during_refill);
    endmethod

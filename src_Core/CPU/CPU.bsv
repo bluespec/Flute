@@ -298,7 +298,7 @@ module mkCPU (CPU_IFC);
 
    function Action fa_emit_instr_trace (Bit #(64) instret, WordXL pc, Instr instr, Priv_Mode priv);
       action
-	 if (cur_verbosity >= 1)
+	 if ((cur_verbosity >= 1) || ((instret & 'h_F_FFFF) == 0))
 	    $display ("instret:%0d  PC:0x%0h  instr:0x%0h  priv:%0d",
 		      instret, pc, instr, priv);
       endaction
