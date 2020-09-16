@@ -534,6 +534,7 @@ module mkCache #(parameter Bool      dcache_not_icache,
 	    $display ("%0d: %m.rl_writeback_loop", cur_cycle);
 	    $display ("    cset %0h way %0h cword %0h data %0h",
 		      rg_cset_in_cache, rg_way_in_cset, rg_cword_in_cline, cword);
+	    $display ("    cset_cword: ", fshow (cset_cword));
 	 end
 
       // If last cset_cword in cline, return to continuation
@@ -657,7 +658,7 @@ module mkCache #(parameter Bool      dcache_not_icache,
 				       can_up_to_E: dcache_not_icache};
       f_L1_to_L2_reqs.enq (l1_to_l2_req);
 
-      // Request read of first CSet_CWord in CLine (BRAM port B)
+      // Request read of first CSet_CWord in CLine
       // for cset_cword read-modify-write
       let                 cword_in_cline       = 0;
       CSet_CWord_in_Cache cset_cword_in_cache  = { rg_cset_in_cache, cword_in_cline };
@@ -765,6 +766,7 @@ module mkCache #(parameter Bool      dcache_not_icache,
 	 let next_cword_in_cline      = rg_cword_in_cline + 1;
 	 let next_cset_cword_in_cache = { va_cset_in_cache, next_cword_in_cline };
 	 ram_cset_cword.a.put (bram_cmd_read, next_cset_cword_in_cache, ?);
+
 	 rg_cword_in_cline <= next_cword_in_cline;
 	 if (verbosity >= 2)
 	    $display ("    Requesting ram_cset_cword.a cword-in-cache: 0x%0h",
@@ -961,9 +963,8 @@ module mkCache #(parameter Bool      dcache_not_icache,
 	 $display ("    Save rg_cset_in_cache  = %0h", rg_cset_in_cache);
 	 $display ("    Save rg_cword_in_cline = %0h", rg_cword_in_cline);
 	 $display ("    Save rg_way_in_cset    = %0h", rg_way_in_cset);
-	 $display ("    Save rg_va = %0h", rg_va);
 	 $display ("    Probe RAMs for: ", fshow (l2_to_l1_req));
-	 $display ("    -> ", FSM_DOWNGRADE_B);
+	 $display ("    -> FSM_DOWNGRADE_B");
       end
 
       // 'push' state for after downgrade:
@@ -1094,8 +1095,16 @@ module mkCache #(parameter Bool      dcache_not_icache,
       rg_cset_in_cache  <= rg_save_cset_in_cache;
       rg_cword_in_cline <= rg_save_cword_in_cline;
       rg_way_in_cset    <= rg_save_way_in_cset;
-      fa_req_rams_A (rg_save_va);
 
+      // Re-Request meta RAM
+      ram_cset_meta.a.put (bram_cmd_read, rg_save_cset_in_cache, ?);
+
+      // Re-Request data RAM
+      CSet_CWord_in_Cache  cset_cword_in_cache = fn_Addr_to_CSet_CWord_in_Cache (rg_save_va);
+      if (rg_save_fsm_state == FSM_UPGRADE_REFILL)
+	 cset_cword_in_cache  = { rg_save_cset_in_cache, rg_save_cword_in_cline };
+
+      ram_cset_cword.a.put (bram_cmd_read, cset_cword_in_cache, ?);
    endrule: rl_downgrade_req_from_L2_C
 
    // ****************************************************************

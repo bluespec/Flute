@@ -439,6 +439,9 @@ module mkSoC_Top (SoC_Top_IFC);
    interface get_to_console   = uart0.get_to_console;
    interface put_from_console = uart0.put_from_console;
 
+   // Catch-all status; return-value can identify the origin (0 = none)
+   method Bit #(8) status = 0;
+
    // ----------------------------------------------------------------
    // Misc. control and status
 
