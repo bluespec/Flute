@@ -411,7 +411,7 @@ function ALU_Outputs fv_OP_and_OP_IMM_shifts (ALU_Inputs inputs);
    if (funct3 == f3_SLLI)
       rd_val = fn_shl (rs1_val, shamt);  // in LUTRAMs/DSPs
    else begin // assert: (funct3 == f3_SRxI)
-      if (instr_b30 == 1'b0) begin
+      if (instr_b30 == 1'b0) 
 	 // SRL/SRLI
 	 rd_val = fn_shrl (rs1_val, shamt);  // in LUTRAMs/DSPs
       else

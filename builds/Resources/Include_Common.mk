@@ -35,6 +35,7 @@ all: compile  simulator
 # Near-mem (Cache and optional MMU for VM)
 # WT = Write-through; WB = write-back
 # L1 = L1 only; L1_L2 = L1 + coherent L2
+# TCM = No caches, only TCM
 
 CACHES ?= WT_L1
 
@@ -42,6 +43,8 @@ ifeq ($(CACHES),WB_L1)
   NEAR_MEM_VM_DIR=Near_Mem_VM_WB_L1
 else ifeq ($(CACHES),WB_L1_L2)
   NEAR_MEM_VM_DIR=Near_Mem_VM_WB_L1_L2
+else ifeq ($(CACHES),TCM)
+  NEAR_MEM_VM_DIR=Near_Mem_TCM
 else
   NEAR_MEM_VM_DIR=Near_Mem_VM_WT_L1
 endif
@@ -57,9 +60,9 @@ SRC_CORE ?= $(REPO)/src_Core/Core
 
 CORE_DIRS = $(REPO)/src_Core/CPU:$(REPO)/src_Core/ISA:$(REPO)/src_Core/RegFiles:$(SRC_CORE):$(REPO)/src_Core/Cache_Config:$(REPO)/src_Core/$(NEAR_MEM_VM_DIR):$(REPO)/src_Core/PLIC:$(REPO)/src_Core/Near_Mem_IO:$(REPO)/src_Core/Debug_Module:$(REPO)/src_Core/BSV_Additional_Libs
 
-TESTBENCH_DIRS  = $(REPO)/src_Testbench/Top:$(REPO)/src_Testbench/SoC:$(REPO)/src_Testbench/Fabrics/AXI4
+TESTBENCH_DIRS = $(REPO)/src_Testbench/Top:$(REPO)/src_Testbench/SoC:$(REPO)/src_Testbench/Fabrics/AXI4
 
-BSC_PATH = $(CUSTOM_DIRS):$(CORE_DIRS):$(TESTBENCH_DIRS):+
+BSC_PATH = $(CUSTOM_DIRS):$(CORE_DIRS):$(CUSTOM_TB_DIRS):$(TESTBENCH_DIRS):+
 
 # ----------------
 # Top-level file and module
