@@ -191,7 +191,7 @@ module mkI_MMU_Cache (I_MMU_Cache_IFC);
    // For debugging
    Integer verbosity       = 0;    // 1: Requests and responses; 2: rules; 3: detail
    Integer verbosity_tlb   = 0;    // 2: rules; 3: detail
-   Integer verbosity_cache = 0;    // 1 rules; 2: more detail
+   Integer verbosity_cache = 0;    // 1: rules; 2: more detail
    Integer verbosity_mmio  = 0;    // 1: rules
 
    // ----------------------------------------------------------------

@@ -953,7 +953,8 @@ module mkCache #(parameter Bool      dcache_not_icache,
    // Start downgrade by probing cache for downgrade addr
 
    rule rl_downgrade_req_from_L2_A (   (rg_fsm_state == FSM_IDLE)
-				    || (rg_fsm_state == FSM_UPGRADE_REFILL));
+				    || (   (rg_fsm_state == FSM_UPGRADE_REFILL)
+					&& (rg_cword_in_cline == 0)));
       let l2_to_l1_req = f_L2_to_L1_reqs.first;
       let addr         = l2_to_l1_req.addr;
       if (verbosity >= 1) begin
@@ -1007,32 +1008,19 @@ module mkCache #(parameter Bool      dcache_not_icache,
 	 $finish (1);
       end
 
-      /*
-      // Assertion: must have a hit
-      // No, the line may have been evicted before this request
       if (valid_info.num_valids == 0) begin
-	 $display ("%0d: %m.rl_downgrade_req_from_L2_B", cur_cycle);
-	 $display ("    INTERNAL ERROR pa %0h is MISS (downgrade request from L2 must HIT)",
-		   rg_pa);
-	 $write   ("    ", fshow_cset_meta (rg_cset_in_cache, ram_A_cset_meta));
-	 $finish (1);
-      end
-      */
-
-      if (valid_info.num_valids == 0) begin
-	 // MISS: equivalent to I, so the 'downgrade' is already satisfied
-
-	 // TODO: do we need to respond explicitly?  L2 thought that
-	 // this L1 had this line.  A MISS means it must have been
-	 // evicted (voluntary downgrade), and the L1 must have
-	 // informed L2 already with a respond.
-	 let rsp = L1_to_L2_Rsp {addr:     rg_pa,
-				 to_state: META_INVALID,
-				 m_cline:  tagged Invalid};
+	 // MISS: equivalent to I, so 'downgrade' is already satisfied.
+	 // No response needed: L2 thought that this L1 had this line.
+	 // MISS means it must have been recently evicted (voluntary
+	 // downgrade) and this L1 must have informed L2 already with
+	 // a response (the messages crossed).
+	 // let rsp = L1_to_L2_Rsp {addr: rg_pa, to_state: META_INVALID, m_cline: tagged Invalid};
 	 // f_L1_to_L2_rsps.enq (rsp);
+	 // if (verbosity >= 1)
+	 //    $display ("    Send ", fshow (rsp), " -> FSM_DOWNGRADE_C");
 	 rg_fsm_state <= FSM_DOWNGRADE_C;
 	 if (verbosity >= 1)
-	    $display ("    Send ", fshow (rsp), " -> FSM_DOWNGRADE_C");
+	    $display ("    MISS (= INVALID already); ignoring; -> FSM_DOWNGRADE_C");
       end
       else begin
 	 // HIT (valid_info.num_valids == 1)
@@ -1146,8 +1134,8 @@ module mkCache #(parameter Bool      dcache_not_icache,
    // while the virt addr is being translated to a phys addr
    method Action ma_request_va (WordXL va);    // if (rg_fsm_state == FSM_IDLE);
       fa_req_rams_A (va);
-      rg_va <= va;
-      rg_error_during_refill <= False;
+      rg_va                  <= va;
+      rg_cset_in_cache       <= fn_Addr_to_CSet_in_Cache (va);
       if (verbosity >= 1)
 	 $display ("%0d: %m.ma_request_va: %0h", cur_cycle, va);
    endmethod
