@@ -88,6 +88,7 @@
 // RDY_set_verbosity              O     1 const
 // RDY_ma_ddr4_ready              O     1 const
 // mv_status                      O     8
+// RST_N_por_reset                I     1 reset
 // CLK                            I     1 clock
 // RST_N                          I     1 reset
 // cpu_reset_server_request_put   I     1 reg
@@ -196,7 +197,8 @@
   `define BSV_RESET_EDGE negedge
 `endif
 
-module mkCore(CLK,
+module mkCore(RST_N_por_reset,
+	      CLK,
 	      RST_N,
 
 	      cpu_reset_server_request_put,
@@ -474,6 +476,7 @@ module mkCore(CLK,
 	      RDY_ma_ddr4_ready,
 
 	      mv_status);
+  input  RST_N_por_reset;
   input  CLK;
   input  RST_N;
 
@@ -1917,12 +1920,12 @@ module mkCore(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
+  reg [31 : 0] v__h5477;
+  reg [31 : 0] v__h5678;
+  reg [31 : 0] v__h6046;
   reg [31 : 0] v__h5471;
   reg [31 : 0] v__h5672;
   reg [31 : 0] v__h6040;
-  reg [31 : 0] v__h5465;
-  reg [31 : 0] v__h5666;
-  reg [31 : 0] v__h6034;
   // synopsys translate_on
 
   // remaining internal signals
@@ -2494,7 +2497,7 @@ module mkCore(CLK,
 
   // submodule debug_module
   mkDebug_Module debug_module(.CLK(CLK),
-			      .RST_N(RST_N),
+			      .RST_N(RST_N_por_reset),
 			      .dmi_read_addr_dm_addr(debug_module$dmi_read_addr_dm_addr),
 			      .dmi_write_dm_addr(debug_module$dmi_write_dm_addr),
 			      .dmi_write_dm_word(debug_module$dmi_write_dm_word),
@@ -4010,33 +4013,37 @@ module mkCore(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_from_soc_start)
 	begin
-	  v__h5471 = $stime;
+	  v__h5477 = $stime;
 	  #0;
 	end
-    v__h5465 = v__h5471 / 32'd10;
+    v__h5471 = v__h5477 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_from_soc_start)
-	$display("%0d: Core.rl_cpu_hart0_reset_from_soc_start", v__h5465);
+	$display("%0d: Core.rl_cpu_hart0_reset_from_soc_start", v__h5471);
+    if (RST_N_por_reset != `BSV_RESET_VALUE)
+      if (RST_N != `BSV_RESET_VALUE)
+	if (WILL_FIRE_RL_rl_cpu_hart0_reset_from_dm_start)
+	  begin
+	    v__h5678 = $stime;
+	    #0;
+	  end
+    v__h5672 = v__h5678 / 32'd10;
+    if (RST_N_por_reset != `BSV_RESET_VALUE)
+      if (RST_N != `BSV_RESET_VALUE)
+	if (WILL_FIRE_RL_rl_cpu_hart0_reset_from_dm_start)
+	  $display("%0d: Core.rl_cpu_hart0_reset_from_dm_start", v__h5672);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cpu_hart0_reset_from_dm_start)
-	begin
-	  v__h5672 = $stime;
-	  #0;
-	end
-    v__h5666 = v__h5672 / 32'd10;
+      if (RST_N_por_reset != `BSV_RESET_VALUE)
+	if (WILL_FIRE_RL_rl_cpu_hart0_reset_complete)
+	  begin
+	    v__h6046 = $stime;
+	    #0;
+	  end
+    v__h6040 = v__h6046 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cpu_hart0_reset_from_dm_start)
-	$display("%0d: Core.rl_cpu_hart0_reset_from_dm_start", v__h5666);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cpu_hart0_reset_complete)
-	begin
-	  v__h6040 = $stime;
-	  #0;
-	end
-    v__h6034 = v__h6040 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_cpu_hart0_reset_complete)
-	$display("%0d: Core.rl_cpu_hart0_reset_complete", v__h6034);
+      if (RST_N_por_reset != `BSV_RESET_VALUE)
+	if (WILL_FIRE_RL_rl_cpu_hart0_reset_complete)
+	  $display("%0d: Core.rl_cpu_hart0_reset_complete", v__h6040);
   end
   // synopsys translate_on
 endmodule  // mkCore
