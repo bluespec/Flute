@@ -384,14 +384,16 @@ module mkNear_Mem (Near_Mem_IFC);
    interface Server server_fence_i;
       interface Put request;
 	 method Action put (Token t);
-	    i_mmu_cache.flush_server.request.put (flush_to_invalid);
-	    d_mmu_cache.flush_server.request.put (flush_to_invalid);
+	    // With coherent caches, no need for any action here
+	    // i_mmu_cache.flush_server.request.put (flush_to_invalid);
+	    // d_mmu_cache.flush_server.request.put (flush_to_invalid);
 	 endmethod
       endinterface
       interface Get response;
 	 method ActionValue #(Token) get;
-	    let ti <- i_mmu_cache.flush_server.response.get;
-	    let td <- d_mmu_cache.flush_server.response.get;
+	    // With coherent caches, no need for any action here
+	    // let ti <- i_mmu_cache.flush_server.response.get;
+	    // let td <- d_mmu_cache.flush_server.response.get;
 	    return ?;
 	 endmethod
       endinterface
@@ -401,12 +403,14 @@ module mkNear_Mem (Near_Mem_IFC);
    interface Server server_fence;
       interface Put request;
 	 method Action put (Fence_Ordering t);
-	    d_mmu_cache.flush_server.request.put (flush_to_invalid);
+	    // With coherent caches, no need for any action here
+	    // d_mmu_cache.flush_server.request.put (flush_to_invalid);
 	 endmethod
       endinterface
       interface Get response;
 	 method ActionValue #(Token) get;
-	    let td <- d_mmu_cache.flush_server.response.get;
+	    // With coherent caches, no need for any action here
+	    // let td <- d_mmu_cache.flush_server.response.get;
 	    return ?;
 	 endmethod
       endinterface
