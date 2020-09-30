@@ -4,8 +4,8 @@ package AXI4_Deburster;
 
 // ================================================================
 // This package defines a AXI4-slave-to-AXI4-slave conversion module.
-// The parameter interface is an AXI4-slave that carries no burst transactions.
-// The output interface is an AXI4-slave that carries burst transactions.
+// The master-side interface is an AXI4-slave that carries no burst transactions.
+// The slave-side interface is an AXI4-slave that carries burst transactions.
 
 // ================================================================
 // Bluespec library imports
@@ -44,9 +44,6 @@ endinterface
 
 // ================================================================
 // The Deburster module
-// The function parameter is an address-decode function, which
-// returns (True,  slave-port-num)  if address is mapped to slave-port-num
-//         (False, ?)               if address is unmapped to any slave port
 
 module mkAXI4_Deburster (AXI4_Deburster_IFC #(wd_id, wd_addr, wd_data, wd_user))
    provisos (Add #(a__, 8, wd_addr));
