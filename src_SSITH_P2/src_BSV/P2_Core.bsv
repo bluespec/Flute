@@ -24,6 +24,8 @@ import GetPut        :: *;
 import ClientServer  :: *;
 import Connectable   :: *;
 import Bus           :: *;
+import Clocks        :: *;
+import RegUInit      :: *;
 
 // ----------------
 // BSV additional libs
@@ -65,6 +67,12 @@ import Giraffe_IFC  :: *;
 `endif
 
 // ================================================================
+// Constant: cycles to hold SoC in reset for ndm reset:
+
+UInt#(6) ndm_interval = 10;
+UInt#(6) por_interval = 20;
+
+// ================================================================
 // The P2_Core interface
 
 interface P2_Core_IFC;
@@ -95,7 +103,7 @@ interface P2_Core_IFC;
    // packed output tuples (n,vb),/ where 'vb' is a vector of
    // bytes with relevant bytes in locations [0]..[n-1]
 
-      interface AXI4_Stream_Master_IFC #(Wd_SId, Wd_SDest, Wd_SData, Wd_SUser)  tv_verifier_info_tx;
+   interface AXI4_Stream_Master_IFC #(Wd_SId, Wd_SDest, Wd_SData, Wd_SUser)  tv_verifier_info_tx;
 `endif
 
 `ifdef INCLUDE_GDB_CONTROL
@@ -105,16 +113,31 @@ interface P2_Core_IFC;
 `ifdef JTAG_TAP
    interface JTAG_IFC jtag;
 `endif
+   // This reset output only if there's a debug module:
+   interface Reset ndm_reset;
 `endif
 endinterface
 
 // ================================================================
 
 (* synthesize *)
-module mkP2_Core (P2_Core_IFC);
+module mkP2_Core #(Reset dmi_reset) (P2_Core_IFC);
+   // A "power-on reset" generator:
+   Reg #(UInt #(6)) initCnt <- mkRegUInit(por_interval);
+   let clk <- exposeCurrentClock;
+   let rstIfc <- mkReset(2, True, clk, reset_by noReset);
+   rule rl_decInitCnt (initCnt != 0);
+      initCnt <= initCnt - 1;
+      rstIfc.assertReset();
+   endrule
+   let por_reset = rstIfc.new_rst;
+   // -----------------
+   let dmi_reset1 <- mkResetInverter(dmi_reset);
+
+   // -----------------
 
    // Core: CPU + Near_Mem_IO (CLINT) + PLIC + Debug module (optional) + TV (optional)
-   Core_IFC::Core_IFC #(N_External_Interrupt_Sources)  core <- mkCore;
+   Core_IFC::Core_IFC #(N_External_Interrupt_Sources)  core <- mkCore(por_reset);
 
    // ================================================================
    // Tie-offs (not used in SSITH GFE)
@@ -139,7 +162,18 @@ module mkP2_Core (P2_Core_IFC);
    // (NDM reset from Debug Module = "non-debug-module-reset" = reset all except Debug Module)
 
    Reg #(Bool)          rg_once      <- mkReg (False);
-   Reg #(Maybe #(Bool)) rg_ndm_reset <- mkReg (tagged Invalid);
+   Reg #(Maybe #(Bool)) rg_ndm_reset <- mkReg (tagged Invalid, reset_by por_reset);
+`ifdef INCLUDE_GDB_CONTROL
+   Reg #(UInt #(6))     rg_ndm_count <- mkReg (0, reset_by por_reset);
+
+   // Reset this by por_reset to avoid circularity:
+   let ndmIfc <- mkReset(2, True, clk, reset_by por_reset);
+
+   rule decNdmCountRl (rg_ndm_count != 0);
+      rg_ndm_count <= rg_ndm_count -1;
+      ndmIfc.assertReset();
+   endrule
+`endif
 
    rule rl_once (! rg_once);
       Bool running = True;
@@ -154,7 +188,9 @@ module mkP2_Core (P2_Core_IFC);
       let running <- core.cpu_reset_server.response.get;
 
 `ifdef INCLUDE_GDB_CONTROL
-      // Respond to Debug module if this is an ndm-reset
+      // wait for end of ndm_interval:
+      when (rg_ndm_count == 0, noAction);
+      // Respond to Debug module if this is an ndm-reset:
       if (rg_ndm_reset matches tagged Valid .x)
 	 core.ndm_reset_client.response.put (running);
       rg_ndm_reset <= tagged Invalid;
@@ -168,6 +204,7 @@ module mkP2_Core (P2_Core_IFC);
 `ifdef INCLUDE_GDB_CONTROL
       let running <- core.ndm_reset_client.request.get;
       rg_ndm_reset <= tagged Valid running;
+      rg_ndm_count <= ndm_interval;
 `endif
 
       rg_once <= False;
@@ -187,21 +224,21 @@ module mkP2_Core (P2_Core_IFC);
    Wire#(Bit#(32)) w_dmi_rsp_data <- mkDWire(0);
    Wire#(Bit#(2)) w_dmi_rsp_response <- mkDWire(0);
 
-   BusReceiver#(Tuple3#(Bit#(7),Bit#(32),Bit#(2))) bus_dmi_req <- mkBusReceiver;
-   BusSender#(Tuple2#(Bit#(32),Bit#(2))) bus_dmi_rsp <- mkBusSender(unpack(0));
+   BusReceiver#(Tuple3#(Bit#(7),Bit#(32),Bit#(2))) bus_dmi_req <- mkBusReceiver(reset_by dmi_reset1);
+   BusSender#(Tuple2#(Bit#(32),Bit#(2))) bus_dmi_rsp <- mkBusSender(unpack(0), reset_by dmi_reset1);
 
 `ifdef JTAG_TAP
-   let jtagtap <- mkJtagTap;
+   let jtagtap <- mkJtagTap(reset_by dmi_reset1);
 
-   mkConnection(jtagtap.dmi.req_ready, pack(bus_dmi_req.in.ready));
-   mkConnection(jtagtap.dmi.req_valid, compose(bus_dmi_req.in.valid, unpack));
-   mkConnection(jtagtap.dmi.req_addr, w_dmi_req_addr._write);
-   mkConnection(jtagtap.dmi.req_data, w_dmi_req_data._write);
-   mkConnection(jtagtap.dmi.req_op, w_dmi_req_op._write);
-   mkConnection(jtagtap.dmi.rsp_valid, pack(bus_dmi_rsp.out.valid));
-   mkConnection(jtagtap.dmi.rsp_ready, compose(bus_dmi_rsp.out.ready, unpack));
-   mkConnection(jtagtap.dmi.rsp_data, w_dmi_rsp_data);
-   mkConnection(jtagtap.dmi.rsp_response, w_dmi_rsp_response);
+   mkConnection(jtagtap.dmi.req_ready, pack(bus_dmi_req.in.ready), reset_by dmi_reset1);
+   mkConnection(jtagtap.dmi.req_valid, compose(bus_dmi_req.in.valid, unpack), reset_by dmi_reset1);
+   mkConnection(jtagtap.dmi.req_addr, w_dmi_req_addr._write, reset_by dmi_reset1);
+   mkConnection(jtagtap.dmi.req_data, w_dmi_req_data._write, reset_by dmi_reset1);
+   mkConnection(jtagtap.dmi.req_op, w_dmi_req_op._write, reset_by dmi_reset1);
+   mkConnection(jtagtap.dmi.rsp_valid, pack(bus_dmi_rsp.out.valid), reset_by dmi_reset1);
+   mkConnection(jtagtap.dmi.rsp_ready, compose(bus_dmi_rsp.out.ready, unpack), reset_by dmi_reset1);
+   mkConnection(jtagtap.dmi.rsp_data, w_dmi_rsp_data, reset_by dmi_reset1);
+   mkConnection(jtagtap.dmi.rsp_response, w_dmi_rsp_response, reset_by dmi_reset1);
 `endif
 
    rule rl_dmi_req;
@@ -281,6 +318,7 @@ module mkP2_Core (P2_Core_IFC);
    interface JTAG_IFC jtag = jtagtap.jtag;
 `endif
 
+   interface ndm_reset = ndmIfc.new_rst;
 `endif
 endmodule
 
