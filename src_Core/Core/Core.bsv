@@ -427,14 +427,6 @@ module mkCore #(Reset por_reset) (Core_IFC #(N_External_Interrupt_Sources));
    // ----------------
    // For ISA tests: watch memory writes to <tohost> addr
 
-`ifdef WATCH_TOHOST
-   method Action set_watch_tohost (Bool watch_tohost, Bit #(64) tohost_addr);
-      cpu.set_watch_tohost (watch_tohost, tohost_addr);
-   endmethod
-
-   method Bit #(64) mv_tohost_value = cpu.mv_tohost_value;
-`endif
-
    // Inform core that DDR4 has been initialized and is ready to accept requests
    method Action ma_ddr4_ready;
       cpu.ma_ddr4_ready;
