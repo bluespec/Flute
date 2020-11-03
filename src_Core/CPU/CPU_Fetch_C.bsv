@@ -240,23 +240,23 @@ module mkCPU_Fetch_C #(IMem_IFC  imem32) (IMem_IFC);
 	  && is_32b_instr (imem32.instr [31:16]))
 	 begin
 	    addr_of_b32 = imem32.pc + 4;
-            // Here, we know that addr[0:1] == 2'b10 (from is_addr_odd16).
-            // We also know that addr_of_b32 = addr with the bottom 2 bits set to 2'b0
-            // ie addr_of_b32 = addr - 2       (1)
-            // Since after this if statement we make a request to imem32.req with the
-            // address addr_of_b32, the next time imem32.valid is True we will have
-            // imem32.pc = addr_of_b32 + 4     (2)
-            // so we will have imem32.pc = addr + 2     using (1) and (2)
-            // since we set rg_pc = addr above, we then get
-            // imem32.pc = rg_pc + 2
-            rg_imem_pc_is_rg_pc_plus_2 <= True;
+	    // Here, we know that addr[0:1] == 2'b10 (from is_addr_odd16).
+	    // We also know that addr_of_b32 = addr with the bottom 2 bits set to 2'b0
+	    // ie addr_of_b32 = addr - 2       (1)
+	    // Since after this if statement we make a request to imem32.req with the
+	    // address addr_of_b32, the next time imem32.valid is True we will have
+	    // imem32.pc = addr_of_b32 + 4     (2)
+	    // so we will have imem32.pc = addr + 2     using (1) and (2)
+	    // since we set rg_pc = addr above, we then get
+	    // imem32.pc = rg_pc + 2
+	    rg_imem_pc_is_rg_pc_plus_2 <= True;
 	 end
-         else begin
-            // This is similar to the first branch of this if statement, but we get either
-            // imem32.pc = rg_pc  or  imem32.pc = rg_pc - 2
-            // In either case we can assert this to be False
-            rg_imem_pc_is_rg_pc_plus_2 <= False;
-         end
+	 else begin
+	    // This is similar to the first branch of this if statement, but we get either
+	    // imem32.pc = rg_pc  or  imem32.pc = rg_pc - 2
+	    // In either case we can assert this to be False
+	    rg_imem_pc_is_rg_pc_plus_2 <= False;
+	 end
 
       imem32.req (f3, addr_of_b32, priv, sstatus_SUM, mstatus_MXR, satp);
       if (verbosity > 0) begin
