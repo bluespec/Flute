@@ -10,7 +10,7 @@
 // cpu_reset_server_response_get  O     1 reg
 // RDY_cpu_reset_server_response_get  O     1 reg
 // cpu_imem_master_awvalid        O     1 reg
-// cpu_imem_master_awid           O     4 reg
+// cpu_imem_master_awid           O    16 reg
 // cpu_imem_master_awaddr         O    64 reg
 // cpu_imem_master_awlen          O     8 reg
 // cpu_imem_master_awsize         O     3 reg
@@ -26,7 +26,7 @@
 // cpu_imem_master_wlast          O     1 reg
 // cpu_imem_master_bready         O     1 reg
 // cpu_imem_master_arvalid        O     1 reg
-// cpu_imem_master_arid           O     4 reg
+// cpu_imem_master_arid           O    16 reg
 // cpu_imem_master_araddr         O    64 reg
 // cpu_imem_master_arlen          O     8 reg
 // cpu_imem_master_arsize         O     3 reg
@@ -37,8 +37,8 @@
 // cpu_imem_master_arqos          O     4 reg
 // cpu_imem_master_arregion       O     4 reg
 // cpu_imem_master_rready         O     1 reg
-// core_mem_master_awvalid        O     1 reg
-// core_mem_master_awid           O     4 reg
+// core_mem_master_awvalid        O     1
+// core_mem_master_awid           O    16 reg
 // core_mem_master_awaddr         O    64 reg
 // core_mem_master_awlen          O     8 reg
 // core_mem_master_awsize         O     3 reg
@@ -48,13 +48,13 @@
 // core_mem_master_awprot         O     3 reg
 // core_mem_master_awqos          O     4 reg
 // core_mem_master_awregion       O     4 reg
-// core_mem_master_wvalid         O     1 reg
+// core_mem_master_wvalid         O     1
 // core_mem_master_wdata          O    64 reg
 // core_mem_master_wstrb          O     8 reg
 // core_mem_master_wlast          O     1 reg
-// core_mem_master_bready         O     1 reg
-// core_mem_master_arvalid        O     1 reg
-// core_mem_master_arid           O     4 reg
+// core_mem_master_bready         O     1
+// core_mem_master_arvalid        O     1
+// core_mem_master_arid           O    16 reg
 // core_mem_master_araddr         O    64 reg
 // core_mem_master_arlen          O     8 reg
 // core_mem_master_arsize         O     3 reg
@@ -64,18 +64,18 @@
 // core_mem_master_arprot         O     3 reg
 // core_mem_master_arqos          O     4 reg
 // core_mem_master_arregion       O     4 reg
-// core_mem_master_rready         O     1 reg
-// dma_server_awready             O     1 const
-// dma_server_wready              O     1 const
-// dma_server_bvalid              O     1 const
-// dma_server_bid                 O     6 const
-// dma_server_bresp               O     2 const
-// dma_server_arready             O     1 const
-// dma_server_rvalid              O     1 const
-// dma_server_rid                 O     6 const
-// dma_server_rdata               O   512 const
-// dma_server_rresp               O     2 const
-// dma_server_rlast               O     1 const
+// core_mem_master_rready         O     1
+// dma_server_awready             O     1 reg
+// dma_server_wready              O     1 reg
+// dma_server_bvalid              O     1 reg
+// dma_server_bid                 O    16 reg
+// dma_server_bresp               O     2 reg
+// dma_server_arready             O     1 reg
+// dma_server_rvalid              O     1 reg
+// dma_server_rid                 O    16 reg
+// dma_server_rdata               O   512 reg
+// dma_server_rresp               O     2 reg
+// dma_server_rlast               O     1 reg
 // tv_verifier_info_get_get       O   608 reg
 // RDY_tv_verifier_info_get_get   O     1 reg
 // RDY_dm_dmi_read_addr           O     1
@@ -94,53 +94,53 @@
 // cpu_imem_master_awready        I     1
 // cpu_imem_master_wready         I     1
 // cpu_imem_master_bvalid         I     1
-// cpu_imem_master_bid            I     4 reg
+// cpu_imem_master_bid            I    16 reg
 // cpu_imem_master_bresp          I     2 reg
 // cpu_imem_master_arready        I     1
 // cpu_imem_master_rvalid         I     1
-// cpu_imem_master_rid            I     4 reg
+// cpu_imem_master_rid            I    16 reg
 // cpu_imem_master_rdata          I    64 reg
 // cpu_imem_master_rresp          I     2 reg
 // cpu_imem_master_rlast          I     1 reg
 // core_mem_master_awready        I     1
 // core_mem_master_wready         I     1
 // core_mem_master_bvalid         I     1
-// core_mem_master_bid            I     4 reg
+// core_mem_master_bid            I    16 reg
 // core_mem_master_bresp          I     2 reg
 // core_mem_master_arready        I     1
 // core_mem_master_rvalid         I     1
-// core_mem_master_rid            I     4 reg
+// core_mem_master_rid            I    16 reg
 // core_mem_master_rdata          I    64 reg
 // core_mem_master_rresp          I     2 reg
 // core_mem_master_rlast          I     1 reg
-// dma_server_awvalid             I     1 unused
-// dma_server_awid                I     6 unused
-// dma_server_awaddr              I    64 unused
-// dma_server_awlen               I     8 unused
-// dma_server_awsize              I     3 unused
-// dma_server_awburst             I     2 unused
-// dma_server_awlock              I     1 unused
-// dma_server_awcache             I     4 unused
-// dma_server_awprot              I     3 unused
-// dma_server_awqos               I     4 unused
-// dma_server_awregion            I     4 unused
-// dma_server_wvalid              I     1 unused
-// dma_server_wdata               I   512 unused
-// dma_server_wstrb               I    64 unused
-// dma_server_wlast               I     1 unused
-// dma_server_bready              I     1 unused
-// dma_server_arvalid             I     1 unused
-// dma_server_arid                I     6 unused
-// dma_server_araddr              I    64 unused
-// dma_server_arlen               I     8 unused
-// dma_server_arsize              I     3 unused
-// dma_server_arburst             I     2 unused
-// dma_server_arlock              I     1 unused
-// dma_server_arcache             I     4 unused
-// dma_server_arprot              I     3 unused
-// dma_server_arqos               I     4 unused
-// dma_server_arregion            I     4 unused
-// dma_server_rready              I     1 unused
+// dma_server_awvalid             I     1
+// dma_server_awid                I    16 reg
+// dma_server_awaddr              I    64 reg
+// dma_server_awlen               I     8 reg
+// dma_server_awsize              I     3 reg
+// dma_server_awburst             I     2 reg
+// dma_server_awlock              I     1 reg
+// dma_server_awcache             I     4 reg
+// dma_server_awprot              I     3 reg
+// dma_server_awqos               I     4 reg
+// dma_server_awregion            I     4 reg
+// dma_server_wvalid              I     1
+// dma_server_wdata               I   512 reg
+// dma_server_wstrb               I    64 reg
+// dma_server_wlast               I     1 reg
+// dma_server_bready              I     1
+// dma_server_arvalid             I     1
+// dma_server_arid                I    16 reg
+// dma_server_araddr              I    64 reg
+// dma_server_arlen               I     8 reg
+// dma_server_arsize              I     3 reg
+// dma_server_arburst             I     2 reg
+// dma_server_arlock              I     1 reg
+// dma_server_arcache             I     4 reg
+// dma_server_arprot              I     3 reg
+// dma_server_arqos               I     4 reg
+// dma_server_arregion            I     4 reg
+// dma_server_rready              I     1
 // core_external_interrupt_sources_0_m_interrupt_req_set_not_clear  I     1
 // core_external_interrupt_sources_1_m_interrupt_req_set_not_clear  I     1
 // core_external_interrupt_sources_2_m_interrupt_req_set_not_clear  I     1
@@ -176,6 +176,7 @@
 // EN_ndm_reset_client_request_get  I     1
 //
 // Combinational paths from inputs to outputs:
+//   (core_mem_master_awready, core_mem_master_wready) -> core_mem_master_bready
 //   (dm_dmi_read_addr_dm_addr, EN_dm_dmi_read_addr) -> RDY_dm_dmi_read_data
 //   (dm_dmi_read_addr_dm_addr,
 //    EN_dm_dmi_read_addr,
@@ -491,7 +492,7 @@ module mkCore(CLK,
   output cpu_imem_master_awvalid;
 
   // value method cpu_imem_master_m_awid
-  output [3 : 0] cpu_imem_master_awid;
+  output [15 : 0] cpu_imem_master_awid;
 
   // value method cpu_imem_master_m_awaddr
   output [63 : 0] cpu_imem_master_awaddr;
@@ -544,7 +545,7 @@ module mkCore(CLK,
 
   // action method cpu_imem_master_m_bvalid
   input  cpu_imem_master_bvalid;
-  input  [3 : 0] cpu_imem_master_bid;
+  input  [15 : 0] cpu_imem_master_bid;
   input  [1 : 0] cpu_imem_master_bresp;
 
   // value method cpu_imem_master_m_bready
@@ -554,7 +555,7 @@ module mkCore(CLK,
   output cpu_imem_master_arvalid;
 
   // value method cpu_imem_master_m_arid
-  output [3 : 0] cpu_imem_master_arid;
+  output [15 : 0] cpu_imem_master_arid;
 
   // value method cpu_imem_master_m_araddr
   output [63 : 0] cpu_imem_master_araddr;
@@ -590,7 +591,7 @@ module mkCore(CLK,
 
   // action method cpu_imem_master_m_rvalid
   input  cpu_imem_master_rvalid;
-  input  [3 : 0] cpu_imem_master_rid;
+  input  [15 : 0] cpu_imem_master_rid;
   input  [63 : 0] cpu_imem_master_rdata;
   input  [1 : 0] cpu_imem_master_rresp;
   input  cpu_imem_master_rlast;
@@ -602,7 +603,7 @@ module mkCore(CLK,
   output core_mem_master_awvalid;
 
   // value method core_mem_master_m_awid
-  output [3 : 0] core_mem_master_awid;
+  output [15 : 0] core_mem_master_awid;
 
   // value method core_mem_master_m_awaddr
   output [63 : 0] core_mem_master_awaddr;
@@ -655,7 +656,7 @@ module mkCore(CLK,
 
   // action method core_mem_master_m_bvalid
   input  core_mem_master_bvalid;
-  input  [3 : 0] core_mem_master_bid;
+  input  [15 : 0] core_mem_master_bid;
   input  [1 : 0] core_mem_master_bresp;
 
   // value method core_mem_master_m_bready
@@ -665,7 +666,7 @@ module mkCore(CLK,
   output core_mem_master_arvalid;
 
   // value method core_mem_master_m_arid
-  output [3 : 0] core_mem_master_arid;
+  output [15 : 0] core_mem_master_arid;
 
   // value method core_mem_master_m_araddr
   output [63 : 0] core_mem_master_araddr;
@@ -701,7 +702,7 @@ module mkCore(CLK,
 
   // action method core_mem_master_m_rvalid
   input  core_mem_master_rvalid;
-  input  [3 : 0] core_mem_master_rid;
+  input  [15 : 0] core_mem_master_rid;
   input  [63 : 0] core_mem_master_rdata;
   input  [1 : 0] core_mem_master_rresp;
   input  core_mem_master_rlast;
@@ -711,7 +712,7 @@ module mkCore(CLK,
 
   // action method dma_server_m_awvalid
   input  dma_server_awvalid;
-  input  [5 : 0] dma_server_awid;
+  input  [15 : 0] dma_server_awid;
   input  [63 : 0] dma_server_awaddr;
   input  [7 : 0] dma_server_awlen;
   input  [2 : 0] dma_server_awsize;
@@ -738,7 +739,7 @@ module mkCore(CLK,
   output dma_server_bvalid;
 
   // value method dma_server_m_bid
-  output [5 : 0] dma_server_bid;
+  output [15 : 0] dma_server_bid;
 
   // value method dma_server_m_bresp
   output [1 : 0] dma_server_bresp;
@@ -750,7 +751,7 @@ module mkCore(CLK,
 
   // action method dma_server_m_arvalid
   input  dma_server_arvalid;
-  input  [5 : 0] dma_server_arid;
+  input  [15 : 0] dma_server_arid;
   input  [63 : 0] dma_server_araddr;
   input  [7 : 0] dma_server_arlen;
   input  [2 : 0] dma_server_arsize;
@@ -768,7 +769,7 @@ module mkCore(CLK,
   output dma_server_rvalid;
 
   // value method dma_server_m_rid
-  output [5 : 0] dma_server_rid;
+  output [15 : 0] dma_server_rid;
 
   // value method dma_server_m_rdata
   output [511 : 0] dma_server_rdata;
@@ -889,6 +890,12 @@ module mkCore(CLK,
 		cpu_imem_master_awaddr,
 		cpu_imem_master_wdata;
   wire [31 : 0] dm_dmi_read_data;
+  wire [15 : 0] core_mem_master_arid,
+		core_mem_master_awid,
+		cpu_imem_master_arid,
+		cpu_imem_master_awid,
+		dma_server_bid,
+		dma_server_rid;
   wire [7 : 0] core_mem_master_arlen,
 	       core_mem_master_awlen,
 	       core_mem_master_wstrb,
@@ -896,21 +903,16 @@ module mkCore(CLK,
 	       cpu_imem_master_awlen,
 	       cpu_imem_master_wstrb,
 	       mv_status;
-  wire [5 : 0] dma_server_bid, dma_server_rid;
   wire [3 : 0] core_mem_master_arcache,
-	       core_mem_master_arid,
 	       core_mem_master_arqos,
 	       core_mem_master_arregion,
 	       core_mem_master_awcache,
-	       core_mem_master_awid,
 	       core_mem_master_awqos,
 	       core_mem_master_awregion,
 	       cpu_imem_master_arcache,
-	       cpu_imem_master_arid,
 	       cpu_imem_master_arqos,
 	       cpu_imem_master_arregion,
 	       cpu_imem_master_awcache,
-	       cpu_imem_master_awid,
 	       cpu_imem_master_awqos,
 	       cpu_imem_master_awregion;
   wire [2 : 0] core_mem_master_arprot,
@@ -983,6 +985,18 @@ module mkCore(CLK,
 		cpu$mem_master_rdata,
 		cpu$mem_master_wdata,
 		cpu$set_verbosity_logdelay;
+  wire [15 : 0] cpu$dma_server_arid,
+		cpu$dma_server_awid,
+		cpu$dma_server_bid,
+		cpu$dma_server_rid,
+		cpu$imem_master_arid,
+		cpu$imem_master_awid,
+		cpu$imem_master_bid,
+		cpu$imem_master_rid,
+		cpu$mem_master_arid,
+		cpu$mem_master_awid,
+		cpu$mem_master_bid,
+		cpu$mem_master_rid;
   wire [7 : 0] cpu$dma_server_arlen,
 	       cpu$dma_server_awlen,
 	       cpu$imem_master_arlen,
@@ -992,10 +1006,6 @@ module mkCore(CLK,
 	       cpu$mem_master_awlen,
 	       cpu$mem_master_wstrb,
 	       cpu$mv_status;
-  wire [5 : 0] cpu$dma_server_arid,
-	       cpu$dma_server_awid,
-	       cpu$dma_server_bid,
-	       cpu$dma_server_rid;
   wire [3 : 0] cpu$dma_server_arcache,
 	       cpu$dma_server_arqos,
 	       cpu$dma_server_arregion,
@@ -1004,25 +1014,17 @@ module mkCore(CLK,
 	       cpu$dma_server_awregion,
 	       cpu$hart0_put_other_req_put,
 	       cpu$imem_master_arcache,
-	       cpu$imem_master_arid,
 	       cpu$imem_master_arqos,
 	       cpu$imem_master_arregion,
 	       cpu$imem_master_awcache,
-	       cpu$imem_master_awid,
 	       cpu$imem_master_awqos,
 	       cpu$imem_master_awregion,
-	       cpu$imem_master_bid,
-	       cpu$imem_master_rid,
 	       cpu$mem_master_arcache,
-	       cpu$mem_master_arid,
 	       cpu$mem_master_arqos,
 	       cpu$mem_master_arregion,
 	       cpu$mem_master_awcache,
-	       cpu$mem_master_awid,
 	       cpu$mem_master_awqos,
 	       cpu$mem_master_awregion,
-	       cpu$mem_master_bid,
-	       cpu$mem_master_rid,
 	       cpu$set_verbosity_verbosity;
   wire [2 : 0] cpu$dma_server_arprot,
 	       cpu$dma_server_arsize,
@@ -1137,6 +1139,10 @@ module mkCore(CLK,
 		debug_module$master_rdata,
 		debug_module$master_wdata;
   wire [31 : 0] debug_module$dmi_read_data, debug_module$dmi_write_dm_word;
+  wire [15 : 0] debug_module$master_arid,
+		debug_module$master_awid,
+		debug_module$master_bid,
+		debug_module$master_rid;
   wire [7 : 0] debug_module$master_arlen,
 	       debug_module$master_awlen,
 	       debug_module$master_wstrb;
@@ -1144,15 +1150,11 @@ module mkCore(CLK,
 	       debug_module$dmi_write_dm_addr;
   wire [3 : 0] debug_module$hart0_get_other_req_get,
 	       debug_module$master_arcache,
-	       debug_module$master_arid,
 	       debug_module$master_arqos,
 	       debug_module$master_arregion,
 	       debug_module$master_awcache,
-	       debug_module$master_awid,
 	       debug_module$master_awqos,
-	       debug_module$master_awregion,
-	       debug_module$master_bid,
-	       debug_module$master_rid;
+	       debug_module$master_awregion;
   wire [2 : 0] debug_module$master_arprot,
 	       debug_module$master_arsize,
 	       debug_module$master_awprot,
@@ -1274,6 +1276,14 @@ module mkCore(CLK,
 		dm_mem_tap$slave_awaddr,
 		dm_mem_tap$slave_rdata,
 		dm_mem_tap$slave_wdata;
+  wire [15 : 0] dm_mem_tap$master_arid,
+		dm_mem_tap$master_awid,
+		dm_mem_tap$master_bid,
+		dm_mem_tap$master_rid,
+		dm_mem_tap$slave_arid,
+		dm_mem_tap$slave_awid,
+		dm_mem_tap$slave_bid,
+		dm_mem_tap$slave_rid;
   wire [7 : 0] dm_mem_tap$master_arlen,
 	       dm_mem_tap$master_awlen,
 	       dm_mem_tap$master_wstrb,
@@ -1281,25 +1291,17 @@ module mkCore(CLK,
 	       dm_mem_tap$slave_awlen,
 	       dm_mem_tap$slave_wstrb;
   wire [3 : 0] dm_mem_tap$master_arcache,
-	       dm_mem_tap$master_arid,
 	       dm_mem_tap$master_arqos,
 	       dm_mem_tap$master_arregion,
 	       dm_mem_tap$master_awcache,
-	       dm_mem_tap$master_awid,
 	       dm_mem_tap$master_awqos,
 	       dm_mem_tap$master_awregion,
-	       dm_mem_tap$master_bid,
-	       dm_mem_tap$master_rid,
 	       dm_mem_tap$slave_arcache,
-	       dm_mem_tap$slave_arid,
 	       dm_mem_tap$slave_arqos,
 	       dm_mem_tap$slave_arregion,
 	       dm_mem_tap$slave_awcache,
-	       dm_mem_tap$slave_awid,
 	       dm_mem_tap$slave_awqos,
-	       dm_mem_tap$slave_awregion,
-	       dm_mem_tap$slave_bid,
-	       dm_mem_tap$slave_rid;
+	       dm_mem_tap$slave_awregion;
   wire [2 : 0] dm_mem_tap$master_arprot,
 	       dm_mem_tap$master_arsize,
 	       dm_mem_tap$master_awprot,
@@ -1347,6 +1349,125 @@ module mkCore(CLK,
        dm_mem_tap$slave_wready,
        dm_mem_tap$slave_wvalid;
 
+  // ports of submodule dma_server_mux
+  wire [511 : 0] dma_server_mux$initiator_A_server_rdata,
+		 dma_server_mux$initiator_A_server_wdata,
+		 dma_server_mux$target_client_rdata,
+		 dma_server_mux$target_client_wdata;
+  wire [63 : 0] dma_server_mux$initiator_A_server_araddr,
+		dma_server_mux$initiator_A_server_awaddr,
+		dma_server_mux$initiator_A_server_wstrb,
+		dma_server_mux$initiator_B_server_araddr,
+		dma_server_mux$initiator_B_server_awaddr,
+		dma_server_mux$initiator_B_server_rdata,
+		dma_server_mux$initiator_B_server_wdata,
+		dma_server_mux$target_client_araddr,
+		dma_server_mux$target_client_awaddr,
+		dma_server_mux$target_client_wstrb;
+  wire [15 : 0] dma_server_mux$initiator_A_server_arid,
+		dma_server_mux$initiator_A_server_awid,
+		dma_server_mux$initiator_A_server_bid,
+		dma_server_mux$initiator_A_server_rid,
+		dma_server_mux$initiator_B_server_arid,
+		dma_server_mux$initiator_B_server_awid,
+		dma_server_mux$initiator_B_server_bid,
+		dma_server_mux$initiator_B_server_rid,
+		dma_server_mux$target_client_arid,
+		dma_server_mux$target_client_awid,
+		dma_server_mux$target_client_bid,
+		dma_server_mux$target_client_rid;
+  wire [7 : 0] dma_server_mux$initiator_A_server_arlen,
+	       dma_server_mux$initiator_A_server_awlen,
+	       dma_server_mux$initiator_B_server_arlen,
+	       dma_server_mux$initiator_B_server_awlen,
+	       dma_server_mux$initiator_B_server_wstrb,
+	       dma_server_mux$target_client_arlen,
+	       dma_server_mux$target_client_awlen;
+  wire [3 : 0] dma_server_mux$initiator_A_server_arcache,
+	       dma_server_mux$initiator_A_server_arqos,
+	       dma_server_mux$initiator_A_server_arregion,
+	       dma_server_mux$initiator_A_server_awcache,
+	       dma_server_mux$initiator_A_server_awqos,
+	       dma_server_mux$initiator_A_server_awregion,
+	       dma_server_mux$initiator_B_server_arcache,
+	       dma_server_mux$initiator_B_server_arqos,
+	       dma_server_mux$initiator_B_server_arregion,
+	       dma_server_mux$initiator_B_server_awcache,
+	       dma_server_mux$initiator_B_server_awqos,
+	       dma_server_mux$initiator_B_server_awregion,
+	       dma_server_mux$target_client_arcache,
+	       dma_server_mux$target_client_arqos,
+	       dma_server_mux$target_client_arregion,
+	       dma_server_mux$target_client_awcache,
+	       dma_server_mux$target_client_awqos,
+	       dma_server_mux$target_client_awregion;
+  wire [2 : 0] dma_server_mux$initiator_A_server_arprot,
+	       dma_server_mux$initiator_A_server_arsize,
+	       dma_server_mux$initiator_A_server_awprot,
+	       dma_server_mux$initiator_A_server_awsize,
+	       dma_server_mux$initiator_B_server_arprot,
+	       dma_server_mux$initiator_B_server_arsize,
+	       dma_server_mux$initiator_B_server_awprot,
+	       dma_server_mux$initiator_B_server_awsize,
+	       dma_server_mux$target_client_arprot,
+	       dma_server_mux$target_client_arsize,
+	       dma_server_mux$target_client_awprot,
+	       dma_server_mux$target_client_awsize;
+  wire [1 : 0] dma_server_mux$initiator_A_server_arburst,
+	       dma_server_mux$initiator_A_server_awburst,
+	       dma_server_mux$initiator_A_server_bresp,
+	       dma_server_mux$initiator_A_server_rresp,
+	       dma_server_mux$initiator_B_server_arburst,
+	       dma_server_mux$initiator_B_server_awburst,
+	       dma_server_mux$initiator_B_server_bresp,
+	       dma_server_mux$initiator_B_server_rresp,
+	       dma_server_mux$target_client_arburst,
+	       dma_server_mux$target_client_awburst,
+	       dma_server_mux$target_client_bresp,
+	       dma_server_mux$target_client_rresp;
+  wire dma_server_mux$initiator_A_server_arlock,
+       dma_server_mux$initiator_A_server_arready,
+       dma_server_mux$initiator_A_server_arvalid,
+       dma_server_mux$initiator_A_server_awlock,
+       dma_server_mux$initiator_A_server_awready,
+       dma_server_mux$initiator_A_server_awvalid,
+       dma_server_mux$initiator_A_server_bready,
+       dma_server_mux$initiator_A_server_bvalid,
+       dma_server_mux$initiator_A_server_rlast,
+       dma_server_mux$initiator_A_server_rready,
+       dma_server_mux$initiator_A_server_rvalid,
+       dma_server_mux$initiator_A_server_wlast,
+       dma_server_mux$initiator_A_server_wready,
+       dma_server_mux$initiator_A_server_wvalid,
+       dma_server_mux$initiator_B_server_arlock,
+       dma_server_mux$initiator_B_server_arready,
+       dma_server_mux$initiator_B_server_arvalid,
+       dma_server_mux$initiator_B_server_awlock,
+       dma_server_mux$initiator_B_server_awready,
+       dma_server_mux$initiator_B_server_awvalid,
+       dma_server_mux$initiator_B_server_bready,
+       dma_server_mux$initiator_B_server_bvalid,
+       dma_server_mux$initiator_B_server_rlast,
+       dma_server_mux$initiator_B_server_rready,
+       dma_server_mux$initiator_B_server_rvalid,
+       dma_server_mux$initiator_B_server_wlast,
+       dma_server_mux$initiator_B_server_wready,
+       dma_server_mux$initiator_B_server_wvalid,
+       dma_server_mux$target_client_arlock,
+       dma_server_mux$target_client_arready,
+       dma_server_mux$target_client_arvalid,
+       dma_server_mux$target_client_awlock,
+       dma_server_mux$target_client_awready,
+       dma_server_mux$target_client_awvalid,
+       dma_server_mux$target_client_bready,
+       dma_server_mux$target_client_bvalid,
+       dma_server_mux$target_client_rlast,
+       dma_server_mux$target_client_rready,
+       dma_server_mux$target_client_rvalid,
+       dma_server_mux$target_client_wlast,
+       dma_server_mux$target_client_wready,
+       dma_server_mux$target_client_wvalid;
+
   // ports of submodule f_reset_reqs
   wire f_reset_reqs$CLR,
        f_reset_reqs$DEQ,
@@ -1383,206 +1504,167 @@ module mkCore(CLK,
        f_trace_data_merged$ENQ,
        f_trace_data_merged$FULL_N;
 
-  // ports of submodule fabric_2x3
-  wire [63 : 0] fabric_2x3$v_from_masters_0_araddr,
-		fabric_2x3$v_from_masters_0_awaddr,
-		fabric_2x3$v_from_masters_0_rdata,
-		fabric_2x3$v_from_masters_0_wdata,
-		fabric_2x3$v_from_masters_1_araddr,
-		fabric_2x3$v_from_masters_1_awaddr,
-		fabric_2x3$v_from_masters_1_rdata,
-		fabric_2x3$v_from_masters_1_wdata,
-		fabric_2x3$v_to_slaves_0_araddr,
-		fabric_2x3$v_to_slaves_0_awaddr,
-		fabric_2x3$v_to_slaves_0_rdata,
-		fabric_2x3$v_to_slaves_0_wdata,
-		fabric_2x3$v_to_slaves_1_araddr,
-		fabric_2x3$v_to_slaves_1_awaddr,
-		fabric_2x3$v_to_slaves_1_rdata,
-		fabric_2x3$v_to_slaves_1_wdata,
-		fabric_2x3$v_to_slaves_2_araddr,
-		fabric_2x3$v_to_slaves_2_awaddr,
-		fabric_2x3$v_to_slaves_2_rdata,
-		fabric_2x3$v_to_slaves_2_wdata;
-  wire [7 : 0] fabric_2x3$v_from_masters_0_arlen,
-	       fabric_2x3$v_from_masters_0_awlen,
-	       fabric_2x3$v_from_masters_0_wstrb,
-	       fabric_2x3$v_from_masters_1_arlen,
-	       fabric_2x3$v_from_masters_1_awlen,
-	       fabric_2x3$v_from_masters_1_wstrb,
-	       fabric_2x3$v_to_slaves_0_arlen,
-	       fabric_2x3$v_to_slaves_0_awlen,
-	       fabric_2x3$v_to_slaves_0_wstrb,
-	       fabric_2x3$v_to_slaves_1_arlen,
-	       fabric_2x3$v_to_slaves_1_awlen,
-	       fabric_2x3$v_to_slaves_1_wstrb,
-	       fabric_2x3$v_to_slaves_2_arlen,
-	       fabric_2x3$v_to_slaves_2_awlen,
-	       fabric_2x3$v_to_slaves_2_wstrb;
-  wire [3 : 0] fabric_2x3$set_verbosity_verbosity,
-	       fabric_2x3$v_from_masters_0_arcache,
-	       fabric_2x3$v_from_masters_0_arid,
-	       fabric_2x3$v_from_masters_0_arqos,
-	       fabric_2x3$v_from_masters_0_arregion,
-	       fabric_2x3$v_from_masters_0_awcache,
-	       fabric_2x3$v_from_masters_0_awid,
-	       fabric_2x3$v_from_masters_0_awqos,
-	       fabric_2x3$v_from_masters_0_awregion,
-	       fabric_2x3$v_from_masters_0_bid,
-	       fabric_2x3$v_from_masters_0_rid,
-	       fabric_2x3$v_from_masters_1_arcache,
-	       fabric_2x3$v_from_masters_1_arid,
-	       fabric_2x3$v_from_masters_1_arqos,
-	       fabric_2x3$v_from_masters_1_arregion,
-	       fabric_2x3$v_from_masters_1_awcache,
-	       fabric_2x3$v_from_masters_1_awid,
-	       fabric_2x3$v_from_masters_1_awqos,
-	       fabric_2x3$v_from_masters_1_awregion,
-	       fabric_2x3$v_from_masters_1_bid,
-	       fabric_2x3$v_from_masters_1_rid,
-	       fabric_2x3$v_to_slaves_0_arcache,
-	       fabric_2x3$v_to_slaves_0_arid,
-	       fabric_2x3$v_to_slaves_0_arqos,
-	       fabric_2x3$v_to_slaves_0_arregion,
-	       fabric_2x3$v_to_slaves_0_awcache,
-	       fabric_2x3$v_to_slaves_0_awid,
-	       fabric_2x3$v_to_slaves_0_awqos,
-	       fabric_2x3$v_to_slaves_0_awregion,
-	       fabric_2x3$v_to_slaves_0_bid,
-	       fabric_2x3$v_to_slaves_0_rid,
-	       fabric_2x3$v_to_slaves_1_arcache,
-	       fabric_2x3$v_to_slaves_1_arid,
-	       fabric_2x3$v_to_slaves_1_arqos,
-	       fabric_2x3$v_to_slaves_1_arregion,
-	       fabric_2x3$v_to_slaves_1_awcache,
-	       fabric_2x3$v_to_slaves_1_awid,
-	       fabric_2x3$v_to_slaves_1_awqos,
-	       fabric_2x3$v_to_slaves_1_awregion,
-	       fabric_2x3$v_to_slaves_1_bid,
-	       fabric_2x3$v_to_slaves_1_rid,
-	       fabric_2x3$v_to_slaves_2_arcache,
-	       fabric_2x3$v_to_slaves_2_arid,
-	       fabric_2x3$v_to_slaves_2_arqos,
-	       fabric_2x3$v_to_slaves_2_arregion,
-	       fabric_2x3$v_to_slaves_2_awcache,
-	       fabric_2x3$v_to_slaves_2_awid,
-	       fabric_2x3$v_to_slaves_2_awqos,
-	       fabric_2x3$v_to_slaves_2_awregion,
-	       fabric_2x3$v_to_slaves_2_bid,
-	       fabric_2x3$v_to_slaves_2_rid;
-  wire [2 : 0] fabric_2x3$v_from_masters_0_arprot,
-	       fabric_2x3$v_from_masters_0_arsize,
-	       fabric_2x3$v_from_masters_0_awprot,
-	       fabric_2x3$v_from_masters_0_awsize,
-	       fabric_2x3$v_from_masters_1_arprot,
-	       fabric_2x3$v_from_masters_1_arsize,
-	       fabric_2x3$v_from_masters_1_awprot,
-	       fabric_2x3$v_from_masters_1_awsize,
-	       fabric_2x3$v_to_slaves_0_arprot,
-	       fabric_2x3$v_to_slaves_0_arsize,
-	       fabric_2x3$v_to_slaves_0_awprot,
-	       fabric_2x3$v_to_slaves_0_awsize,
-	       fabric_2x3$v_to_slaves_1_arprot,
-	       fabric_2x3$v_to_slaves_1_arsize,
-	       fabric_2x3$v_to_slaves_1_awprot,
-	       fabric_2x3$v_to_slaves_1_awsize,
-	       fabric_2x3$v_to_slaves_2_arprot,
-	       fabric_2x3$v_to_slaves_2_arsize,
-	       fabric_2x3$v_to_slaves_2_awprot,
-	       fabric_2x3$v_to_slaves_2_awsize;
-  wire [1 : 0] fabric_2x3$v_from_masters_0_arburst,
-	       fabric_2x3$v_from_masters_0_awburst,
-	       fabric_2x3$v_from_masters_0_bresp,
-	       fabric_2x3$v_from_masters_0_rresp,
-	       fabric_2x3$v_from_masters_1_arburst,
-	       fabric_2x3$v_from_masters_1_awburst,
-	       fabric_2x3$v_from_masters_1_bresp,
-	       fabric_2x3$v_from_masters_1_rresp,
-	       fabric_2x3$v_to_slaves_0_arburst,
-	       fabric_2x3$v_to_slaves_0_awburst,
-	       fabric_2x3$v_to_slaves_0_bresp,
-	       fabric_2x3$v_to_slaves_0_rresp,
-	       fabric_2x3$v_to_slaves_1_arburst,
-	       fabric_2x3$v_to_slaves_1_awburst,
-	       fabric_2x3$v_to_slaves_1_bresp,
-	       fabric_2x3$v_to_slaves_1_rresp,
-	       fabric_2x3$v_to_slaves_2_arburst,
-	       fabric_2x3$v_to_slaves_2_awburst,
-	       fabric_2x3$v_to_slaves_2_bresp,
-	       fabric_2x3$v_to_slaves_2_rresp;
-  wire fabric_2x3$EN_reset,
-       fabric_2x3$EN_set_verbosity,
-       fabric_2x3$RDY_reset,
-       fabric_2x3$v_from_masters_0_arlock,
-       fabric_2x3$v_from_masters_0_arready,
-       fabric_2x3$v_from_masters_0_arvalid,
-       fabric_2x3$v_from_masters_0_awlock,
-       fabric_2x3$v_from_masters_0_awready,
-       fabric_2x3$v_from_masters_0_awvalid,
-       fabric_2x3$v_from_masters_0_bready,
-       fabric_2x3$v_from_masters_0_bvalid,
-       fabric_2x3$v_from_masters_0_rlast,
-       fabric_2x3$v_from_masters_0_rready,
-       fabric_2x3$v_from_masters_0_rvalid,
-       fabric_2x3$v_from_masters_0_wlast,
-       fabric_2x3$v_from_masters_0_wready,
-       fabric_2x3$v_from_masters_0_wvalid,
-       fabric_2x3$v_from_masters_1_arlock,
-       fabric_2x3$v_from_masters_1_arready,
-       fabric_2x3$v_from_masters_1_arvalid,
-       fabric_2x3$v_from_masters_1_awlock,
-       fabric_2x3$v_from_masters_1_awready,
-       fabric_2x3$v_from_masters_1_awvalid,
-       fabric_2x3$v_from_masters_1_bready,
-       fabric_2x3$v_from_masters_1_bvalid,
-       fabric_2x3$v_from_masters_1_rlast,
-       fabric_2x3$v_from_masters_1_rready,
-       fabric_2x3$v_from_masters_1_rvalid,
-       fabric_2x3$v_from_masters_1_wlast,
-       fabric_2x3$v_from_masters_1_wready,
-       fabric_2x3$v_from_masters_1_wvalid,
-       fabric_2x3$v_to_slaves_0_arlock,
-       fabric_2x3$v_to_slaves_0_arready,
-       fabric_2x3$v_to_slaves_0_arvalid,
-       fabric_2x3$v_to_slaves_0_awlock,
-       fabric_2x3$v_to_slaves_0_awready,
-       fabric_2x3$v_to_slaves_0_awvalid,
-       fabric_2x3$v_to_slaves_0_bready,
-       fabric_2x3$v_to_slaves_0_bvalid,
-       fabric_2x3$v_to_slaves_0_rlast,
-       fabric_2x3$v_to_slaves_0_rready,
-       fabric_2x3$v_to_slaves_0_rvalid,
-       fabric_2x3$v_to_slaves_0_wlast,
-       fabric_2x3$v_to_slaves_0_wready,
-       fabric_2x3$v_to_slaves_0_wvalid,
-       fabric_2x3$v_to_slaves_1_arlock,
-       fabric_2x3$v_to_slaves_1_arready,
-       fabric_2x3$v_to_slaves_1_arvalid,
-       fabric_2x3$v_to_slaves_1_awlock,
-       fabric_2x3$v_to_slaves_1_awready,
-       fabric_2x3$v_to_slaves_1_awvalid,
-       fabric_2x3$v_to_slaves_1_bready,
-       fabric_2x3$v_to_slaves_1_bvalid,
-       fabric_2x3$v_to_slaves_1_rlast,
-       fabric_2x3$v_to_slaves_1_rready,
-       fabric_2x3$v_to_slaves_1_rvalid,
-       fabric_2x3$v_to_slaves_1_wlast,
-       fabric_2x3$v_to_slaves_1_wready,
-       fabric_2x3$v_to_slaves_1_wvalid,
-       fabric_2x3$v_to_slaves_2_arlock,
-       fabric_2x3$v_to_slaves_2_arready,
-       fabric_2x3$v_to_slaves_2_arvalid,
-       fabric_2x3$v_to_slaves_2_awlock,
-       fabric_2x3$v_to_slaves_2_awready,
-       fabric_2x3$v_to_slaves_2_awvalid,
-       fabric_2x3$v_to_slaves_2_bready,
-       fabric_2x3$v_to_slaves_2_bvalid,
-       fabric_2x3$v_to_slaves_2_rlast,
-       fabric_2x3$v_to_slaves_2_rready,
-       fabric_2x3$v_to_slaves_2_rvalid,
-       fabric_2x3$v_to_slaves_2_wlast,
-       fabric_2x3$v_to_slaves_2_wready,
-       fabric_2x3$v_to_slaves_2_wvalid;
+  // ports of submodule fabric_1x3
+  wire [63 : 0] fabric_1x3$v_from_masters_0_araddr,
+		fabric_1x3$v_from_masters_0_awaddr,
+		fabric_1x3$v_from_masters_0_rdata,
+		fabric_1x3$v_from_masters_0_wdata,
+		fabric_1x3$v_to_slaves_0_araddr,
+		fabric_1x3$v_to_slaves_0_awaddr,
+		fabric_1x3$v_to_slaves_0_rdata,
+		fabric_1x3$v_to_slaves_0_wdata,
+		fabric_1x3$v_to_slaves_1_araddr,
+		fabric_1x3$v_to_slaves_1_awaddr,
+		fabric_1x3$v_to_slaves_1_rdata,
+		fabric_1x3$v_to_slaves_1_wdata,
+		fabric_1x3$v_to_slaves_2_araddr,
+		fabric_1x3$v_to_slaves_2_awaddr,
+		fabric_1x3$v_to_slaves_2_rdata,
+		fabric_1x3$v_to_slaves_2_wdata;
+  wire [15 : 0] fabric_1x3$v_from_masters_0_arid,
+		fabric_1x3$v_from_masters_0_awid,
+		fabric_1x3$v_from_masters_0_bid,
+		fabric_1x3$v_from_masters_0_rid,
+		fabric_1x3$v_to_slaves_0_arid,
+		fabric_1x3$v_to_slaves_0_awid,
+		fabric_1x3$v_to_slaves_0_bid,
+		fabric_1x3$v_to_slaves_0_rid,
+		fabric_1x3$v_to_slaves_1_arid,
+		fabric_1x3$v_to_slaves_1_awid,
+		fabric_1x3$v_to_slaves_1_bid,
+		fabric_1x3$v_to_slaves_1_rid,
+		fabric_1x3$v_to_slaves_2_arid,
+		fabric_1x3$v_to_slaves_2_awid,
+		fabric_1x3$v_to_slaves_2_bid,
+		fabric_1x3$v_to_slaves_2_rid;
+  wire [7 : 0] fabric_1x3$v_from_masters_0_arlen,
+	       fabric_1x3$v_from_masters_0_awlen,
+	       fabric_1x3$v_from_masters_0_wstrb,
+	       fabric_1x3$v_to_slaves_0_arlen,
+	       fabric_1x3$v_to_slaves_0_awlen,
+	       fabric_1x3$v_to_slaves_0_wstrb,
+	       fabric_1x3$v_to_slaves_1_arlen,
+	       fabric_1x3$v_to_slaves_1_awlen,
+	       fabric_1x3$v_to_slaves_1_wstrb,
+	       fabric_1x3$v_to_slaves_2_arlen,
+	       fabric_1x3$v_to_slaves_2_awlen,
+	       fabric_1x3$v_to_slaves_2_wstrb;
+  wire [3 : 0] fabric_1x3$set_verbosity_verbosity,
+	       fabric_1x3$v_from_masters_0_arcache,
+	       fabric_1x3$v_from_masters_0_arqos,
+	       fabric_1x3$v_from_masters_0_arregion,
+	       fabric_1x3$v_from_masters_0_awcache,
+	       fabric_1x3$v_from_masters_0_awqos,
+	       fabric_1x3$v_from_masters_0_awregion,
+	       fabric_1x3$v_to_slaves_0_arcache,
+	       fabric_1x3$v_to_slaves_0_arqos,
+	       fabric_1x3$v_to_slaves_0_arregion,
+	       fabric_1x3$v_to_slaves_0_awcache,
+	       fabric_1x3$v_to_slaves_0_awqos,
+	       fabric_1x3$v_to_slaves_0_awregion,
+	       fabric_1x3$v_to_slaves_1_arcache,
+	       fabric_1x3$v_to_slaves_1_arqos,
+	       fabric_1x3$v_to_slaves_1_arregion,
+	       fabric_1x3$v_to_slaves_1_awcache,
+	       fabric_1x3$v_to_slaves_1_awqos,
+	       fabric_1x3$v_to_slaves_1_awregion,
+	       fabric_1x3$v_to_slaves_2_arcache,
+	       fabric_1x3$v_to_slaves_2_arqos,
+	       fabric_1x3$v_to_slaves_2_arregion,
+	       fabric_1x3$v_to_slaves_2_awcache,
+	       fabric_1x3$v_to_slaves_2_awqos,
+	       fabric_1x3$v_to_slaves_2_awregion;
+  wire [2 : 0] fabric_1x3$v_from_masters_0_arprot,
+	       fabric_1x3$v_from_masters_0_arsize,
+	       fabric_1x3$v_from_masters_0_awprot,
+	       fabric_1x3$v_from_masters_0_awsize,
+	       fabric_1x3$v_to_slaves_0_arprot,
+	       fabric_1x3$v_to_slaves_0_arsize,
+	       fabric_1x3$v_to_slaves_0_awprot,
+	       fabric_1x3$v_to_slaves_0_awsize,
+	       fabric_1x3$v_to_slaves_1_arprot,
+	       fabric_1x3$v_to_slaves_1_arsize,
+	       fabric_1x3$v_to_slaves_1_awprot,
+	       fabric_1x3$v_to_slaves_1_awsize,
+	       fabric_1x3$v_to_slaves_2_arprot,
+	       fabric_1x3$v_to_slaves_2_arsize,
+	       fabric_1x3$v_to_slaves_2_awprot,
+	       fabric_1x3$v_to_slaves_2_awsize;
+  wire [1 : 0] fabric_1x3$v_from_masters_0_arburst,
+	       fabric_1x3$v_from_masters_0_awburst,
+	       fabric_1x3$v_from_masters_0_bresp,
+	       fabric_1x3$v_from_masters_0_rresp,
+	       fabric_1x3$v_to_slaves_0_arburst,
+	       fabric_1x3$v_to_slaves_0_awburst,
+	       fabric_1x3$v_to_slaves_0_bresp,
+	       fabric_1x3$v_to_slaves_0_rresp,
+	       fabric_1x3$v_to_slaves_1_arburst,
+	       fabric_1x3$v_to_slaves_1_awburst,
+	       fabric_1x3$v_to_slaves_1_bresp,
+	       fabric_1x3$v_to_slaves_1_rresp,
+	       fabric_1x3$v_to_slaves_2_arburst,
+	       fabric_1x3$v_to_slaves_2_awburst,
+	       fabric_1x3$v_to_slaves_2_bresp,
+	       fabric_1x3$v_to_slaves_2_rresp;
+  wire fabric_1x3$EN_reset,
+       fabric_1x3$EN_set_verbosity,
+       fabric_1x3$RDY_reset,
+       fabric_1x3$v_from_masters_0_arlock,
+       fabric_1x3$v_from_masters_0_arready,
+       fabric_1x3$v_from_masters_0_arvalid,
+       fabric_1x3$v_from_masters_0_awlock,
+       fabric_1x3$v_from_masters_0_awready,
+       fabric_1x3$v_from_masters_0_awvalid,
+       fabric_1x3$v_from_masters_0_bready,
+       fabric_1x3$v_from_masters_0_bvalid,
+       fabric_1x3$v_from_masters_0_rlast,
+       fabric_1x3$v_from_masters_0_rready,
+       fabric_1x3$v_from_masters_0_rvalid,
+       fabric_1x3$v_from_masters_0_wlast,
+       fabric_1x3$v_from_masters_0_wready,
+       fabric_1x3$v_from_masters_0_wvalid,
+       fabric_1x3$v_to_slaves_0_arlock,
+       fabric_1x3$v_to_slaves_0_arready,
+       fabric_1x3$v_to_slaves_0_arvalid,
+       fabric_1x3$v_to_slaves_0_awlock,
+       fabric_1x3$v_to_slaves_0_awready,
+       fabric_1x3$v_to_slaves_0_awvalid,
+       fabric_1x3$v_to_slaves_0_bready,
+       fabric_1x3$v_to_slaves_0_bvalid,
+       fabric_1x3$v_to_slaves_0_rlast,
+       fabric_1x3$v_to_slaves_0_rready,
+       fabric_1x3$v_to_slaves_0_rvalid,
+       fabric_1x3$v_to_slaves_0_wlast,
+       fabric_1x3$v_to_slaves_0_wready,
+       fabric_1x3$v_to_slaves_0_wvalid,
+       fabric_1x3$v_to_slaves_1_arlock,
+       fabric_1x3$v_to_slaves_1_arready,
+       fabric_1x3$v_to_slaves_1_arvalid,
+       fabric_1x3$v_to_slaves_1_awlock,
+       fabric_1x3$v_to_slaves_1_awready,
+       fabric_1x3$v_to_slaves_1_awvalid,
+       fabric_1x3$v_to_slaves_1_bready,
+       fabric_1x3$v_to_slaves_1_bvalid,
+       fabric_1x3$v_to_slaves_1_rlast,
+       fabric_1x3$v_to_slaves_1_rready,
+       fabric_1x3$v_to_slaves_1_rvalid,
+       fabric_1x3$v_to_slaves_1_wlast,
+       fabric_1x3$v_to_slaves_1_wready,
+       fabric_1x3$v_to_slaves_1_wvalid,
+       fabric_1x3$v_to_slaves_2_arlock,
+       fabric_1x3$v_to_slaves_2_arready,
+       fabric_1x3$v_to_slaves_2_arvalid,
+       fabric_1x3$v_to_slaves_2_awlock,
+       fabric_1x3$v_to_slaves_2_awready,
+       fabric_1x3$v_to_slaves_2_awvalid,
+       fabric_1x3$v_to_slaves_2_bready,
+       fabric_1x3$v_to_slaves_2_bvalid,
+       fabric_1x3$v_to_slaves_2_rlast,
+       fabric_1x3$v_to_slaves_2_rready,
+       fabric_1x3$v_to_slaves_2_rvalid,
+       fabric_1x3$v_to_slaves_2_wlast,
+       fabric_1x3$v_to_slaves_2_wready,
+       fabric_1x3$v_to_slaves_2_wvalid;
 
   // ports of submodule near_mem_io
   wire [63 : 0] near_mem_io$axi4_slave_araddr,
@@ -1591,19 +1673,19 @@ module mkCore(CLK,
 		near_mem_io$axi4_slave_wdata,
 		near_mem_io$set_addr_map_addr_base,
 		near_mem_io$set_addr_map_addr_lim;
+  wire [15 : 0] near_mem_io$axi4_slave_arid,
+		near_mem_io$axi4_slave_awid,
+		near_mem_io$axi4_slave_bid,
+		near_mem_io$axi4_slave_rid;
   wire [7 : 0] near_mem_io$axi4_slave_arlen,
 	       near_mem_io$axi4_slave_awlen,
 	       near_mem_io$axi4_slave_wstrb;
   wire [3 : 0] near_mem_io$axi4_slave_arcache,
-	       near_mem_io$axi4_slave_arid,
 	       near_mem_io$axi4_slave_arqos,
 	       near_mem_io$axi4_slave_arregion,
 	       near_mem_io$axi4_slave_awcache,
-	       near_mem_io$axi4_slave_awid,
 	       near_mem_io$axi4_slave_awqos,
-	       near_mem_io$axi4_slave_awregion,
-	       near_mem_io$axi4_slave_bid,
-	       near_mem_io$axi4_slave_rid;
+	       near_mem_io$axi4_slave_awregion;
   wire [2 : 0] near_mem_io$axi4_slave_arprot,
 	       near_mem_io$axi4_slave_arsize,
 	       near_mem_io$axi4_slave_awprot,
@@ -1645,19 +1727,19 @@ module mkCore(CLK,
 		plic$axi4_slave_wdata,
 		plic$set_addr_map_addr_base,
 		plic$set_addr_map_addr_lim;
+  wire [15 : 0] plic$axi4_slave_arid,
+		plic$axi4_slave_awid,
+		plic$axi4_slave_bid,
+		plic$axi4_slave_rid;
   wire [7 : 0] plic$axi4_slave_arlen,
 	       plic$axi4_slave_awlen,
 	       plic$axi4_slave_wstrb;
   wire [3 : 0] plic$axi4_slave_arcache,
-	       plic$axi4_slave_arid,
 	       plic$axi4_slave_arqos,
 	       plic$axi4_slave_arregion,
 	       plic$axi4_slave_awcache,
-	       plic$axi4_slave_awid,
 	       plic$axi4_slave_awqos,
 	       plic$axi4_slave_awregion,
-	       plic$axi4_slave_bid,
-	       plic$axi4_slave_rid,
 	       plic$set_verbosity_verbosity;
   wire [2 : 0] plic$axi4_slave_arprot,
 	       plic$axi4_slave_arsize,
@@ -1755,11 +1837,13 @@ module mkCore(CLK,
        CAN_FIRE_RL_rl_rd_addr_channel_2,
        CAN_FIRE_RL_rl_rd_addr_channel_3,
        CAN_FIRE_RL_rl_rd_addr_channel_4,
+       CAN_FIRE_RL_rl_rd_addr_channel_5,
        CAN_FIRE_RL_rl_rd_data_channel,
        CAN_FIRE_RL_rl_rd_data_channel_1,
        CAN_FIRE_RL_rl_rd_data_channel_2,
        CAN_FIRE_RL_rl_rd_data_channel_3,
        CAN_FIRE_RL_rl_rd_data_channel_4,
+       CAN_FIRE_RL_rl_rd_data_channel_5,
        CAN_FIRE_RL_rl_relay_external_interrupts,
        CAN_FIRE_RL_rl_relay_sw_interrupts,
        CAN_FIRE_RL_rl_relay_timer_interrupts,
@@ -1768,16 +1852,19 @@ module mkCore(CLK,
        CAN_FIRE_RL_rl_wr_addr_channel_2,
        CAN_FIRE_RL_rl_wr_addr_channel_3,
        CAN_FIRE_RL_rl_wr_addr_channel_4,
+       CAN_FIRE_RL_rl_wr_addr_channel_5,
        CAN_FIRE_RL_rl_wr_data_channel,
        CAN_FIRE_RL_rl_wr_data_channel_1,
        CAN_FIRE_RL_rl_wr_data_channel_2,
        CAN_FIRE_RL_rl_wr_data_channel_3,
        CAN_FIRE_RL_rl_wr_data_channel_4,
+       CAN_FIRE_RL_rl_wr_data_channel_5,
        CAN_FIRE_RL_rl_wr_response_channel,
        CAN_FIRE_RL_rl_wr_response_channel_1,
        CAN_FIRE_RL_rl_wr_response_channel_2,
        CAN_FIRE_RL_rl_wr_response_channel_3,
        CAN_FIRE_RL_rl_wr_response_channel_4,
+       CAN_FIRE_RL_rl_wr_response_channel_5,
        CAN_FIRE_core_external_interrupt_sources_0_m_interrupt_req,
        CAN_FIRE_core_external_interrupt_sources_10_m_interrupt_req,
        CAN_FIRE_core_external_interrupt_sources_11_m_interrupt_req,
@@ -1849,11 +1936,13 @@ module mkCore(CLK,
        WILL_FIRE_RL_rl_rd_addr_channel_2,
        WILL_FIRE_RL_rl_rd_addr_channel_3,
        WILL_FIRE_RL_rl_rd_addr_channel_4,
+       WILL_FIRE_RL_rl_rd_addr_channel_5,
        WILL_FIRE_RL_rl_rd_data_channel,
        WILL_FIRE_RL_rl_rd_data_channel_1,
        WILL_FIRE_RL_rl_rd_data_channel_2,
        WILL_FIRE_RL_rl_rd_data_channel_3,
        WILL_FIRE_RL_rl_rd_data_channel_4,
+       WILL_FIRE_RL_rl_rd_data_channel_5,
        WILL_FIRE_RL_rl_relay_external_interrupts,
        WILL_FIRE_RL_rl_relay_sw_interrupts,
        WILL_FIRE_RL_rl_relay_timer_interrupts,
@@ -1862,16 +1951,19 @@ module mkCore(CLK,
        WILL_FIRE_RL_rl_wr_addr_channel_2,
        WILL_FIRE_RL_rl_wr_addr_channel_3,
        WILL_FIRE_RL_rl_wr_addr_channel_4,
+       WILL_FIRE_RL_rl_wr_addr_channel_5,
        WILL_FIRE_RL_rl_wr_data_channel,
        WILL_FIRE_RL_rl_wr_data_channel_1,
        WILL_FIRE_RL_rl_wr_data_channel_2,
        WILL_FIRE_RL_rl_wr_data_channel_3,
        WILL_FIRE_RL_rl_wr_data_channel_4,
+       WILL_FIRE_RL_rl_wr_data_channel_5,
        WILL_FIRE_RL_rl_wr_response_channel,
        WILL_FIRE_RL_rl_wr_response_channel_1,
        WILL_FIRE_RL_rl_wr_response_channel_2,
        WILL_FIRE_RL_rl_wr_response_channel_3,
        WILL_FIRE_RL_rl_wr_response_channel_4,
+       WILL_FIRE_RL_rl_wr_response_channel_5,
        WILL_FIRE_core_external_interrupt_sources_0_m_interrupt_req,
        WILL_FIRE_core_external_interrupt_sources_10_m_interrupt_req,
        WILL_FIRE_core_external_interrupt_sources_11_m_interrupt_req,
@@ -1917,12 +2009,12 @@ module mkCore(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h5471;
-  reg [31 : 0] v__h5672;
-  reg [31 : 0] v__h6040;
-  reg [31 : 0] v__h5465;
-  reg [31 : 0] v__h5666;
-  reg [31 : 0] v__h6034;
+  reg [31 : 0] v__h6193;
+  reg [31 : 0] v__h6394;
+  reg [31 : 0] v__h6762;
+  reg [31 : 0] v__h6187;
+  reg [31 : 0] v__h6388;
+  reg [31 : 0] v__h6756;
   // synopsys translate_on
 
   // remaining internal signals
@@ -1942,53 +2034,53 @@ module mkCore(CLK,
 	     EN_cpu_reset_server_response_get ;
 
   // value method cpu_imem_master_m_awvalid
-  assign cpu_imem_master_awvalid = cpu$imem_master_awvalid ;
+  assign cpu_imem_master_awvalid = fabric_1x3$v_to_slaves_0_awvalid ;
 
   // value method cpu_imem_master_m_awid
-  assign cpu_imem_master_awid = cpu$imem_master_awid ;
+  assign cpu_imem_master_awid = fabric_1x3$v_to_slaves_0_awid ;
 
   // value method cpu_imem_master_m_awaddr
-  assign cpu_imem_master_awaddr = cpu$imem_master_awaddr ;
+  assign cpu_imem_master_awaddr = fabric_1x3$v_to_slaves_0_awaddr ;
 
   // value method cpu_imem_master_m_awlen
-  assign cpu_imem_master_awlen = cpu$imem_master_awlen ;
+  assign cpu_imem_master_awlen = fabric_1x3$v_to_slaves_0_awlen ;
 
   // value method cpu_imem_master_m_awsize
-  assign cpu_imem_master_awsize = cpu$imem_master_awsize ;
+  assign cpu_imem_master_awsize = fabric_1x3$v_to_slaves_0_awsize ;
 
   // value method cpu_imem_master_m_awburst
-  assign cpu_imem_master_awburst = cpu$imem_master_awburst ;
+  assign cpu_imem_master_awburst = fabric_1x3$v_to_slaves_0_awburst ;
 
   // value method cpu_imem_master_m_awlock
-  assign cpu_imem_master_awlock = cpu$imem_master_awlock ;
+  assign cpu_imem_master_awlock = fabric_1x3$v_to_slaves_0_awlock ;
 
   // value method cpu_imem_master_m_awcache
-  assign cpu_imem_master_awcache = cpu$imem_master_awcache ;
+  assign cpu_imem_master_awcache = fabric_1x3$v_to_slaves_0_awcache ;
 
   // value method cpu_imem_master_m_awprot
-  assign cpu_imem_master_awprot = cpu$imem_master_awprot ;
+  assign cpu_imem_master_awprot = fabric_1x3$v_to_slaves_0_awprot ;
 
   // value method cpu_imem_master_m_awqos
-  assign cpu_imem_master_awqos = cpu$imem_master_awqos ;
+  assign cpu_imem_master_awqos = fabric_1x3$v_to_slaves_0_awqos ;
 
   // value method cpu_imem_master_m_awregion
-  assign cpu_imem_master_awregion = cpu$imem_master_awregion ;
+  assign cpu_imem_master_awregion = fabric_1x3$v_to_slaves_0_awregion ;
 
   // action method cpu_imem_master_m_awready
   assign CAN_FIRE_cpu_imem_master_m_awready = 1'd1 ;
   assign WILL_FIRE_cpu_imem_master_m_awready = 1'd1 ;
 
   // value method cpu_imem_master_m_wvalid
-  assign cpu_imem_master_wvalid = cpu$imem_master_wvalid ;
+  assign cpu_imem_master_wvalid = fabric_1x3$v_to_slaves_0_wvalid ;
 
   // value method cpu_imem_master_m_wdata
-  assign cpu_imem_master_wdata = cpu$imem_master_wdata ;
+  assign cpu_imem_master_wdata = fabric_1x3$v_to_slaves_0_wdata ;
 
   // value method cpu_imem_master_m_wstrb
-  assign cpu_imem_master_wstrb = cpu$imem_master_wstrb ;
+  assign cpu_imem_master_wstrb = fabric_1x3$v_to_slaves_0_wstrb ;
 
   // value method cpu_imem_master_m_wlast
-  assign cpu_imem_master_wlast = cpu$imem_master_wlast ;
+  assign cpu_imem_master_wlast = fabric_1x3$v_to_slaves_0_wlast ;
 
   // action method cpu_imem_master_m_wready
   assign CAN_FIRE_cpu_imem_master_m_wready = 1'd1 ;
@@ -1999,40 +2091,40 @@ module mkCore(CLK,
   assign WILL_FIRE_cpu_imem_master_m_bvalid = 1'd1 ;
 
   // value method cpu_imem_master_m_bready
-  assign cpu_imem_master_bready = cpu$imem_master_bready ;
+  assign cpu_imem_master_bready = fabric_1x3$v_to_slaves_0_bready ;
 
   // value method cpu_imem_master_m_arvalid
-  assign cpu_imem_master_arvalid = cpu$imem_master_arvalid ;
+  assign cpu_imem_master_arvalid = fabric_1x3$v_to_slaves_0_arvalid ;
 
   // value method cpu_imem_master_m_arid
-  assign cpu_imem_master_arid = cpu$imem_master_arid ;
+  assign cpu_imem_master_arid = fabric_1x3$v_to_slaves_0_arid ;
 
   // value method cpu_imem_master_m_araddr
-  assign cpu_imem_master_araddr = cpu$imem_master_araddr ;
+  assign cpu_imem_master_araddr = fabric_1x3$v_to_slaves_0_araddr ;
 
   // value method cpu_imem_master_m_arlen
-  assign cpu_imem_master_arlen = cpu$imem_master_arlen ;
+  assign cpu_imem_master_arlen = fabric_1x3$v_to_slaves_0_arlen ;
 
   // value method cpu_imem_master_m_arsize
-  assign cpu_imem_master_arsize = cpu$imem_master_arsize ;
+  assign cpu_imem_master_arsize = fabric_1x3$v_to_slaves_0_arsize ;
 
   // value method cpu_imem_master_m_arburst
-  assign cpu_imem_master_arburst = cpu$imem_master_arburst ;
+  assign cpu_imem_master_arburst = fabric_1x3$v_to_slaves_0_arburst ;
 
   // value method cpu_imem_master_m_arlock
-  assign cpu_imem_master_arlock = cpu$imem_master_arlock ;
+  assign cpu_imem_master_arlock = fabric_1x3$v_to_slaves_0_arlock ;
 
   // value method cpu_imem_master_m_arcache
-  assign cpu_imem_master_arcache = cpu$imem_master_arcache ;
+  assign cpu_imem_master_arcache = fabric_1x3$v_to_slaves_0_arcache ;
 
   // value method cpu_imem_master_m_arprot
-  assign cpu_imem_master_arprot = cpu$imem_master_arprot ;
+  assign cpu_imem_master_arprot = fabric_1x3$v_to_slaves_0_arprot ;
 
   // value method cpu_imem_master_m_arqos
-  assign cpu_imem_master_arqos = cpu$imem_master_arqos ;
+  assign cpu_imem_master_arqos = fabric_1x3$v_to_slaves_0_arqos ;
 
   // value method cpu_imem_master_m_arregion
-  assign cpu_imem_master_arregion = cpu$imem_master_arregion ;
+  assign cpu_imem_master_arregion = fabric_1x3$v_to_slaves_0_arregion ;
 
   // action method cpu_imem_master_m_arready
   assign CAN_FIRE_cpu_imem_master_m_arready = 1'd1 ;
@@ -2043,56 +2135,56 @@ module mkCore(CLK,
   assign WILL_FIRE_cpu_imem_master_m_rvalid = 1'd1 ;
 
   // value method cpu_imem_master_m_rready
-  assign cpu_imem_master_rready = cpu$imem_master_rready ;
+  assign cpu_imem_master_rready = fabric_1x3$v_to_slaves_0_rready ;
 
   // value method core_mem_master_m_awvalid
-  assign core_mem_master_awvalid = fabric_2x3$v_to_slaves_0_awvalid ;
+  assign core_mem_master_awvalid = cpu$mem_master_awvalid ;
 
   // value method core_mem_master_m_awid
-  assign core_mem_master_awid = fabric_2x3$v_to_slaves_0_awid ;
+  assign core_mem_master_awid = cpu$mem_master_awid ;
 
   // value method core_mem_master_m_awaddr
-  assign core_mem_master_awaddr = fabric_2x3$v_to_slaves_0_awaddr ;
+  assign core_mem_master_awaddr = cpu$mem_master_awaddr ;
 
   // value method core_mem_master_m_awlen
-  assign core_mem_master_awlen = fabric_2x3$v_to_slaves_0_awlen ;
+  assign core_mem_master_awlen = cpu$mem_master_awlen ;
 
   // value method core_mem_master_m_awsize
-  assign core_mem_master_awsize = fabric_2x3$v_to_slaves_0_awsize ;
+  assign core_mem_master_awsize = cpu$mem_master_awsize ;
 
   // value method core_mem_master_m_awburst
-  assign core_mem_master_awburst = fabric_2x3$v_to_slaves_0_awburst ;
+  assign core_mem_master_awburst = cpu$mem_master_awburst ;
 
   // value method core_mem_master_m_awlock
-  assign core_mem_master_awlock = fabric_2x3$v_to_slaves_0_awlock ;
+  assign core_mem_master_awlock = cpu$mem_master_awlock ;
 
   // value method core_mem_master_m_awcache
-  assign core_mem_master_awcache = fabric_2x3$v_to_slaves_0_awcache ;
+  assign core_mem_master_awcache = cpu$mem_master_awcache ;
 
   // value method core_mem_master_m_awprot
-  assign core_mem_master_awprot = fabric_2x3$v_to_slaves_0_awprot ;
+  assign core_mem_master_awprot = cpu$mem_master_awprot ;
 
   // value method core_mem_master_m_awqos
-  assign core_mem_master_awqos = fabric_2x3$v_to_slaves_0_awqos ;
+  assign core_mem_master_awqos = cpu$mem_master_awqos ;
 
   // value method core_mem_master_m_awregion
-  assign core_mem_master_awregion = fabric_2x3$v_to_slaves_0_awregion ;
+  assign core_mem_master_awregion = cpu$mem_master_awregion ;
 
   // action method core_mem_master_m_awready
   assign CAN_FIRE_core_mem_master_m_awready = 1'd1 ;
   assign WILL_FIRE_core_mem_master_m_awready = 1'd1 ;
 
   // value method core_mem_master_m_wvalid
-  assign core_mem_master_wvalid = fabric_2x3$v_to_slaves_0_wvalid ;
+  assign core_mem_master_wvalid = cpu$mem_master_wvalid ;
 
   // value method core_mem_master_m_wdata
-  assign core_mem_master_wdata = fabric_2x3$v_to_slaves_0_wdata ;
+  assign core_mem_master_wdata = cpu$mem_master_wdata ;
 
   // value method core_mem_master_m_wstrb
-  assign core_mem_master_wstrb = fabric_2x3$v_to_slaves_0_wstrb ;
+  assign core_mem_master_wstrb = cpu$mem_master_wstrb ;
 
   // value method core_mem_master_m_wlast
-  assign core_mem_master_wlast = fabric_2x3$v_to_slaves_0_wlast ;
+  assign core_mem_master_wlast = cpu$mem_master_wlast ;
 
   // action method core_mem_master_m_wready
   assign CAN_FIRE_core_mem_master_m_wready = 1'd1 ;
@@ -2103,40 +2195,40 @@ module mkCore(CLK,
   assign WILL_FIRE_core_mem_master_m_bvalid = 1'd1 ;
 
   // value method core_mem_master_m_bready
-  assign core_mem_master_bready = fabric_2x3$v_to_slaves_0_bready ;
+  assign core_mem_master_bready = cpu$mem_master_bready ;
 
   // value method core_mem_master_m_arvalid
-  assign core_mem_master_arvalid = fabric_2x3$v_to_slaves_0_arvalid ;
+  assign core_mem_master_arvalid = cpu$mem_master_arvalid ;
 
   // value method core_mem_master_m_arid
-  assign core_mem_master_arid = fabric_2x3$v_to_slaves_0_arid ;
+  assign core_mem_master_arid = cpu$mem_master_arid ;
 
   // value method core_mem_master_m_araddr
-  assign core_mem_master_araddr = fabric_2x3$v_to_slaves_0_araddr ;
+  assign core_mem_master_araddr = cpu$mem_master_araddr ;
 
   // value method core_mem_master_m_arlen
-  assign core_mem_master_arlen = fabric_2x3$v_to_slaves_0_arlen ;
+  assign core_mem_master_arlen = cpu$mem_master_arlen ;
 
   // value method core_mem_master_m_arsize
-  assign core_mem_master_arsize = fabric_2x3$v_to_slaves_0_arsize ;
+  assign core_mem_master_arsize = cpu$mem_master_arsize ;
 
   // value method core_mem_master_m_arburst
-  assign core_mem_master_arburst = fabric_2x3$v_to_slaves_0_arburst ;
+  assign core_mem_master_arburst = cpu$mem_master_arburst ;
 
   // value method core_mem_master_m_arlock
-  assign core_mem_master_arlock = fabric_2x3$v_to_slaves_0_arlock ;
+  assign core_mem_master_arlock = cpu$mem_master_arlock ;
 
   // value method core_mem_master_m_arcache
-  assign core_mem_master_arcache = fabric_2x3$v_to_slaves_0_arcache ;
+  assign core_mem_master_arcache = cpu$mem_master_arcache ;
 
   // value method core_mem_master_m_arprot
-  assign core_mem_master_arprot = fabric_2x3$v_to_slaves_0_arprot ;
+  assign core_mem_master_arprot = cpu$mem_master_arprot ;
 
   // value method core_mem_master_m_arqos
-  assign core_mem_master_arqos = fabric_2x3$v_to_slaves_0_arqos ;
+  assign core_mem_master_arqos = cpu$mem_master_arqos ;
 
   // value method core_mem_master_m_arregion
-  assign core_mem_master_arregion = fabric_2x3$v_to_slaves_0_arregion ;
+  assign core_mem_master_arregion = cpu$mem_master_arregion ;
 
   // action method core_mem_master_m_arready
   assign CAN_FIRE_core_mem_master_m_arready = 1'd1 ;
@@ -2147,30 +2239,30 @@ module mkCore(CLK,
   assign WILL_FIRE_core_mem_master_m_rvalid = 1'd1 ;
 
   // value method core_mem_master_m_rready
-  assign core_mem_master_rready = fabric_2x3$v_to_slaves_0_rready ;
+  assign core_mem_master_rready = cpu$mem_master_rready ;
 
   // action method dma_server_m_awvalid
   assign CAN_FIRE_dma_server_m_awvalid = 1'd1 ;
   assign WILL_FIRE_dma_server_m_awvalid = 1'd1 ;
 
   // value method dma_server_m_awready
-  assign dma_server_awready = cpu$dma_server_awready ;
+  assign dma_server_awready = dma_server_mux$initiator_A_server_awready ;
 
   // action method dma_server_m_wvalid
   assign CAN_FIRE_dma_server_m_wvalid = 1'd1 ;
   assign WILL_FIRE_dma_server_m_wvalid = 1'd1 ;
 
   // value method dma_server_m_wready
-  assign dma_server_wready = cpu$dma_server_wready ;
+  assign dma_server_wready = dma_server_mux$initiator_A_server_wready ;
 
   // value method dma_server_m_bvalid
-  assign dma_server_bvalid = cpu$dma_server_bvalid ;
+  assign dma_server_bvalid = dma_server_mux$initiator_A_server_bvalid ;
 
   // value method dma_server_m_bid
-  assign dma_server_bid = cpu$dma_server_bid ;
+  assign dma_server_bid = dma_server_mux$initiator_A_server_bid ;
 
   // value method dma_server_m_bresp
-  assign dma_server_bresp = cpu$dma_server_bresp ;
+  assign dma_server_bresp = dma_server_mux$initiator_A_server_bresp ;
 
   // action method dma_server_m_bready
   assign CAN_FIRE_dma_server_m_bready = 1'd1 ;
@@ -2181,22 +2273,22 @@ module mkCore(CLK,
   assign WILL_FIRE_dma_server_m_arvalid = 1'd1 ;
 
   // value method dma_server_m_arready
-  assign dma_server_arready = cpu$dma_server_arready ;
+  assign dma_server_arready = dma_server_mux$initiator_A_server_arready ;
 
   // value method dma_server_m_rvalid
-  assign dma_server_rvalid = cpu$dma_server_rvalid ;
+  assign dma_server_rvalid = dma_server_mux$initiator_A_server_rvalid ;
 
   // value method dma_server_m_rid
-  assign dma_server_rid = cpu$dma_server_rid ;
+  assign dma_server_rid = dma_server_mux$initiator_A_server_rid ;
 
   // value method dma_server_m_rdata
-  assign dma_server_rdata = cpu$dma_server_rdata ;
+  assign dma_server_rdata = dma_server_mux$initiator_A_server_rdata ;
 
   // value method dma_server_m_rresp
-  assign dma_server_rresp = cpu$dma_server_rresp ;
+  assign dma_server_rresp = dma_server_mux$initiator_A_server_rresp ;
 
   // value method dma_server_m_rlast
-  assign dma_server_rlast = cpu$dma_server_rlast ;
+  assign dma_server_rlast = dma_server_mux$initiator_A_server_rlast ;
 
   // action method dma_server_m_rready
   assign CAN_FIRE_dma_server_m_rready = 1'd1 ;
@@ -2726,6 +2818,127 @@ module mkCore(CLK,
 			  .trace_data_out_get(dm_mem_tap$trace_data_out_get),
 			  .RDY_trace_data_out_get(dm_mem_tap$RDY_trace_data_out_get));
 
+  // submodule dma_server_mux
+  mkDma_Server_Mux dma_server_mux(.CLK(CLK),
+				  .RST_N(RST_N),
+				  .initiator_A_server_araddr(dma_server_mux$initiator_A_server_araddr),
+				  .initiator_A_server_arburst(dma_server_mux$initiator_A_server_arburst),
+				  .initiator_A_server_arcache(dma_server_mux$initiator_A_server_arcache),
+				  .initiator_A_server_arid(dma_server_mux$initiator_A_server_arid),
+				  .initiator_A_server_arlen(dma_server_mux$initiator_A_server_arlen),
+				  .initiator_A_server_arlock(dma_server_mux$initiator_A_server_arlock),
+				  .initiator_A_server_arprot(dma_server_mux$initiator_A_server_arprot),
+				  .initiator_A_server_arqos(dma_server_mux$initiator_A_server_arqos),
+				  .initiator_A_server_arregion(dma_server_mux$initiator_A_server_arregion),
+				  .initiator_A_server_arsize(dma_server_mux$initiator_A_server_arsize),
+				  .initiator_A_server_arvalid(dma_server_mux$initiator_A_server_arvalid),
+				  .initiator_A_server_awaddr(dma_server_mux$initiator_A_server_awaddr),
+				  .initiator_A_server_awburst(dma_server_mux$initiator_A_server_awburst),
+				  .initiator_A_server_awcache(dma_server_mux$initiator_A_server_awcache),
+				  .initiator_A_server_awid(dma_server_mux$initiator_A_server_awid),
+				  .initiator_A_server_awlen(dma_server_mux$initiator_A_server_awlen),
+				  .initiator_A_server_awlock(dma_server_mux$initiator_A_server_awlock),
+				  .initiator_A_server_awprot(dma_server_mux$initiator_A_server_awprot),
+				  .initiator_A_server_awqos(dma_server_mux$initiator_A_server_awqos),
+				  .initiator_A_server_awregion(dma_server_mux$initiator_A_server_awregion),
+				  .initiator_A_server_awsize(dma_server_mux$initiator_A_server_awsize),
+				  .initiator_A_server_awvalid(dma_server_mux$initiator_A_server_awvalid),
+				  .initiator_A_server_bready(dma_server_mux$initiator_A_server_bready),
+				  .initiator_A_server_rready(dma_server_mux$initiator_A_server_rready),
+				  .initiator_A_server_wdata(dma_server_mux$initiator_A_server_wdata),
+				  .initiator_A_server_wlast(dma_server_mux$initiator_A_server_wlast),
+				  .initiator_A_server_wstrb(dma_server_mux$initiator_A_server_wstrb),
+				  .initiator_A_server_wvalid(dma_server_mux$initiator_A_server_wvalid),
+				  .initiator_B_server_araddr(dma_server_mux$initiator_B_server_araddr),
+				  .initiator_B_server_arburst(dma_server_mux$initiator_B_server_arburst),
+				  .initiator_B_server_arcache(dma_server_mux$initiator_B_server_arcache),
+				  .initiator_B_server_arid(dma_server_mux$initiator_B_server_arid),
+				  .initiator_B_server_arlen(dma_server_mux$initiator_B_server_arlen),
+				  .initiator_B_server_arlock(dma_server_mux$initiator_B_server_arlock),
+				  .initiator_B_server_arprot(dma_server_mux$initiator_B_server_arprot),
+				  .initiator_B_server_arqos(dma_server_mux$initiator_B_server_arqos),
+				  .initiator_B_server_arregion(dma_server_mux$initiator_B_server_arregion),
+				  .initiator_B_server_arsize(dma_server_mux$initiator_B_server_arsize),
+				  .initiator_B_server_arvalid(dma_server_mux$initiator_B_server_arvalid),
+				  .initiator_B_server_awaddr(dma_server_mux$initiator_B_server_awaddr),
+				  .initiator_B_server_awburst(dma_server_mux$initiator_B_server_awburst),
+				  .initiator_B_server_awcache(dma_server_mux$initiator_B_server_awcache),
+				  .initiator_B_server_awid(dma_server_mux$initiator_B_server_awid),
+				  .initiator_B_server_awlen(dma_server_mux$initiator_B_server_awlen),
+				  .initiator_B_server_awlock(dma_server_mux$initiator_B_server_awlock),
+				  .initiator_B_server_awprot(dma_server_mux$initiator_B_server_awprot),
+				  .initiator_B_server_awqos(dma_server_mux$initiator_B_server_awqos),
+				  .initiator_B_server_awregion(dma_server_mux$initiator_B_server_awregion),
+				  .initiator_B_server_awsize(dma_server_mux$initiator_B_server_awsize),
+				  .initiator_B_server_awvalid(dma_server_mux$initiator_B_server_awvalid),
+				  .initiator_B_server_bready(dma_server_mux$initiator_B_server_bready),
+				  .initiator_B_server_rready(dma_server_mux$initiator_B_server_rready),
+				  .initiator_B_server_wdata(dma_server_mux$initiator_B_server_wdata),
+				  .initiator_B_server_wlast(dma_server_mux$initiator_B_server_wlast),
+				  .initiator_B_server_wstrb(dma_server_mux$initiator_B_server_wstrb),
+				  .initiator_B_server_wvalid(dma_server_mux$initiator_B_server_wvalid),
+				  .target_client_arready(dma_server_mux$target_client_arready),
+				  .target_client_awready(dma_server_mux$target_client_awready),
+				  .target_client_bid(dma_server_mux$target_client_bid),
+				  .target_client_bresp(dma_server_mux$target_client_bresp),
+				  .target_client_bvalid(dma_server_mux$target_client_bvalid),
+				  .target_client_rdata(dma_server_mux$target_client_rdata),
+				  .target_client_rid(dma_server_mux$target_client_rid),
+				  .target_client_rlast(dma_server_mux$target_client_rlast),
+				  .target_client_rresp(dma_server_mux$target_client_rresp),
+				  .target_client_rvalid(dma_server_mux$target_client_rvalid),
+				  .target_client_wready(dma_server_mux$target_client_wready),
+				  .initiator_A_server_awready(dma_server_mux$initiator_A_server_awready),
+				  .initiator_A_server_wready(dma_server_mux$initiator_A_server_wready),
+				  .initiator_A_server_bvalid(dma_server_mux$initiator_A_server_bvalid),
+				  .initiator_A_server_bid(dma_server_mux$initiator_A_server_bid),
+				  .initiator_A_server_bresp(dma_server_mux$initiator_A_server_bresp),
+				  .initiator_A_server_arready(dma_server_mux$initiator_A_server_arready),
+				  .initiator_A_server_rvalid(dma_server_mux$initiator_A_server_rvalid),
+				  .initiator_A_server_rid(dma_server_mux$initiator_A_server_rid),
+				  .initiator_A_server_rdata(dma_server_mux$initiator_A_server_rdata),
+				  .initiator_A_server_rresp(dma_server_mux$initiator_A_server_rresp),
+				  .initiator_A_server_rlast(dma_server_mux$initiator_A_server_rlast),
+				  .initiator_B_server_awready(dma_server_mux$initiator_B_server_awready),
+				  .initiator_B_server_wready(dma_server_mux$initiator_B_server_wready),
+				  .initiator_B_server_bvalid(dma_server_mux$initiator_B_server_bvalid),
+				  .initiator_B_server_bid(dma_server_mux$initiator_B_server_bid),
+				  .initiator_B_server_bresp(dma_server_mux$initiator_B_server_bresp),
+				  .initiator_B_server_arready(dma_server_mux$initiator_B_server_arready),
+				  .initiator_B_server_rvalid(dma_server_mux$initiator_B_server_rvalid),
+				  .initiator_B_server_rid(dma_server_mux$initiator_B_server_rid),
+				  .initiator_B_server_rdata(dma_server_mux$initiator_B_server_rdata),
+				  .initiator_B_server_rresp(dma_server_mux$initiator_B_server_rresp),
+				  .initiator_B_server_rlast(dma_server_mux$initiator_B_server_rlast),
+				  .target_client_awvalid(dma_server_mux$target_client_awvalid),
+				  .target_client_awid(dma_server_mux$target_client_awid),
+				  .target_client_awaddr(dma_server_mux$target_client_awaddr),
+				  .target_client_awlen(dma_server_mux$target_client_awlen),
+				  .target_client_awsize(dma_server_mux$target_client_awsize),
+				  .target_client_awburst(dma_server_mux$target_client_awburst),
+				  .target_client_awlock(dma_server_mux$target_client_awlock),
+				  .target_client_awcache(dma_server_mux$target_client_awcache),
+				  .target_client_awprot(dma_server_mux$target_client_awprot),
+				  .target_client_awqos(dma_server_mux$target_client_awqos),
+				  .target_client_awregion(dma_server_mux$target_client_awregion),
+				  .target_client_wvalid(dma_server_mux$target_client_wvalid),
+				  .target_client_wdata(dma_server_mux$target_client_wdata),
+				  .target_client_wstrb(dma_server_mux$target_client_wstrb),
+				  .target_client_wlast(dma_server_mux$target_client_wlast),
+				  .target_client_bready(dma_server_mux$target_client_bready),
+				  .target_client_arvalid(dma_server_mux$target_client_arvalid),
+				  .target_client_arid(dma_server_mux$target_client_arid),
+				  .target_client_araddr(dma_server_mux$target_client_araddr),
+				  .target_client_arlen(dma_server_mux$target_client_arlen),
+				  .target_client_arsize(dma_server_mux$target_client_arsize),
+				  .target_client_arburst(dma_server_mux$target_client_arburst),
+				  .target_client_arlock(dma_server_mux$target_client_arlock),
+				  .target_client_arcache(dma_server_mux$target_client_arcache),
+				  .target_client_arprot(dma_server_mux$target_client_arprot),
+				  .target_client_arqos(dma_server_mux$target_client_arqos),
+				  .target_client_arregion(dma_server_mux$target_client_arregion),
+				  .target_client_rready(dma_server_mux$target_client_rready));
+
   // submodule f_reset_reqs
   FIFO2 #(.width(32'd1), .guarded(32'd1)) f_reset_reqs(.RST(RST_N),
 						       .CLK(CLK),
@@ -2770,209 +2983,170 @@ module mkCore(CLK,
 								.FULL_N(f_trace_data_merged$FULL_N),
 								.EMPTY_N(f_trace_data_merged$EMPTY_N));
 
-  // submodule fabric_2x3
-  mkFabric_2x3 fabric_2x3(.CLK(CLK),
+  // submodule fabric_1x3
+  mkFabric_1x3 fabric_1x3(.CLK(CLK),
 			  .RST_N(RST_N),
-			  .set_verbosity_verbosity(fabric_2x3$set_verbosity_verbosity),
-			  .v_from_masters_0_araddr(fabric_2x3$v_from_masters_0_araddr),
-			  .v_from_masters_0_arburst(fabric_2x3$v_from_masters_0_arburst),
-			  .v_from_masters_0_arcache(fabric_2x3$v_from_masters_0_arcache),
-			  .v_from_masters_0_arid(fabric_2x3$v_from_masters_0_arid),
-			  .v_from_masters_0_arlen(fabric_2x3$v_from_masters_0_arlen),
-			  .v_from_masters_0_arlock(fabric_2x3$v_from_masters_0_arlock),
-			  .v_from_masters_0_arprot(fabric_2x3$v_from_masters_0_arprot),
-			  .v_from_masters_0_arqos(fabric_2x3$v_from_masters_0_arqos),
-			  .v_from_masters_0_arregion(fabric_2x3$v_from_masters_0_arregion),
-			  .v_from_masters_0_arsize(fabric_2x3$v_from_masters_0_arsize),
-			  .v_from_masters_0_arvalid(fabric_2x3$v_from_masters_0_arvalid),
-			  .v_from_masters_0_awaddr(fabric_2x3$v_from_masters_0_awaddr),
-			  .v_from_masters_0_awburst(fabric_2x3$v_from_masters_0_awburst),
-			  .v_from_masters_0_awcache(fabric_2x3$v_from_masters_0_awcache),
-			  .v_from_masters_0_awid(fabric_2x3$v_from_masters_0_awid),
-			  .v_from_masters_0_awlen(fabric_2x3$v_from_masters_0_awlen),
-			  .v_from_masters_0_awlock(fabric_2x3$v_from_masters_0_awlock),
-			  .v_from_masters_0_awprot(fabric_2x3$v_from_masters_0_awprot),
-			  .v_from_masters_0_awqos(fabric_2x3$v_from_masters_0_awqos),
-			  .v_from_masters_0_awregion(fabric_2x3$v_from_masters_0_awregion),
-			  .v_from_masters_0_awsize(fabric_2x3$v_from_masters_0_awsize),
-			  .v_from_masters_0_awvalid(fabric_2x3$v_from_masters_0_awvalid),
-			  .v_from_masters_0_bready(fabric_2x3$v_from_masters_0_bready),
-			  .v_from_masters_0_rready(fabric_2x3$v_from_masters_0_rready),
-			  .v_from_masters_0_wdata(fabric_2x3$v_from_masters_0_wdata),
-			  .v_from_masters_0_wlast(fabric_2x3$v_from_masters_0_wlast),
-			  .v_from_masters_0_wstrb(fabric_2x3$v_from_masters_0_wstrb),
-			  .v_from_masters_0_wvalid(fabric_2x3$v_from_masters_0_wvalid),
-			  .v_from_masters_1_araddr(fabric_2x3$v_from_masters_1_araddr),
-			  .v_from_masters_1_arburst(fabric_2x3$v_from_masters_1_arburst),
-			  .v_from_masters_1_arcache(fabric_2x3$v_from_masters_1_arcache),
-			  .v_from_masters_1_arid(fabric_2x3$v_from_masters_1_arid),
-			  .v_from_masters_1_arlen(fabric_2x3$v_from_masters_1_arlen),
-			  .v_from_masters_1_arlock(fabric_2x3$v_from_masters_1_arlock),
-			  .v_from_masters_1_arprot(fabric_2x3$v_from_masters_1_arprot),
-			  .v_from_masters_1_arqos(fabric_2x3$v_from_masters_1_arqos),
-			  .v_from_masters_1_arregion(fabric_2x3$v_from_masters_1_arregion),
-			  .v_from_masters_1_arsize(fabric_2x3$v_from_masters_1_arsize),
-			  .v_from_masters_1_arvalid(fabric_2x3$v_from_masters_1_arvalid),
-			  .v_from_masters_1_awaddr(fabric_2x3$v_from_masters_1_awaddr),
-			  .v_from_masters_1_awburst(fabric_2x3$v_from_masters_1_awburst),
-			  .v_from_masters_1_awcache(fabric_2x3$v_from_masters_1_awcache),
-			  .v_from_masters_1_awid(fabric_2x3$v_from_masters_1_awid),
-			  .v_from_masters_1_awlen(fabric_2x3$v_from_masters_1_awlen),
-			  .v_from_masters_1_awlock(fabric_2x3$v_from_masters_1_awlock),
-			  .v_from_masters_1_awprot(fabric_2x3$v_from_masters_1_awprot),
-			  .v_from_masters_1_awqos(fabric_2x3$v_from_masters_1_awqos),
-			  .v_from_masters_1_awregion(fabric_2x3$v_from_masters_1_awregion),
-			  .v_from_masters_1_awsize(fabric_2x3$v_from_masters_1_awsize),
-			  .v_from_masters_1_awvalid(fabric_2x3$v_from_masters_1_awvalid),
-			  .v_from_masters_1_bready(fabric_2x3$v_from_masters_1_bready),
-			  .v_from_masters_1_rready(fabric_2x3$v_from_masters_1_rready),
-			  .v_from_masters_1_wdata(fabric_2x3$v_from_masters_1_wdata),
-			  .v_from_masters_1_wlast(fabric_2x3$v_from_masters_1_wlast),
-			  .v_from_masters_1_wstrb(fabric_2x3$v_from_masters_1_wstrb),
-			  .v_from_masters_1_wvalid(fabric_2x3$v_from_masters_1_wvalid),
-			  .v_to_slaves_0_arready(fabric_2x3$v_to_slaves_0_arready),
-			  .v_to_slaves_0_awready(fabric_2x3$v_to_slaves_0_awready),
-			  .v_to_slaves_0_bid(fabric_2x3$v_to_slaves_0_bid),
-			  .v_to_slaves_0_bresp(fabric_2x3$v_to_slaves_0_bresp),
-			  .v_to_slaves_0_bvalid(fabric_2x3$v_to_slaves_0_bvalid),
-			  .v_to_slaves_0_rdata(fabric_2x3$v_to_slaves_0_rdata),
-			  .v_to_slaves_0_rid(fabric_2x3$v_to_slaves_0_rid),
-			  .v_to_slaves_0_rlast(fabric_2x3$v_to_slaves_0_rlast),
-			  .v_to_slaves_0_rresp(fabric_2x3$v_to_slaves_0_rresp),
-			  .v_to_slaves_0_rvalid(fabric_2x3$v_to_slaves_0_rvalid),
-			  .v_to_slaves_0_wready(fabric_2x3$v_to_slaves_0_wready),
-			  .v_to_slaves_1_arready(fabric_2x3$v_to_slaves_1_arready),
-			  .v_to_slaves_1_awready(fabric_2x3$v_to_slaves_1_awready),
-			  .v_to_slaves_1_bid(fabric_2x3$v_to_slaves_1_bid),
-			  .v_to_slaves_1_bresp(fabric_2x3$v_to_slaves_1_bresp),
-			  .v_to_slaves_1_bvalid(fabric_2x3$v_to_slaves_1_bvalid),
-			  .v_to_slaves_1_rdata(fabric_2x3$v_to_slaves_1_rdata),
-			  .v_to_slaves_1_rid(fabric_2x3$v_to_slaves_1_rid),
-			  .v_to_slaves_1_rlast(fabric_2x3$v_to_slaves_1_rlast),
-			  .v_to_slaves_1_rresp(fabric_2x3$v_to_slaves_1_rresp),
-			  .v_to_slaves_1_rvalid(fabric_2x3$v_to_slaves_1_rvalid),
-			  .v_to_slaves_1_wready(fabric_2x3$v_to_slaves_1_wready),
-			  .v_to_slaves_2_arready(fabric_2x3$v_to_slaves_2_arready),
-			  .v_to_slaves_2_awready(fabric_2x3$v_to_slaves_2_awready),
-			  .v_to_slaves_2_bid(fabric_2x3$v_to_slaves_2_bid),
-			  .v_to_slaves_2_bresp(fabric_2x3$v_to_slaves_2_bresp),
-			  .v_to_slaves_2_bvalid(fabric_2x3$v_to_slaves_2_bvalid),
-			  .v_to_slaves_2_rdata(fabric_2x3$v_to_slaves_2_rdata),
-			  .v_to_slaves_2_rid(fabric_2x3$v_to_slaves_2_rid),
-			  .v_to_slaves_2_rlast(fabric_2x3$v_to_slaves_2_rlast),
-			  .v_to_slaves_2_rresp(fabric_2x3$v_to_slaves_2_rresp),
-			  .v_to_slaves_2_rvalid(fabric_2x3$v_to_slaves_2_rvalid),
-			  .v_to_slaves_2_wready(fabric_2x3$v_to_slaves_2_wready),
-			  .EN_reset(fabric_2x3$EN_reset),
-			  .EN_set_verbosity(fabric_2x3$EN_set_verbosity),
-			  .RDY_reset(fabric_2x3$RDY_reset),
+			  .set_verbosity_verbosity(fabric_1x3$set_verbosity_verbosity),
+			  .v_from_masters_0_araddr(fabric_1x3$v_from_masters_0_araddr),
+			  .v_from_masters_0_arburst(fabric_1x3$v_from_masters_0_arburst),
+			  .v_from_masters_0_arcache(fabric_1x3$v_from_masters_0_arcache),
+			  .v_from_masters_0_arid(fabric_1x3$v_from_masters_0_arid),
+			  .v_from_masters_0_arlen(fabric_1x3$v_from_masters_0_arlen),
+			  .v_from_masters_0_arlock(fabric_1x3$v_from_masters_0_arlock),
+			  .v_from_masters_0_arprot(fabric_1x3$v_from_masters_0_arprot),
+			  .v_from_masters_0_arqos(fabric_1x3$v_from_masters_0_arqos),
+			  .v_from_masters_0_arregion(fabric_1x3$v_from_masters_0_arregion),
+			  .v_from_masters_0_arsize(fabric_1x3$v_from_masters_0_arsize),
+			  .v_from_masters_0_arvalid(fabric_1x3$v_from_masters_0_arvalid),
+			  .v_from_masters_0_awaddr(fabric_1x3$v_from_masters_0_awaddr),
+			  .v_from_masters_0_awburst(fabric_1x3$v_from_masters_0_awburst),
+			  .v_from_masters_0_awcache(fabric_1x3$v_from_masters_0_awcache),
+			  .v_from_masters_0_awid(fabric_1x3$v_from_masters_0_awid),
+			  .v_from_masters_0_awlen(fabric_1x3$v_from_masters_0_awlen),
+			  .v_from_masters_0_awlock(fabric_1x3$v_from_masters_0_awlock),
+			  .v_from_masters_0_awprot(fabric_1x3$v_from_masters_0_awprot),
+			  .v_from_masters_0_awqos(fabric_1x3$v_from_masters_0_awqos),
+			  .v_from_masters_0_awregion(fabric_1x3$v_from_masters_0_awregion),
+			  .v_from_masters_0_awsize(fabric_1x3$v_from_masters_0_awsize),
+			  .v_from_masters_0_awvalid(fabric_1x3$v_from_masters_0_awvalid),
+			  .v_from_masters_0_bready(fabric_1x3$v_from_masters_0_bready),
+			  .v_from_masters_0_rready(fabric_1x3$v_from_masters_0_rready),
+			  .v_from_masters_0_wdata(fabric_1x3$v_from_masters_0_wdata),
+			  .v_from_masters_0_wlast(fabric_1x3$v_from_masters_0_wlast),
+			  .v_from_masters_0_wstrb(fabric_1x3$v_from_masters_0_wstrb),
+			  .v_from_masters_0_wvalid(fabric_1x3$v_from_masters_0_wvalid),
+			  .v_to_slaves_0_arready(fabric_1x3$v_to_slaves_0_arready),
+			  .v_to_slaves_0_awready(fabric_1x3$v_to_slaves_0_awready),
+			  .v_to_slaves_0_bid(fabric_1x3$v_to_slaves_0_bid),
+			  .v_to_slaves_0_bresp(fabric_1x3$v_to_slaves_0_bresp),
+			  .v_to_slaves_0_bvalid(fabric_1x3$v_to_slaves_0_bvalid),
+			  .v_to_slaves_0_rdata(fabric_1x3$v_to_slaves_0_rdata),
+			  .v_to_slaves_0_rid(fabric_1x3$v_to_slaves_0_rid),
+			  .v_to_slaves_0_rlast(fabric_1x3$v_to_slaves_0_rlast),
+			  .v_to_slaves_0_rresp(fabric_1x3$v_to_slaves_0_rresp),
+			  .v_to_slaves_0_rvalid(fabric_1x3$v_to_slaves_0_rvalid),
+			  .v_to_slaves_0_wready(fabric_1x3$v_to_slaves_0_wready),
+			  .v_to_slaves_1_arready(fabric_1x3$v_to_slaves_1_arready),
+			  .v_to_slaves_1_awready(fabric_1x3$v_to_slaves_1_awready),
+			  .v_to_slaves_1_bid(fabric_1x3$v_to_slaves_1_bid),
+			  .v_to_slaves_1_bresp(fabric_1x3$v_to_slaves_1_bresp),
+			  .v_to_slaves_1_bvalid(fabric_1x3$v_to_slaves_1_bvalid),
+			  .v_to_slaves_1_rdata(fabric_1x3$v_to_slaves_1_rdata),
+			  .v_to_slaves_1_rid(fabric_1x3$v_to_slaves_1_rid),
+			  .v_to_slaves_1_rlast(fabric_1x3$v_to_slaves_1_rlast),
+			  .v_to_slaves_1_rresp(fabric_1x3$v_to_slaves_1_rresp),
+			  .v_to_slaves_1_rvalid(fabric_1x3$v_to_slaves_1_rvalid),
+			  .v_to_slaves_1_wready(fabric_1x3$v_to_slaves_1_wready),
+			  .v_to_slaves_2_arready(fabric_1x3$v_to_slaves_2_arready),
+			  .v_to_slaves_2_awready(fabric_1x3$v_to_slaves_2_awready),
+			  .v_to_slaves_2_bid(fabric_1x3$v_to_slaves_2_bid),
+			  .v_to_slaves_2_bresp(fabric_1x3$v_to_slaves_2_bresp),
+			  .v_to_slaves_2_bvalid(fabric_1x3$v_to_slaves_2_bvalid),
+			  .v_to_slaves_2_rdata(fabric_1x3$v_to_slaves_2_rdata),
+			  .v_to_slaves_2_rid(fabric_1x3$v_to_slaves_2_rid),
+			  .v_to_slaves_2_rlast(fabric_1x3$v_to_slaves_2_rlast),
+			  .v_to_slaves_2_rresp(fabric_1x3$v_to_slaves_2_rresp),
+			  .v_to_slaves_2_rvalid(fabric_1x3$v_to_slaves_2_rvalid),
+			  .v_to_slaves_2_wready(fabric_1x3$v_to_slaves_2_wready),
+			  .EN_reset(fabric_1x3$EN_reset),
+			  .EN_set_verbosity(fabric_1x3$EN_set_verbosity),
+			  .RDY_reset(fabric_1x3$RDY_reset),
 			  .RDY_set_verbosity(),
-			  .v_from_masters_0_awready(fabric_2x3$v_from_masters_0_awready),
-			  .v_from_masters_0_wready(fabric_2x3$v_from_masters_0_wready),
-			  .v_from_masters_0_bvalid(fabric_2x3$v_from_masters_0_bvalid),
-			  .v_from_masters_0_bid(fabric_2x3$v_from_masters_0_bid),
-			  .v_from_masters_0_bresp(fabric_2x3$v_from_masters_0_bresp),
-			  .v_from_masters_0_arready(fabric_2x3$v_from_masters_0_arready),
-			  .v_from_masters_0_rvalid(fabric_2x3$v_from_masters_0_rvalid),
-			  .v_from_masters_0_rid(fabric_2x3$v_from_masters_0_rid),
-			  .v_from_masters_0_rdata(fabric_2x3$v_from_masters_0_rdata),
-			  .v_from_masters_0_rresp(fabric_2x3$v_from_masters_0_rresp),
-			  .v_from_masters_0_rlast(fabric_2x3$v_from_masters_0_rlast),
-			  .v_from_masters_1_awready(fabric_2x3$v_from_masters_1_awready),
-			  .v_from_masters_1_wready(fabric_2x3$v_from_masters_1_wready),
-			  .v_from_masters_1_bvalid(fabric_2x3$v_from_masters_1_bvalid),
-			  .v_from_masters_1_bid(fabric_2x3$v_from_masters_1_bid),
-			  .v_from_masters_1_bresp(fabric_2x3$v_from_masters_1_bresp),
-			  .v_from_masters_1_arready(fabric_2x3$v_from_masters_1_arready),
-			  .v_from_masters_1_rvalid(fabric_2x3$v_from_masters_1_rvalid),
-			  .v_from_masters_1_rid(fabric_2x3$v_from_masters_1_rid),
-			  .v_from_masters_1_rdata(fabric_2x3$v_from_masters_1_rdata),
-			  .v_from_masters_1_rresp(fabric_2x3$v_from_masters_1_rresp),
-			  .v_from_masters_1_rlast(fabric_2x3$v_from_masters_1_rlast),
-			  .v_to_slaves_0_awvalid(fabric_2x3$v_to_slaves_0_awvalid),
-			  .v_to_slaves_0_awid(fabric_2x3$v_to_slaves_0_awid),
-			  .v_to_slaves_0_awaddr(fabric_2x3$v_to_slaves_0_awaddr),
-			  .v_to_slaves_0_awlen(fabric_2x3$v_to_slaves_0_awlen),
-			  .v_to_slaves_0_awsize(fabric_2x3$v_to_slaves_0_awsize),
-			  .v_to_slaves_0_awburst(fabric_2x3$v_to_slaves_0_awburst),
-			  .v_to_slaves_0_awlock(fabric_2x3$v_to_slaves_0_awlock),
-			  .v_to_slaves_0_awcache(fabric_2x3$v_to_slaves_0_awcache),
-			  .v_to_slaves_0_awprot(fabric_2x3$v_to_slaves_0_awprot),
-			  .v_to_slaves_0_awqos(fabric_2x3$v_to_slaves_0_awqos),
-			  .v_to_slaves_0_awregion(fabric_2x3$v_to_slaves_0_awregion),
-			  .v_to_slaves_0_wvalid(fabric_2x3$v_to_slaves_0_wvalid),
-			  .v_to_slaves_0_wdata(fabric_2x3$v_to_slaves_0_wdata),
-			  .v_to_slaves_0_wstrb(fabric_2x3$v_to_slaves_0_wstrb),
-			  .v_to_slaves_0_wlast(fabric_2x3$v_to_slaves_0_wlast),
-			  .v_to_slaves_0_bready(fabric_2x3$v_to_slaves_0_bready),
-			  .v_to_slaves_0_arvalid(fabric_2x3$v_to_slaves_0_arvalid),
-			  .v_to_slaves_0_arid(fabric_2x3$v_to_slaves_0_arid),
-			  .v_to_slaves_0_araddr(fabric_2x3$v_to_slaves_0_araddr),
-			  .v_to_slaves_0_arlen(fabric_2x3$v_to_slaves_0_arlen),
-			  .v_to_slaves_0_arsize(fabric_2x3$v_to_slaves_0_arsize),
-			  .v_to_slaves_0_arburst(fabric_2x3$v_to_slaves_0_arburst),
-			  .v_to_slaves_0_arlock(fabric_2x3$v_to_slaves_0_arlock),
-			  .v_to_slaves_0_arcache(fabric_2x3$v_to_slaves_0_arcache),
-			  .v_to_slaves_0_arprot(fabric_2x3$v_to_slaves_0_arprot),
-			  .v_to_slaves_0_arqos(fabric_2x3$v_to_slaves_0_arqos),
-			  .v_to_slaves_0_arregion(fabric_2x3$v_to_slaves_0_arregion),
-			  .v_to_slaves_0_rready(fabric_2x3$v_to_slaves_0_rready),
-			  .v_to_slaves_1_awvalid(fabric_2x3$v_to_slaves_1_awvalid),
-			  .v_to_slaves_1_awid(fabric_2x3$v_to_slaves_1_awid),
-			  .v_to_slaves_1_awaddr(fabric_2x3$v_to_slaves_1_awaddr),
-			  .v_to_slaves_1_awlen(fabric_2x3$v_to_slaves_1_awlen),
-			  .v_to_slaves_1_awsize(fabric_2x3$v_to_slaves_1_awsize),
-			  .v_to_slaves_1_awburst(fabric_2x3$v_to_slaves_1_awburst),
-			  .v_to_slaves_1_awlock(fabric_2x3$v_to_slaves_1_awlock),
-			  .v_to_slaves_1_awcache(fabric_2x3$v_to_slaves_1_awcache),
-			  .v_to_slaves_1_awprot(fabric_2x3$v_to_slaves_1_awprot),
-			  .v_to_slaves_1_awqos(fabric_2x3$v_to_slaves_1_awqos),
-			  .v_to_slaves_1_awregion(fabric_2x3$v_to_slaves_1_awregion),
-			  .v_to_slaves_1_wvalid(fabric_2x3$v_to_slaves_1_wvalid),
-			  .v_to_slaves_1_wdata(fabric_2x3$v_to_slaves_1_wdata),
-			  .v_to_slaves_1_wstrb(fabric_2x3$v_to_slaves_1_wstrb),
-			  .v_to_slaves_1_wlast(fabric_2x3$v_to_slaves_1_wlast),
-			  .v_to_slaves_1_bready(fabric_2x3$v_to_slaves_1_bready),
-			  .v_to_slaves_1_arvalid(fabric_2x3$v_to_slaves_1_arvalid),
-			  .v_to_slaves_1_arid(fabric_2x3$v_to_slaves_1_arid),
-			  .v_to_slaves_1_araddr(fabric_2x3$v_to_slaves_1_araddr),
-			  .v_to_slaves_1_arlen(fabric_2x3$v_to_slaves_1_arlen),
-			  .v_to_slaves_1_arsize(fabric_2x3$v_to_slaves_1_arsize),
-			  .v_to_slaves_1_arburst(fabric_2x3$v_to_slaves_1_arburst),
-			  .v_to_slaves_1_arlock(fabric_2x3$v_to_slaves_1_arlock),
-			  .v_to_slaves_1_arcache(fabric_2x3$v_to_slaves_1_arcache),
-			  .v_to_slaves_1_arprot(fabric_2x3$v_to_slaves_1_arprot),
-			  .v_to_slaves_1_arqos(fabric_2x3$v_to_slaves_1_arqos),
-			  .v_to_slaves_1_arregion(fabric_2x3$v_to_slaves_1_arregion),
-			  .v_to_slaves_1_rready(fabric_2x3$v_to_slaves_1_rready),
-			  .v_to_slaves_2_awvalid(fabric_2x3$v_to_slaves_2_awvalid),
-			  .v_to_slaves_2_awid(fabric_2x3$v_to_slaves_2_awid),
-			  .v_to_slaves_2_awaddr(fabric_2x3$v_to_slaves_2_awaddr),
-			  .v_to_slaves_2_awlen(fabric_2x3$v_to_slaves_2_awlen),
-			  .v_to_slaves_2_awsize(fabric_2x3$v_to_slaves_2_awsize),
-			  .v_to_slaves_2_awburst(fabric_2x3$v_to_slaves_2_awburst),
-			  .v_to_slaves_2_awlock(fabric_2x3$v_to_slaves_2_awlock),
-			  .v_to_slaves_2_awcache(fabric_2x3$v_to_slaves_2_awcache),
-			  .v_to_slaves_2_awprot(fabric_2x3$v_to_slaves_2_awprot),
-			  .v_to_slaves_2_awqos(fabric_2x3$v_to_slaves_2_awqos),
-			  .v_to_slaves_2_awregion(fabric_2x3$v_to_slaves_2_awregion),
-			  .v_to_slaves_2_wvalid(fabric_2x3$v_to_slaves_2_wvalid),
-			  .v_to_slaves_2_wdata(fabric_2x3$v_to_slaves_2_wdata),
-			  .v_to_slaves_2_wstrb(fabric_2x3$v_to_slaves_2_wstrb),
-			  .v_to_slaves_2_wlast(fabric_2x3$v_to_slaves_2_wlast),
-			  .v_to_slaves_2_bready(fabric_2x3$v_to_slaves_2_bready),
-			  .v_to_slaves_2_arvalid(fabric_2x3$v_to_slaves_2_arvalid),
-			  .v_to_slaves_2_arid(fabric_2x3$v_to_slaves_2_arid),
-			  .v_to_slaves_2_araddr(fabric_2x3$v_to_slaves_2_araddr),
-			  .v_to_slaves_2_arlen(fabric_2x3$v_to_slaves_2_arlen),
-			  .v_to_slaves_2_arsize(fabric_2x3$v_to_slaves_2_arsize),
-			  .v_to_slaves_2_arburst(fabric_2x3$v_to_slaves_2_arburst),
-			  .v_to_slaves_2_arlock(fabric_2x3$v_to_slaves_2_arlock),
-			  .v_to_slaves_2_arcache(fabric_2x3$v_to_slaves_2_arcache),
-			  .v_to_slaves_2_arprot(fabric_2x3$v_to_slaves_2_arprot),
-			  .v_to_slaves_2_arqos(fabric_2x3$v_to_slaves_2_arqos),
-			  .v_to_slaves_2_arregion(fabric_2x3$v_to_slaves_2_arregion),
-			  .v_to_slaves_2_rready(fabric_2x3$v_to_slaves_2_rready));
+			  .v_from_masters_0_awready(fabric_1x3$v_from_masters_0_awready),
+			  .v_from_masters_0_wready(fabric_1x3$v_from_masters_0_wready),
+			  .v_from_masters_0_bvalid(fabric_1x3$v_from_masters_0_bvalid),
+			  .v_from_masters_0_bid(fabric_1x3$v_from_masters_0_bid),
+			  .v_from_masters_0_bresp(fabric_1x3$v_from_masters_0_bresp),
+			  .v_from_masters_0_arready(fabric_1x3$v_from_masters_0_arready),
+			  .v_from_masters_0_rvalid(fabric_1x3$v_from_masters_0_rvalid),
+			  .v_from_masters_0_rid(fabric_1x3$v_from_masters_0_rid),
+			  .v_from_masters_0_rdata(fabric_1x3$v_from_masters_0_rdata),
+			  .v_from_masters_0_rresp(fabric_1x3$v_from_masters_0_rresp),
+			  .v_from_masters_0_rlast(fabric_1x3$v_from_masters_0_rlast),
+			  .v_to_slaves_0_awvalid(fabric_1x3$v_to_slaves_0_awvalid),
+			  .v_to_slaves_0_awid(fabric_1x3$v_to_slaves_0_awid),
+			  .v_to_slaves_0_awaddr(fabric_1x3$v_to_slaves_0_awaddr),
+			  .v_to_slaves_0_awlen(fabric_1x3$v_to_slaves_0_awlen),
+			  .v_to_slaves_0_awsize(fabric_1x3$v_to_slaves_0_awsize),
+			  .v_to_slaves_0_awburst(fabric_1x3$v_to_slaves_0_awburst),
+			  .v_to_slaves_0_awlock(fabric_1x3$v_to_slaves_0_awlock),
+			  .v_to_slaves_0_awcache(fabric_1x3$v_to_slaves_0_awcache),
+			  .v_to_slaves_0_awprot(fabric_1x3$v_to_slaves_0_awprot),
+			  .v_to_slaves_0_awqos(fabric_1x3$v_to_slaves_0_awqos),
+			  .v_to_slaves_0_awregion(fabric_1x3$v_to_slaves_0_awregion),
+			  .v_to_slaves_0_wvalid(fabric_1x3$v_to_slaves_0_wvalid),
+			  .v_to_slaves_0_wdata(fabric_1x3$v_to_slaves_0_wdata),
+			  .v_to_slaves_0_wstrb(fabric_1x3$v_to_slaves_0_wstrb),
+			  .v_to_slaves_0_wlast(fabric_1x3$v_to_slaves_0_wlast),
+			  .v_to_slaves_0_bready(fabric_1x3$v_to_slaves_0_bready),
+			  .v_to_slaves_0_arvalid(fabric_1x3$v_to_slaves_0_arvalid),
+			  .v_to_slaves_0_arid(fabric_1x3$v_to_slaves_0_arid),
+			  .v_to_slaves_0_araddr(fabric_1x3$v_to_slaves_0_araddr),
+			  .v_to_slaves_0_arlen(fabric_1x3$v_to_slaves_0_arlen),
+			  .v_to_slaves_0_arsize(fabric_1x3$v_to_slaves_0_arsize),
+			  .v_to_slaves_0_arburst(fabric_1x3$v_to_slaves_0_arburst),
+			  .v_to_slaves_0_arlock(fabric_1x3$v_to_slaves_0_arlock),
+			  .v_to_slaves_0_arcache(fabric_1x3$v_to_slaves_0_arcache),
+			  .v_to_slaves_0_arprot(fabric_1x3$v_to_slaves_0_arprot),
+			  .v_to_slaves_0_arqos(fabric_1x3$v_to_slaves_0_arqos),
+			  .v_to_slaves_0_arregion(fabric_1x3$v_to_slaves_0_arregion),
+			  .v_to_slaves_0_rready(fabric_1x3$v_to_slaves_0_rready),
+			  .v_to_slaves_1_awvalid(fabric_1x3$v_to_slaves_1_awvalid),
+			  .v_to_slaves_1_awid(fabric_1x3$v_to_slaves_1_awid),
+			  .v_to_slaves_1_awaddr(fabric_1x3$v_to_slaves_1_awaddr),
+			  .v_to_slaves_1_awlen(fabric_1x3$v_to_slaves_1_awlen),
+			  .v_to_slaves_1_awsize(fabric_1x3$v_to_slaves_1_awsize),
+			  .v_to_slaves_1_awburst(fabric_1x3$v_to_slaves_1_awburst),
+			  .v_to_slaves_1_awlock(fabric_1x3$v_to_slaves_1_awlock),
+			  .v_to_slaves_1_awcache(fabric_1x3$v_to_slaves_1_awcache),
+			  .v_to_slaves_1_awprot(fabric_1x3$v_to_slaves_1_awprot),
+			  .v_to_slaves_1_awqos(fabric_1x3$v_to_slaves_1_awqos),
+			  .v_to_slaves_1_awregion(fabric_1x3$v_to_slaves_1_awregion),
+			  .v_to_slaves_1_wvalid(fabric_1x3$v_to_slaves_1_wvalid),
+			  .v_to_slaves_1_wdata(fabric_1x3$v_to_slaves_1_wdata),
+			  .v_to_slaves_1_wstrb(fabric_1x3$v_to_slaves_1_wstrb),
+			  .v_to_slaves_1_wlast(fabric_1x3$v_to_slaves_1_wlast),
+			  .v_to_slaves_1_bready(fabric_1x3$v_to_slaves_1_bready),
+			  .v_to_slaves_1_arvalid(fabric_1x3$v_to_slaves_1_arvalid),
+			  .v_to_slaves_1_arid(fabric_1x3$v_to_slaves_1_arid),
+			  .v_to_slaves_1_araddr(fabric_1x3$v_to_slaves_1_araddr),
+			  .v_to_slaves_1_arlen(fabric_1x3$v_to_slaves_1_arlen),
+			  .v_to_slaves_1_arsize(fabric_1x3$v_to_slaves_1_arsize),
+			  .v_to_slaves_1_arburst(fabric_1x3$v_to_slaves_1_arburst),
+			  .v_to_slaves_1_arlock(fabric_1x3$v_to_slaves_1_arlock),
+			  .v_to_slaves_1_arcache(fabric_1x3$v_to_slaves_1_arcache),
+			  .v_to_slaves_1_arprot(fabric_1x3$v_to_slaves_1_arprot),
+			  .v_to_slaves_1_arqos(fabric_1x3$v_to_slaves_1_arqos),
+			  .v_to_slaves_1_arregion(fabric_1x3$v_to_slaves_1_arregion),
+			  .v_to_slaves_1_rready(fabric_1x3$v_to_slaves_1_rready),
+			  .v_to_slaves_2_awvalid(fabric_1x3$v_to_slaves_2_awvalid),
+			  .v_to_slaves_2_awid(fabric_1x3$v_to_slaves_2_awid),
+			  .v_to_slaves_2_awaddr(fabric_1x3$v_to_slaves_2_awaddr),
+			  .v_to_slaves_2_awlen(fabric_1x3$v_to_slaves_2_awlen),
+			  .v_to_slaves_2_awsize(fabric_1x3$v_to_slaves_2_awsize),
+			  .v_to_slaves_2_awburst(fabric_1x3$v_to_slaves_2_awburst),
+			  .v_to_slaves_2_awlock(fabric_1x3$v_to_slaves_2_awlock),
+			  .v_to_slaves_2_awcache(fabric_1x3$v_to_slaves_2_awcache),
+			  .v_to_slaves_2_awprot(fabric_1x3$v_to_slaves_2_awprot),
+			  .v_to_slaves_2_awqos(fabric_1x3$v_to_slaves_2_awqos),
+			  .v_to_slaves_2_awregion(fabric_1x3$v_to_slaves_2_awregion),
+			  .v_to_slaves_2_wvalid(fabric_1x3$v_to_slaves_2_wvalid),
+			  .v_to_slaves_2_wdata(fabric_1x3$v_to_slaves_2_wdata),
+			  .v_to_slaves_2_wstrb(fabric_1x3$v_to_slaves_2_wstrb),
+			  .v_to_slaves_2_wlast(fabric_1x3$v_to_slaves_2_wlast),
+			  .v_to_slaves_2_bready(fabric_1x3$v_to_slaves_2_bready),
+			  .v_to_slaves_2_arvalid(fabric_1x3$v_to_slaves_2_arvalid),
+			  .v_to_slaves_2_arid(fabric_1x3$v_to_slaves_2_arid),
+			  .v_to_slaves_2_araddr(fabric_1x3$v_to_slaves_2_araddr),
+			  .v_to_slaves_2_arlen(fabric_1x3$v_to_slaves_2_arlen),
+			  .v_to_slaves_2_arsize(fabric_1x3$v_to_slaves_2_arsize),
+			  .v_to_slaves_2_arburst(fabric_1x3$v_to_slaves_2_arburst),
+			  .v_to_slaves_2_arlock(fabric_1x3$v_to_slaves_2_arlock),
+			  .v_to_slaves_2_arcache(fabric_1x3$v_to_slaves_2_arcache),
+			  .v_to_slaves_2_arprot(fabric_1x3$v_to_slaves_2_arprot),
+			  .v_to_slaves_2_arqos(fabric_1x3$v_to_slaves_2_arqos),
+			  .v_to_slaves_2_arregion(fabric_1x3$v_to_slaves_2_arregion),
+			  .v_to_slaves_2_rready(fabric_1x3$v_to_slaves_2_rready));
 
   // submodule near_mem_io
   mkNear_Mem_IO_AXI4 near_mem_io(.CLK(CLK),
@@ -3181,9 +3355,9 @@ module mkCore(CLK,
 
   // rule RL_mkConnectionGetPut_1
   assign CAN_FIRE_RL_mkConnectionGetPut_1 =
-	     tv_encode$RDY_trace_data_in_put && f_trace_data_merged$EMPTY_N ;
+	     WILL_FIRE_RL_mkConnectionGetPut_1 ;
   assign WILL_FIRE_RL_mkConnectionGetPut_1 =
-	     CAN_FIRE_RL_mkConnectionGetPut_1 ;
+	     tv_encode$RDY_trace_data_in_put && f_trace_data_merged$EMPTY_N ;
 
   // rule RL_rl_wr_addr_channel
   assign CAN_FIRE_RL_rl_wr_addr_channel = 1'd1 ;
@@ -3411,6 +3585,26 @@ module mkCore(CLK,
   assign CAN_FIRE_RL_rl_rd_data_channel_4 = 1'd1 ;
   assign WILL_FIRE_RL_rl_rd_data_channel_4 = 1'd1 ;
 
+  // rule RL_rl_wr_addr_channel_5
+  assign CAN_FIRE_RL_rl_wr_addr_channel_5 = 1'd1 ;
+  assign WILL_FIRE_RL_rl_wr_addr_channel_5 = 1'd1 ;
+
+  // rule RL_rl_wr_data_channel_5
+  assign CAN_FIRE_RL_rl_wr_data_channel_5 = 1'd1 ;
+  assign WILL_FIRE_RL_rl_wr_data_channel_5 = 1'd1 ;
+
+  // rule RL_rl_wr_response_channel_5
+  assign CAN_FIRE_RL_rl_wr_response_channel_5 = 1'd1 ;
+  assign WILL_FIRE_RL_rl_wr_response_channel_5 = 1'd1 ;
+
+  // rule RL_rl_rd_addr_channel_5
+  assign CAN_FIRE_RL_rl_rd_addr_channel_5 = 1'd1 ;
+  assign WILL_FIRE_RL_rl_rd_addr_channel_5 = 1'd1 ;
+
+  // rule RL_rl_rd_data_channel_5
+  assign CAN_FIRE_RL_rl_rd_data_channel_5 = 1'd1 ;
+  assign WILL_FIRE_RL_rl_rd_data_channel_5 = 1'd1 ;
+
   // rule RL_rl_relay_sw_interrupts
   assign CAN_FIRE_RL_rl_relay_sw_interrupts =
 	     near_mem_io$RDY_get_sw_interrupt_req_get ;
@@ -3429,7 +3623,7 @@ module mkCore(CLK,
 
   // rule RL_rl_cpu_hart0_reset_from_soc_start
   assign CAN_FIRE_RL_rl_cpu_hart0_reset_from_soc_start =
-	     fabric_2x3$RDY_reset &&
+	     fabric_1x3$RDY_reset &&
 	     near_mem_io$RDY_server_reset_request_put &&
 	     plic_RDY_server_reset_request_put_AND_cpu_RDY__ETC___d9 ;
   assign WILL_FIRE_RL_rl_cpu_hart0_reset_from_soc_start =
@@ -3437,7 +3631,7 @@ module mkCore(CLK,
 
   // rule RL_rl_cpu_hart0_reset_from_dm_start
   assign CAN_FIRE_RL_rl_cpu_hart0_reset_from_dm_start =
-	     fabric_2x3$RDY_reset &&
+	     fabric_1x3$RDY_reset &&
 	     near_mem_io$RDY_server_reset_request_put &&
 	     plic$RDY_server_reset_request_put &&
 	     debug_module$RDY_hart0_reset_client_request_get &&
@@ -3460,34 +3654,34 @@ module mkCore(CLK,
 	     CAN_FIRE_RL_rl_cpu_hart0_reset_complete ;
 
   // submodule cpu
-  assign cpu$dma_server_araddr = dma_server_araddr ;
-  assign cpu$dma_server_arburst = dma_server_arburst ;
-  assign cpu$dma_server_arcache = dma_server_arcache ;
-  assign cpu$dma_server_arid = dma_server_arid ;
-  assign cpu$dma_server_arlen = dma_server_arlen ;
-  assign cpu$dma_server_arlock = dma_server_arlock ;
-  assign cpu$dma_server_arprot = dma_server_arprot ;
-  assign cpu$dma_server_arqos = dma_server_arqos ;
-  assign cpu$dma_server_arregion = dma_server_arregion ;
-  assign cpu$dma_server_arsize = dma_server_arsize ;
-  assign cpu$dma_server_arvalid = dma_server_arvalid ;
-  assign cpu$dma_server_awaddr = dma_server_awaddr ;
-  assign cpu$dma_server_awburst = dma_server_awburst ;
-  assign cpu$dma_server_awcache = dma_server_awcache ;
-  assign cpu$dma_server_awid = dma_server_awid ;
-  assign cpu$dma_server_awlen = dma_server_awlen ;
-  assign cpu$dma_server_awlock = dma_server_awlock ;
-  assign cpu$dma_server_awprot = dma_server_awprot ;
-  assign cpu$dma_server_awqos = dma_server_awqos ;
-  assign cpu$dma_server_awregion = dma_server_awregion ;
-  assign cpu$dma_server_awsize = dma_server_awsize ;
-  assign cpu$dma_server_awvalid = dma_server_awvalid ;
-  assign cpu$dma_server_bready = dma_server_bready ;
-  assign cpu$dma_server_rready = dma_server_rready ;
-  assign cpu$dma_server_wdata = dma_server_wdata ;
-  assign cpu$dma_server_wlast = dma_server_wlast ;
-  assign cpu$dma_server_wstrb = dma_server_wstrb ;
-  assign cpu$dma_server_wvalid = dma_server_wvalid ;
+  assign cpu$dma_server_araddr = dma_server_mux$target_client_araddr ;
+  assign cpu$dma_server_arburst = dma_server_mux$target_client_arburst ;
+  assign cpu$dma_server_arcache = dma_server_mux$target_client_arcache ;
+  assign cpu$dma_server_arid = dma_server_mux$target_client_arid ;
+  assign cpu$dma_server_arlen = dma_server_mux$target_client_arlen ;
+  assign cpu$dma_server_arlock = dma_server_mux$target_client_arlock ;
+  assign cpu$dma_server_arprot = dma_server_mux$target_client_arprot ;
+  assign cpu$dma_server_arqos = dma_server_mux$target_client_arqos ;
+  assign cpu$dma_server_arregion = dma_server_mux$target_client_arregion ;
+  assign cpu$dma_server_arsize = dma_server_mux$target_client_arsize ;
+  assign cpu$dma_server_arvalid = dma_server_mux$target_client_arvalid ;
+  assign cpu$dma_server_awaddr = dma_server_mux$target_client_awaddr ;
+  assign cpu$dma_server_awburst = dma_server_mux$target_client_awburst ;
+  assign cpu$dma_server_awcache = dma_server_mux$target_client_awcache ;
+  assign cpu$dma_server_awid = dma_server_mux$target_client_awid ;
+  assign cpu$dma_server_awlen = dma_server_mux$target_client_awlen ;
+  assign cpu$dma_server_awlock = dma_server_mux$target_client_awlock ;
+  assign cpu$dma_server_awprot = dma_server_mux$target_client_awprot ;
+  assign cpu$dma_server_awqos = dma_server_mux$target_client_awqos ;
+  assign cpu$dma_server_awregion = dma_server_mux$target_client_awregion ;
+  assign cpu$dma_server_awsize = dma_server_mux$target_client_awsize ;
+  assign cpu$dma_server_awvalid = dma_server_mux$target_client_awvalid ;
+  assign cpu$dma_server_bready = dma_server_mux$target_client_bready ;
+  assign cpu$dma_server_rready = dma_server_mux$target_client_rready ;
+  assign cpu$dma_server_wdata = dma_server_mux$target_client_wdata ;
+  assign cpu$dma_server_wlast = dma_server_mux$target_client_wlast ;
+  assign cpu$dma_server_wstrb = dma_server_mux$target_client_wstrb ;
+  assign cpu$dma_server_wvalid = dma_server_mux$target_client_wvalid ;
   assign cpu$hart0_csr_mem_server_request_put =
 	     dm_csr_tap$client_request_get ;
   assign cpu$hart0_fpr_mem_server_request_put =
@@ -3501,29 +3695,29 @@ module mkCore(CLK,
 	       debug_module$hart0_reset_client_request_get ;
   assign cpu$hart0_server_run_halt_request_put =
 	     debug_module$hart0_client_run_halt_request_get ;
-  assign cpu$imem_master_arready = cpu_imem_master_arready ;
-  assign cpu$imem_master_awready = cpu_imem_master_awready ;
-  assign cpu$imem_master_bid = cpu_imem_master_bid ;
-  assign cpu$imem_master_bresp = cpu_imem_master_bresp ;
-  assign cpu$imem_master_bvalid = cpu_imem_master_bvalid ;
-  assign cpu$imem_master_rdata = cpu_imem_master_rdata ;
-  assign cpu$imem_master_rid = cpu_imem_master_rid ;
-  assign cpu$imem_master_rlast = cpu_imem_master_rlast ;
-  assign cpu$imem_master_rresp = cpu_imem_master_rresp ;
-  assign cpu$imem_master_rvalid = cpu_imem_master_rvalid ;
-  assign cpu$imem_master_wready = cpu_imem_master_wready ;
+  assign cpu$imem_master_arready = fabric_1x3$v_from_masters_0_arready ;
+  assign cpu$imem_master_awready = fabric_1x3$v_from_masters_0_awready ;
+  assign cpu$imem_master_bid = fabric_1x3$v_from_masters_0_bid ;
+  assign cpu$imem_master_bresp = fabric_1x3$v_from_masters_0_bresp ;
+  assign cpu$imem_master_bvalid = fabric_1x3$v_from_masters_0_bvalid ;
+  assign cpu$imem_master_rdata = fabric_1x3$v_from_masters_0_rdata ;
+  assign cpu$imem_master_rid = fabric_1x3$v_from_masters_0_rid ;
+  assign cpu$imem_master_rlast = fabric_1x3$v_from_masters_0_rlast ;
+  assign cpu$imem_master_rresp = fabric_1x3$v_from_masters_0_rresp ;
+  assign cpu$imem_master_rvalid = fabric_1x3$v_from_masters_0_rvalid ;
+  assign cpu$imem_master_wready = fabric_1x3$v_from_masters_0_wready ;
   assign cpu$m_external_interrupt_req_set_not_clear = plic$v_targets_0_m_eip ;
-  assign cpu$mem_master_arready = fabric_2x3$v_from_masters_0_arready ;
-  assign cpu$mem_master_awready = fabric_2x3$v_from_masters_0_awready ;
-  assign cpu$mem_master_bid = fabric_2x3$v_from_masters_0_bid ;
-  assign cpu$mem_master_bresp = fabric_2x3$v_from_masters_0_bresp ;
-  assign cpu$mem_master_bvalid = fabric_2x3$v_from_masters_0_bvalid ;
-  assign cpu$mem_master_rdata = fabric_2x3$v_from_masters_0_rdata ;
-  assign cpu$mem_master_rid = fabric_2x3$v_from_masters_0_rid ;
-  assign cpu$mem_master_rlast = fabric_2x3$v_from_masters_0_rlast ;
-  assign cpu$mem_master_rresp = fabric_2x3$v_from_masters_0_rresp ;
-  assign cpu$mem_master_rvalid = fabric_2x3$v_from_masters_0_rvalid ;
-  assign cpu$mem_master_wready = fabric_2x3$v_from_masters_0_wready ;
+  assign cpu$mem_master_arready = core_mem_master_arready ;
+  assign cpu$mem_master_awready = core_mem_master_awready ;
+  assign cpu$mem_master_bid = core_mem_master_bid ;
+  assign cpu$mem_master_bresp = core_mem_master_bresp ;
+  assign cpu$mem_master_bvalid = core_mem_master_bvalid ;
+  assign cpu$mem_master_rdata = core_mem_master_rdata ;
+  assign cpu$mem_master_rid = core_mem_master_rid ;
+  assign cpu$mem_master_rlast = core_mem_master_rlast ;
+  assign cpu$mem_master_rresp = core_mem_master_rresp ;
+  assign cpu$mem_master_rvalid = core_mem_master_rvalid ;
+  assign cpu$mem_master_wready = core_mem_master_wready ;
   assign cpu$nmi_req_set_not_clear = nmi_req_set_not_clear ;
   assign cpu$s_external_interrupt_req_set_not_clear = plic$v_targets_1_m_eip ;
   assign cpu$set_verbosity_logdelay = set_verbosity_logdelay ;
@@ -3666,17 +3860,19 @@ module mkCore(CLK,
 	     WILL_FIRE_RL_merge_dm_gpr_trace_data ;
 
   // submodule dm_mem_tap
-  assign dm_mem_tap$master_arready = fabric_2x3$v_from_masters_1_arready ;
-  assign dm_mem_tap$master_awready = fabric_2x3$v_from_masters_1_awready ;
-  assign dm_mem_tap$master_bid = fabric_2x3$v_from_masters_1_bid ;
-  assign dm_mem_tap$master_bresp = fabric_2x3$v_from_masters_1_bresp ;
-  assign dm_mem_tap$master_bvalid = fabric_2x3$v_from_masters_1_bvalid ;
-  assign dm_mem_tap$master_rdata = fabric_2x3$v_from_masters_1_rdata ;
-  assign dm_mem_tap$master_rid = fabric_2x3$v_from_masters_1_rid ;
-  assign dm_mem_tap$master_rlast = fabric_2x3$v_from_masters_1_rlast ;
-  assign dm_mem_tap$master_rresp = fabric_2x3$v_from_masters_1_rresp ;
-  assign dm_mem_tap$master_rvalid = fabric_2x3$v_from_masters_1_rvalid ;
-  assign dm_mem_tap$master_wready = fabric_2x3$v_from_masters_1_wready ;
+  assign dm_mem_tap$master_arready =
+	     dma_server_mux$initiator_B_server_arready ;
+  assign dm_mem_tap$master_awready =
+	     dma_server_mux$initiator_B_server_awready ;
+  assign dm_mem_tap$master_bid = dma_server_mux$initiator_B_server_bid ;
+  assign dm_mem_tap$master_bresp = dma_server_mux$initiator_B_server_bresp ;
+  assign dm_mem_tap$master_bvalid = dma_server_mux$initiator_B_server_bvalid ;
+  assign dm_mem_tap$master_rdata = dma_server_mux$initiator_B_server_rdata ;
+  assign dm_mem_tap$master_rid = dma_server_mux$initiator_B_server_rid ;
+  assign dm_mem_tap$master_rlast = dma_server_mux$initiator_B_server_rlast ;
+  assign dm_mem_tap$master_rresp = dma_server_mux$initiator_B_server_rresp ;
+  assign dm_mem_tap$master_rvalid = dma_server_mux$initiator_B_server_rvalid ;
+  assign dm_mem_tap$master_wready = dma_server_mux$initiator_B_server_wready ;
   assign dm_mem_tap$slave_araddr = debug_module$master_araddr ;
   assign dm_mem_tap$slave_arburst = debug_module$master_arburst ;
   assign dm_mem_tap$slave_arcache = debug_module$master_arcache ;
@@ -3708,11 +3904,88 @@ module mkCore(CLK,
   assign dm_mem_tap$EN_trace_data_out_get =
 	     WILL_FIRE_RL_merge_dm_mem_trace_data ;
 
+  // submodule dma_server_mux
+  assign dma_server_mux$initiator_A_server_araddr = dma_server_araddr ;
+  assign dma_server_mux$initiator_A_server_arburst = dma_server_arburst ;
+  assign dma_server_mux$initiator_A_server_arcache = dma_server_arcache ;
+  assign dma_server_mux$initiator_A_server_arid = dma_server_arid ;
+  assign dma_server_mux$initiator_A_server_arlen = dma_server_arlen ;
+  assign dma_server_mux$initiator_A_server_arlock = dma_server_arlock ;
+  assign dma_server_mux$initiator_A_server_arprot = dma_server_arprot ;
+  assign dma_server_mux$initiator_A_server_arqos = dma_server_arqos ;
+  assign dma_server_mux$initiator_A_server_arregion = dma_server_arregion ;
+  assign dma_server_mux$initiator_A_server_arsize = dma_server_arsize ;
+  assign dma_server_mux$initiator_A_server_arvalid = dma_server_arvalid ;
+  assign dma_server_mux$initiator_A_server_awaddr = dma_server_awaddr ;
+  assign dma_server_mux$initiator_A_server_awburst = dma_server_awburst ;
+  assign dma_server_mux$initiator_A_server_awcache = dma_server_awcache ;
+  assign dma_server_mux$initiator_A_server_awid = dma_server_awid ;
+  assign dma_server_mux$initiator_A_server_awlen = dma_server_awlen ;
+  assign dma_server_mux$initiator_A_server_awlock = dma_server_awlock ;
+  assign dma_server_mux$initiator_A_server_awprot = dma_server_awprot ;
+  assign dma_server_mux$initiator_A_server_awqos = dma_server_awqos ;
+  assign dma_server_mux$initiator_A_server_awregion = dma_server_awregion ;
+  assign dma_server_mux$initiator_A_server_awsize = dma_server_awsize ;
+  assign dma_server_mux$initiator_A_server_awvalid = dma_server_awvalid ;
+  assign dma_server_mux$initiator_A_server_bready = dma_server_bready ;
+  assign dma_server_mux$initiator_A_server_rready = dma_server_rready ;
+  assign dma_server_mux$initiator_A_server_wdata = dma_server_wdata ;
+  assign dma_server_mux$initiator_A_server_wlast = dma_server_wlast ;
+  assign dma_server_mux$initiator_A_server_wstrb = dma_server_wstrb ;
+  assign dma_server_mux$initiator_A_server_wvalid = dma_server_wvalid ;
+  assign dma_server_mux$initiator_B_server_araddr = dm_mem_tap$master_araddr ;
+  assign dma_server_mux$initiator_B_server_arburst =
+	     dm_mem_tap$master_arburst ;
+  assign dma_server_mux$initiator_B_server_arcache =
+	     dm_mem_tap$master_arcache ;
+  assign dma_server_mux$initiator_B_server_arid = dm_mem_tap$master_arid ;
+  assign dma_server_mux$initiator_B_server_arlen = dm_mem_tap$master_arlen ;
+  assign dma_server_mux$initiator_B_server_arlock = dm_mem_tap$master_arlock ;
+  assign dma_server_mux$initiator_B_server_arprot = dm_mem_tap$master_arprot ;
+  assign dma_server_mux$initiator_B_server_arqos = dm_mem_tap$master_arqos ;
+  assign dma_server_mux$initiator_B_server_arregion =
+	     dm_mem_tap$master_arregion ;
+  assign dma_server_mux$initiator_B_server_arsize = dm_mem_tap$master_arsize ;
+  assign dma_server_mux$initiator_B_server_arvalid =
+	     dm_mem_tap$master_arvalid ;
+  assign dma_server_mux$initiator_B_server_awaddr = dm_mem_tap$master_awaddr ;
+  assign dma_server_mux$initiator_B_server_awburst =
+	     dm_mem_tap$master_awburst ;
+  assign dma_server_mux$initiator_B_server_awcache =
+	     dm_mem_tap$master_awcache ;
+  assign dma_server_mux$initiator_B_server_awid = dm_mem_tap$master_awid ;
+  assign dma_server_mux$initiator_B_server_awlen = dm_mem_tap$master_awlen ;
+  assign dma_server_mux$initiator_B_server_awlock = dm_mem_tap$master_awlock ;
+  assign dma_server_mux$initiator_B_server_awprot = dm_mem_tap$master_awprot ;
+  assign dma_server_mux$initiator_B_server_awqos = dm_mem_tap$master_awqos ;
+  assign dma_server_mux$initiator_B_server_awregion =
+	     dm_mem_tap$master_awregion ;
+  assign dma_server_mux$initiator_B_server_awsize = dm_mem_tap$master_awsize ;
+  assign dma_server_mux$initiator_B_server_awvalid =
+	     dm_mem_tap$master_awvalid ;
+  assign dma_server_mux$initiator_B_server_bready = dm_mem_tap$master_bready ;
+  assign dma_server_mux$initiator_B_server_rready = dm_mem_tap$master_rready ;
+  assign dma_server_mux$initiator_B_server_wdata = dm_mem_tap$master_wdata ;
+  assign dma_server_mux$initiator_B_server_wlast = dm_mem_tap$master_wlast ;
+  assign dma_server_mux$initiator_B_server_wstrb = dm_mem_tap$master_wstrb ;
+  assign dma_server_mux$initiator_B_server_wvalid = dm_mem_tap$master_wvalid ;
+  assign dma_server_mux$target_client_arready = cpu$dma_server_arready ;
+  assign dma_server_mux$target_client_awready = cpu$dma_server_awready ;
+  assign dma_server_mux$target_client_bid = cpu$dma_server_bid ;
+  assign dma_server_mux$target_client_bresp = cpu$dma_server_bresp ;
+  assign dma_server_mux$target_client_bvalid = cpu$dma_server_bvalid ;
+  assign dma_server_mux$target_client_rdata = cpu$dma_server_rdata ;
+  assign dma_server_mux$target_client_rid = cpu$dma_server_rid ;
+  assign dma_server_mux$target_client_rlast = cpu$dma_server_rlast ;
+  assign dma_server_mux$target_client_rresp = cpu$dma_server_rresp ;
+  assign dma_server_mux$target_client_rvalid = cpu$dma_server_rvalid ;
+  assign dma_server_mux$target_client_wready = cpu$dma_server_wready ;
+
   // submodule f_reset_reqs
   assign f_reset_reqs$D_IN = cpu_reset_server_request_put ;
   assign f_reset_reqs$ENQ = EN_cpu_reset_server_request_put ;
   assign f_reset_reqs$DEQ =
-	     fabric_2x3$RDY_reset &&
+	     fabric_1x3$RDY_reset &&
 	     near_mem_io$RDY_server_reset_request_put &&
 	     plic_RDY_server_reset_request_put_AND_cpu_RDY__ETC___d9 ;
   assign f_reset_reqs$CLR = 1'b0 ;
@@ -3767,134 +4040,106 @@ module mkCore(CLK,
 	     WILL_FIRE_RL_merge_dm_gpr_trace_data ||
 	     WILL_FIRE_RL_merge_dm_fpr_trace_data ||
 	     WILL_FIRE_RL_merge_dm_csr_trace_data ;
-  assign f_trace_data_merged$DEQ = CAN_FIRE_RL_mkConnectionGetPut_1 ;
+  assign f_trace_data_merged$DEQ = WILL_FIRE_RL_mkConnectionGetPut_1 ;
   assign f_trace_data_merged$CLR = 1'b0 ;
 
-  // submodule fabric_2x3
-  assign fabric_2x3$set_verbosity_verbosity = 4'h0 ;
-  assign fabric_2x3$v_from_masters_0_araddr = cpu$mem_master_araddr ;
-  assign fabric_2x3$v_from_masters_0_arburst = cpu$mem_master_arburst ;
-  assign fabric_2x3$v_from_masters_0_arcache = cpu$mem_master_arcache ;
-  assign fabric_2x3$v_from_masters_0_arid = cpu$mem_master_arid ;
-  assign fabric_2x3$v_from_masters_0_arlen = cpu$mem_master_arlen ;
-  assign fabric_2x3$v_from_masters_0_arlock = cpu$mem_master_arlock ;
-  assign fabric_2x3$v_from_masters_0_arprot = cpu$mem_master_arprot ;
-  assign fabric_2x3$v_from_masters_0_arqos = cpu$mem_master_arqos ;
-  assign fabric_2x3$v_from_masters_0_arregion = cpu$mem_master_arregion ;
-  assign fabric_2x3$v_from_masters_0_arsize = cpu$mem_master_arsize ;
-  assign fabric_2x3$v_from_masters_0_arvalid = cpu$mem_master_arvalid ;
-  assign fabric_2x3$v_from_masters_0_awaddr = cpu$mem_master_awaddr ;
-  assign fabric_2x3$v_from_masters_0_awburst = cpu$mem_master_awburst ;
-  assign fabric_2x3$v_from_masters_0_awcache = cpu$mem_master_awcache ;
-  assign fabric_2x3$v_from_masters_0_awid = cpu$mem_master_awid ;
-  assign fabric_2x3$v_from_masters_0_awlen = cpu$mem_master_awlen ;
-  assign fabric_2x3$v_from_masters_0_awlock = cpu$mem_master_awlock ;
-  assign fabric_2x3$v_from_masters_0_awprot = cpu$mem_master_awprot ;
-  assign fabric_2x3$v_from_masters_0_awqos = cpu$mem_master_awqos ;
-  assign fabric_2x3$v_from_masters_0_awregion = cpu$mem_master_awregion ;
-  assign fabric_2x3$v_from_masters_0_awsize = cpu$mem_master_awsize ;
-  assign fabric_2x3$v_from_masters_0_awvalid = cpu$mem_master_awvalid ;
-  assign fabric_2x3$v_from_masters_0_bready = cpu$mem_master_bready ;
-  assign fabric_2x3$v_from_masters_0_rready = cpu$mem_master_rready ;
-  assign fabric_2x3$v_from_masters_0_wdata = cpu$mem_master_wdata ;
-  assign fabric_2x3$v_from_masters_0_wlast = cpu$mem_master_wlast ;
-  assign fabric_2x3$v_from_masters_0_wstrb = cpu$mem_master_wstrb ;
-  assign fabric_2x3$v_from_masters_0_wvalid = cpu$mem_master_wvalid ;
-  assign fabric_2x3$v_from_masters_1_araddr = dm_mem_tap$master_araddr ;
-  assign fabric_2x3$v_from_masters_1_arburst = dm_mem_tap$master_arburst ;
-  assign fabric_2x3$v_from_masters_1_arcache = dm_mem_tap$master_arcache ;
-  assign fabric_2x3$v_from_masters_1_arid = dm_mem_tap$master_arid ;
-  assign fabric_2x3$v_from_masters_1_arlen = dm_mem_tap$master_arlen ;
-  assign fabric_2x3$v_from_masters_1_arlock = dm_mem_tap$master_arlock ;
-  assign fabric_2x3$v_from_masters_1_arprot = dm_mem_tap$master_arprot ;
-  assign fabric_2x3$v_from_masters_1_arqos = dm_mem_tap$master_arqos ;
-  assign fabric_2x3$v_from_masters_1_arregion = dm_mem_tap$master_arregion ;
-  assign fabric_2x3$v_from_masters_1_arsize = dm_mem_tap$master_arsize ;
-  assign fabric_2x3$v_from_masters_1_arvalid = dm_mem_tap$master_arvalid ;
-  assign fabric_2x3$v_from_masters_1_awaddr = dm_mem_tap$master_awaddr ;
-  assign fabric_2x3$v_from_masters_1_awburst = dm_mem_tap$master_awburst ;
-  assign fabric_2x3$v_from_masters_1_awcache = dm_mem_tap$master_awcache ;
-  assign fabric_2x3$v_from_masters_1_awid = dm_mem_tap$master_awid ;
-  assign fabric_2x3$v_from_masters_1_awlen = dm_mem_tap$master_awlen ;
-  assign fabric_2x3$v_from_masters_1_awlock = dm_mem_tap$master_awlock ;
-  assign fabric_2x3$v_from_masters_1_awprot = dm_mem_tap$master_awprot ;
-  assign fabric_2x3$v_from_masters_1_awqos = dm_mem_tap$master_awqos ;
-  assign fabric_2x3$v_from_masters_1_awregion = dm_mem_tap$master_awregion ;
-  assign fabric_2x3$v_from_masters_1_awsize = dm_mem_tap$master_awsize ;
-  assign fabric_2x3$v_from_masters_1_awvalid = dm_mem_tap$master_awvalid ;
-  assign fabric_2x3$v_from_masters_1_bready = dm_mem_tap$master_bready ;
-  assign fabric_2x3$v_from_masters_1_rready = dm_mem_tap$master_rready ;
-  assign fabric_2x3$v_from_masters_1_wdata = dm_mem_tap$master_wdata ;
-  assign fabric_2x3$v_from_masters_1_wlast = dm_mem_tap$master_wlast ;
-  assign fabric_2x3$v_from_masters_1_wstrb = dm_mem_tap$master_wstrb ;
-  assign fabric_2x3$v_from_masters_1_wvalid = dm_mem_tap$master_wvalid ;
-  assign fabric_2x3$v_to_slaves_0_arready = core_mem_master_arready ;
-  assign fabric_2x3$v_to_slaves_0_awready = core_mem_master_awready ;
-  assign fabric_2x3$v_to_slaves_0_bid = core_mem_master_bid ;
-  assign fabric_2x3$v_to_slaves_0_bresp = core_mem_master_bresp ;
-  assign fabric_2x3$v_to_slaves_0_bvalid = core_mem_master_bvalid ;
-  assign fabric_2x3$v_to_slaves_0_rdata = core_mem_master_rdata ;
-  assign fabric_2x3$v_to_slaves_0_rid = core_mem_master_rid ;
-  assign fabric_2x3$v_to_slaves_0_rlast = core_mem_master_rlast ;
-  assign fabric_2x3$v_to_slaves_0_rresp = core_mem_master_rresp ;
-  assign fabric_2x3$v_to_slaves_0_rvalid = core_mem_master_rvalid ;
-  assign fabric_2x3$v_to_slaves_0_wready = core_mem_master_wready ;
-  assign fabric_2x3$v_to_slaves_1_arready = near_mem_io$axi4_slave_arready ;
-  assign fabric_2x3$v_to_slaves_1_awready = near_mem_io$axi4_slave_awready ;
-  assign fabric_2x3$v_to_slaves_1_bid = near_mem_io$axi4_slave_bid ;
-  assign fabric_2x3$v_to_slaves_1_bresp = near_mem_io$axi4_slave_bresp ;
-  assign fabric_2x3$v_to_slaves_1_bvalid = near_mem_io$axi4_slave_bvalid ;
-  assign fabric_2x3$v_to_slaves_1_rdata = near_mem_io$axi4_slave_rdata ;
-  assign fabric_2x3$v_to_slaves_1_rid = near_mem_io$axi4_slave_rid ;
-  assign fabric_2x3$v_to_slaves_1_rlast = near_mem_io$axi4_slave_rlast ;
-  assign fabric_2x3$v_to_slaves_1_rresp = near_mem_io$axi4_slave_rresp ;
-  assign fabric_2x3$v_to_slaves_1_rvalid = near_mem_io$axi4_slave_rvalid ;
-  assign fabric_2x3$v_to_slaves_1_wready = near_mem_io$axi4_slave_wready ;
-  assign fabric_2x3$v_to_slaves_2_arready = plic$axi4_slave_arready ;
-  assign fabric_2x3$v_to_slaves_2_awready = plic$axi4_slave_awready ;
-  assign fabric_2x3$v_to_slaves_2_bid = plic$axi4_slave_bid ;
-  assign fabric_2x3$v_to_slaves_2_bresp = plic$axi4_slave_bresp ;
-  assign fabric_2x3$v_to_slaves_2_bvalid = plic$axi4_slave_bvalid ;
-  assign fabric_2x3$v_to_slaves_2_rdata = plic$axi4_slave_rdata ;
-  assign fabric_2x3$v_to_slaves_2_rid = plic$axi4_slave_rid ;
-  assign fabric_2x3$v_to_slaves_2_rlast = plic$axi4_slave_rlast ;
-  assign fabric_2x3$v_to_slaves_2_rresp = plic$axi4_slave_rresp ;
-  assign fabric_2x3$v_to_slaves_2_rvalid = plic$axi4_slave_rvalid ;
-  assign fabric_2x3$v_to_slaves_2_wready = plic$axi4_slave_wready ;
-  assign fabric_2x3$EN_reset =
+  // submodule fabric_1x3
+  assign fabric_1x3$set_verbosity_verbosity = 4'h0 ;
+  assign fabric_1x3$v_from_masters_0_araddr = cpu$imem_master_araddr ;
+  assign fabric_1x3$v_from_masters_0_arburst = cpu$imem_master_arburst ;
+  assign fabric_1x3$v_from_masters_0_arcache = cpu$imem_master_arcache ;
+  assign fabric_1x3$v_from_masters_0_arid = cpu$imem_master_arid ;
+  assign fabric_1x3$v_from_masters_0_arlen = cpu$imem_master_arlen ;
+  assign fabric_1x3$v_from_masters_0_arlock = cpu$imem_master_arlock ;
+  assign fabric_1x3$v_from_masters_0_arprot = cpu$imem_master_arprot ;
+  assign fabric_1x3$v_from_masters_0_arqos = cpu$imem_master_arqos ;
+  assign fabric_1x3$v_from_masters_0_arregion = cpu$imem_master_arregion ;
+  assign fabric_1x3$v_from_masters_0_arsize = cpu$imem_master_arsize ;
+  assign fabric_1x3$v_from_masters_0_arvalid = cpu$imem_master_arvalid ;
+  assign fabric_1x3$v_from_masters_0_awaddr = cpu$imem_master_awaddr ;
+  assign fabric_1x3$v_from_masters_0_awburst = cpu$imem_master_awburst ;
+  assign fabric_1x3$v_from_masters_0_awcache = cpu$imem_master_awcache ;
+  assign fabric_1x3$v_from_masters_0_awid = cpu$imem_master_awid ;
+  assign fabric_1x3$v_from_masters_0_awlen = cpu$imem_master_awlen ;
+  assign fabric_1x3$v_from_masters_0_awlock = cpu$imem_master_awlock ;
+  assign fabric_1x3$v_from_masters_0_awprot = cpu$imem_master_awprot ;
+  assign fabric_1x3$v_from_masters_0_awqos = cpu$imem_master_awqos ;
+  assign fabric_1x3$v_from_masters_0_awregion = cpu$imem_master_awregion ;
+  assign fabric_1x3$v_from_masters_0_awsize = cpu$imem_master_awsize ;
+  assign fabric_1x3$v_from_masters_0_awvalid = cpu$imem_master_awvalid ;
+  assign fabric_1x3$v_from_masters_0_bready = cpu$imem_master_bready ;
+  assign fabric_1x3$v_from_masters_0_rready = cpu$imem_master_rready ;
+  assign fabric_1x3$v_from_masters_0_wdata = cpu$imem_master_wdata ;
+  assign fabric_1x3$v_from_masters_0_wlast = cpu$imem_master_wlast ;
+  assign fabric_1x3$v_from_masters_0_wstrb = cpu$imem_master_wstrb ;
+  assign fabric_1x3$v_from_masters_0_wvalid = cpu$imem_master_wvalid ;
+  assign fabric_1x3$v_to_slaves_0_arready = cpu_imem_master_arready ;
+  assign fabric_1x3$v_to_slaves_0_awready = cpu_imem_master_awready ;
+  assign fabric_1x3$v_to_slaves_0_bid = cpu_imem_master_bid ;
+  assign fabric_1x3$v_to_slaves_0_bresp = cpu_imem_master_bresp ;
+  assign fabric_1x3$v_to_slaves_0_bvalid = cpu_imem_master_bvalid ;
+  assign fabric_1x3$v_to_slaves_0_rdata = cpu_imem_master_rdata ;
+  assign fabric_1x3$v_to_slaves_0_rid = cpu_imem_master_rid ;
+  assign fabric_1x3$v_to_slaves_0_rlast = cpu_imem_master_rlast ;
+  assign fabric_1x3$v_to_slaves_0_rresp = cpu_imem_master_rresp ;
+  assign fabric_1x3$v_to_slaves_0_rvalid = cpu_imem_master_rvalid ;
+  assign fabric_1x3$v_to_slaves_0_wready = cpu_imem_master_wready ;
+  assign fabric_1x3$v_to_slaves_1_arready = near_mem_io$axi4_slave_arready ;
+  assign fabric_1x3$v_to_slaves_1_awready = near_mem_io$axi4_slave_awready ;
+  assign fabric_1x3$v_to_slaves_1_bid = near_mem_io$axi4_slave_bid ;
+  assign fabric_1x3$v_to_slaves_1_bresp = near_mem_io$axi4_slave_bresp ;
+  assign fabric_1x3$v_to_slaves_1_bvalid = near_mem_io$axi4_slave_bvalid ;
+  assign fabric_1x3$v_to_slaves_1_rdata = near_mem_io$axi4_slave_rdata ;
+  assign fabric_1x3$v_to_slaves_1_rid = near_mem_io$axi4_slave_rid ;
+  assign fabric_1x3$v_to_slaves_1_rlast = near_mem_io$axi4_slave_rlast ;
+  assign fabric_1x3$v_to_slaves_1_rresp = near_mem_io$axi4_slave_rresp ;
+  assign fabric_1x3$v_to_slaves_1_rvalid = near_mem_io$axi4_slave_rvalid ;
+  assign fabric_1x3$v_to_slaves_1_wready = near_mem_io$axi4_slave_wready ;
+  assign fabric_1x3$v_to_slaves_2_arready = plic$axi4_slave_arready ;
+  assign fabric_1x3$v_to_slaves_2_awready = plic$axi4_slave_awready ;
+  assign fabric_1x3$v_to_slaves_2_bid = plic$axi4_slave_bid ;
+  assign fabric_1x3$v_to_slaves_2_bresp = plic$axi4_slave_bresp ;
+  assign fabric_1x3$v_to_slaves_2_bvalid = plic$axi4_slave_bvalid ;
+  assign fabric_1x3$v_to_slaves_2_rdata = plic$axi4_slave_rdata ;
+  assign fabric_1x3$v_to_slaves_2_rid = plic$axi4_slave_rid ;
+  assign fabric_1x3$v_to_slaves_2_rlast = plic$axi4_slave_rlast ;
+  assign fabric_1x3$v_to_slaves_2_rresp = plic$axi4_slave_rresp ;
+  assign fabric_1x3$v_to_slaves_2_rvalid = plic$axi4_slave_rvalid ;
+  assign fabric_1x3$v_to_slaves_2_wready = plic$axi4_slave_wready ;
+  assign fabric_1x3$EN_reset =
 	     WILL_FIRE_RL_rl_cpu_hart0_reset_from_dm_start ||
 	     WILL_FIRE_RL_rl_cpu_hart0_reset_from_soc_start ;
-  assign fabric_2x3$EN_set_verbosity = 1'b0 ;
+  assign fabric_1x3$EN_set_verbosity = 1'b0 ;
 
   // submodule near_mem_io
-  assign near_mem_io$axi4_slave_araddr = fabric_2x3$v_to_slaves_1_araddr ;
-  assign near_mem_io$axi4_slave_arburst = fabric_2x3$v_to_slaves_1_arburst ;
-  assign near_mem_io$axi4_slave_arcache = fabric_2x3$v_to_slaves_1_arcache ;
-  assign near_mem_io$axi4_slave_arid = fabric_2x3$v_to_slaves_1_arid ;
-  assign near_mem_io$axi4_slave_arlen = fabric_2x3$v_to_slaves_1_arlen ;
-  assign near_mem_io$axi4_slave_arlock = fabric_2x3$v_to_slaves_1_arlock ;
-  assign near_mem_io$axi4_slave_arprot = fabric_2x3$v_to_slaves_1_arprot ;
-  assign near_mem_io$axi4_slave_arqos = fabric_2x3$v_to_slaves_1_arqos ;
-  assign near_mem_io$axi4_slave_arregion = fabric_2x3$v_to_slaves_1_arregion ;
-  assign near_mem_io$axi4_slave_arsize = fabric_2x3$v_to_slaves_1_arsize ;
-  assign near_mem_io$axi4_slave_arvalid = fabric_2x3$v_to_slaves_1_arvalid ;
-  assign near_mem_io$axi4_slave_awaddr = fabric_2x3$v_to_slaves_1_awaddr ;
-  assign near_mem_io$axi4_slave_awburst = fabric_2x3$v_to_slaves_1_awburst ;
-  assign near_mem_io$axi4_slave_awcache = fabric_2x3$v_to_slaves_1_awcache ;
-  assign near_mem_io$axi4_slave_awid = fabric_2x3$v_to_slaves_1_awid ;
-  assign near_mem_io$axi4_slave_awlen = fabric_2x3$v_to_slaves_1_awlen ;
-  assign near_mem_io$axi4_slave_awlock = fabric_2x3$v_to_slaves_1_awlock ;
-  assign near_mem_io$axi4_slave_awprot = fabric_2x3$v_to_slaves_1_awprot ;
-  assign near_mem_io$axi4_slave_awqos = fabric_2x3$v_to_slaves_1_awqos ;
-  assign near_mem_io$axi4_slave_awregion = fabric_2x3$v_to_slaves_1_awregion ;
-  assign near_mem_io$axi4_slave_awsize = fabric_2x3$v_to_slaves_1_awsize ;
-  assign near_mem_io$axi4_slave_awvalid = fabric_2x3$v_to_slaves_1_awvalid ;
-  assign near_mem_io$axi4_slave_bready = fabric_2x3$v_to_slaves_1_bready ;
-  assign near_mem_io$axi4_slave_rready = fabric_2x3$v_to_slaves_1_rready ;
-  assign near_mem_io$axi4_slave_wdata = fabric_2x3$v_to_slaves_1_wdata ;
-  assign near_mem_io$axi4_slave_wlast = fabric_2x3$v_to_slaves_1_wlast ;
-  assign near_mem_io$axi4_slave_wstrb = fabric_2x3$v_to_slaves_1_wstrb ;
-  assign near_mem_io$axi4_slave_wvalid = fabric_2x3$v_to_slaves_1_wvalid ;
+  assign near_mem_io$axi4_slave_araddr = fabric_1x3$v_to_slaves_1_araddr ;
+  assign near_mem_io$axi4_slave_arburst = fabric_1x3$v_to_slaves_1_arburst ;
+  assign near_mem_io$axi4_slave_arcache = fabric_1x3$v_to_slaves_1_arcache ;
+  assign near_mem_io$axi4_slave_arid = fabric_1x3$v_to_slaves_1_arid ;
+  assign near_mem_io$axi4_slave_arlen = fabric_1x3$v_to_slaves_1_arlen ;
+  assign near_mem_io$axi4_slave_arlock = fabric_1x3$v_to_slaves_1_arlock ;
+  assign near_mem_io$axi4_slave_arprot = fabric_1x3$v_to_slaves_1_arprot ;
+  assign near_mem_io$axi4_slave_arqos = fabric_1x3$v_to_slaves_1_arqos ;
+  assign near_mem_io$axi4_slave_arregion = fabric_1x3$v_to_slaves_1_arregion ;
+  assign near_mem_io$axi4_slave_arsize = fabric_1x3$v_to_slaves_1_arsize ;
+  assign near_mem_io$axi4_slave_arvalid = fabric_1x3$v_to_slaves_1_arvalid ;
+  assign near_mem_io$axi4_slave_awaddr = fabric_1x3$v_to_slaves_1_awaddr ;
+  assign near_mem_io$axi4_slave_awburst = fabric_1x3$v_to_slaves_1_awburst ;
+  assign near_mem_io$axi4_slave_awcache = fabric_1x3$v_to_slaves_1_awcache ;
+  assign near_mem_io$axi4_slave_awid = fabric_1x3$v_to_slaves_1_awid ;
+  assign near_mem_io$axi4_slave_awlen = fabric_1x3$v_to_slaves_1_awlen ;
+  assign near_mem_io$axi4_slave_awlock = fabric_1x3$v_to_slaves_1_awlock ;
+  assign near_mem_io$axi4_slave_awprot = fabric_1x3$v_to_slaves_1_awprot ;
+  assign near_mem_io$axi4_slave_awqos = fabric_1x3$v_to_slaves_1_awqos ;
+  assign near_mem_io$axi4_slave_awregion = fabric_1x3$v_to_slaves_1_awregion ;
+  assign near_mem_io$axi4_slave_awsize = fabric_1x3$v_to_slaves_1_awsize ;
+  assign near_mem_io$axi4_slave_awvalid = fabric_1x3$v_to_slaves_1_awvalid ;
+  assign near_mem_io$axi4_slave_bready = fabric_1x3$v_to_slaves_1_bready ;
+  assign near_mem_io$axi4_slave_rready = fabric_1x3$v_to_slaves_1_rready ;
+  assign near_mem_io$axi4_slave_wdata = fabric_1x3$v_to_slaves_1_wdata ;
+  assign near_mem_io$axi4_slave_wlast = fabric_1x3$v_to_slaves_1_wlast ;
+  assign near_mem_io$axi4_slave_wstrb = fabric_1x3$v_to_slaves_1_wstrb ;
+  assign near_mem_io$axi4_slave_wvalid = fabric_1x3$v_to_slaves_1_wvalid ;
   assign near_mem_io$set_addr_map_addr_base =
 	     soc_map$m_near_mem_io_addr_base ;
   assign near_mem_io$set_addr_map_addr_lim = soc_map$m_near_mem_io_addr_lim ;
@@ -3911,34 +4156,34 @@ module mkCore(CLK,
 	     near_mem_io$RDY_get_sw_interrupt_req_get ;
 
   // submodule plic
-  assign plic$axi4_slave_araddr = fabric_2x3$v_to_slaves_2_araddr ;
-  assign plic$axi4_slave_arburst = fabric_2x3$v_to_slaves_2_arburst ;
-  assign plic$axi4_slave_arcache = fabric_2x3$v_to_slaves_2_arcache ;
-  assign plic$axi4_slave_arid = fabric_2x3$v_to_slaves_2_arid ;
-  assign plic$axi4_slave_arlen = fabric_2x3$v_to_slaves_2_arlen ;
-  assign plic$axi4_slave_arlock = fabric_2x3$v_to_slaves_2_arlock ;
-  assign plic$axi4_slave_arprot = fabric_2x3$v_to_slaves_2_arprot ;
-  assign plic$axi4_slave_arqos = fabric_2x3$v_to_slaves_2_arqos ;
-  assign plic$axi4_slave_arregion = fabric_2x3$v_to_slaves_2_arregion ;
-  assign plic$axi4_slave_arsize = fabric_2x3$v_to_slaves_2_arsize ;
-  assign plic$axi4_slave_arvalid = fabric_2x3$v_to_slaves_2_arvalid ;
-  assign plic$axi4_slave_awaddr = fabric_2x3$v_to_slaves_2_awaddr ;
-  assign plic$axi4_slave_awburst = fabric_2x3$v_to_slaves_2_awburst ;
-  assign plic$axi4_slave_awcache = fabric_2x3$v_to_slaves_2_awcache ;
-  assign plic$axi4_slave_awid = fabric_2x3$v_to_slaves_2_awid ;
-  assign plic$axi4_slave_awlen = fabric_2x3$v_to_slaves_2_awlen ;
-  assign plic$axi4_slave_awlock = fabric_2x3$v_to_slaves_2_awlock ;
-  assign plic$axi4_slave_awprot = fabric_2x3$v_to_slaves_2_awprot ;
-  assign plic$axi4_slave_awqos = fabric_2x3$v_to_slaves_2_awqos ;
-  assign plic$axi4_slave_awregion = fabric_2x3$v_to_slaves_2_awregion ;
-  assign plic$axi4_slave_awsize = fabric_2x3$v_to_slaves_2_awsize ;
-  assign plic$axi4_slave_awvalid = fabric_2x3$v_to_slaves_2_awvalid ;
-  assign plic$axi4_slave_bready = fabric_2x3$v_to_slaves_2_bready ;
-  assign plic$axi4_slave_rready = fabric_2x3$v_to_slaves_2_rready ;
-  assign plic$axi4_slave_wdata = fabric_2x3$v_to_slaves_2_wdata ;
-  assign plic$axi4_slave_wlast = fabric_2x3$v_to_slaves_2_wlast ;
-  assign plic$axi4_slave_wstrb = fabric_2x3$v_to_slaves_2_wstrb ;
-  assign plic$axi4_slave_wvalid = fabric_2x3$v_to_slaves_2_wvalid ;
+  assign plic$axi4_slave_araddr = fabric_1x3$v_to_slaves_2_araddr ;
+  assign plic$axi4_slave_arburst = fabric_1x3$v_to_slaves_2_arburst ;
+  assign plic$axi4_slave_arcache = fabric_1x3$v_to_slaves_2_arcache ;
+  assign plic$axi4_slave_arid = fabric_1x3$v_to_slaves_2_arid ;
+  assign plic$axi4_slave_arlen = fabric_1x3$v_to_slaves_2_arlen ;
+  assign plic$axi4_slave_arlock = fabric_1x3$v_to_slaves_2_arlock ;
+  assign plic$axi4_slave_arprot = fabric_1x3$v_to_slaves_2_arprot ;
+  assign plic$axi4_slave_arqos = fabric_1x3$v_to_slaves_2_arqos ;
+  assign plic$axi4_slave_arregion = fabric_1x3$v_to_slaves_2_arregion ;
+  assign plic$axi4_slave_arsize = fabric_1x3$v_to_slaves_2_arsize ;
+  assign plic$axi4_slave_arvalid = fabric_1x3$v_to_slaves_2_arvalid ;
+  assign plic$axi4_slave_awaddr = fabric_1x3$v_to_slaves_2_awaddr ;
+  assign plic$axi4_slave_awburst = fabric_1x3$v_to_slaves_2_awburst ;
+  assign plic$axi4_slave_awcache = fabric_1x3$v_to_slaves_2_awcache ;
+  assign plic$axi4_slave_awid = fabric_1x3$v_to_slaves_2_awid ;
+  assign plic$axi4_slave_awlen = fabric_1x3$v_to_slaves_2_awlen ;
+  assign plic$axi4_slave_awlock = fabric_1x3$v_to_slaves_2_awlock ;
+  assign plic$axi4_slave_awprot = fabric_1x3$v_to_slaves_2_awprot ;
+  assign plic$axi4_slave_awqos = fabric_1x3$v_to_slaves_2_awqos ;
+  assign plic$axi4_slave_awregion = fabric_1x3$v_to_slaves_2_awregion ;
+  assign plic$axi4_slave_awsize = fabric_1x3$v_to_slaves_2_awsize ;
+  assign plic$axi4_slave_awvalid = fabric_1x3$v_to_slaves_2_awvalid ;
+  assign plic$axi4_slave_bready = fabric_1x3$v_to_slaves_2_bready ;
+  assign plic$axi4_slave_rready = fabric_1x3$v_to_slaves_2_rready ;
+  assign plic$axi4_slave_wdata = fabric_1x3$v_to_slaves_2_wdata ;
+  assign plic$axi4_slave_wlast = fabric_1x3$v_to_slaves_2_wlast ;
+  assign plic$axi4_slave_wstrb = fabric_1x3$v_to_slaves_2_wstrb ;
+  assign plic$axi4_slave_wvalid = fabric_1x3$v_to_slaves_2_wvalid ;
   assign plic$set_addr_map_addr_base = soc_map$m_plic_addr_base ;
   assign plic$set_addr_map_addr_lim = soc_map$m_plic_addr_lim ;
   assign plic$set_verbosity_verbosity = 4'h0 ;
@@ -3991,7 +4236,7 @@ module mkCore(CLK,
   // submodule tv_encode
   assign tv_encode$trace_data_in_put = f_trace_data_merged$D_OUT ;
   assign tv_encode$EN_reset = 1'b0 ;
-  assign tv_encode$EN_trace_data_in_put = CAN_FIRE_RL_mkConnectionGetPut_1 ;
+  assign tv_encode$EN_trace_data_in_put = WILL_FIRE_RL_mkConnectionGetPut_1 ;
   assign tv_encode$EN_tv_vb_out_get = EN_tv_verifier_info_get_get ;
 
   // remaining internal signals
@@ -4010,33 +4255,33 @@ module mkCore(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_from_soc_start)
 	begin
-	  v__h5471 = $stime;
+	  v__h6193 = $stime;
 	  #0;
 	end
-    v__h5465 = v__h5471 / 32'd10;
+    v__h6187 = v__h6193 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_from_soc_start)
-	$display("%0d: Core.rl_cpu_hart0_reset_from_soc_start", v__h5465);
+	$display("%0d: Core.rl_cpu_hart0_reset_from_soc_start", v__h6187);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_from_dm_start)
 	begin
-	  v__h5672 = $stime;
+	  v__h6394 = $stime;
 	  #0;
 	end
-    v__h5666 = v__h5672 / 32'd10;
+    v__h6388 = v__h6394 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_from_dm_start)
-	$display("%0d: Core.rl_cpu_hart0_reset_from_dm_start", v__h5666);
+	$display("%0d: Core.rl_cpu_hart0_reset_from_dm_start", v__h6388);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_complete)
 	begin
-	  v__h6040 = $stime;
+	  v__h6762 = $stime;
 	  #0;
 	end
-    v__h6034 = v__h6040 / 32'd10;
+    v__h6756 = v__h6762 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_complete)
-	$display("%0d: Core.rl_cpu_hart0_reset_complete", v__h6034);
+	$display("%0d: Core.rl_cpu_hart0_reset_complete", v__h6756);
   end
   // synopsys translate_on
 endmodule  // mkCore

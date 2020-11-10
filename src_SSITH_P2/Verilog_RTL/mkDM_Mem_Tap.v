@@ -9,16 +9,16 @@
 // slave_awready                  O     1 reg
 // slave_wready                   O     1 reg
 // slave_bvalid                   O     1 reg
-// slave_bid                      O     4 reg
+// slave_bid                      O    16 reg
 // slave_bresp                    O     2 reg
 // slave_arready                  O     1 reg
 // slave_rvalid                   O     1 reg
-// slave_rid                      O     4 reg
+// slave_rid                      O    16 reg
 // slave_rdata                    O    64 reg
 // slave_rresp                    O     2 reg
 // slave_rlast                    O     1 reg
 // master_awvalid                 O     1 reg
-// master_awid                    O     4 reg
+// master_awid                    O    16 reg
 // master_awaddr                  O    64 reg
 // master_awlen                   O     8 reg
 // master_awsize                  O     3 reg
@@ -34,7 +34,7 @@
 // master_wlast                   O     1 reg
 // master_bready                  O     1 reg
 // master_arvalid                 O     1 reg
-// master_arid                    O     4 reg
+// master_arid                    O    16 reg
 // master_araddr                  O    64 reg
 // master_arlen                   O     8 reg
 // master_arsize                  O     3 reg
@@ -50,7 +50,7 @@
 // CLK                            I     1 clock
 // RST_N                          I     1 reset
 // slave_awvalid                  I     1
-// slave_awid                     I     4 reg
+// slave_awid                     I    16 reg
 // slave_awaddr                   I    64 reg
 // slave_awlen                    I     8 reg
 // slave_awsize                   I     3 reg
@@ -66,7 +66,7 @@
 // slave_wlast                    I     1 reg
 // slave_bready                   I     1
 // slave_arvalid                  I     1
-// slave_arid                     I     4 reg
+// slave_arid                     I    16 reg
 // slave_araddr                   I    64 reg
 // slave_arlen                    I     8 reg
 // slave_arsize                   I     3 reg
@@ -80,11 +80,11 @@
 // master_awready                 I     1
 // master_wready                  I     1
 // master_bvalid                  I     1
-// master_bid                     I     4 reg
+// master_bid                     I    16 reg
 // master_bresp                   I     2 reg
 // master_arready                 I     1
 // master_rvalid                  I     1
-// master_rid                     I     4 reg
+// master_rid                     I    16 reg
 // master_rdata                   I    64 reg
 // master_rresp                   I     2 reg
 // master_rlast                   I     1 reg
@@ -245,7 +245,7 @@ module mkDM_Mem_Tap(CLK,
 
   // action method slave_m_awvalid
   input  slave_awvalid;
-  input  [3 : 0] slave_awid;
+  input  [15 : 0] slave_awid;
   input  [63 : 0] slave_awaddr;
   input  [7 : 0] slave_awlen;
   input  [2 : 0] slave_awsize;
@@ -272,7 +272,7 @@ module mkDM_Mem_Tap(CLK,
   output slave_bvalid;
 
   // value method slave_m_bid
-  output [3 : 0] slave_bid;
+  output [15 : 0] slave_bid;
 
   // value method slave_m_bresp
   output [1 : 0] slave_bresp;
@@ -284,7 +284,7 @@ module mkDM_Mem_Tap(CLK,
 
   // action method slave_m_arvalid
   input  slave_arvalid;
-  input  [3 : 0] slave_arid;
+  input  [15 : 0] slave_arid;
   input  [63 : 0] slave_araddr;
   input  [7 : 0] slave_arlen;
   input  [2 : 0] slave_arsize;
@@ -302,7 +302,7 @@ module mkDM_Mem_Tap(CLK,
   output slave_rvalid;
 
   // value method slave_m_rid
-  output [3 : 0] slave_rid;
+  output [15 : 0] slave_rid;
 
   // value method slave_m_rdata
   output [63 : 0] slave_rdata;
@@ -322,7 +322,7 @@ module mkDM_Mem_Tap(CLK,
   output master_awvalid;
 
   // value method master_m_awid
-  output [3 : 0] master_awid;
+  output [15 : 0] master_awid;
 
   // value method master_m_awaddr
   output [63 : 0] master_awaddr;
@@ -375,7 +375,7 @@ module mkDM_Mem_Tap(CLK,
 
   // action method master_m_bvalid
   input  master_bvalid;
-  input  [3 : 0] master_bid;
+  input  [15 : 0] master_bid;
   input  [1 : 0] master_bresp;
 
   // value method master_m_bready
@@ -385,7 +385,7 @@ module mkDM_Mem_Tap(CLK,
   output master_arvalid;
 
   // value method master_m_arid
-  output [3 : 0] master_arid;
+  output [15 : 0] master_arid;
 
   // value method master_m_araddr
   output [63 : 0] master_araddr;
@@ -421,7 +421,7 @@ module mkDM_Mem_Tap(CLK,
 
   // action method master_m_rvalid
   input  master_rvalid;
-  input  [3 : 0] master_rid;
+  input  [15 : 0] master_rid;
   input  [63 : 0] master_rdata;
   input  [1 : 0] master_rresp;
   input  master_rlast;
@@ -437,17 +437,14 @@ module mkDM_Mem_Tap(CLK,
   // signals for module outputs
   wire [426 : 0] trace_data_out_get;
   wire [63 : 0] master_araddr, master_awaddr, master_wdata, slave_rdata;
+  wire [15 : 0] master_arid, master_awid, slave_bid, slave_rid;
   wire [7 : 0] master_arlen, master_awlen, master_wstrb;
   wire [3 : 0] master_arcache,
-	       master_arid,
 	       master_arqos,
 	       master_arregion,
 	       master_awcache,
-	       master_awid,
 	       master_awqos,
-	       master_awregion,
-	       slave_bid,
-	       slave_rid;
+	       master_awregion;
   wire [2 : 0] master_arprot, master_arsize, master_awprot, master_awsize;
   wire [1 : 0] master_arburst, master_awburst, slave_bresp, slave_rresp;
   wire RDY_trace_data_out_get,
@@ -475,7 +472,7 @@ module mkDM_Mem_Tap(CLK,
        f_trace_data$FULL_N;
 
   // ports of submodule master_xactor_f_rd_addr
-  wire [96 : 0] master_xactor_f_rd_addr$D_IN, master_xactor_f_rd_addr$D_OUT;
+  wire [108 : 0] master_xactor_f_rd_addr$D_IN, master_xactor_f_rd_addr$D_OUT;
   wire master_xactor_f_rd_addr$CLR,
        master_xactor_f_rd_addr$DEQ,
        master_xactor_f_rd_addr$EMPTY_N,
@@ -483,7 +480,7 @@ module mkDM_Mem_Tap(CLK,
        master_xactor_f_rd_addr$FULL_N;
 
   // ports of submodule master_xactor_f_rd_data
-  wire [70 : 0] master_xactor_f_rd_data$D_IN, master_xactor_f_rd_data$D_OUT;
+  wire [82 : 0] master_xactor_f_rd_data$D_IN, master_xactor_f_rd_data$D_OUT;
   wire master_xactor_f_rd_data$CLR,
        master_xactor_f_rd_data$DEQ,
        master_xactor_f_rd_data$EMPTY_N,
@@ -491,7 +488,7 @@ module mkDM_Mem_Tap(CLK,
        master_xactor_f_rd_data$FULL_N;
 
   // ports of submodule master_xactor_f_wr_addr
-  wire [96 : 0] master_xactor_f_wr_addr$D_IN, master_xactor_f_wr_addr$D_OUT;
+  wire [108 : 0] master_xactor_f_wr_addr$D_IN, master_xactor_f_wr_addr$D_OUT;
   wire master_xactor_f_wr_addr$CLR,
        master_xactor_f_wr_addr$DEQ,
        master_xactor_f_wr_addr$EMPTY_N,
@@ -507,7 +504,7 @@ module mkDM_Mem_Tap(CLK,
        master_xactor_f_wr_data$FULL_N;
 
   // ports of submodule master_xactor_f_wr_resp
-  wire [5 : 0] master_xactor_f_wr_resp$D_IN, master_xactor_f_wr_resp$D_OUT;
+  wire [17 : 0] master_xactor_f_wr_resp$D_IN, master_xactor_f_wr_resp$D_OUT;
   wire master_xactor_f_wr_resp$CLR,
        master_xactor_f_wr_resp$DEQ,
        master_xactor_f_wr_resp$EMPTY_N,
@@ -515,7 +512,7 @@ module mkDM_Mem_Tap(CLK,
        master_xactor_f_wr_resp$FULL_N;
 
   // ports of submodule slave_xactor_f_rd_addr
-  wire [96 : 0] slave_xactor_f_rd_addr$D_IN, slave_xactor_f_rd_addr$D_OUT;
+  wire [108 : 0] slave_xactor_f_rd_addr$D_IN, slave_xactor_f_rd_addr$D_OUT;
   wire slave_xactor_f_rd_addr$CLR,
        slave_xactor_f_rd_addr$DEQ,
        slave_xactor_f_rd_addr$EMPTY_N,
@@ -523,7 +520,7 @@ module mkDM_Mem_Tap(CLK,
        slave_xactor_f_rd_addr$FULL_N;
 
   // ports of submodule slave_xactor_f_rd_data
-  wire [70 : 0] slave_xactor_f_rd_data$D_IN, slave_xactor_f_rd_data$D_OUT;
+  wire [82 : 0] slave_xactor_f_rd_data$D_IN, slave_xactor_f_rd_data$D_OUT;
   wire slave_xactor_f_rd_data$CLR,
        slave_xactor_f_rd_data$DEQ,
        slave_xactor_f_rd_data$EMPTY_N,
@@ -531,7 +528,7 @@ module mkDM_Mem_Tap(CLK,
        slave_xactor_f_rd_data$FULL_N;
 
   // ports of submodule slave_xactor_f_wr_addr
-  wire [96 : 0] slave_xactor_f_wr_addr$D_IN, slave_xactor_f_wr_addr$D_OUT;
+  wire [108 : 0] slave_xactor_f_wr_addr$D_IN, slave_xactor_f_wr_addr$D_OUT;
   wire slave_xactor_f_wr_addr$CLR,
        slave_xactor_f_wr_addr$DEQ,
        slave_xactor_f_wr_addr$EMPTY_N,
@@ -547,7 +544,7 @@ module mkDM_Mem_Tap(CLK,
        slave_xactor_f_wr_data$FULL_N;
 
   // ports of submodule slave_xactor_f_wr_resp
-  wire [5 : 0] slave_xactor_f_wr_resp$D_IN, slave_xactor_f_wr_resp$D_OUT;
+  wire [17 : 0] slave_xactor_f_wr_resp$D_IN, slave_xactor_f_wr_resp$D_OUT;
   wire slave_xactor_f_wr_resp$CLR,
        slave_xactor_f_wr_resp$DEQ,
        slave_xactor_f_wr_resp$EMPTY_N,
@@ -587,10 +584,10 @@ module mkDM_Mem_Tap(CLK,
        WILL_FIRE_trace_data_out_get;
 
   // remaining internal signals
-  reg [63 : 0] y__h1773;
+  reg [63 : 0] y__h1798;
   reg [31 : 0] CASE_slave_xactor_f_wr_dataD_OUT_BITS_8_TO_1__ETC__q1;
-  reg [1 : 0] sz__h1638;
-  wire [63 : 0] x__h1706, x__h1758, x__h1772;
+  reg [1 : 0] sz__h1663;
+  wire [63 : 0] x__h1731, x__h1783, x__h1797;
   wire slave_xactor_f_wr_data_i_notEmpty_AND_master_x_ETC___d8;
 
   // action method slave_m_awvalid
@@ -611,7 +608,7 @@ module mkDM_Mem_Tap(CLK,
   assign slave_bvalid = slave_xactor_f_wr_resp$EMPTY_N ;
 
   // value method slave_m_bid
-  assign slave_bid = slave_xactor_f_wr_resp$D_OUT[5:2] ;
+  assign slave_bid = slave_xactor_f_wr_resp$D_OUT[17:2] ;
 
   // value method slave_m_bresp
   assign slave_bresp = slave_xactor_f_wr_resp$D_OUT[1:0] ;
@@ -631,7 +628,7 @@ module mkDM_Mem_Tap(CLK,
   assign slave_rvalid = slave_xactor_f_rd_data$EMPTY_N ;
 
   // value method slave_m_rid
-  assign slave_rid = slave_xactor_f_rd_data$D_OUT[70:67] ;
+  assign slave_rid = slave_xactor_f_rd_data$D_OUT[82:67] ;
 
   // value method slave_m_rdata
   assign slave_rdata = slave_xactor_f_rd_data$D_OUT[66:3] ;
@@ -650,7 +647,7 @@ module mkDM_Mem_Tap(CLK,
   assign master_awvalid = master_xactor_f_wr_addr$EMPTY_N ;
 
   // value method master_m_awid
-  assign master_awid = master_xactor_f_wr_addr$D_OUT[96:93] ;
+  assign master_awid = master_xactor_f_wr_addr$D_OUT[108:93] ;
 
   // value method master_m_awaddr
   assign master_awaddr = master_xactor_f_wr_addr$D_OUT[92:29] ;
@@ -710,7 +707,7 @@ module mkDM_Mem_Tap(CLK,
   assign master_arvalid = master_xactor_f_rd_addr$EMPTY_N ;
 
   // value method master_m_arid
-  assign master_arid = master_xactor_f_rd_addr$D_OUT[96:93] ;
+  assign master_arid = master_xactor_f_rd_addr$D_OUT[108:93] ;
 
   // value method master_m_araddr
   assign master_araddr = master_xactor_f_rd_addr$D_OUT[92:29] ;
@@ -768,7 +765,7 @@ module mkDM_Mem_Tap(CLK,
 							 .EMPTY_N(f_trace_data$EMPTY_N));
 
   // submodule master_xactor_f_rd_addr
-  FIFO2 #(.width(32'd97),
+  FIFO2 #(.width(32'd109),
 	  .guarded(32'd1)) master_xactor_f_rd_addr(.RST(RST_N),
 						   .CLK(CLK),
 						   .D_IN(master_xactor_f_rd_addr$D_IN),
@@ -780,7 +777,7 @@ module mkDM_Mem_Tap(CLK,
 						   .EMPTY_N(master_xactor_f_rd_addr$EMPTY_N));
 
   // submodule master_xactor_f_rd_data
-  FIFO2 #(.width(32'd71),
+  FIFO2 #(.width(32'd83),
 	  .guarded(32'd1)) master_xactor_f_rd_data(.RST(RST_N),
 						   .CLK(CLK),
 						   .D_IN(master_xactor_f_rd_data$D_IN),
@@ -792,7 +789,7 @@ module mkDM_Mem_Tap(CLK,
 						   .EMPTY_N(master_xactor_f_rd_data$EMPTY_N));
 
   // submodule master_xactor_f_wr_addr
-  FIFO2 #(.width(32'd97),
+  FIFO2 #(.width(32'd109),
 	  .guarded(32'd1)) master_xactor_f_wr_addr(.RST(RST_N),
 						   .CLK(CLK),
 						   .D_IN(master_xactor_f_wr_addr$D_IN),
@@ -816,29 +813,31 @@ module mkDM_Mem_Tap(CLK,
 						   .EMPTY_N(master_xactor_f_wr_data$EMPTY_N));
 
   // submodule master_xactor_f_wr_resp
-  FIFO2 #(.width(32'd6), .guarded(32'd1)) master_xactor_f_wr_resp(.RST(RST_N),
-								  .CLK(CLK),
-								  .D_IN(master_xactor_f_wr_resp$D_IN),
-								  .ENQ(master_xactor_f_wr_resp$ENQ),
-								  .DEQ(master_xactor_f_wr_resp$DEQ),
-								  .CLR(master_xactor_f_wr_resp$CLR),
-								  .D_OUT(master_xactor_f_wr_resp$D_OUT),
-								  .FULL_N(master_xactor_f_wr_resp$FULL_N),
-								  .EMPTY_N(master_xactor_f_wr_resp$EMPTY_N));
+  FIFO2 #(.width(32'd18),
+	  .guarded(32'd1)) master_xactor_f_wr_resp(.RST(RST_N),
+						   .CLK(CLK),
+						   .D_IN(master_xactor_f_wr_resp$D_IN),
+						   .ENQ(master_xactor_f_wr_resp$ENQ),
+						   .DEQ(master_xactor_f_wr_resp$DEQ),
+						   .CLR(master_xactor_f_wr_resp$CLR),
+						   .D_OUT(master_xactor_f_wr_resp$D_OUT),
+						   .FULL_N(master_xactor_f_wr_resp$FULL_N),
+						   .EMPTY_N(master_xactor_f_wr_resp$EMPTY_N));
 
   // submodule slave_xactor_f_rd_addr
-  FIFO2 #(.width(32'd97), .guarded(32'd1)) slave_xactor_f_rd_addr(.RST(RST_N),
-								  .CLK(CLK),
-								  .D_IN(slave_xactor_f_rd_addr$D_IN),
-								  .ENQ(slave_xactor_f_rd_addr$ENQ),
-								  .DEQ(slave_xactor_f_rd_addr$DEQ),
-								  .CLR(slave_xactor_f_rd_addr$CLR),
-								  .D_OUT(slave_xactor_f_rd_addr$D_OUT),
-								  .FULL_N(slave_xactor_f_rd_addr$FULL_N),
-								  .EMPTY_N(slave_xactor_f_rd_addr$EMPTY_N));
+  FIFO2 #(.width(32'd109),
+	  .guarded(32'd1)) slave_xactor_f_rd_addr(.RST(RST_N),
+						  .CLK(CLK),
+						  .D_IN(slave_xactor_f_rd_addr$D_IN),
+						  .ENQ(slave_xactor_f_rd_addr$ENQ),
+						  .DEQ(slave_xactor_f_rd_addr$DEQ),
+						  .CLR(slave_xactor_f_rd_addr$CLR),
+						  .D_OUT(slave_xactor_f_rd_addr$D_OUT),
+						  .FULL_N(slave_xactor_f_rd_addr$FULL_N),
+						  .EMPTY_N(slave_xactor_f_rd_addr$EMPTY_N));
 
   // submodule slave_xactor_f_rd_data
-  FIFO2 #(.width(32'd71), .guarded(32'd1)) slave_xactor_f_rd_data(.RST(RST_N),
+  FIFO2 #(.width(32'd83), .guarded(32'd1)) slave_xactor_f_rd_data(.RST(RST_N),
 								  .CLK(CLK),
 								  .D_IN(slave_xactor_f_rd_data$D_IN),
 								  .ENQ(slave_xactor_f_rd_data$ENQ),
@@ -849,15 +848,16 @@ module mkDM_Mem_Tap(CLK,
 								  .EMPTY_N(slave_xactor_f_rd_data$EMPTY_N));
 
   // submodule slave_xactor_f_wr_addr
-  FIFO2 #(.width(32'd97), .guarded(32'd1)) slave_xactor_f_wr_addr(.RST(RST_N),
-								  .CLK(CLK),
-								  .D_IN(slave_xactor_f_wr_addr$D_IN),
-								  .ENQ(slave_xactor_f_wr_addr$ENQ),
-								  .DEQ(slave_xactor_f_wr_addr$DEQ),
-								  .CLR(slave_xactor_f_wr_addr$CLR),
-								  .D_OUT(slave_xactor_f_wr_addr$D_OUT),
-								  .FULL_N(slave_xactor_f_wr_addr$FULL_N),
-								  .EMPTY_N(slave_xactor_f_wr_addr$EMPTY_N));
+  FIFO2 #(.width(32'd109),
+	  .guarded(32'd1)) slave_xactor_f_wr_addr(.RST(RST_N),
+						  .CLK(CLK),
+						  .D_IN(slave_xactor_f_wr_addr$D_IN),
+						  .ENQ(slave_xactor_f_wr_addr$ENQ),
+						  .DEQ(slave_xactor_f_wr_addr$DEQ),
+						  .CLR(slave_xactor_f_wr_addr$CLR),
+						  .D_OUT(slave_xactor_f_wr_addr$D_OUT),
+						  .FULL_N(slave_xactor_f_wr_addr$FULL_N),
+						  .EMPTY_N(slave_xactor_f_wr_addr$EMPTY_N));
 
   // submodule slave_xactor_f_wr_data
   FIFO2 #(.width(32'd73), .guarded(32'd1)) slave_xactor_f_wr_data(.RST(RST_N),
@@ -871,15 +871,15 @@ module mkDM_Mem_Tap(CLK,
 								  .EMPTY_N(slave_xactor_f_wr_data$EMPTY_N));
 
   // submodule slave_xactor_f_wr_resp
-  FIFO2 #(.width(32'd6), .guarded(32'd1)) slave_xactor_f_wr_resp(.RST(RST_N),
-								 .CLK(CLK),
-								 .D_IN(slave_xactor_f_wr_resp$D_IN),
-								 .ENQ(slave_xactor_f_wr_resp$ENQ),
-								 .DEQ(slave_xactor_f_wr_resp$DEQ),
-								 .CLR(slave_xactor_f_wr_resp$CLR),
-								 .D_OUT(slave_xactor_f_wr_resp$D_OUT),
-								 .FULL_N(slave_xactor_f_wr_resp$FULL_N),
-								 .EMPTY_N(slave_xactor_f_wr_resp$EMPTY_N));
+  FIFO2 #(.width(32'd18), .guarded(32'd1)) slave_xactor_f_wr_resp(.RST(RST_N),
+								  .CLK(CLK),
+								  .D_IN(slave_xactor_f_wr_resp$D_IN),
+								  .ENQ(slave_xactor_f_wr_resp$ENQ),
+								  .DEQ(slave_xactor_f_wr_resp$DEQ),
+								  .CLR(slave_xactor_f_wr_resp$CLR),
+								  .D_OUT(slave_xactor_f_wr_resp$D_OUT),
+								  .FULL_N(slave_xactor_f_wr_resp$FULL_N),
+								  .EMPTY_N(slave_xactor_f_wr_resp$EMPTY_N));
 
   // rule RL_write_reqs
   assign CAN_FIRE_RL_write_reqs =
@@ -908,8 +908,8 @@ module mkDM_Mem_Tap(CLK,
   // submodule f_trace_data
   assign f_trace_data$D_IN =
 	     { 107'h12AAAAAAAAAAAAAAA955555554A,
-	       x__h1706,
-	       x__h1758,
+	       x__h1731,
+	       x__h1783,
 	       slave_xactor_f_wr_addr$D_OUT[92:0],
 	       99'h2AAAAAAAAAAAAAAAAAAAAAAAA } ;
   assign f_trace_data$ENQ =
@@ -1026,9 +1026,9 @@ module mkDM_Mem_Tap(CLK,
 	     master_xactor_f_wr_addr$FULL_N &&
 	     master_xactor_f_wr_data$FULL_N &&
 	     f_trace_data$FULL_N ;
-  assign x__h1706 = { 62'd0, sz__h1638 } ;
-  assign x__h1758 = x__h1772 & y__h1773 ;
-  assign x__h1772 =
+  assign x__h1731 = { 62'd0, sz__h1663 } ;
+  assign x__h1783 = x__h1797 & y__h1798 ;
+  assign x__h1797 =
 	     slave_xactor_f_wr_data$D_OUT[72:9] >>
 	     CASE_slave_xactor_f_wr_dataD_OUT_BITS_8_TO_1__ETC__q1 ;
   always@(slave_xactor_f_wr_data$D_OUT)
@@ -1052,23 +1052,68 @@ module mkDM_Mem_Tap(CLK,
   always@(slave_xactor_f_wr_data$D_OUT)
   begin
     case (slave_xactor_f_wr_data$D_OUT[8:1])
-      8'h03, 8'h0C, 8'h30, 8'hC0: sz__h1638 = 2'b01;
-      8'h0F, 8'hF0: sz__h1638 = 2'b10;
-      8'h10, 8'h20, 8'h40, 8'h80: sz__h1638 = 2'b0;
-      8'hFF: sz__h1638 = 2'b11;
-      default: sz__h1638 = 2'b0;
+      8'h03, 8'h0C, 8'h30, 8'hC0: sz__h1663 = 2'b01;
+      8'h0F, 8'hF0: sz__h1663 = 2'b10;
+      8'h10, 8'h20, 8'h40, 8'h80: sz__h1663 = 2'b0;
+      8'hFF: sz__h1663 = 2'b11;
+      default: sz__h1663 = 2'b0;
     endcase
   end
   always@(slave_xactor_f_wr_data$D_OUT)
   begin
     case (slave_xactor_f_wr_data$D_OUT[8:1])
       8'h01, 8'h02, 8'h04, 8'h08, 8'h10, 8'h20, 8'h40, 8'h80:
-	  y__h1773 = 64'h00000000000000FF;
-      8'h03, 8'h0C, 8'h30, 8'hC0: y__h1773 = 64'h000000000000FFFF;
-      8'h0F, 8'hF0: y__h1773 = 64'h00000000FFFFFFFF;
-      8'hFF: y__h1773 = 64'hFFFFFFFFFFFFFFFF;
-      default: y__h1773 = 64'd0;
+	  y__h1798 = 64'h00000000000000FF;
+      8'h03, 8'h0C, 8'h30, 8'hC0: y__h1798 = 64'h000000000000FFFF;
+      8'h0F, 8'hF0: y__h1798 = 64'h00000000FFFFFFFF;
+      8'hFF: y__h1798 = 64'hFFFFFFFFFFFFFFFF;
+      default: y__h1798 = 64'd0;
     endcase
   end
+
+  // handling of system tasks
+
+  // synopsys translate_off
+  always@(negedge CLK)
+  begin
+    #0;
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_write_reqs &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'hFF &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'hF0 &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'hC0 &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'h30 &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'h80 &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'h40 &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'h20 &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'h10 &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'h0F &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'h0C &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'h03 &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'h08 &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'h04 &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'h02 &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'h01)
+	$display("Dynamic assertion failed: \"../src_Core/Core_v2/TV_Taps.bsv\", line 100, column 40\nmkDM_Mem_Tap: unsupported byte enables");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_write_reqs &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'hFF &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'hF0 &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'hC0 &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'h30 &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'h80 &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'h40 &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'h20 &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'h10 &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'h0F &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'h0C &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'h03 &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'h08 &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'h04 &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'h02 &&
+	  slave_xactor_f_wr_data$D_OUT[8:1] != 8'h01)
+	$finish(32'd0);
+  end
+  // synopsys translate_on
 endmodule  // mkDM_Mem_Tap
 

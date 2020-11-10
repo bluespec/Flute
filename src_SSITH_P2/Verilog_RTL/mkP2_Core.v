@@ -7,7 +7,7 @@
 // Ports:
 // Name                         I/O  size props
 // master0_awvalid                O     1 reg
-// master0_awid                   O     4 reg
+// master0_awid                   O    16 reg
 // master0_awaddr                 O    64 reg
 // master0_awlen                  O     8 reg
 // master0_awsize                 O     3 reg
@@ -23,7 +23,7 @@
 // master0_wlast                  O     1 reg
 // master0_bready                 O     1 reg
 // master0_arvalid                O     1 reg
-// master0_arid                   O     4 reg
+// master0_arid                   O    16 reg
 // master0_araddr                 O    64 reg
 // master0_arlen                  O     8 reg
 // master0_arsize                 O     3 reg
@@ -34,8 +34,8 @@
 // master0_arqos                  O     4 reg
 // master0_arregion               O     4 reg
 // master0_rready                 O     1 reg
-// master1_awvalid                O     1 reg
-// master1_awid                   O     4 reg
+// master1_awvalid                O     1
+// master1_awid                   O    16 reg
 // master1_awaddr                 O    64 reg
 // master1_awlen                  O     8 reg
 // master1_awsize                 O     3 reg
@@ -45,13 +45,13 @@
 // master1_awprot                 O     3 reg
 // master1_awqos                  O     4 reg
 // master1_awregion               O     4 reg
-// master1_wvalid                 O     1 reg
+// master1_wvalid                 O     1
 // master1_wdata                  O    64 reg
 // master1_wstrb                  O     8 reg
 // master1_wlast                  O     1 reg
-// master1_bready                 O     1 reg
-// master1_arvalid                O     1 reg
-// master1_arid                   O     4 reg
+// master1_bready                 O     1
+// master1_arvalid                O     1
+// master1_arid                   O    16 reg
 // master1_araddr                 O    64 reg
 // master1_arlen                  O     8 reg
 // master1_arsize                 O     3 reg
@@ -61,7 +61,7 @@
 // master1_arprot                 O     3 reg
 // master1_arqos                  O     4 reg
 // master1_arregion               O     4 reg
-// master1_rready                 O     1 reg
+// master1_rready                 O     1
 // tv_verifier_info_tx_tvalid     O     1 reg
 // tv_verifier_info_tx_tdata      O   608 reg
 // tv_verifier_info_tx_tstrb      O    76 reg
@@ -75,22 +75,22 @@
 // master0_awready                I     1
 // master0_wready                 I     1
 // master0_bvalid                 I     1
-// master0_bid                    I     4 reg
+// master0_bid                    I    16 reg
 // master0_bresp                  I     2 reg
 // master0_arready                I     1
 // master0_rvalid                 I     1
-// master0_rid                    I     4 reg
+// master0_rid                    I    16 reg
 // master0_rdata                  I    64 reg
 // master0_rresp                  I     2 reg
 // master0_rlast                  I     1 reg
 // master1_awready                I     1
 // master1_wready                 I     1
 // master1_bvalid                 I     1
-// master1_bid                    I     4 reg
+// master1_bid                    I    16 reg
 // master1_bresp                  I     2 reg
 // master1_arready                I     1
 // master1_rvalid                 I     1
-// master1_rid                    I     4 reg
+// master1_rid                    I    16 reg
 // master1_rdata                  I    64 reg
 // master1_rresp                  I     2 reg
 // master1_rlast                  I     1 reg
@@ -100,7 +100,8 @@
 // jtag_tms                       I     1
 // jtag_tclk                      I     1
 //
-// No combinational paths from inputs to outputs
+// Combinational paths from inputs to outputs:
+//   (master1_awready, master1_wready) -> master1_bready
 //
 //
 
@@ -295,7 +296,7 @@ module mkP2_Core(CLK,
   output master0_awvalid;
 
   // value method master0_m_awid
-  output [3 : 0] master0_awid;
+  output [15 : 0] master0_awid;
 
   // value method master0_m_awaddr
   output [63 : 0] master0_awaddr;
@@ -348,7 +349,7 @@ module mkP2_Core(CLK,
 
   // action method master0_m_bvalid
   input  master0_bvalid;
-  input  [3 : 0] master0_bid;
+  input  [15 : 0] master0_bid;
   input  [1 : 0] master0_bresp;
 
   // value method master0_m_bready
@@ -358,7 +359,7 @@ module mkP2_Core(CLK,
   output master0_arvalid;
 
   // value method master0_m_arid
-  output [3 : 0] master0_arid;
+  output [15 : 0] master0_arid;
 
   // value method master0_m_araddr
   output [63 : 0] master0_araddr;
@@ -394,7 +395,7 @@ module mkP2_Core(CLK,
 
   // action method master0_m_rvalid
   input  master0_rvalid;
-  input  [3 : 0] master0_rid;
+  input  [15 : 0] master0_rid;
   input  [63 : 0] master0_rdata;
   input  [1 : 0] master0_rresp;
   input  master0_rlast;
@@ -406,7 +407,7 @@ module mkP2_Core(CLK,
   output master1_awvalid;
 
   // value method master1_m_awid
-  output [3 : 0] master1_awid;
+  output [15 : 0] master1_awid;
 
   // value method master1_m_awaddr
   output [63 : 0] master1_awaddr;
@@ -459,7 +460,7 @@ module mkP2_Core(CLK,
 
   // action method master1_m_bvalid
   input  master1_bvalid;
-  input  [3 : 0] master1_bid;
+  input  [15 : 0] master1_bid;
   input  [1 : 0] master1_bresp;
 
   // value method master1_m_bready
@@ -469,7 +470,7 @@ module mkP2_Core(CLK,
   output master1_arvalid;
 
   // value method master1_m_arid
-  output [3 : 0] master1_arid;
+  output [15 : 0] master1_arid;
 
   // value method master1_m_araddr
   output [63 : 0] master1_araddr;
@@ -505,7 +506,7 @@ module mkP2_Core(CLK,
 
   // action method master1_m_rvalid
   input  master1_rvalid;
-  input  [3 : 0] master1_rid;
+  input  [15 : 0] master1_rid;
   input  [63 : 0] master1_rdata;
   input  [1 : 0] master1_rresp;
   input  master1_rlast;
@@ -565,6 +566,7 @@ module mkP2_Core(CLK,
 		master1_araddr,
 		master1_awaddr,
 		master1_wdata;
+  wire [15 : 0] master0_arid, master0_awid, master1_arid, master1_awid;
   wire [7 : 0] master0_arlen,
 	       master0_awlen,
 	       master0_wstrb,
@@ -572,19 +574,15 @@ module mkP2_Core(CLK,
 	       master1_awlen,
 	       master1_wstrb;
   wire [3 : 0] master0_arcache,
-	       master0_arid,
 	       master0_arqos,
 	       master0_arregion,
 	       master0_awcache,
-	       master0_awid,
 	       master0_awqos,
 	       master0_awregion,
 	       master1_arcache,
-	       master1_arid,
 	       master1_arqos,
 	       master1_arregion,
 	       master1_awcache,
-	       master1_awid,
 	       master1_awqos,
 	       master1_awregion;
   wire [2 : 0] master0_arprot,
@@ -673,6 +671,16 @@ module mkP2_Core(CLK,
 		core$dma_server_wstrb,
 		core$set_verbosity_logdelay;
   wire [31 : 0] core$dm_dmi_read_data, core$dm_dmi_write_dm_word;
+  wire [15 : 0] core$core_mem_master_arid,
+		core$core_mem_master_awid,
+		core$core_mem_master_bid,
+		core$core_mem_master_rid,
+		core$cpu_imem_master_arid,
+		core$cpu_imem_master_awid,
+		core$cpu_imem_master_bid,
+		core$cpu_imem_master_rid,
+		core$dma_server_arid,
+		core$dma_server_awid;
   wire [7 : 0] core$core_mem_master_arlen,
 	       core$core_mem_master_awlen,
 	       core$core_mem_master_wstrb,
@@ -682,27 +690,18 @@ module mkP2_Core(CLK,
 	       core$dma_server_arlen,
 	       core$dma_server_awlen;
   wire [6 : 0] core$dm_dmi_read_addr_dm_addr, core$dm_dmi_write_dm_addr;
-  wire [5 : 0] core$dma_server_arid, core$dma_server_awid;
   wire [3 : 0] core$core_mem_master_arcache,
-	       core$core_mem_master_arid,
 	       core$core_mem_master_arqos,
 	       core$core_mem_master_arregion,
 	       core$core_mem_master_awcache,
-	       core$core_mem_master_awid,
 	       core$core_mem_master_awqos,
 	       core$core_mem_master_awregion,
-	       core$core_mem_master_bid,
-	       core$core_mem_master_rid,
 	       core$cpu_imem_master_arcache,
-	       core$cpu_imem_master_arid,
 	       core$cpu_imem_master_arqos,
 	       core$cpu_imem_master_arregion,
 	       core$cpu_imem_master_awcache,
-	       core$cpu_imem_master_awid,
 	       core$cpu_imem_master_awqos,
 	       core$cpu_imem_master_awregion,
-	       core$cpu_imem_master_bid,
-	       core$cpu_imem_master_rid,
 	       core$dma_server_arcache,
 	       core$dma_server_arqos,
 	       core$dma_server_arregion,
@@ -922,7 +921,7 @@ module mkP2_Core(CLK,
   // inputs to muxes for submodule ports
   wire [33 : 0] MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1,
 		MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2,
-		MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_2,
+		MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_1,
 		MUX_bus_dmi_rsp_fifof_x_wire$wset_1__VAL_1,
 		MUX_bus_dmi_rsp_fifof_x_wire$wset_1__VAL_2;
   wire [1 : 0] MUX_bus_dmi_rsp_fifof_cntr_r$write_1__VAL_2,
@@ -1538,31 +1537,31 @@ module mkP2_Core(CLK,
 
   // inputs to muxes for submodule ports
   assign MUX_bus_dmi_rsp_fifof_q_0$write_1__SEL_1 =
+	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo3 ;
+  assign MUX_bus_dmi_rsp_fifof_q_0$write_1__SEL_2 =
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_incCtr &&
 	     bus_dmi_rsp_fifof_cntr_r == 2'd0 ;
-  assign MUX_bus_dmi_rsp_fifof_q_0$write_1__SEL_2 =
-	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo3 ;
   assign MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_1 =
+	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo1 ;
+  assign MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_2 =
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_incCtr &&
 	     bus_dmi_rsp_fifof_cntr_r == 2'd1 ;
-  assign MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_2 =
-	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo1 ;
   assign MUX_bus_dmi_rsp_fifof_x_wire$wset_1__SEL_1 =
 	     WILL_FIRE_RL_rl_dmi_req_cpu &&
 	     bus_dmi_req_fifof$D_OUT[1:0] != 2'd1 ;
   assign MUX_bus_dmi_rsp_fifof_cntr_r$write_1__VAL_2 =
 	     bus_dmi_rsp_fifof_cntr_r + 2'd1 ;
   assign MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1 =
+	     (bus_dmi_rsp_fifof_cntr_r == 2'd1) ?
+	       MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2 :
+	       bus_dmi_rsp_fifof_q_1 ;
+  assign MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2 =
 	     MUX_bus_dmi_rsp_fifof_x_wire$wset_1__SEL_1 ?
 	       MUX_bus_dmi_rsp_fifof_x_wire$wset_1__VAL_1 :
 	       MUX_bus_dmi_rsp_fifof_x_wire$wset_1__VAL_2 ;
-  assign MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2 =
-	     (bus_dmi_rsp_fifof_cntr_r == 2'd1) ?
-	       MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1 :
-	       bus_dmi_rsp_fifof_q_1 ;
-  assign MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_2 =
+  assign MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_1 =
 	     (bus_dmi_rsp_fifof_cntr_r == 2'd2) ?
-	       MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1 :
+	       MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2 :
 	       34'd0 ;
   assign MUX_bus_dmi_rsp_fifof_x_wire$wset_1__VAL_1 =
 	     { 32'hAAAAAAAA,
@@ -1612,25 +1611,25 @@ module mkP2_Core(CLK,
     endcase
   end
   assign bus_dmi_rsp_fifof_q_0$EN =
+	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo3 ||
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_incCtr &&
 	     bus_dmi_rsp_fifof_cntr_r == 2'd0 ||
-	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo3 ||
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_decCtr ;
 
   // register bus_dmi_rsp_fifof_q_1
   always@(MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_1 or
-	  MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1 or
+	  MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_1 or
 	  MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_2 or
-	  MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_2 or
+	  MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2 or
 	  WILL_FIRE_RL_bus_dmi_rsp_fifof_decCtr)
   begin
     case (1'b1) // synopsys parallel_case
       MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_1:
 	  bus_dmi_rsp_fifof_q_1$D_IN =
-	      MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1;
+	      MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_1;
       MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_2:
 	  bus_dmi_rsp_fifof_q_1$D_IN =
-	      MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_2;
+	      MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2;
       WILL_FIRE_RL_bus_dmi_rsp_fifof_decCtr:
 	  bus_dmi_rsp_fifof_q_1$D_IN = 34'd0;
       default: bus_dmi_rsp_fifof_q_1$D_IN =
@@ -1638,9 +1637,9 @@ module mkP2_Core(CLK,
     endcase
   end
   assign bus_dmi_rsp_fifof_q_1$EN =
+	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo1 ||
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_incCtr &&
 	     bus_dmi_rsp_fifof_cntr_r == 2'd1 ||
-	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo1 ||
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_decCtr ;
 
   // register rg_ndm_reset
@@ -1725,7 +1724,8 @@ module mkP2_Core(CLK,
 	     64'hAAAAAAAAAAAAAAAA /* unspecified value */  ;
   assign core$dma_server_arburst = 2'b10 /* unspecified value */  ;
   assign core$dma_server_arcache = 4'b1010 /* unspecified value */  ;
-  assign core$dma_server_arid = 6'b101010 /* unspecified value */  ;
+  assign core$dma_server_arid =
+	     16'b1010101010101010 /* unspecified value */  ;
   assign core$dma_server_arlen = 8'b10101010 /* unspecified value */  ;
   assign core$dma_server_arlock = 1'b0 /* unspecified value */  ;
   assign core$dma_server_arprot = 3'b010 /* unspecified value */  ;
@@ -1737,7 +1737,8 @@ module mkP2_Core(CLK,
 	     64'hAAAAAAAAAAAAAAAA /* unspecified value */  ;
   assign core$dma_server_awburst = 2'b10 /* unspecified value */  ;
   assign core$dma_server_awcache = 4'b1010 /* unspecified value */  ;
-  assign core$dma_server_awid = 6'b101010 /* unspecified value */  ;
+  assign core$dma_server_awid =
+	     16'b1010101010101010 /* unspecified value */  ;
   assign core$dma_server_awlen = 8'b10101010 /* unspecified value */  ;
   assign core$dma_server_awlock = 1'b0 /* unspecified value */  ;
   assign core$dma_server_awprot = 3'b010 /* unspecified value */  ;

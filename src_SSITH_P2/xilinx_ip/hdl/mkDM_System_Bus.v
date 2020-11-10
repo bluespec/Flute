@@ -11,7 +11,7 @@
 // RDY_av_read                    O     1
 // RDY_write                      O     1
 // master_awvalid                 O     1 reg
-// master_awid                    O     4 reg
+// master_awid                    O    16 reg
 // master_awaddr                  O    64 reg
 // master_awlen                   O     8 reg
 // master_awsize                  O     3 reg
@@ -27,7 +27,7 @@
 // master_wlast                   O     1 reg
 // master_bready                  O     1 reg
 // master_arvalid                 O     1 reg
-// master_arid                    O     4 reg
+// master_arid                    O    16 reg
 // master_araddr                  O    64 reg
 // master_arlen                   O     8 reg
 // master_arsize                  O     3 reg
@@ -46,11 +46,11 @@
 // master_awready                 I     1
 // master_wready                  I     1
 // master_bvalid                  I     1
-// master_bid                     I     4 reg
+// master_bid                     I    16 reg
 // master_bresp                   I     2 reg
 // master_arready                 I     1
 // master_rvalid                  I     1
-// master_rid                     I     4 reg
+// master_rid                     I    16 reg
 // master_rdata                   I    64 reg
 // master_rresp                   I     2 reg
 // master_rlast                   I     1 reg
@@ -186,7 +186,7 @@ module mkDM_System_Bus(CLK,
   output master_awvalid;
 
   // value method master_m_awid
-  output [3 : 0] master_awid;
+  output [15 : 0] master_awid;
 
   // value method master_m_awaddr
   output [63 : 0] master_awaddr;
@@ -239,7 +239,7 @@ module mkDM_System_Bus(CLK,
 
   // action method master_m_bvalid
   input  master_bvalid;
-  input  [3 : 0] master_bid;
+  input  [15 : 0] master_bid;
   input  [1 : 0] master_bresp;
 
   // value method master_m_bready
@@ -249,7 +249,7 @@ module mkDM_System_Bus(CLK,
   output master_arvalid;
 
   // value method master_m_arid
-  output [3 : 0] master_arid;
+  output [15 : 0] master_arid;
 
   // value method master_m_araddr
   output [63 : 0] master_araddr;
@@ -285,7 +285,7 @@ module mkDM_System_Bus(CLK,
 
   // action method master_m_rvalid
   input  master_rvalid;
-  input  [3 : 0] master_rid;
+  input  [15 : 0] master_rid;
   input  [63 : 0] master_rdata;
   input  [1 : 0] master_rresp;
   input  master_rlast;
@@ -296,13 +296,12 @@ module mkDM_System_Bus(CLK,
   // signals for module outputs
   reg [31 : 0] av_read;
   wire [63 : 0] master_araddr, master_awaddr, master_wdata;
+  wire [15 : 0] master_arid, master_awid;
   wire [7 : 0] master_arlen, master_awlen, master_wstrb;
   wire [3 : 0] master_arcache,
-	       master_arid,
 	       master_arqos,
 	       master_arregion,
 	       master_awcache,
-	       master_awid,
 	       master_awqos,
 	       master_awregion;
   wire [2 : 0] master_arprot, master_arsize, master_awprot, master_awsize;
@@ -372,7 +371,7 @@ module mkDM_System_Bus(CLK,
   wire rg_sbdata0$EN;
 
   // ports of submodule master_xactor_f_rd_addr
-  wire [96 : 0] master_xactor_f_rd_addr$D_IN, master_xactor_f_rd_addr$D_OUT;
+  wire [108 : 0] master_xactor_f_rd_addr$D_IN, master_xactor_f_rd_addr$D_OUT;
   wire master_xactor_f_rd_addr$CLR,
        master_xactor_f_rd_addr$DEQ,
        master_xactor_f_rd_addr$EMPTY_N,
@@ -380,7 +379,7 @@ module mkDM_System_Bus(CLK,
        master_xactor_f_rd_addr$FULL_N;
 
   // ports of submodule master_xactor_f_rd_data
-  wire [70 : 0] master_xactor_f_rd_data$D_IN, master_xactor_f_rd_data$D_OUT;
+  wire [82 : 0] master_xactor_f_rd_data$D_IN, master_xactor_f_rd_data$D_OUT;
   wire master_xactor_f_rd_data$CLR,
        master_xactor_f_rd_data$DEQ,
        master_xactor_f_rd_data$EMPTY_N,
@@ -388,7 +387,7 @@ module mkDM_System_Bus(CLK,
        master_xactor_f_rd_data$FULL_N;
 
   // ports of submodule master_xactor_f_wr_addr
-  wire [96 : 0] master_xactor_f_wr_addr$D_IN, master_xactor_f_wr_addr$D_OUT;
+  wire [108 : 0] master_xactor_f_wr_addr$D_IN, master_xactor_f_wr_addr$D_OUT;
   wire master_xactor_f_wr_addr$CLR,
        master_xactor_f_wr_addr$DEQ,
        master_xactor_f_wr_addr$EMPTY_N,
@@ -404,7 +403,7 @@ module mkDM_System_Bus(CLK,
        master_xactor_f_wr_data$FULL_N;
 
   // ports of submodule master_xactor_f_wr_resp
-  wire [5 : 0] master_xactor_f_wr_resp$D_IN, master_xactor_f_wr_resp$D_OUT;
+  wire [17 : 0] master_xactor_f_wr_resp$D_IN, master_xactor_f_wr_resp$D_OUT;
   wire master_xactor_f_wr_resp$CLR,
        master_xactor_f_wr_resp$DEQ,
        master_xactor_f_wr_resp$EMPTY_N,
@@ -437,8 +436,8 @@ module mkDM_System_Bus(CLK,
   reg [31 : 0] MUX_rg_sbaddress0$write_1__VAL_2,
 	       MUX_rg_sbaddress1$write_1__VAL_2;
   reg [2 : 0] MUX_rg_sbcs_sberror$write_1__VAL_4;
-  wire [96 : 0] MUX_master_xactor_f_rd_addr$enq_1__VAL_1,
-		MUX_master_xactor_f_rd_addr$enq_1__VAL_2;
+  wire [108 : 0] MUX_master_xactor_f_rd_addr$enq_1__VAL_1,
+		 MUX_master_xactor_f_rd_addr$enq_1__VAL_2;
   wire MUX_master_xactor_f_rd_addr$enq_1__SEL_1,
        MUX_rg_sbaddress0$write_1__SEL_2,
        MUX_rg_sbaddress0$write_1__SEL_3,
@@ -538,7 +537,7 @@ module mkDM_System_Bus(CLK,
   assign master_awvalid = master_xactor_f_wr_addr$EMPTY_N ;
 
   // value method master_m_awid
-  assign master_awid = master_xactor_f_wr_addr$D_OUT[96:93] ;
+  assign master_awid = master_xactor_f_wr_addr$D_OUT[108:93] ;
 
   // value method master_m_awaddr
   assign master_awaddr = master_xactor_f_wr_addr$D_OUT[92:29] ;
@@ -598,7 +597,7 @@ module mkDM_System_Bus(CLK,
   assign master_arvalid = master_xactor_f_rd_addr$EMPTY_N ;
 
   // value method master_m_arid
-  assign master_arid = master_xactor_f_rd_addr$D_OUT[96:93] ;
+  assign master_arid = master_xactor_f_rd_addr$D_OUT[108:93] ;
 
   // value method master_m_araddr
   assign master_araddr = master_xactor_f_rd_addr$D_OUT[92:29] ;
@@ -639,7 +638,7 @@ module mkDM_System_Bus(CLK,
   assign master_rready = master_xactor_f_rd_data$FULL_N ;
 
   // submodule master_xactor_f_rd_addr
-  FIFO2 #(.width(32'd97),
+  FIFO2 #(.width(32'd109),
 	  .guarded(32'd1)) master_xactor_f_rd_addr(.RST(RST_N),
 						   .CLK(CLK),
 						   .D_IN(master_xactor_f_rd_addr$D_IN),
@@ -651,7 +650,7 @@ module mkDM_System_Bus(CLK,
 						   .EMPTY_N(master_xactor_f_rd_addr$EMPTY_N));
 
   // submodule master_xactor_f_rd_data
-  FIFO2 #(.width(32'd71),
+  FIFO2 #(.width(32'd83),
 	  .guarded(32'd1)) master_xactor_f_rd_data(.RST(RST_N),
 						   .CLK(CLK),
 						   .D_IN(master_xactor_f_rd_data$D_IN),
@@ -663,7 +662,7 @@ module mkDM_System_Bus(CLK,
 						   .EMPTY_N(master_xactor_f_rd_data$EMPTY_N));
 
   // submodule master_xactor_f_wr_addr
-  FIFO2 #(.width(32'd97),
+  FIFO2 #(.width(32'd109),
 	  .guarded(32'd1)) master_xactor_f_wr_addr(.RST(RST_N),
 						   .CLK(CLK),
 						   .D_IN(master_xactor_f_wr_addr$D_IN),
@@ -687,15 +686,16 @@ module mkDM_System_Bus(CLK,
 						   .EMPTY_N(master_xactor_f_wr_data$EMPTY_N));
 
   // submodule master_xactor_f_wr_resp
-  FIFO2 #(.width(32'd6), .guarded(32'd1)) master_xactor_f_wr_resp(.RST(RST_N),
-								  .CLK(CLK),
-								  .D_IN(master_xactor_f_wr_resp$D_IN),
-								  .ENQ(master_xactor_f_wr_resp$ENQ),
-								  .DEQ(master_xactor_f_wr_resp$DEQ),
-								  .CLR(master_xactor_f_wr_resp$CLR),
-								  .D_OUT(master_xactor_f_wr_resp$D_OUT),
-								  .FULL_N(master_xactor_f_wr_resp$FULL_N),
-								  .EMPTY_N(master_xactor_f_wr_resp$EMPTY_N));
+  FIFO2 #(.width(32'd18),
+	  .guarded(32'd1)) master_xactor_f_wr_resp(.RST(RST_N),
+						   .CLK(CLK),
+						   .D_IN(master_xactor_f_wr_resp$D_IN),
+						   .ENQ(master_xactor_f_wr_resp$ENQ),
+						   .DEQ(master_xactor_f_wr_resp$DEQ),
+						   .CLR(master_xactor_f_wr_resp$CLR),
+						   .D_OUT(master_xactor_f_wr_resp$D_OUT),
+						   .FULL_N(master_xactor_f_wr_resp$FULL_N),
+						   .EMPTY_N(master_xactor_f_wr_resp$EMPTY_N));
 
   // rule RL_rl_sb_read_finish
   assign CAN_FIRE_RL_rl_sb_read_finish =
@@ -747,9 +747,9 @@ module mkDM_System_Bus(CLK,
 	     EN_write &&
 	     write_dm_addr_EQ_0x3C_61_AND_rg_sb_state_EQ_0__ETC___d326 ;
   assign MUX_master_xactor_f_rd_addr$enq_1__VAL_1 =
-	     { 4'd0, sbaddress__h638, 8'd0, x__h2654, 18'd65536 } ;
+	     { 16'd0, sbaddress__h638, 8'd0, x__h2654, 18'd65536 } ;
   assign MUX_master_xactor_f_rd_addr$enq_1__VAL_2 =
-	     { 4'd0, addr64__h3701, 8'd0, x__h2654, 18'd65536 } ;
+	     { 16'd0, addr64__h3701, 8'd0, x__h2654, 18'd65536 } ;
   always@(write_dm_addr or
 	  rg_sbaddress1_7_CONCAT_rg_sbaddress0_8_9_PLUS__ETC___d104 or
 	  IF_rg_sbcs_sbreadonaddr_24_THEN_IF_rg_sbcs_sba_ETC___d310)
@@ -959,7 +959,7 @@ module mkDM_System_Bus(CLK,
 
   // submodule master_xactor_f_wr_addr
   assign master_xactor_f_wr_addr$D_IN =
-	     { 4'd0, sbaddress__h638, 8'd0, x__h4302, 18'd65536 } ;
+	     { 16'd0, sbaddress__h638, 8'd0, x__h4302, 18'd65536 } ;
   assign master_xactor_f_wr_addr$ENQ =
 	     EN_write &&
 	     write_dm_addr_EQ_0x3C_61_AND_rg_sb_state_EQ_0__ETC___d326 ;
@@ -1610,7 +1610,7 @@ module mkDM_System_Bus(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_sb_read_finish &&
 	  master_xactor_f_rd_data$D_OUT[2:1] != 2'b0)
-	$write("'h%h", master_xactor_f_rd_data$D_OUT[70:67]);
+	$write("'h%h", master_xactor_f_rd_data$D_OUT[82:67]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_sb_read_finish &&
 	  master_xactor_f_rd_data$D_OUT[2:1] != 2'b0)

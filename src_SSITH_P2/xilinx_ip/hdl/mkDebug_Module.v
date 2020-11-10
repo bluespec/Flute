@@ -31,7 +31,7 @@
 // RDY_ndm_reset_client_request_get  O     1 reg
 // RDY_ndm_reset_client_response_put  O     1 reg
 // master_awvalid                 O     1 reg
-// master_awid                    O     4 reg
+// master_awid                    O    16 reg
 // master_awaddr                  O    64 reg
 // master_awlen                   O     8 reg
 // master_awsize                  O     3 reg
@@ -47,7 +47,7 @@
 // master_wlast                   O     1 reg
 // master_bready                  O     1 reg
 // master_arvalid                 O     1 reg
-// master_arid                    O     4 reg
+// master_arid                    O    16 reg
 // master_araddr                  O    64 reg
 // master_arlen                   O     8 reg
 // master_arsize                  O     3 reg
@@ -72,11 +72,11 @@
 // master_awready                 I     1
 // master_wready                  I     1
 // master_bvalid                  I     1
-// master_bid                     I     4 reg
+// master_bid                     I    16 reg
 // master_bresp                   I     2 reg
 // master_arready                 I     1
 // master_rvalid                  I     1
-// master_rid                     I     4 reg
+// master_rid                     I    16 reg
 // master_rdata                   I    64 reg
 // master_rresp                   I     2 reg
 // master_rlast                   I     1 reg
@@ -343,7 +343,7 @@ module mkDebug_Module(CLK,
   output master_awvalid;
 
   // value method master_m_awid
-  output [3 : 0] master_awid;
+  output [15 : 0] master_awid;
 
   // value method master_m_awaddr
   output [63 : 0] master_awaddr;
@@ -396,7 +396,7 @@ module mkDebug_Module(CLK,
 
   // action method master_m_bvalid
   input  master_bvalid;
-  input  [3 : 0] master_bid;
+  input  [15 : 0] master_bid;
   input  [1 : 0] master_bresp;
 
   // value method master_m_bready
@@ -406,7 +406,7 @@ module mkDebug_Module(CLK,
   output master_arvalid;
 
   // value method master_m_arid
-  output [3 : 0] master_arid;
+  output [15 : 0] master_arid;
 
   // value method master_m_araddr
   output [63 : 0] master_araddr;
@@ -442,7 +442,7 @@ module mkDebug_Module(CLK,
 
   // action method master_m_rvalid
   input  master_rvalid;
-  input  [3 : 0] master_rid;
+  input  [15 : 0] master_rid;
   input  [63 : 0] master_rdata;
   input  [1 : 0] master_rresp;
   input  master_rlast;
@@ -456,14 +456,13 @@ module mkDebug_Module(CLK,
   wire [69 : 0] hart0_fpr_mem_client_request_get,
 		hart0_gpr_mem_client_request_get;
   wire [63 : 0] master_araddr, master_awaddr, master_wdata;
+  wire [15 : 0] master_arid, master_awid;
   wire [7 : 0] master_arlen, master_awlen, master_wstrb;
   wire [3 : 0] hart0_get_other_req_get,
 	       master_arcache,
-	       master_arid,
 	       master_arqos,
 	       master_arregion,
 	       master_awcache,
-	       master_awid,
 	       master_awqos,
 	       master_awregion;
   wire [2 : 0] master_arprot, master_arsize, master_awprot, master_awsize;
@@ -569,20 +568,20 @@ module mkDebug_Module(CLK,
 		dm_system_bus$master_rdata,
 		dm_system_bus$master_wdata;
   wire [31 : 0] dm_system_bus$av_read, dm_system_bus$write_dm_word;
+  wire [15 : 0] dm_system_bus$master_arid,
+		dm_system_bus$master_awid,
+		dm_system_bus$master_bid,
+		dm_system_bus$master_rid;
   wire [7 : 0] dm_system_bus$master_arlen,
 	       dm_system_bus$master_awlen,
 	       dm_system_bus$master_wstrb;
   wire [6 : 0] dm_system_bus$av_read_dm_addr, dm_system_bus$write_dm_addr;
   wire [3 : 0] dm_system_bus$master_arcache,
-	       dm_system_bus$master_arid,
 	       dm_system_bus$master_arqos,
 	       dm_system_bus$master_arregion,
 	       dm_system_bus$master_awcache,
-	       dm_system_bus$master_awid,
 	       dm_system_bus$master_awqos,
-	       dm_system_bus$master_awregion,
-	       dm_system_bus$master_bid,
-	       dm_system_bus$master_rid;
+	       dm_system_bus$master_awregion;
   wire [2 : 0] dm_system_bus$master_arprot,
 	       dm_system_bus$master_arsize,
 	       dm_system_bus$master_awprot,

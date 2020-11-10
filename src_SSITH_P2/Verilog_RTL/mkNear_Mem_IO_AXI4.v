@@ -12,11 +12,11 @@
 // axi4_slave_awready             O     1 reg
 // axi4_slave_wready              O     1 reg
 // axi4_slave_bvalid              O     1 reg
-// axi4_slave_bid                 O     4 reg
+// axi4_slave_bid                 O    16 reg
 // axi4_slave_bresp               O     2 reg
 // axi4_slave_arready             O     1 reg
 // axi4_slave_rvalid              O     1 reg
-// axi4_slave_rid                 O     4 reg
+// axi4_slave_rid                 O    16 reg
 // axi4_slave_rdata               O    64 reg
 // axi4_slave_rresp               O     2 reg
 // axi4_slave_rlast               O     1 reg
@@ -29,7 +29,7 @@
 // set_addr_map_addr_base         I    64 reg
 // set_addr_map_addr_lim          I    64 reg
 // axi4_slave_awvalid             I     1
-// axi4_slave_awid                I     4 reg
+// axi4_slave_awid                I    16 reg
 // axi4_slave_awaddr              I    64 reg
 // axi4_slave_awlen               I     8 reg
 // axi4_slave_awsize              I     3 reg
@@ -45,7 +45,7 @@
 // axi4_slave_wlast               I     1 reg
 // axi4_slave_bready              I     1
 // axi4_slave_arvalid             I     1
-// axi4_slave_arid                I     4 reg
+// axi4_slave_arid                I    16 reg
 // axi4_slave_araddr              I    64 reg
 // axi4_slave_arlen               I     8 reg
 // axi4_slave_arsize              I     3 reg
@@ -174,7 +174,7 @@ module mkNear_Mem_IO_AXI4(CLK,
 
   // action method axi4_slave_m_awvalid
   input  axi4_slave_awvalid;
-  input  [3 : 0] axi4_slave_awid;
+  input  [15 : 0] axi4_slave_awid;
   input  [63 : 0] axi4_slave_awaddr;
   input  [7 : 0] axi4_slave_awlen;
   input  [2 : 0] axi4_slave_awsize;
@@ -201,7 +201,7 @@ module mkNear_Mem_IO_AXI4(CLK,
   output axi4_slave_bvalid;
 
   // value method axi4_slave_m_bid
-  output [3 : 0] axi4_slave_bid;
+  output [15 : 0] axi4_slave_bid;
 
   // value method axi4_slave_m_bresp
   output [1 : 0] axi4_slave_bresp;
@@ -213,7 +213,7 @@ module mkNear_Mem_IO_AXI4(CLK,
 
   // action method axi4_slave_m_arvalid
   input  axi4_slave_arvalid;
-  input  [3 : 0] axi4_slave_arid;
+  input  [15 : 0] axi4_slave_arid;
   input  [63 : 0] axi4_slave_araddr;
   input  [7 : 0] axi4_slave_arlen;
   input  [2 : 0] axi4_slave_arsize;
@@ -231,7 +231,7 @@ module mkNear_Mem_IO_AXI4(CLK,
   output axi4_slave_rvalid;
 
   // value method axi4_slave_m_rid
-  output [3 : 0] axi4_slave_rid;
+  output [15 : 0] axi4_slave_rid;
 
   // value method axi4_slave_m_rdata
   output [63 : 0] axi4_slave_rdata;
@@ -259,7 +259,7 @@ module mkNear_Mem_IO_AXI4(CLK,
 
   // signals for module outputs
   wire [63 : 0] axi4_slave_rdata;
-  wire [3 : 0] axi4_slave_bid, axi4_slave_rid;
+  wire [15 : 0] axi4_slave_bid, axi4_slave_rid;
   wire [1 : 0] axi4_slave_bresp, axi4_slave_rresp;
   wire RDY_get_sw_interrupt_req_get,
        RDY_get_timer_interrupt_req_get,
@@ -353,7 +353,7 @@ module mkNear_Mem_IO_AXI4(CLK,
        f_timer_interrupt_req$FULL_N;
 
   // ports of submodule slave_xactor_f_rd_addr
-  wire [96 : 0] slave_xactor_f_rd_addr$D_IN, slave_xactor_f_rd_addr$D_OUT;
+  wire [108 : 0] slave_xactor_f_rd_addr$D_IN, slave_xactor_f_rd_addr$D_OUT;
   wire slave_xactor_f_rd_addr$CLR,
        slave_xactor_f_rd_addr$DEQ,
        slave_xactor_f_rd_addr$EMPTY_N,
@@ -361,7 +361,7 @@ module mkNear_Mem_IO_AXI4(CLK,
        slave_xactor_f_rd_addr$FULL_N;
 
   // ports of submodule slave_xactor_f_rd_data
-  wire [70 : 0] slave_xactor_f_rd_data$D_IN, slave_xactor_f_rd_data$D_OUT;
+  wire [82 : 0] slave_xactor_f_rd_data$D_IN, slave_xactor_f_rd_data$D_OUT;
   wire slave_xactor_f_rd_data$CLR,
        slave_xactor_f_rd_data$DEQ,
        slave_xactor_f_rd_data$EMPTY_N,
@@ -369,7 +369,7 @@ module mkNear_Mem_IO_AXI4(CLK,
        slave_xactor_f_rd_data$FULL_N;
 
   // ports of submodule slave_xactor_f_wr_addr
-  wire [96 : 0] slave_xactor_f_wr_addr$D_IN, slave_xactor_f_wr_addr$D_OUT;
+  wire [108 : 0] slave_xactor_f_wr_addr$D_IN, slave_xactor_f_wr_addr$D_OUT;
   wire slave_xactor_f_wr_addr$CLR,
        slave_xactor_f_wr_addr$DEQ,
        slave_xactor_f_wr_addr$EMPTY_N,
@@ -385,7 +385,7 @@ module mkNear_Mem_IO_AXI4(CLK,
        slave_xactor_f_wr_data$FULL_N;
 
   // ports of submodule slave_xactor_f_wr_resp
-  wire [5 : 0] slave_xactor_f_wr_resp$D_IN, slave_xactor_f_wr_resp$D_OUT;
+  wire [17 : 0] slave_xactor_f_wr_resp$D_IN, slave_xactor_f_wr_resp$D_OUT;
   wire slave_xactor_f_wr_resp$CLR,
        slave_xactor_f_wr_resp$DEQ,
        slave_xactor_f_wr_resp$EMPTY_N,
@@ -433,8 +433,8 @@ module mkNear_Mem_IO_AXI4(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h10050;
-  reg [31 : 0] v__h10182;
+  reg [31 : 0] v__h10048;
+  reg [31 : 0] v__h10180;
   reg [31 : 0] v__h1852;
   reg [31 : 0] v__h2269;
   reg [31 : 0] v__h2453;
@@ -461,8 +461,8 @@ module mkNear_Mem_IO_AXI4(CLK,
   reg [31 : 0] v__h9456;
   reg [31 : 0] v__h9566;
   reg [31 : 0] v__h9673;
-  reg [31 : 0] v__h10044;
-  reg [31 : 0] v__h10176;
+  reg [31 : 0] v__h10042;
+  reg [31 : 0] v__h10174;
   // synopsys translate_on
 
   // remaining internal signals
@@ -530,7 +530,7 @@ module mkNear_Mem_IO_AXI4(CLK,
   assign axi4_slave_bvalid = slave_xactor_f_wr_resp$EMPTY_N ;
 
   // value method axi4_slave_m_bid
-  assign axi4_slave_bid = slave_xactor_f_wr_resp$D_OUT[5:2] ;
+  assign axi4_slave_bid = slave_xactor_f_wr_resp$D_OUT[17:2] ;
 
   // value method axi4_slave_m_bresp
   assign axi4_slave_bresp = slave_xactor_f_wr_resp$D_OUT[1:0] ;
@@ -550,7 +550,7 @@ module mkNear_Mem_IO_AXI4(CLK,
   assign axi4_slave_rvalid = slave_xactor_f_rd_data$EMPTY_N ;
 
   // value method axi4_slave_m_rid
-  assign axi4_slave_rid = slave_xactor_f_rd_data$D_OUT[70:67] ;
+  assign axi4_slave_rid = slave_xactor_f_rd_data$D_OUT[82:67] ;
 
   // value method axi4_slave_m_rdata
   assign axi4_slave_rdata = slave_xactor_f_rd_data$D_OUT[66:3] ;
@@ -620,18 +620,19 @@ module mkNear_Mem_IO_AXI4(CLK,
 								.EMPTY_N(f_timer_interrupt_req$EMPTY_N));
 
   // submodule slave_xactor_f_rd_addr
-  FIFO2 #(.width(32'd97), .guarded(32'd1)) slave_xactor_f_rd_addr(.RST(RST_N),
-								  .CLK(CLK),
-								  .D_IN(slave_xactor_f_rd_addr$D_IN),
-								  .ENQ(slave_xactor_f_rd_addr$ENQ),
-								  .DEQ(slave_xactor_f_rd_addr$DEQ),
-								  .CLR(slave_xactor_f_rd_addr$CLR),
-								  .D_OUT(slave_xactor_f_rd_addr$D_OUT),
-								  .FULL_N(slave_xactor_f_rd_addr$FULL_N),
-								  .EMPTY_N(slave_xactor_f_rd_addr$EMPTY_N));
+  FIFO2 #(.width(32'd109),
+	  .guarded(32'd1)) slave_xactor_f_rd_addr(.RST(RST_N),
+						  .CLK(CLK),
+						  .D_IN(slave_xactor_f_rd_addr$D_IN),
+						  .ENQ(slave_xactor_f_rd_addr$ENQ),
+						  .DEQ(slave_xactor_f_rd_addr$DEQ),
+						  .CLR(slave_xactor_f_rd_addr$CLR),
+						  .D_OUT(slave_xactor_f_rd_addr$D_OUT),
+						  .FULL_N(slave_xactor_f_rd_addr$FULL_N),
+						  .EMPTY_N(slave_xactor_f_rd_addr$EMPTY_N));
 
   // submodule slave_xactor_f_rd_data
-  FIFO2 #(.width(32'd71), .guarded(32'd1)) slave_xactor_f_rd_data(.RST(RST_N),
+  FIFO2 #(.width(32'd83), .guarded(32'd1)) slave_xactor_f_rd_data(.RST(RST_N),
 								  .CLK(CLK),
 								  .D_IN(slave_xactor_f_rd_data$D_IN),
 								  .ENQ(slave_xactor_f_rd_data$ENQ),
@@ -642,15 +643,16 @@ module mkNear_Mem_IO_AXI4(CLK,
 								  .EMPTY_N(slave_xactor_f_rd_data$EMPTY_N));
 
   // submodule slave_xactor_f_wr_addr
-  FIFO2 #(.width(32'd97), .guarded(32'd1)) slave_xactor_f_wr_addr(.RST(RST_N),
-								  .CLK(CLK),
-								  .D_IN(slave_xactor_f_wr_addr$D_IN),
-								  .ENQ(slave_xactor_f_wr_addr$ENQ),
-								  .DEQ(slave_xactor_f_wr_addr$DEQ),
-								  .CLR(slave_xactor_f_wr_addr$CLR),
-								  .D_OUT(slave_xactor_f_wr_addr$D_OUT),
-								  .FULL_N(slave_xactor_f_wr_addr$FULL_N),
-								  .EMPTY_N(slave_xactor_f_wr_addr$EMPTY_N));
+  FIFO2 #(.width(32'd109),
+	  .guarded(32'd1)) slave_xactor_f_wr_addr(.RST(RST_N),
+						  .CLK(CLK),
+						  .D_IN(slave_xactor_f_wr_addr$D_IN),
+						  .ENQ(slave_xactor_f_wr_addr$ENQ),
+						  .DEQ(slave_xactor_f_wr_addr$DEQ),
+						  .CLR(slave_xactor_f_wr_addr$CLR),
+						  .D_OUT(slave_xactor_f_wr_addr$D_OUT),
+						  .FULL_N(slave_xactor_f_wr_addr$FULL_N),
+						  .EMPTY_N(slave_xactor_f_wr_addr$EMPTY_N));
 
   // submodule slave_xactor_f_wr_data
   FIFO2 #(.width(32'd73), .guarded(32'd1)) slave_xactor_f_wr_data(.RST(RST_N),
@@ -664,15 +666,15 @@ module mkNear_Mem_IO_AXI4(CLK,
 								  .EMPTY_N(slave_xactor_f_wr_data$EMPTY_N));
 
   // submodule slave_xactor_f_wr_resp
-  FIFO2 #(.width(32'd6), .guarded(32'd1)) slave_xactor_f_wr_resp(.RST(RST_N),
-								 .CLK(CLK),
-								 .D_IN(slave_xactor_f_wr_resp$D_IN),
-								 .ENQ(slave_xactor_f_wr_resp$ENQ),
-								 .DEQ(slave_xactor_f_wr_resp$DEQ),
-								 .CLR(slave_xactor_f_wr_resp$CLR),
-								 .D_OUT(slave_xactor_f_wr_resp$D_OUT),
-								 .FULL_N(slave_xactor_f_wr_resp$FULL_N),
-								 .EMPTY_N(slave_xactor_f_wr_resp$EMPTY_N));
+  FIFO2 #(.width(32'd18), .guarded(32'd1)) slave_xactor_f_wr_resp(.RST(RST_N),
+								  .CLK(CLK),
+								  .D_IN(slave_xactor_f_wr_resp$D_IN),
+								  .ENQ(slave_xactor_f_wr_resp$ENQ),
+								  .DEQ(slave_xactor_f_wr_resp$DEQ),
+								  .CLR(slave_xactor_f_wr_resp$CLR),
+								  .D_OUT(slave_xactor_f_wr_resp$D_OUT),
+								  .FULL_N(slave_xactor_f_wr_resp$FULL_N),
+								  .EMPTY_N(slave_xactor_f_wr_resp$EMPTY_N));
 
   // rule RL_rl_reset
   assign CAN_FIRE_RL_rl_reset =
@@ -842,7 +844,7 @@ module mkNear_Mem_IO_AXI4(CLK,
 
   // submodule slave_xactor_f_rd_data
   assign slave_xactor_f_rd_data$D_IN =
-	     { slave_xactor_f_rd_addr$D_OUT[96:93],
+	     { slave_xactor_f_rd_addr$D_OUT[108:93],
 	       x__h2751,
 	       rresp__h2548,
 	       1'd1 } ;
@@ -878,7 +880,7 @@ module mkNear_Mem_IO_AXI4(CLK,
 
   // submodule slave_xactor_f_wr_resp
   assign slave_xactor_f_wr_resp$D_IN =
-	     { slave_xactor_f_wr_addr$D_OUT[96:93], v__h3350 } ;
+	     { slave_xactor_f_wr_addr$D_OUT[108:93], v__h3350 } ;
   assign slave_xactor_f_wr_resp$ENQ = WILL_FIRE_RL_rl_process_wr_req ;
   assign slave_xactor_f_wr_resp$DEQ =
 	     axi4_slave_bready && slave_xactor_f_wr_resp$EMPTY_N ;
@@ -1056,27 +1058,27 @@ module mkNear_Mem_IO_AXI4(CLK,
       if (EN_get_timer_interrupt_req_get &&
 	  NOT_cfg_verbosity_read_ULE_1_0___d31)
 	begin
-	  v__h10050 = $stime;
+	  v__h10048 = $stime;
 	  #0;
 	end
-    v__h10044 = v__h10050 / 32'd10;
+    v__h10042 = v__h10048 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_get_timer_interrupt_req_get &&
 	  NOT_cfg_verbosity_read_ULE_1_0___d31)
 	$display("%0d: Near_Mem_IO_AXI4: get_timer_interrupt_req: %x",
-		 v__h10044,
+		 v__h10042,
 		 f_timer_interrupt_req$D_OUT);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_get_sw_interrupt_req_get && NOT_cfg_verbosity_read_ULE_1_0___d31)
 	begin
-	  v__h10182 = $stime;
+	  v__h10180 = $stime;
 	  #0;
 	end
-    v__h10176 = v__h10182 / 32'd10;
+    v__h10174 = v__h10180 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_get_sw_interrupt_req_get && NOT_cfg_verbosity_read_ULE_1_0___d31)
 	$display("%0d: Near_Mem_IO_AXI4: get_sw_interrupt_req: %x",
-		 v__h10176,
+		 v__h10174,
 		 f_sw_interrupt_req$D_OUT);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset && cfg_verbosity != 4'd0)
@@ -1113,7 +1115,7 @@ module mkNear_Mem_IO_AXI4(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req &&
 	  NOT_cfg_verbosity_read_ULE_1_0___d31)
-	$write("'h%h", slave_xactor_f_rd_addr$D_OUT[96:93]);
+	$write("'h%h", slave_xactor_f_rd_addr$D_OUT[108:93]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req &&
 	  NOT_cfg_verbosity_read_ULE_1_0___d31)
@@ -1222,7 +1224,7 @@ module mkNear_Mem_IO_AXI4(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req &&
 	  slave_xactor_f_rd_addr_first__1_BITS_92_TO_29__ETC___d53)
-	$write("'h%h", slave_xactor_f_rd_addr$D_OUT[96:93]);
+	$write("'h%h", slave_xactor_f_rd_addr$D_OUT[108:93]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req &&
 	  slave_xactor_f_rd_addr_first__1_BITS_92_TO_29__ETC___d53)
@@ -1361,7 +1363,7 @@ module mkNear_Mem_IO_AXI4(CLK,
 	   byte_addr__h2405 != 64'h0000000000000004 &&
 	   byte_addr__h2405 != 64'h0000000000004004 &&
 	   byte_addr__h2405 != 64'h000000000000BFFC))
-	$write("'h%h", slave_xactor_f_rd_addr$D_OUT[96:93]);
+	$write("'h%h", slave_xactor_f_rd_addr$D_OUT[108:93]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req &&
 	  (slave_xactor_f_rd_addr_first__1_BITS_92_TO_29__ETC___d53 ||
@@ -1595,7 +1597,7 @@ module mkNear_Mem_IO_AXI4(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req &&
 	  NOT_cfg_verbosity_read_ULE_1_0___d31)
-	$write("'h%h", slave_xactor_f_rd_addr$D_OUT[96:93]);
+	$write("'h%h", slave_xactor_f_rd_addr$D_OUT[108:93]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req &&
 	  NOT_cfg_verbosity_read_ULE_1_0___d31)
@@ -1691,7 +1693,7 @@ module mkNear_Mem_IO_AXI4(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req &&
 	  NOT_cfg_verbosity_read_ULE_1_0___d31)
-	$write("'h%h", slave_xactor_f_rd_addr$D_OUT[96:93]);
+	$write("'h%h", slave_xactor_f_rd_addr$D_OUT[108:93]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req &&
 	  NOT_cfg_verbosity_read_ULE_1_0___d31)
@@ -1767,7 +1769,7 @@ module mkNear_Mem_IO_AXI4(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req &&
 	  NOT_cfg_verbosity_read_ULE_1_0___d31)
-	$write("'h%h", slave_xactor_f_wr_addr$D_OUT[96:93]);
+	$write("'h%h", slave_xactor_f_wr_addr$D_OUT[108:93]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req &&
 	  NOT_cfg_verbosity_read_ULE_1_0___d31)
@@ -1922,7 +1924,7 @@ module mkNear_Mem_IO_AXI4(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req &&
 	  slave_xactor_f_wr_addr_first__00_BITS_92_TO_29_ETC___d102)
-	$write("'h%h", slave_xactor_f_wr_addr$D_OUT[96:93]);
+	$write("'h%h", slave_xactor_f_wr_addr$D_OUT[108:93]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req &&
 	  slave_xactor_f_wr_addr_first__00_BITS_92_TO_29_ETC___d102)
@@ -2212,7 +2214,7 @@ module mkNear_Mem_IO_AXI4(CLK,
 	   byte_addr__h3346 != 64'h0000000000000004 &&
 	   byte_addr__h3346 != 64'h0000000000004004 &&
 	   byte_addr__h3346 != 64'h000000000000BFFC))
-	$write("'h%h", slave_xactor_f_wr_addr$D_OUT[96:93]);
+	$write("'h%h", slave_xactor_f_wr_addr$D_OUT[108:93]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req &&
 	  (slave_xactor_f_wr_addr_first__00_BITS_92_TO_29_ETC___d102 ||
@@ -2558,7 +2560,7 @@ module mkNear_Mem_IO_AXI4(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req &&
 	  NOT_cfg_verbosity_read_ULE_1_0___d31)
-	$write("'h%h", slave_xactor_f_wr_addr$D_OUT[96:93]);
+	$write("'h%h", slave_xactor_f_wr_addr$D_OUT[108:93]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req &&
 	  NOT_cfg_verbosity_read_ULE_1_0___d31)
@@ -2700,7 +2702,7 @@ module mkNear_Mem_IO_AXI4(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req &&
 	  NOT_cfg_verbosity_read_ULE_1_0___d31)
-	$write("'h%h", slave_xactor_f_wr_addr$D_OUT[96:93]);
+	$write("'h%h", slave_xactor_f_wr_addr$D_OUT[108:93]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req &&
 	  NOT_cfg_verbosity_read_ULE_1_0___d31)
