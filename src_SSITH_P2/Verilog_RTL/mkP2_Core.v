@@ -921,7 +921,7 @@ module mkP2_Core(CLK,
   // inputs to muxes for submodule ports
   wire [33 : 0] MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1,
 		MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2,
-		MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_1,
+		MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_2,
 		MUX_bus_dmi_rsp_fifof_x_wire$wset_1__VAL_1,
 		MUX_bus_dmi_rsp_fifof_x_wire$wset_1__VAL_2;
   wire [1 : 0] MUX_bus_dmi_rsp_fifof_cntr_r$write_1__VAL_2,
@@ -1498,9 +1498,9 @@ module mkP2_Core(CLK,
   assign WILL_FIRE_RL_rl_ndmreset = CAN_FIRE_RL_rl_ndmreset ;
 
   // rule RL_mkConnectionGetPut
-  assign CAN_FIRE_RL_mkConnectionGetPut =
+  assign CAN_FIRE_RL_mkConnectionGetPut = WILL_FIRE_RL_mkConnectionGetPut ;
+  assign WILL_FIRE_RL_mkConnectionGetPut =
 	     core$RDY_tv_verifier_info_get_get && tv_xactor$RDY_tv_in_put ;
-  assign WILL_FIRE_RL_mkConnectionGetPut = CAN_FIRE_RL_mkConnectionGetPut ;
 
   // rule RL_bus_dmi_req_do_enq
   assign CAN_FIRE_RL_bus_dmi_req_do_enq =
@@ -1537,31 +1537,31 @@ module mkP2_Core(CLK,
 
   // inputs to muxes for submodule ports
   assign MUX_bus_dmi_rsp_fifof_q_0$write_1__SEL_1 =
-	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo3 ;
-  assign MUX_bus_dmi_rsp_fifof_q_0$write_1__SEL_2 =
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_incCtr &&
 	     bus_dmi_rsp_fifof_cntr_r == 2'd0 ;
+  assign MUX_bus_dmi_rsp_fifof_q_0$write_1__SEL_2 =
+	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo3 ;
   assign MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_1 =
-	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo1 ;
-  assign MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_2 =
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_incCtr &&
 	     bus_dmi_rsp_fifof_cntr_r == 2'd1 ;
+  assign MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_2 =
+	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo1 ;
   assign MUX_bus_dmi_rsp_fifof_x_wire$wset_1__SEL_1 =
 	     WILL_FIRE_RL_rl_dmi_req_cpu &&
 	     bus_dmi_req_fifof$D_OUT[1:0] != 2'd1 ;
   assign MUX_bus_dmi_rsp_fifof_cntr_r$write_1__VAL_2 =
 	     bus_dmi_rsp_fifof_cntr_r + 2'd1 ;
   assign MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1 =
-	     (bus_dmi_rsp_fifof_cntr_r == 2'd1) ?
-	       MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2 :
-	       bus_dmi_rsp_fifof_q_1 ;
-  assign MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2 =
 	     MUX_bus_dmi_rsp_fifof_x_wire$wset_1__SEL_1 ?
 	       MUX_bus_dmi_rsp_fifof_x_wire$wset_1__VAL_1 :
 	       MUX_bus_dmi_rsp_fifof_x_wire$wset_1__VAL_2 ;
-  assign MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_1 =
+  assign MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2 =
+	     (bus_dmi_rsp_fifof_cntr_r == 2'd1) ?
+	       MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1 :
+	       bus_dmi_rsp_fifof_q_1 ;
+  assign MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_2 =
 	     (bus_dmi_rsp_fifof_cntr_r == 2'd2) ?
-	       MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2 :
+	       MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1 :
 	       34'd0 ;
   assign MUX_bus_dmi_rsp_fifof_x_wire$wset_1__VAL_1 =
 	     { 32'hAAAAAAAA,
@@ -1611,25 +1611,25 @@ module mkP2_Core(CLK,
     endcase
   end
   assign bus_dmi_rsp_fifof_q_0$EN =
-	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo3 ||
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_incCtr &&
 	     bus_dmi_rsp_fifof_cntr_r == 2'd0 ||
+	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo3 ||
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_decCtr ;
 
   // register bus_dmi_rsp_fifof_q_1
   always@(MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_1 or
-	  MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_1 or
+	  MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1 or
 	  MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_2 or
-	  MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2 or
+	  MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_2 or
 	  WILL_FIRE_RL_bus_dmi_rsp_fifof_decCtr)
   begin
     case (1'b1) // synopsys parallel_case
       MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_1:
 	  bus_dmi_rsp_fifof_q_1$D_IN =
-	      MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_1;
+	      MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_1;
       MUX_bus_dmi_rsp_fifof_q_1$write_1__SEL_2:
 	  bus_dmi_rsp_fifof_q_1$D_IN =
-	      MUX_bus_dmi_rsp_fifof_q_0$write_1__VAL_2;
+	      MUX_bus_dmi_rsp_fifof_q_1$write_1__VAL_2;
       WILL_FIRE_RL_bus_dmi_rsp_fifof_decCtr:
 	  bus_dmi_rsp_fifof_q_1$D_IN = 34'd0;
       default: bus_dmi_rsp_fifof_q_1$D_IN =
@@ -1637,9 +1637,9 @@ module mkP2_Core(CLK,
     endcase
   end
   assign bus_dmi_rsp_fifof_q_1$EN =
-	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo1 ||
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_incCtr &&
 	     bus_dmi_rsp_fifof_cntr_r == 2'd1 ||
+	     WILL_FIRE_RL_bus_dmi_rsp_fifof_both && _dfoo1 ||
 	     WILL_FIRE_RL_bus_dmi_rsp_fifof_decCtr ;
 
   // register rg_ndm_reset
@@ -1762,7 +1762,7 @@ module mkP2_Core(CLK,
   assign core$EN_cpu_reset_server_request_put = CAN_FIRE_RL_rl_once ;
   assign core$EN_cpu_reset_server_response_get =
 	     CAN_FIRE_RL_rl_reset_response ;
-  assign core$EN_tv_verifier_info_get_get = CAN_FIRE_RL_mkConnectionGetPut ;
+  assign core$EN_tv_verifier_info_get_get = WILL_FIRE_RL_mkConnectionGetPut ;
   assign core$EN_dm_dmi_read_addr =
 	     WILL_FIRE_RL_rl_dmi_req_cpu &&
 	     bus_dmi_req_fifof$D_OUT[1:0] == 2'd1 ;
@@ -1788,7 +1788,7 @@ module mkP2_Core(CLK,
   // submodule tv_xactor
   assign tv_xactor$axi_out_tready = tv_verifier_info_tx_tready ;
   assign tv_xactor$tv_in_put = core$tv_verifier_info_get_get ;
-  assign tv_xactor$EN_tv_in_put = CAN_FIRE_RL_mkConnectionGetPut ;
+  assign tv_xactor$EN_tv_in_put = WILL_FIRE_RL_mkConnectionGetPut ;
 
   // remaining internal signals
   assign IF_bus_dmi_req_fifof_first__9_BITS_1_TO_0_0_EQ_ETC___d90 =

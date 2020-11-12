@@ -2017,9 +2017,6 @@ module mkCore(CLK,
   reg [31 : 0] v__h6756;
   // synopsys translate_on
 
-  // remaining internal signals
-  wire plic_RDY_server_reset_request_put_AND_cpu_RDY__ETC___d9;
-
   // action method cpu_reset_server_request_put
   assign RDY_cpu_reset_server_request_put = f_reset_reqs$FULL_N ;
   assign CAN_FIRE_cpu_reset_server_request_put = f_reset_reqs$FULL_N ;
@@ -3355,9 +3352,9 @@ module mkCore(CLK,
 
   // rule RL_mkConnectionGetPut_1
   assign CAN_FIRE_RL_mkConnectionGetPut_1 =
-	     WILL_FIRE_RL_mkConnectionGetPut_1 ;
-  assign WILL_FIRE_RL_mkConnectionGetPut_1 =
 	     tv_encode$RDY_trace_data_in_put && f_trace_data_merged$EMPTY_N ;
+  assign WILL_FIRE_RL_mkConnectionGetPut_1 =
+	     CAN_FIRE_RL_mkConnectionGetPut_1 ;
 
   // rule RL_rl_wr_addr_channel
   assign CAN_FIRE_RL_rl_wr_addr_channel = 1'd1 ;
@@ -3381,57 +3378,57 @@ module mkCore(CLK,
 
   // rule RL_ClientServerRequest_1
   assign CAN_FIRE_RL_ClientServerRequest_1 =
-	     dm_gpr_tap_ifc$RDY_server_request_put &&
-	     debug_module$RDY_hart0_gpr_mem_client_request_get ;
+	     debug_module$RDY_hart0_gpr_mem_client_request_get &&
+	     dm_gpr_tap_ifc$RDY_server_request_put ;
   assign WILL_FIRE_RL_ClientServerRequest_1 =
 	     CAN_FIRE_RL_ClientServerRequest_1 ;
 
   // rule RL_ClientServerResponse_1
   assign CAN_FIRE_RL_ClientServerResponse_1 =
-	     dm_gpr_tap_ifc$RDY_server_response_get &&
-	     debug_module$RDY_hart0_gpr_mem_client_response_put ;
+	     debug_module$RDY_hart0_gpr_mem_client_response_put &&
+	     dm_gpr_tap_ifc$RDY_server_response_get ;
   assign WILL_FIRE_RL_ClientServerResponse_1 =
 	     CAN_FIRE_RL_ClientServerResponse_1 ;
 
   // rule RL_ClientServerRequest_2
   assign CAN_FIRE_RL_ClientServerRequest_2 =
-	     dm_gpr_tap_ifc$RDY_client_request_get &&
-	     cpu$RDY_hart0_gpr_mem_server_request_put ;
+	     cpu$RDY_hart0_gpr_mem_server_request_put &&
+	     dm_gpr_tap_ifc$RDY_client_request_get ;
   assign WILL_FIRE_RL_ClientServerRequest_2 =
 	     CAN_FIRE_RL_ClientServerRequest_2 ;
 
   // rule RL_ClientServerResponse_2
   assign CAN_FIRE_RL_ClientServerResponse_2 =
-	     dm_gpr_tap_ifc$RDY_client_response_put &&
-	     cpu$RDY_hart0_gpr_mem_server_response_get ;
+	     cpu$RDY_hart0_gpr_mem_server_response_get &&
+	     dm_gpr_tap_ifc$RDY_client_response_put ;
   assign WILL_FIRE_RL_ClientServerResponse_2 =
 	     CAN_FIRE_RL_ClientServerResponse_2 ;
 
   // rule RL_ClientServerRequest_3
   assign CAN_FIRE_RL_ClientServerRequest_3 =
-	     dm_fpr_tap_ifc$RDY_server_request_put &&
-	     debug_module$RDY_hart0_fpr_mem_client_request_get ;
+	     debug_module$RDY_hart0_fpr_mem_client_request_get &&
+	     dm_fpr_tap_ifc$RDY_server_request_put ;
   assign WILL_FIRE_RL_ClientServerRequest_3 =
 	     CAN_FIRE_RL_ClientServerRequest_3 ;
 
   // rule RL_ClientServerResponse_3
   assign CAN_FIRE_RL_ClientServerResponse_3 =
-	     dm_fpr_tap_ifc$RDY_server_response_get &&
-	     debug_module$RDY_hart0_fpr_mem_client_response_put ;
+	     debug_module$RDY_hart0_fpr_mem_client_response_put &&
+	     dm_fpr_tap_ifc$RDY_server_response_get ;
   assign WILL_FIRE_RL_ClientServerResponse_3 =
 	     CAN_FIRE_RL_ClientServerResponse_3 ;
 
   // rule RL_ClientServerRequest_4
   assign CAN_FIRE_RL_ClientServerRequest_4 =
-	     dm_fpr_tap_ifc$RDY_client_request_get &&
-	     cpu$RDY_hart0_fpr_mem_server_request_put ;
+	     cpu$RDY_hart0_fpr_mem_server_request_put &&
+	     dm_fpr_tap_ifc$RDY_client_request_get ;
   assign WILL_FIRE_RL_ClientServerRequest_4 =
 	     CAN_FIRE_RL_ClientServerRequest_4 ;
 
   // rule RL_ClientServerResponse_4
   assign CAN_FIRE_RL_ClientServerResponse_4 =
-	     dm_fpr_tap_ifc$RDY_client_response_put &&
-	     cpu$RDY_hart0_fpr_mem_server_response_get ;
+	     cpu$RDY_hart0_fpr_mem_server_response_get &&
+	     dm_fpr_tap_ifc$RDY_client_response_put ;
   assign WILL_FIRE_RL_ClientServerResponse_4 =
 	     CAN_FIRE_RL_ClientServerResponse_4 ;
 
@@ -3452,29 +3449,29 @@ module mkCore(CLK,
 
   // rule RL_ClientServerRequest_5
   assign CAN_FIRE_RL_ClientServerRequest_5 =
-	     dm_csr_tap$RDY_server_request_put &&
-	     debug_module$RDY_hart0_csr_mem_client_request_get ;
+	     debug_module$RDY_hart0_csr_mem_client_request_get &&
+	     dm_csr_tap$RDY_server_request_put ;
   assign WILL_FIRE_RL_ClientServerRequest_5 =
 	     CAN_FIRE_RL_ClientServerRequest_5 ;
 
   // rule RL_ClientServerResponse_5
   assign CAN_FIRE_RL_ClientServerResponse_5 =
-	     dm_csr_tap$RDY_server_response_get &&
-	     debug_module$RDY_hart0_csr_mem_client_response_put ;
+	     debug_module$RDY_hart0_csr_mem_client_response_put &&
+	     dm_csr_tap$RDY_server_response_get ;
   assign WILL_FIRE_RL_ClientServerResponse_5 =
 	     CAN_FIRE_RL_ClientServerResponse_5 ;
 
   // rule RL_ClientServerRequest_6
   assign CAN_FIRE_RL_ClientServerRequest_6 =
-	     dm_csr_tap$RDY_client_request_get &&
-	     cpu$RDY_hart0_csr_mem_server_request_put ;
+	     cpu$RDY_hart0_csr_mem_server_request_put &&
+	     dm_csr_tap$RDY_client_request_get ;
   assign WILL_FIRE_RL_ClientServerRequest_6 =
 	     CAN_FIRE_RL_ClientServerRequest_6 ;
 
   // rule RL_ClientServerResponse_6
   assign CAN_FIRE_RL_ClientServerResponse_6 =
-	     dm_csr_tap$RDY_client_response_put &&
-	     cpu$RDY_hart0_csr_mem_server_response_get ;
+	     cpu$RDY_hart0_csr_mem_server_response_get &&
+	     dm_csr_tap$RDY_client_response_put ;
   assign WILL_FIRE_RL_ClientServerResponse_6 =
 	     CAN_FIRE_RL_ClientServerResponse_6 ;
 
@@ -3623,19 +3620,21 @@ module mkCore(CLK,
 
   // rule RL_rl_cpu_hart0_reset_from_soc_start
   assign CAN_FIRE_RL_rl_cpu_hart0_reset_from_soc_start =
-	     fabric_1x3$RDY_reset &&
+	     fabric_1x3$RDY_reset && cpu$RDY_hart0_server_reset_request_put &&
 	     near_mem_io$RDY_server_reset_request_put &&
-	     plic_RDY_server_reset_request_put_AND_cpu_RDY__ETC___d9 ;
+	     plic$RDY_server_reset_request_put &&
+	     f_reset_reqs$EMPTY_N &&
+	     f_reset_requestor$FULL_N ;
   assign WILL_FIRE_RL_rl_cpu_hart0_reset_from_soc_start =
 	     CAN_FIRE_RL_rl_cpu_hart0_reset_from_soc_start ;
 
   // rule RL_rl_cpu_hart0_reset_from_dm_start
   assign CAN_FIRE_RL_rl_cpu_hart0_reset_from_dm_start =
 	     fabric_1x3$RDY_reset &&
-	     near_mem_io$RDY_server_reset_request_put &&
-	     plic$RDY_server_reset_request_put &&
 	     debug_module$RDY_hart0_reset_client_request_get &&
 	     cpu$RDY_hart0_server_reset_request_put &&
+	     near_mem_io$RDY_server_reset_request_put &&
+	     plic$RDY_server_reset_request_put &&
 	     f_reset_requestor$FULL_N ;
   assign WILL_FIRE_RL_rl_cpu_hart0_reset_from_dm_start =
 	     CAN_FIRE_RL_rl_cpu_hart0_reset_from_dm_start &&
@@ -3643,9 +3642,9 @@ module mkCore(CLK,
 
   // rule RL_rl_cpu_hart0_reset_complete
   assign CAN_FIRE_RL_rl_cpu_hart0_reset_complete =
+	     cpu$RDY_hart0_server_reset_response_get &&
 	     near_mem_io$RDY_server_reset_response_get &&
 	     plic$RDY_server_reset_response_get &&
-	     cpu$RDY_hart0_server_reset_response_get &&
 	     f_reset_requestor$EMPTY_N &&
 	     (f_reset_requestor$D_OUT ||
 	      debug_module$RDY_hart0_reset_client_response_put) &&
@@ -3984,10 +3983,7 @@ module mkCore(CLK,
   // submodule f_reset_reqs
   assign f_reset_reqs$D_IN = cpu_reset_server_request_put ;
   assign f_reset_reqs$ENQ = EN_cpu_reset_server_request_put ;
-  assign f_reset_reqs$DEQ =
-	     fabric_1x3$RDY_reset &&
-	     near_mem_io$RDY_server_reset_request_put &&
-	     plic_RDY_server_reset_request_put_AND_cpu_RDY__ETC___d9 ;
+  assign f_reset_reqs$DEQ = CAN_FIRE_RL_rl_cpu_hart0_reset_from_soc_start ;
   assign f_reset_reqs$CLR = 1'b0 ;
 
   // submodule f_reset_requestor
@@ -4040,7 +4036,7 @@ module mkCore(CLK,
 	     WILL_FIRE_RL_merge_dm_gpr_trace_data ||
 	     WILL_FIRE_RL_merge_dm_fpr_trace_data ||
 	     WILL_FIRE_RL_merge_dm_csr_trace_data ;
-  assign f_trace_data_merged$DEQ = WILL_FIRE_RL_mkConnectionGetPut_1 ;
+  assign f_trace_data_merged$DEQ = CAN_FIRE_RL_mkConnectionGetPut_1 ;
   assign f_trace_data_merged$CLR = 1'b0 ;
 
   // submodule fabric_1x3
@@ -4236,15 +4232,8 @@ module mkCore(CLK,
   // submodule tv_encode
   assign tv_encode$trace_data_in_put = f_trace_data_merged$D_OUT ;
   assign tv_encode$EN_reset = 1'b0 ;
-  assign tv_encode$EN_trace_data_in_put = WILL_FIRE_RL_mkConnectionGetPut_1 ;
+  assign tv_encode$EN_trace_data_in_put = CAN_FIRE_RL_mkConnectionGetPut_1 ;
   assign tv_encode$EN_tv_vb_out_get = EN_tv_verifier_info_get_get ;
-
-  // remaining internal signals
-  assign plic_RDY_server_reset_request_put_AND_cpu_RDY__ETC___d9 =
-	     plic$RDY_server_reset_request_put &&
-	     cpu$RDY_hart0_server_reset_request_put &&
-	     f_reset_reqs$EMPTY_N &&
-	     f_reset_requestor$FULL_N ;
 
   // handling of system tasks
 

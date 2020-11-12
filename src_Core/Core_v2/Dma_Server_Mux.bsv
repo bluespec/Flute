@@ -28,11 +28,16 @@ import GetPut_Aux :: *;
 // ================================================================
 // Project imports
 
-// Main fabric
 import AXI4_Types   :: *;
 import AXI4_Fabric  :: *;
+import AXI4_Widener :: *;
+
 import Fabric_Defs  :: *;    // for Wd_{Id,Addr,Data,User}
 import Near_Mem_IFC :: *;    // for Wd_{Id,Addr,Data,User}_Dma
+
+// ================================================================
+
+export Dma_Server_Mux_IFC (..), mkDma_Server_Mux;
 
 // ================================================================
 // INTERFACE
@@ -49,31 +54,74 @@ endinterface
 (* synthesize *)
 module mkDma_Server_Mux (Dma_Server_Mux_IFC);
 
-   AXI4_Slave_Xactor_IFC  #(Wd_Id_Dma, Wd_Addr_Dma, Wd_Data_Dma, Wd_User_Dma) slave_xactor_A <- mkAXI4_Slave_Xactor;
-   AXI4_Slave_Xactor_IFC  #(Wd_Id,     Wd_Addr,     Wd_Data,     Wd_User)     slave_xactor_B <- mkAXI4_Slave_Xactor;
-   AXI4_Master_Xactor_IFC #(Wd_Id_Dma, Wd_Addr_Dma, Wd_Data_Dma, Wd_User_Dma) master_xactor  <- mkAXI4_Master_Xactor;
+   AXI4_Widener_IFC #(Wd_Id_Dma,
+		      Wd_Addr_Dma,
+		      Wd_Data,        // narrower
+		      Wd_Data_Dma,    // wider
+		      Wd_User_Dma) widener <- mkAXI4_Widener;
+
+   Fabric_2x1_IFC fabric_2x1 <- mkDma_Server_Mux_Fabric;
 
    // ----------------------------------------------------------------
-   // BEHAVIOR
+   // Connect widener to one of the fabric ports
 
-   Reg #(Bool) rg_done <- mkReg (False);
-
-   // TODO: fill in.
-   rule rl_WARNING (! rg_done);
-      $display ("%0d: %m.rl_WARNING", cur_cycle);
-      $display ("    WARNING WARNING WARNING");
-      $display ("    TBD: the body of this module needs to be implemented");
-      $display ("    Missing Debug Module connectivity to memory");
-      rg_done <= True;
-   endrule
+   mkConnection (widener.to_slave, fabric_2x1.v_from_masters [1]);
 
    // ----------------------------------------------------------------
    // INTERFACE
 
-   interface initiator_A_server = slave_xactor_A.axi_side;
-   interface initiator_B_server = slave_xactor_B.axi_side;
-   interface target_client      = master_xactor.axi_side;
+   interface initiator_A_server = fabric_2x1.v_from_masters [0];
+   interface initiator_B_server = widener.from_master;
+   interface target_client      = fabric_2x1.v_to_slaves [0];
 endmodule
+
+// ****************************************************************
+// ****************************************************************
+// 2x1 Fabric to mux the DMA and Debug Module into the CPU.
+// Masters: External DMA into memory, Debug Module System Bus Access
+// Slave: mkCPU.dma_server
+
+// ----------------
+// Fabric port numbers for masters
+
+typedef 2  Num_Masters_2x1;
+
+// ----------------
+// Fabric port numbers for slaves
+
+typedef 1  Num_Slaves_2x1;
+
+typedef Bit #(TLog #(Num_Slaves_2x1))  Slave_Num_2x1;
+
+Slave_Num_2x1  default_slave_num     = 0;
+
+// ----------------
+// Specialization of parameterized AXI4 fabric for 2x1 Core fabric
+
+typedef AXI4_Fabric_IFC #(Num_Masters_2x1,
+			  Num_Slaves_2x1,
+			  Wd_Id_Dma,
+			  Wd_Addr_Dma,
+			  Wd_Data_Dma,
+			  Wd_User_Dma)  Fabric_2x1_IFC;
+
+// ----------------
+
+(* synthesize *)
+module mkDma_Server_Mux_Fabric (Fabric_2x1_IFC);
+
+   // ----------------
+   // Slave address decoder
+   // Any addr is legal, and there is only one slave to service it.
+
+   function Tuple2 #(Bool, Slave_Num_2x1) fn_addr_to_slave_num_2x1  (Fabric_Addr addr);
+      return tuple2 (True, default_slave_num);
+   endfunction
+
+   Fabric_2x1_IFC fabric <- mkAXI4_Fabric (fn_addr_to_slave_num_2x1);
+
+   return fabric;
+endmodule: mkDma_Server_Mux_Fabric
 
 // ================================================================
 

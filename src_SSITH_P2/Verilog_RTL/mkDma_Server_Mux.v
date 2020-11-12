@@ -641,118 +641,236 @@ module mkDma_Server_Mux(CLK,
        target_client_wlast,
        target_client_wvalid;
 
-  // register rg_done
-  reg rg_done;
-  wire rg_done$D_IN, rg_done$EN;
+  // ports of submodule fabric_2x1
+  wire [511 : 0] fabric_2x1$v_from_masters_0_rdata,
+		 fabric_2x1$v_from_masters_0_wdata,
+		 fabric_2x1$v_from_masters_1_rdata,
+		 fabric_2x1$v_from_masters_1_wdata,
+		 fabric_2x1$v_to_slaves_0_rdata,
+		 fabric_2x1$v_to_slaves_0_wdata;
+  wire [63 : 0] fabric_2x1$v_from_masters_0_araddr,
+		fabric_2x1$v_from_masters_0_awaddr,
+		fabric_2x1$v_from_masters_0_wstrb,
+		fabric_2x1$v_from_masters_1_araddr,
+		fabric_2x1$v_from_masters_1_awaddr,
+		fabric_2x1$v_from_masters_1_wstrb,
+		fabric_2x1$v_to_slaves_0_araddr,
+		fabric_2x1$v_to_slaves_0_awaddr,
+		fabric_2x1$v_to_slaves_0_wstrb;
+  wire [15 : 0] fabric_2x1$v_from_masters_0_arid,
+		fabric_2x1$v_from_masters_0_awid,
+		fabric_2x1$v_from_masters_0_bid,
+		fabric_2x1$v_from_masters_0_rid,
+		fabric_2x1$v_from_masters_1_arid,
+		fabric_2x1$v_from_masters_1_awid,
+		fabric_2x1$v_from_masters_1_bid,
+		fabric_2x1$v_from_masters_1_rid,
+		fabric_2x1$v_to_slaves_0_arid,
+		fabric_2x1$v_to_slaves_0_awid,
+		fabric_2x1$v_to_slaves_0_bid,
+		fabric_2x1$v_to_slaves_0_rid;
+  wire [7 : 0] fabric_2x1$v_from_masters_0_arlen,
+	       fabric_2x1$v_from_masters_0_awlen,
+	       fabric_2x1$v_from_masters_1_arlen,
+	       fabric_2x1$v_from_masters_1_awlen,
+	       fabric_2x1$v_to_slaves_0_arlen,
+	       fabric_2x1$v_to_slaves_0_awlen;
+  wire [3 : 0] fabric_2x1$set_verbosity_verbosity,
+	       fabric_2x1$v_from_masters_0_arcache,
+	       fabric_2x1$v_from_masters_0_arqos,
+	       fabric_2x1$v_from_masters_0_arregion,
+	       fabric_2x1$v_from_masters_0_awcache,
+	       fabric_2x1$v_from_masters_0_awqos,
+	       fabric_2x1$v_from_masters_0_awregion,
+	       fabric_2x1$v_from_masters_1_arcache,
+	       fabric_2x1$v_from_masters_1_arqos,
+	       fabric_2x1$v_from_masters_1_arregion,
+	       fabric_2x1$v_from_masters_1_awcache,
+	       fabric_2x1$v_from_masters_1_awqos,
+	       fabric_2x1$v_from_masters_1_awregion,
+	       fabric_2x1$v_to_slaves_0_arcache,
+	       fabric_2x1$v_to_slaves_0_arqos,
+	       fabric_2x1$v_to_slaves_0_arregion,
+	       fabric_2x1$v_to_slaves_0_awcache,
+	       fabric_2x1$v_to_slaves_0_awqos,
+	       fabric_2x1$v_to_slaves_0_awregion;
+  wire [2 : 0] fabric_2x1$v_from_masters_0_arprot,
+	       fabric_2x1$v_from_masters_0_arsize,
+	       fabric_2x1$v_from_masters_0_awprot,
+	       fabric_2x1$v_from_masters_0_awsize,
+	       fabric_2x1$v_from_masters_1_arprot,
+	       fabric_2x1$v_from_masters_1_arsize,
+	       fabric_2x1$v_from_masters_1_awprot,
+	       fabric_2x1$v_from_masters_1_awsize,
+	       fabric_2x1$v_to_slaves_0_arprot,
+	       fabric_2x1$v_to_slaves_0_arsize,
+	       fabric_2x1$v_to_slaves_0_awprot,
+	       fabric_2x1$v_to_slaves_0_awsize;
+  wire [1 : 0] fabric_2x1$v_from_masters_0_arburst,
+	       fabric_2x1$v_from_masters_0_awburst,
+	       fabric_2x1$v_from_masters_0_bresp,
+	       fabric_2x1$v_from_masters_0_rresp,
+	       fabric_2x1$v_from_masters_1_arburst,
+	       fabric_2x1$v_from_masters_1_awburst,
+	       fabric_2x1$v_from_masters_1_bresp,
+	       fabric_2x1$v_from_masters_1_rresp,
+	       fabric_2x1$v_to_slaves_0_arburst,
+	       fabric_2x1$v_to_slaves_0_awburst,
+	       fabric_2x1$v_to_slaves_0_bresp,
+	       fabric_2x1$v_to_slaves_0_rresp;
+  wire fabric_2x1$EN_reset,
+       fabric_2x1$EN_set_verbosity,
+       fabric_2x1$v_from_masters_0_arlock,
+       fabric_2x1$v_from_masters_0_arready,
+       fabric_2x1$v_from_masters_0_arvalid,
+       fabric_2x1$v_from_masters_0_awlock,
+       fabric_2x1$v_from_masters_0_awready,
+       fabric_2x1$v_from_masters_0_awvalid,
+       fabric_2x1$v_from_masters_0_bready,
+       fabric_2x1$v_from_masters_0_bvalid,
+       fabric_2x1$v_from_masters_0_rlast,
+       fabric_2x1$v_from_masters_0_rready,
+       fabric_2x1$v_from_masters_0_rvalid,
+       fabric_2x1$v_from_masters_0_wlast,
+       fabric_2x1$v_from_masters_0_wready,
+       fabric_2x1$v_from_masters_0_wvalid,
+       fabric_2x1$v_from_masters_1_arlock,
+       fabric_2x1$v_from_masters_1_arready,
+       fabric_2x1$v_from_masters_1_arvalid,
+       fabric_2x1$v_from_masters_1_awlock,
+       fabric_2x1$v_from_masters_1_awready,
+       fabric_2x1$v_from_masters_1_awvalid,
+       fabric_2x1$v_from_masters_1_bready,
+       fabric_2x1$v_from_masters_1_bvalid,
+       fabric_2x1$v_from_masters_1_rlast,
+       fabric_2x1$v_from_masters_1_rready,
+       fabric_2x1$v_from_masters_1_rvalid,
+       fabric_2x1$v_from_masters_1_wlast,
+       fabric_2x1$v_from_masters_1_wready,
+       fabric_2x1$v_from_masters_1_wvalid,
+       fabric_2x1$v_to_slaves_0_arlock,
+       fabric_2x1$v_to_slaves_0_arready,
+       fabric_2x1$v_to_slaves_0_arvalid,
+       fabric_2x1$v_to_slaves_0_awlock,
+       fabric_2x1$v_to_slaves_0_awready,
+       fabric_2x1$v_to_slaves_0_awvalid,
+       fabric_2x1$v_to_slaves_0_bready,
+       fabric_2x1$v_to_slaves_0_bvalid,
+       fabric_2x1$v_to_slaves_0_rlast,
+       fabric_2x1$v_to_slaves_0_rready,
+       fabric_2x1$v_to_slaves_0_rvalid,
+       fabric_2x1$v_to_slaves_0_wlast,
+       fabric_2x1$v_to_slaves_0_wready,
+       fabric_2x1$v_to_slaves_0_wvalid;
 
-  // ports of submodule master_xactor_f_rd_addr
-  wire [108 : 0] master_xactor_f_rd_addr$D_IN, master_xactor_f_rd_addr$D_OUT;
-  wire master_xactor_f_rd_addr$CLR,
-       master_xactor_f_rd_addr$DEQ,
-       master_xactor_f_rd_addr$EMPTY_N,
-       master_xactor_f_rd_addr$ENQ;
+  // ports of submodule widener_f_araddrs
+  wire [63 : 0] widener_f_araddrs$D_IN, widener_f_araddrs$D_OUT;
+  wire widener_f_araddrs$CLR,
+       widener_f_araddrs$DEQ,
+       widener_f_araddrs$EMPTY_N,
+       widener_f_araddrs$ENQ,
+       widener_f_araddrs$FULL_N;
 
-  // ports of submodule master_xactor_f_rd_data
-  wire [530 : 0] master_xactor_f_rd_data$D_IN;
-  wire master_xactor_f_rd_data$CLR,
-       master_xactor_f_rd_data$DEQ,
-       master_xactor_f_rd_data$ENQ,
-       master_xactor_f_rd_data$FULL_N;
+  // ports of submodule widener_xactor_from_master_f_rd_addr
+  wire [108 : 0] widener_xactor_from_master_f_rd_addr$D_IN,
+		 widener_xactor_from_master_f_rd_addr$D_OUT;
+  wire widener_xactor_from_master_f_rd_addr$CLR,
+       widener_xactor_from_master_f_rd_addr$DEQ,
+       widener_xactor_from_master_f_rd_addr$EMPTY_N,
+       widener_xactor_from_master_f_rd_addr$ENQ,
+       widener_xactor_from_master_f_rd_addr$FULL_N;
 
-  // ports of submodule master_xactor_f_wr_addr
-  wire [108 : 0] master_xactor_f_wr_addr$D_IN, master_xactor_f_wr_addr$D_OUT;
-  wire master_xactor_f_wr_addr$CLR,
-       master_xactor_f_wr_addr$DEQ,
-       master_xactor_f_wr_addr$EMPTY_N,
-       master_xactor_f_wr_addr$ENQ;
+  // ports of submodule widener_xactor_from_master_f_rd_data
+  wire [82 : 0] widener_xactor_from_master_f_rd_data$D_IN,
+		widener_xactor_from_master_f_rd_data$D_OUT;
+  wire widener_xactor_from_master_f_rd_data$CLR,
+       widener_xactor_from_master_f_rd_data$DEQ,
+       widener_xactor_from_master_f_rd_data$EMPTY_N,
+       widener_xactor_from_master_f_rd_data$ENQ,
+       widener_xactor_from_master_f_rd_data$FULL_N;
 
-  // ports of submodule master_xactor_f_wr_data
-  wire [576 : 0] master_xactor_f_wr_data$D_IN, master_xactor_f_wr_data$D_OUT;
-  wire master_xactor_f_wr_data$CLR,
-       master_xactor_f_wr_data$DEQ,
-       master_xactor_f_wr_data$EMPTY_N,
-       master_xactor_f_wr_data$ENQ;
+  // ports of submodule widener_xactor_from_master_f_wr_addr
+  wire [108 : 0] widener_xactor_from_master_f_wr_addr$D_IN,
+		 widener_xactor_from_master_f_wr_addr$D_OUT;
+  wire widener_xactor_from_master_f_wr_addr$CLR,
+       widener_xactor_from_master_f_wr_addr$DEQ,
+       widener_xactor_from_master_f_wr_addr$EMPTY_N,
+       widener_xactor_from_master_f_wr_addr$ENQ,
+       widener_xactor_from_master_f_wr_addr$FULL_N;
 
-  // ports of submodule master_xactor_f_wr_resp
-  wire [17 : 0] master_xactor_f_wr_resp$D_IN;
-  wire master_xactor_f_wr_resp$CLR,
-       master_xactor_f_wr_resp$DEQ,
-       master_xactor_f_wr_resp$ENQ,
-       master_xactor_f_wr_resp$FULL_N;
+  // ports of submodule widener_xactor_from_master_f_wr_data
+  wire [72 : 0] widener_xactor_from_master_f_wr_data$D_IN,
+		widener_xactor_from_master_f_wr_data$D_OUT;
+  wire widener_xactor_from_master_f_wr_data$CLR,
+       widener_xactor_from_master_f_wr_data$DEQ,
+       widener_xactor_from_master_f_wr_data$EMPTY_N,
+       widener_xactor_from_master_f_wr_data$ENQ,
+       widener_xactor_from_master_f_wr_data$FULL_N;
 
-  // ports of submodule slave_xactor_A_f_rd_addr
-  wire [108 : 0] slave_xactor_A_f_rd_addr$D_IN;
-  wire slave_xactor_A_f_rd_addr$CLR,
-       slave_xactor_A_f_rd_addr$DEQ,
-       slave_xactor_A_f_rd_addr$ENQ,
-       slave_xactor_A_f_rd_addr$FULL_N;
+  // ports of submodule widener_xactor_from_master_f_wr_resp
+  wire [17 : 0] widener_xactor_from_master_f_wr_resp$D_IN,
+		widener_xactor_from_master_f_wr_resp$D_OUT;
+  wire widener_xactor_from_master_f_wr_resp$CLR,
+       widener_xactor_from_master_f_wr_resp$DEQ,
+       widener_xactor_from_master_f_wr_resp$EMPTY_N,
+       widener_xactor_from_master_f_wr_resp$ENQ,
+       widener_xactor_from_master_f_wr_resp$FULL_N;
 
-  // ports of submodule slave_xactor_A_f_rd_data
-  wire [530 : 0] slave_xactor_A_f_rd_data$D_IN,
-		 slave_xactor_A_f_rd_data$D_OUT;
-  wire slave_xactor_A_f_rd_data$CLR,
-       slave_xactor_A_f_rd_data$DEQ,
-       slave_xactor_A_f_rd_data$EMPTY_N,
-       slave_xactor_A_f_rd_data$ENQ;
+  // ports of submodule widener_xactor_to_slave_f_rd_addr
+  wire [108 : 0] widener_xactor_to_slave_f_rd_addr$D_IN,
+		 widener_xactor_to_slave_f_rd_addr$D_OUT;
+  wire widener_xactor_to_slave_f_rd_addr$CLR,
+       widener_xactor_to_slave_f_rd_addr$DEQ,
+       widener_xactor_to_slave_f_rd_addr$EMPTY_N,
+       widener_xactor_to_slave_f_rd_addr$ENQ,
+       widener_xactor_to_slave_f_rd_addr$FULL_N;
 
-  // ports of submodule slave_xactor_A_f_wr_addr
-  wire [108 : 0] slave_xactor_A_f_wr_addr$D_IN;
-  wire slave_xactor_A_f_wr_addr$CLR,
-       slave_xactor_A_f_wr_addr$DEQ,
-       slave_xactor_A_f_wr_addr$ENQ,
-       slave_xactor_A_f_wr_addr$FULL_N;
+  // ports of submodule widener_xactor_to_slave_f_rd_data
+  wire [530 : 0] widener_xactor_to_slave_f_rd_data$D_IN,
+		 widener_xactor_to_slave_f_rd_data$D_OUT;
+  wire widener_xactor_to_slave_f_rd_data$CLR,
+       widener_xactor_to_slave_f_rd_data$DEQ,
+       widener_xactor_to_slave_f_rd_data$EMPTY_N,
+       widener_xactor_to_slave_f_rd_data$ENQ,
+       widener_xactor_to_slave_f_rd_data$FULL_N;
 
-  // ports of submodule slave_xactor_A_f_wr_data
-  wire [576 : 0] slave_xactor_A_f_wr_data$D_IN;
-  wire slave_xactor_A_f_wr_data$CLR,
-       slave_xactor_A_f_wr_data$DEQ,
-       slave_xactor_A_f_wr_data$ENQ,
-       slave_xactor_A_f_wr_data$FULL_N;
+  // ports of submodule widener_xactor_to_slave_f_wr_addr
+  wire [108 : 0] widener_xactor_to_slave_f_wr_addr$D_IN,
+		 widener_xactor_to_slave_f_wr_addr$D_OUT;
+  wire widener_xactor_to_slave_f_wr_addr$CLR,
+       widener_xactor_to_slave_f_wr_addr$DEQ,
+       widener_xactor_to_slave_f_wr_addr$EMPTY_N,
+       widener_xactor_to_slave_f_wr_addr$ENQ,
+       widener_xactor_to_slave_f_wr_addr$FULL_N;
 
-  // ports of submodule slave_xactor_A_f_wr_resp
-  wire [17 : 0] slave_xactor_A_f_wr_resp$D_IN, slave_xactor_A_f_wr_resp$D_OUT;
-  wire slave_xactor_A_f_wr_resp$CLR,
-       slave_xactor_A_f_wr_resp$DEQ,
-       slave_xactor_A_f_wr_resp$EMPTY_N,
-       slave_xactor_A_f_wr_resp$ENQ;
+  // ports of submodule widener_xactor_to_slave_f_wr_data
+  wire [576 : 0] widener_xactor_to_slave_f_wr_data$D_IN,
+		 widener_xactor_to_slave_f_wr_data$D_OUT;
+  wire widener_xactor_to_slave_f_wr_data$CLR,
+       widener_xactor_to_slave_f_wr_data$DEQ,
+       widener_xactor_to_slave_f_wr_data$EMPTY_N,
+       widener_xactor_to_slave_f_wr_data$ENQ,
+       widener_xactor_to_slave_f_wr_data$FULL_N;
 
-  // ports of submodule slave_xactor_B_f_rd_addr
-  wire [108 : 0] slave_xactor_B_f_rd_addr$D_IN;
-  wire slave_xactor_B_f_rd_addr$CLR,
-       slave_xactor_B_f_rd_addr$DEQ,
-       slave_xactor_B_f_rd_addr$ENQ,
-       slave_xactor_B_f_rd_addr$FULL_N;
-
-  // ports of submodule slave_xactor_B_f_rd_data
-  wire [82 : 0] slave_xactor_B_f_rd_data$D_IN, slave_xactor_B_f_rd_data$D_OUT;
-  wire slave_xactor_B_f_rd_data$CLR,
-       slave_xactor_B_f_rd_data$DEQ,
-       slave_xactor_B_f_rd_data$EMPTY_N,
-       slave_xactor_B_f_rd_data$ENQ;
-
-  // ports of submodule slave_xactor_B_f_wr_addr
-  wire [108 : 0] slave_xactor_B_f_wr_addr$D_IN;
-  wire slave_xactor_B_f_wr_addr$CLR,
-       slave_xactor_B_f_wr_addr$DEQ,
-       slave_xactor_B_f_wr_addr$ENQ,
-       slave_xactor_B_f_wr_addr$FULL_N;
-
-  // ports of submodule slave_xactor_B_f_wr_data
-  wire [72 : 0] slave_xactor_B_f_wr_data$D_IN;
-  wire slave_xactor_B_f_wr_data$CLR,
-       slave_xactor_B_f_wr_data$DEQ,
-       slave_xactor_B_f_wr_data$ENQ,
-       slave_xactor_B_f_wr_data$FULL_N;
-
-  // ports of submodule slave_xactor_B_f_wr_resp
-  wire [17 : 0] slave_xactor_B_f_wr_resp$D_IN, slave_xactor_B_f_wr_resp$D_OUT;
-  wire slave_xactor_B_f_wr_resp$CLR,
-       slave_xactor_B_f_wr_resp$DEQ,
-       slave_xactor_B_f_wr_resp$EMPTY_N,
-       slave_xactor_B_f_wr_resp$ENQ;
+  // ports of submodule widener_xactor_to_slave_f_wr_resp
+  wire [17 : 0] widener_xactor_to_slave_f_wr_resp$D_IN,
+		widener_xactor_to_slave_f_wr_resp$D_OUT;
+  wire widener_xactor_to_slave_f_wr_resp$CLR,
+       widener_xactor_to_slave_f_wr_resp$DEQ,
+       widener_xactor_to_slave_f_wr_resp$EMPTY_N,
+       widener_xactor_to_slave_f_wr_resp$ENQ,
+       widener_xactor_to_slave_f_wr_resp$FULL_N;
 
   // rule scheduling signals
-  wire CAN_FIRE_RL_rl_WARNING,
+  wire CAN_FIRE_RL_rl_rd_addr_channel,
+       CAN_FIRE_RL_rl_rd_data_channel,
+       CAN_FIRE_RL_rl_wr_addr_channel,
+       CAN_FIRE_RL_rl_wr_data_channel,
+       CAN_FIRE_RL_rl_wr_response_channel,
+       CAN_FIRE_RL_widener_rl_rd_resp_slave_to_master,
+       CAN_FIRE_RL_widener_rl_rd_xaction_master_to_slave,
+       CAN_FIRE_RL_widener_rl_wr_resp_slave_to_master,
+       CAN_FIRE_RL_widener_rl_wr_xaction_master_to_slave,
        CAN_FIRE_initiator_A_server_m_arvalid,
        CAN_FIRE_initiator_A_server_m_awvalid,
        CAN_FIRE_initiator_A_server_m_bready,
@@ -768,7 +886,15 @@ module mkDma_Server_Mux(CLK,
        CAN_FIRE_target_client_m_bvalid,
        CAN_FIRE_target_client_m_rvalid,
        CAN_FIRE_target_client_m_wready,
-       WILL_FIRE_RL_rl_WARNING,
+       WILL_FIRE_RL_rl_rd_addr_channel,
+       WILL_FIRE_RL_rl_rd_data_channel,
+       WILL_FIRE_RL_rl_wr_addr_channel,
+       WILL_FIRE_RL_rl_wr_data_channel,
+       WILL_FIRE_RL_rl_wr_response_channel,
+       WILL_FIRE_RL_widener_rl_rd_resp_slave_to_master,
+       WILL_FIRE_RL_widener_rl_rd_xaction_master_to_slave,
+       WILL_FIRE_RL_widener_rl_wr_resp_slave_to_master,
+       WILL_FIRE_RL_widener_rl_wr_xaction_master_to_slave,
        WILL_FIRE_initiator_A_server_m_arvalid,
        WILL_FIRE_initiator_A_server_m_awvalid,
        WILL_FIRE_initiator_A_server_m_bready,
@@ -785,34 +911,32 @@ module mkDma_Server_Mux(CLK,
        WILL_FIRE_target_client_m_rvalid,
        WILL_FIRE_target_client_m_wready;
 
-  // declarations used by system tasks
-  // synopsys translate_off
-  reg [31 : 0] v__h1556;
-  reg [31 : 0] v__h1550;
-  // synopsys translate_on
+  // remaining internal signals
+  wire [511 : 0] s_data__h1390, s_wrd_wdata__h1385, x__h1956;
+  wire [63 : 0] s_strb__h1392, s_wrd_wstrb__h1386;
 
   // action method initiator_A_server_m_awvalid
   assign CAN_FIRE_initiator_A_server_m_awvalid = 1'd1 ;
   assign WILL_FIRE_initiator_A_server_m_awvalid = 1'd1 ;
 
   // value method initiator_A_server_m_awready
-  assign initiator_A_server_awready = slave_xactor_A_f_wr_addr$FULL_N ;
+  assign initiator_A_server_awready = fabric_2x1$v_from_masters_0_awready ;
 
   // action method initiator_A_server_m_wvalid
   assign CAN_FIRE_initiator_A_server_m_wvalid = 1'd1 ;
   assign WILL_FIRE_initiator_A_server_m_wvalid = 1'd1 ;
 
   // value method initiator_A_server_m_wready
-  assign initiator_A_server_wready = slave_xactor_A_f_wr_data$FULL_N ;
+  assign initiator_A_server_wready = fabric_2x1$v_from_masters_0_wready ;
 
   // value method initiator_A_server_m_bvalid
-  assign initiator_A_server_bvalid = slave_xactor_A_f_wr_resp$EMPTY_N ;
+  assign initiator_A_server_bvalid = fabric_2x1$v_from_masters_0_bvalid ;
 
   // value method initiator_A_server_m_bid
-  assign initiator_A_server_bid = slave_xactor_A_f_wr_resp$D_OUT[17:2] ;
+  assign initiator_A_server_bid = fabric_2x1$v_from_masters_0_bid ;
 
   // value method initiator_A_server_m_bresp
-  assign initiator_A_server_bresp = slave_xactor_A_f_wr_resp$D_OUT[1:0] ;
+  assign initiator_A_server_bresp = fabric_2x1$v_from_masters_0_bresp ;
 
   // action method initiator_A_server_m_bready
   assign CAN_FIRE_initiator_A_server_m_bready = 1'd1 ;
@@ -823,22 +947,22 @@ module mkDma_Server_Mux(CLK,
   assign WILL_FIRE_initiator_A_server_m_arvalid = 1'd1 ;
 
   // value method initiator_A_server_m_arready
-  assign initiator_A_server_arready = slave_xactor_A_f_rd_addr$FULL_N ;
+  assign initiator_A_server_arready = fabric_2x1$v_from_masters_0_arready ;
 
   // value method initiator_A_server_m_rvalid
-  assign initiator_A_server_rvalid = slave_xactor_A_f_rd_data$EMPTY_N ;
+  assign initiator_A_server_rvalid = fabric_2x1$v_from_masters_0_rvalid ;
 
   // value method initiator_A_server_m_rid
-  assign initiator_A_server_rid = slave_xactor_A_f_rd_data$D_OUT[530:515] ;
+  assign initiator_A_server_rid = fabric_2x1$v_from_masters_0_rid ;
 
   // value method initiator_A_server_m_rdata
-  assign initiator_A_server_rdata = slave_xactor_A_f_rd_data$D_OUT[514:3] ;
+  assign initiator_A_server_rdata = fabric_2x1$v_from_masters_0_rdata ;
 
   // value method initiator_A_server_m_rresp
-  assign initiator_A_server_rresp = slave_xactor_A_f_rd_data$D_OUT[2:1] ;
+  assign initiator_A_server_rresp = fabric_2x1$v_from_masters_0_rresp ;
 
   // value method initiator_A_server_m_rlast
-  assign initiator_A_server_rlast = slave_xactor_A_f_rd_data$D_OUT[0] ;
+  assign initiator_A_server_rlast = fabric_2x1$v_from_masters_0_rlast ;
 
   // action method initiator_A_server_m_rready
   assign CAN_FIRE_initiator_A_server_m_rready = 1'd1 ;
@@ -849,23 +973,28 @@ module mkDma_Server_Mux(CLK,
   assign WILL_FIRE_initiator_B_server_m_awvalid = 1'd1 ;
 
   // value method initiator_B_server_m_awready
-  assign initiator_B_server_awready = slave_xactor_B_f_wr_addr$FULL_N ;
+  assign initiator_B_server_awready =
+	     widener_xactor_from_master_f_wr_addr$FULL_N ;
 
   // action method initiator_B_server_m_wvalid
   assign CAN_FIRE_initiator_B_server_m_wvalid = 1'd1 ;
   assign WILL_FIRE_initiator_B_server_m_wvalid = 1'd1 ;
 
   // value method initiator_B_server_m_wready
-  assign initiator_B_server_wready = slave_xactor_B_f_wr_data$FULL_N ;
+  assign initiator_B_server_wready =
+	     widener_xactor_from_master_f_wr_data$FULL_N ;
 
   // value method initiator_B_server_m_bvalid
-  assign initiator_B_server_bvalid = slave_xactor_B_f_wr_resp$EMPTY_N ;
+  assign initiator_B_server_bvalid =
+	     widener_xactor_from_master_f_wr_resp$EMPTY_N ;
 
   // value method initiator_B_server_m_bid
-  assign initiator_B_server_bid = slave_xactor_B_f_wr_resp$D_OUT[17:2] ;
+  assign initiator_B_server_bid =
+	     widener_xactor_from_master_f_wr_resp$D_OUT[17:2] ;
 
   // value method initiator_B_server_m_bresp
-  assign initiator_B_server_bresp = slave_xactor_B_f_wr_resp$D_OUT[1:0] ;
+  assign initiator_B_server_bresp =
+	     widener_xactor_from_master_f_wr_resp$D_OUT[1:0] ;
 
   // action method initiator_B_server_m_bready
   assign CAN_FIRE_initiator_B_server_m_bready = 1'd1 ;
@@ -876,75 +1005,81 @@ module mkDma_Server_Mux(CLK,
   assign WILL_FIRE_initiator_B_server_m_arvalid = 1'd1 ;
 
   // value method initiator_B_server_m_arready
-  assign initiator_B_server_arready = slave_xactor_B_f_rd_addr$FULL_N ;
+  assign initiator_B_server_arready =
+	     widener_xactor_from_master_f_rd_addr$FULL_N ;
 
   // value method initiator_B_server_m_rvalid
-  assign initiator_B_server_rvalid = slave_xactor_B_f_rd_data$EMPTY_N ;
+  assign initiator_B_server_rvalid =
+	     widener_xactor_from_master_f_rd_data$EMPTY_N ;
 
   // value method initiator_B_server_m_rid
-  assign initiator_B_server_rid = slave_xactor_B_f_rd_data$D_OUT[82:67] ;
+  assign initiator_B_server_rid =
+	     widener_xactor_from_master_f_rd_data$D_OUT[82:67] ;
 
   // value method initiator_B_server_m_rdata
-  assign initiator_B_server_rdata = slave_xactor_B_f_rd_data$D_OUT[66:3] ;
+  assign initiator_B_server_rdata =
+	     widener_xactor_from_master_f_rd_data$D_OUT[66:3] ;
 
   // value method initiator_B_server_m_rresp
-  assign initiator_B_server_rresp = slave_xactor_B_f_rd_data$D_OUT[2:1] ;
+  assign initiator_B_server_rresp =
+	     widener_xactor_from_master_f_rd_data$D_OUT[2:1] ;
 
   // value method initiator_B_server_m_rlast
-  assign initiator_B_server_rlast = slave_xactor_B_f_rd_data$D_OUT[0] ;
+  assign initiator_B_server_rlast =
+	     widener_xactor_from_master_f_rd_data$D_OUT[0] ;
 
   // action method initiator_B_server_m_rready
   assign CAN_FIRE_initiator_B_server_m_rready = 1'd1 ;
   assign WILL_FIRE_initiator_B_server_m_rready = 1'd1 ;
 
   // value method target_client_m_awvalid
-  assign target_client_awvalid = master_xactor_f_wr_addr$EMPTY_N ;
+  assign target_client_awvalid = fabric_2x1$v_to_slaves_0_awvalid ;
 
   // value method target_client_m_awid
-  assign target_client_awid = master_xactor_f_wr_addr$D_OUT[108:93] ;
+  assign target_client_awid = fabric_2x1$v_to_slaves_0_awid ;
 
   // value method target_client_m_awaddr
-  assign target_client_awaddr = master_xactor_f_wr_addr$D_OUT[92:29] ;
+  assign target_client_awaddr = fabric_2x1$v_to_slaves_0_awaddr ;
 
   // value method target_client_m_awlen
-  assign target_client_awlen = master_xactor_f_wr_addr$D_OUT[28:21] ;
+  assign target_client_awlen = fabric_2x1$v_to_slaves_0_awlen ;
 
   // value method target_client_m_awsize
-  assign target_client_awsize = master_xactor_f_wr_addr$D_OUT[20:18] ;
+  assign target_client_awsize = fabric_2x1$v_to_slaves_0_awsize ;
 
   // value method target_client_m_awburst
-  assign target_client_awburst = master_xactor_f_wr_addr$D_OUT[17:16] ;
+  assign target_client_awburst = fabric_2x1$v_to_slaves_0_awburst ;
 
   // value method target_client_m_awlock
-  assign target_client_awlock = master_xactor_f_wr_addr$D_OUT[15] ;
+  assign target_client_awlock = fabric_2x1$v_to_slaves_0_awlock ;
 
   // value method target_client_m_awcache
-  assign target_client_awcache = master_xactor_f_wr_addr$D_OUT[14:11] ;
+  assign target_client_awcache = fabric_2x1$v_to_slaves_0_awcache ;
 
   // value method target_client_m_awprot
-  assign target_client_awprot = master_xactor_f_wr_addr$D_OUT[10:8] ;
+  assign target_client_awprot = fabric_2x1$v_to_slaves_0_awprot ;
 
   // value method target_client_m_awqos
-  assign target_client_awqos = master_xactor_f_wr_addr$D_OUT[7:4] ;
+  assign target_client_awqos = fabric_2x1$v_to_slaves_0_awqos ;
 
   // value method target_client_m_awregion
-  assign target_client_awregion = master_xactor_f_wr_addr$D_OUT[3:0] ;
+  assign target_client_awregion = fabric_2x1$v_to_slaves_0_awregion ;
 
   // action method target_client_m_awready
   assign CAN_FIRE_target_client_m_awready = 1'd1 ;
   assign WILL_FIRE_target_client_m_awready = 1'd1 ;
 
   // value method target_client_m_wvalid
-  assign target_client_wvalid = master_xactor_f_wr_data$EMPTY_N ;
+  assign target_client_wvalid = fabric_2x1$v_to_slaves_0_wvalid ;
 
   // value method target_client_m_wdata
-  assign target_client_wdata = master_xactor_f_wr_data$D_OUT[576:65] ;
+  assign target_client_wdata = fabric_2x1$v_to_slaves_0_wdata ;
 
   // value method target_client_m_wstrb
-  assign target_client_wstrb = master_xactor_f_wr_data$D_OUT[64:1] ;
+  assign target_client_wstrb = fabric_2x1$v_to_slaves_0_wstrb ;
 
   // value method target_client_m_wlast
-  assign target_client_wlast = master_xactor_f_wr_data$D_OUT[0] ;
+  assign target_client_wlast = fabric_2x1$v_to_slaves_0_wlast ;
 
   // action method target_client_m_wready
   assign CAN_FIRE_target_client_m_wready = 1'd1 ;
@@ -955,40 +1090,40 @@ module mkDma_Server_Mux(CLK,
   assign WILL_FIRE_target_client_m_bvalid = 1'd1 ;
 
   // value method target_client_m_bready
-  assign target_client_bready = master_xactor_f_wr_resp$FULL_N ;
+  assign target_client_bready = fabric_2x1$v_to_slaves_0_bready ;
 
   // value method target_client_m_arvalid
-  assign target_client_arvalid = master_xactor_f_rd_addr$EMPTY_N ;
+  assign target_client_arvalid = fabric_2x1$v_to_slaves_0_arvalid ;
 
   // value method target_client_m_arid
-  assign target_client_arid = master_xactor_f_rd_addr$D_OUT[108:93] ;
+  assign target_client_arid = fabric_2x1$v_to_slaves_0_arid ;
 
   // value method target_client_m_araddr
-  assign target_client_araddr = master_xactor_f_rd_addr$D_OUT[92:29] ;
+  assign target_client_araddr = fabric_2x1$v_to_slaves_0_araddr ;
 
   // value method target_client_m_arlen
-  assign target_client_arlen = master_xactor_f_rd_addr$D_OUT[28:21] ;
+  assign target_client_arlen = fabric_2x1$v_to_slaves_0_arlen ;
 
   // value method target_client_m_arsize
-  assign target_client_arsize = master_xactor_f_rd_addr$D_OUT[20:18] ;
+  assign target_client_arsize = fabric_2x1$v_to_slaves_0_arsize ;
 
   // value method target_client_m_arburst
-  assign target_client_arburst = master_xactor_f_rd_addr$D_OUT[17:16] ;
+  assign target_client_arburst = fabric_2x1$v_to_slaves_0_arburst ;
 
   // value method target_client_m_arlock
-  assign target_client_arlock = master_xactor_f_rd_addr$D_OUT[15] ;
+  assign target_client_arlock = fabric_2x1$v_to_slaves_0_arlock ;
 
   // value method target_client_m_arcache
-  assign target_client_arcache = master_xactor_f_rd_addr$D_OUT[14:11] ;
+  assign target_client_arcache = fabric_2x1$v_to_slaves_0_arcache ;
 
   // value method target_client_m_arprot
-  assign target_client_arprot = master_xactor_f_rd_addr$D_OUT[10:8] ;
+  assign target_client_arprot = fabric_2x1$v_to_slaves_0_arprot ;
 
   // value method target_client_m_arqos
-  assign target_client_arqos = master_xactor_f_rd_addr$D_OUT[7:4] ;
+  assign target_client_arqos = fabric_2x1$v_to_slaves_0_arqos ;
 
   // value method target_client_m_arregion
-  assign target_client_arregion = master_xactor_f_rd_addr$D_OUT[3:0] ;
+  assign target_client_arregion = fabric_2x1$v_to_slaves_0_arregion ;
 
   // action method target_client_m_arready
   assign CAN_FIRE_target_client_m_arready = 1'd1 ;
@@ -999,296 +1134,431 @@ module mkDma_Server_Mux(CLK,
   assign WILL_FIRE_target_client_m_rvalid = 1'd1 ;
 
   // value method target_client_m_rready
-  assign target_client_rready = master_xactor_f_rd_data$FULL_N ;
+  assign target_client_rready = fabric_2x1$v_to_slaves_0_rready ;
 
-  // submodule master_xactor_f_rd_addr
+  // submodule fabric_2x1
+  mkDma_Server_Mux_Fabric fabric_2x1(.CLK(CLK),
+				     .RST_N(RST_N),
+				     .set_verbosity_verbosity(fabric_2x1$set_verbosity_verbosity),
+				     .v_from_masters_0_araddr(fabric_2x1$v_from_masters_0_araddr),
+				     .v_from_masters_0_arburst(fabric_2x1$v_from_masters_0_arburst),
+				     .v_from_masters_0_arcache(fabric_2x1$v_from_masters_0_arcache),
+				     .v_from_masters_0_arid(fabric_2x1$v_from_masters_0_arid),
+				     .v_from_masters_0_arlen(fabric_2x1$v_from_masters_0_arlen),
+				     .v_from_masters_0_arlock(fabric_2x1$v_from_masters_0_arlock),
+				     .v_from_masters_0_arprot(fabric_2x1$v_from_masters_0_arprot),
+				     .v_from_masters_0_arqos(fabric_2x1$v_from_masters_0_arqos),
+				     .v_from_masters_0_arregion(fabric_2x1$v_from_masters_0_arregion),
+				     .v_from_masters_0_arsize(fabric_2x1$v_from_masters_0_arsize),
+				     .v_from_masters_0_arvalid(fabric_2x1$v_from_masters_0_arvalid),
+				     .v_from_masters_0_awaddr(fabric_2x1$v_from_masters_0_awaddr),
+				     .v_from_masters_0_awburst(fabric_2x1$v_from_masters_0_awburst),
+				     .v_from_masters_0_awcache(fabric_2x1$v_from_masters_0_awcache),
+				     .v_from_masters_0_awid(fabric_2x1$v_from_masters_0_awid),
+				     .v_from_masters_0_awlen(fabric_2x1$v_from_masters_0_awlen),
+				     .v_from_masters_0_awlock(fabric_2x1$v_from_masters_0_awlock),
+				     .v_from_masters_0_awprot(fabric_2x1$v_from_masters_0_awprot),
+				     .v_from_masters_0_awqos(fabric_2x1$v_from_masters_0_awqos),
+				     .v_from_masters_0_awregion(fabric_2x1$v_from_masters_0_awregion),
+				     .v_from_masters_0_awsize(fabric_2x1$v_from_masters_0_awsize),
+				     .v_from_masters_0_awvalid(fabric_2x1$v_from_masters_0_awvalid),
+				     .v_from_masters_0_bready(fabric_2x1$v_from_masters_0_bready),
+				     .v_from_masters_0_rready(fabric_2x1$v_from_masters_0_rready),
+				     .v_from_masters_0_wdata(fabric_2x1$v_from_masters_0_wdata),
+				     .v_from_masters_0_wlast(fabric_2x1$v_from_masters_0_wlast),
+				     .v_from_masters_0_wstrb(fabric_2x1$v_from_masters_0_wstrb),
+				     .v_from_masters_0_wvalid(fabric_2x1$v_from_masters_0_wvalid),
+				     .v_from_masters_1_araddr(fabric_2x1$v_from_masters_1_araddr),
+				     .v_from_masters_1_arburst(fabric_2x1$v_from_masters_1_arburst),
+				     .v_from_masters_1_arcache(fabric_2x1$v_from_masters_1_arcache),
+				     .v_from_masters_1_arid(fabric_2x1$v_from_masters_1_arid),
+				     .v_from_masters_1_arlen(fabric_2x1$v_from_masters_1_arlen),
+				     .v_from_masters_1_arlock(fabric_2x1$v_from_masters_1_arlock),
+				     .v_from_masters_1_arprot(fabric_2x1$v_from_masters_1_arprot),
+				     .v_from_masters_1_arqos(fabric_2x1$v_from_masters_1_arqos),
+				     .v_from_masters_1_arregion(fabric_2x1$v_from_masters_1_arregion),
+				     .v_from_masters_1_arsize(fabric_2x1$v_from_masters_1_arsize),
+				     .v_from_masters_1_arvalid(fabric_2x1$v_from_masters_1_arvalid),
+				     .v_from_masters_1_awaddr(fabric_2x1$v_from_masters_1_awaddr),
+				     .v_from_masters_1_awburst(fabric_2x1$v_from_masters_1_awburst),
+				     .v_from_masters_1_awcache(fabric_2x1$v_from_masters_1_awcache),
+				     .v_from_masters_1_awid(fabric_2x1$v_from_masters_1_awid),
+				     .v_from_masters_1_awlen(fabric_2x1$v_from_masters_1_awlen),
+				     .v_from_masters_1_awlock(fabric_2x1$v_from_masters_1_awlock),
+				     .v_from_masters_1_awprot(fabric_2x1$v_from_masters_1_awprot),
+				     .v_from_masters_1_awqos(fabric_2x1$v_from_masters_1_awqos),
+				     .v_from_masters_1_awregion(fabric_2x1$v_from_masters_1_awregion),
+				     .v_from_masters_1_awsize(fabric_2x1$v_from_masters_1_awsize),
+				     .v_from_masters_1_awvalid(fabric_2x1$v_from_masters_1_awvalid),
+				     .v_from_masters_1_bready(fabric_2x1$v_from_masters_1_bready),
+				     .v_from_masters_1_rready(fabric_2x1$v_from_masters_1_rready),
+				     .v_from_masters_1_wdata(fabric_2x1$v_from_masters_1_wdata),
+				     .v_from_masters_1_wlast(fabric_2x1$v_from_masters_1_wlast),
+				     .v_from_masters_1_wstrb(fabric_2x1$v_from_masters_1_wstrb),
+				     .v_from_masters_1_wvalid(fabric_2x1$v_from_masters_1_wvalid),
+				     .v_to_slaves_0_arready(fabric_2x1$v_to_slaves_0_arready),
+				     .v_to_slaves_0_awready(fabric_2x1$v_to_slaves_0_awready),
+				     .v_to_slaves_0_bid(fabric_2x1$v_to_slaves_0_bid),
+				     .v_to_slaves_0_bresp(fabric_2x1$v_to_slaves_0_bresp),
+				     .v_to_slaves_0_bvalid(fabric_2x1$v_to_slaves_0_bvalid),
+				     .v_to_slaves_0_rdata(fabric_2x1$v_to_slaves_0_rdata),
+				     .v_to_slaves_0_rid(fabric_2x1$v_to_slaves_0_rid),
+				     .v_to_slaves_0_rlast(fabric_2x1$v_to_slaves_0_rlast),
+				     .v_to_slaves_0_rresp(fabric_2x1$v_to_slaves_0_rresp),
+				     .v_to_slaves_0_rvalid(fabric_2x1$v_to_slaves_0_rvalid),
+				     .v_to_slaves_0_wready(fabric_2x1$v_to_slaves_0_wready),
+				     .EN_reset(fabric_2x1$EN_reset),
+				     .EN_set_verbosity(fabric_2x1$EN_set_verbosity),
+				     .RDY_reset(),
+				     .RDY_set_verbosity(),
+				     .v_from_masters_0_awready(fabric_2x1$v_from_masters_0_awready),
+				     .v_from_masters_0_wready(fabric_2x1$v_from_masters_0_wready),
+				     .v_from_masters_0_bvalid(fabric_2x1$v_from_masters_0_bvalid),
+				     .v_from_masters_0_bid(fabric_2x1$v_from_masters_0_bid),
+				     .v_from_masters_0_bresp(fabric_2x1$v_from_masters_0_bresp),
+				     .v_from_masters_0_arready(fabric_2x1$v_from_masters_0_arready),
+				     .v_from_masters_0_rvalid(fabric_2x1$v_from_masters_0_rvalid),
+				     .v_from_masters_0_rid(fabric_2x1$v_from_masters_0_rid),
+				     .v_from_masters_0_rdata(fabric_2x1$v_from_masters_0_rdata),
+				     .v_from_masters_0_rresp(fabric_2x1$v_from_masters_0_rresp),
+				     .v_from_masters_0_rlast(fabric_2x1$v_from_masters_0_rlast),
+				     .v_from_masters_1_awready(fabric_2x1$v_from_masters_1_awready),
+				     .v_from_masters_1_wready(fabric_2x1$v_from_masters_1_wready),
+				     .v_from_masters_1_bvalid(fabric_2x1$v_from_masters_1_bvalid),
+				     .v_from_masters_1_bid(fabric_2x1$v_from_masters_1_bid),
+				     .v_from_masters_1_bresp(fabric_2x1$v_from_masters_1_bresp),
+				     .v_from_masters_1_arready(fabric_2x1$v_from_masters_1_arready),
+				     .v_from_masters_1_rvalid(fabric_2x1$v_from_masters_1_rvalid),
+				     .v_from_masters_1_rid(fabric_2x1$v_from_masters_1_rid),
+				     .v_from_masters_1_rdata(fabric_2x1$v_from_masters_1_rdata),
+				     .v_from_masters_1_rresp(fabric_2x1$v_from_masters_1_rresp),
+				     .v_from_masters_1_rlast(fabric_2x1$v_from_masters_1_rlast),
+				     .v_to_slaves_0_awvalid(fabric_2x1$v_to_slaves_0_awvalid),
+				     .v_to_slaves_0_awid(fabric_2x1$v_to_slaves_0_awid),
+				     .v_to_slaves_0_awaddr(fabric_2x1$v_to_slaves_0_awaddr),
+				     .v_to_slaves_0_awlen(fabric_2x1$v_to_slaves_0_awlen),
+				     .v_to_slaves_0_awsize(fabric_2x1$v_to_slaves_0_awsize),
+				     .v_to_slaves_0_awburst(fabric_2x1$v_to_slaves_0_awburst),
+				     .v_to_slaves_0_awlock(fabric_2x1$v_to_slaves_0_awlock),
+				     .v_to_slaves_0_awcache(fabric_2x1$v_to_slaves_0_awcache),
+				     .v_to_slaves_0_awprot(fabric_2x1$v_to_slaves_0_awprot),
+				     .v_to_slaves_0_awqos(fabric_2x1$v_to_slaves_0_awqos),
+				     .v_to_slaves_0_awregion(fabric_2x1$v_to_slaves_0_awregion),
+				     .v_to_slaves_0_wvalid(fabric_2x1$v_to_slaves_0_wvalid),
+				     .v_to_slaves_0_wdata(fabric_2x1$v_to_slaves_0_wdata),
+				     .v_to_slaves_0_wstrb(fabric_2x1$v_to_slaves_0_wstrb),
+				     .v_to_slaves_0_wlast(fabric_2x1$v_to_slaves_0_wlast),
+				     .v_to_slaves_0_bready(fabric_2x1$v_to_slaves_0_bready),
+				     .v_to_slaves_0_arvalid(fabric_2x1$v_to_slaves_0_arvalid),
+				     .v_to_slaves_0_arid(fabric_2x1$v_to_slaves_0_arid),
+				     .v_to_slaves_0_araddr(fabric_2x1$v_to_slaves_0_araddr),
+				     .v_to_slaves_0_arlen(fabric_2x1$v_to_slaves_0_arlen),
+				     .v_to_slaves_0_arsize(fabric_2x1$v_to_slaves_0_arsize),
+				     .v_to_slaves_0_arburst(fabric_2x1$v_to_slaves_0_arburst),
+				     .v_to_slaves_0_arlock(fabric_2x1$v_to_slaves_0_arlock),
+				     .v_to_slaves_0_arcache(fabric_2x1$v_to_slaves_0_arcache),
+				     .v_to_slaves_0_arprot(fabric_2x1$v_to_slaves_0_arprot),
+				     .v_to_slaves_0_arqos(fabric_2x1$v_to_slaves_0_arqos),
+				     .v_to_slaves_0_arregion(fabric_2x1$v_to_slaves_0_arregion),
+				     .v_to_slaves_0_rready(fabric_2x1$v_to_slaves_0_rready));
+
+  // submodule widener_f_araddrs
+  SizedFIFO #(.p1width(32'd64),
+	      .p2depth(32'd8),
+	      .p3cntr_width(32'd3),
+	      .guarded(32'd1)) widener_f_araddrs(.RST(RST_N),
+						 .CLK(CLK),
+						 .D_IN(widener_f_araddrs$D_IN),
+						 .ENQ(widener_f_araddrs$ENQ),
+						 .DEQ(widener_f_araddrs$DEQ),
+						 .CLR(widener_f_araddrs$CLR),
+						 .D_OUT(widener_f_araddrs$D_OUT),
+						 .FULL_N(widener_f_araddrs$FULL_N),
+						 .EMPTY_N(widener_f_araddrs$EMPTY_N));
+
+  // submodule widener_xactor_from_master_f_rd_addr
   FIFO2 #(.width(32'd109),
-	  .guarded(32'd1)) master_xactor_f_rd_addr(.RST(RST_N),
-						   .CLK(CLK),
-						   .D_IN(master_xactor_f_rd_addr$D_IN),
-						   .ENQ(master_xactor_f_rd_addr$ENQ),
-						   .DEQ(master_xactor_f_rd_addr$DEQ),
-						   .CLR(master_xactor_f_rd_addr$CLR),
-						   .D_OUT(master_xactor_f_rd_addr$D_OUT),
-						   .FULL_N(),
-						   .EMPTY_N(master_xactor_f_rd_addr$EMPTY_N));
+	  .guarded(32'd1)) widener_xactor_from_master_f_rd_addr(.RST(RST_N),
+								.CLK(CLK),
+								.D_IN(widener_xactor_from_master_f_rd_addr$D_IN),
+								.ENQ(widener_xactor_from_master_f_rd_addr$ENQ),
+								.DEQ(widener_xactor_from_master_f_rd_addr$DEQ),
+								.CLR(widener_xactor_from_master_f_rd_addr$CLR),
+								.D_OUT(widener_xactor_from_master_f_rd_addr$D_OUT),
+								.FULL_N(widener_xactor_from_master_f_rd_addr$FULL_N),
+								.EMPTY_N(widener_xactor_from_master_f_rd_addr$EMPTY_N));
 
-  // submodule master_xactor_f_rd_data
-  FIFO2 #(.width(32'd531),
-	  .guarded(32'd1)) master_xactor_f_rd_data(.RST(RST_N),
-						   .CLK(CLK),
-						   .D_IN(master_xactor_f_rd_data$D_IN),
-						   .ENQ(master_xactor_f_rd_data$ENQ),
-						   .DEQ(master_xactor_f_rd_data$DEQ),
-						   .CLR(master_xactor_f_rd_data$CLR),
-						   .D_OUT(),
-						   .FULL_N(master_xactor_f_rd_data$FULL_N),
-						   .EMPTY_N());
-
-  // submodule master_xactor_f_wr_addr
-  FIFO2 #(.width(32'd109),
-	  .guarded(32'd1)) master_xactor_f_wr_addr(.RST(RST_N),
-						   .CLK(CLK),
-						   .D_IN(master_xactor_f_wr_addr$D_IN),
-						   .ENQ(master_xactor_f_wr_addr$ENQ),
-						   .DEQ(master_xactor_f_wr_addr$DEQ),
-						   .CLR(master_xactor_f_wr_addr$CLR),
-						   .D_OUT(master_xactor_f_wr_addr$D_OUT),
-						   .FULL_N(),
-						   .EMPTY_N(master_xactor_f_wr_addr$EMPTY_N));
-
-  // submodule master_xactor_f_wr_data
-  FIFO2 #(.width(32'd577),
-	  .guarded(32'd1)) master_xactor_f_wr_data(.RST(RST_N),
-						   .CLK(CLK),
-						   .D_IN(master_xactor_f_wr_data$D_IN),
-						   .ENQ(master_xactor_f_wr_data$ENQ),
-						   .DEQ(master_xactor_f_wr_data$DEQ),
-						   .CLR(master_xactor_f_wr_data$CLR),
-						   .D_OUT(master_xactor_f_wr_data$D_OUT),
-						   .FULL_N(),
-						   .EMPTY_N(master_xactor_f_wr_data$EMPTY_N));
-
-  // submodule master_xactor_f_wr_resp
-  FIFO2 #(.width(32'd18),
-	  .guarded(32'd1)) master_xactor_f_wr_resp(.RST(RST_N),
-						   .CLK(CLK),
-						   .D_IN(master_xactor_f_wr_resp$D_IN),
-						   .ENQ(master_xactor_f_wr_resp$ENQ),
-						   .DEQ(master_xactor_f_wr_resp$DEQ),
-						   .CLR(master_xactor_f_wr_resp$CLR),
-						   .D_OUT(),
-						   .FULL_N(master_xactor_f_wr_resp$FULL_N),
-						   .EMPTY_N());
-
-  // submodule slave_xactor_A_f_rd_addr
-  FIFO2 #(.width(32'd109),
-	  .guarded(32'd1)) slave_xactor_A_f_rd_addr(.RST(RST_N),
-						    .CLK(CLK),
-						    .D_IN(slave_xactor_A_f_rd_addr$D_IN),
-						    .ENQ(slave_xactor_A_f_rd_addr$ENQ),
-						    .DEQ(slave_xactor_A_f_rd_addr$DEQ),
-						    .CLR(slave_xactor_A_f_rd_addr$CLR),
-						    .D_OUT(),
-						    .FULL_N(slave_xactor_A_f_rd_addr$FULL_N),
-						    .EMPTY_N());
-
-  // submodule slave_xactor_A_f_rd_data
-  FIFO2 #(.width(32'd531),
-	  .guarded(32'd1)) slave_xactor_A_f_rd_data(.RST(RST_N),
-						    .CLK(CLK),
-						    .D_IN(slave_xactor_A_f_rd_data$D_IN),
-						    .ENQ(slave_xactor_A_f_rd_data$ENQ),
-						    .DEQ(slave_xactor_A_f_rd_data$DEQ),
-						    .CLR(slave_xactor_A_f_rd_data$CLR),
-						    .D_OUT(slave_xactor_A_f_rd_data$D_OUT),
-						    .FULL_N(),
-						    .EMPTY_N(slave_xactor_A_f_rd_data$EMPTY_N));
-
-  // submodule slave_xactor_A_f_wr_addr
-  FIFO2 #(.width(32'd109),
-	  .guarded(32'd1)) slave_xactor_A_f_wr_addr(.RST(RST_N),
-						    .CLK(CLK),
-						    .D_IN(slave_xactor_A_f_wr_addr$D_IN),
-						    .ENQ(slave_xactor_A_f_wr_addr$ENQ),
-						    .DEQ(slave_xactor_A_f_wr_addr$DEQ),
-						    .CLR(slave_xactor_A_f_wr_addr$CLR),
-						    .D_OUT(),
-						    .FULL_N(slave_xactor_A_f_wr_addr$FULL_N),
-						    .EMPTY_N());
-
-  // submodule slave_xactor_A_f_wr_data
-  FIFO2 #(.width(32'd577),
-	  .guarded(32'd1)) slave_xactor_A_f_wr_data(.RST(RST_N),
-						    .CLK(CLK),
-						    .D_IN(slave_xactor_A_f_wr_data$D_IN),
-						    .ENQ(slave_xactor_A_f_wr_data$ENQ),
-						    .DEQ(slave_xactor_A_f_wr_data$DEQ),
-						    .CLR(slave_xactor_A_f_wr_data$CLR),
-						    .D_OUT(),
-						    .FULL_N(slave_xactor_A_f_wr_data$FULL_N),
-						    .EMPTY_N());
-
-  // submodule slave_xactor_A_f_wr_resp
-  FIFO2 #(.width(32'd18),
-	  .guarded(32'd1)) slave_xactor_A_f_wr_resp(.RST(RST_N),
-						    .CLK(CLK),
-						    .D_IN(slave_xactor_A_f_wr_resp$D_IN),
-						    .ENQ(slave_xactor_A_f_wr_resp$ENQ),
-						    .DEQ(slave_xactor_A_f_wr_resp$DEQ),
-						    .CLR(slave_xactor_A_f_wr_resp$CLR),
-						    .D_OUT(slave_xactor_A_f_wr_resp$D_OUT),
-						    .FULL_N(),
-						    .EMPTY_N(slave_xactor_A_f_wr_resp$EMPTY_N));
-
-  // submodule slave_xactor_B_f_rd_addr
-  FIFO2 #(.width(32'd109),
-	  .guarded(32'd1)) slave_xactor_B_f_rd_addr(.RST(RST_N),
-						    .CLK(CLK),
-						    .D_IN(slave_xactor_B_f_rd_addr$D_IN),
-						    .ENQ(slave_xactor_B_f_rd_addr$ENQ),
-						    .DEQ(slave_xactor_B_f_rd_addr$DEQ),
-						    .CLR(slave_xactor_B_f_rd_addr$CLR),
-						    .D_OUT(),
-						    .FULL_N(slave_xactor_B_f_rd_addr$FULL_N),
-						    .EMPTY_N());
-
-  // submodule slave_xactor_B_f_rd_data
+  // submodule widener_xactor_from_master_f_rd_data
   FIFO2 #(.width(32'd83),
-	  .guarded(32'd1)) slave_xactor_B_f_rd_data(.RST(RST_N),
-						    .CLK(CLK),
-						    .D_IN(slave_xactor_B_f_rd_data$D_IN),
-						    .ENQ(slave_xactor_B_f_rd_data$ENQ),
-						    .DEQ(slave_xactor_B_f_rd_data$DEQ),
-						    .CLR(slave_xactor_B_f_rd_data$CLR),
-						    .D_OUT(slave_xactor_B_f_rd_data$D_OUT),
-						    .FULL_N(),
-						    .EMPTY_N(slave_xactor_B_f_rd_data$EMPTY_N));
+	  .guarded(32'd1)) widener_xactor_from_master_f_rd_data(.RST(RST_N),
+								.CLK(CLK),
+								.D_IN(widener_xactor_from_master_f_rd_data$D_IN),
+								.ENQ(widener_xactor_from_master_f_rd_data$ENQ),
+								.DEQ(widener_xactor_from_master_f_rd_data$DEQ),
+								.CLR(widener_xactor_from_master_f_rd_data$CLR),
+								.D_OUT(widener_xactor_from_master_f_rd_data$D_OUT),
+								.FULL_N(widener_xactor_from_master_f_rd_data$FULL_N),
+								.EMPTY_N(widener_xactor_from_master_f_rd_data$EMPTY_N));
 
-  // submodule slave_xactor_B_f_wr_addr
+  // submodule widener_xactor_from_master_f_wr_addr
   FIFO2 #(.width(32'd109),
-	  .guarded(32'd1)) slave_xactor_B_f_wr_addr(.RST(RST_N),
-						    .CLK(CLK),
-						    .D_IN(slave_xactor_B_f_wr_addr$D_IN),
-						    .ENQ(slave_xactor_B_f_wr_addr$ENQ),
-						    .DEQ(slave_xactor_B_f_wr_addr$DEQ),
-						    .CLR(slave_xactor_B_f_wr_addr$CLR),
-						    .D_OUT(),
-						    .FULL_N(slave_xactor_B_f_wr_addr$FULL_N),
-						    .EMPTY_N());
+	  .guarded(32'd1)) widener_xactor_from_master_f_wr_addr(.RST(RST_N),
+								.CLK(CLK),
+								.D_IN(widener_xactor_from_master_f_wr_addr$D_IN),
+								.ENQ(widener_xactor_from_master_f_wr_addr$ENQ),
+								.DEQ(widener_xactor_from_master_f_wr_addr$DEQ),
+								.CLR(widener_xactor_from_master_f_wr_addr$CLR),
+								.D_OUT(widener_xactor_from_master_f_wr_addr$D_OUT),
+								.FULL_N(widener_xactor_from_master_f_wr_addr$FULL_N),
+								.EMPTY_N(widener_xactor_from_master_f_wr_addr$EMPTY_N));
 
-  // submodule slave_xactor_B_f_wr_data
+  // submodule widener_xactor_from_master_f_wr_data
   FIFO2 #(.width(32'd73),
-	  .guarded(32'd1)) slave_xactor_B_f_wr_data(.RST(RST_N),
-						    .CLK(CLK),
-						    .D_IN(slave_xactor_B_f_wr_data$D_IN),
-						    .ENQ(slave_xactor_B_f_wr_data$ENQ),
-						    .DEQ(slave_xactor_B_f_wr_data$DEQ),
-						    .CLR(slave_xactor_B_f_wr_data$CLR),
-						    .D_OUT(),
-						    .FULL_N(slave_xactor_B_f_wr_data$FULL_N),
-						    .EMPTY_N());
+	  .guarded(32'd1)) widener_xactor_from_master_f_wr_data(.RST(RST_N),
+								.CLK(CLK),
+								.D_IN(widener_xactor_from_master_f_wr_data$D_IN),
+								.ENQ(widener_xactor_from_master_f_wr_data$ENQ),
+								.DEQ(widener_xactor_from_master_f_wr_data$DEQ),
+								.CLR(widener_xactor_from_master_f_wr_data$CLR),
+								.D_OUT(widener_xactor_from_master_f_wr_data$D_OUT),
+								.FULL_N(widener_xactor_from_master_f_wr_data$FULL_N),
+								.EMPTY_N(widener_xactor_from_master_f_wr_data$EMPTY_N));
 
-  // submodule slave_xactor_B_f_wr_resp
+  // submodule widener_xactor_from_master_f_wr_resp
   FIFO2 #(.width(32'd18),
-	  .guarded(32'd1)) slave_xactor_B_f_wr_resp(.RST(RST_N),
-						    .CLK(CLK),
-						    .D_IN(slave_xactor_B_f_wr_resp$D_IN),
-						    .ENQ(slave_xactor_B_f_wr_resp$ENQ),
-						    .DEQ(slave_xactor_B_f_wr_resp$DEQ),
-						    .CLR(slave_xactor_B_f_wr_resp$CLR),
-						    .D_OUT(slave_xactor_B_f_wr_resp$D_OUT),
-						    .FULL_N(),
-						    .EMPTY_N(slave_xactor_B_f_wr_resp$EMPTY_N));
+	  .guarded(32'd1)) widener_xactor_from_master_f_wr_resp(.RST(RST_N),
+								.CLK(CLK),
+								.D_IN(widener_xactor_from_master_f_wr_resp$D_IN),
+								.ENQ(widener_xactor_from_master_f_wr_resp$ENQ),
+								.DEQ(widener_xactor_from_master_f_wr_resp$DEQ),
+								.CLR(widener_xactor_from_master_f_wr_resp$CLR),
+								.D_OUT(widener_xactor_from_master_f_wr_resp$D_OUT),
+								.FULL_N(widener_xactor_from_master_f_wr_resp$FULL_N),
+								.EMPTY_N(widener_xactor_from_master_f_wr_resp$EMPTY_N));
 
-  // rule RL_rl_WARNING
-  assign CAN_FIRE_RL_rl_WARNING = !rg_done ;
-  assign WILL_FIRE_RL_rl_WARNING = CAN_FIRE_RL_rl_WARNING ;
+  // submodule widener_xactor_to_slave_f_rd_addr
+  FIFO2 #(.width(32'd109),
+	  .guarded(32'd1)) widener_xactor_to_slave_f_rd_addr(.RST(RST_N),
+							     .CLK(CLK),
+							     .D_IN(widener_xactor_to_slave_f_rd_addr$D_IN),
+							     .ENQ(widener_xactor_to_slave_f_rd_addr$ENQ),
+							     .DEQ(widener_xactor_to_slave_f_rd_addr$DEQ),
+							     .CLR(widener_xactor_to_slave_f_rd_addr$CLR),
+							     .D_OUT(widener_xactor_to_slave_f_rd_addr$D_OUT),
+							     .FULL_N(widener_xactor_to_slave_f_rd_addr$FULL_N),
+							     .EMPTY_N(widener_xactor_to_slave_f_rd_addr$EMPTY_N));
 
-  // register rg_done
-  assign rg_done$D_IN = 1'd1 ;
-  assign rg_done$EN = CAN_FIRE_RL_rl_WARNING ;
+  // submodule widener_xactor_to_slave_f_rd_data
+  FIFO2 #(.width(32'd531),
+	  .guarded(32'd1)) widener_xactor_to_slave_f_rd_data(.RST(RST_N),
+							     .CLK(CLK),
+							     .D_IN(widener_xactor_to_slave_f_rd_data$D_IN),
+							     .ENQ(widener_xactor_to_slave_f_rd_data$ENQ),
+							     .DEQ(widener_xactor_to_slave_f_rd_data$DEQ),
+							     .CLR(widener_xactor_to_slave_f_rd_data$CLR),
+							     .D_OUT(widener_xactor_to_slave_f_rd_data$D_OUT),
+							     .FULL_N(widener_xactor_to_slave_f_rd_data$FULL_N),
+							     .EMPTY_N(widener_xactor_to_slave_f_rd_data$EMPTY_N));
 
-  // submodule master_xactor_f_rd_addr
-  assign master_xactor_f_rd_addr$D_IN = 109'h0 ;
-  assign master_xactor_f_rd_addr$ENQ = 1'b0 ;
-  assign master_xactor_f_rd_addr$DEQ =
-	     master_xactor_f_rd_addr$EMPTY_N && target_client_arready ;
-  assign master_xactor_f_rd_addr$CLR = 1'b0 ;
+  // submodule widener_xactor_to_slave_f_wr_addr
+  FIFO2 #(.width(32'd109),
+	  .guarded(32'd1)) widener_xactor_to_slave_f_wr_addr(.RST(RST_N),
+							     .CLK(CLK),
+							     .D_IN(widener_xactor_to_slave_f_wr_addr$D_IN),
+							     .ENQ(widener_xactor_to_slave_f_wr_addr$ENQ),
+							     .DEQ(widener_xactor_to_slave_f_wr_addr$DEQ),
+							     .CLR(widener_xactor_to_slave_f_wr_addr$CLR),
+							     .D_OUT(widener_xactor_to_slave_f_wr_addr$D_OUT),
+							     .FULL_N(widener_xactor_to_slave_f_wr_addr$FULL_N),
+							     .EMPTY_N(widener_xactor_to_slave_f_wr_addr$EMPTY_N));
 
-  // submodule master_xactor_f_rd_data
-  assign master_xactor_f_rd_data$D_IN =
-	     { target_client_rid,
-	       target_client_rdata,
-	       target_client_rresp,
-	       target_client_rlast } ;
-  assign master_xactor_f_rd_data$ENQ =
-	     target_client_rvalid && master_xactor_f_rd_data$FULL_N ;
-  assign master_xactor_f_rd_data$DEQ = 1'b0 ;
-  assign master_xactor_f_rd_data$CLR = 1'b0 ;
+  // submodule widener_xactor_to_slave_f_wr_data
+  FIFO2 #(.width(32'd577),
+	  .guarded(32'd1)) widener_xactor_to_slave_f_wr_data(.RST(RST_N),
+							     .CLK(CLK),
+							     .D_IN(widener_xactor_to_slave_f_wr_data$D_IN),
+							     .ENQ(widener_xactor_to_slave_f_wr_data$ENQ),
+							     .DEQ(widener_xactor_to_slave_f_wr_data$DEQ),
+							     .CLR(widener_xactor_to_slave_f_wr_data$CLR),
+							     .D_OUT(widener_xactor_to_slave_f_wr_data$D_OUT),
+							     .FULL_N(widener_xactor_to_slave_f_wr_data$FULL_N),
+							     .EMPTY_N(widener_xactor_to_slave_f_wr_data$EMPTY_N));
 
-  // submodule master_xactor_f_wr_addr
-  assign master_xactor_f_wr_addr$D_IN = 109'h0 ;
-  assign master_xactor_f_wr_addr$ENQ = 1'b0 ;
-  assign master_xactor_f_wr_addr$DEQ =
-	     master_xactor_f_wr_addr$EMPTY_N && target_client_awready ;
-  assign master_xactor_f_wr_addr$CLR = 1'b0 ;
+  // submodule widener_xactor_to_slave_f_wr_resp
+  FIFO2 #(.width(32'd18),
+	  .guarded(32'd1)) widener_xactor_to_slave_f_wr_resp(.RST(RST_N),
+							     .CLK(CLK),
+							     .D_IN(widener_xactor_to_slave_f_wr_resp$D_IN),
+							     .ENQ(widener_xactor_to_slave_f_wr_resp$ENQ),
+							     .DEQ(widener_xactor_to_slave_f_wr_resp$DEQ),
+							     .CLR(widener_xactor_to_slave_f_wr_resp$CLR),
+							     .D_OUT(widener_xactor_to_slave_f_wr_resp$D_OUT),
+							     .FULL_N(widener_xactor_to_slave_f_wr_resp$FULL_N),
+							     .EMPTY_N(widener_xactor_to_slave_f_wr_resp$EMPTY_N));
 
-  // submodule master_xactor_f_wr_data
-  assign master_xactor_f_wr_data$D_IN = 577'h0 ;
-  assign master_xactor_f_wr_data$ENQ = 1'b0 ;
-  assign master_xactor_f_wr_data$DEQ =
-	     master_xactor_f_wr_data$EMPTY_N && target_client_wready ;
-  assign master_xactor_f_wr_data$CLR = 1'b0 ;
+  // rule RL_rl_wr_addr_channel
+  assign CAN_FIRE_RL_rl_wr_addr_channel = 1'd1 ;
+  assign WILL_FIRE_RL_rl_wr_addr_channel = 1'd1 ;
 
-  // submodule master_xactor_f_wr_resp
-  assign master_xactor_f_wr_resp$D_IN =
-	     { target_client_bid, target_client_bresp } ;
-  assign master_xactor_f_wr_resp$ENQ =
-	     target_client_bvalid && master_xactor_f_wr_resp$FULL_N ;
-  assign master_xactor_f_wr_resp$DEQ = 1'b0 ;
-  assign master_xactor_f_wr_resp$CLR = 1'b0 ;
+  // rule RL_rl_wr_data_channel
+  assign CAN_FIRE_RL_rl_wr_data_channel = 1'd1 ;
+  assign WILL_FIRE_RL_rl_wr_data_channel = 1'd1 ;
 
-  // submodule slave_xactor_A_f_rd_addr
-  assign slave_xactor_A_f_rd_addr$D_IN =
-	     { initiator_A_server_arid,
-	       initiator_A_server_araddr,
-	       initiator_A_server_arlen,
-	       initiator_A_server_arsize,
-	       initiator_A_server_arburst,
-	       initiator_A_server_arlock,
-	       initiator_A_server_arcache,
-	       initiator_A_server_arprot,
-	       initiator_A_server_arqos,
-	       initiator_A_server_arregion } ;
-  assign slave_xactor_A_f_rd_addr$ENQ =
-	     initiator_A_server_arvalid && slave_xactor_A_f_rd_addr$FULL_N ;
-  assign slave_xactor_A_f_rd_addr$DEQ = 1'b0 ;
-  assign slave_xactor_A_f_rd_addr$CLR = 1'b0 ;
+  // rule RL_rl_wr_response_channel
+  assign CAN_FIRE_RL_rl_wr_response_channel = 1'd1 ;
+  assign WILL_FIRE_RL_rl_wr_response_channel = 1'd1 ;
 
-  // submodule slave_xactor_A_f_rd_data
-  assign slave_xactor_A_f_rd_data$D_IN = 531'h0 ;
-  assign slave_xactor_A_f_rd_data$ENQ = 1'b0 ;
-  assign slave_xactor_A_f_rd_data$DEQ =
-	     initiator_A_server_rready && slave_xactor_A_f_rd_data$EMPTY_N ;
-  assign slave_xactor_A_f_rd_data$CLR = 1'b0 ;
+  // rule RL_rl_rd_addr_channel
+  assign CAN_FIRE_RL_rl_rd_addr_channel = 1'd1 ;
+  assign WILL_FIRE_RL_rl_rd_addr_channel = 1'd1 ;
 
-  // submodule slave_xactor_A_f_wr_addr
-  assign slave_xactor_A_f_wr_addr$D_IN =
-	     { initiator_A_server_awid,
-	       initiator_A_server_awaddr,
-	       initiator_A_server_awlen,
-	       initiator_A_server_awsize,
-	       initiator_A_server_awburst,
-	       initiator_A_server_awlock,
-	       initiator_A_server_awcache,
-	       initiator_A_server_awprot,
-	       initiator_A_server_awqos,
-	       initiator_A_server_awregion } ;
-  assign slave_xactor_A_f_wr_addr$ENQ =
-	     initiator_A_server_awvalid && slave_xactor_A_f_wr_addr$FULL_N ;
-  assign slave_xactor_A_f_wr_addr$DEQ = 1'b0 ;
-  assign slave_xactor_A_f_wr_addr$CLR = 1'b0 ;
+  // rule RL_rl_rd_data_channel
+  assign CAN_FIRE_RL_rl_rd_data_channel = 1'd1 ;
+  assign WILL_FIRE_RL_rl_rd_data_channel = 1'd1 ;
 
-  // submodule slave_xactor_A_f_wr_data
-  assign slave_xactor_A_f_wr_data$D_IN =
-	     { initiator_A_server_wdata,
-	       initiator_A_server_wstrb,
-	       initiator_A_server_wlast } ;
-  assign slave_xactor_A_f_wr_data$ENQ =
-	     initiator_A_server_wvalid && slave_xactor_A_f_wr_data$FULL_N ;
-  assign slave_xactor_A_f_wr_data$DEQ = 1'b0 ;
-  assign slave_xactor_A_f_wr_data$CLR = 1'b0 ;
+  // rule RL_widener_rl_wr_xaction_master_to_slave
+  assign CAN_FIRE_RL_widener_rl_wr_xaction_master_to_slave =
+	     widener_xactor_from_master_f_wr_addr$EMPTY_N &&
+	     widener_xactor_from_master_f_wr_data$EMPTY_N &&
+	     widener_xactor_to_slave_f_wr_addr$FULL_N &&
+	     widener_xactor_to_slave_f_wr_data$FULL_N ;
+  assign WILL_FIRE_RL_widener_rl_wr_xaction_master_to_slave =
+	     CAN_FIRE_RL_widener_rl_wr_xaction_master_to_slave ;
 
-  // submodule slave_xactor_A_f_wr_resp
-  assign slave_xactor_A_f_wr_resp$D_IN = 18'h0 ;
-  assign slave_xactor_A_f_wr_resp$ENQ = 1'b0 ;
-  assign slave_xactor_A_f_wr_resp$DEQ =
-	     initiator_A_server_bready && slave_xactor_A_f_wr_resp$EMPTY_N ;
-  assign slave_xactor_A_f_wr_resp$CLR = 1'b0 ;
+  // rule RL_widener_rl_wr_resp_slave_to_master
+  assign CAN_FIRE_RL_widener_rl_wr_resp_slave_to_master =
+	     widener_xactor_to_slave_f_wr_resp$EMPTY_N &&
+	     widener_xactor_from_master_f_wr_resp$FULL_N ;
+  assign WILL_FIRE_RL_widener_rl_wr_resp_slave_to_master =
+	     CAN_FIRE_RL_widener_rl_wr_resp_slave_to_master ;
 
-  // submodule slave_xactor_B_f_rd_addr
-  assign slave_xactor_B_f_rd_addr$D_IN =
+  // rule RL_widener_rl_rd_xaction_master_to_slave
+  assign CAN_FIRE_RL_widener_rl_rd_xaction_master_to_slave =
+	     widener_xactor_from_master_f_rd_addr$EMPTY_N &&
+	     widener_xactor_to_slave_f_rd_addr$FULL_N &&
+	     widener_f_araddrs$FULL_N ;
+  assign WILL_FIRE_RL_widener_rl_rd_xaction_master_to_slave =
+	     CAN_FIRE_RL_widener_rl_rd_xaction_master_to_slave ;
+
+  // rule RL_widener_rl_rd_resp_slave_to_master
+  assign CAN_FIRE_RL_widener_rl_rd_resp_slave_to_master =
+	     widener_xactor_to_slave_f_rd_data$EMPTY_N &&
+	     widener_f_araddrs$EMPTY_N &&
+	     widener_xactor_from_master_f_rd_data$FULL_N ;
+  assign WILL_FIRE_RL_widener_rl_rd_resp_slave_to_master =
+	     CAN_FIRE_RL_widener_rl_rd_resp_slave_to_master ;
+
+  // submodule fabric_2x1
+  assign fabric_2x1$set_verbosity_verbosity = 4'h0 ;
+  assign fabric_2x1$v_from_masters_0_araddr = initiator_A_server_araddr ;
+  assign fabric_2x1$v_from_masters_0_arburst = initiator_A_server_arburst ;
+  assign fabric_2x1$v_from_masters_0_arcache = initiator_A_server_arcache ;
+  assign fabric_2x1$v_from_masters_0_arid = initiator_A_server_arid ;
+  assign fabric_2x1$v_from_masters_0_arlen = initiator_A_server_arlen ;
+  assign fabric_2x1$v_from_masters_0_arlock = initiator_A_server_arlock ;
+  assign fabric_2x1$v_from_masters_0_arprot = initiator_A_server_arprot ;
+  assign fabric_2x1$v_from_masters_0_arqos = initiator_A_server_arqos ;
+  assign fabric_2x1$v_from_masters_0_arregion = initiator_A_server_arregion ;
+  assign fabric_2x1$v_from_masters_0_arsize = initiator_A_server_arsize ;
+  assign fabric_2x1$v_from_masters_0_arvalid = initiator_A_server_arvalid ;
+  assign fabric_2x1$v_from_masters_0_awaddr = initiator_A_server_awaddr ;
+  assign fabric_2x1$v_from_masters_0_awburst = initiator_A_server_awburst ;
+  assign fabric_2x1$v_from_masters_0_awcache = initiator_A_server_awcache ;
+  assign fabric_2x1$v_from_masters_0_awid = initiator_A_server_awid ;
+  assign fabric_2x1$v_from_masters_0_awlen = initiator_A_server_awlen ;
+  assign fabric_2x1$v_from_masters_0_awlock = initiator_A_server_awlock ;
+  assign fabric_2x1$v_from_masters_0_awprot = initiator_A_server_awprot ;
+  assign fabric_2x1$v_from_masters_0_awqos = initiator_A_server_awqos ;
+  assign fabric_2x1$v_from_masters_0_awregion = initiator_A_server_awregion ;
+  assign fabric_2x1$v_from_masters_0_awsize = initiator_A_server_awsize ;
+  assign fabric_2x1$v_from_masters_0_awvalid = initiator_A_server_awvalid ;
+  assign fabric_2x1$v_from_masters_0_bready = initiator_A_server_bready ;
+  assign fabric_2x1$v_from_masters_0_rready = initiator_A_server_rready ;
+  assign fabric_2x1$v_from_masters_0_wdata = initiator_A_server_wdata ;
+  assign fabric_2x1$v_from_masters_0_wlast = initiator_A_server_wlast ;
+  assign fabric_2x1$v_from_masters_0_wstrb = initiator_A_server_wstrb ;
+  assign fabric_2x1$v_from_masters_0_wvalid = initiator_A_server_wvalid ;
+  assign fabric_2x1$v_from_masters_1_araddr =
+	     widener_xactor_to_slave_f_rd_addr$D_OUT[92:29] ;
+  assign fabric_2x1$v_from_masters_1_arburst =
+	     widener_xactor_to_slave_f_rd_addr$D_OUT[17:16] ;
+  assign fabric_2x1$v_from_masters_1_arcache =
+	     widener_xactor_to_slave_f_rd_addr$D_OUT[14:11] ;
+  assign fabric_2x1$v_from_masters_1_arid =
+	     widener_xactor_to_slave_f_rd_addr$D_OUT[108:93] ;
+  assign fabric_2x1$v_from_masters_1_arlen =
+	     widener_xactor_to_slave_f_rd_addr$D_OUT[28:21] ;
+  assign fabric_2x1$v_from_masters_1_arlock =
+	     widener_xactor_to_slave_f_rd_addr$D_OUT[15] ;
+  assign fabric_2x1$v_from_masters_1_arprot =
+	     widener_xactor_to_slave_f_rd_addr$D_OUT[10:8] ;
+  assign fabric_2x1$v_from_masters_1_arqos =
+	     widener_xactor_to_slave_f_rd_addr$D_OUT[7:4] ;
+  assign fabric_2x1$v_from_masters_1_arregion =
+	     widener_xactor_to_slave_f_rd_addr$D_OUT[3:0] ;
+  assign fabric_2x1$v_from_masters_1_arsize =
+	     widener_xactor_to_slave_f_rd_addr$D_OUT[20:18] ;
+  assign fabric_2x1$v_from_masters_1_arvalid =
+	     widener_xactor_to_slave_f_rd_addr$EMPTY_N ;
+  assign fabric_2x1$v_from_masters_1_awaddr =
+	     widener_xactor_to_slave_f_wr_addr$D_OUT[92:29] ;
+  assign fabric_2x1$v_from_masters_1_awburst =
+	     widener_xactor_to_slave_f_wr_addr$D_OUT[17:16] ;
+  assign fabric_2x1$v_from_masters_1_awcache =
+	     widener_xactor_to_slave_f_wr_addr$D_OUT[14:11] ;
+  assign fabric_2x1$v_from_masters_1_awid =
+	     widener_xactor_to_slave_f_wr_addr$D_OUT[108:93] ;
+  assign fabric_2x1$v_from_masters_1_awlen =
+	     widener_xactor_to_slave_f_wr_addr$D_OUT[28:21] ;
+  assign fabric_2x1$v_from_masters_1_awlock =
+	     widener_xactor_to_slave_f_wr_addr$D_OUT[15] ;
+  assign fabric_2x1$v_from_masters_1_awprot =
+	     widener_xactor_to_slave_f_wr_addr$D_OUT[10:8] ;
+  assign fabric_2x1$v_from_masters_1_awqos =
+	     widener_xactor_to_slave_f_wr_addr$D_OUT[7:4] ;
+  assign fabric_2x1$v_from_masters_1_awregion =
+	     widener_xactor_to_slave_f_wr_addr$D_OUT[3:0] ;
+  assign fabric_2x1$v_from_masters_1_awsize =
+	     widener_xactor_to_slave_f_wr_addr$D_OUT[20:18] ;
+  assign fabric_2x1$v_from_masters_1_awvalid =
+	     widener_xactor_to_slave_f_wr_addr$EMPTY_N ;
+  assign fabric_2x1$v_from_masters_1_bready =
+	     widener_xactor_to_slave_f_wr_resp$FULL_N ;
+  assign fabric_2x1$v_from_masters_1_rready =
+	     widener_xactor_to_slave_f_rd_data$FULL_N ;
+  assign fabric_2x1$v_from_masters_1_wdata =
+	     widener_xactor_to_slave_f_wr_data$D_OUT[576:65] ;
+  assign fabric_2x1$v_from_masters_1_wlast =
+	     widener_xactor_to_slave_f_wr_data$D_OUT[0] ;
+  assign fabric_2x1$v_from_masters_1_wstrb =
+	     widener_xactor_to_slave_f_wr_data$D_OUT[64:1] ;
+  assign fabric_2x1$v_from_masters_1_wvalid =
+	     widener_xactor_to_slave_f_wr_data$EMPTY_N ;
+  assign fabric_2x1$v_to_slaves_0_arready = target_client_arready ;
+  assign fabric_2x1$v_to_slaves_0_awready = target_client_awready ;
+  assign fabric_2x1$v_to_slaves_0_bid = target_client_bid ;
+  assign fabric_2x1$v_to_slaves_0_bresp = target_client_bresp ;
+  assign fabric_2x1$v_to_slaves_0_bvalid = target_client_bvalid ;
+  assign fabric_2x1$v_to_slaves_0_rdata = target_client_rdata ;
+  assign fabric_2x1$v_to_slaves_0_rid = target_client_rid ;
+  assign fabric_2x1$v_to_slaves_0_rlast = target_client_rlast ;
+  assign fabric_2x1$v_to_slaves_0_rresp = target_client_rresp ;
+  assign fabric_2x1$v_to_slaves_0_rvalid = target_client_rvalid ;
+  assign fabric_2x1$v_to_slaves_0_wready = target_client_wready ;
+  assign fabric_2x1$EN_reset = 1'b0 ;
+  assign fabric_2x1$EN_set_verbosity = 1'b0 ;
+
+  // submodule widener_f_araddrs
+  assign widener_f_araddrs$D_IN =
+	     widener_xactor_from_master_f_rd_addr$D_OUT[92:29] ;
+  assign widener_f_araddrs$ENQ =
+	     CAN_FIRE_RL_widener_rl_rd_xaction_master_to_slave ;
+  assign widener_f_araddrs$DEQ =
+	     CAN_FIRE_RL_widener_rl_rd_resp_slave_to_master ;
+  assign widener_f_araddrs$CLR = 1'b0 ;
+
+  // submodule widener_xactor_from_master_f_rd_addr
+  assign widener_xactor_from_master_f_rd_addr$D_IN =
 	     { initiator_B_server_arid,
 	       initiator_B_server_araddr,
 	       initiator_B_server_arlen,
@@ -1299,20 +1569,27 @@ module mkDma_Server_Mux(CLK,
 	       initiator_B_server_arprot,
 	       initiator_B_server_arqos,
 	       initiator_B_server_arregion } ;
-  assign slave_xactor_B_f_rd_addr$ENQ =
-	     initiator_B_server_arvalid && slave_xactor_B_f_rd_addr$FULL_N ;
-  assign slave_xactor_B_f_rd_addr$DEQ = 1'b0 ;
-  assign slave_xactor_B_f_rd_addr$CLR = 1'b0 ;
+  assign widener_xactor_from_master_f_rd_addr$ENQ =
+	     initiator_B_server_arvalid &&
+	     widener_xactor_from_master_f_rd_addr$FULL_N ;
+  assign widener_xactor_from_master_f_rd_addr$DEQ =
+	     CAN_FIRE_RL_widener_rl_rd_xaction_master_to_slave ;
+  assign widener_xactor_from_master_f_rd_addr$CLR = 1'b0 ;
 
-  // submodule slave_xactor_B_f_rd_data
-  assign slave_xactor_B_f_rd_data$D_IN = 83'h0 ;
-  assign slave_xactor_B_f_rd_data$ENQ = 1'b0 ;
-  assign slave_xactor_B_f_rd_data$DEQ =
-	     initiator_B_server_rready && slave_xactor_B_f_rd_data$EMPTY_N ;
-  assign slave_xactor_B_f_rd_data$CLR = 1'b0 ;
+  // submodule widener_xactor_from_master_f_rd_data
+  assign widener_xactor_from_master_f_rd_data$D_IN =
+	     { widener_xactor_to_slave_f_rd_data$D_OUT[530:515],
+	       x__h1956[63:0],
+	       widener_xactor_to_slave_f_rd_data$D_OUT[2:0] } ;
+  assign widener_xactor_from_master_f_rd_data$ENQ =
+	     CAN_FIRE_RL_widener_rl_rd_resp_slave_to_master ;
+  assign widener_xactor_from_master_f_rd_data$DEQ =
+	     initiator_B_server_rready &&
+	     widener_xactor_from_master_f_rd_data$EMPTY_N ;
+  assign widener_xactor_from_master_f_rd_data$CLR = 1'b0 ;
 
-  // submodule slave_xactor_B_f_wr_addr
-  assign slave_xactor_B_f_wr_addr$D_IN =
+  // submodule widener_xactor_from_master_f_wr_addr
+  assign widener_xactor_from_master_f_wr_addr$D_IN =
 	     { initiator_B_server_awid,
 	       initiator_B_server_awaddr,
 	       initiator_B_server_awlen,
@@ -1323,76 +1600,104 @@ module mkDma_Server_Mux(CLK,
 	       initiator_B_server_awprot,
 	       initiator_B_server_awqos,
 	       initiator_B_server_awregion } ;
-  assign slave_xactor_B_f_wr_addr$ENQ =
-	     initiator_B_server_awvalid && slave_xactor_B_f_wr_addr$FULL_N ;
-  assign slave_xactor_B_f_wr_addr$DEQ = 1'b0 ;
-  assign slave_xactor_B_f_wr_addr$CLR = 1'b0 ;
+  assign widener_xactor_from_master_f_wr_addr$ENQ =
+	     initiator_B_server_awvalid &&
+	     widener_xactor_from_master_f_wr_addr$FULL_N ;
+  assign widener_xactor_from_master_f_wr_addr$DEQ =
+	     CAN_FIRE_RL_widener_rl_wr_xaction_master_to_slave ;
+  assign widener_xactor_from_master_f_wr_addr$CLR = 1'b0 ;
 
-  // submodule slave_xactor_B_f_wr_data
-  assign slave_xactor_B_f_wr_data$D_IN =
+  // submodule widener_xactor_from_master_f_wr_data
+  assign widener_xactor_from_master_f_wr_data$D_IN =
 	     { initiator_B_server_wdata,
 	       initiator_B_server_wstrb,
 	       initiator_B_server_wlast } ;
-  assign slave_xactor_B_f_wr_data$ENQ =
-	     initiator_B_server_wvalid && slave_xactor_B_f_wr_data$FULL_N ;
-  assign slave_xactor_B_f_wr_data$DEQ = 1'b0 ;
-  assign slave_xactor_B_f_wr_data$CLR = 1'b0 ;
+  assign widener_xactor_from_master_f_wr_data$ENQ =
+	     initiator_B_server_wvalid &&
+	     widener_xactor_from_master_f_wr_data$FULL_N ;
+  assign widener_xactor_from_master_f_wr_data$DEQ =
+	     CAN_FIRE_RL_widener_rl_wr_xaction_master_to_slave ;
+  assign widener_xactor_from_master_f_wr_data$CLR = 1'b0 ;
 
-  // submodule slave_xactor_B_f_wr_resp
-  assign slave_xactor_B_f_wr_resp$D_IN = 18'h0 ;
-  assign slave_xactor_B_f_wr_resp$ENQ = 1'b0 ;
-  assign slave_xactor_B_f_wr_resp$DEQ =
-	     initiator_B_server_bready && slave_xactor_B_f_wr_resp$EMPTY_N ;
-  assign slave_xactor_B_f_wr_resp$CLR = 1'b0 ;
+  // submodule widener_xactor_from_master_f_wr_resp
+  assign widener_xactor_from_master_f_wr_resp$D_IN =
+	     widener_xactor_to_slave_f_wr_resp$D_OUT ;
+  assign widener_xactor_from_master_f_wr_resp$ENQ =
+	     CAN_FIRE_RL_widener_rl_wr_resp_slave_to_master ;
+  assign widener_xactor_from_master_f_wr_resp$DEQ =
+	     initiator_B_server_bready &&
+	     widener_xactor_from_master_f_wr_resp$EMPTY_N ;
+  assign widener_xactor_from_master_f_wr_resp$CLR = 1'b0 ;
 
-  // handling of inlined registers
+  // submodule widener_xactor_to_slave_f_rd_addr
+  assign widener_xactor_to_slave_f_rd_addr$D_IN =
+	     widener_xactor_from_master_f_rd_addr$D_OUT ;
+  assign widener_xactor_to_slave_f_rd_addr$ENQ =
+	     CAN_FIRE_RL_widener_rl_rd_xaction_master_to_slave ;
+  assign widener_xactor_to_slave_f_rd_addr$DEQ =
+	     widener_xactor_to_slave_f_rd_addr$EMPTY_N &&
+	     fabric_2x1$v_from_masters_1_arready ;
+  assign widener_xactor_to_slave_f_rd_addr$CLR = 1'b0 ;
 
-  always@(posedge CLK)
-  begin
-    if (RST_N == `BSV_RESET_VALUE)
-      begin
-        rg_done <= `BSV_ASSIGNMENT_DELAY 1'd0;
-      end
-    else
-      begin
-        if (rg_done$EN) rg_done <= `BSV_ASSIGNMENT_DELAY rg_done$D_IN;
-      end
-  end
+  // submodule widener_xactor_to_slave_f_rd_data
+  assign widener_xactor_to_slave_f_rd_data$D_IN =
+	     { fabric_2x1$v_from_masters_1_rid,
+	       fabric_2x1$v_from_masters_1_rdata,
+	       fabric_2x1$v_from_masters_1_rresp,
+	       fabric_2x1$v_from_masters_1_rlast } ;
+  assign widener_xactor_to_slave_f_rd_data$ENQ =
+	     fabric_2x1$v_from_masters_1_rvalid &&
+	     widener_xactor_to_slave_f_rd_data$FULL_N ;
+  assign widener_xactor_to_slave_f_rd_data$DEQ =
+	     CAN_FIRE_RL_widener_rl_rd_resp_slave_to_master ;
+  assign widener_xactor_to_slave_f_rd_data$CLR = 1'b0 ;
 
-  // synopsys translate_off
-  `ifdef BSV_NO_INITIAL_BLOCKS
-  `else // not BSV_NO_INITIAL_BLOCKS
-  initial
-  begin
-    rg_done = 1'h0;
-  end
-  `endif // BSV_NO_INITIAL_BLOCKS
-  // synopsys translate_on
+  // submodule widener_xactor_to_slave_f_wr_addr
+  assign widener_xactor_to_slave_f_wr_addr$D_IN =
+	     widener_xactor_from_master_f_wr_addr$D_OUT ;
+  assign widener_xactor_to_slave_f_wr_addr$ENQ =
+	     CAN_FIRE_RL_widener_rl_wr_xaction_master_to_slave ;
+  assign widener_xactor_to_slave_f_wr_addr$DEQ =
+	     widener_xactor_to_slave_f_wr_addr$EMPTY_N &&
+	     fabric_2x1$v_from_masters_1_awready ;
+  assign widener_xactor_to_slave_f_wr_addr$CLR = 1'b0 ;
 
-  // handling of system tasks
+  // submodule widener_xactor_to_slave_f_wr_data
+  assign widener_xactor_to_slave_f_wr_data$D_IN =
+	     { s_wrd_wdata__h1385,
+	       s_wrd_wstrb__h1386,
+	       widener_xactor_from_master_f_wr_data$D_OUT[0] } ;
+  assign widener_xactor_to_slave_f_wr_data$ENQ =
+	     CAN_FIRE_RL_widener_rl_wr_xaction_master_to_slave ;
+  assign widener_xactor_to_slave_f_wr_data$DEQ =
+	     widener_xactor_to_slave_f_wr_data$EMPTY_N &&
+	     fabric_2x1$v_from_masters_1_wready ;
+  assign widener_xactor_to_slave_f_wr_data$CLR = 1'b0 ;
 
-  // synopsys translate_off
-  always@(negedge CLK)
-  begin
-    #0;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_WARNING)
-	begin
-	  v__h1556 = $stime;
-	  #0;
-	end
-    v__h1550 = v__h1556 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_WARNING) $display("%0d: %m.rl_WARNING", v__h1550);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_WARNING) $display("    WARNING WARNING WARNING");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_WARNING)
-	$display("    TBD: the body of this module needs to be implemented");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_WARNING)
-	$display("    Missing Debug Module connectivity to memory");
-  end
-  // synopsys translate_on
+  // submodule widener_xactor_to_slave_f_wr_resp
+  assign widener_xactor_to_slave_f_wr_resp$D_IN =
+	     { fabric_2x1$v_from_masters_1_bid,
+	       fabric_2x1$v_from_masters_1_bresp } ;
+  assign widener_xactor_to_slave_f_wr_resp$ENQ =
+	     fabric_2x1$v_from_masters_1_bvalid &&
+	     widener_xactor_to_slave_f_wr_resp$FULL_N ;
+  assign widener_xactor_to_slave_f_wr_resp$DEQ =
+	     CAN_FIRE_RL_widener_rl_wr_resp_slave_to_master ;
+  assign widener_xactor_to_slave_f_wr_resp$CLR = 1'b0 ;
+
+  // remaining internal signals
+  assign s_data__h1390 =
+	     { 448'd0, widener_xactor_from_master_f_wr_data$D_OUT[72:9] } ;
+  assign s_strb__h1392 =
+	     { 56'd0, widener_xactor_from_master_f_wr_data$D_OUT[8:1] } ;
+  assign s_wrd_wdata__h1385 =
+	     s_data__h1390 <<
+	     { widener_xactor_from_master_f_wr_addr$D_OUT[34:32], 6'd0 } ;
+  assign s_wrd_wstrb__h1386 =
+	     s_strb__h1392 <<
+	     { widener_xactor_from_master_f_wr_addr$D_OUT[34:32], 3'd0 } ;
+  assign x__h1956 =
+	     widener_xactor_to_slave_f_rd_data$D_OUT[514:3] >>
+	     { widener_f_araddrs$D_OUT[5:3], 6'd0 } ;
 endmodule  // mkDma_Server_Mux
 

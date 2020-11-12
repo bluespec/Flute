@@ -9,7 +9,9 @@ package AXI4_Widener;
 
 // The primary function is data-bus re-alignment due to widening.
 
-// NOTE: Does not support bursts yet (which would more reshaping of bursts etc.)
+// NOTE: Does not support bursts yet (which would need reshaping the
+// data beats, strobes, burst lengh, etc.)
+
 // ================================================================
 // Bluespec library imports
 
@@ -132,9 +134,7 @@ module mkAXI4_Widener (AXI4_Widener_IFC #(wd_id_t, wd_addr_t, m_wd_data_t, s_wd_
    endrule: rl_wr_xaction_master_to_slave
 
    // ----------------
-   // Wr responses (B channel): just pass through as-is
-   // last response for a burst, then respond to master.  Remember if
-   // any of them was not an 'okay' response.
+   // Wr responses (B channel): just pass through as-is.
 
    rule rl_wr_resp_slave_to_master;
       AXI4_Wr_Resp #(wd_id_t, wd_user_t) s_wrr <- pop_o (xactor_to_slave.o_wr_resp);
@@ -149,8 +149,8 @@ module mkAXI4_Widener (AXI4_Widener_IFC #(wd_id_t, wd_addr_t, m_wd_data_t, s_wd_
    endrule
  
    // ----------------
-   // Rd requests (AR channel); just pass it through,
-   // but remember the addr in order to align the data response
+   // Rd requests (AR channel); just pass it through, as-is
+   // but remember the addr in order to align the data response.
 
    rule rl_rd_xaction_master_to_slave;
       AXI4_Rd_Addr #(wd_id_t, wd_addr_t, wd_user_t) m_rda <- pop_o (xactor_from_master.o_rd_addr);
