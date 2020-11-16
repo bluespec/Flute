@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved
 
 package CPU_Fetch_C;
 
@@ -79,16 +79,9 @@ module mkCPU_Fetch_C #(IMem_IFC  imem32) (IMem_IFC);
 
    Integer verbosity = 0;
 
-   // This register holds the actual PC value (which can be +/-2 from
-   // the address given to the ICache.
-   Reg #(WordXL)  rg_pc  <- mkRegU;
-
-   // These registers caches the last output of imem32 (imem32.pc, and imem32.instr [31:16])
-   Reg #(WordXL)    rg_cache_addr <- mkReg ('1);
-   Reg #(Bit #(16)) rg_cache_b16  <- mkRegU;
-
    // The following hold args of the 'req' method.
    Reg #(Bit #(3))  rg_f3          <- mkRegU;
+   Reg #(WordXL)    rg_pc          <- mkRegU;
    Reg #(Priv_Mode) rg_priv        <- mkRegU;
    Reg #(Bit #(1))  rg_sstatus_SUM <- mkRegU;
    Reg #(Bit #(1))  rg_mstatus_MXR <- mkRegU;
@@ -96,6 +89,10 @@ module mkCPU_Fetch_C #(IMem_IFC  imem32) (IMem_IFC);
 
    // Holds a faulting address
    Reg #(WordXL)    rg_tval        <- mkRegU;
+
+   // These registers caches the last output of imem32 (imem32.pc, and imem32.instr [31:16])
+   Reg #(WordXL)    rg_cache_addr <- mkReg ('1);
+   Reg #(Bit #(16)) rg_cache_b16  <- mkRegU;
 
    // ----------------------------------------------------------------
    // Conditions for selecting 16b and 32b instruction
@@ -126,6 +123,7 @@ module mkCPU_Fetch_C #(IMem_IFC  imem32) (IMem_IFC);
    // Condition: 32b instr from { ...next imem [15:0], imem [31:16] }
    Bool cond_i32_odd_fetch_next = (   is_addr_odd16 (rg_pc)
 				   && imem32.valid
+				   && (! imem32.exc)
 				   && eq_b32_addr (rg_pc, imem32.pc)
 				   && is_32b_instr (imem32.instr [31:16]));
 
@@ -174,7 +172,7 @@ module mkCPU_Fetch_C #(IMem_IFC  imem32) (IMem_IFC);
    // When imem32.instr [31:15] has lower half of 32b instr, cache it and fetch next 32 bits
 
    (* no_implicit_conditions, fire_when_enabled *)
-   rule rl_fetch_next_32b (imem32.valid && cond_i32_odd_fetch_next);
+   rule rl_fetch_next_32b (cond_i32_odd_fetch_next);
       Addr next_b32_addr = imem32.pc + 4;
       imem32.req (rg_f3, next_b32_addr, rg_priv, rg_sstatus_SUM, rg_mstatus_MXR, rg_satp);
       rg_cache_addr <= imem32.pc;
@@ -207,9 +205,13 @@ module mkCPU_Fetch_C #(IMem_IFC  imem32) (IMem_IFC);
       rg_tval        <= addr;
 
       // Cache the previous output, if valid
-      if (imem32.valid) begin
-	 rg_cache_addr     <= imem32.pc;
-	 rg_cache_b16 <= imem32.instr [31:16];
+      if (imem32.valid && (! imem32.exc)) begin
+	 rg_cache_addr <= imem32.pc;
+	 rg_cache_b16  <= imem32.instr [31:16];
+      end
+      else begin
+	 // Invalidate
+	 rg_cache_addr <= 'h1;
       end
 
       WordXL addr_of_b32 = fn_to_b32_addr (addr);
@@ -218,7 +220,7 @@ module mkCPU_Fetch_C #(IMem_IFC  imem32) (IMem_IFC);
       // (the 16b we've already got is saved in r16_cache_b16).
       // Note: since we know it's a 32b instr, this next fetch is not speculative, so ok if it page faults.
       if (   is_addr_odd16 (addr)
-	  && imem32.valid
+	  && (imem32.valid && (! imem32.exc))
 	  && (addr_of_b32 == imem32.pc)
 	  && is_32b_instr (imem32.instr [31:16]))
 	 begin
@@ -232,7 +234,8 @@ module mkCPU_Fetch_C #(IMem_IFC  imem32) (IMem_IFC);
    endmethod
 
    // CPU side: IMem response
-   method Bool     valid    = (imem32.valid && (   cond_i32_odd
+   method Bool     valid    = (imem32.valid && (   imem32.exc
+						|| cond_i32_odd
 						|| cond_i32_even
 						|| cond_i16_odd
 						|| cond_i16_even));
