@@ -202,7 +202,6 @@ module mkCPU_Fetch_C #(IMem_IFC  imem32) (IMem_IFC);
       rg_sstatus_SUM <= sstatus_SUM;
       rg_mstatus_MXR <= mstatus_MXR;
       rg_satp        <= satp;
-      rg_tval        <= addr;
 
       // Cache the previous output, if valid
       if (imem32.valid && (! imem32.exc)) begin
@@ -215,6 +214,7 @@ module mkCPU_Fetch_C #(IMem_IFC  imem32) (IMem_IFC);
       end
 
       WordXL addr_of_b32 = fn_to_b32_addr (addr);
+      WordXL tval        = addr;
 
       // Fetch next 32b word if request is odd-16b aligned, we've already got those 16b, and it's a 32b instr
       // (the 16b we've already got is saved in r16_cache_b16).
@@ -225,8 +225,10 @@ module mkCPU_Fetch_C #(IMem_IFC  imem32) (IMem_IFC);
 	  && is_32b_instr (imem32.instr [31:16]))
 	 begin
 	    addr_of_b32 = addr_of_b32 + 4;
+	    tval        = addr_of_b32;
 	 end
 
+      rg_tval <= tval;
       imem32.req (f3, addr_of_b32, priv, sstatus_SUM, mstatus_MXR, satp);
       if (verbosity > 0) begin
 	 $display ("CPU_Fetch_C.req: addr 0x%0h, addr_of_b32 0x%0h", addr, addr_of_b32);
