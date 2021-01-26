@@ -262,9 +262,7 @@ function Tuple2 #(Bool, Instr) fv_decode_C_FLDSP (MISA  misa,  Bit #(2) xl, Inst
       Bool is_legal = ((misa.c == 1'b1)
 		       && (op == opcode_C2)
 		       && (funct3 == funct3_C_FLDSP)
-		       && (misa.d == 1'b1)
-		       && (   (xl == misa_mxl_64)
-			   || (xl == misa_mxl_128)));
+		       && (misa.d == 1'b1));
 
       RegName rs1   = reg_sp;
       let     instr = mkInstr_I_type (zeroExtend (offset),  rs1,  f3_FLD,  rd,  op_LOAD_FP);
@@ -368,9 +366,7 @@ function Tuple2 #(Bool, Instr) fv_decode_C_FSDSP (MISA  misa,  Bit #(2)  xl, Ins
 
       Bool is_legal = ((misa.c == 1'b1)
 		       && (op == opcode_C2)
-		       && (funct3 == funct3_C_FSDSP)
-		       && (   (xl == misa_mxl_64)
-			   || (xl == misa_mxl_128)));
+		       && (funct3 == funct3_C_FSDSP));
 
       RegName   rs1   = reg_sp;
       let       instr = mkInstr_S_type (zeroExtend (offset), rs2, rs1, f3_FSD, op_STORE_FP);
