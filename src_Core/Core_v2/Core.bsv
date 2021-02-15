@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2020 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2018-2021 Bluespec, Inc. All Rights Reserved.
 
 package Core;
 
@@ -398,6 +398,13 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
    method Action nmi_req (Bool set_not_clear);
       cpu.nmi_req (set_not_clear);
    endmethod
+
+   // ----------------------------------------------------------------
+   // Optional PC Trace output
+
+`ifdef INCLUDE_PC_TRACE
+   interface Get  g_pc_trace = cpu.g_pc_trace;
+`endif
 
    // ----------------------------------------------------------------
    // Optional TV interface

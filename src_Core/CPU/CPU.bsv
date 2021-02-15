@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2021 Bluespec, Inc. All Rights Reserved
 
 package CPU;
 
@@ -44,6 +44,7 @@ import AXI4_Lite_Types :: *;
 
 import ISA_Decls :: *;
 
+import PC_Trace  :: *;
 import TV_Info   :: *;
 
 import GPR_RegFile :: *;
@@ -273,6 +274,13 @@ module mkCPU (CPU_IFC);
 `endif
 
    // ----------------
+   // PC trace output
+
+`ifdef INCLUDE_PC_TRACE
+   FIFOF #(PC_Trace) f_pc_trace  <- mkFIFOF;
+`endif
+
+   // ----------------
    // Tandem Verification
 
 `ifdef INCLUDE_TANDEM_VERIF
@@ -301,6 +309,11 @@ module mkCPU (CPU_IFC);
 	 if ((cur_verbosity >= 1) || ((instret & 'h_F_FFFF) == 0))
 	    $display ("instret:%0d  PC:0x%0h  instr:0x%0h  priv:%0d",
 		      instret, pc, instr, priv);
+
+`ifdef INCLUDE_PC_TRACE
+	 let pc_trace = PC_Trace {cycle: mcycle,  instret: instret, pc: pc};
+	 f_pc_trace.enq (pc_trace);
+`endif
       endaction
    endfunction
 
@@ -1718,6 +1731,14 @@ module mkCPU (CPU_IFC);
    method Action  nmi_req (x);
       csr_regfile.nmi_req (x);
    endmethod
+
+   // ----------------
+   // Optional PC trace interface
+   // Outputs a stream of 2-tuples: (cycle_count, pc)
+
+`ifdef INCLUDE_PC_TRACE
+   interface Get  g_pc_trace = toGet (f_pc_trace);
+`endif
 
    // ----------------
    // Optional interface to Tandem Verifier

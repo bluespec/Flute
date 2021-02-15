@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2021 Bluespec, Inc. All Rights Reserved
 
 package CPU_IFC;
 
@@ -25,6 +25,10 @@ import AXI4_Lite_Types :: *;
 import DM_CPU_Req_Rsp :: *;
 `endif
 
+`ifdef INCLUDE_PC_TRACE
+import PC_Trace :: *;
+
+`endif
 `ifdef INCLUDE_TANDEM_VERIF
 import TV_Info         :: *;
 `endif
@@ -81,6 +85,14 @@ interface CPU_IFC;
 
    (* always_ready, always_enabled *)
    method Action  nmi_req (Bool set_not_clear);
+
+   // ----------------
+   // Optional PC trace interface
+   // Outputs a stream of 2-tuples: (cycle_count, pc)
+
+`ifdef INCLUDE_PC_TRACE
+   interface Get #(PC_Trace)  g_pc_trace;
+`endif
 
    // ----------------
    // Optional interface to Tandem Verifier

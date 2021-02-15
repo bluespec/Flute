@@ -35,6 +35,10 @@ import AXI4_Lite_Types :: *;
 // External interrupt request interface
 import PLIC  :: *;
 
+`ifdef INCLUDE_PC_TRACE
+import PC_Trace  :: *;
+`endif
+
 `ifdef INCLUDE_TANDEM_VERIF
 import TV_Info  :: *;
 `endif
@@ -85,6 +89,13 @@ interface Core_IFC #(numeric type t_n_interrupt_sources);
 
    (* always_ready, always_enabled *)
    method Action nmi_req (Bool set_not_clear);
+
+   // ----------------------------------------------------------------
+   // Optional PC Trace output
+
+`ifdef INCLUDE_PC_TRACE
+   interface Get #(PC_Trace)  g_pc_trace;
+`endif
 
    // ----------------------------------------------------------------
    // Optional Tandem Verifier interface output tuples (n,vb),
