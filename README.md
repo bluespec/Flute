@@ -29,23 +29,25 @@ adequate to boot a Linux kernel.
 The pre-generated synthesizable Verilog RTL source files in this
 repository are for a few specific configurations:
 
-1. RV32ACIMU:    **(DARPA SSITH users: with Piccolo this is the "P1" processor)**
-    - RV32I: base RV32 integer instructions
+1. RV32IMAC-MU:    **(DARPA SSITH users: with Piccolo this is the "P1" processor)**
+    - RV32: RISC-V 32-bit architecture 
+    - 'I' base RV32 integer instructions
+    - 'M' extension: integer multiply/divide instructions
     - 'A' extension: atomic memory ops
     - 'C' extension: compressed instructions
-    - 'M' extension: integer multiply/divide instructions
     - Privilege levels M (machine) and U (user)
     - Supports external, timer, software and non-maskable interrupts
     - Passes all riscv-isa tests for RV32ACIMU
     - Boots FreeRTOS
 
-2. RV64ACDFIMSU    **(DARPA SSITH users: with Flute this is the "P2" processor)**
-    - RV64I: base RV64 integer instructions
-    - 'A' extension: atomic memory ops
-    - 'C' extension: compressed instructions
-    - 'D' extension: double-precision floating point instructions
-    - 'F' extension: single-precision floating point instructions
+2. RV64IMAFDC-MSU    **(DARPA SSITH users: with Flute this is the "P2" processor)**
+    - RV64: RISC-V 64-bit architecture
+    - 'I' base RV64 integer instructions
     - 'M' extension: integer multiply/divide instructions
+    - 'A' extension: atomic memory ops
+    - 'F' extension: single-precision floating point instructions
+    - 'D' extension: double-precision floating point instructions
+    - 'C' extension: compressed instructions
     - Privilege levels M (machine), S (Supervisor) and U (user)
     - Supports Sv39 virtual memory
     - Supports external, timer, software and non-maskable interrupts
