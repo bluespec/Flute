@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2016-2021 Bluespec, Inc. All Rights Reserved.
 
 package Cache;
 
@@ -431,9 +431,12 @@ module mkCache #(parameter Bool      dcache_not_icache,
 	 let cset_cword_in_cache = fn_Addr_to_CSet_CWord_in_Cache (va);
 	 ram_cset_cword.a.put (bram_cmd_read, cset_cword_in_cache, ?);
 
-	 if (verbosity >= 2)
-	    $display ("    fa_req_rams_A %0h cset_in_cache %0h, cset_cword_in_cache %0h",
+	 if (verbosity >= 2) begin
+	    if (dcache_not_icache) $write ("    dmem");
+	    else $write ("    imem");
+	    $display (".fa_req_rams_A %0h cset_in_cache %0h, cset_cword_in_cache %0h",
 		      va, cset_in_cache, cset_cword_in_cache);
+	 end
       endaction
    endfunction
 
@@ -958,12 +961,13 @@ module mkCache #(parameter Bool      dcache_not_icache,
       let l2_to_l1_req = f_L2_to_L1_reqs.first;
       let addr         = l2_to_l1_req.addr;
       if (verbosity >= 1) begin
-	 $display ("%0d: %m.rl_downgrade_req_from_L2_A", cur_cycle);
-	 $display ("    Save rg_va             = %0h", rg_va);
-	 $display ("    Save rg_pa             = %0h", rg_pa);
-	 $display ("    Save rg_cset_in_cache  = %0h", rg_cset_in_cache);
-	 $display ("    Save rg_cword_in_cline = %0h", rg_cword_in_cline);
-	 $display ("    Save rg_way_in_cset    = %0h", rg_way_in_cset);
+	 $display ("%0d: %m.rl_downgrade_req_from_L2_A: save state (push)", cur_cycle);
+	 $display ("    rg_save_fsm_state <= ", fshow (rg_save_fsm_state));
+	 $display ("    rg_save_va             <= %0h", rg_va);
+	 $display ("    rg_save_pa             <= %0h", rg_pa);
+	 $display ("    rg_save_cset_in_cache  <= %0h", rg_cset_in_cache);
+	 $display ("    rg_save_cword_in_cline <= %0h", rg_cword_in_cline);
+	 $display ("    rg_save_way_in_cset    <= %0h", rg_way_in_cset);
 	 $display ("    Probe RAMs for: ", fshow (l2_to_l1_req));
 	 $display ("    -> FSM_DOWNGRADE_B");
       end
@@ -1068,7 +1072,7 @@ module mkCache #(parameter Bool      dcache_not_icache,
 
       if (verbosity >= 1) begin
 	 $display ("%0d: %m.rl_downgrade_req_from_L2_C", cur_cycle);
-	 $display ("    writeback done; restore and reprobe RAMs");
+	 $display ("    writeback done; restore (pop) and reprobe RAMs");
 	 $display ("    rg_fsm_state      <= ", fshow (rg_save_fsm_state));
 	 $display ("    rg_va             <= %0h", rg_save_va);
 	 $display ("    rg_pa             <= %0h", rg_save_pa);
@@ -1133,11 +1137,12 @@ module mkCache #(parameter Bool      dcache_not_icache,
    // This starts a new request (with virt addr)
    // while the virt addr is being translated to a phys addr
    method Action ma_request_va (WordXL va);    // if (rg_fsm_state == FSM_IDLE);
+      if (verbosity >= 1)
+	 $display ("%0d: %m.ma_request_va: %0h", cur_cycle, va);
+
       fa_req_rams_A (va);
       rg_va                  <= va;
       rg_cset_in_cache       <= fn_Addr_to_CSet_in_Cache (va);
-      if (verbosity >= 1)
-	 $display ("%0d: %m.ma_request_va: %0h", cur_cycle, va);
    endmethod
 
    // This completes a new request with the phys addr

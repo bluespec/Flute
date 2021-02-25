@@ -756,7 +756,7 @@ module mkCPU (CPU_IFC);
 			   && (stage3.out.ostatus == OSTATUS_EMPTY)
 			   && (stage2.out.ostatus == OSTATUS_NONPIPE));
       if (cur_verbosity > 1)
-	 $display ("%0d: %m.rl_stage2_nonpipe", mcycle);
+	 $display ("%0d: %m.rl_stage2_nonpipe -> CPU_TRAP", mcycle);
 
       // Just save relevant info and handle in next clock
       rg_trap_info       <= stage2.out.trap_info;

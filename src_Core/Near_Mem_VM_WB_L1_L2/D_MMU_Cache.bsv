@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2016-2021 Bluespec, Inc. All Rights Reserved.
 
 package D_MMU_Cache;
 
@@ -684,7 +684,8 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
 			     && (crg_mmu_cache_req_state [0] == REQ_STATE_EMPTY));
 
    // Step A
-   rule rl_ptw_rd_A (ok_to_do_DMem_PTW || ok_to_do_IMem_PTW);
+   rule rl_ptw_rd_A (cache.mv_is_idle
+		     && (ok_to_do_DMem_PTW || ok_to_do_IMem_PTW));
       let ptw_mem_req <- ptw.mem_client.request.get;
 
       if (verbosity >= 3) begin
@@ -783,6 +784,7 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
 
    // Phase A
    rule rl_pte_wb_req_A ((crg_state [0] == STATE_MAIN)
+			 && cache.mv_is_idle
 			 && (crg_mmu_cache_req_state [0] == REQ_STATE_EMPTY));
       if (verbosity >= 2)
 	 $display ("%0d: %m.rl_pte_wb_req_A: cache request pte_pa %0h pte %0h",

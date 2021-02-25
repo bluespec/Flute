@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2021 Bluespec, Inc. All Rights Reserved
 
 package CPU_StageF;
 
@@ -140,7 +140,7 @@ module mkCPU_StageF #(Bit #(4)  verbosity,
 		      Bit #(1)         mstatus_MXR,
 		      WordXL           satp);
       if (verbosity > 1) begin
-	 $write ("    %m.enq:  pc:0x%0h  epoch:%0d  priv:%0d",     pc, epoch, priv);
+	 $write ("    %m.CPU_StageF.ma_enq:  pc:0x%0h  epoch:%0d  priv:%0d", pc, epoch, priv);
 	 $write ("  sstatus_SUM:%0d  mstatus_MXR:%0d  satp:0x%0h",
 		 sstatus_SUM, mstatus_MXR, satp);
 	 $display ("");
