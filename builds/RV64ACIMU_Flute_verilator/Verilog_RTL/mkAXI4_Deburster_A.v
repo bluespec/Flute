@@ -660,32 +660,32 @@ module mkAXI4_Deburster_A(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h2538;
-  reg [31 : 0] v__h1445;
-  reg [31 : 0] v__h2532;
-  reg [31 : 0] v__h1439;
+  reg [31 : 0] v__h2520;
+  reg [31 : 0] v__h2514;
   // synopsys translate_on
 
   // remaining internal signals
-  wire [63 : 0] IF_m_xactor_from_master_f_rd_addr_first__7_BIT_ETC___d104,
-		IF_m_xactor_from_master_f_wr_addr_first__7_BIT_ETC___d34,
-		a_out_araddr__h3122,
-		a_out_awaddr__h2001,
-		addr___1__h2153,
-		addr___1__h3272,
-		addr__h2083,
-		addr__h3204,
-		burst_len__h2084,
-		burst_len__h3205,
-		m_rg_last_beat_raddr_2_PLUS_1_SL_m_xactor_from_ETC___d100,
-		m_rg_last_beat_waddr_2_PLUS_1_SL_m_xactor_from_ETC___d30,
-		wrap_boundary__h2085,
-		wrap_boundary__h3206;
-  wire [7 : 0] x__h2401, x__h2925, x__h3420, x__h3653;
-  wire m_rg_ar_beat_count_0_ULT_m_xactor_from_master__ETC___d110,
-       m_rg_b_beat_count_6_ULT_m_f_w_awlen_first__7___d58,
+  wire [63 : 0] a_out_araddr__h3104,
+		a_out_awaddr__h1971,
+		addr___1__h2065,
+		addr___1__h3198,
+		addr__h2053,
+		addr__h3186,
+		burst_len__h2054,
+		burst_len__h3187,
+		wrap_mask__h2055,
+		wrap_mask__h3188,
+		x__h2077,
+		x__h3210,
+		y__h2078,
+		y__h2079,
+		y__h3211,
+		y__h3212;
+  wire [7 : 0] x__h2383, x__h2907, x__h3414, x__h3647;
+  wire m_rg_ar_beat_count_9_ULT_m_xactor_from_master__ETC___d110,
+       m_rg_b_beat_count_5_ULT_m_f_w_awlen_first__6___d57,
        m_rg_r_beat_count_19_ULT_m_f_r_arlen_first__20___d121,
-       m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d43;
+       m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d42;
 
   // action method reset
   assign RDY_reset = !m_rg_reset ;
@@ -1010,7 +1010,7 @@ module mkAXI4_Deburster_A(CLK,
   // rule RL_m_rl_wr_resp_slave_to_master
   assign CAN_FIRE_RL_m_rl_wr_resp_slave_to_master =
 	     m_xactor_to_slave_f_wr_resp$EMPTY_N && m_f_w_awlen$EMPTY_N &&
-	     (m_rg_b_beat_count_6_ULT_m_f_w_awlen_first__7___d58 ||
+	     (m_rg_b_beat_count_5_ULT_m_f_w_awlen_first__6___d57 ||
 	      m_xactor_from_master_f_wr_resp$FULL_N) ;
   assign WILL_FIRE_RL_m_rl_wr_resp_slave_to_master =
 	     CAN_FIRE_RL_m_rl_wr_resp_slave_to_master ;
@@ -1039,26 +1039,26 @@ module mkAXI4_Deburster_A(CLK,
 	     WILL_FIRE_RL_m_rl_wr_resp_slave_to_master &&
 	     (m_rg_b_resp == 2'b0 &&
 	      m_xactor_to_slave_f_wr_resp$D_OUT[1:0] != 2'b0 ||
-	      !m_rg_b_beat_count_6_ULT_m_f_w_awlen_first__7___d58) ;
+	      !m_rg_b_beat_count_5_ULT_m_f_w_awlen_first__6___d57) ;
   assign MUX_m_rg_ar_beat_count$write_1__VAL_2 =
-	     m_rg_ar_beat_count_0_ULT_m_xactor_from_master__ETC___d110 ?
-	       x__h3420 :
+	     m_rg_ar_beat_count_9_ULT_m_xactor_from_master__ETC___d110 ?
+	       x__h3414 :
 	       8'd0 ;
   assign MUX_m_rg_b_beat_count$write_1__VAL_2 =
-	     m_rg_b_beat_count_6_ULT_m_f_w_awlen_first__7___d58 ?
-	       x__h2925 :
+	     m_rg_b_beat_count_5_ULT_m_f_w_awlen_first__6___d57 ?
+	       x__h2907 :
 	       8'd0 ;
   assign MUX_m_rg_b_resp$write_1__VAL_2 =
-	     m_rg_b_beat_count_6_ULT_m_f_w_awlen_first__7___d58 ?
+	     m_rg_b_beat_count_5_ULT_m_f_w_awlen_first__6___d57 ?
 	       m_xactor_to_slave_f_wr_resp$D_OUT[1:0] :
 	       2'b0 ;
   assign MUX_m_rg_r_beat_count$write_1__VAL_2 =
 	     m_rg_r_beat_count_19_ULT_m_f_r_arlen_first__20___d121 ?
-	       x__h3653 :
+	       x__h3647 :
 	       8'd0 ;
   assign MUX_m_rg_w_beat_count$write_1__VAL_2 =
-	     m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d43 ?
-	       x__h2401 :
+	     m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d42 ?
+	       x__h2383 :
 	       8'd0 ;
 
   // register m_rg_ar_beat_count
@@ -1079,12 +1079,12 @@ module mkAXI4_Deburster_A(CLK,
   assign m_rg_b_resp$EN = MUX_m_rg_b_resp$write_1__SEL_2 || m_rg_reset ;
 
   // register m_rg_last_beat_raddr
-  assign m_rg_last_beat_raddr$D_IN = a_out_araddr__h3122 ;
+  assign m_rg_last_beat_raddr$D_IN = a_out_araddr__h3104 ;
   assign m_rg_last_beat_raddr$EN =
 	     CAN_FIRE_RL_m_rl_rd_xaction_master_to_slave ;
 
   // register m_rg_last_beat_waddr
-  assign m_rg_last_beat_waddr$D_IN = a_out_awaddr__h2001 ;
+  assign m_rg_last_beat_waddr$D_IN = a_out_awaddr__h1971 ;
   assign m_rg_last_beat_waddr$EN =
 	     CAN_FIRE_RL_m_rl_wr_xaction_master_to_slave ;
 
@@ -1121,7 +1121,7 @@ module mkAXI4_Deburster_A(CLK,
 	     m_rg_w_beat_count == 8'd0 ;
   assign m_f_w_awlen$DEQ =
 	     WILL_FIRE_RL_m_rl_wr_resp_slave_to_master &&
-	     !m_rg_b_beat_count_6_ULT_m_f_w_awlen_first__7___d58 ;
+	     !m_rg_b_beat_count_5_ULT_m_f_w_awlen_first__6___d57 ;
   assign m_f_w_awlen$CLR = m_rg_reset ;
 
   // submodule m_xactor_from_master_f_rd_addr
@@ -1140,7 +1140,7 @@ module mkAXI4_Deburster_A(CLK,
 	     from_master_arvalid && m_xactor_from_master_f_rd_addr$FULL_N ;
   assign m_xactor_from_master_f_rd_addr$DEQ =
 	     WILL_FIRE_RL_m_rl_rd_xaction_master_to_slave &&
-	     !m_rg_ar_beat_count_0_ULT_m_xactor_from_master__ETC___d110 ;
+	     !m_rg_ar_beat_count_9_ULT_m_xactor_from_master__ETC___d110 ;
   assign m_xactor_from_master_f_rd_addr$CLR = m_rg_reset ;
 
   // submodule m_xactor_from_master_f_rd_data
@@ -1169,7 +1169,7 @@ module mkAXI4_Deburster_A(CLK,
 	     from_master_awvalid && m_xactor_from_master_f_wr_addr$FULL_N ;
   assign m_xactor_from_master_f_wr_addr$DEQ =
 	     WILL_FIRE_RL_m_rl_wr_xaction_master_to_slave &&
-	     !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d43 ;
+	     !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d42 ;
   assign m_xactor_from_master_f_wr_addr$CLR = m_rg_reset ;
 
   // submodule m_xactor_from_master_f_wr_data
@@ -1189,7 +1189,7 @@ module mkAXI4_Deburster_A(CLK,
 		 m_rg_b_resp } ;
   assign m_xactor_from_master_f_wr_resp$ENQ =
 	     WILL_FIRE_RL_m_rl_wr_resp_slave_to_master &&
-	     !m_rg_b_beat_count_6_ULT_m_f_w_awlen_first__7___d58 ;
+	     !m_rg_b_beat_count_5_ULT_m_f_w_awlen_first__6___d57 ;
   assign m_xactor_from_master_f_wr_resp$DEQ =
 	     from_master_bready && m_xactor_from_master_f_wr_resp$EMPTY_N ;
   assign m_xactor_from_master_f_wr_resp$CLR = m_rg_reset ;
@@ -1197,7 +1197,7 @@ module mkAXI4_Deburster_A(CLK,
   // submodule m_xactor_to_slave_f_rd_addr
   assign m_xactor_to_slave_f_rd_addr$D_IN =
 	     { m_xactor_from_master_f_rd_addr$D_OUT[96:93],
-	       a_out_araddr__h3122,
+	       a_out_araddr__h3104,
 	       8'd0,
 	       m_xactor_from_master_f_rd_addr$D_OUT[20:18],
 	       2'b0,
@@ -1223,7 +1223,7 @@ module mkAXI4_Deburster_A(CLK,
   // submodule m_xactor_to_slave_f_wr_addr
   assign m_xactor_to_slave_f_wr_addr$D_IN =
 	     { m_xactor_from_master_f_wr_addr$D_OUT[96:93],
-	       a_out_awaddr__h2001,
+	       a_out_awaddr__h1971,
 	       8'd0,
 	       m_xactor_from_master_f_wr_addr$D_OUT[20:18],
 	       2'b0,
@@ -1252,61 +1252,57 @@ module mkAXI4_Deburster_A(CLK,
   assign m_xactor_to_slave_f_wr_resp$CLR = m_rg_reset ;
 
   // remaining internal signals
-  assign IF_m_xactor_from_master_f_rd_addr_first__7_BIT_ETC___d104 =
-	     (m_xactor_from_master_f_rd_addr$D_OUT[17:16] == 2'b10) ?
-	       ((m_rg_last_beat_raddr_2_PLUS_1_SL_m_xactor_from_ETC___d100 ==
-		 64'd0) ?
-		  addr___1__h3272 :
-		  addr__h3204) :
-	       addr__h3204 ;
-  assign IF_m_xactor_from_master_f_wr_addr_first__7_BIT_ETC___d34 =
-	     (m_xactor_from_master_f_wr_addr$D_OUT[17:16] == 2'b10) ?
-	       ((m_rg_last_beat_waddr_2_PLUS_1_SL_m_xactor_from_ETC___d30 ==
-		 64'd0) ?
-		  addr___1__h2153 :
-		  addr__h2083) :
-	       addr__h2083 ;
-  assign a_out_araddr__h3122 =
+  assign a_out_araddr__h3104 =
 	     (m_rg_ar_beat_count == 8'd0) ?
 	       m_xactor_from_master_f_rd_addr$D_OUT[92:29] :
-	       IF_m_xactor_from_master_f_rd_addr_first__7_BIT_ETC___d104 ;
-  assign a_out_awaddr__h2001 =
+	       ((m_xactor_from_master_f_rd_addr$D_OUT[17:16] == 2'b10) ?
+		  addr___1__h3198 :
+		  addr__h3186) ;
+  assign a_out_awaddr__h1971 =
 	     (m_rg_w_beat_count == 8'd0) ?
 	       m_xactor_from_master_f_wr_addr$D_OUT[92:29] :
-	       IF_m_xactor_from_master_f_wr_addr_first__7_BIT_ETC___d34 ;
-  assign addr___1__h2153 = addr__h2083 - wrap_boundary__h2085 ;
-  assign addr___1__h3272 = addr__h3204 - wrap_boundary__h3206 ;
-  assign addr__h2083 =
+	       ((m_xactor_from_master_f_wr_addr$D_OUT[17:16] == 2'b10) ?
+		  addr___1__h2065 :
+		  addr__h2053) ;
+  assign addr___1__h2065 = x__h2077 | y__h2078 ;
+  assign addr___1__h3198 = x__h3210 | y__h3211 ;
+  assign addr__h2053 =
 	     m_rg_last_beat_waddr +
 	     (64'd1 << m_xactor_from_master_f_wr_addr$D_OUT[20:18]) ;
-  assign addr__h3204 =
+  assign addr__h3186 =
 	     m_rg_last_beat_raddr +
 	     (64'd1 << m_xactor_from_master_f_rd_addr$D_OUT[20:18]) ;
-  assign burst_len__h2084 =
+  assign burst_len__h2054 =
 	     { 56'd0, m_xactor_from_master_f_wr_addr$D_OUT[28:21] } + 64'd1 ;
-  assign burst_len__h3205 =
+  assign burst_len__h3187 =
 	     { 56'd0, m_xactor_from_master_f_rd_addr$D_OUT[28:21] } + 64'd1 ;
-  assign m_rg_ar_beat_count_0_ULT_m_xactor_from_master__ETC___d110 =
+  assign m_rg_ar_beat_count_9_ULT_m_xactor_from_master__ETC___d110 =
 	     m_rg_ar_beat_count <
 	     m_xactor_from_master_f_rd_addr$D_OUT[28:21] ;
-  assign m_rg_b_beat_count_6_ULT_m_f_w_awlen_first__7___d58 =
+  assign m_rg_b_beat_count_5_ULT_m_f_w_awlen_first__6___d57 =
 	     m_rg_b_beat_count < m_f_w_awlen$D_OUT ;
-  assign m_rg_last_beat_raddr_2_PLUS_1_SL_m_xactor_from_ETC___d100 =
-	     addr__h3204 % wrap_boundary__h3206 ;
-  assign m_rg_last_beat_waddr_2_PLUS_1_SL_m_xactor_from_ETC___d30 =
-	     addr__h2083 % wrap_boundary__h2085 ;
   assign m_rg_r_beat_count_19_ULT_m_f_r_arlen_first__20___d121 =
 	     m_rg_r_beat_count < m_f_r_arlen$D_OUT ;
-  assign m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d43 =
+  assign m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d42 =
 	     m_rg_w_beat_count < m_xactor_from_master_f_wr_addr$D_OUT[28:21] ;
-  assign wrap_boundary__h2085 =
-	     burst_len__h2084 << m_xactor_from_master_f_wr_addr$D_OUT[20:18] ;
-  assign wrap_boundary__h3206 =
-	     burst_len__h3205 << m_xactor_from_master_f_rd_addr$D_OUT[20:18] ;
-  assign x__h2401 = m_rg_w_beat_count + 8'd1 ;
-  assign x__h2925 = m_rg_b_beat_count + 8'd1 ;
-  assign x__h3420 = m_rg_ar_beat_count + 8'd1 ;
-  assign x__h3653 = m_rg_r_beat_count + 8'd1 ;
+  assign wrap_mask__h2055 =
+	     (burst_len__h2054 <<
+	      m_xactor_from_master_f_wr_addr$D_OUT[20:18]) -
+	     64'd1 ;
+  assign wrap_mask__h3188 =
+	     (burst_len__h3187 <<
+	      m_xactor_from_master_f_rd_addr$D_OUT[20:18]) -
+	     64'd1 ;
+  assign x__h2077 = m_rg_last_beat_waddr & y__h2079 ;
+  assign x__h2383 = m_rg_w_beat_count + 8'd1 ;
+  assign x__h2907 = m_rg_b_beat_count + 8'd1 ;
+  assign x__h3210 = m_rg_last_beat_raddr & y__h3212 ;
+  assign x__h3414 = m_rg_ar_beat_count + 8'd1 ;
+  assign x__h3647 = m_rg_r_beat_count + 8'd1 ;
+  assign y__h2078 = addr__h2053 & wrap_mask__h2055 ;
+  assign y__h2079 = ~wrap_mask__h2055 ;
+  assign y__h3211 = addr__h3186 & wrap_mask__h3188 ;
+  assign y__h3212 = ~wrap_mask__h3188 ;
 
   // handling of inlined registers
 
@@ -1367,84 +1363,75 @@ module mkAXI4_Deburster_A(CLK,
     #0;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_m_rl_wr_xaction_master_to_slave &&
-	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d43 &&
+	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d42 &&
 	  !m_xactor_from_master_f_wr_data$D_OUT[0])
 	begin
-	  v__h2538 = $stime;
+	  v__h2520 = $stime;
 	  #0;
 	end
-    v__h2532 = v__h2538 / 32'd10;
+    v__h2514 = v__h2520 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_m_rl_wr_xaction_master_to_slave &&
-	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d43 &&
+	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d42 &&
 	  !m_xactor_from_master_f_wr_data$D_OUT[0])
 	$display("%0d: ERROR: %m::AXI4_Deburster.rl_wr_xaction_master_to_slave: m -> s",
-		 v__h2532);
+		 v__h2514);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_m_rl_wr_xaction_master_to_slave &&
-	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d43 &&
+	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d42 &&
 	  !m_xactor_from_master_f_wr_data$D_OUT[0])
 	$display("    WLAST not set on last data beat (awlen = %0d)",
 		 m_xactor_from_master_f_wr_addr$D_OUT[28:21]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_m_rl_wr_xaction_master_to_slave &&
-	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d43 &&
+	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d42 &&
 	  !m_xactor_from_master_f_wr_data$D_OUT[0])
 	$write("    ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_m_rl_wr_xaction_master_to_slave &&
-	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d43 &&
+	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d42 &&
 	  !m_xactor_from_master_f_wr_data$D_OUT[0])
 	$write("AXI4_Wr_Data { ", "wdata: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_m_rl_wr_xaction_master_to_slave &&
-	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d43 &&
+	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d42 &&
 	  !m_xactor_from_master_f_wr_data$D_OUT[0])
 	$write("'h%h", m_xactor_from_master_f_wr_data$D_OUT[72:9]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_m_rl_wr_xaction_master_to_slave &&
-	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d43 &&
+	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d42 &&
 	  !m_xactor_from_master_f_wr_data$D_OUT[0])
 	$write(", ", "wstrb: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_m_rl_wr_xaction_master_to_slave &&
-	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d43 &&
+	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d42 &&
 	  !m_xactor_from_master_f_wr_data$D_OUT[0])
 	$write("'h%h", m_xactor_from_master_f_wr_data$D_OUT[8:1]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_m_rl_wr_xaction_master_to_slave &&
-	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d43 &&
+	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d42 &&
 	  !m_xactor_from_master_f_wr_data$D_OUT[0])
 	$write(", ", "wlast: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_m_rl_wr_xaction_master_to_slave &&
-	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d43 &&
+	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d42 &&
 	  !m_xactor_from_master_f_wr_data$D_OUT[0])
 	$write("False");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_m_rl_wr_xaction_master_to_slave &&
-	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d43 &&
+	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d42 &&
 	  !m_xactor_from_master_f_wr_data$D_OUT[0])
 	$write(", ", "wuser: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_m_rl_wr_xaction_master_to_slave &&
-	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d43 &&
+	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d42 &&
 	  !m_xactor_from_master_f_wr_data$D_OUT[0])
 	$write("'h%h", 1'd0, " }");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_m_rl_wr_xaction_master_to_slave &&
-	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d43 &&
+	  !m_rg_w_beat_count_ULT_m_xactor_from_master_f_w_ETC___d42 &&
 	  !m_xactor_from_master_f_wr_data$D_OUT[0])
 	$write("\n");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (m_rg_reset)
-	begin
-	  v__h1445 = $stime;
-	  #0;
-	end
-    v__h1439 = v__h1445 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (m_rg_reset) $display("%0d: %m::AXI4_Deburster.rl_reset", v__h1439);
   end
   // synopsys translate_on
 endmodule  // mkAXI4_Deburster_A
