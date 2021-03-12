@@ -143,8 +143,6 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
 
    // Threshold: interrupts at or below threshold should be masked out for target
    Vector #(t_n_targets, Reg #(Bit #(t_wd_priority)))   vrg_target_threshold <- replicateM (mkReg ('1));
-   // Target has claimed interrupt for source and is servicing it
-   Vector #(t_n_targets, Reg #(Bit #(TLog #(t_n_sources))))  vrg_servicing_source <- replicateM (mkReg (0));
 
    // ----------------
    // Per-target, per-source state
@@ -197,8 +195,8 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
 	    for (Integer source_id = 0; source_id < n_sources; source_id = source_id + 1)
 	       $write (" %0d", vvrg_ie [target_id][source_id]);
 	    match { .max_prio, .max_id } = fn_target_max_prio_and_max_id (fromInteger (target_id));
-	    $display (" MaxPri %0d, Thresh %0d, MaxId %0d, Svcing %0d",
-		      max_prio, vrg_target_threshold [target_id], max_id, vrg_servicing_source [target_id]);
+	    $display (" MaxPri %0d, Thresh %0d, MaxId %0d",
+		      max_prio, vrg_target_threshold [target_id], max_id);
 	 end
       endaction
    endfunction
@@ -221,7 +219,6 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
       for (Integer target_id = 0; target_id < n_targets; target_id = target_id + 1) begin
 	 // Mask all interrupts with highest threshold
 	 vrg_target_threshold [target_id] <= '1;
-	 vrg_servicing_source [target_id] <=  0;
       end
 
       for (Integer target_id = 0; target_id < n_targets; target_id = target_id + 1)
@@ -347,26 +344,15 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
 	 match { .max_prio, .max_id } = fn_target_max_prio_and_max_id (target_id);
 	 Bool eip = (max_prio > vrg_target_threshold [target_id]);
 	 if (target_id <= fromInteger (n_targets - 1)) begin
-	    if (vrg_servicing_source [target_id] != 0) begin
-	       $display ("%0d: ERROR: PLIC: target %0d claiming without prior completion",
-			 cur_cycle, target_id);
-	       $display ("    Still servicing interrupt from source %0d", vrg_servicing_source [target_id]);
-	       $display ("    Trying to claim service   for  source %0d", max_id);
-	       $display ("    Ignoring.");
-	       rresp = axi4_resp_slverr;
+	    if (max_id != 0) begin
+	       vrg_source_ip   [max_id]         <= False;
+	       vrg_source_busy [max_id]         <= True;
+	       rdata = changeWidth (max_id);
 	    end
-	    else begin
-	       if (max_id != 0) begin
-		  vrg_source_ip   [max_id]         <= False;
-		  vrg_source_busy [max_id]         <= True;
-		  vrg_servicing_source [target_id] <= truncate (max_id);
-		  rdata = changeWidth (max_id);
 
-		  if (cfg_verbosity > 0)
-		     $display ("%0d: PLIC.rl_process_rd_req: reading Claim for target %0d = 0x%0h",
-			cur_cycle, target_id, rdata);
-	       end
-	    end
+	    if (cfg_verbosity > 0)
+	       $display ("%0d: PLIC.rl_process_rd_req: reading Claim for target %0d = 0x%0h",
+		  cur_cycle, target_id, rdata);
 	 end
 	 else
 	    rresp = axi4_resp_slverr;
@@ -497,25 +483,23 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
       end
 
       // Interrupt service completion by target
-      // Actual memory-write-data is irrelevant.
+      // Write data is the source ID to complete. Disabled sources are ignored.
       else if ((addr_offset [31:0] & 32'hFFFF_0FFF) == 32'h0020_0004) begin
 	 Bit #(T_wd_target_id)  target_id = truncate (addr_offset [20:12]);
-	 Bit #(T_wd_source_id)  source_id = zeroExtend (vrg_servicing_source [target_id]);
+	 Bit #(T_wd_source_id)  source_id = truncate (wdata32);
 
 	 if (target_id <= fromInteger (n_targets - 1)) begin
-	    if (vrg_source_busy [source_id]) begin
+	    if (   (source_id <= fromInteger (n_sources))
+		&& vvrg_ie [target_id][source_id]) begin
 	       vrg_source_busy [source_id] <= False;
-	       vrg_servicing_source [target_id] <= 0;
 	       if (cfg_verbosity > 0)
 		  $display ("%0d: PLIC.rl_process_wr_req: writing completion for target %0d for source 0x%0h",
 		     cur_cycle, target_id, source_id);
 	    end
 	    else begin
-	       $display ("%0d: ERROR: PLIC: interrupt completion to source that is not being serviced",
-			 cur_cycle);
-	       $display ("    Completion message from target %0d to source %0d", target_id, source_id);
-	       $display ("    Ignoring");
-	       bresp = axi4_resp_slverr;
+	       if (cfg_verbosity > 0)
+		  $display ("%0d: PLIC.rl_process_wr_req: ignoring completion for target %0d for source 0x%0h",
+		     cur_cycle, target_id, source_id);
 	    end
 	 end
 	 else
