@@ -314,7 +314,7 @@ module mkCFFifo( Fifo#(n, t) ) provisos (Bits#(t,tSz));
 
   method Action deq if( !empty );
     // Tell later stages a dequeue was requested
-    deqReq[0] <= tagged Valid;
+    deqReq[0] <= tagged Valid (?);
   endmethod
 
   method t first if( !empty );
@@ -327,7 +327,7 @@ module mkCFFifo( Fifo#(n, t) ) provisos (Bits#(t,tSz));
     enqReq[1] <= tagged Invalid;
     deqReq[1] <= tagged Invalid;
     // Tell later stages a clear was requested
-    clearReq[0] <= tagged Valid;
+    clearReq[0] <= tagged Valid (?);
   endmethod
 endmodule
 

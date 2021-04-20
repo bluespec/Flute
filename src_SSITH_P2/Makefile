@@ -92,8 +92,18 @@ CORE_DIRS = $(REPO)/src_Core/CPU:$(REPO)/src_Core/ISA:$(REPO)/src_Core/RegFiles:
 
 TESTBENCH_DIRS  = $(REPO)/src_Testbench/Fabrics/AXI4
 
+# ----------------
+# Please use one of the following defs of BSC_PATH (and comment out the other)
+
+# If you are using one of the older bsc 'releases'
 BSC_PATH = $(CUSTOM_DIRS):src_BSV:$(CORE_DIRS):$(TESTBENCH_DIRS):+:%/Libraries/TLM3:%/Libraries/Axi:%/Libraries/Axi4
-# OLD: BSC_PATH = -p $(CORE_DIRS):src_BSV:$(TESTBENCH_DIRS):+:%/Libraries/TLM3:%/Libraries/Axi:%/Libraries/Axi4
+
+# If you are using a new 'bsc' build from these open-source repos:
+#     https://github.com/B-Lang-org/bsc
+#     https://github.com/B-Lang-org/bsc-contrib
+# CONTRIB_LIBS=$(HOME)/git_clones/bsc-contrib/Libraries
+# TLM_LIBS=$(CONTRIB_LIBS)/Bus:$(CONTRIB_LIBS)/AMBA_TLM3/TLM3:$(CONTRIB_LIBS)/AMBA_TLM3/Axi:$(CONTRIB_LIBS)/AMBA_TLM3/Axi4
+# BSC_PATH = $(CUSTOM_DIRS):src_BSV:$(CORE_DIRS):$(TESTBENCH_DIRS):+:$(TLM_LIBS)
 
 # ----------------
 # Top-level file and module
