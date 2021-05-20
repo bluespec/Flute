@@ -25,7 +25,9 @@ import Near_Mem_IFC :: *;    // For Wd_Id_Dma
 // ================================================================
 // From L1CoCache.bsv
 
-typedef TMul#(CoreNum, 2) L1Num;
+// typedef TMul#(CoreNum, 2) L1Num;    // TODO: DELETE
+typedef TAdd #(TMul#(CoreNum, 2), 1) L1Num;    // per core (I-Cache, D-Cache), and DMA-Cache
+
 typedef `LOG_L1_WAYS LgL1WayNum;
 typedef Bit#(LgL1WayNum) L1Way;
 

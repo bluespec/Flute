@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2016-2021 Bluespec, Inc. All Rights Reserved.
 
 // Near_Mem_IFC is an abstraction of the 'near' memory subsystem (TCMs
 // (Tightly Coupled Memories), MMUs, L1 Caches, L2 caches, etc.
@@ -48,15 +48,13 @@ import CPU_IFC          :: *;    // For Wd_Id/Addr/User/Data_Dma
 import AXI4_Types   :: *;
 import Fabric_Defs  :: *;
 
-// System address map and pc_reset value
-import SoC_Map :: *;
-
 `ifdef ISA_PRIV_S
 import PTW :: *;
 `endif
 
 import D_MMU_Cache :: *;
 import I_MMU_Cache :: *;
+import DMA_Cache   :: *;
 
 import LLCache_Aux   :: *;
 import CacheUtils    :: *;
@@ -71,7 +69,7 @@ import LLC_AXI4_Adapter     :: *;
 `endif
 
 import MMIO_AXI4_Adapter    :: *;
-import LLC_DMA_AXI4_Adapter :: *;
+import LLC_DMA_AXI4_Adapter :: *;    // TODO: DELETE AFTER ACTION BELOW
 
 // ================================================================
 // Exports
@@ -82,8 +80,9 @@ export mkNear_Mem;
 // Debug verbosities
 
 // 0-1: quiet; 2 show L1-to-L2 and L2-to-L1 messages
-Integer verbosity_I_L1_L2 = 0;    // for I-Cache
-Integer verbosity_D_L1_L2 = 0;    // for D-Cache
+Integer verbosity_I_L1_L2   = 0;    // for I-Cache
+Integer verbosity_D_L1_L2   = 0;    // for D-Cache
+Integer verbosity_DMA_L1_L2 = 0;    // for DMA-Cache
 
 // 0=quiet, 1 = rule firings
 Integer verbosity_mmio_axi4_adapter = 0;
@@ -227,30 +226,35 @@ module mkNear_Mem (Near_Mem_IFC);
    Reg #(Bit #(4)) cfg_verbosity <- mkConfigReg (0);
    Reg #(State)    rg_state      <- mkReg (STATE_READY);
 
-   // ----------------
-   // System address map and pc reset value
-   SoC_Map_IFC  soc_map  <- mkSoC_Map;
-
    // Reset response queue
    FIFOF #(Token) f_reset_rsps <- mkFIFOF;
 
-   I_MMU_Cache_IFC  i_mmu_cache <- mkI_MMU_Cache;
-   D_MMU_Cache_IFC  d_mmu_cache <- mkD_MMU_Cache;
+   // L1 caches
+   I_MMU_Cache_IFC  i_mmu_cache <- mkI_MMU_Cache;    // Instruction fetch
+   D_MMU_Cache_IFC  d_mmu_cache <- mkD_MMU_Cache;    // Data, PTWs
+   DMA_Cache_IFC    dma_cache   <- mkDMA_Cache;      // External 'devices'
 
    // last level cache
    LLCache llc <- mkLLCache;
 
    // Adapter for llc's 'coherent DMA interface'
+   // TODO: directly tie-off llc.dma, instead of introducing this AXI4 adapter?
    AXI4_Slave_IFC #(Wd_Id_Dma,
 		    Wd_Addr_Dma,
 		    Wd_Data_Dma,
 		    Wd_User_Dma)  llc_dma_axi4_adapter <- mkLLC_DMA_AXI4_Adapter (llc.dma);
 
+   AXI4_Master_IFC #(Wd_Id_Dma,
+		     Wd_Addr_Dma,
+		     Wd_Data_Dma,
+		     Wd_User_Dma) dummy_m = dummy_AXI4_Master_ifc;
+   mkConnection (dummy_m, llc_dma_axi4_adapter);
+
    // Adapter for back-side of LLC to AXI4
    LLC_AXI4_Adapter_IFC  llc_axi4_adapter <- mkLLC_AXi4_Adapter (llc.to_mem);
 
    // Adapter for MMIO interfaces of i_mmu_cache and d_mmu_cache to AXI4
-   MMIO_AXI4_Adapter_IFC #(2)
+   MMIO_AXI4_Adapter_IFC #(Num_MMIO_L1_Clients)
        mmio_axi4_adapter <- mkMMIO_AXI4_Adapter_2 (fromInteger (verbosity_mmio_axi4_adapter));
 
    // ----------------
@@ -269,12 +273,17 @@ module mkNear_Mem (Near_Mem_IFC);
 				     0,
 				     i_mmu_cache.l1_to_l2_client,
 				     i_mmu_cache.l2_to_l1_server);
-   l1 [0] = ifc_I_L1;
    let ifc_D_L1 <- mkL1_IFC_Adapter (verbosity_D_L1_L2,
 				     1,
 				     d_mmu_cache.l1_to_l2_client,
 				     d_mmu_cache.l2_to_l1_server);
+   let ifc_DMA_L1 <- mkL1_IFC_Adapter (verbosity_DMA_L1_L2,
+				       1,
+				       dma_cache.l1_to_l2_client,
+				       dma_cache.l2_to_l1_server);
+   l1 [0] = ifc_I_L1;
    l1 [1] = ifc_D_L1;
+   l1 [2] = ifc_DMA_L1;
    mkL1LLConnect (llc.to_child, l1);
 
    // ----------------
@@ -282,6 +291,7 @@ module mkNear_Mem (Near_Mem_IFC);
 
    mkConnection (i_mmu_cache.mmio_client, mmio_axi4_adapter.v_mmio_server [0]);
    mkConnection (d_mmu_cache.mmio_client, mmio_axi4_adapter.v_mmio_server [1]);
+   mkConnection (dma_cache.mmio_client,   mmio_axi4_adapter.v_mmio_server [2]);
 
    // ----------------------------------------------------------------
    // BEHAVIOR
@@ -442,7 +452,8 @@ module mkNear_Mem (Near_Mem_IFC);
    // ----------------------------------------------------------------
    // Interface to 'coherent DMA' port of optional L2 cache
 
-   interface dma_server = llc_dma_axi4_adapter;
+   // interface dma_server = llc_dma_axi4_adapter;    // TODO: DELETE
+   interface dma_server = dma_cache.axi4_s;
 
    // ----------------------------------------------------------------
    // Misc. control and status

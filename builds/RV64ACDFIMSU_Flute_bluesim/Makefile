@@ -26,6 +26,8 @@ BSC_COMPILATION_FLAGS += \
 	-D FABRIC64    \
 	-D WATCH_TOHOST    \
 
+#	-D INCLUDE_TANDEM_VERIF    \
+
 
 # Default ISA test
 
@@ -40,4 +42,3 @@ include $(REPO)/builds/Resources/Include_Common.mk
 # Makefile rules for building for specific simulator: bluesim
 
 include $(REPO)/builds/Resources/Include_bluesim.mk
-

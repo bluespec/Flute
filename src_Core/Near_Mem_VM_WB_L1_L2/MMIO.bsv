@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2016-2021 Bluespec, Inc. All Rights Reserved.
 
 package MMIO;
 
@@ -181,7 +181,7 @@ module mkMMIO #(parameter Bit #(3)  verbosity)
       rg_fsm_state    <= FSM_IDLE;
 
       if (verbosity >= 2)
-	 $display ("    goto MMIO_DONE");
+	 $display ("    => FSM_IDLE");
    endrule
 
    // ----------------------------------------------------------------
@@ -196,7 +196,7 @@ module mkMMIO #(parameter Bit #(3)  verbosity)
 	 $display ("%0d: %m.rl_AMO_SC; f3 %0h  vaddr %0h  paddr %0h  st_value %0h",
 		   cur_cycle, rg_req.f3, rg_req.va, rg_pa, rg_req.st_value);
 	 $display ("    FAIL due to I/O address.");
-	 $display ("    goto MMIO_DONE");
+	 $display ("    => FSM_IDLE");
       end
    endrule
 
@@ -206,11 +206,19 @@ module mkMMIO #(parameter Bit #(3)  verbosity)
    method Action req (MMU_Cache_Req mmu_cache_req);
       rg_req <= mmu_cache_req;
       rg_err <= False;
+      if (verbosity >= 1) begin
+	 $display ("%0d: %m.ma_req", cur_cycle);
+	 $display ("    ", fshow (mmu_cache_req));
+      end
    endmethod
 
    method Action start (PA pa);
       rg_pa        <= pa;
       rg_fsm_state <= FSM_START;
+      if (verbosity >= 1) begin
+	 $display ("%0d: %m.ma_start", cur_cycle);
+	 $display ("    add %0h", pa);
+      end
    endmethod
 
    method result () if (rg_fsm_state == FSM_IDLE);

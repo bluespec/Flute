@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2016-2021 Bluespec, Inc. All Rights Reserved.
 
 package MMIO_AXI4_Adapter;
 
@@ -25,6 +25,7 @@ package MMIO_AXI4_Adapter;
 
 // ================================================================
 
+export  Num_MMIO_L1_Clients;
 export  MMIO_AXI4_Adapter_IFC (..);
 export  mkMMIO_AXI4_Adapter;      // parameterized by # of clients
 export  mkMMIO_AXI4_Adapter_2;    // 2 clients, synthesized
@@ -126,8 +127,8 @@ module mkMMIO_AXI4_Adapter #(parameter Bit #(3) verbosity)
    // TODO: change mkFIFOF to mkSizedFIFOF (allowing multiple outstanding reads)
    // many reads can be outstanding
    FIFOF #(Tuple4 #(Bit #(log_num_clients_t),    // client_id
+		    Bit #(64),                   // addr (only LSBs needed, rest for debugging
 		    AXI4_Size,
-		    Bit #(3),                    // addr lsbs
 		    AXI4_Len))                   // arlen (= # of beats - 1)
          f_rd_rsp_control <- mkFIFOF;
 
@@ -138,7 +139,8 @@ module mkMMIO_AXI4_Adapter #(parameter Bit #(3) verbosity)
 
    function Action fa_rd_req (Integer j, FIFOF #(Single_Req) f_reqs_j);
       action
-	 let         req   <- pop (f_reqs_j);
+	 let req <- pop (f_reqs_j);
+
 	 Fabric_Addr araddr = fv_Addr_to_Fabric_Addr (req.addr);
 	 AXI4_Size   arsize = fv_size_code_to_AXI4_Size (req.size_code);
 
@@ -169,7 +171,7 @@ module mkMMIO_AXI4_Adapter #(parameter Bit #(3) verbosity)
 					     aruser:   fabric_default_user};
 	 master_xactor.i_rd_addr.enq (mem_req_rd_addr);
 
-	 f_rd_rsp_control.enq (tuple4 (fromInteger (j), arsize, req.addr [2:0], arlen));
+	 f_rd_rsp_control.enq (tuple4 (fromInteger (j), req.addr, arsize, arlen));
 	 rg_rd_beat         <= 0;
 	 rg_rd_rsps_pending <= rg_rd_rsps_pending + 1;
       endaction
@@ -185,10 +187,8 @@ module mkMMIO_AXI4_Adapter #(parameter Bit #(3) verbosity)
    // ----------------
    // Read responses
 
-   match {.rd_client_id,
-	  .rd_arsize,
-	  .rd_addr_lsbs, 
-	  .rd_arlen      } = f_rd_rsp_control.first;
+   match {.rd_client_id, .rd_addr, .rd_arsize, .rd_arlen} = f_rd_rsp_control.first;
+   Bit #(3) rd_addr_lsbs = rd_addr [2:0];
 
    Reg #(Bit #(64)) rg_rd_data_buf <- mkRegU;    // accumulate data across beats
 
@@ -196,6 +196,13 @@ module mkMMIO_AXI4_Adapter #(parameter Bit #(3) verbosity)
       // Get read-data response from AXI4
       let       rd_data <- pop_o (master_xactor.o_rd_data);
       Bool      ok      = (rd_data.rresp == axi4_resp_okay);
+
+      if (! ok) begin
+	 $display ("%0d: ERROR: %m.rl_rd_data: ERROR", cur_cycle);
+	 $display ("    AXI4 error response for client %0d, addr %0h  arsize %0h  arlen %0h",
+		   rd_client_id, rd_addr, rd_arsize, rd_arlen);
+	 $display ("    ", fshow (rd_data));
+      end
 
       // Accumulate beats into word64 and rg_rd_data
       Bit #(64) word64 = rg_rd_data_buf;
@@ -376,18 +383,17 @@ module mkMMIO_AXI4_Adapter #(parameter Bit #(3) verbosity)
       if (rg_wr_rsps_pending == 0) begin
 	 rg_wr_error <= True;
 
-	 $display ("%0d: %m.rl_wr_rsp: ERROR write-response when not expecting any",
-		   cur_cycle);
+	 $display ("%0d: %m.rl_wr_rsp:", cur_cycle);
+	 $display ("    ERROR write-response when not expecting any");
 	 $display ("    ", fshow (wr_resp));
       end
       else begin
 	 rg_wr_rsps_pending <= rg_wr_rsps_pending - 1;
 	 if (wr_resp.bresp != axi4_resp_okay) begin
 	    rg_wr_error <= True;
-	    if (verbosity >= 1) begin
-	       $display ("%0d: %m.rl_wr_rsp: ERROR", cur_cycle);
-	       $display ("    ", fshow (wr_resp));
-	    end
+	    $display ("%0d: %m.rl_wr_rsp", cur_cycle);
+	    $display ("    ERROR: AXI4 write-response error");
+	    $display ("    ", fshow (wr_resp));
 	 end
 	 else if (verbosity >= 1) begin
 	    $display ("%0d: %m.rl_wr_rsp: pending=%0d, ",
@@ -417,10 +423,14 @@ module mkMMIO_AXI4_Adapter #(parameter Bit #(3) verbosity)
 endmodule
 
 // ================================================================
+// Synthesized instance, fixing number of clients
+
+// typedef 2 Num_MMIO_L1_Clients;    // TODO: DELETE
+typedef 3 Num_MMIO_L1_Clients;
 
 (* synthesize *)
 module mkMMIO_AXI4_Adapter_2 #(parameter Bit #(3) verbosity)
-                             (MMIO_AXI4_Adapter_IFC #(2));
+                             (MMIO_AXI4_Adapter_IFC #(Num_MMIO_L1_Clients));
    let ifc <- mkMMIO_AXI4_Adapter (verbosity);
    return ifc;
 endmodule

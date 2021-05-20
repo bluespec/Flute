@@ -1,6 +1,6 @@
 ###  -*-Makefile-*-
 
-# Copyright (c) 2018-2019 Bluespec, Inc. All Rights Reserved
+# Copyright (c) 2018-2021 Bluespec, Inc. All Rights Reserved
 
 # This file is not a standalone Makefile, but 'include'd by other Makefiles
 
@@ -108,14 +108,14 @@ test:
 .PHONY: isa_tests
 isa_tests:
 	@echo "Running regressions on ISA tests; saving logs in Logs/"
-	$(REPO)/Tests/Run_regression.py  ./exe_HW_sim  $(REPO)  ./Logs  $(ARCH)
+	$(REPO)/Tests/Run_regression.py  ./exe_HW_sim  $(REPO)  ./Logs  $(ARCH)  $(PRIVS)
 	@echo "Finished running regressions; saved logs in Logs/"
 
 # ================================================================
 
 .PHONY: clean
 clean:
-	rm -r -f  *~  Makefile_*  symbol_table.txt  build_dir  obj_dir
+	rm -r -f  *~  Makefile_*  symbol_table.txt  build_dir  obj_dir  directc*
 
 .PHONY: full_clean
 full_clean: clean

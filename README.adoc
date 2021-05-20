@@ -1,0 +1,391 @@
+= Flute, a free and open-source RISC-V CPU
+Rishiyur S. Nikhil, Bluespec, Inc. (c) 2021
+:revnumber: v1.0
+:revdate: 2021-05-19
+:sectnums:
+:toc:
+:toclevels: 3
+:toc-title: Contents
+:description: Highly-parameterized RISC-V CPU, from small RV32 embedded to Linux-capable RV64
+:keywords: RISC-V, Bluespec, BSV, Flute
+
+'''
+
+// ================================================================
+// SECTION
+
+== CPU microarchitecture and options
+
+Flute is one of a family of free and open-source RISC-V CPUs from
+Bluespec, Inc.  (https://bluespec.com[]) For a description of the
+family, see Section <<CPU_Family>>.
+
+Flute's microarchitecture is a 5-stage, in-order pipeline.  The source
+code is highly parameterized to produce hundreds of variants, ranging
+from a small, bare-metal RV32 CPU to a medium-size, Linux-capable RV64
+CPUs with multiple privilege levels.
+
+There is a sketch of the module hierarchy in `Doc/Microarchitecture/Microarchitecture.pdf`.
+
+=== RISC-V ISA Spec options
+
+* RV32I or RV64I
+* Optional ISA A (Atomic instructions)
+* Optional ISA C (Compressed instructions)
+* Optional ISA M (Integer multiply and divide)
+* Optional ISA F (Single-precision IEEE floating point) +
+  Optional ISA D (Double-precision IEEE floating point)
+    ** For F and D, optional hardare divider (or trap on divide instructions)
+* Optional Privileged Architecture MU (Machine and User levels) or MSU
+  (Machine, Supervisor and User Levels)
+    ** For RV32, Privilege S implements the Sv32 Virtual Memory scheme
+    ** For RV64, Privilege S implements the Sv39 Virtual Memory scheme
+
+=== CPU microarchitecture options
+
+* Barrel-shifter (faster, more expensive hardware) or serial shifter
+  (cheaper, slower hardware) for Shift instructions
+
+* Multipliers inferred by RTL Syntheis tool (faster, more expensive
+    hardware), or serial multiplier (cheaper, slower hardware)
+    multiplication for ISA M option
+
+=== "`Near-Memory options`" (Caches and MMUs)
+
+Flute has separate I- and D-caches.
+
+* WT_L1: L1 only for I-Cache and D-Cache; write-through policy
+* WB_L1: L1 only for I-Cache and D-Cache; write-back policy
+* WB_L1_L2: L1 for I-Cache and D-Cache, shared coherent L2 cache; write-back policy
+
+For all of them, an MMU is included if Privilege S is selected.
+
+=== Development options
+
+* Optional standard RISC-V Debug Module that can connect to GDB, to
+  control and observe the CPU.
+
+* Optional Tandem Verification trace generator that outputs an
+  instruction-by-instruction trace that can be compared with a golden
+  model RISC-V CPU (e.g., RISC-V Formal Specication, simulator like
+  Spike or Bluespec Cissr)
+
+// ================================================================
+// SECTION
+
+== The provided system to run out-of-the-box, including CLINT and PLIC
+
+This repository contains a simple system (a small SoC) that
+instantiates the CPU. The system can be compiled into a Bluesim or
+Verilog simulation, and can be synthesized for FPGA.
+
+The immediate layer (the "`core`") that surrounds the CPU includes a
+CLINT (we call it "`Near Mem IO`") which contains the standard RISC-V
+MTIME (Real-time timer) and MTIMECMP (Timer Compare) memory-mapped
+registers and an MSIP "`Software Interrupt`" memory-mapped register.
+
+The immediate layer (the "`core`") that surrounds the CPU also
+includes a standard memory-mapped PLIC (Platform-Level Interrupt
+Controller).
+
+The SoC surrounding the core is based on an AMBA AXI4 interconnect, to
+which is connected a boot ROM model, a DRAM memory model and a UART
+model for serial communication.  The interconnect is parameterized for
+the number of M (Manager) and S (Subordinate) ports, so one can attach
+more memories, peripherals, or accelerators (needs recompilation).
+
+The system is run in simulation by loading the DRAM memory model with
+a data from a standard Verilog "`Mem Hex`" file (hexadecimal memory
+contents), which can be produced from a RISC-V ELF binary file.
+
+// ================================================================
+// SECTION
+
+== Directory structure
+
+All the hardware designs in this repository are written in BSV, an
+HLHDL (High-Level Hardware Description Language).  BSV sources files
+have extension `.bsv`.  These are compiled to standard synthesizable
+Verilog RTL using the free and open source _bsc_ compiler
+(https://github.com/B-Lang-org/bsc[]).
+
+// ----------------------------------------------------------------
+// SUBSECTION
+
+=== CPU and Core, in `src_Core/`
+
+The `src_Core/` directory contains the sources for the CPU and immediate surrounding core(s).
+
+The CPU itself is in sub-directories `CPU`, `ISA`, and `RegFiles`.
+
+The CLINT (unit with memory-mapped MTIME, MTIMECMP and MSIP registers) are in `Near_Mem_IO`.
+
+The PLIC (Platform-level Interrupt Controller) is in `PLIC`.
+
+The alternative "`near-memory`" subsystems (caches, MMUs) are in
+`Near_Mem_VM_WT_L1`,
+`Near_Mem_VM_WB_L1`, and
+`Near_Mem_VM_WB_L1_L2`.
+
+The optional RISC-V Debug Module is in `Debug_Module`.
+
+Two alterative "`cores`" are in `Core` (used with WT_L1 and WB_L1) and
+`Core_v2` (used with WB_L1_L2). These directories also contain the
+optional Tandem Verification generators.  These cores instantiate the
+CPU, chosen near-memory subsystem, CLINT, PLIC, optional Debug Module
+and optional Tandem Verification generator.
+
+// ----------------------------------------------------------------
+// SUBSECTION
+
+=== SoC and simulation top-level, in `src_Testbench/`
+
+The SoC is in `src_Testbench/SoC`.  This includes a boot ROM model, an
+AXI4 interconnect fabric, a memory controller for DRAM, and a UART
+model for serial communications.
+
+The file `SoC/SoC_Map.bsv` specifies the system's address map
+(addresses for memory, boot ROM, CLINT, PLIC, UART, etc.)
+
+The subdirectory `src_Testbench/Fabrics/` contains the code for AXI4 interfaces,
+transactors and fabrics.
+
+Everything in the SoC and below is synthesizable, and can be
+synthesized for FPGA.
+
+The `src_Testbench/Top/` subdirectory is the only part that is meant
+for simulaton only (not synthesizable). It contains a thin layer
+around the SoC to provide a simulation clock and reset, a memory model
+for the DRAM, and connections from the UART to the terminal.
+
+// ----------------------------------------------------------------
+// SUBSECTION
+
+=== ISA tests (in `Tests/`)
+
+The directory `Tests/isa` is a copy of the "`official`" RISC-V ISA
+tests (original is at https://github.com/riscv/riscv-tests[]).  It
+also contains compiled versions of all the tests (each has a RISC-V
+ELF file and an "`objdump`" file that shows its disassemby).
+
+The directory `Tests/elf_to_hex` contains a small C program to convert
+an ELF file to a "`Mem Hex`" memory hexadecimal contents file.
+
+// ----------------------------------------------------------------
+// SUBSECTION
+
+=== Provided example builds (including generated Verilogs)
+
+As mentioned earlier, one can generate hundreds of variants of Flute
+depending on the choice of configuration parameters.  This repository
+contains "`build`" directories for a few particular configurations,
+both to provide an out-of-the-box experience and to serve as example
+templates which you can modify to create your own variant:
+
+The following are for RV32I + C (Compressed instructions), bare-metal
+(M and U privilege levels). One builds for the Bluesim simulator, the
+other for Icarus Verilog (iverilog):
+
+[source]
+----
+builds/Flute_RV32CI_MU_WT_L1_bluesim_tohost/
+builds/Flute_RV32CI_MU_WT_L1_iverilog_tohost/
+----
+
+The following are for RV64GC (RV64IMAFDC), privilege levels M, S and
+U, virtual memory Sv39. One builds for the Bluesim simulator, the
+other for a Verilator simulator.  These have booted FreeRTOS, Linux
+and FreeBSD, in simulation and on FPGA.
+
+[source]
+----
+builds/Flute_RV64GC_MSU_WB_L1_L2_bluesim_tohost/
+builds/Flute_RV64GC_MSU_WB_L1_L2_verilator_tohost/
+----
+
+// ================================================================
+// SECTION
+
+== Building and running simulations (Bluesim or Verilog simulation)
+
+For some of the actions below, you need to have installed the free and
+open-source _bsc_ compiler, which you can find at
+https://github.com/B-Lang-org/bsc[].
+
+// ----------------------------------------------------------------
+// SUBSECTION
+
+=== Building for Bluesim simulation (_bsc_ needed)
+
+In one of the Bluesim build directories,
+e.g,. `builds/Flute_RV32CI_MU_WT_L1_bluesim_tohost/` the command
+
+[source]
+----
+$ make compile simulator
+----
+
+will compile and build a Bluesim simulator.
+
+See section below for how to run the simulation.
+
+// ----------------------------------------------------------------
+// SUBSECTION
+
+=== Building for Verilator simulation (_bsc_ not needed)
+
+Each of the Verilator build directories,
+e.g,. `builds/Flute_RV64GC_MSU_WB_L1_L2_verilator_tohost/`
+contains a `Verilog_RTL` directory where we have already generated the
+Verilog RTL sources for you from the BSV sources.
+
+_You do not need the free and open-source bsc compiler to just build
+the Verilog simulator from the Verilog sources._
+
+The following command will build a Verilator simulation executable.
+
+[source]
+----
+$ make simulator
+----
+
+See section below for how to run the simulation.
+
+// ----------------
+// SUBSUBSECTION
+
+==== Regenerating the Verilog RTL (_bsc_ needed)
+
+[source]
+----
+$ make compile
+----
+
+will regenerate the Verilog files in the `Verilog_RTL` directory.
+
+// ----------------------------------------------------------------
+// SUBSECTION
+
+=== Running a simulation (Bluesim or Verilog simulation)
+
+Once you have built a Bluesim, IVerilog or Verilator simulator as
+described in the previous sections, you can run it as follows (_bsc_
+is not needed for this).
+
+To run a single ISA test:
+
+[source]
+----
+$ make test
+----
+
+This runs the default ISA test (`Tests/isa/rv32ui-p-add` for RV32,
+`Tests/isa/rv64ui-p-add` for RV64), and prints an instruction trace
+during execution.  (First, it uses an `elf_to_hex` program, provided
+in the `Tests/` directory, to convert the relevant ELF file into a
+"`Mem Hex`" memory-contents file, which is loaded into the memory
+model at the start of simulation).
+
+You can choose a different ISA test from the `Tests/isa/` directory by
+specifying it on the command line, like this:
+
+[source]
+----
+$ make test TEST=rv64ui-v-ld
+----
+
+Note: if you specify a test that contains an instruction outside the
+set of instructions for your build (e.g., an ELF that uses C
+(compressed) instructions for a build that does not support C) this
+will result in an illegal instruction trap, as expected.
+
+You can run all relevant ISA tests (i.e., all those tests that are
+relevant for the build's chosen ISA options) with:
+
+[source]
+----
+$ make isa_tests
+----
+
+This will spawn multiple parallel processes to run run through all the
+relevant tests.  The `Logs` subdirectory contains a log for each ISA
+test that was run.
+
+`make isa_tests` actually invokes the Python program
+`Tests/Run_regression.py`, which you can run directly if you wish.
+Running it with `--help` will describe its command-line arguments,
+including the ISA architecture string, using which it selects the
+"`relevant`" ISA tests.
+
+The following will "`clean`" your build directory.  The first command
+just deletes intermediate files and directories created during
+creation of the simulator.  The latter will also deleted the simulator
+itself and restore the directory to its pristine state.
+
+[source]
+----
+$ make clean
+$ make full_clean
+----
+
+// ----------------
+
+==== Running your own ELF file on Flute
+
+If you look at the actions taken by the Makefile in the above
+examples, you can see how you can substitute your own ELF file as a
+program to run.
+
+// ================================================================
+// SECTION
+
+== Creating a new architecture configuration
+
+In the `builds/` directory, you can create a new sub-directory to
+build a new configuration of interest.  For example:
+
+[source]
+----
+$ cd  builds
+$ Resources/mkBuild_Dir.py  ..  RV32IMAC  MU  WT_L1  bluesim  tohost
+----
+
+will create a new directory: `Flute_RV32ACIM_MU_WT_L1_bluesim_tohost/`
+populated with a `Makefile` to compile and link a bluesim simulation
+for an RV32I CPU with M,A, and C ISA options, M and U privilege
+levels, L1 I-Cache and D-Cache with write-through policy (no L2
+cache), for building a Bluesim simulator, and which observes the
+`tohost` memory location for test completion (which is the standard
+method in ISA tests to signal completion).
+
+You can build and run that simulator as usual:
+
+[source]
+----
+$ make compile simulator test isa_tests
+----
+
+// ================================================================
+// SECTION
+
+'''
+[#CPU_Family]
+== Other open-source RISC-V CPUs from Bluespec, Inc.
+
+This is one of a family of free, open-source RISC-V CPUs created by Bluespec, Inc.
+
+* Piccolo (https://github.com/bluespec/Piccolo[]): 3-stage, in-order pipeline +
+  For low-end applications (Embedded Systems, IoT, microcontrollers, etc.).
+
+* Flute (https://github.com/bluespec/Flute[]): 5-stage, in-order pipeline. +
+  For low-end to medium applications that require 32-bit or
+  64-bit operation, an MMU (Virtual Memory) and more performance.
+
+* Toooba (https://github.com/bluespec/Toooba[]): superscalar, deep, out-of-order RV64
+  pipeline, using MIT's RISCY-OOO core.
+
+All of them are written in entirely in BSV, an HLHDL (High-Level
+Hardware Description Language).
+
+The three repo structures are nearly identical, and the ways to build
+and run are nearly identical.

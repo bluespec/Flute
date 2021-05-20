@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 
-# Copyright (c) 2018-2019 Bluespec, Inc.
+# Copyright (c) 2018-2021 Bluespec, Inc.
 # See LICENSE for license details
 
 usage_line = (
     "  Usage:\n"
-    "    $ <this_prog>    <simulation_executable>  <repo_dir>  <logs_dir>  <arch>  <opt verbosity>  <opt parallelism>\n"
+    "    $ <this_prog>    <simulation_executable>  <repo_dir>  <logs_dir>  <arch>  <privs>  <opt verbosity>  <opt parallelism>\n"
     "\n"
     "  Runs the RISC-V <simulation_executable>\n"
     "  on ISA tests: ELF files taken from <repo-dir>/isa and its sub-directories.\n"
@@ -98,7 +98,8 @@ def main (argv = None):
     args_dict ['logs_path'] = logs_path
 
     # Architecture string and implied ISA test families
-    arch_string = extract_arch_string (argv [4])
+    # arch_string = extract_arch_string (argv [4])
+    arch_string = argv [4]
     if (arch_string == None):
         sys.stderr.write ("ERROR: no architecture specified?\n")
         sys.stdout.write ("\n")
@@ -107,7 +108,18 @@ def main (argv = None):
         return 1
     args_dict ['arch_string'] = arch_string
 
-    test_families = select_test_families (arch_string)
+    # Privilege-levels string and implied ISA test families
+    # privs_string = extract_arch_string (argv [5])
+    privs_string = argv [5]
+    if (privs_string == None):
+        sys.stderr.write ("ERROR: no privilege levels specified?\n")
+        sys.stdout.write ("\n")
+        sys.stdout.write (usage_line)
+        sys.stdout.write ("\n")
+        return 1
+    args_dict ['privs_string'] = privs_string
+
+    test_families = select_test_families (arch_string, privs_string)
     print ("Testing the following families of ISA tests")
     for tf in test_families:
         print ("    " + tf)
@@ -249,10 +261,12 @@ def extract_arch_string (s):
     return arch
 
 # ================================================================
-# Select ISA test families based on provided arch string
+# Select ISA test families based on provided arch and privileges string
 
-def select_test_families (arch):
-    arch = arch.lower ()
+def select_test_families (arch, privs):
+    arch     = arch.lower ()
+    arch     = arch.replace ("g", "imafd")
+    privs    = privs.lower ()
     families = []
 
     if arch.find ("32") != -1:
@@ -262,7 +276,7 @@ def select_test_families (arch):
         rv = 64
         families = ["rv64ui-p", "rv64mi-p"]
 
-    if (arch.find ("s") != -1):
+    if ("s" in privs):
         s = True
         if rv == 32:
             families.extend (["rv32ui-v", "rv32si-p"])
@@ -272,21 +286,20 @@ def select_test_families (arch):
         s = False
 
     def add_family (extension):
-        if (arch.find (extension) != -1):
-            if rv == 32:
-                families.append ("rv32u" + extension + "-p")
-                if s:
-                    families.append ("rv32u" + extension + "-v")
-            else:
-                families.append ("rv64u" + extension + "-p")
-                if s:
-                    families.append ("rv64u" + extension + "-v")
+        if rv == 32:
+            families.append ("rv32u" + extension + "-p")
+            if s:
+                families.append ("rv32u" + extension + "-v")
+        else:
+            families.append ("rv64u" + extension + "-p")
+            if s:
+                families.append ("rv64u" + extension + "-v")
 
-    add_family ("m")
-    add_family ("a")
-    add_family ("f")
-    add_family ("d")
-    add_family ("c")
+    if ("m" in arch): add_family ("m")
+    if ("a" in arch): add_family ("a")
+    if ("f" in arch): add_family ("f")
+    if ("d" in arch): add_family ("d")
+    if ("c" in arch): add_family ("c")
 
     return families
 
