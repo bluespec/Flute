@@ -106,7 +106,7 @@ function DMA_Cache_Index fn_addr_to_index (Bit #(64) addr);
    return truncate (addr >> bits_per_byte_in_data);
 endfunction
 
-function Bit #(64) fn_addr_to_data_addr (Bit #(64) addr);
+function Bit #(64) fn_addr_to_line_addr (Bit #(64) addr);
    return ((addr >> bits_per_byte_in_data) << bits_per_byte_in_data);
 endfunction
 
@@ -316,16 +316,6 @@ module mkDMA_Cache (DMA_Cache_IFC);
       end
    endrule
 
-   // ----------------
-   // Some convenience values for head of merged queue (current request)
-
-   let req     = f_reqs.first;
-   let req_op  = req.req_op;
-   let addr    = req.addr;
-   let index   = fn_addr_to_index (addr);
-   let tag_set = rf_tag_sets.sub (index);
-   let tag     = tag_set [0];    // Direct mapped only, for now
-
    // ================================================================
    // Handle downgrade-request from L2 (highest priority)
 
@@ -337,30 +327,35 @@ module mkDMA_Cache (DMA_Cache_IFC);
       end
 
       // Probe tag mem for this address and data
-      let             addr     = l2_to_l1_req.addr;
-      DMA_Cache_Index index    = fn_addr_to_index (addr);
-      let             tag_set  = rf_tag_sets.sub  (index);
-      let             data_set = rf_data_sets.sub (index);
-      let             tag      = tag_set  [0];    // For now, direct mapped only
-      let             data     = data_set [0];    // For now, direct mapped only
+      let             line_addr = fn_addr_to_line_addr (l2_to_l1_req.addr);
+      DMA_Cache_Index index     = fn_addr_to_index (line_addr);
+      let             tag_set   = rf_tag_sets.sub  (index);
+      let             data_set  = rf_data_sets.sub (index);
+      let             tag       = tag_set  [0];    // For now, direct mapped only
+      let             data      = data_set [0];    // For now, direct mapped only
       if (verbosity >= 1) begin
 	 $display ("    Index %0h  ", index, fshow (tag));
       end
 
-      // If miss, then data already evicted/downgraded; ignore this request
-      if ((tag.tag_state == META_INVALID) || (tag.tag_addr != addr)) begin
+      // Ignore if already INVALID, or already in requested to-state,
+      // or already has different address
+      Bool ignore = (   (tag.tag_state == META_INVALID)
+		     || ((tag.tag_state <= l2_to_l1_req.to_state) && (tag.tag_addr == line_addr))
+		     || (tag.tag_addr != line_addr));
+
+      if (ignore) begin
 	 if (verbosity >= 1) begin
 	    $display ("    Miss (already evicted/downgraded); no action");
 	 end
       end
       else begin
 	 // Compose and return response
-	 let writeback_data = ((tag_set [0].tag_state == META_MODIFIED)
-			       ? tagged Valid (data)
-			       : tagged Invalid);
-	 let rsp = L1_to_L2_Rsp {addr:     addr,
+	 let m_cline = ((tag.tag_state == META_MODIFIED)
+			? tagged Valid (data)
+			: tagged Invalid);
+	 let rsp = L1_to_L2_Rsp {addr:     line_addr,
 				 to_state: l2_to_l1_req.to_state,
-				 m_cline:  writeback_data};
+				 m_cline:  m_cline};
 	 f_L1_to_L2_Rsps.enq (rsp);
 
 	 if (verbosity >= 1)
@@ -368,37 +363,48 @@ module mkDMA_Cache (DMA_Cache_IFC);
 
 	 // Update cache tag to state requested by L2
 	 let new_tag = DMA_Cache_Tag {tag_state: l2_to_l1_req.to_state,
-				      tag_addr:  addr };
+				      tag_addr:  line_addr };
 	 tag_set [0] = new_tag;        // Direct mapped only, for now
 	 rf_tag_sets.upd(index, tag_set);
       end
    endrule
 
    // ================================================================
+   // Some convenience values for head of merged queue (current request)
+
+   let req       = f_reqs.first;
+   let req_op    = req.req_op;
+   let addr      = req.addr;
+   let line_addr = fn_addr_to_line_addr (addr);
+   let index     = fn_addr_to_index (addr);
+   let tag_set   = rf_tag_sets.sub (index);
+   let tag       = tag_set [0];    // Direct mapped only, for now
+
+   // ================================================================
    // Evictions on conflict-miss
    // (Cache frame for AXI4 request's address is currently occupied by
    //  data with a different address; needs to be handed back to L2).
 
+   Bool evict = (   (tag.tag_state != META_INVALID)
+		 && (tag.tag_addr  != line_addr));
+
    rule rl_evict ((rg_state == STATE_IDLE)
 		  && (! f_L2_to_L1_Reqs.notEmpty)        // L2-to-L1 requests have priority
 		  && soc_map.m_is_mem_addr (addr)        // cacheable addrs only
-		  && (tag.tag_state != META_INVALID)
-		  && (tag.tag_addr  != fn_addr_to_data_addr (addr)));
-      let index   = fn_addr_to_index (addr);
-      let tag_set = rf_tag_sets.sub (index);
-      let tag     = tag_set [0];    // Direct mapped only, for now
-
+		  && evict);
       // Evict current occupant (=> INVALID), and evict data if modified
-      let m_data = ((tag.tag_state != META_MODIFIED)
-		    ? tagged Invalid
-		    : tagged Valid rf_data_sets.sub (index) [0]);
+      let data_set = rf_data_sets.sub (index);
+      let data     = data_set [0];    // Direct mapped only, for now
+      let m_cline  = ((tag.tag_state != META_MODIFIED)
+		      ? tagged Invalid
+		      : tagged Valid data);
       let l1_to_l2_rsp = L1_to_L2_Rsp {addr:     tag.tag_addr,
 				       to_state: META_INVALID,
-				       m_cline:  m_data };
+				       m_cline:  m_cline };
       f_L1_to_L2_Rsps.enq (l1_to_l2_rsp);
 
       // Set cache frame tag to INVALID
-      let new_tag = DMA_Cache_Tag {tag_state: META_INVALID, tag_addr:  ? };
+      let new_tag     = DMA_Cache_Tag {tag_state: META_INVALID, tag_addr:  ? };
       let new_tag_set = fn_mk_Tag_Set (new_tag);
       rf_tag_sets.upd (index, new_tag_set);
 
@@ -443,8 +449,10 @@ module mkDMA_Cache (DMA_Cache_IFC);
    function Action fa_upd_cache_and_respond (Meta_State new_tag_state, Data rdata);
       action
 	 // Update cache tag
-	 let new_tag = DMA_Cache_Tag {tag_state: ((req_op == AXI4_OP_WR) ? META_MODIFIED : new_tag_state),
-				      tag_addr: addr};
+	 let new_tag = DMA_Cache_Tag {tag_state: ((req_op == AXI4_OP_WR)
+						  ? META_MODIFIED
+						  : new_tag_state),
+				      tag_addr: line_addr};
 	 let new_tag_set = fn_mk_Tag_Set (new_tag);
 	 rf_tag_sets.upd (index, new_tag_set);
 	 if(verbosity >= 1)
@@ -474,16 +482,17 @@ module mkDMA_Cache (DMA_Cache_IFC);
    endfunction
 
    // ================================================================
-   // Hit; no need to upgrade cache meta state
+   // Hit; no eviction, no refill;
+   //      just respond and update meta state to MODIFIED on writes
+
+   Bool is_hit = ((   ((req_op == AXI4_OP_RD) && (tag.tag_state >= META_SHARED))
+		   || ((req_op == AXI4_OP_WR) && (tag.tag_state >= META_EXCLUSIVE)))
+		  && (tag.tag_addr  == line_addr));
 
    rule rl_hit ((rg_state == STATE_IDLE)
 		&& (! f_L2_to_L1_Reqs.notEmpty)        // L2-to-L1 requests have priority
 		&& soc_map.m_is_mem_addr (addr)        // cacheable addrs only
-		&& (   ((req_op == AXI4_OP_RD)
-			&& (tag.tag_state >= META_SHARED))
-		    || ((req_op == AXI4_OP_WR)
-			&& (tag.tag_state >= META_EXCLUSIVE)))
-		&& (tag.tag_addr  == fn_addr_to_data_addr (addr)));
+		&& is_hit);
 
       let new_tag_state = ((req_op == AXI4_OP_RD) ? tag.tag_state : META_MODIFIED);
       let data_set = rf_data_sets.sub (index);
@@ -499,31 +508,35 @@ module mkDMA_Cache (DMA_Cache_IFC);
    endrule
 
    // ================================================================
-   // Hit; buts need upgrade from Invalid/Shared to Shared/Exclusive
-   // Upgrade needed if cache state is
-   //     I
-   //  or S,E,M and addr matches tag and
-   //               is WR and is E or M
+   // Hit; but first needs upgrade from Invalid/Shared to Shared/Exclusive
+   // Do upgrade if tag state is
+   // Req is RD:  tag state is I
+   // Reg is WR:  tag state is I or
+   //             tag state is S, E and addr matches tag
 
-   function Bool fn_needs_upgrade (DMA_Cache_Tag  tag1, Bit #(64) addr1);
+   function Bool fn_do_upgrade ();
       Bool result;
-      if (tag1.tag_state == META_INVALID)
-	 result = True;    // Refill needed for read or write
-      else if (tag1.tag_addr != fn_addr_to_data_addr (addr1))
-	 result = False;    // Tag does not match; need to evict before upgrade
+      if (tag.tag_state == META_INVALID)
+	 // Refill needed for read or write
+	 result = True;
+      else if (tag.tag_addr != line_addr)
+	 // Tag does not match; need to evict before upgrade
+	 result = False;
       else if (req_op == AXI4_OP_RD)
-	 result = False;    // RD and tag match; no need to upgrade
+	 // RD and tag match; no need to upgrade
+	 result = False;
       else    
-	 result = (tag1.tag_state == META_SHARED);  // WR and tag match; upgrade if S (not E, M)
+	 // WR and tag match; upgrade if S (not E, M)
+	 result = (tag.tag_state == META_SHARED);
       return result;
    endfunction
 
    rule rl_upgrade_req ((rg_state == STATE_IDLE)
 			&& (! f_L2_to_L1_Reqs.notEmpty)        // L2-to-L1 requests have priority
 			&& soc_map.m_is_mem_addr (addr)        // cacheable addrs only
-			&& fn_needs_upgrade (tag, addr));
+			&& fn_do_upgrade ());
       // Request refill/upgrade from L2
-      let l1_to_l2_req = L1_to_L2_Req {addr:        addr,
+      let l1_to_l2_req = L1_to_L2_Req {addr:        line_addr,
 				       from_state:  tag.tag_state,
 				       to_state:    ((req_op == AXI4_OP_RD)
 						     ? META_SHARED
@@ -545,12 +558,14 @@ module mkDMA_Cache (DMA_Cache_IFC);
       let rsp <- pop (f_L2_to_L1_Rsps);
 
       // Assert response is for addr requested
-      if (rsp.addr != fn_addr_to_data_addr (addr)) begin
-	 $display ("%0d: DMA_Cache.rl_upgrade_rsp: ERROR: rsp is not for addr %0h", cur_cycle, addr);
+      if (rsp.addr != line_addr) begin
+	 $display ("%0d: DMA_Cache.rl_upgrade_rsp: ERROR: rsp is not for addr %0h",
+		   cur_cycle, line_addr);
 	 $display ("    ", fshow (rsp));
 	 $finish (1);
       end
 
+      // Old data can be from L2 or from this cache
       Data old_data = ?;
       if (rsp.m_cline matches tagged Valid .x) begin
 	 if (tag.tag_state != META_INVALID) begin
@@ -583,7 +598,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
    endrule
 
    // ================================================================
-   // MMIO (request addr is not cached mem)
+   // MMIO (request addr is not in cached mem: pass thru to MMIO box)
 
    // These regs are used to slice 512-bit data into 64-bit slices, one per MMIO transaction
    Reg #(Bit #(Wd_Addr_Dma))                        rg_mmio_addr       <- mkRegU;
