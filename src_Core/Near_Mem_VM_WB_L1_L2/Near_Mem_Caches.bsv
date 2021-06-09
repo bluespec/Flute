@@ -69,7 +69,6 @@ import LLC_AXI4_Adapter     :: *;
 `endif
 
 import MMIO_AXI4_Adapter    :: *;
-import LLC_DMA_AXI4_Adapter :: *;    // TODO: DELETE AFTER ACTION BELOW
 
 // ================================================================
 // Exports
@@ -237,18 +236,14 @@ module mkNear_Mem (Near_Mem_IFC);
    // last level cache
    LLCache llc <- mkLLCache;
 
-   // Adapter for llc's 'coherent DMA interface'
-   // TODO: directly tie-off llc.dma, instead of introducing this AXI4 adapter?
-   AXI4_Slave_IFC #(Wd_Id_Dma,
-		    Wd_Addr_Dma,
-		    Wd_Data_Dma,
-		    Wd_User_Dma)  llc_dma_axi4_adapter <- mkLLC_DMA_AXI4_Adapter (llc.dma);
+   // Tie-offs for llc.dma, which is not used here
+   FifoDeq #(DmaRq #(LLCDmaReqId)) nullFifoDeq_memReq = nullFifoDeq;
+   FifoEnq #(DmaRs #(LLCDmaReqId)) nullFifoEnq_RespLd = nullFifoEnq;
+   FifoEnq #(LLCDmaReqId)          nullFifoEnq_RespSt = nullFifoEnq;
 
-   AXI4_Master_IFC #(Wd_Id_Dma,
-		     Wd_Addr_Dma,
-		     Wd_Data_Dma,
-		     Wd_User_Dma) dummy_m = dummy_AXI4_Master_ifc;
-   mkConnection (dummy_m, llc_dma_axi4_adapter);
+   mkConnection (llc.dma.memReq, nullFifoDeq_memReq);
+   mkConnection (llc.dma.respLd, nullFifoEnq_RespLd);
+   mkConnection (llc.dma.respSt, nullFifoEnq_RespSt);
 
    // Adapter for back-side of LLC to AXI4
    LLC_AXI4_Adapter_IFC  llc_axi4_adapter <- mkLLC_AXi4_Adapter (llc.to_mem);
@@ -268,7 +263,6 @@ module mkNear_Mem (Near_Mem_IFC);
    // ----------------
    // connect LLC to L1 caches, creating a crossbar
 
-   Vector#(L1Num, ChildCacheToParent#(L1Way, void)) l1 = ?;
    let ifc_I_L1 <- mkL1_IFC_Adapter (verbosity_I_L1_L2,
 				     0,
 				     i_mmu_cache.l1_to_l2_client,
@@ -281,6 +275,8 @@ module mkNear_Mem (Near_Mem_IFC);
 				       1,
 				       dma_cache.l1_to_l2_client,
 				       dma_cache.l2_to_l1_server);
+
+   Vector#(L1Num, ChildCacheToParent#(L1Way, void)) l1 = ?;
    l1 [0] = ifc_I_L1;
    l1 [1] = ifc_D_L1;
    l1 [2] = ifc_DMA_L1;
@@ -450,9 +446,8 @@ module mkNear_Mem (Near_Mem_IFC);
    interface mem_master  = llc_axi4_adapter.mem_master;
 
    // ----------------------------------------------------------------
-   // Interface to 'coherent DMA' port of optional L2 cache
+   // Interface for coherent access by devices
 
-   // interface dma_server = llc_dma_axi4_adapter;    // TODO: DELETE
    interface dma_server = dma_cache.axi4_s;
 
    // ----------------------------------------------------------------

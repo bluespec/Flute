@@ -425,8 +425,8 @@ endmodule
 // ================================================================
 // Synthesized instance, fixing number of clients
 
-// typedef 2 Num_MMIO_L1_Clients;    // TODO: DELETE
-typedef 3 Num_MMIO_L1_Clients;
+// typedef 2 Num_MMIO_L1_Clients;    // Using L2's direct DMA port
+typedef 3 Num_MMIO_L1_Clients;    // Using DMA_Cache
 
 (* synthesize *)
 module mkMMIO_AXI4_Adapter_2 #(parameter Bit #(3) verbosity)
