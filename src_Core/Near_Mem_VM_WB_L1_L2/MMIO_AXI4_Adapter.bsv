@@ -94,6 +94,7 @@ endfunction
 
 // ================================================================
 // MODULE IMPLEMENTATION
+// Non-synthesizable (polymorphic in num_clients_t)
 
 module mkMMIO_AXI4_Adapter #(parameter Bit #(3) verbosity)
                            (MMIO_AXI4_Adapter_IFC #(num_clients_t))

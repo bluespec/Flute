@@ -97,8 +97,7 @@ typedef Bit #(64)               Slice;                  // MMIO width
 typedef TDiv #(Wd_Data_Dma, 64) Slices_per_Data;        // 512/64 = 8
 
 typedef 1   DMA_Cache_Num_Ways;    // Direct-mapped, for now
-// typedef 64  DMA_Cache_Num_Sets;    // Cache holds 64x64 bytes = 4 KB = 1 page
-typedef 128 DMA_Cache_Num_Sets;    // Cache holds 128x64 bytes = 8 KB = 2 page
+typedef 64  DMA_Cache_Num_Sets;    // Cache holds 64x64 bytes = 4 KB = 1 page
 
 typedef TLog #(DMA_Cache_Num_Sets)    DMA_Cache_Index_Width;
 typedef Bit #(DMA_Cache_Index_Width)  DMA_Cache_Index;

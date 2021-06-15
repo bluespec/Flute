@@ -16,7 +16,7 @@ FIGS_PNG = \
 all: $(FIGS_PNG)
 
 $(FIGS_PNG): %.png: %.svg
-	inkscape --export-filename=$@  --export-area-drawing  -d 300 -y 0.0 $<
+	inkscape --export-png=$@  --export-area-drawing  -d 300 -y 0.0 $<
 
 # ================================================================
 

@@ -37,6 +37,31 @@ import GetPut_Aux :: *;
 import Semi_FIFOF :: *;
 
 // ================================================================
+// Options for cache-coherent access for devices
+// Default is OPTION_DMA_CACHE, override with OPTION_L2_COHERENT_DMA_PORT
+
+// OPTION_DMA_CACHE    OPTION_L2_COHERENT_DMA_PORT
+//     defined              defined                => OPTION_L2_COHERENT_DMA_PORT
+//     defined            undefined                => OPTION_DMA_CACHE
+//   undefined              defined                => OPTION_L2_COHERENT_DMA_PORT
+//   undefined            undefined                => OPTION_DMA_CACHE
+
+// Default is OPTION_DMA_CACHE, unless overridden by explicit OPTION_L2_COHERENT_DMA_PORT
+`ifdef OPTION_DMA_CACHE
+
+`ifdef OPTION_L2_COHERENT_DMA_PORT
+`undef OPTION_DMA_CACHE
+`endif
+
+`else
+
+`ifndef OPTION_L2_COHERENT_DMA_PORT
+`define OPTION_DMA_CACHE
+`endif
+
+`endif
+
+// ================================================================
 // Project imports
 
 import ISA_Decls        :: *;
@@ -54,8 +79,18 @@ import PTW :: *;
 
 import D_MMU_Cache :: *;
 import I_MMU_Cache :: *;
-import DMA_Cache   :: *;
 
+// This option is for "L1-like" cache connecting to L2 on an L1-like port
+`ifdef OPTION_DMA_CACHE
+import DMA_Cache   :: *;
+`endif
+
+// This option is for a direct connection to L2's "coherent DMA" port
+`ifdef OPTION_L2_COHERENT_DMA_PORT
+import LLC_DMA_AXI4_Adapter :: *;
+`endif
+
+// ----------------
 import LLCache_Aux   :: *;
 import CacheUtils    :: *;
 import CCTypes       :: *;
@@ -231,10 +266,15 @@ module mkNear_Mem (Near_Mem_IFC);
    // L1 caches
    I_MMU_Cache_IFC  i_mmu_cache <- mkI_MMU_Cache;    // Instruction fetch
    D_MMU_Cache_IFC  d_mmu_cache <- mkD_MMU_Cache;    // Data, PTWs
+`ifdef OPTION_DMA_CACHE
    DMA_Cache_IFC    dma_cache   <- mkDMA_Cache;      // External 'devices'
+`endif
 
    // last level cache
    LLCache llc <- mkLLCache;
+
+`ifdef OPTION_DMA_CACHE
+   messageM ("INFO: Near_Mem_Caches: coherent device access with DMA_Cache");
 
    // Tie-offs for llc.dma, which is not used here
    FifoDeq #(DmaRq #(LLCDmaReqId)) nullFifoDeq_memReq = nullFifoDeq;
@@ -244,6 +284,17 @@ module mkNear_Mem (Near_Mem_IFC);
    mkConnection (llc.dma.memReq, nullFifoDeq_memReq);
    mkConnection (llc.dma.respLd, nullFifoEnq_RespLd);
    mkConnection (llc.dma.respSt, nullFifoEnq_RespSt);
+`endif
+
+`ifdef OPTION_L2_COHERENT_DMA_PORT
+   messageM ("INFO: Near_Mem_Caches: coherent device access with direct coherent L2 port");
+
+   // Adapter for llc's 'coherent DMA interface'
+   AXI4_Slave_IFC #(Wd_Id_Dma,
+		    Wd_Addr_Dma,
+		    Wd_Data_Dma,
+		    Wd_User_Dma)  llc_dma_axi4_adapter <- mkLLC_DMA_AXI4_Adapter (llc.dma);
+`endif
 
    // Adapter for back-side of LLC to AXI4
    LLC_AXI4_Adapter_IFC  llc_axi4_adapter <- mkLLC_AXi4_Adapter (llc.to_mem);
@@ -261,33 +312,45 @@ module mkNear_Mem (Near_Mem_IFC);
 `endif
 
    // ----------------
-   // connect LLC to L1 caches, creating a crossbar
+   // connect L1 caches to LLC (L2)
+
+   Vector#(L1Num, ChildCacheToParent#(L1Way, void)) l1 = ?;
 
    let ifc_I_L1 <- mkL1_IFC_Adapter (verbosity_I_L1_L2,
 				     0,
 				     i_mmu_cache.l1_to_l2_client,
 				     i_mmu_cache.l2_to_l1_server);
+   l1 [0] = ifc_I_L1;
+
    let ifc_D_L1 <- mkL1_IFC_Adapter (verbosity_D_L1_L2,
 				     1,
 				     d_mmu_cache.l1_to_l2_client,
 				     d_mmu_cache.l2_to_l1_server);
+   l1 [1] = ifc_D_L1;
+
+`ifdef OPTION_DMA_CACHE
    let ifc_DMA_L1 <- mkL1_IFC_Adapter (verbosity_DMA_L1_L2,
 				       1,
 				       dma_cache.l1_to_l2_client,
 				       dma_cache.l2_to_l1_server);
-
-   Vector#(L1Num, ChildCacheToParent#(L1Way, void)) l1 = ?;
-   l1 [0] = ifc_I_L1;
-   l1 [1] = ifc_D_L1;
    l1 [2] = ifc_DMA_L1;
+`endif
+
    mkL1LLConnect (llc.to_child, l1);
 
    // ----------------
-   //Connect  MMIO interfaces of i_mmu_cache and d_mmu_cache to mmio_axi4_adapter
+   //Connect  MMIO interfaces of i_mmu_cache, d_mmu_cache and dma_cache to mmio_axi4_adapter
 
    mkConnection (i_mmu_cache.mmio_client, mmio_axi4_adapter.v_mmio_server [0]);
    mkConnection (d_mmu_cache.mmio_client, mmio_axi4_adapter.v_mmio_server [1]);
+`ifdef OPTION_DMA_CACHE
    mkConnection (dma_cache.mmio_client,   mmio_axi4_adapter.v_mmio_server [2]);
+`endif
+`ifdef OPTION_L2_COHERENT_DMA_PORT
+   // TODO: llc_dma_axi4_adapter should triage MMIO and connect here
+   Client #(Single_Req, Single_Rsp) cstub = client_stub;
+   mkConnection (cstub, mmio_axi4_adapter.v_mmio_server [2]);
+`endif
 
    // ----------------------------------------------------------------
    // BEHAVIOR
@@ -448,7 +511,13 @@ module mkNear_Mem (Near_Mem_IFC);
    // ----------------------------------------------------------------
    // Interface for coherent access by devices
 
+`ifdef OPTION_DMA_CACHE
    interface dma_server = dma_cache.axi4_s;
+`endif
+
+`ifdef OPTION_L2_COHERENT_DMA_PORT
+   interface dma_server = llc_dma_axi4_adapter;
+`endif
 
    // ----------------------------------------------------------------
    // Misc. control and status
