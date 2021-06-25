@@ -6,6 +6,7 @@
 
 REPO ?= ../..
 ARCH ?= RV64ACDFIMSU
+PRIVS  ?= MSU
 
 # Alternative cache organizations:
 # Default (no definition for CACHES)    L1 only, write-through policy

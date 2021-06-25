@@ -6,6 +6,7 @@
 
 REPO ?= ../..
 ARCH ?= RV32ACDFIMSU
+PRIVS ?= MSU
 
 # ================================================================
 # RISC-V config macros passed into Bluespec 'bsc' compiler
