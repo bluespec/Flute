@@ -81,7 +81,7 @@ interface PLIC_IFC #(numeric type  t_n_external_sources,
    interface Server #(Bit #(0), Bit #(0))  server_reset;
 
    // set_addr_map should be called after this module's reset
-   method Action set_addr_map (Bit #(64)  addr_base, Bit #(64)  addr_lim);
+   method Action set_addr_map (Fabric_Addr addr_base, Fabric_Addr addr_lim);
 
    // Memory-mapped access
    interface AXI4_Slave_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) axi4_slave;
@@ -106,9 +106,15 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
    Reg #(Bit #(4)) cfg_verbosity <- mkConfigReg (0);
 
    // Source_Ids and Priorities are read and written over the memory interface
-   // and should fit within the data bus width, currently 64 bits.
+   // and should fit within the data bus width, currently 32/64 bits.
+`ifdef FABRIC32
+   staticAssert ((valueOf (TLog #(t_n_sources))               <= 32), "PLIC: t_n_sources parameter too large");
+   staticAssert ((valueOf (TLog #(TAdd #(t_max_priority, 1))) <= 32), "PLIC: t_max_priority parameter too large");
+`endif
+`ifdef FABRIC64
    staticAssert ((valueOf (TLog #(t_n_sources))               <= 64), "PLIC: t_n_sources parameter too large");
    staticAssert ((valueOf (TLog #(TAdd #(t_max_priority, 1))) <= 64), "PLIC: t_max_priority parameter too large");
+`endif
 
    Integer  n_sources = valueOf (t_n_sources);
    Integer  n_targets = valueOf (t_n_targets);
@@ -122,8 +128,8 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
    // Memory-mapped access
 
    // Base and limit addrs for this memory-mapped block.
-   Reg #(Bit #(64))  rg_addr_base <- mkRegU;
-   Reg #(Bit #(64))  rg_addr_lim  <- mkRegU;
+   Reg #(Fabric_Addr)  rg_addr_base <- mkRegU;
+   Reg #(Fabric_Addr)  rg_addr_lim  <- mkRegU;
 
    // Connector to AXI4 fabric
    AXI4_Slave_Xactor_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) slave_xactor <- mkAXI4_Slave_Xactor;
@@ -247,7 +253,7 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
       end
 
       let        addr_offset = rda.araddr - rg_addr_base;
-      Bit #(64)  rdata       = 0;
+      Fabric_Data  rdata       = 0;
       AXI4_Resp  rresp       = axi4_resp_okay;
 
       if (rda.araddr < rg_addr_base) begin
@@ -366,8 +372,10 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
 	 $display ("            ", fshow (rda));
       end
 
-      if ((valueOf (Wd_Data) == 64) && ((addr_offset & 'h7) == 'h4))
+`ifdef FABRIC64
+      if (((addr_offset & 'h7) == 'h4))
 	 rdata = { rdata [31:0], 32'h0 };
+`endif
 
       // Send read-response to bus
       Fabric_Data x = truncate (rdata);
@@ -577,7 +585,7 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
    interface server_reset   = toGPServer (f_reset_reqs, f_reset_rsps);
 
    // set_addr_map should be called after this module's reset
-   method Action set_addr_map (Bit #(64)  addr_base, Bit #(64)  addr_lim);
+   method Action set_addr_map (Fabric_Addr  addr_base, Fabric_Addr  addr_lim);
       if (addr_base [1:0] != 0)
 	 $display ("%0d: WARNING: PLIC.set_addr_map: addr_base 0x%0h is not 4-Byte-aligned",
 		   cur_cycle, addr_base);

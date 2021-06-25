@@ -80,7 +80,7 @@ interface Near_Mem_IO_AXI4_IFC;
    interface Server #(Bit #(0), Bit #(0))  server_reset;
 
    // set_addr_map should be called after this module's reset
-   method Action set_addr_map (Bit #(64) addr_base, Bit #(64) addr_lim);
+   method Action set_addr_map (Fabric_Addr addr_base, Fabric_Addr addr_lim);
 
    // Memory-mapped access
    interface AXI4_Slave_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) axi4_slave;
@@ -112,8 +112,8 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
    // Memory-mapped access
 
    // Base and limit addrs for this memory-mapped block.
-   Reg #(Bit #(64)) rg_addr_base <- mkRegU;
-   Reg #(Bit #(64)) rg_addr_lim  <- mkRegU;
+   Reg #(Fabric_Addr) rg_addr_base <- mkRegU;
+   Reg #(Fabric_Addr) rg_addr_lim  <- mkRegU;
 
    // Connector to AXI4 fabric
    AXI4_Slave_Xactor_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) slave_xactor <- mkAXI4_Slave_Xactor;
@@ -419,7 +419,7 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
    interface  server_reset = toGPServer (f_reset_reqs, f_reset_rsps);
 
    // set_addr_map should be called after this module's reset
-   method Action  set_addr_map (Bit #(64) addr_base, Bit #(64) addr_lim);
+   method Action  set_addr_map (Fabric_Addr addr_base, Fabric_Addr addr_lim);
       if (addr_base [1:0] != 0)
 	 $display ("%0d: WARNING: Near_Mem_IO_AXI4.set_addr_map: addr_base 0x%0h is not 4-Byte-aligned",
 		   cur_cycle, addr_base);
