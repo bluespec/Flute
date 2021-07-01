@@ -541,21 +541,24 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
             Bit# (64) wdata_from_fpr = zeroExtend (x.fval2);
 `endif
 `endif
-	    dcache.req (cache_op,
-			instr_funct3 (x.instr),
+	    dcache.req (  cache_op
+                        , instr_funct3 (x.instr)
 `ifdef ISA_A
-			amo_funct7,
+			, amo_funct7
 `endif
-			x.addr,
+			, x.addr
 `ifdef ISA_F
-			(x.rs_frm_fpr ? wdata_from_fpr : wdata_from_gpr),
+			, (x.rs_frm_fpr ? wdata_from_fpr : wdata_from_gpr)
 `else
-			wdata_from_gpr,
+			, wdata_from_gpr
 `endif
-			mem_priv,
-			sstatus_SUM,
-			mstatus_MXR,
-			csr_regfile.read_satp);
+`ifdef ISA_PRIV_S
+			, mem_priv
+			, sstatus_SUM
+			, mstatus_MXR
+			, csr_regfile.read_satp
+`endif
+                     );
 	 end
 
 `ifdef SHIFT_SERIAL

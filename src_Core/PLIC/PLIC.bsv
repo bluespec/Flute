@@ -81,7 +81,7 @@ interface PLIC_IFC #(numeric type  t_n_external_sources,
    interface Server #(Bit #(0), Bit #(0))  server_reset;
 
    // set_addr_map should be called after this module's reset
-   method Action set_addr_map (Fabric_Addr addr_base, Fabric_Addr addr_lim);
+   method Action set_addr_map (Fabric_Addr  addr_base, Fabric_Addr  addr_lim);
 
    // Memory-mapped access
    interface AXI4_Slave_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) axi4_slave;
@@ -96,7 +96,12 @@ endinterface
 // ================================================================
 // PLIC module implementation
 
-module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
+module mkPLIC #(function Tuple2 #(Bit #(t_wd_priority), Bit #(TLog #(t_n_sources)))
+		   fn_target_max_prio_and_max_id0 (Vector #(t_n_sources, Bool)                        vrg_source_ip,
+						   Vector #(t_n_targets, Vector #(t_n_sources, Bool)) vvrg_ie,
+						   Vector #(t_n_sources, Bit #(t_wd_priority))        vrg_source_prio,
+		      				   Bit #(T_wd_target_id)  target_id))
+	      (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
    provisos (Add #(1, t_n_external_sources, t_n_sources),           // source 0 is reserved for 'no source'
 	     Add #(_any_0, TLog #(t_n_sources), T_wd_source_id),
 	     Add #(_any_1, TLog #(t_n_targets), T_wd_target_id),
@@ -106,15 +111,9 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
    Reg #(Bit #(4)) cfg_verbosity <- mkConfigReg (0);
 
    // Source_Ids and Priorities are read and written over the memory interface
-   // and should fit within the data bus width, currently 32/64 bits.
-`ifdef FABRIC32
-   staticAssert ((valueOf (TLog #(t_n_sources))               <= 32), "PLIC: t_n_sources parameter too large");
-   staticAssert ((valueOf (TLog #(TAdd #(t_max_priority, 1))) <= 32), "PLIC: t_max_priority parameter too large");
-`endif
-`ifdef FABRIC64
+   // and should fit within the data bus width, currently 64 bits.
    staticAssert ((valueOf (TLog #(t_n_sources))               <= 64), "PLIC: t_n_sources parameter too large");
    staticAssert ((valueOf (TLog #(TAdd #(t_max_priority, 1))) <= 64), "PLIC: t_max_priority parameter too large");
-`endif
 
    Integer  n_sources = valueOf (t_n_sources);
    Integer  n_targets = valueOf (t_n_targets);
@@ -149,6 +148,8 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
 
    // Threshold: interrupts at or below threshold should be masked out for target
    Vector #(t_n_targets, Reg #(Bit #(t_wd_priority)))   vrg_target_threshold <- replicateM (mkReg ('1));
+   // Target has claimed interrupt for source and is servicing it
+   Vector #(t_n_targets, Reg #(Bit #(TLog #(t_n_sources))))  vrg_servicing_source <- replicateM (mkReg (0));
 
    // ----------------
    // Per-target, per-source state
@@ -160,23 +161,9 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
    // ================================================================
    // Compute outputs for each target (combinational)
 
-   function Tuple2 #(Bit #(t_wd_priority), Bit #(TLog #(t_n_sources)))
-            fn_target_max_prio_and_max_id (Bit #(T_wd_target_id)  target_id);
-
-      Bit #(t_wd_priority)       max_prio = 0;
-      Bit #(TLog #(t_n_sources)) max_id   = 0;
-
-      // Note: source_ids begin at 1, not 0.
-      for (Integer source_id = 1; source_id < n_sources; source_id = source_id + 1)
-	 if (   vrg_source_ip [source_id]
-	     && (vrg_source_prio [source_id] > max_prio)
-	     && (vvrg_ie [target_id][source_id])) begin
-	    max_id   = fromInteger (source_id);
-	    max_prio = vrg_source_prio [source_id];
-	 end
-      // Assert: if any interrupt is pending (max_id > 0), then prio > 0
-      return tuple2 (max_prio, max_id);
-   endfunction
+   let fn_target_max_prio_and_max_id = fn_target_max_prio_and_max_id0(readVReg(vrg_source_ip),
+								      map(readVReg, vvrg_ie),
+								      readVReg(vrg_source_prio));
 
    function Action fa_show_PLIC_state;
       action
@@ -201,8 +188,8 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
 	    for (Integer source_id = 0; source_id < n_sources; source_id = source_id + 1)
 	       $write (" %0d", vvrg_ie [target_id][source_id]);
 	    match { .max_prio, .max_id } = fn_target_max_prio_and_max_id (fromInteger (target_id));
-	    $display (" MaxPri %0d, Thresh %0d, MaxId %0d",
-		      max_prio, vrg_target_threshold [target_id], max_id);
+	    $display (" MaxPri %0d, Thresh %0d, MaxId %0d, Svcing %0d",
+		      max_prio, vrg_target_threshold [target_id], max_id, vrg_servicing_source [target_id]);
 	 end
       endaction
    endfunction
@@ -225,6 +212,7 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
       for (Integer target_id = 0; target_id < n_targets; target_id = target_id + 1) begin
 	 // Mask all interrupts with highest threshold
 	 vrg_target_threshold [target_id] <= '1;
+	 vrg_servicing_source [target_id] <=  0;
       end
 
       for (Integer target_id = 0; target_id < n_targets; target_id = target_id + 1)
@@ -252,9 +240,9 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
 	 $display ("    ", fshow (rda));
       end
 
-      let        addr_offset = rda.araddr - rg_addr_base;
+      let          addr_offset = rda.araddr - rg_addr_base;
       Fabric_Data  rdata       = 0;
-      AXI4_Resp  rresp       = axi4_resp_okay;
+      AXI4_Resp    rresp       = axi4_resp_okay;
 
       if (rda.araddr < rg_addr_base) begin
 	 // Technically this should not happen: the fabric should
@@ -264,7 +252,7 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
 	 rresp = axi4_resp_decerr;
       end
 
-      // Source Priority 
+      // Source Priority
       else if (addr_offset < 'h1000) begin
 	 Bit #(T_wd_source_id)  source_id = truncate (addr_offset [11:2]);
 	 if ((0 < source_id) && (source_id <= fromInteger (n_sources - 1))) begin
@@ -350,15 +338,26 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
 	 match { .max_prio, .max_id } = fn_target_max_prio_and_max_id (target_id);
 	 Bool eip = (max_prio > vrg_target_threshold [target_id]);
 	 if (target_id <= fromInteger (n_targets - 1)) begin
-	    if (max_id != 0) begin
-	       vrg_source_ip   [max_id]         <= False;
-	       vrg_source_busy [max_id]         <= True;
-	       rdata = changeWidth (max_id);
+	    if (vrg_servicing_source [target_id] != 0) begin
+	       $display ("%0d: ERROR: PLIC: target %0d claiming without prior completion",
+			 cur_cycle, target_id);
+	       $display ("    Still servicing interrupt from source %0d", vrg_servicing_source [target_id]);
+	       $display ("    Trying to claim service   for  source %0d", max_id);
+	       $display ("    Ignoring.");
+	       rresp = axi4_resp_slverr;
 	    end
+	    else begin
+	       if (max_id != 0) begin
+		  vrg_source_ip   [max_id]         <= False;
+		  vrg_source_busy [max_id]         <= True;
+		  vrg_servicing_source [target_id] <= truncate (max_id);
+		  rdata = changeWidth (max_id);
 
-	    if (cfg_verbosity > 0)
-	       $display ("%0d: PLIC.rl_process_rd_req: reading Claim for target %0d = 0x%0h",
-		  cur_cycle, target_id, rdata);
+		  if (cfg_verbosity > 0)
+		     $display ("%0d: PLIC.rl_process_rd_req: reading Claim for target %0d = 0x%0h",
+			cur_cycle, target_id, rdata);
+	       end
+	    end
 	 end
 	 else
 	    rresp = axi4_resp_slverr;
@@ -372,10 +371,8 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
 	 $display ("            ", fshow (rda));
       end
 
-`ifdef FABRIC64
-      if (((addr_offset & 'h7) == 'h4))
-	 rdata = { rdata [31:0], 32'h0 };
-`endif
+      if ((valueOf (Wd_Data) == 64) && ((addr_offset & 'h7) == 'h4))
+	 rdata = { rdata [31:0], 0 };
 
       // Send read-response to bus
       Fabric_Data x = truncate (rdata);
@@ -423,7 +420,7 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
 	 bresp = axi4_resp_decerr;
       end
 
-      // Source priority 
+      // Source priority
       else if (addr_offset < 'h1000) begin
 	 Bit #(T_wd_source_id)  source_id = truncate (addr_offset [11:2]);
 	 if ((0 < source_id) && (source_id <= fromInteger (n_sources - 1))) begin
@@ -491,23 +488,25 @@ module mkPLIC (PLIC_IFC #(t_n_external_sources, t_n_targets, t_max_priority))
       end
 
       // Interrupt service completion by target
-      // Write data is the source ID to complete. Disabled sources are ignored.
+      // Actual memory-write-data is irrelevant.
       else if ((addr_offset [31:0] & 32'hFFFF_0FFF) == 32'h0020_0004) begin
 	 Bit #(T_wd_target_id)  target_id = truncate (addr_offset [20:12]);
-	 Bit #(T_wd_source_id)  source_id = truncate (wdata32);
+	 Bit #(T_wd_source_id)  source_id = zeroExtend (vrg_servicing_source [target_id]);
 
 	 if (target_id <= fromInteger (n_targets - 1)) begin
-	    if (   (source_id <= fromInteger (n_sources))
-		&& vvrg_ie [target_id][source_id]) begin
+	    if (vrg_source_busy [source_id]) begin
 	       vrg_source_busy [source_id] <= False;
+	       vrg_servicing_source [target_id] <= 0;
 	       if (cfg_verbosity > 0)
 		  $display ("%0d: PLIC.rl_process_wr_req: writing completion for target %0d for source 0x%0h",
 		     cur_cycle, target_id, source_id);
 	    end
 	    else begin
-	       if (cfg_verbosity > 0)
-		  $display ("%0d: PLIC.rl_process_wr_req: ignoring completion for target %0d for source 0x%0h",
-		     cur_cycle, target_id, source_id);
+	       $display ("%0d: ERROR: PLIC: interrupt completion to source that is not being serviced",
+			 cur_cycle);
+	       $display ("    Completion message from target %0d to source %0d", target_id, source_id);
+	       $display ("    Ignoring");
+	       bresp = axi4_resp_slverr;
 	    end
 	 end
 	 else

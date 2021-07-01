@@ -51,10 +51,10 @@ module mkFabric_AXI4 (Fabric_AXI4_IFC);
 	 return tuple2 (True, fromInteger (boot_rom_slave_num));
 
 `ifdef Near_Mem_TCM
-      // TCM
-      else if (   (soc_map.m_tcm_addr_base <= addr)
-	       && (addr < soc_map.m_tcm_addr_lim))
-	 return tuple2 (True, fromInteger (tcm_back_door_slave_num));
+      // TCM DMA Server
+      else if (   (soc_map.m_itcm_addr_base <= addr)
+	       && (addr < soc_map.m_itcm_addr_lim))
+	 return tuple2 (True, fromInteger (dma_server_num));
 `endif
 
       // UART

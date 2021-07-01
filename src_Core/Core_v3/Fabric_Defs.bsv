@@ -22,8 +22,8 @@ package Fabric_Defs;
 // ================================================================
 // Project imports
 
-import AXI4_Types :: *;
 import ISA_Decls  :: *;
+import AXI4_Types :: *;
 
 // ================================================================
 // Fabric parameters
