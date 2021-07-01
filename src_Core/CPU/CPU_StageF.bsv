@@ -146,7 +146,15 @@ module mkCPU_StageF #(Bit #(4)  verbosity,
 	 $display ("");
       end
 
-      imem.req (f3_LW, pc, priv, sstatus_SUM, mstatus_MXR, satp);
+      imem.req (  f3_LW
+                , pc
+`ifdef ISA_PRIV_S
+                , priv
+                , sstatus_SUM
+                , mstatus_MXR
+                , satp
+`endif
+                );
       branch_predictor.predict_req (pc);    // TODO: ASID.VA vs PA?
 
       rg_epoch <= epoch;

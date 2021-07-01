@@ -44,21 +44,32 @@ ifeq ($(CACHES),WB_L1)
 else ifeq ($(CACHES),WB_L1_L2)
   NEAR_MEM_VM_DIR=Near_Mem_VM_WB_L1_L2
 else ifeq ($(CACHES),TCM)
-  NEAR_MEM_VM_DIR=Near_Mem_TCM
+  NEAR_MEM_VM_DIR=Near_Mem/Near_Mem_TCM/src
 else
   NEAR_MEM_VM_DIR=Near_Mem_VM_WT_L1
+endif
+
+FABRICS ?= AXI4
+ifeq ($(FABRICS),AHBL)
+   CUSTOM_DIRS = $(REPO)/src_Core/Near_Mem/Near_Mem_TCM/fabrics/AHB_Lite/src
 endif
 
 # ================================================================
 # CORE
 
-SRC_CORE ?= $(REPO)/src_Core/Core
+# SRC_CORE ?= $(REPO)/src_Core/Core
 # SRC_CORE ?= $(REPO)/src_Core/Core_v2
+SRC_CORE ?= $(REPO)/src_Core/Core_v3
+
+# ================================================================
+# Debug Module
+SRC_DM ?= $(REPO)/Debug_Module/src
+# SRC_DM ?= $(REPO)/src_Core/Debug_Module
 
 # ================================================================
 # Search path for bsc for .bsv files
 
-CORE_DIRS = $(REPO)/src_Core/CPU:$(REPO)/src_Core/ISA:$(REPO)/src_Core/RegFiles:$(SRC_CORE):$(REPO)/src_Core/Cache_Config:$(REPO)/src_Core/$(NEAR_MEM_VM_DIR):$(REPO)/src_Core/PLIC:$(REPO)/src_Core/Near_Mem_IO:$(REPO)/src_Core/Debug_Module:$(REPO)/src_Core/BSV_Additional_Libs
+CORE_DIRS = $(REPO)/src_Core/CPU:$(REPO)/src_Core/ISA:$(REPO)/src_Core/RegFiles:$(SRC_CORE):$(REPO)/src_Core/Cache_Config:$(REPO)/src_Core/$(NEAR_MEM_VM_DIR):$(REPO)/src_Core/PLIC:$(REPO)/src_Core/Near_Mem_IO:$(SRC_DM):$(REPO)/src_Core/BSV_Additional_Libs
 
 TESTBENCH_DIRS = $(REPO)/src_Testbench/Top:$(REPO)/src_Testbench/SoC:$(REPO)/src_Testbench/Fabrics/AXI4
 

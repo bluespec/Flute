@@ -26,7 +26,7 @@ import GetPut       :: *;
 import ClientServer :: *;
 import Connectable  :: *;
 import ConfigReg    :: *;
-
+import Clocks       :: *;
 // ----------------
 // BSV additional libs
 
@@ -37,6 +37,11 @@ import Semi_FIFOF :: *;
 // Project imports
 
 import AXI4_Types :: *;
+
+`ifdef FABRIC_AHBL
+import AHBL_Types  :: *;
+import AHBL_Defs   :: *;
+`endif
 
 `ifdef INCLUDE_DMEM_SLAVE
 import AXI4_Lite_Types :: *;
@@ -66,7 +71,7 @@ import CPU_Stage1 :: *;    // Execute
 import CPU_Stage2 :: *;    // Memory and long-latency ops
 import CPU_Stage3 :: *;    // Writeback
 
-import Near_Mem_IFC :: *;    // Caches or TCM
+import Near_Mem_IFC :: *;  // Caches or TCM
 
 `ifdef Near_Mem_Caches
 import Near_Mem_Caches :: *;
@@ -77,8 +82,10 @@ import Near_Mem_TCM :: *;
 `endif
 
 `ifdef INCLUDE_GDB_CONTROL
-import Debug_Module   :: *;
-import DM_CPU_Req_Rsp :: *;
+//import Debug_Module     :: *;
+import DM_Common        :: *;
+import Debug_Interfaces :: *;
+import DM_CPU_Req_Rsp   :: *;
 `endif
 
 // System address map and pc_reset value
@@ -1689,17 +1696,25 @@ module mkCPU (CPU_IFC);
    // ================================================================
    // INTERFACE
 
-   // Reset
-   interface Server  hart0_server_reset = toGPServer (f_reset_reqs, f_reset_rsps);
-
    // ----------------
    // SoC fabric connections
 
+`ifndef Near_Mem_TCM
    // IMem to fabric master interface
    interface  imem_master = near_mem.imem_master;
+`endif
 
+`ifdef Near_Mem_TCM
+   // DMem to fabric master interface
+   interface  dmem_master = near_mem.dmem_master;
+
+`ifdef DUAL_FABRIC
+   interface  nmio_master = near_mem.nmio_master;
+`endif
+`else
    // DMem to fabric master interface
    interface Near_Mem_Fabric_IFC  mem_master = near_mem.mem_master;
+`endif
 
    // ----------------------------------------------------------------
    // Optional AXI4-Lite D-cache slave interface
@@ -1708,10 +1723,19 @@ module mkCPU (CPU_IFC);
    interface  dmem_slave = near_mem.dmem_slave;
 `endif
 
+`ifdef Near_Mem_TCM
+   // ----------------
+   // Debug access to ITCM
+   interface AXI4_Slave_IFC imem_dma_server = near_mem.imem_dma_server;
+
+   // DMA/Debug access to DTCM
+   interface AXI4_Slave_IFC dmem_dma_server = near_mem.dmem_dma_server;
+`else
    // ----------------
    // Interface to 'coherent DMA' port of optional L2 cache
 
    interface AXI4_Slave_IFC dma_server = near_mem.dma_server;
+`endif
 
    // ----------------------------------------------------------------
    // External interrupts
@@ -1751,25 +1775,32 @@ module mkCPU (CPU_IFC);
    // Optional interface to Debug Module
 
 `ifdef INCLUDE_GDB_CONTROL
-   // run-control, other
-   interface Server  hart0_server_run_halt = toGPServer (f_run_halt_reqs, f_run_halt_rsps);
+   interface CPU_DM_Ifc debug;
+      // Reset
+      interface Server  hart_reset_server = toGPServer (f_reset_reqs, f_reset_rsps);
+      // run-control, other
+      interface Server  hart_server_run_halt = toGPServer (f_run_halt_reqs, f_run_halt_rsps);
 
-   interface Put  hart0_put_other_req;
-      method Action  put (Bit #(4) req);
-	 cfg_verbosity <= req;
-      endmethod
-   endinterface
+      interface Put  hart_put_other_req;
+         method Action  put (Bit #(4) req);
+            cfg_verbosity <= req;
+         endmethod
+      endinterface
 
-   // GPR access
-   interface Server  hart0_gpr_mem_server = toGPServer (f_gpr_reqs, f_gpr_rsps);
+      // GPR access
+      interface Server  hart_gpr_mem_server = toGPServer (f_gpr_reqs, f_gpr_rsps);
 
 `ifdef ISA_F
-   // FPR access
-   interface Server  hart0_fpr_mem_server = toGPServer (f_fpr_reqs, f_fpr_rsps);
+      // FPR access
+      interface Server  hart_fpr_mem_server = toGPServer (f_fpr_reqs, f_fpr_rsps);
 `endif
 
-   // CSR access
-   interface Server  hart0_csr_mem_server = toGPServer (f_csr_reqs, f_csr_rsps);
+      // CSR access
+      interface Server  hart_csr_mem_server = toGPServer (f_csr_reqs, f_csr_rsps);
+   endinterface
+`else
+   // Reset
+   interface Server  hart_reset_server = toGPServer (f_reset_reqs, f_reset_rsps);
 `endif
 
    // ----------------------------------------------------------------
@@ -1794,6 +1825,7 @@ module mkCPU (CPU_IFC);
    method Bit #(64) mv_tohost_value = near_mem.mv_tohost_value;
 `endif
 
+`ifndef Near_Mem_TCM
    // Inform core that DDR4 has been initialized and is ready to accept requests
    method Action ma_ddr4_ready;
       near_mem.ma_ddr4_ready;
@@ -1803,6 +1835,7 @@ module mkCPU (CPU_IFC);
    method Bit #(8) mv_status;
       return near_mem.mv_status;
    endmethod
+`endif
 
 endmodule: mkCPU
 

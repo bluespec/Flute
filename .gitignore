@@ -18,3 +18,5 @@ vpi_wrapper_*
 Aux_files
 worker_*
 log_*.txt
+Verilog_RTL
+hdl
