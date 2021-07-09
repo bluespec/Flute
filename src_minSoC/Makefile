@@ -30,19 +30,21 @@ BSC_COMPILATION_FLAGS += \
 	-D MULT_SYNTH    \
 	-D Near_Mem_TCM    \
 	-D FABRIC32    \
-	-D INCLUDE_GDB_CONTROL \
 	-D FABRIC_AHBL \
 	-D FABRIC_AXI4 \
 	-D DUAL_FABRIC \
 	-D WATCH_TOHOST \
 	-D JTAG_TAP \
 	-D XILINX_BSCAN -D XILINX_XC7K325T \
-	-D TCM_LOADER
+	-D INCLUDE_GDB_CONTROL 
+
+# Uncomment the following when generating RTL for microsemi with TCM Loader
+#	-D MICROSEMI -D TCM_LOADER
 
 # ================================================================
 # Search path for bsc for .bsv files
 
-CORE_DIRS = $(REPO)/src_Core/CPU:$(REPO)/src_Core/ISA:$(REPO)/src_Core/RegFiles:$(REPO)/src_Core/Core:$(REPO)/src_Core/Near_Mem/Near_Mem_TCM/src:$(REPO)/src_Core/Near_Mem/Near_Mem_TCM/fabrics/AHB_Lite/src:$(REPO)/src_Core/PLIC:$(REPO)/src_Core/Near_Mem_IO:$(REPO)/src_Core/BSV_Additional_Libs:$(DEBUG_REPO)/src
+CORE_DIRS = $(REPO)/src_Core/CPU:$(REPO)/src_Core/ISA:$(REPO)/src_Core/RegFiles:$(REPO)/src_Core/Core_v3:$(REPO)/src_Core/Near_Mem/Near_Mem_TCM/src:$(REPO)/src_Core/Near_Mem/Near_Mem_TCM/fabrics/AHB_Lite/src:$(REPO)/src_Core/PLIC:$(REPO)/src_Core/Near_Mem_IO:$(REPO)/src_Core/BSV_Additional_Libs:$(DEBUG_REPO)/src
 
 TESTBENCH_DIRS  = $(REPO)/src_Testbench/Fabrics/AXI4
 
