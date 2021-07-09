@@ -178,8 +178,8 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
 
    Bit #(1) reset_requestor_dm  = 0;
    Bit #(1) reset_requestor_soc = 1;
-`ifdef INCLUDE_GDB_CONTROL
    FIFOF #(Bit #(1)) f_reset_requestor <- mkFIFOF;
+`ifdef INCLUDE_GDB_CONTROL
    Server #(Bool, Bool)  hart_reset_server = cpu.debug.hart_reset_server;
 `else
    Server #(Bool, Bool)  hart_reset_server = cpu.hart_reset_server;
@@ -414,13 +414,21 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
    // TCM DMA server connections
 `ifdef Near_Mem_TCM
 `ifdef INCLUDE_GDB_CONTROL
+   // GDB with TCM - backdoor present
    mkConnection (local_fabric.v_to_slaves [imem_dma_slave_num], cpu.imem_dma_server);
    mkConnection (local_fabric.v_to_slaves [dmem_dma_slave_num], cpu.dmem_dma_server);
 `else
+`ifdef TCM_LOADER
+   // No GDB, TCM Loader - backdoor present
+   mkConnection (local_fabric.v_to_slaves [imem_dma_slave_num], cpu.imem_dma_server);
+   mkConnection (local_fabric.v_to_slaves [dmem_dma_slave_num], cpu.dmem_dma_server);
+`else
+   // No GDB. No TCM Loader. No backdoor.
    AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) idma_dummy_master = dummy_AXI4_Master_ifc;
    AXI4_Master_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) ddma_dummy_master = dummy_AXI4_Master_ifc;
    mkConnection (idma_dummy_master, cpu.imem_dma_server);
    mkConnection (ddma_dummy_master, cpu.dmem_dma_server);
+`endif
 `endif
 `endif
 
