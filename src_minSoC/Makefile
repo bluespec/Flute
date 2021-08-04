@@ -36,10 +36,10 @@ BSC_COMPILATION_FLAGS += \
 	-D WATCH_TOHOST \
 	-D JTAG_TAP \
 	-D XILINX_BSCAN -D XILINX_XC7K325T \
-	-D INCLUDE_GDB_CONTROL 
-
-# Uncomment the following when generating RTL for microsemi with TCM Loader
-#	-D MICROSEMI -D TCM_LOADER
+ 	-D INCLUDE_GDB_CONTROL \
+ 	-D MICROSEMI -D TCM_LOADER \
+# Comment/Uncomment the above when to include/exclude TCM_LOADER
+# The MICROSEMI flag uses BRAM without file-load capability
 
 # ================================================================
 # Search path for bsc for .bsv files
