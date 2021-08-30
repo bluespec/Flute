@@ -199,10 +199,12 @@ module mkMMIO_AXI4_Adapter #(parameter Bit #(3) verbosity)
       Bool      ok      = (rd_data.rresp == axi4_resp_okay);
 
       if (! ok) begin
-	 $display ("%0d: ERROR: %m.rl_rd_data: ERROR", cur_cycle);
-	 $display ("    AXI4 error response for client %0d, addr %0h  arsize %0h  arlen %0h",
-		   rd_client_id, rd_addr, rd_arsize, rd_arlen);
-	 $display ("    ", fshow (rd_data));
+	 if (verbosity >= 1) begin
+	    $display ("%0d: ERROR: %m.rl_rd_data", cur_cycle);
+	    $display ("    AXI4 error response for client %0d addr %0h arsize %0h arlen %0h beat %0d",
+		      rd_client_id, rd_addr, rd_arsize, rd_arlen, rg_rd_beat);
+	    $display ("    ", fshow (rd_data));
+	 end
       end
 
       // Accumulate beats into word64 and rg_rd_data

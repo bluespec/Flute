@@ -14,6 +14,7 @@ import FIFOF :: *;
 // ----------------
 // Other library imports
 
+import Cur_Cycle  :: *;
 import Semi_FIFOF :: *;
 
 // ================================================================
@@ -395,7 +396,8 @@ module mkDM_System_Bus (DM_System_Bus_IFC);
       action
 	 // Debug announce
 	 if (verbosity != 0) begin
-	    $write ("DM_System_Bus.sbaddress.write: [0x%08h] <= 0x%08h", dm_addr, dm_word);
+	    $write ("%0d: %m.fa_rg_sbaddress_write (dm_addr 0x%08h, dm_word 0x%08h)",
+		    dm_addr, dm_word);
 	    if (rg_sbcs_sbreadonaddr) begin
 	       $write ("; readonaddr");
 	       if (rg_sbcs_sbautoincrement)
@@ -449,17 +451,33 @@ module mkDM_System_Bus (DM_System_Bus_IFC);
 
    function ActionValue #(DM_Word) fav_rg_sbdata_read (DM_Addr dm_addr);
       actionvalue
+	 if (verbosity != 0) begin
+	    $write ("%0d: %m.fav_rg_sbdata_read (dm_addr 0x%08h)", cur_cycle, dm_addr);
+	    if (rg_sbcs_sbreadonaddr) begin
+	       $write ("; readonaddr");
+	       if (rg_sbcs_sbautoincrement)
+		  $write ("; autoincrement");
+	    end
+	    $display ("");
+	 end
+
 	 DM_Word result = 0;
 	 if (sbbusy) begin
-	    $display ("DM_System_Bus.sbdata.read: busy, setting sbbusyerror");
+	    if (verbosity != 0)
+	       $display ("DM_System_Bus.sbdata.read: busy, setting sbbusyerror");
 	    rg_sbcs_sbbusyerror <= True;
 	 end
 
-	 else if (rg_sbcs_sbbusyerror)
-	    $display ("DM_System_Bus.sbdata.read: ignoring due to sbbusyerror");
+	 else if (rg_sbcs_sbbusyerror) begin
+	    if (verbosity != 0)
+	       $display ("DM_System_Bus.sbdata.read: ignoring due to sbbusyerror");
+	 end
 
-	 else if (rg_sbcs_sberror != DM_SBERROR_NONE)
-	    $display ("DM_System_Bus.sbdata.read: ignoring due to sberror = 0x%0h", rg_sbcs_sberror);
+	 else if (rg_sbcs_sberror != DM_SBERROR_NONE) begin
+	    if (verbosity != 0)
+	       $display ("DM_System_Bus.sbdata.read: ignoring due to sberror = 0x%0h",
+			 rg_sbcs_sberror);
+	 end
 
 	 else begin
 	    if (dm_addr == dm_addr_sbdata0)
@@ -490,15 +508,17 @@ module mkDM_System_Bus (DM_System_Bus_IFC);
 			   && (rg_sbcs_sberror == DM_SBERROR_NONE));
       let rdr <- pop_o (master_xactor.o_rd_data);
       if (verbosity != 0)
-	 $display ("DM_System_Bus.rule_sb_read_finish: rdr = ", fshow (rdr));
+	 $display ("%m.rl_sb_read_finish: rdr = ", fshow (rdr));
 
       // Extract relevant bytes from fabric data
       Bit #(64) rdata64 = zeroExtend (rdr.rdata);
-      Bit #(64) data    = fn_extract_and_extend_bytes (rg_sbcs_sbaccess, rg_sbaddress_reading, rdata64);
+      Bit #(64) data    = fn_extract_and_extend_bytes (rg_sbcs_sbaccess,
+						       rg_sbaddress_reading,
+						       rdata64);
 
       if (rdr.rresp != axi4_resp_okay) begin
-	 $display ("DM_System_Bus.rule_sb_read_finish: setting rg_sbcs_sberror to DM_SBERROR_OTHER\n");
-	 $display ("    rdr = ", fshow (rdr));
+	 if (verbosity != 0)
+	    $display ("%m.rl_sb_read_finish: fabric error: rg_sbcs_sberror := DM_SBERROR_OTHER");
 	 rg_sbcs_sberror <= DM_SBERROR_OTHER;
       end
 
