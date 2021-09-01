@@ -18,9 +18,9 @@ import ProcTypes::*;
 import CCTypes::*;
 
 // ----------------
-// From Piccolo/Flute
+// From Bluespec RISC-V CPUs
 
-import Near_Mem_IFC :: *;    // For Wd_Id_Dma
+import AXI_Widths   :: *;
 
 // ================================================================
 // Options for cache-coherent access for devices

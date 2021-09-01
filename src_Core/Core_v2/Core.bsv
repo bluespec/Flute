@@ -76,7 +76,9 @@ import TV_Taps :: *;
 // The Core module
 
 (* synthesize *)
-module mkCore (Core_IFC #(N_External_Interrupt_Sources));
+module mkCore
+   #(Reset dm_power_on_reset)                // for future use
+   (Core_IFC #(N_External_Interrupt_Sources));
 
    // ================================================================
    // STATE

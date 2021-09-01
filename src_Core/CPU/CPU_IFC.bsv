@@ -11,10 +11,11 @@ import ClientServer :: *;
 // ================================================================
 // Project imports
 
-import ISA_Decls       :: *;
+import ISA_Decls :: *;
 
-import AXI4_Types  :: *;
-import Fabric_Defs :: *;
+import AXI4_Types   :: *;
+import AXI_Widths   :: *;
+import Fabric_Defs  :: *;
 import Near_Mem_IFC :: *;    // For Wd_Id/Addr/Data/User_Dma
 
 `ifdef INCLUDE_DMEM_SLAVE

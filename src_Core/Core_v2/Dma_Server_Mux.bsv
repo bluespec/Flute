@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2020-2021 Bluespec, Inc. All Rights Reserved.
 
 package Dma_Server_Mux;
 
@@ -29,6 +29,7 @@ import GetPut_Aux :: *;
 // Project imports
 
 import AXI4_Types   :: *;
+import AXI_Widths   :: *;
 import AXI4_Fabric  :: *;
 import AXI4_Widener :: *;
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2020 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2018-2021 Bluespec, Inc. All Rights Reserved.
 
 package Core_IFC;
 
@@ -26,6 +26,7 @@ import Near_Mem_IFC :: *;    // For Wd_{Id,Addr,Data,User}_Dma
 
 // Main fabric
 import AXI4_Types   :: *;
+import AXI_Widths   :: *;
 import Fabric_Defs  :: *;
 
 `ifdef INCLUDE_DMEM_SLAVE

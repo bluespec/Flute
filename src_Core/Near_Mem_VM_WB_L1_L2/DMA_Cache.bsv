@@ -52,6 +52,7 @@ import MMU_Cache_Common :: *;    // For L1<->L2 reqs and rsps
 import MMIO  :: *;
 
 import AXI4_Types   :: *;
+import AXI_Widths   :: *;
 import Near_Mem_IFC :: *;    // For Wd_{Id/Addr/User/Data}_Dma
 
 // ================================================================
