@@ -140,7 +140,6 @@ interface CPU_IFC;
 
 `ifdef INCLUDE_GDB_CONTROL
    interface CPU_DM_Ifc debug;
-   /*
    // run-control, other
    interface Server #(Bool, Bool)  hart0_server_run_halt;
    interface Put #(Bit #(4))       hart0_put_other_req;
@@ -155,7 +154,6 @@ interface CPU_IFC;
 
    // CSR access
    interface Server #(DM_CPU_Req #(12, XLEN), DM_CPU_Rsp #(XLEN)) hart_csr_mem_server;
-   */
 `else
    // Reset
    interface Server #(Bool, Bool)  hart_reset_server;

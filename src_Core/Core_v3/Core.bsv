@@ -194,10 +194,8 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
       plic.server_reset.request.put (?);         // PLIC
       local_fabric.reset;                        // Local Fabric
 
-`ifdef INCLUDE_GDB_CONTROL
       // Remember the requestor, so we can respond to it
       f_reset_requestor.enq (reset_requestor_soc);
-`endif
       $display ("%0d: Core.rl_cpu_hart0_reset_from_soc_start", cur_cycle);
    endrule
 

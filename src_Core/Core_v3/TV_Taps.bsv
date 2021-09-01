@@ -100,7 +100,7 @@ module mkDM_Mem_Tap (DM_Mem_Tap_IFC);
 	 default: dynamicAssert(False, "mkDM_Mem_Tap: unsupported byte enables");
       endcase
       paddr = zeroExtend (wr_addr.awaddr);
-      stval = ((zeroExtend (wr_data.wdata) >> sh) & mask);
+      stval = zeroExtend (((wr_data.wdata) >> sh) & mask);
       Trace_Data td = mkTrace_MEM_WRITE (sz, truncate (stval), paddr);
       f_trace_data.enq (td);
    endrule

@@ -314,8 +314,7 @@ module mkCPU (CPU_IFC);
    function Action fa_emit_instr_trace (Bit #(64) instret, WordXL pc, Instr instr, Priv_Mode priv);
       action
 	 if ((cur_verbosity >= 1) || ((instret & 'h_F_FFFF) == 0))
-	    $display ("instret:%0d  PC:0x%0h  instr:0x%0h  priv:%0d",
-		      instret, pc, instr, priv);
+	    $display ("%8h (0x%8h)", pc, instr);
 
 `ifdef INCLUDE_PC_TRACE
 	 let pc_trace = PC_Trace {cycle: mcycle,  instret: instret, pc: pc};
@@ -701,7 +700,7 @@ module mkCPU (CPU_IFC);
 	       end
 	    end
 	 end
-	  
+
       // ----------------
       // Move instruction from StageD to Stage1
       if (   (! stage1_full)
@@ -869,20 +868,10 @@ module mkCPU (CPU_IFC);
       f_trace_data.enq (trace_data);
 `endif
 
-      // Simulation heuristic: finish if trap back to this instr
-`ifndef INCLUDE_GDB_CONTROL
-      if (epc == next_pc) begin
-	 $display ("%0d: %m.rl_stage1_trap: Tight infinite trap loop: pc 0x%0x instr 0x%08x", mcycle,
-		   next_pc, instr);
-	 fa_report_CPI;
-	 $finish (0);
-      end
-`endif
-
       fa_emit_instr_trace (minstret, epc, instr, rg_cur_priv);
 
       // Debug
-      if (cur_verbosity != 0)
+      if (cur_verbosity > 1)
 	 $display ("    mcause:0x%0h  epc 0x%0h  tval:0x%0h  next_pc 0x%0h, new_priv %0d new_mstatus 0x%0h",
 		   mcause, epc, tval, next_pc, new_priv, new_mstatus);
    endrule: rl_trap
@@ -1179,7 +1168,7 @@ module mkCPU (CPU_IFC);
 
       // Debug
       fa_emit_instr_trace (minstret, stage1.out.data_to_stage2.pc, stage1.out.data_to_stage2.instr, rg_cur_priv);
-      if (cur_verbosity != 0)
+      if (cur_verbosity > 1)
 	 $display ("    xRET: next_pc:0x%0h  new mstatus:0x%0h  new priv:%0d", next_pc, new_mstatus, new_priv);
    endrule: rl_stage1_xRET
 
@@ -1440,15 +1429,15 @@ module mkCPU (CPU_IFC);
       if (cur_verbosity > 1)
 	 $display ("%0d: %m.rl_BREAK_cache_flush_finish", mcycle);
    endrule
+`endif
 
    // ----------------
-   // Reset from Debug Module
+   // Reset from Debug Module (or SoC)
 
    rule rl_reset_from_Debug_Module (f_reset_reqs.notEmpty && (rg_state != CPU_RESET1));
       $display ("%0d: %m.rl_reset_from_Debug_Module", mcycle);
       rg_state <= CPU_RESET1;
    endrule
-`endif
 
    // ================================================================
    // EXTERNAL and GDB INTERRUPTS while running

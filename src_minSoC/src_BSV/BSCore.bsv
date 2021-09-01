@@ -206,8 +206,8 @@ module mkBSCore (BSCore_IFC);
 `ifdef INCLUDE_GDB_CONTROL
       // wait for end of ndm_interval:
       when (rg_ndm_count == 0, noAction);
-      rg_reset_done <= True;
 `endif
+      rg_reset_done <= True;
    endrule
 
    // ----------------
@@ -284,6 +284,50 @@ module mkBSCore (BSCore_IFC);
 `endif
 
 endmodule
+
+// ================================================================
+
+`ifdef INCLUDE_TANDEM_VERIF
+
+// ================================================================
+// TV AXI4 Stream Parameters
+
+typedef SizeOf #(Info_CPU_to_Verifier)Wd_SData;
+typedef 0 Wd_SDest;
+typedef 0 Wd_SUser;
+typedef 0 Wd_SId;
+
+// ================================================================
+
+interface TV_Xactor;
+   interface Put #(Info_CPU_to_Verifier) tv_in;
+   interface AXI4_Stream_Master_IFC #(Wd_SId, Wd_SDest, Wd_SData, Wd_SUser)  axi_out;
+endinterface
+
+function AXI4_Stream #(Wd_SId, Wd_SDest, Wd_SData, Wd_SUser) fn_TVToAxiS (Info_CPU_to_Verifier x);
+   return AXI4_Stream {tid: ?,
+		       tdata: pack(x),
+		       tstrb: '1,
+		       tkeep: '1,
+		       tlast: True,
+		       tdest: ?,
+		       tuser: ? };
+endfunction
+
+(*synthesize*)
+module mkTV_Xactor (TV_Xactor);
+   AXI4_Stream_Master_Xactor_IFC #(Wd_SId, Wd_SDest, Wd_SData, Wd_SUser)
+                               tv_xactor <- mkAXI4_Stream_Master_Xactor;
+
+   interface Put tv_in;
+      method Action put(x);
+	 toPut(tv_xactor.i_stream).put(fn_TVToAxiS(x));
+      endmethod
+   endinterface
+
+   interface axi_out = tv_xactor.axi_side;
+endmodule
+`endif
 
 // ================================================================
 
