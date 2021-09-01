@@ -140,6 +140,9 @@ typedef Bit #(TLog #(Num_Slaves))  Slave_Num;
 
 `ifdef DUAL_FABRIC
 `ifdef INCLUDE_GDB_CONTROL
+
+`define LOADER_OR_DEBUG=1
+
 `ifdef TCM_LOADER
 
 // tcm assumed.
@@ -173,6 +176,7 @@ Slave_Num  dmem_dma_slave_num    = 3;
 // Dual fabric, no gdb
 `ifdef TCM_LOADER
 // tcm assumed.
+`define LOADER_OR_DEBUG=1
 
 // 2x4 Fabric for the Core
 // Masters: CPU DMem, TCM Loader
@@ -324,7 +328,7 @@ module mkLocal_Fabric (Local_Fabric_IFC);
 	 selected_target = plic_slave_num;
 
 `ifdef DUAL_FABRIC
-`ifdef INCLUDE_GDB_CONTROL
+`ifdef LOADER_OR_DEBUG
       // DUAL_FABRIC with GDB_CONTROL
       // All addresses must be captured in these two else cases. There is no bound checking in
       // TCMs so, behaviour is undefined if a wrong address makes it to the TCM. It is the
