@@ -206,7 +206,7 @@ module mkNear_Mem (Near_Mem_IFC);
 
 `ifdef OPTION_DMA_CACHE
    let ifc_DMA_L1 <- mkL1_IFC_Adapter (verbosity_DMA_L1_L2,
-				       1,
+				       2,
 				       dma_cache.l1_to_l2_client,
 				       dma_cache.l2_to_l1_server);
    l1 [2] = ifc_DMA_L1;
