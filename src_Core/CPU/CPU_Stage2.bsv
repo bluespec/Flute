@@ -30,22 +30,23 @@ mkCPU_Stage2;
 // ================================================================
 // BSV library imports
 
-import FIFOF        :: *;
-import GetPut       :: *;
-import ClientServer :: *;
-import ConfigReg    :: *;
+import FIFOF            :: *;
+import GetPut           :: *;
+import ClientServer     :: *;
+import ConfigReg        :: *;
 
 // ----------------
 // BSV additional libs
 
-import Cur_Cycle  :: *;
+import Cur_Cycle        :: *;
+import Macro_Check      :: *;
 
 // ================================================================
 // Project imports
 
-import ISA_Decls     :: *;
+import ISA_Decls        :: *;
 
-import TV_Info       :: *;
+import TV_Info          :: *;
 
 import CPU_Globals      :: *;
 import Near_Mem_IFC     :: *;
@@ -53,16 +54,16 @@ import MMU_Cache_Common :: *;    // for CacheOp
 import CSR_RegFile      :: *;    // For SATP, SSTATUS, MSTATUS
 
 `ifdef SHIFT_SERIAL
-import Shifter_Box  :: *;
+import Shifter_Box      :: *;
 `endif
 
 `ifdef ISA_M
-import RISCV_MBox  :: *;
+import RISCV_MBox       :: *;
 `endif
 
 `ifdef ISA_F
-import FBox_Top    :: *;
-import FBox_Core   :: *;   // For fv_nanbox function
+import FBox_Top         :: *;
+import FBox_Core        :: *;   // For fv_nanbox function
 `endif
 
 // ================================================================
@@ -101,6 +102,9 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
    Reg #(Bool)                  rg_resetting  <- mkReg (False);
    Reg #(Bool)                  rg_full       <- mkReg (False);
    Reg #(Data_Stage1_to_Stage2) rg_stage2     <- mkRegU;    // From Stage 1
+
+   // Check macros
+   let macro_check <- mkMacroCheck;
 
    // ----------------
    // Serial shifter box
@@ -236,8 +240,11 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 			   : (  dcache.exc
 			      ? OSTATUS_NONPIPE
 			      : OSTATUS_PIPE));
-
+`ifdef NM32
+	    WordXL result = dcache.word32;
+`else
 	    WordXL result = truncate (dcache.word64);
+`endif
 
             let funct3 = instr_funct3 (rg_stage2.instr);
 
@@ -259,8 +266,13 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
                else
                   data_to_stage3.frd_val = dcache.word64;
 `else
+`ifdef NM32
+               // Only FLW is a legal instruction
+               data_to_stage3.frd_val = dcache.word32;
+`else
                // Only FLW is a legal instruction
                data_to_stage3.frd_val = truncate (dcache.word64);
+`endif
 `endif
             end
 `endif
@@ -531,14 +543,22 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 `ifdef RV64
             Bit# (64) wdata_from_gpr = x.val2;
 `else
+`ifdef NM32
+            Bit# (32) wdata_from_gpr = x.val2;
+`else
             Bit# (64) wdata_from_gpr = zeroExtend (x.val2);
+`endif
 `endif
 
 `ifdef ISA_F
 `ifdef ISA_D
             Bit# (64) wdata_from_fpr = x.fval2;
 `else
+`ifdef NM32
+            Bit# (32) wdata_from_fpr = x.fval2;
+`else
             Bit# (64) wdata_from_fpr = zeroExtend (x.fval2);
+`endif
 `endif
 `endif
 	    dcache.req (  cache_op

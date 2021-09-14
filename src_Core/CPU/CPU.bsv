@@ -173,7 +173,7 @@ module mkCPU (CPU_IFC);
    // For debugging
 
    // Verbosity: 0=quiet; 1=instruction trace; 2=more detail
-   Reg #(Bit #(4))  cfg_verbosity <- mkConfigReg (0);
+   Reg #(Bit #(4))  cfg_verbosity <- mkConfigReg (1);
 
    // Verbosity is 0 as long as # of instrs retired is <= cfg_logdelay
    Reg #(Bit #(64))  cfg_logdelay <- mkConfigReg (0);
