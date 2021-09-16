@@ -1,6 +1,6 @@
 [submodule "src_Core/Near_Mem"]
 	path = src_Core/Near_Mem
-	url = ssh://git@github.com/bluespec/Near_Mem.git
+	url = https://github.com/bluespec/Near_Mem.git
 [submodule "Debug_Module"]
 	path = Debug_Module
-	url = ssh://git@github.com/bluespec/RISCV_Debug_Module.git
+	url = https://github.com/bluespec/RISCV_Debug_Module.git
