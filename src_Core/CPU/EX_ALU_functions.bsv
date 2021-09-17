@@ -1053,11 +1053,13 @@ endfunction
 
 `ifdef ISA_A
 function ALU_Outputs fv_AMO (ALU_Inputs inputs);
+   let rs2    = inputs.decoded_instr.rs2;
    let funct3 = inputs.decoded_instr.funct3;
    let funct5 = inputs.decoded_instr.funct5;
    let funct7 = inputs.decoded_instr.funct7;
 
-   Bool legal_f5 = (   (funct5 == f5_AMO_LR)   || (funct5 == f5_AMO_SC)
+   Bool legal_f5 = (   ((funct5 == f5_AMO_LR) && (rs2 == 0))
+		    || (funct5 == f5_AMO_SC)
 
 		    || (funct5 == f5_AMO_ADD)
 		    || (funct5 == f5_AMO_SWAP)
