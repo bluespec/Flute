@@ -465,8 +465,15 @@ endfunction: fv_OP_and_OP_IMM_shifts
 // Remaining OP and OP_IMM (excluding shifts, M ops MUL/DIV/REM)
 
 function ALU_Outputs fv_OP_and_OP_IMM (ALU_Inputs inputs);
+   Bool trap = False;
+
    let rs1_val = inputs.rs1_val;
    let rs2_val = inputs.rs2_val;
+   let funct3  = inputs.decoded_instr.funct3;
+
+   // ADD and SUB differ only in instr [30]
+   Bit #(1) instr_b30  = inputs.instr [30];
+   Bool     subtract   = ((inputs.decoded_instr.opcode == op_OP) && (instr_b30 == 1'b1));
 
    // Signed versions of rs1_val and rs2_val
    IntXL  s_rs1_val = unpack (rs1_val);
@@ -475,16 +482,17 @@ function ALU_Outputs fv_OP_and_OP_IMM (ALU_Inputs inputs);
    IntXL  s_rs2_val_local = s_rs2_val;
    WordXL rs2_val_local   = rs2_val;
 
-   Bit #(1) instr_b30  = inputs.instr [30];
-   Bool     subtract   = ((inputs.decoded_instr.opcode == op_OP) && (instr_b30 == 1'b1));
-
    if (inputs.decoded_instr.opcode == op_OP_IMM) begin
       s_rs2_val_local = extend (unpack (inputs.decoded_instr.imm12_I));
       rs2_val_local   = pack (s_rs2_val_local);
    end
+   else begin
+      // For op_OP, check Must Be Zero bits in funct7
+      trap = (   (inputs.instr [31] != 1'b0)
+	      && ((funct3 != f3_ADDI) && (instr_b30 != 1'b0))
+	      && (inputs.instr [29:25] != 5'b0));
+   end
 
-   let  funct3 = inputs.decoded_instr.funct3;
-   Bool trap   = False;
    WordXL rd_val = ?;
 
    if      ((funct3 == f3_ADDI) && (! subtract)) rd_val = pack (s_rs1_val + s_rs2_val_local);
