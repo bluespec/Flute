@@ -1102,7 +1102,10 @@ function ALU_Outputs fv_ALU (ALU_Inputs inputs);
 `ifdef RV64
    // OP 'M' ops MULW/ DIVW/ DIVUW/ REMW/ REMUW
    else if (   (inputs.decoded_instr.opcode == op_OP_32)
-	    && f7_is_OP_MUL_DIV_REM (inputs.decoded_instr.funct7))
+	    && f7_is_OP_MUL_DIV_REM (inputs.decoded_instr.funct7)
+	    && (inputs.decoded_instr.funct3 != 3'b001)
+	    && (inputs.decoded_instr.funct3 != 3'b010)
+	    && (inputs.decoded_instr.funct3 != 3'b011))
       begin
 	 // Will be executed in MBox in next stage
 	 alu_outputs.op_stage2 = OP_Stage2_M;
