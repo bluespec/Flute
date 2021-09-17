@@ -723,7 +723,7 @@ function ALU_Outputs fv_LOAD (ALU_Inputs inputs);
    alu_outputs.rd        = inputs.decoded_instr.rd;
    alu_outputs.addr      = eaddr;
 `ifdef ISA_F
-   // note that the destination register for this load is in the FPR
+   // For LOAD_FP, destination register is in FP regs
    alu_outputs.rd_in_fpr = (opcode == op_LOAD_FP);
 `endif
 
@@ -753,7 +753,7 @@ endfunction
 // ----------------------------------------------------------------
 // STORE
 
-function ALU_Outputs fv_ST (ALU_Inputs inputs);
+function ALU_Outputs fv_STORE (ALU_Inputs inputs);
    // Signed version of rs1_val
    IntXL  s_rs1_val = unpack (inputs.rs1_val);
    IntXL  imm_s     = extend (unpack (inputs.decoded_instr.imm12_S));
@@ -761,35 +761,34 @@ function ALU_Outputs fv_ST (ALU_Inputs inputs);
 
    let opcode = inputs.decoded_instr.opcode;
    let funct3 = inputs.decoded_instr.funct3;
-   Bool legal_ST = (   (funct3 == f3_SB)
-		    || (funct3 == f3_SH)
-		    || (funct3 == f3_SW)
+
+   Bool legal_STORE = (   (opcode == op_STORE)
+		       && (   (funct3 == f3_SB)
+			   || (funct3 == f3_SH)
+			   || (funct3 == f3_SW)
 `ifdef RV64
-		    || (funct3 == f3_SD)
+			   || (funct3 == f3_SD)
 `endif
-`ifdef ISA_F
-		    || (funct3 == f3_FSW)
-`endif
-`ifdef ISA_D
-		    || (funct3 == f3_FSD)
-`endif
-		    );
+			  ));
 
-   let alu_outputs = alu_outputs_base;
-
-   // FP stores are not legal unless the MSTATUS.FS bit is set
-   Bool legal_FP_ST = True;
+   Bool legal_STORE_FP = False;
 `ifdef ISA_F
    if (opcode == op_STORE_FP) begin
-      legal_FP_ST = (fv_mstatus_fs (inputs.mstatus) != fs_xs_off);
-
-      // note that the source data register for this store is in the FPR
-      alu_outputs.rs_frm_fpr = True;
+      // FP stores are not legal unless the MSTATUS.FS bit is set
+      legal_STORE_FP = (   (fv_mstatus_fs (inputs.mstatus) != fs_xs_off)
+			&& (   (funct3 == f3_FSW)
+`ifdef ISA_D
+			    || (funct3 == f3_FSD)
+`endif
+			   ));
    end
 `endif
 
-   alu_outputs.control   = ((legal_ST && legal_FP_ST) ? CONTROL_STRAIGHT
-                                                      : CONTROL_TRAP);
+   let alu_outputs = alu_outputs_base;
+
+   alu_outputs.control   = ((legal_STORE || legal_STORE_FP)
+			    ? CONTROL_STRAIGHT
+			    : CONTROL_TRAP);
    alu_outputs.op_stage2 = OP_Stage2_ST;
    alu_outputs.addr      = eaddr;
 
@@ -797,6 +796,8 @@ function ALU_Outputs fv_ST (ALU_Inputs inputs);
 
 `ifdef ISA_F
    alu_outputs.fval2     = inputs.frs2_val;
+   // For STORE_FP, source data register is in FP Regs
+   alu_outputs.rs_frm_fpr = (opcode == op_STORE_FP);
 `endif
 
 `ifdef INCLUDE_TANDEM_VERIF
@@ -1174,7 +1175,7 @@ function ALU_Outputs fv_ALU (ALU_Inputs inputs);
       alu_outputs = fv_LOAD (inputs);
 
    else if (inputs.decoded_instr.opcode == op_STORE)
-      alu_outputs = fv_ST (inputs);
+      alu_outputs = fv_STORE (inputs);
 
    else if (inputs.decoded_instr.opcode == op_MISC_MEM)
       alu_outputs = fv_MISC_MEM (inputs);
@@ -1192,7 +1193,7 @@ function ALU_Outputs fv_ALU (ALU_Inputs inputs);
       alu_outputs = fv_LOAD (inputs);
 
    else if (   (inputs.decoded_instr.opcode == op_STORE_FP))
-      alu_outputs = fv_ST (inputs);
+      alu_outputs = fv_STORE (inputs);
 
    else if (   (inputs.decoded_instr.opcode == op_FP)
             || (inputs.decoded_instr.opcode == op_FMADD)
