@@ -827,10 +827,22 @@ endfunction
 // No-ops, for now
 
 function ALU_Outputs fv_MISC_MEM (ALU_Inputs inputs);
+   Bool is_FENCE_I = (   (inputs.decoded_instr.funct3  == f3_FENCE_I)
+		      && (inputs.decoded_instr.rd      == 0)
+		      && (inputs.decoded_instr.rs1     == 0)
+		      && (inputs.decoded_instr.imm12_I == 0));
+
+   Bit #(4) fence_fm = fv_instr_to_fence_fm (inputs.instr);
+   Bool is_FENCE   = (   (inputs.decoded_instr.funct3  == f3_FENCE)
+		      && (inputs.decoded_instr.rd      == 0)
+		      && (inputs.decoded_instr.rs1     == 0)
+		      && (   (fence_fm == fence_fm_none)
+			  || (fence_fm == fence_fm_TSO)));
+
    let alu_outputs = alu_outputs_base;
-   alu_outputs.control  = (  (inputs.decoded_instr.funct3 == f3_FENCE_I)
+   alu_outputs.control  = (  is_FENCE_I
 			   ? CONTROL_FENCE_I
-			   : (  (inputs.decoded_instr.funct3 == f3_FENCE)
+			   : (  is_FENCE
 			      ? CONTROL_FENCE
 			      : CONTROL_TRAP));
 

@@ -459,6 +459,11 @@ instance Bits #(Fence_Ordering, 8);
    endfunction
 endinstance
 
+function Bit #(4) fv_instr_to_fence_fm (Bit #(32) instr) = instr [31:28];
+
+Bit #(4) fence_fm_none = 4'b0000;
+Bit #(4) fence_fm_TSO  = 4'b1000;
+
 // ================================================================
 // Atomic Memory Operation Instructions
 
