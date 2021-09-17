@@ -424,8 +424,14 @@ function ALU_Outputs fv_OP_and_OP_IMM_shifts (ALU_Inputs inputs);
    end
 `endif
 
-   // Trap in RV32 if shamt > 31, i.e., if imm12_I [5] is 1
-   Bool trap = ((rv_version == RV32) && (inputs.decoded_instr.imm12_I [5] == 1));
+   // Trap assertion:
+   //     instr [31] and [29:26] Must Be Zero;;
+   //     For RV32 with immediate shamt, [25] Must Be Zero (shamt <= 31)
+   Bool trap = (   (inputs.instr [31]    != 1'b0)
+		|| (inputs.instr [29:26] != 4'b0)
+		|| (   (rv_version == RV32)
+		    && (inputs.decoded_instr.opcode == op_OP_IMM)
+		    && (inputs.instr [25] != 1'b0)));
 
    let alu_outputs       = alu_outputs_base;
    alu_outputs.control   = (trap ? CONTROL_TRAP : CONTROL_STRAIGHT);
