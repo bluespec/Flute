@@ -527,28 +527,29 @@ endfunction: fv_OP_and_OP_IMM
 // OP_IMM_32 (ADDIW, SLLIW, SRxIW)
 
 function ALU_Outputs fv_OP_IMM_32 (ALU_Inputs inputs);
-   WordXL   rs1_val     = inputs.rs1_val;
-   IntXL    s_rs1_val   = unpack (rs1_val);
+   Bit #(5) shamt     = truncate (inputs.decoded_instr.imm12_I);
+   Bit #(1) instr_b30 = inputs.instr [30];
+   Bit #(3) funct3    = inputs.decoded_instr.funct3;
+   WordXL   rs1_val   = inputs.rs1_val;
 
-   Bit #(5) shamt       = truncate (inputs.decoded_instr.imm12_I);
-   Bool     shamt5_is_0 = (inputs.instr [25] == 1'b0);
+   IntXL    s_rs1_val = unpack (rs1_val);
 
-   let    funct3 = inputs.decoded_instr.funct3;
+   // Must Be Zero bits
+   Bool ok_MBZ = ((inputs.instr [31] == 1'b0) && (inputs.instr [29:25] == 5'b0));
+
    Bool   trap   = False;
    WordXL rd_val = ?;
-
    if (funct3 == f3_ADDIW) begin
       IntXL  s_rs2_val = extend (unpack (inputs.decoded_instr.imm12_I));
       IntXL  sum       = s_rs1_val + s_rs2_val;
       WordXL tmp       = pack (sum);
       rd_val           = signExtend (tmp [31:0]);
    end
-   else if ((funct3 == f3_SLLIW) && shamt5_is_0) begin
+   else if ((funct3 == f3_SLLIW) && ok_MBZ && (instr_b30 == 1'b0)) begin
       Bit #(32) tmp = truncate (rs1_val);
       rd_val = signExtend (tmp << shamt);
    end
-   else if ((funct3 == f3_SRxIW) && shamt5_is_0) begin
-      Bit #(1) instr_b30 = inputs.instr [30];
+   else if ((funct3 == f3_SRxIW) && ok_MBZ) begin
       if (instr_b30 == 1'b0) begin
 	 // SRLIW
 	 Bit #(32) tmp = truncate (rs1_val);
@@ -593,8 +594,8 @@ function ALU_Outputs fv_OP_32 (ALU_Inputs inputs);
    Int #(32) s_rs2_val = unpack (rs2_val);
 
    let    funct10 = inputs.decoded_instr.funct10;
-   Bool   trap   = False;
-   WordXL rd_val = ?;
+   Bool   trap    = False;
+   WordXL rd_val  = ?;
 
    if      (funct10 == f10_ADDW) begin
       rd_val = pack (signExtend (s_rs1_val + s_rs2_val));
