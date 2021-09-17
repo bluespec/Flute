@@ -678,9 +678,9 @@ function ALU_Outputs fv_AUIPC (ALU_Inputs inputs);
 endfunction
 
 // ----------------------------------------------------------------
-// LOAD
+// LOAD (LB/LH/LW/LD, LBU/LHU/LWU, FLW, FLD
 
-function ALU_Outputs fv_LD (ALU_Inputs inputs);
+function ALU_Outputs fv_LOAD (ALU_Inputs inputs);
    // Signed versions of rs1_val and rs2_val
    let opcode = inputs.decoded_instr.opcode;
    IntXL s_rs1_val = unpack (inputs.rs1_val);
@@ -691,32 +691,34 @@ function ALU_Outputs fv_LD (ALU_Inputs inputs);
 
    let funct3 = inputs.decoded_instr.funct3;
 
-   Bool legal_LD = (   (funct3 == f3_LB) || (funct3 == f3_LBU)
-		    || (funct3 == f3_LH) || (funct3 == f3_LHU)
-		    || (funct3 == f3_LW)
+   Bool legal_LOAD = (   (opcode == op_LOAD)
+		      && (   (funct3 == f3_LB) || (funct3 == f3_LBU)
+			  || (funct3 == f3_LH) || (funct3 == f3_LHU)
+			  || (funct3 == f3_LW)
 `ifdef RV64
-		    || (funct3 == f3_LWU)
-		    || (funct3 == f3_LD)
+			  || (funct3 == f3_LWU)
+			  || (funct3 == f3_LD)
 `endif
-`ifdef ISA_F
-		    || (funct3 == f3_FLW)
-`endif
-`ifdef ISA_D
-		    || (funct3 == f3_FLD)
-`endif
-		    );
+			 ));
 
-   // FP loads are not legal unless the MSTATUS.FS bit is set
-   Bool legal_FP_LD = True;
+
+   Bool legal_LOAD_FP = False;
 `ifdef ISA_F
    if (opcode == op_LOAD_FP)
-      legal_FP_LD = (fv_mstatus_fs (inputs.mstatus) != fs_xs_off);
+      // FP loads are not legal unless the MSTATUS.FS bit is set
+      legal_LOAD_FP = (   (fv_mstatus_fs (inputs.mstatus) != fs_xs_off)
+		       && (  (funct3 == f3_FLW)
+`ifdef ISA_D
+			   || (funct3 == f3_FLD)
+`endif
+			  ));
 `endif
 
    let alu_outputs = alu_outputs_base;
 
-   alu_outputs.control   = ((legal_LD && legal_FP_LD) ? CONTROL_STRAIGHT
-                                                      : CONTROL_TRAP);
+   alu_outputs.control   = ((legal_LOAD || legal_LOAD_FP)
+			    ? CONTROL_STRAIGHT
+			    : CONTROL_TRAP);
    alu_outputs.op_stage2 = OP_Stage2_LD;
    alu_outputs.rd        = inputs.decoded_instr.rd;
    alu_outputs.addr      = eaddr;
@@ -1169,7 +1171,7 @@ function ALU_Outputs fv_ALU (ALU_Inputs inputs);
       alu_outputs = fv_AUIPC (inputs);
 
    else if (inputs.decoded_instr.opcode == op_LOAD)
-      alu_outputs = fv_LD (inputs);
+      alu_outputs = fv_LOAD (inputs);
 
    else if (inputs.decoded_instr.opcode == op_STORE)
       alu_outputs = fv_ST (inputs);
@@ -1187,7 +1189,7 @@ function ALU_Outputs fv_ALU (ALU_Inputs inputs);
 
 `ifdef ISA_F
    else if (   (inputs.decoded_instr.opcode == op_LOAD_FP))
-      alu_outputs = fv_LD (inputs);
+      alu_outputs = fv_LOAD (inputs);
 
    else if (   (inputs.decoded_instr.opcode == op_STORE_FP))
       alu_outputs = fv_ST (inputs);
