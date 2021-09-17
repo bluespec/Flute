@@ -14,9 +14,9 @@ import ClientServer :: *;
 import ISA_Decls :: *;
 
 import AXI4_Types   :: *;
-import AXI_Widths   :: *;
+import AXI_Widths   :: *;    // For Wd_Id/Addr/Data/User_Dma
 import Fabric_Defs  :: *;
-import Near_Mem_IFC :: *;    // For Wd_Id/Addr/Data/User_Dma
+import Near_Mem_IFC :: *;
 
 `ifdef INCLUDE_DMEM_SLAVE
 import AXI4_Lite_Types :: *;

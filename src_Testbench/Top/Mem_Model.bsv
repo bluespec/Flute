@@ -45,7 +45,11 @@ module mkMem_Model (Mem_Model_IFC);
 
    Raw_Mem_Addr alloc_size = 'h_80_0000;    // 8M raw mem words, or 256MB
                    
+`ifdef INCLUDE_GDB_CONTROL
+   RegFile #(Raw_Mem_Addr, Bit #(Bits_per_Raw_Mem_Word)) rf <- mkRegFile (0, alloc_size - 1);
+`else
    RegFile #(Raw_Mem_Addr, Bit #(Bits_per_Raw_Mem_Word)) rf <- mkRegFileLoad ("Mem.hex", 0, alloc_size - 1);
+`endif
 
    FIFOF #(MemoryResponse #(Bits_per_Raw_Mem_Word))  f_raw_mem_rsps <- mkFIFOF;
 
