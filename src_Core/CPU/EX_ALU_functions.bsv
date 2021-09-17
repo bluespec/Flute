@@ -3,8 +3,8 @@
 package EX_ALU_functions;
 
 // ================================================================
-// These are the "ALU" functions in the EX stage of the "Piccolo" CPU.
-// EX stands for "Execution".
+// These are the "ALU" functions in the EX ("execute") stage
+// for several Bluespec CPUs including Piccolo and Flute.
 
 // ================================================================
 // Exports
@@ -920,7 +920,7 @@ function ALU_Outputs fv_SYSTEM (ALU_Inputs inputs);
 `endif
 
 	    /*
-	    // URET instruction (future: Piccolo does not support 'N' extension)
+	    // URET instruction (future: support 'N' extension)
 	    else if (   (inputs.cur_priv >= u_Priv_Mode)
 		     && (inputs.decoded_instr.imm12_I == f12_URET))
 	       begin
@@ -969,8 +969,8 @@ function ALU_Outputs fv_SYSTEM (ALU_Inputs inputs);
       alu_outputs.val1      = rs1_val;
    end
 
-   // funct3 is not f3_PRIV
-   else begin // (funct3 == f3_SYSTEM_ILLEGAL)
+   // Illegal funct3
+   else begin
       alu_outputs.control = CONTROL_TRAP;
    end
 
