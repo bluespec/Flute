@@ -663,99 +663,139 @@ Bit #(3) funct3_JALR = 3'b000;
 `ifdef ISA_F
 // ================================================================
 // Floating Point Instructions
-// TODO: these are implementation choices; should not be in ISA_Decls
+
+// ----------------------------------------------------------------
+// TODO: the following are FPU implementation choices; shouldn't be in ISA_Decls
 // Enumeration of floating point opcodes for decode within the FPU
-typedef enum {
-     FPAdd
-   , FPSub
-   , FPMul
-   , FPDiv
-   , FPSqrt
-   , FPMAdd
-   , FPMSub
-   , FPNMAdd
-   , FPNMSub } FpuOp deriving (Bits, Eq, FShow);
+typedef enum {FPAdd,
+	      FPSub,
+	      FPMul,
+	      FPDiv,
+	      FPSqrt,
+	      FPMAdd,
+	      FPMSub,
+	      FPNMAdd,
+	      FPNMSub
+   } FpuOp
+   deriving (Bits, Eq, FShow);
 
 // Enumeration of rounding modes
-typedef enum {
-     Rnd_Nearest_Even
-   , Rnd_Zero
-   , Rnd_Minus_Inf
-   , Rnd_Plus_Inf
-   , Rnd_Nearest_Max_Mag
-} RoundMode deriving (Bits, Eq, FShow);
+typedef enum {Rnd_Nearest_Even,
+	      Rnd_Zero,
+	      Rnd_Minus_Inf,
+	      Rnd_Plus_Inf,
+	      Rnd_Nearest_Max_Mag
+   } RoundMode
+   deriving (Bits, Eq, FShow);
 
-// Funct2 encoding
-Bit #(2) f2_S           = 2'b00;
-Bit #(2) f2_D           = 2'b01;
-Bit #(2) f2_Q           = 2'b11;
-
+// ----------------------------------------------------------------
 // Floating point Load-Store
-Opcode   op_LOAD_FP     = 7'b_00_001_11;
-Opcode   op_STORE_FP    = 7'b_01_001_11;
-Bit #(3) f3_FSW         = 3'b010;
-Bit #(3) f3_FSD         = 3'b011;
-Bit #(3) f3_FLW         = 3'b010;
-Bit #(3) f3_FLD         = 3'b011;
 
-// Fused FP Multiply Add/Sub instructions
-Opcode   op_FMADD       = 7'b10_00_011;
-Opcode   op_FMSUB       = 7'b10_00_111;
-Opcode   op_FNMSUB      = 7'b10_01_011;
-Opcode   op_FNMADD      = 7'b10_01_111;
+Opcode   op_LOAD_FP  = 7'b_00_001_11;
+Opcode   op_STORE_FP = 7'b_01_001_11;
 
+Bit #(3) f3_FSW = 3'b010;
+Bit #(3) f3_FLW = 3'b010;
+
+Bit #(3) f3_FSD = 3'b011;
+Bit #(3) f3_FLD = 3'b011;
+
+// ----------------------------------------------------------------
+// Fused FP Multiply Add/Sub instructions (FM/FNM)
+
+Opcode   op_FMADD  = 7'b10_00_011;
+Opcode   op_FMSUB  = 7'b10_00_111;
+Opcode   op_FNMSUB = 7'b10_01_011;
+Opcode   op_FNMADD = 7'b10_01_111;
+
+Bit #(2) f2_S = 2'b00;
+Bit #(2) f2_D = 2'b01;
+Bit #(2) f2_Q = 2'b11;
+
+// ----------------------------------------------------------------
 // All other FP intructions
-Opcode   op_FP          = 7'b10_10_011;
 
-Bit #(7) f7_FADD_D      = 7'h1 ;
-Bit #(7) f7_FSUB_D      = 7'h5 ;
-Bit #(7) f7_FMUL_D      = 7'h9 ;
-Bit #(7) f7_FDIV_D      = 7'hD ;
-Bit #(7) f7_FSQRT_D     = 7'h2D;
-Bit #(7) f7_FCMP_D      = 7'h51;
-Bit #(7) f7_FMIN_D      = 7'h15;
-Bit #(7) f7_FMAX_D      = 7'h15;
-Bit #(7) f7_FSGNJ_D     = 7'h11;
+Opcode  op_FP = 7'b10_10_011;
+
+// ----------------
+// RV32F
 
 Bit #(7) f7_FADD_S      = 7'h0 ;
 Bit #(7) f7_FSUB_S      = 7'h4 ;
 Bit #(7) f7_FMUL_S      = 7'h8 ;
 Bit #(7) f7_FDIV_S      = 7'hC ;
-Bit #(7) f7_FSQRT_S     = 7'h2C;
+Bit #(7) f7_FSQRT_S     = 7'h2C; Bit #(5) rs2_FSQRT_S   = 5'b00000;
+
+Bit #(7) f7_FSGNJ_S     = 7'h10;                                    Bit #(3) funct3_FSGNJ_S  = 3'b000;
+Bit #(7) f7_FSGNJN_S    = 7'h10;                                    Bit #(3) funct3_FSGNJN_S = 3'b001;
+Bit #(7) f7_FSGNJX_S    = 7'h10;                                    Bit #(3) funct3_FSGNJX_S = 3'b010;
+
+Bit #(7) f7_FMIN_S      = 7'h14;                                    Bit #(3) funct3_FMIN_S   = 3'b000;
+Bit #(7) f7_FMAX_S      = 7'h14;                                    Bit #(3) funct3_FMAX_S   = 3'b001;
+
+Bit #(7) f7_FCVT_W_S    = 7'h60; Bit #(5) rs2_FCVT_W_S  = 5'b00000;
+Bit #(7) f7_FCVT_WU_S   = 7'h60; Bit #(5) rs2_FCVT_WU_S = 5'b00001;
+Bit #(7) f7_FMV_X_W     = 7'h70; Bit #(5) rs2_FMV_X_W   = 5'b00000; Bit #(3) funct3_FMV_X_W  = 3'b000;
+
 Bit #(7) f7_FCMP_S      = 7'h50;
-Bit #(7) f7_FMIN_S      = 7'h14;
-Bit #(7) f7_FMAX_S      = 7'h14;
-Bit #(7) f7_FSGNJ_S     = 7'h10;
+Bit #(7) f7_FEQ_S       = 7'h50;                                    Bit #(3) funct3_FEQ_S    = 3'b010;
+Bit #(7) f7_FLT_S       = 7'h50;                                    Bit #(3) funct3_FLT_S    = 3'b001;
+Bit #(7) f7_FLE_S       = 7'h50;                                    Bit #(3) funct3_FLE_S    = 3'b000;
 
-Bit #(7) f7_FCVT_W_S    = 7'h60;
-Bit #(7) f7_FCVT_WU_S   = 7'h60;
-Bit #(7) f7_FCVT_S_W    = 7'h68;
-Bit #(7) f7_FCVT_S_WU   = 7'h68;
+Bit #(7) f7_FCLASS_S    = 7'h70; Bit #(5) rs2_FCLASS_S  = 5'b00000; Bit #(3) funct3_FCLASS_S = 3'b001;
+Bit #(7) f7_FCVT_S_W    = 7'h68; Bit #(5) rs2_FCVT_S_W  = 5'b00000;
+Bit #(7) f7_FCVT_S_WU   = 7'h68; Bit #(5) rs2_FCVT_S_WU = 5'b00001;
+Bit #(7) f7_FMV_W_X     = 7'h78; Bit #(5) rs2_FMV_W_X   = 5'b00000; Bit #(3) funct3_FMV_W_X  = 3'b000;
 
-Bit #(7) f7_FCVT_L_S    = 7'h60;
-Bit #(7) f7_FCVT_LU_S   = 7'h60;
-Bit #(7) f7_FCVT_S_L    = 7'h68;
-Bit #(7) f7_FCVT_S_LU   = 7'h68;
+// ----------------
+// RV64F
 
-Bit #(7) f7_FCVT_S_D    = 7'h20;
-Bit #(7) f7_FCVT_D_S    = 7'h21;
-Bit #(7) f7_FCVT_W_D    = 7'h61;
-Bit #(7) f7_FCVT_WU_D   = 7'h61;
-Bit #(7) f7_FCVT_D_W    = 7'h69;
-Bit #(7) f7_FCVT_D_WU   = 7'h69;
+Bit #(7) f7_FCVT_L_S    = 7'h60; Bit #(5) rs2_FCVT_L_S  = 5'b00010;
+Bit #(7) f7_FCVT_LU_S   = 7'h60; Bit #(5) rs2_FCVT_LU_S = 5'b00011;
+Bit #(7) f7_FCVT_S_L    = 7'h68; Bit #(5) rs2_FCVT_S_L  = 5'b00010;
+Bit #(7) f7_FCVT_S_LU   = 7'h68; Bit #(5) rs2_FCVT_S_LU = 5'b00011;
 
-Bit #(7) f7_FCVT_L_D    = 7'h61;
-Bit #(7) f7_FCVT_LU_D   = 7'h61;
-Bit #(7) f7_FCVT_D_L    = 7'h69;
-Bit #(7) f7_FCVT_D_LU   = 7'h69;
+// ----------------
+// RV32D
 
-Bit #(7) f7_FMV_X_D     = 7'h71;
-Bit #(7) f7_FMV_D_X     = 7'h79;
-Bit #(7) f7_FCLASS_D    = 7'h71;
-Bit #(7) f7_FMV_X_W     = 7'h70;
-Bit #(7) f7_FMV_W_X     = 7'h78;
-Bit #(7) f7_FCLASS_S    = 7'h70;
+Bit #(7) f7_FADD_D      = 7'h1 ;
+Bit #(7) f7_FSUB_D      = 7'h5 ;
+Bit #(7) f7_FMUL_D      = 7'h9 ;
+Bit #(7) f7_FDIV_D      = 7'hD ;
+Bit #(7) f7_FSQRT_D     = 7'h2D; Bit #(5) rs2_FSQRT_D  = 5'b00000;
 
+Bit #(7) f7_FSGNJ_D     = 7'h11;                                    Bit #(3) funct3_FSGNJ_D  = 3'b000;
+Bit #(7) f7_FSGNJN_D    = 7'h11;                                    Bit #(3) funct3_FSGNJN_D = 3'b001;
+Bit #(7) f7_FSGNJX_D    = 7'h11;                                    Bit #(3) funct3_FSGNJX_D = 3'b010;
+
+Bit #(7) f7_FMIN_D      = 7'h15;                                    Bit #(3) funct3_FMIN_D   = 3'b000;
+Bit #(7) f7_FMAX_D      = 7'h15;                                    Bit #(3) funct3_FMAX_D   = 3'b001;
+
+Bit #(7) f7_FCVT_S_D    = 7'h20; Bit #(5) rs2_FCVT_S_D = 5'b00001;
+Bit #(7) f7_FCVT_D_S    = 7'h21; Bit #(5) rs2_FCVT_D_S = 5'b00000;
+
+Bit #(7) f7_FCMP_D      = 7'h51;
+Bit #(7) f7_FEQ_D       = 7'h51;                                    Bit #(3) funct3_FEQ_D    = 3'b010;
+Bit #(7) f7_FLT_D       = 7'h51;                                    Bit #(3) funct3_FLT_D    = 3'b001;
+Bit #(7) f7_FLE_D       = 7'h51;                                    Bit #(3) funct3_FLE_D    = 3'b000;
+
+Bit #(7) f7_FCLASS_D    = 7'h71; Bit #(5) rs2_FCLASS_D  = 5'b00000; Bit #(3) funct3_FCLASS_D = 3'b001;
+Bit #(7) f7_FCVT_W_D    = 7'h61; Bit #(5) rs2_FCVT_W_D  = 5'b00000;
+Bit #(7) f7_FCVT_WU_D   = 7'h61; Bit #(5) rs2_FCVT_WU_D = 5'b00001;
+Bit #(7) f7_FCVT_D_W    = 7'h69; Bit #(5) rs2_FCVT_D_W  = 5'b00000;
+Bit #(7) f7_FCVT_D_WU   = 7'h69; Bit #(5) rs2_FCVT_D_WU = 5'b00001;
+
+// ----------------
+// RV64D
+
+Bit #(7) f7_FCVT_L_D    = 7'h61; Bit #(5) rs2_FCVT_L_D  = 5'b00010;
+Bit #(7) f7_FCVT_LU_D   = 7'h61; Bit #(5) rs2_FCVT_LU_D = 5'b00011;
+Bit #(7) f7_FMV_X_D     = 7'h71; Bit #(5) rs2_FMV_X_D   = 5'b00000; Bit #(3) funct3_FMV_X_D = 3'b000;
+Bit #(7) f7_FCVT_D_L    = 7'h69; Bit #(5) rs2_FCVT_D_L  = 5'b00010;
+Bit #(7) f7_FCVT_D_LU   = 7'h69; Bit #(5) rs2_FCVT_D_LU = 5'b00011;
+Bit #(7) f7_FMV_D_X     = 7'h79; Bit #(5) rs2_FMV_D_X   = 5'b00000; Bit #(3) funct3_FMV_D_X = 3'b000;
+
+// ----------------------------------------------------------------
 // fv_is_rd_in_GPR: Checks if the request generates a result which
 // should be written into the GPR
 function Bool fv_is_rd_in_GPR (Bit #(7) funct7, RegName rs2);
@@ -844,6 +884,125 @@ function Tuple2# (Bit #(3), Bool) fv_rmode_check (
    return (tuple2 (rm, rm_is_legal));
 endfunction
 
+// TODO: Check misa.f and misa.d
+function Bool fv_is_fp_instr_legal (Bit #(7) funct7,
+				    Bit #(3) rm,
+				    RegName  rs2,
+				    Opcode   opcode);
+   // These compile-time constants (which will be optimized out) avoid ugly ifdefs later
+   Bool rv64 = False;
+`ifdef RV64
+   rv64 = True;
+`endif
+
+   Bool isa_F = False;
+   Bool isa_D = False;
+`ifdef ISA_F
+   isa_F = True;
+`ifdef ISA_D
+   isa_D = True;
+`endif
+`endif
+
+   // ----------------
+   // For FM.../FNM... check funct7 [1:0] (i.e., instr[26:25])
+   Bool ok_instr_26_25 = (isa_D    // Both SP and DP are legal
+			  ? ((funct7 [1:0] == f2_S) || (funct7 [1:0] == f2_D))
+			  : (isa_F    // Only SP is legal
+			     ? (funct7 [1:0] == f2_S)
+			     : False));
+   Bool is_legal_FM_FNM = (   ok_instr_26_25
+			   && (   (opcode == op_FMADD )
+			       || (opcode == op_FMSUB )
+			       || (opcode == op_FNMADD)
+			       || (opcode == op_FNMSUB)));
+   // ----------------
+   Bool is_legal_other_RV32F
+   = (   isa_F
+      && (   (funct7== f7_FADD_S)
+	  || (funct7== f7_FSUB_S)
+	  || (funct7== f7_FMUL_S)
+`ifdef INCLUDE_FDIV
+	  || (funct7== f7_FDIV_S)
+`endif
+`ifdef INCLUDE_FSQRT
+	  || ((funct7== f7_FSQRT_S)   && (rs2 == rs2_FSQRT_S))
+`endif
+	  || ((funct7== f7_FSGNJ_S)                              && (rm == funct3_FSGNJ_S))
+	  || ((funct7== f7_FSGNJN_S)                             && (rm == funct3_FSGNJN_S))
+	  || ((funct7== f7_FSGNJX_S)                             && (rm == funct3_FSGNJX_S))
+	  || ((funct7== f7_FMIN_S)                               && (rm == funct3_FMIN_S))
+	  || ((funct7== f7_FMAX_S)                               && (rm == funct3_FMAX_S))
+	  || ((funct7== f7_FCVT_W_S)  && (rs2 == rs2_FCVT_W_S))
+	  || ((funct7== f7_FCVT_WU_S) && (rs2 == rs2_FCVT_WU_S))
+	  || ((funct7== f7_FMV_X_W)   && (rs2 == rs2_FMV_X_W)    && (rm == funct3_FMV_X_W))
+	  || ((funct7== f7_FEQ_S)     &&                            (rm == funct3_FEQ_S))
+	  || ((funct7== f7_FLT_S)     &&                            (rm == funct3_FLT_S))
+	  || ((funct7== f7_FLE_S)     &&                            (rm == funct3_FLE_S))
+	  || ((funct7== f7_FCLASS_S)  && (rs2 == rs2_FCLASS_S)   && (rm == funct3_FCLASS_S))
+	  || ((funct7== f7_FCVT_S_W)  && (rs2 == rs2_FCVT_S_W))
+	  || ((funct7== f7_FCVT_S_WU) && (rs2 == rs2_FCVT_S_WU))
+	  || ((funct7== f7_FMV_W_X)   && (rs2 == rs2_FMV_W_X)    && (rm == funct3_FMV_W_X))
+	 ));
+
+   // ----------------
+   Bool is_legal_other_RV64F
+   = (   isa_F
+      && rv64
+      && (   ((funct7== f7_FCVT_L_S)  && (rs2 == rs2_FCVT_L_S))
+	  || ((funct7== f7_FCVT_LU_S) && (rs2 == rs2_FCVT_LU_S))
+	  || ((funct7== f7_FCVT_S_L)  && (rs2 == rs2_FCVT_S_L))
+	  || ((funct7== f7_FCVT_S_LU) && (rs2 == rs2_FCVT_S_LU))
+	  ));
+
+   // ----------------
+   Bool is_legal_other_RV32D
+   = (   isa_D
+      && (   (funct7== f7_FADD_D)
+	  || (funct7== f7_FSUB_D)
+	  || (funct7== f7_FMUL_D)
+`ifdef INCLUDE_FDIV
+	  || (funct7== f7_FDIV_D)
+`endif
+`ifdef INCLUDE_FSQRT
+	  || ((funct7== f7_FSQRT_D)   && (rs2 == rs2_FSQRT_D))
+`endif
+	  || ((funct7== f7_FSGNJ_D)                              && (rm == funct3_FSGNJ_D))
+	  || ((funct7== f7_FSGNJN_D)                             && (rm == funct3_FSGNJN_D))
+	  || ((funct7== f7_FSGNJX_D)                             && (rm == funct3_FSGNJX_D))
+	  || ((funct7== f7_FMIN_D)                               && (rm == funct3_FMIN_D))
+	  || ((funct7== f7_FMAX_D)                               && (rm == funct3_FMAX_D))
+	  || ((funct7== f7_FCVT_S_D)  && (rs2 == rs2_FCVT_S_D))
+	  || ((funct7== f7_FCVT_D_S)  && (rs2 == rs2_FCVT_D_S))
+	  || ((funct7== f7_FEQ_D)                                && (rm == funct3_FEQ_D))
+	  || ((funct7== f7_FLT_D)                                && (rm == funct3_FLT_D))
+	  || ((funct7== f7_FLE_D)                                && (rm == funct3_FLE_D))
+	  || ((funct7== f7_FCLASS_D)  && (rs2 == rs2_FCLASS_D))  && (rm == funct3_FCLASS_D)
+	  || ((funct7== f7_FCVT_W_D)  && (rs2 == rs2_FCVT_W_D))
+	  || ((funct7== f7_FCVT_WU_D) && (rs2 == rs2_FCVT_WU_D))
+	  || ((funct7== f7_FCVT_D_W)  && (rs2 == rs2_FCVT_D_W))
+	  || ((funct7== f7_FCVT_D_WU) && (rs2 == rs2_FCVT_D_WU))
+	  ));
+
+   // ----------------
+   Bool is_legal_other_RV64D
+   = (   isa_D
+      && rv64
+      && (   ((funct7== f7_FCVT_L_D)  && (rs2 == rs2_FCVT_L_D))
+	  || ((funct7== f7_FCVT_LU_D) && (rs2 == rs2_FCVT_LU_D))
+	  || ((funct7== f7_FMV_X_D)   && (rs2 == rs2_FMV_X_D))   && (rm == funct3_FMV_X_D)
+	  || ((funct7== f7_FCVT_D_L)  && (rs2 == rs2_FCVT_D_L))
+	  || ((funct7== f7_FCVT_D_LU) && (rs2 == rs2_FCVT_D_LU))
+	  || ((funct7== f7_FMV_D_X)   && (rs2 == rs2_FMV_D_X))   && (rm == funct3_FMV_D_X)
+	  ));
+
+   // ----------------
+   return (is_legal_FM_FNM
+	   || is_legal_other_RV32F || is_legal_other_RV64F
+	   || is_legal_other_RV32D || is_legal_other_RV64D);
+endfunction
+
+/* DELETE (OLD): radical rewrite (with more error-checking) above
 // A D instruction requires misa.f to be set as well as misa.d
 function Bool fv_is_fp_instr_legal (
    Bit #(7) f7, Bit #(3) rm, RegName rs2, Opcode fopc);
@@ -930,6 +1089,7 @@ function Bool fv_is_fp_instr_legal (
          ) return True;
       else return False;
 endfunction
+*/
 
 // Returns True if the first operand (val1) should be taken from the GPR
 // instead of the FPR for a FP opcode

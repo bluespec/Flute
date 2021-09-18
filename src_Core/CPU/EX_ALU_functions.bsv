@@ -982,28 +982,14 @@ endfunction: fv_SYSTEM
 // Just pass through to the FP stage
 
 `ifdef ISA_F
-function ALU_Outputs fv_FP (ALU_Inputs inputs);
+function ALU_Outputs fv_FP (ALU_Inputs inputs, Bit #(3) rm);
    let opcode = inputs.decoded_instr.opcode;
    let funct3 = inputs.decoded_instr.funct3;
    let funct7 = inputs.decoded_instr.funct7;
    let rs2    = inputs.decoded_instr.rs2;
 
-   // Check instruction legality
-   // Is the rounding mode legal
-   match {.rm, .rm_is_legal} = fv_rmode_check  (funct3, inputs.frm);
-
-   // Is the instruction legal -- if MSTATUS.FS = fs_xs_off, FP instructions
-   // are always illegal
-   let inst_is_legal = (  (fv_mstatus_fs (inputs.mstatus) == fs_xs_off)
-			? False
-			: fv_is_fp_instr_legal (funct7,
-						rm,
-						rs2,
-						opcode));
-
    let alu_outputs         = alu_outputs_base;
-   alu_outputs.control     = ((inst_is_legal && rm_is_legal) ? CONTROL_STRAIGHT
-			                                     : CONTROL_TRAP);
+   alu_outputs.control     = CONTROL_STRAIGHT;
    alu_outputs.op_stage2   = OP_Stage2_FD;
    alu_outputs.rd          = inputs.decoded_instr.rd;
    alu_outputs.rm          = rm;
@@ -1099,6 +1085,15 @@ endfunction
 // Top-level ALU function
 
 function ALU_Outputs fv_ALU (ALU_Inputs inputs);
+
+`ifdef ISA_F
+   // FP instructions are illegal if MSTATUS.FS = fs_xs_off
+   let fp_insts_are_legal = (! (fv_mstatus_fs (inputs.mstatus) == fs_xs_off));
+
+   // Is floating point rounding mode legal?
+   match {.rm, .rm_is_legal} = fv_rmode_check (inputs.decoded_instr.funct3, inputs.frm);
+`endif
+
    let alu_outputs = alu_outputs_base;
 
    if (inputs.decoded_instr.opcode == op_BRANCH)
@@ -1209,12 +1204,22 @@ function ALU_Outputs fv_ALU (ALU_Inputs inputs);
    else if (   (inputs.decoded_instr.opcode == op_STORE_FP))
       alu_outputs = fv_STORE (inputs);
 
+   else if (   fp_insts_are_legal
+	    && rm_is_legal
+	    && fv_is_fp_instr_legal (inputs.decoded_instr.funct7,
+				     rm,
+				     inputs.decoded_instr.rs2,
+				     inputs.decoded_instr.opcode))
+      alu_outputs = fv_FP (inputs, rm);
+
+   /* DELETE: OLD
    else if (   (inputs.decoded_instr.opcode == op_FP)
             || (inputs.decoded_instr.opcode == op_FMADD)
             || (inputs.decoded_instr.opcode == op_FMSUB)
             || (inputs.decoded_instr.opcode == op_FNMSUB)
             || (inputs.decoded_instr.opcode == op_FNMADD))
       alu_outputs = fv_FP (inputs);
+   */
 `endif
 
    else begin
