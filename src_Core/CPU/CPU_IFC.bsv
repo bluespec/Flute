@@ -11,19 +11,12 @@ import ClientServer :: *;
 // ================================================================
 // Project imports
 
-<<<<<<< HEAD
 import ISA_Decls :: *;
 
 import AXI4_Types   :: *;
 import AXI_Widths   :: *;    // For Wd_Id/Addr/Data/User_Dma
 import Fabric_Defs  :: *;
 import Near_Mem_IFC :: *;
-=======
-import ISA_Decls   :: *;
-
-import AXI4_Types  :: *;
-import Fabric_Defs :: *;
->>>>>>> d917335e843eab9fb2aa86dad49e2b6c3b0fe49c
 
 `ifdef FABRIC_AHBL
 import AHBL_Types  :: *;
