@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2016-2021 Bluespec, Inc. All Rights Reserved.
 
 // Near_Mem_IFC encapsulates the MMU and L1 cache.
 // It is 'near' the CPU (1-cycle access in common case).
@@ -38,20 +38,11 @@ import ISA_Decls :: *;
 import MMU_Cache_Common :: *;
 import AXI4_Types       :: *;
 import Fabric_Defs      :: *;
+import AXI_Widths       :: *;
 
 `ifdef INCLUDE_DMEM_SLAVE
 import AXI4_Lite_Types :: *;
 `endif
-
-// ================================================================
-// Near-Mem parameters (statically defined)
-
-// Id of requestor for 'coherent DMA' port into (optional) L2 cache
-
-typedef 16   Wd_Id_Dma;
-typedef 64   Wd_Addr_Dma;
-typedef 512  Wd_Data_Dma;
-typedef 0    Wd_User_Dma;
 
 // ================================================================
 // This part of the interface is lifted out to surrounding modules.

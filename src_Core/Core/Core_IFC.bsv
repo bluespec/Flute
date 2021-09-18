@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2019 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2018-2021 Bluespec, Inc. All Rights Reserved.
 
 package Core_IFC;
 
@@ -22,7 +22,8 @@ import ClientServer  :: *;
 // ================================================================
 // Project imports
 
-import Near_Mem_IFC :: *;    // For Wd_{Id,Addr,Data,User}_Dma
+import AXI_Widths   :: *;    // For Wd_{Id,Addr,Data,User}_Dma
+import Near_Mem_IFC :: *;
 
 // Main fabric
 import AXI4_Types   :: *;

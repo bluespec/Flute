@@ -4,9 +4,10 @@
 # *** This file is program-generated, not hand-written. ***
 # ================================================================
 
-REPO ?= ../..
-ARCH ?= RV64ACDFIMSU
+REPO   ?= ../..
+ARCH   ?= RV64ACDFIMSU
 PRIVS  ?= MSU
+CACHES ?= WT_L1
 
 # Alternative cache organizations:
 # Default (no definition for CACHES)    L1 only, write-through policy
@@ -17,10 +18,10 @@ PRIVS  ?= MSU
 
 BSC_COMPILATION_FLAGS += \
 	-D RV64 \
-	-D ISA_PRIV_M  -D ISA_PRIV_U  -D ISA_PRIV_S  \
-	-D SV39  \
 	-D ISA_I  -D ISA_M  -D ISA_A  -D ISA_C \
 	-D ISA_F  -D ISA_D  -D INCLUDE_FDIV  -D INCLUDE_FSQRT \
+	-D ISA_PRIV_M  -D ISA_PRIV_S  -D ISA_PRIV_U  \
+	-D SV39  \
 	-D SHIFT_BARREL    \
 	-D MULT_SYNTH    \
 	-D Near_Mem_Caches    \
@@ -40,6 +41,6 @@ TEST ?= rv64ui-p-add
 include $(REPO)/builds/Resources/Include_Common.mk
 
 #================================================================
-# Makefile rules for building for specific simulator: bluesim
+# Makefile rules for building for specific simulator
 
 include $(REPO)/builds/Resources/Include_bluesim.mk

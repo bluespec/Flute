@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2020 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2013-2021 Bluespec, Inc. All Rights Reserved
 
 // ================================================================
 // ISA defs for UC Berkeley RISC V

@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2016-2021 Bluespec, Inc. All Rights Reserved.
 
 package SoC_Top;
 
@@ -35,6 +35,7 @@ import GetPut_Aux  :: *;
 import AXI4_Types     :: *;
 import AXI4_Fabric    :: *;
 import AXI4_Deburster :: *;
+import AXI_Widths     :: *;
 
 `ifdef INCLUDE_DMEM_SLAVE
 import AXI4_Lite_Types :: *;
@@ -147,7 +148,8 @@ module mkSoC_Top (SoC_Top_IFC);
    SoC_Map_IFC soc_map <- mkSoC_Map;
 
    // Core: CPU + Near_Mem_IO (CLINT) + PLIC + Debug module (optional) + TV (optional)
-   Core_IFC #(N_External_Interrupt_Sources)  core <- mkCore;
+   Reset dm_power_on_reset <- exposeCurrentReset;    // TODO: plumb this in from outside
+   Core_IFC #(N_External_Interrupt_Sources)  core <- mkCore (dm_power_on_reset);
 
    // SoC Fabric
    Fabric_AXI4_IFC  fabric <- mkFabric_AXI4;
