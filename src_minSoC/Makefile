@@ -21,25 +21,43 @@ ARCH ?= RV32ACIMU
 
 # ================================================================
 # RISC-V config macros passed into Bluespec 'bsc' compiler
-
-BSC_COMPILATION_FLAGS += \
+#
+BSC_COMPILATION_ISA_FLAGS = \
 	-D RV32 \
 	-D ISA_PRIV_M  -D ISA_PRIV_U  \
 	-D ISA_I  -D ISA_M  -D ISA_A -D ISA_C \
+
+BSC_COMPILATION_UARCH_FLAGS = \
 	-D SHIFT_BARREL    \
 	-D MULT_SYNTH    \
-	-D Near_Mem_TCM    \
-	-D FABRIC32    \
 	-D FABRIC_AHBL \
 	-D FABRIC_AXI4 \
 	-D DUAL_FABRIC \
 	-D WATCH_TOHOST \
-	-D JTAG_TAP \
-	-D XILINX_BSCAN -D XILINX_XC7K325T \
- 	-D INCLUDE_GDB_CONTROL \
  	-D MICROSEMI -D TCM_LOADER \
 # Comment/Uncomment the above when to include/exclude TCM_LOADER
 # The MICROSEMI flag uses BRAM without file-load capability
+
+BSC_COMPILATION_NM_FLAGS = \
+	-D FABRIC32    \
+	-D Near_Mem_TCM    \
+	-D NM32        \
+
+BSC_COMPILATION_DM_FLAGS = \
+ 	-D JTAG_TAP \
+ 	-D XILINX_BSCAN -D XILINX_XC7K325T \
+  	-D INCLUDE_GDB_CONTROL \
+
+BSC_COMPILATION_FLAGS = \
+			$(BSC_COMPILATION_ISA_FLAGS) \
+			$(BSC_COMPILATION_UARCH_FLAGS) \
+			$(BSC_COMPILATION_NM_FLAGS) \
+# BSC_COMPILATION_FLAGS = \
+                          BSC_COMPILATION_ISA_FLAGS \
+			  BSC_COMPILATION_UARCH_FLAGS \
+			  BSC_COMPILATION_NM_FLAGS \
+			  BSC_COMPILATION_DM_FLAGS \
+
 
 # ================================================================
 # Search path for bsc for .bsv files
