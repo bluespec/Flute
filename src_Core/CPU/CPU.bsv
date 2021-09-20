@@ -191,6 +191,9 @@ module mkCPU (CPU_IFC);
    Reg #(Trap_Info)  rg_trap_info       <- mkRegU;
    Reg #(Bool)       rg_trap_interrupt  <- mkRegU;
    Reg #(Instr)      rg_trap_instr      <- mkRegU;
+`ifdef SHOW_COMPRESSED
+   Reg #(Instr)      rg_trap_traced_instr <- mkRegU;
+`endif
 `ifdef INCLUDE_TANDEM_VERIF
    Reg #(Trace_Data) rg_trap_trace_data <- mkRegU;
 `endif
@@ -672,7 +675,11 @@ module mkCPU (CPU_IFC);
 	 // Note: this instr cannot be a CSRRx updating INSTRET, since
 	 // CSRRx is done off-pipe
 	 csr_regfile.csr_minstret_incr;
+`ifdef SHOW_COMPRESSED
+	 fa_emit_instr_trace (minstret, stage2.out.data_to_stage3.pc, stage2.out.data_to_stage3.traced_instr, rg_cur_priv);
+`else
 	 fa_emit_instr_trace (minstret, stage2.out.data_to_stage3.pc, stage2.out.data_to_stage3.instr, rg_cur_priv);
+`endif
       end
 
       // ----------------
@@ -768,6 +775,9 @@ module mkCPU (CPU_IFC);
       rg_trap_info       <= stage2.out.trap_info;
       rg_trap_interrupt  <= False;
       rg_trap_instr      <= stage2.out.data_to_stage3.instr;
+`ifdef SHOW_COMPRESSED
+      rg_trap_traced_instr <= stage2.out.data_to_stage3.traced_instr;
+`endif
 `ifdef INCLUDE_TANDEM_VERIF
       rg_trap_trace_data <= stage2.out.data_to_stage3.trace_data;
 `endif
@@ -799,6 +809,9 @@ module mkCPU (CPU_IFC);
       rg_trap_info       <= stage1.out.trap_info;
       rg_trap_interrupt  <= False;
       rg_trap_instr      <= stage1.out.data_to_stage2.instr;
+`ifdef SHOW_COMPRESSED
+      rg_trap_traced_instr <= stage1.out.data_to_stage2.traced_instr;
+`endif
 `ifdef INCLUDE_TANDEM_VERIF
       rg_trap_trace_data <= stage1.out.data_to_stage2.trace_data;
 `endif
@@ -868,8 +881,11 @@ module mkCPU (CPU_IFC);
       f_trace_data.enq (trace_data);
 `endif
 
-      fa_emit_instr_trace (minstret, epc, instr, rg_cur_priv);
-
+`ifdef SHOW_COMPRESSED
+      fa_emit_instr_trace (minstret, epc, rg_trap_traced_instr, rg_cur_priv);
+`else
+      fa_emit_instr_trace (minstret, epc, rg_trap_instr, rg_cur_priv);
+`endif
       // Debug
       if (cur_verbosity > 1)
 	 $display ("    mcause:0x%0h  epc 0x%0h  tval:0x%0h  next_pc 0x%0h, new_priv %0d new_mstatus 0x%0h",
@@ -982,6 +998,7 @@ module mkCPU (CPU_IFC);
 `endif
 
 	 // Debug
+	 // Note: CSR instructions are never compressed.
 	 fa_emit_instr_trace (minstret, rg_csr_pc, instr, rg_cur_priv);
 	 if (cur_verbosity > 1) begin
 	    $display ("    S1: write CSRRW/CSRRWI Rs1 %0d Rs1_val 0x%0h csr 0x%0h csr_val 0x%0h Rd %0d",
@@ -1102,6 +1119,7 @@ module mkCPU (CPU_IFC);
 `endif
 
 	 // Debug
+	 // Note: CSR instructions are never compressed.
 	 fa_emit_instr_trace (minstret, rg_csr_pc, instr, rg_cur_priv);
 	 if (cur_verbosity > 1) begin
 	    $display ("    S1: write CSRR_S_or_C: Rs1 %0d Rs1_val 0x%0h csr 0x%0h csr_val 0x%0h Rd %0d",
@@ -1167,7 +1185,11 @@ module mkCPU (CPU_IFC);
 `endif
 
       // Debug
+`ifdef SHOW_COMPRESSED
+      fa_emit_instr_trace (minstret, stage1.out.data_to_stage2.pc, stage1.out.data_to_stage2.traced_instr, rg_cur_priv);
+`else
       fa_emit_instr_trace (minstret, stage1.out.data_to_stage2.pc, stage1.out.data_to_stage2.instr, rg_cur_priv);
+`endif
       if (cur_verbosity > 1)
 	 $display ("    xRET: next_pc:0x%0h  new mstatus:0x%0h  new priv:%0d", next_pc, new_mstatus, new_priv);
    endrule: rl_stage1_xRET
@@ -1204,7 +1226,11 @@ module mkCPU (CPU_IFC);
       // Debug
       fa_emit_instr_trace (minstret,
 			   stage1.out.data_to_stage2.pc,
+`ifdef SHOW_COMPRESSED
+			   stage1.out.data_to_stage2.traced_instr,
+`else
 			   stage1.out.data_to_stage2.instr,
+`endif
 			   rg_cur_priv);
 `ifdef INCLUDE_TANDEM_VERIF
       let trace_data = stage1.out.data_to_stage2.trace_data;
@@ -1246,7 +1272,11 @@ module mkCPU (CPU_IFC);
       csr_regfile.csr_minstret_incr;
       // Debug
       fa_emit_instr_trace (minstret, stage1.out.data_to_stage2.pc,
+`ifdef SHOW_COMPRESSED
+			   stage1.out.data_to_stage2.traced_instr,
+`else
 			   stage1.out.data_to_stage2.instr,
+`endif
 			   rg_cur_priv);
 `ifdef INCLUDE_TANDEM_VERIF
       // Trace data
@@ -1300,8 +1330,11 @@ module mkCPU (CPU_IFC);
       // Debug
       fa_emit_instr_trace (minstret,
 			   stage1.out.data_to_stage2.pc,
-			   stage1.out.data_to_stage2.instr,
+`ifdef SHOW_COMPRESSED
+			   stage1.out.data_to_stage2.traced_instr,
+`else
 			   rg_cur_priv);
+`endif
 `ifdef INCLUDE_TANDEM_VERIF
       // Trace data
       let trace_data = stage1.out.data_to_stage2.trace_data;
@@ -1342,7 +1375,11 @@ module mkCPU (CPU_IFC);
 `endif
 
       // Debug
+`ifdef SHOW_COMPRESSED
+      fa_emit_instr_trace (minstret, stage1.out.data_to_stage2.pc, stage1.out.data_to_stage2.traced_instr, rg_cur_priv);
+`else
       fa_emit_instr_trace (minstret, stage1.out.data_to_stage2.pc, stage1.out.data_to_stage2.instr, rg_cur_priv);
+`endif
       if (cur_verbosity > 1)
 	 $display ("    CPU.rl_stage1_WFI");
    endrule: rl_stage1_WFI

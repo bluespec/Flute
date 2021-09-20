@@ -422,6 +422,9 @@ typedef struct {
    Addr       pc;
    Instr      instr;             // For debugging. Just funct3, funct7 are
                                  // enough for functionality.
+`ifdef SHOW_COMPRESSED
+   Instr      traced_instr;      // might be the compressed form
+`endif
    Op_Stage2  op_stage2;
    RegName    rd;
    Addr       addr;              // Branch, jump: newPC
@@ -505,6 +508,9 @@ endinstance
 typedef struct {
    Addr      pc;            // For debugging only
    Instr     instr;         // For debugging only
+`ifdef SHOW_COMPRESSED
+   Instr     traced_instr;  // For debugging only
+`endif
    Priv_Mode priv;
 
    Bool      rd_valid;

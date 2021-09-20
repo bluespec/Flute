@@ -175,6 +175,11 @@ module mkCPU_Stage1 #(Bit #(4)         verbosity,
 
    let data_to_stage2 = Data_Stage1_to_Stage2 {pc            : rg_stage_input.pc,
 					       instr         : rg_stage_input.instr,
+`ifdef SHOW_COMPRESSED
+					       traced_instr  : (rg_stage_input.is_i32_not_i16
+								? rg_stage_input.instr
+								: extend (rg_stage_input.instr_C)),
+`endif
 					       op_stage2     : alu_outputs.op_stage2,
 					       rd            : alu_outputs.rd,
 					       addr          : alu_outputs.addr,

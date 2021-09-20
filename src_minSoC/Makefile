@@ -35,9 +35,12 @@ BSC_COMPILATION_FLAGS += \
 	-D DUAL_FABRIC \
 	-D WATCH_TOHOST \
 	-D JTAG_TAP \
+	-D SHOW_COMPRESSED \
 	-D XILINX_BSCAN -D XILINX_XC7K325T \
- 	-D INCLUDE_GDB_CONTROL \
- 	-D MICROSEMI -D TCM_LOADER \
+	-D INCLUDE_TANDEM_VERIF \
+	-D INCLUDE_GDB_CONTROL \
+	-D MICROSEMI -D TCM_LOADER \
+#	-D SHOW_COMPRESSED \
 # Comment/Uncomment the above when to include/exclude TCM_LOADER
 # The MICROSEMI flag uses BRAM without file-load capability
 
@@ -80,6 +83,7 @@ compile:  build_dir  Verilog_RTL
 	@echo  "INFO: Generating RTL into Verilog_RTL ..."
 	bsc -u -elab -verilog  $(RTL_GEN_DIRS)  $(BSC_COMPILATION_FLAGS)  $(BSC_PATH)  $(TOPFILE)
 	@echo  "INFO: Generated RTL into Verilog_RTL"
+	mkdir -p xilinx_ip/hdl
 	cp  Verilog_RTL/*  xilinx_ip/hdl/
 	@echo  "INFO: Copied RTL from  Verilog_RTL/  to  xilinx_ip/hdl/"
 
