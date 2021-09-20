@@ -273,23 +273,23 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
    endrule
 
    // Create a tap for DM's GPR writes to the CPU, and merge-in the trace data.
-   DM_GPR_Tap_IFC  dm_gpr_tap_ifc <- mkDM_GPR_Tap;
+   DM_GPR_Tap_IFC  dm_gpr_tap <- mkDM_GPR_Tap;
    //mkConnection (debug_module.hart0.hart_gpr_mem_client, dm_gpr_tap_ifc.server);
-   mkConnection (dm_gpr_tap_ifc.client, cpu.hart0_gpr_mem_server);
+   mkConnection (dm_gpr_tap.client, cpu.debug.hart_gpr_mem_server);
 
    rule merge_dm_gpr_trace_data;
-      let tmp <- dm_gpr_tap_ifc.trace_data_out.get;
+      let tmp <- dm_gpr_tap.trace_data_out.get;
       f_trace_data_merged.enq (tmp);
    endrule
 
 `ifdef ISA_F
    // Create a tap for DM's FPR writes to the CPU, and merge-in the trace data.
-   DM_FPR_Tap_IFC  dm_fpr_tap_ifc <- mkDM_FPR_Tap;
+   DM_FPR_Tap_IFC  dm_fpr_tap <- mkDM_FPR_Tap;
    //mkConnection (debug_module.hart0.hart_fpr_mem_client, dm_fpr_tap_ifc.server);
-   mkConnection (dm_fpr_tap_ifc.client, cpu.hart0_fpr_mem_server);
+   mkConnection (dm_fpr_tap.client, cpu.debug.hart_fpr_mem_server);
 
    rule merge_dm_fpr_trace_data;
-      let tmp <- dm_fpr_tap_ifc.trace_data_out.get;
+      let tmp <- dm_fpr_tap.trace_data_out.get;
       f_trace_data_merged.enq (tmp);
    endrule
 `endif
@@ -297,7 +297,7 @@ module mkCore (Core_IFC #(N_External_Interrupt_Sources));
    // Create a tap for DM's CSR writes, and merge-in the trace data.
    DM_CSR_Tap_IFC  dm_csr_tap <- mkDM_CSR_Tap;
    //mkConnection(debug_module.hart0.hart_csr_mem_client, dm_csr_tap.server);
-   mkConnection(dm_csr_tap.client, cpu.hart0_csr_mem_server);
+   mkConnection(dm_csr_tap.client, cpu.debug.hart_csr_mem_server);
 
    rule merge_dm_csr_trace_data;
       let tmp <- dm_csr_tap.trace_data_out.get;
