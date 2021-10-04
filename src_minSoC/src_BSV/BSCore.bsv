@@ -202,7 +202,9 @@ module mkBSCore (BSCore_IFC);
 `endif
    rule rl_reset_response;
       let running <- core.cpu_reset_server.response.get;
-
+`ifndef TCM_LOADER
+      if (running) $display("Trace starting");
+`endif
 `ifdef INCLUDE_GDB_CONTROL
       // wait for end of ndm_interval:
       when (rg_ndm_count == 0, noAction);
@@ -277,6 +279,7 @@ module mkBSCore (BSCore_IFC);
 	 rg_once <= False;
 	 rg_last_cpuh <= x;
 	 rg_reset_done <= False;
+	 if (!x) $display("Trace starting");
       end
    endmethod
    method reset_done = rg_reset_done;

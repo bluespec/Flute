@@ -917,13 +917,16 @@ module mkCPU (CPU_IFC);
 `endif
 
       // In case of trap (illegal CSRRW)
-      rg_trap_info      <= Trap_Info {epc:      stage1.out.data_to_stage2.pc,
-                                      exc_code: exc_code_ILLEGAL_INSTRUCTION,
-                                      tval:     stage1.out.trap_info.tval};
-      rg_trap_interrupt <= False;
-      rg_trap_instr     <= stage1.out.data_to_stage2.instr;    // Also used in successful CSSRW
+      rg_trap_info         <= Trap_Info {epc:      stage1.out.data_to_stage2.pc,
+					 exc_code: exc_code_ILLEGAL_INSTRUCTION,
+					 tval:     stage1.out.trap_info.tval};
+      rg_trap_interrupt    <= False;
+      rg_trap_instr        <= stage1.out.data_to_stage2.instr; // Also used in successful CSSRW
+`ifdef SHOW_COMPRESSED
+      rg_trap_traced_instr <= stage1.out.data_to_stage2.instr; // These instructions never compressed
+`endif
 `ifdef INCLUDE_TANDEM_VERIF
-      rg_trap_trace_data <= stage1.out.data_to_stage2.trace_data;
+      rg_trap_trace_data   <= stage1.out.data_to_stage2.trace_data;
 `endif
 
       rg_state <= CPU_CSRRW_2;
