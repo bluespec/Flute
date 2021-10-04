@@ -35,16 +35,16 @@ BSC_COMPILATION_UARCH_FLAGS = \
 	-D DUAL_FABRIC \
 	-D WATCH_TOHOST \
 	-D INCLUDE_GDB_CONTROL \
+	-D INCLUDE_TANDEM_VERIF \
+	-D SHOW_COMPRESSED \
 #	-D MICROSEMI -D TCM_LOADER \
-#	-D INCLUDE_TANDEM_VERIF \
-#	-D SHOW_COMPRESSED \
 # Comment/Uncomment the above when to include/exclude TCM_LOADER
 # The MICROSEMI flag uses BRAM without file-load capability
 
 BSC_COMPILATION_NM_FLAGS = \
 	-D FABRIC32    \
 	-D Near_Mem_TCM    \
-	-D NM32        \
+#	-D NM32        \
 
 BSC_COMPILATION_DM_FLAGS = \
 	-D JTAG_TAP \
