@@ -66,11 +66,11 @@
 // dma_server_awready             O     1 const
 // dma_server_wready              O     1 const
 // dma_server_bvalid              O     1 const
-// dma_server_bid                 O     6 const
+// dma_server_bid                 O    16 const
 // dma_server_bresp               O     2 const
 // dma_server_arready             O     1 const
 // dma_server_rvalid              O     1 const
-// dma_server_rid                 O     6 const
+// dma_server_rid                 O    16 const
 // dma_server_rdata               O   512 const
 // dma_server_rresp               O     2 const
 // dma_server_rlast               O     1 const
@@ -80,6 +80,7 @@
 // RDY_mv_tohost_value            O     1 const
 // RDY_ma_ddr4_ready              O     1 const
 // mv_status                      O     8
+// RST_N_dm_power_on_reset        I     1 unused
 // CLK                            I     1 clock
 // RST_N                          I     1 reset
 // cpu_reset_server_request_put   I     1 reg
@@ -106,7 +107,7 @@
 // core_mem_master_rresp          I     2 reg
 // core_mem_master_rlast          I     1 reg
 // dma_server_awvalid             I     1 unused
-// dma_server_awid                I     6 unused
+// dma_server_awid                I    16 unused
 // dma_server_awaddr              I    64 unused
 // dma_server_awlen               I     8 unused
 // dma_server_awsize              I     3 unused
@@ -122,7 +123,7 @@
 // dma_server_wlast               I     1 unused
 // dma_server_bready              I     1 unused
 // dma_server_arvalid             I     1 unused
-// dma_server_arid                I     6 unused
+// dma_server_arid                I    16 unused
 // dma_server_araddr              I    64 unused
 // dma_server_arlen               I     8 unused
 // dma_server_arsize              I     3 unused
@@ -177,7 +178,8 @@
   `define BSV_RESET_EDGE negedge
 `endif
 
-module mkCore(CLK,
+module mkCore(RST_N_dm_power_on_reset,
+	      CLK,
 	      RST_N,
 
 	      cpu_reset_server_request_put,
@@ -438,6 +440,7 @@ module mkCore(CLK,
 	      RDY_ma_ddr4_ready,
 
 	      mv_status);
+  input  RST_N_dm_power_on_reset;
   input  CLK;
   input  RST_N;
 
@@ -675,7 +678,7 @@ module mkCore(CLK,
 
   // action method dma_server_m_awvalid
   input  dma_server_awvalid;
-  input  [5 : 0] dma_server_awid;
+  input  [15 : 0] dma_server_awid;
   input  [63 : 0] dma_server_awaddr;
   input  [7 : 0] dma_server_awlen;
   input  [2 : 0] dma_server_awsize;
@@ -702,7 +705,7 @@ module mkCore(CLK,
   output dma_server_bvalid;
 
   // value method dma_server_m_bid
-  output [5 : 0] dma_server_bid;
+  output [15 : 0] dma_server_bid;
 
   // value method dma_server_m_bresp
   output [1 : 0] dma_server_bresp;
@@ -714,7 +717,7 @@ module mkCore(CLK,
 
   // action method dma_server_m_arvalid
   input  dma_server_arvalid;
-  input  [5 : 0] dma_server_arid;
+  input  [15 : 0] dma_server_arid;
   input  [63 : 0] dma_server_araddr;
   input  [7 : 0] dma_server_arlen;
   input  [2 : 0] dma_server_arsize;
@@ -732,7 +735,7 @@ module mkCore(CLK,
   output dma_server_rvalid;
 
   // value method dma_server_m_rid
-  output [5 : 0] dma_server_rid;
+  output [15 : 0] dma_server_rid;
 
   // value method dma_server_m_rdata
   output [511 : 0] dma_server_rdata;
@@ -831,6 +834,7 @@ module mkCore(CLK,
 		cpu_imem_master_awaddr,
 		cpu_imem_master_wdata,
 		mv_tohost_value;
+  wire [15 : 0] dma_server_bid, dma_server_rid;
   wire [7 : 0] core_mem_master_arlen,
 	       core_mem_master_awlen,
 	       core_mem_master_wstrb,
@@ -838,7 +842,6 @@ module mkCore(CLK,
 	       cpu_imem_master_awlen,
 	       cpu_imem_master_wstrb,
 	       mv_status;
-  wire [5 : 0] dma_server_bid, dma_server_rid;
   wire [3 : 0] core_mem_master_arcache,
 	       core_mem_master_arid,
 	       core_mem_master_arqos,
@@ -915,6 +918,10 @@ module mkCore(CLK,
 		cpu$mv_tohost_value,
 		cpu$set_verbosity_logdelay,
 		cpu$set_watch_tohost_tohost_addr;
+  wire [15 : 0] cpu$dma_server_arid,
+		cpu$dma_server_awid,
+		cpu$dma_server_bid,
+		cpu$dma_server_rid;
   wire [7 : 0] cpu$dma_server_arlen,
 	       cpu$dma_server_awlen,
 	       cpu$imem_master_arlen,
@@ -924,10 +931,6 @@ module mkCore(CLK,
 	       cpu$mem_master_awlen,
 	       cpu$mem_master_wstrb,
 	       cpu$mv_status;
-  wire [5 : 0] cpu$dma_server_arid,
-	       cpu$dma_server_awid,
-	       cpu$dma_server_bid,
-	       cpu$dma_server_rid;
   wire [3 : 0] cpu$dma_server_arcache,
 	       cpu$dma_server_arqos,
 	       cpu$dma_server_arregion,

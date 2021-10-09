@@ -83,11 +83,11 @@
 // dma_server_awready             O     1 const
 // dma_server_wready              O     1 const
 // dma_server_bvalid              O     1 const
-// dma_server_bid                 O     6 const
+// dma_server_bid                 O    16 const
 // dma_server_bresp               O     2 const
 // dma_server_arready             O     1 const
 // dma_server_rvalid              O     1 const
-// dma_server_rid                 O     6 const
+// dma_server_rid                 O    16 const
 // dma_server_rdata               O   512 const
 // dma_server_rresp               O     2 const
 // dma_server_rlast               O     1 const
@@ -137,7 +137,7 @@
 // mem_master_rlast               I     1 reg
 // server_fence_request_put       I     8 unused
 // dma_server_awvalid             I     1 unused
-// dma_server_awid                I     6 unused
+// dma_server_awid                I    16 unused
 // dma_server_awaddr              I    64 unused
 // dma_server_awlen               I     8 unused
 // dma_server_awsize              I     3 unused
@@ -153,7 +153,7 @@
 // dma_server_wlast               I     1 unused
 // dma_server_bready              I     1 unused
 // dma_server_arvalid             I     1 unused
-// dma_server_arid                I     6 unused
+// dma_server_arid                I    16 unused
 // dma_server_araddr              I    64 unused
 // dma_server_arlen               I     8 unused
 // dma_server_arsize              I     3 unused
@@ -795,7 +795,7 @@ module mkNear_Mem(CLK,
 
   // action method dma_server_m_awvalid
   input  dma_server_awvalid;
-  input  [5 : 0] dma_server_awid;
+  input  [15 : 0] dma_server_awid;
   input  [63 : 0] dma_server_awaddr;
   input  [7 : 0] dma_server_awlen;
   input  [2 : 0] dma_server_awsize;
@@ -822,7 +822,7 @@ module mkNear_Mem(CLK,
   output dma_server_bvalid;
 
   // value method dma_server_m_bid
-  output [5 : 0] dma_server_bid;
+  output [15 : 0] dma_server_bid;
 
   // value method dma_server_m_bresp
   output [1 : 0] dma_server_bresp;
@@ -834,7 +834,7 @@ module mkNear_Mem(CLK,
 
   // action method dma_server_m_arvalid
   input  dma_server_arvalid;
-  input  [5 : 0] dma_server_arid;
+  input  [15 : 0] dma_server_arid;
   input  [63 : 0] dma_server_araddr;
   input  [7 : 0] dma_server_arlen;
   input  [2 : 0] dma_server_arsize;
@@ -852,7 +852,7 @@ module mkNear_Mem(CLK,
   output dma_server_rvalid;
 
   // value method dma_server_m_rid
-  output [5 : 0] dma_server_rid;
+  output [15 : 0] dma_server_rid;
 
   // value method dma_server_m_rdata
   output [511 : 0] dma_server_rdata;
@@ -899,6 +899,7 @@ module mkNear_Mem(CLK,
 		mem_master_wdata,
 		mv_tohost_value;
   wire [31 : 0] imem_instr;
+  wire [15 : 0] dma_server_bid, dma_server_rid;
   wire [7 : 0] imem_master_arlen,
 	       imem_master_awlen,
 	       imem_master_wstrb,
@@ -906,7 +907,6 @@ module mkNear_Mem(CLK,
 	       mem_master_awlen,
 	       mem_master_wstrb,
 	       mv_status;
-  wire [5 : 0] dma_server_bid, dma_server_rid;
   wire [3 : 0] dmem_exc_code,
 	       imem_exc_code,
 	       imem_master_arcache,
@@ -1559,7 +1559,7 @@ module mkNear_Mem(CLK,
   assign dma_server_bvalid = 1'd0 ;
 
   // value method dma_server_m_bid
-  assign dma_server_bid = 6'h2A ;
+  assign dma_server_bid = 16'hAAAA ;
 
   // value method dma_server_m_bresp
   assign dma_server_bresp = 2'd0 ;
@@ -1579,7 +1579,7 @@ module mkNear_Mem(CLK,
   assign dma_server_rvalid = 1'd0 ;
 
   // value method dma_server_m_rid
-  assign dma_server_rid = 6'd0 ;
+  assign dma_server_rid = 16'd0 ;
 
   // value method dma_server_m_rdata
   assign dma_server_rdata = 512'd0 ;

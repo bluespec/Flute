@@ -43,7 +43,7 @@ import Semi_FIFOF :: *;
 // Project imports
 
 import ISA_Decls    :: *;
-import Near_Mem_IFC :: *;
+import Near_Mem_IFC :: *;    // For Wd_{Id/Addr/User/Data}_Dma
 
 import SoC_Map :: *;    // For predicate on addresses (cacheble or not)
 
@@ -53,7 +53,6 @@ import MMIO  :: *;
 
 import AXI4_Types   :: *;
 import AXI_Widths   :: *;
-import Near_Mem_IFC :: *;    // For Wd_{Id/Addr/User/Data}_Dma
 
 // ================================================================
 
@@ -182,8 +181,10 @@ deriving (Bits, FShow);
 module mkDMA_Cache (DMA_Cache_IFC);
 
    // For debugging
-   Integer verbosity       = 0;    // 1: rules
-   Integer verbosity_mmio  = 0;    // 1: rules
+   Integer verbosity             = 0;    // 1: rules
+   Integer verbosity_merge       = 0;    // 1: rules
+   Integer verbosity_mmio        = 0;    // 1: rules
+   Integer verbosity_mmio_module = 0;    // 1: rules
 
    // ----------------
    // SoC_Map needed for method 'm_is_mem_addr' distinguishing cached vs. other addrs
@@ -217,7 +218,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
    // ----------------
    // MMIO sub-module
 
-   MMIO_IFC   mmio  <- mkMMIO (fromInteger (verbosity_mmio));
+   MMIO_IFC   mmio  <- mkMMIO (fromInteger (verbosity_mmio_module));
 
    // ****************************************************************
    // ****************************************************************
@@ -276,7 +277,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
 			  wdata:      ?};
       f_reqs.enq (req);
 
-      if (verbosity >= 2) begin
+      if (verbosity_merge > 0) begin
 	 $display ("%0d: DMA_Cache.rl_merge_rd_req", cur_cycle);
 	 $display ("        ", fshow (rda));
       end
@@ -310,7 +311,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
 			  wdata:      wrd.wdata};
       f_reqs.enq (req);
 
-      if (verbosity >= 2) begin
+      if (verbosity_merge > 0) begin
 	 $display ("%0d: DMA_Cache.rl_merge_wr_req", cur_cycle);
 	 $display ("    ", fshow (wra));
 	 $display ("    ", fshow (wrd));
@@ -632,7 +633,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
 					      };
 	 mmio.req   (mmu_cache_req);
 	 mmio.start (addr1);
-	 if (verbosity >= 2) begin
+	 if (verbosity_mmio >= 2) begin
 	    $display ("    MMIO slice req: op %0d  size_code %0d  addr %0h  slice data %0h",
 		      cache_op, size_code, addr1, slice);
 	 end
@@ -647,7 +648,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
 			&& (! f_L2_to_L1_Reqs.notEmpty)        // L2-to-L1 requests have priority
 			&& (! soc_map.m_is_mem_addr (addr))    // all non-cacheable addrs
 			&& (req_op == AXI4_OP_WR));
-      if (verbosity >= 1) begin
+      if (verbosity_mmio >= 1) begin
 	 $display ("%0d: DMA_Cache.rl_mmio_wr_req", cur_cycle);
 	 $display ("    ", fshow (req));
       end
@@ -667,8 +668,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
       rg_mmio_num_bytes  <= num_bytes;
       rg_mmio_v_slices   <= v_slices;
       rg_mmio_err        <= False;
-
-      rg_state          <= STATE_MMIO_WR_WAIT;
+      rg_state           <= STATE_MMIO_WR_WAIT;
    endrule
 
    // Collect MMIO slice-write response; request next slice or finish by responding to client
@@ -677,7 +677,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
       // Accumulate errors
       let err = (slice_err || rg_mmio_err);
 
-      if (verbosity >= 1) begin
+      if (slice_err || (verbosity_mmio >= 1)) begin
 	 $display ("%0d: DMA_Cache.rl_mmio_wr_slice_rsp: slice_err %0d  err %0d, num_bytes remaining %0h",
 		   cur_cycle, slice_err, err, rg_mmio_num_bytes);
       end
@@ -709,7 +709,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
 			&& (! f_L2_to_L1_Reqs.notEmpty)        // L2-to-L1 requests have priority
 			&& (! soc_map.m_is_mem_addr (addr))    // all non-cacheable addrs
 			&& (req_op == AXI4_OP_RD));
-      if (verbosity >= 1) begin
+      if (verbosity_mmio >= 1) begin
 	 $display ("%0d: DMA_Cache.rl_mmio_rd_req", cur_cycle);
 	 $display ("    ", fshow (req));
       end
@@ -730,7 +730,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
    // Collect MMIO slice-read response; request next slice or finish by responding to client
    rule rl_mmio_rd_slice_rsp (rg_state == STATE_MMIO_RD_WAIT);
       match { .slice_err, .slice_data, .* } = mmio.result;
-      if (verbosity >= 1) begin
+      if (slice_err || (verbosity_mmio >= 1)) begin
 	 $display ("%0d: DMA_Cache.rl_mmio_rd_slice_rsp: addr %0h  slice_err %0d  slice_data %0h",
 		   cur_cycle, rg_mmio_addr, slice_err, slice_data);
       end
@@ -756,7 +756,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
 	 Vector #(Bytes_per_Data, Bit #(8)) v_bytes = unpack (rdata_in_lsbs);
 	 UInt #(7) rot_amt_bytes = unpack ('h40 - { 0, req.addr [5:0] });
 	 Bit #(Wd_Data_Dma) rdata = pack (rotateBy (v_bytes, truncate (rot_amt_bytes)));
-	 if (verbosity >= 1) begin
+	 if (verbosity_mmio >= 1) begin
 	    $display ("    v_slices         ", fshow (v_slices));
 	    $display ("    num_slices %0d  rot_amt_slices %0d", rg_mmio_num_slices, rot_amt_slices);
 	    $display ("    v_slices_in_lsbs ", fshow (v_slices_in_lsbs));

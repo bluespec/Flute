@@ -296,6 +296,7 @@ module mkSoC_Top(CLK,
 		core$mv_tohost_value,
 		core$set_verbosity_logdelay,
 		core$set_watch_tohost_tohost_addr;
+  wire [15 : 0] core$dma_server_arid, core$dma_server_awid;
   wire [7 : 0] core$core_mem_master_arlen,
 	       core$core_mem_master_awlen,
 	       core$core_mem_master_wstrb,
@@ -305,7 +306,6 @@ module mkSoC_Top(CLK,
 	       core$dma_server_arlen,
 	       core$dma_server_awlen,
 	       core$mv_status;
-  wire [5 : 0] core$dma_server_arid, core$dma_server_awid;
   wire [3 : 0] core$core_mem_master_arcache,
 	       core$core_mem_master_arid,
 	       core$core_mem_master_arqos,
@@ -931,10 +931,10 @@ module mkSoC_Top(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h11534;
-  reg [31 : 0] v__h11788;
-  reg [31 : 0] v__h11528;
-  reg [31 : 0] v__h11782;
+  reg [31 : 0] v__h11537;
+  reg [31 : 0] v__h11791;
+  reg [31 : 0] v__h11531;
+  reg [31 : 0] v__h11785;
   // synopsys translate_on
 
   // actionvalue method to_raw_mem_request_get
@@ -1120,7 +1120,8 @@ module mkSoC_Top(CLK,
 					     .to_slave_rready(boot_rom_axi4_deburster$to_slave_rready));
 
   // submodule core
-  mkCore core(.CLK(CLK),
+  mkCore core(.RST_N_dm_power_on_reset(RST_N),
+	      .CLK(CLK),
 	      .RST_N(RST_N),
 	      .core_external_interrupt_sources_0_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_0_m_interrupt_req_set_not_clear),
 	      .core_external_interrupt_sources_10_m_interrupt_req_set_not_clear(core$core_external_interrupt_sources_10_m_interrupt_req_set_not_clear),
@@ -1896,9 +1897,9 @@ module mkSoC_Top(CLK,
 	     core$RDY_cpu_reset_server_request_put &&
 	     rg_state == 2'd0 ;
   assign MUX_rg_state$write_1__SEL_2 =
-	     mem0_controller$RDY_set_addr_map &&
 	     mem0_controller$RDY_server_reset_response_get &&
 	     uart0$RDY_server_reset_response_get &&
+	     mem0_controller$RDY_set_addr_map &&
 	     core$RDY_cpu_reset_server_response_get &&
 	     rg_state == 2'd1 ;
 
@@ -2071,7 +2072,8 @@ module mkSoC_Top(CLK,
 	     64'hAAAAAAAAAAAAAAAA /* unspecified value */  ;
   assign core$dma_server_arburst = 2'b10 /* unspecified value */  ;
   assign core$dma_server_arcache = 4'b1010 /* unspecified value */  ;
-  assign core$dma_server_arid = 6'b101010 /* unspecified value */  ;
+  assign core$dma_server_arid =
+	     16'b1010101010101010 /* unspecified value */  ;
   assign core$dma_server_arlen = 8'b10101010 /* unspecified value */  ;
   assign core$dma_server_arlock = 1'b0 /* unspecified value */  ;
   assign core$dma_server_arprot = 3'b010 /* unspecified value */  ;
@@ -2083,7 +2085,8 @@ module mkSoC_Top(CLK,
 	     64'hAAAAAAAAAAAAAAAA /* unspecified value */  ;
   assign core$dma_server_awburst = 2'b10 /* unspecified value */  ;
   assign core$dma_server_awcache = 4'b1010 /* unspecified value */  ;
-  assign core$dma_server_awid = 6'b101010 /* unspecified value */  ;
+  assign core$dma_server_awid =
+	     16'b1010101010101010 /* unspecified value */  ;
   assign core$dma_server_awlen = 8'b10101010 /* unspecified value */  ;
   assign core$dma_server_awlock = 1'b0 /* unspecified value */  ;
   assign core$dma_server_awprot = 3'b010 /* unspecified value */  ;
@@ -2456,23 +2459,23 @@ module mkSoC_Top(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset_start_initial)
 	begin
-	  v__h11534 = $stime;
+	  v__h11537 = $stime;
 	  #0;
 	end
-    v__h11528 = v__h11534 / 32'd10;
+    v__h11531 = v__h11537 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset_start_initial)
-	$display("%0d:%m.rl_reset_start_initial ...", v__h11528);
+	$display("%0d:%m.rl_reset_start_initial ...", v__h11531);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset_complete_initial)
 	begin
-	  v__h11788 = $stime;
+	  v__h11791 = $stime;
 	  #0;
 	end
-    v__h11782 = v__h11788 / 32'd10;
+    v__h11785 = v__h11791 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset_complete_initial)
-	$display("%0d:%m.rl_reset_complete_initial", v__h11782);
+	$display("%0d:%m.rl_reset_complete_initial", v__h11785);
   end
   // synopsys translate_on
 endmodule  // mkSoC_Top

@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2020-2021 Bluespec, Inc. All Rights Reserved
 
 package AXI4_Widener;
 
@@ -33,7 +33,7 @@ import Semi_FIFOF :: *;
 import AXI4_Types :: *;
 
 // ================================================================
-// The interface for the fabric module
+// The interface for the widener module
 
 interface AXI4_Widener_IFC #(numeric type wd_id_t,
 			     numeric type wd_addr_t,
