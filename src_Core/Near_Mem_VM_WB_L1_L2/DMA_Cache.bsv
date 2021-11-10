@@ -39,20 +39,21 @@ import Cur_Cycle  :: *;
 import GetPut_Aux :: *;
 import Semi_FIFOF :: *;
 
+// ----------------
+// AXI
+
+import AXI4_Types :: *;
+import AXI4_to_LD :: *;
+import AXI4_to_ST :: *;
+
 // ================================================================
 // Project imports
 
-import ISA_Decls    :: *;
-import Near_Mem_IFC :: *;    // For Wd_{Id/Addr/User/Data}_Dma
-
-import SoC_Map :: *;    // For predicate on addresses (cacheble or not)
-
-import MMU_Cache_Common :: *;    // For L1<->L2 reqs and rsps
-
-import MMIO  :: *;
-
-import AXI4_Types   :: *;
-import AXI_Widths   :: *;
+import ISA_Decls        :: *;
+import Near_Mem_IFC     :: *;    // For Wd_{Id/Addr/User/Data}_Mem
+import AXI_Widths       :: *;    // For Wd_{Id/Addr/User/Data}_Dma
+import SoC_Map          :: *;    // For predicate on addresses (cacheble or not)
+import MMU_Cache_Common :: *;    // For L1<->L2 reqs and rsps, Single_Req/Rsp for MMIO
 
 // ================================================================
 
@@ -92,9 +93,6 @@ typedef TDiv #(Wd_Data_Dma, 8)  Bytes_per_Data;         // 512/8 = 64
 typedef TLog #(Bytes_per_Data)  Bits_per_Byte_in_Data;  // log (64) = 6
 
 Integer bits_per_byte_in_data  = valueOf (Bits_per_Byte_in_Data);
-
-typedef Bit #(64)               Slice;                  // MMIO width
-typedef TDiv #(Wd_Data_Dma, 64) Slices_per_Data;        // 512/64 = 8
 
 typedef 1   DMA_Cache_Num_Ways;    // Direct-mapped, for now
 typedef 64  DMA_Cache_Num_Sets;    // Cache holds 64x64 bytes = 4 KB = 1 page
@@ -140,9 +138,7 @@ endfunction
 typedef enum {STATE_INITIALIZING,    // Setting all cache tags to Invalid
               STATE_IDLE,            // Ready to service external requests
 	      STATE_EVICTED,         // Data evicted, ready to request new data
-	      STATE_UPGRADE,         // refill/upgrade request sent, awaiting response
-	      STATE_MMIO_RD_WAIT,    // Waiting for MMIO slice-read response
-	      STATE_MMIO_WR_WAIT     // Waiting for MMIO slice-write response
+	      STATE_UPGRADE          // refill/upgrade request sent, awaiting response
    } State
 deriving (Bits, Eq, FShow);
 
@@ -180,15 +176,20 @@ deriving (Bits, FShow);
 (* synthesize *)
 module mkDMA_Cache (DMA_Cache_IFC);
 
-   // For debugging
-   Integer verbosity             = 0;    // 1: rules
-   Integer verbosity_merge       = 0;    // 1: rules
-   Integer verbosity_mmio        = 0;    // 1: rules
-   Integer verbosity_mmio_module = 0;    // 1: rules
+   // For debugging: 0: quiet 1: rules
+   Integer verbosity         = 0;
+   Integer verbosity_merge   = 0;
+   Integer verbosity_MMIO_rd = 0;
+   Integer verbosity_MMIO_wr = 0;
 
    // ----------------
-   // SoC_Map needed for method 'm_is_mem_addr' distinguishing cached vs. other addrs
+   // SoC_Map needed for 'is_cached_addr' (vs. MMIO) check
    SoC_Map_IFC soc_map <- mkSoC_Map;
+
+   function Bool fn_is_cached_addr (Bit #(Wd_Addr_Dma) addr);
+      return ((soc_map.m_ddr4_0_cached_addr_base <= addr)
+	      && (addr < soc_map.m_ddr4_0_cached_addr_lim));
+   endfunction
 
    // ----------------
    // FSM state
@@ -215,11 +216,6 @@ module mkDMA_Cache (DMA_Cache_IFC);
    FIFOF #(L2_to_L1_Req) f_L2_to_L1_Reqs <- mkFIFOF;
    FIFOF #(L1_to_L2_Rsp) f_L1_to_L2_Rsps <- mkFIFOF;
 
-   // ----------------
-   // MMIO sub-module
-
-   MMIO_IFC   mmio  <- mkMMIO (fromInteger (verbosity_mmio_module));
-
    // ****************************************************************
    // ****************************************************************
    // BEHAVIOR
@@ -231,7 +227,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
 
    rule rl_init (rg_state == STATE_INITIALIZING);
       if ((verbosity >= 1) && (rg_init_index == 0)) begin
-	 $display ("%0d: DMA_Cache.rl_init: Initializing cache ...", cur_cycle);
+	 $display ("%0d: %m.rl_init: Initializing cache ...", cur_cycle);
       end
 
       let tag     = DMA_Cache_Tag { tag_state: META_INVALID, tag_addr: 0 };
@@ -247,16 +243,17 @@ module mkDMA_Cache (DMA_Cache_IFC);
    endrule
 
    // ================================================================
-   // Merge requests into a single queue, prioritizing reads over writes
+   // Merge cacheable requests into a single queue, prioritizing reads over writes
 
    FIFOF #(AXI4_Req) f_reqs <- mkFIFOF;
 
-   rule rl_merge_rd_req;
+   rule rl_merge_rd_req (fn_is_cached_addr (axi4_s_xactor.o_rd_addr.first.araddr));
       let rda <- pop_o (axi4_s_xactor.o_rd_addr);
 
       // Assert arlen = 0 (single beat)
       if (rda.arlen != 0) begin
-	 $display ("%0d: DMA_Merge.rl_merge_rd_req: ERROR: burst request; not supported", cur_cycle);
+	 $display ("%0d: ERROR: %m.rl_merge_rd_req: burst requests not supported",
+		   cur_cycle);
 	 $display ("    ", fshow (rda));
 	 $finish (1);
       end
@@ -278,19 +275,20 @@ module mkDMA_Cache (DMA_Cache_IFC);
       f_reqs.enq (req);
 
       if (verbosity_merge > 0) begin
-	 $display ("%0d: DMA_Cache.rl_merge_rd_req", cur_cycle);
+	 $display ("%0d: %m.rl_merge_rd_req", cur_cycle);
 	 $display ("        ", fshow (rda));
       end
    endrule
 
    (* descending_urgency = "rl_merge_rd_req, rl_merge_wr_req" *)
-   rule rl_merge_wr_req;
+   rule rl_merge_wr_req (fn_is_cached_addr (axi4_s_xactor.o_wr_addr.first.awaddr));
       let wra <- pop_o (axi4_s_xactor.o_wr_addr);
       let wrd <- pop_o (axi4_s_xactor.o_wr_data);
 
       // Assert awlen = 0 (single beat)
       if (wra.awlen != 0) begin
-	 $display ("%0d: DMA_Merge.rl_merge_wr_req: ERROR: burst request; not supported", cur_cycle);
+	 $display ("%0d: ERROR: %m.rl_merge_wr_req: burst requests not supported",
+		   cur_cycle);
 	 $display ("    ", fshow (wra));
 	 $finish (1);
       end
@@ -312,7 +310,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
       f_reqs.enq (req);
 
       if (verbosity_merge > 0) begin
-	 $display ("%0d: DMA_Cache.rl_merge_wr_req", cur_cycle);
+	 $display ("%0d: %m.rl_merge_wr_req", cur_cycle);
 	 $display ("    ", fshow (wra));
 	 $display ("    ", fshow (wrd));
       end
@@ -324,7 +322,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
    rule rl_downgrade (rg_state != STATE_INITIALIZING);
       let l2_to_l1_req <- pop (f_L2_to_L1_Reqs);
       if (verbosity >= 1) begin
-	 $display ("%0d: DMA_Cache.rl_downgrade", cur_cycle);
+	 $display ("%0d: %m.rl_downgrade", cur_cycle);
 	 $display ("    ", fshow (l2_to_l1_req));
       end
 
@@ -391,8 +389,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
 		 && (tag.tag_addr  != line_addr));
 
    rule rl_evict ((rg_state == STATE_IDLE)
-		  && (! f_L2_to_L1_Reqs.notEmpty)        // L2-to-L1 requests have priority
-		  && soc_map.m_is_mem_addr (addr)        // cacheable addrs only
+		  && (! f_L2_to_L1_Reqs.notEmpty)    // L2-to-L1 requests have priority
 		  && evict);
       // Evict current occupant (=> INVALID), and evict data if modified
       let data_set = rf_data_sets.sub (index);
@@ -411,7 +408,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
       rf_tag_sets.upd (index, new_tag_set);
 
       if (verbosity >= 1) begin
-	 $display ("%0d: DMA_Cache.rl_evict", cur_cycle);
+	 $display ("%0d: %m.rl_evict", cur_cycle);
 	 $display ("    ", fshow (l1_to_l2_rsp));
       end
    endrule
@@ -492,8 +489,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
 		  && (tag.tag_addr  == line_addr));
 
    rule rl_hit ((rg_state == STATE_IDLE)
-		&& (! f_L2_to_L1_Reqs.notEmpty)        // L2-to-L1 requests have priority
-		&& soc_map.m_is_mem_addr (addr)        // cacheable addrs only
+		&& (! f_L2_to_L1_Reqs.notEmpty)    // L2-to-L1 requests have priority
 		&& is_hit);
 
       let new_tag_state = ((req_op == AXI4_OP_RD) ? tag.tag_state : META_MODIFIED);
@@ -501,7 +497,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
       let old_data = data_set [0];    // Direct-mapped only, for now
 
       if (verbosity >= 1) begin
-	 $display ("%0d: DMA_Cache.rl_hit", cur_cycle);
+	 $display ("%0d: %m.rl_hit", cur_cycle);
       end
       fa_upd_cache_and_respond (new_tag_state, old_data);
 
@@ -534,8 +530,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
    endfunction
 
    rule rl_upgrade_req ((rg_state == STATE_IDLE)
-			&& (! f_L2_to_L1_Reqs.notEmpty)        // L2-to-L1 requests have priority
-			&& soc_map.m_is_mem_addr (addr)        // cacheable addrs only
+			&& (! f_L2_to_L1_Reqs.notEmpty)  // L2-to-L1 reqs have priority
 			&& fn_do_upgrade ());
       // Request refill/upgrade from L2
       let l1_to_l2_req = L1_to_L2_Req {addr:        line_addr,
@@ -548,7 +543,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
       rg_state <= STATE_UPGRADE;
 
       if (verbosity >= 1) begin
-	 $display ("%0d: DMA_Cache.rl_upgrade_req", cur_cycle);
+	 $display ("%0d: %m.rl_upgrade_req", cur_cycle);
 	 $display ("    ", fshow (l1_to_l2_req));
       end
    endrule
@@ -556,12 +551,12 @@ module mkDMA_Cache (DMA_Cache_IFC);
    // When upgrade response arrives from L2, update cache, and respond to client
 
    rule rl_upgrade_rsp ((rg_state == STATE_UPGRADE)
-			&& (! f_L2_to_L1_Reqs.notEmpty));        // L2-to-L1 requests have priority
+			&& (! f_L2_to_L1_Reqs.notEmpty));  // L2-to-L1 reqs have priority
       let rsp <- pop (f_L2_to_L1_Rsps);
 
       // Assert response is for addr requested
       if (rsp.addr != line_addr) begin
-	 $display ("%0d: DMA_Cache.rl_upgrade_rsp: ERROR: rsp is not for addr %0h",
+	 $display ("%0d: %m.rl_upgrade_rsp: ERROR: rsp is not for addr %0h",
 		   cur_cycle, line_addr);
 	 $display ("    ", fshow (rsp));
 	 $finish (1);
@@ -571,7 +566,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
       Data old_data = ?;
       if (rsp.m_cline matches tagged Valid .x) begin
 	 if (tag.tag_state != META_INVALID) begin
-	    $display ("%0d: DMA_Cache.rl_upgrade_rsp: ERROR: rsp has refill data for non-INVALID frame",
+	    $display ("%0d: %m.rl_upgrade_rsp: ERROR: rsp has refill data for non-INVALID frame",
 		      cur_cycle);
 	    $display ("    ", fshow (rsp));
 	    $finish (1);
@@ -581,7 +576,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
       else begin
 	 // Assert L2 response contains data if meta state was INVALID
 	 if (tag.tag_state == META_INVALID) begin
-	    $display ("%0d: DMA_Cache.rl_upgrade_rsp: ERROR: rsp has no data for INVALID frame",
+	    $display ("%0d: %m.rl_upgrade_rsp: ERROR: rsp has no data for INVALID frame",
 		      cur_cycle);
 	    $display ("    ", fshow (rsp));
 	    $finish (1);
@@ -590,7 +585,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
       end
 
       if (verbosity >= 1) begin
-	 $display ("%0d: DMA_Cache.rl_upgrade_rsp", cur_cycle);
+	 $display ("%0d: %m.rl_upgrade_rsp", cur_cycle);
       end
       fa_upd_cache_and_respond (rsp.to_state, old_data);
 
@@ -599,190 +594,156 @@ module mkDMA_Cache (DMA_Cache_IFC);
       rg_state <= STATE_IDLE;
    endrule
 
+   // ****************************************************************
+   // MMIO (request addr is not in cached mem)
+
+   // LD/ST requests out of the AXI4_to_LD/ST converters
+   FIFOF #(Single_Req)  f_single_reqs  <- mkFIFOF;
+   FIFOF #(Single_Rsp)  f_single_rsps  <- mkFIFOF;
+
+   // Remembers order of LD/ST requests to system
+   FIFOF #(Bool) f_mmio_rsp_is_load <- mkSizedFIFOF (16);
+
    // ================================================================
-   // MMIO (request addr is not in cached mem: pass thru to MMIO box)
+   // MMIO reads
 
-   // These regs are used to slice 512-bit data into 64-bit slices, one per MMIO transaction
-   Reg #(Bit #(Wd_Addr_Dma))                        rg_mmio_addr       <- mkRegU;
-   Reg #(Bit #(8))                                  rg_mmio_num_bytes  <- mkRegU;
-   Reg #(Vector #(Slices_per_Data, Slice))          rg_mmio_v_slices   <- mkRegU;
-   Reg #(Bool)                                      rg_mmio_err        <- mkRegU;
-   Reg #(Bit #(TAdd #(1, TLog #(Slices_per_Data)))) rg_mmio_num_slices <- mkRegU;
+   // AXI4 to LD converter
+   FIFOF #(AXI4_Rd_Addr #(Wd_Id_Dma,
+			  Wd_Addr_Dma,
+			  Wd_User_Dma)) f_rd_addr <- mkFIFOF;
+   FIFOF #(AXI4_Rd_Data #(Wd_Id_Dma,
+			  Wd_Data_Dma,
+			  Wd_User_Dma)) f_rd_data <- mkFIFOF;
 
-   // ----------------
-   // Send an mmio request for one slice (up to 64bits)
-   function Action fa_mmio_slice_req (CacheOp    cache_op,
-				      Bit #(64)  addr1,
-				      Slice      slice,
-				      Bit #(8)   num_bytes);
-      action
-	 Bit #(3)  size_code = ((num_bytes >= 8) ? axsize_8 : fv_num_bytes_to_AXI4_Size (num_bytes));
-	 let mmu_cache_req   = MMU_Cache_Req {op:          cache_op,
-					      f3:          size_code,
-					      va:          addr1,
-					      st_value:    slice
-`ifdef ISA_A
-					    , amo_funct7:  0     // Bogus (AMO not supported here)
-`endif
-`ifdef ISA_PRIV_S
-					    , priv:        m_Priv_Mode,    // Machine mode (TODO: ok?)
-					      sstatus_SUM: 0,    // Bogus (we're in machine mode)
-					      mstatus_MXR: 0,    // Bogus (we're in machine mode)
-					      satp:        0     // Bogus (we're not doing virt mem)
-`endif
-					      };
-	 mmio.req   (mmu_cache_req);
-	 mmio.start (addr1);
-	 if (verbosity_mmio >= 2) begin
-	    $display ("    MMIO slice req: op %0d  size_code %0d  addr %0h  slice data %0h",
-		      cache_op, size_code, addr1, slice);
-	 end
-      endaction
-   endfunction
+   AXI4_to_LD_IFC #(Wd_Addr_Dma, 64)
+   axi4_to_ld <- mkAXI4_to_LD (to_FIFOF_O (f_rd_addr),
+			       to_FIFOF_I (f_rd_data));
 
-   // ----------------------------------------------------------------
-   // MMIO Writes
-  
-   // MMIO Write-requests (first slice)
-   rule rl_mmio_wr_req (   (rg_state == STATE_IDLE)
-			&& (! f_L2_to_L1_Reqs.notEmpty)        // L2-to-L1 requests have priority
-			&& (! soc_map.m_is_mem_addr (addr))    // all non-cacheable addrs
-			&& (req_op == AXI4_OP_WR));
-      if (verbosity_mmio >= 1) begin
-	 $display ("%0d: DMA_Cache.rl_mmio_wr_req", cur_cycle);
+   // Pass MMIO read requests into axi4_to_ld module
+   rule rl_mmio_AXI_rd_req (! fn_is_cached_addr (axi4_s_xactor.o_rd_addr.first.araddr));
+      let rda <- pop_o (axi4_s_xactor.o_rd_addr);
+      f_rd_addr.enq (rda);
+
+      if (verbosity_MMIO_rd != 0) begin
+	 $display ("%0d: %m.rl_mmio_AXI_rd_req", cur_cycle);
+	 $display ("    awid %0h awaddr %0h awlen %0h awsize %0h awuser %0h",
+		   rda.arid, rda.araddr, rda.arlen, rda.arsize, rda.aruser);
+      end
+   endrule
+
+   // Pass MMIO LD requests from axi4_to_ld module out to system
+   rule rl_mmio_LD_req;
+      match { .size_code, .addr } <- pop_o (axi4_to_ld.reqs);
+      let req = Single_Req {is_read:   True,
+			    addr:      addr,
+			    size_code: size_code,
+			    data:      ?};
+      f_single_reqs.enq (req);
+      f_mmio_rsp_is_load.enq (True);
+
+      if (verbosity_MMIO_rd != 0) begin
+	 $display ("%0d: %m.rl_mmio_LD_req: ", cur_cycle);
 	 $display ("    ", fshow (req));
       end
-
-      // Shift wdata to LSBs.
-      // (We do this on a byte-vector to clarify the shift is in byte-units, not bit-units,
-      //  for a more hardware-efficient shifter)
-      Vector #(Bytes_per_Data, Bit #(8)) v_bytes = unpack (req.wdata);
-      let v_shifted_bytes = rotateBy (v_bytes, unpack (req.addr [5:0]));
-      let shifted_wdata   = pack (v_shifted_bytes);
-
-      Vector #(Slices_per_Data, Slice) v_slices = unpack (shifted_wdata);
-      Bit #(8) num_bytes  = fv_AXI4_Size_to_num_bytes (req.size);
-      fa_mmio_slice_req (CACHE_ST, req.addr, v_slices [0], num_bytes);
-
-      rg_mmio_addr       <= req.addr;
-      rg_mmio_num_bytes  <= num_bytes;
-      rg_mmio_v_slices   <= v_slices;
-      rg_mmio_err        <= False;
-      rg_state           <= STATE_MMIO_WR_WAIT;
    endrule
 
-   // Collect MMIO slice-write response; request next slice or finish by responding to client
-   rule rl_mmio_wr_slice_rsp (rg_state == STATE_MMIO_WR_WAIT);
-      match { .slice_err, .*, .* } = mmio.result;
-      // Accumulate errors
-      let err = (slice_err || rg_mmio_err);
+   // Pass MMIO LD response from system back into axi4_to_ld_module
+   rule rl_mmio_LD_rsp (f_mmio_rsp_is_load.first);
+      f_mmio_rsp_is_load.deq;
+      let rsp <- pop (f_single_rsps);
+      Bool err = (! rsp.ok);
+      axi4_to_ld.rsps.enq (tuple2 (err, rsp.data));
 
-      if (slice_err || (verbosity_mmio >= 1)) begin
-	 $display ("%0d: DMA_Cache.rl_mmio_wr_slice_rsp: slice_err %0d  err %0d, num_bytes remaining %0h",
-		   cur_cycle, slice_err, err, rg_mmio_num_bytes);
-      end
-
-      if (rg_mmio_num_bytes <= 8) begin
-	 // Last slice done; discard client's request, respond to client
-	 fa_respond_to_client (err, ?);
-	 f_reqs.deq;
-	 rg_state <= STATE_IDLE;
-      end
-      else begin
-	 // Write next slice
-	 let addr      = rg_mmio_addr + 8;
-	 let num_bytes = rg_mmio_num_bytes - 8;
-	 let v_slices  = shiftInAtN (rg_mmio_v_slices, 0);
-	 fa_mmio_slice_req (CACHE_ST, addr, v_slices [0], num_bytes);
-	 rg_mmio_addr       <= addr;
-	 rg_mmio_num_bytes  <= num_bytes;
-	 rg_mmio_v_slices   <= v_slices;
-	 rg_mmio_err        <= err;
+      if (verbosity_MMIO_rd != 0) begin
+	 $display ("%0d: %m.rl_mmio_LD_rsp: ", cur_cycle);
+	 $display ("    ", fshow (rsp));
       end
    endrule
 
-   // ----------------------------------------------------------------
-   // MMIO Reads
-  
-   // MMIO Read-requests (first slice)
-   rule rl_mmio_rd_req (   (rg_state == STATE_IDLE)
-			&& (! f_L2_to_L1_Reqs.notEmpty)        // L2-to-L1 requests have priority
-			&& (! soc_map.m_is_mem_addr (addr))    // all non-cacheable addrs
-			&& (req_op == AXI4_OP_RD));
-      if (verbosity_mmio >= 1) begin
-	 $display ("%0d: DMA_Cache.rl_mmio_rd_req", cur_cycle);
+   // Pass AXI4 response to client
+   rule rl_mmio_AXI_rd_rsp;
+      let rdd <- pop (f_rd_data);
+      axi4_s_xactor.i_rd_data.enq (rdd);
+
+      if (verbosity_MMIO_rd != 0) begin
+	 $display ("%0d: %m.rl_mmio_AXI_rd_rsp: ", cur_cycle);
+	 $display ("    ", fshow (rdd));
+      end
+   endrule
+
+   // ================================================================
+   // MMIO writes
+
+   // AXI4 to ST converter
+   FIFOF #(AXI4_Wr_Addr #(Wd_Id_Dma,
+			  Wd_Addr_Dma,
+			  Wd_User_Dma))  f_wr_addr <- mkFIFOF;
+   FIFOF #(AXI4_Wr_Data #(Wd_Data_Dma,
+			  Wd_User_Dma))  f_wr_data <- mkFIFOF;
+   FIFOF #(AXI4_Wr_Resp #(Wd_Id_Dma,
+			  Wd_User_Dma))  f_wr_resp <- mkFIFOF;
+
+   AXI4_to_ST_IFC #(Wd_Addr_Dma, 64)
+   axi4_to_st <- mkAXI4_to_ST (to_FIFOF_O (f_wr_addr),
+			       to_FIFOF_O (f_wr_data),
+			       to_FIFOF_I (f_wr_resp));
+
+   // Pass MMIO write requests into axi4_to_st module
+   rule rl_mmio_axi_wr_req (! fn_is_cached_addr (axi4_s_xactor.o_wr_addr.first.awaddr));
+      let wra <- pop_o (axi4_s_xactor.o_wr_addr);
+      let wrd <- pop_o (axi4_s_xactor.o_wr_data);
+      f_wr_addr.enq (wra);
+      f_wr_data.enq (wrd);
+
+      if (verbosity_MMIO_wr != 0) begin
+	 $display ("%0d: %m.rl_mmio_AXI_wr_req", cur_cycle);
+	 $display ("    awid %0h awaddr %0h awlen %0h awsize %0h awuser %0h",
+		   wra.awid, wra.awaddr, wra.awlen, wra.awsize, wra.awuser);
+	 $display ("    (<wdata>, <wstrb> below) wlast %0d wuser %0h",
+		   wrd.wlast, wrd.wuser);
+	 $display ("    [127:0]    %032h %04h", wrd.wdata [127:0],   wrd.wstrb [15:0]);
+	 $display ("    [255:128]  %032h %04h", wrd.wdata [255:128], wrd.wstrb [31:16]);
+	 $display ("    [383:256]  %032h %04h", wrd.wdata [383:256], wrd.wstrb [47:32]);
+	 $display ("    [511:384]  %032h %04h", wrd.wdata [511:384], wrd.wstrb [63:48]);
+      end
+   endrule
+
+   // Pass MMIO ST requests out from axi4_to_st module out to system
+   rule rl_mmio_ST_req;
+      match { .size_code, .addr, .wdata } <- pop_o (axi4_to_st.reqs);
+      let req = Single_Req {is_read:   False,
+			    addr:      addr,
+			    size_code: size_code,
+			    data:      wdata};
+      f_single_reqs.enq (req);
+      f_mmio_rsp_is_load.enq (False);
+
+      if (verbosity_MMIO_wr != 0) begin
+	 $display ("%0d: %m.rl_mmio_ST_req: ", cur_cycle);
 	 $display ("    ", fshow (req));
       end
-
-      Bit #(8) num_bytes  = fv_AXI4_Size_to_num_bytes (req.size);
-      fa_mmio_slice_req (CACHE_LD, req.addr, ?, num_bytes);
-
-      // Prepare the slice-accumulation registers
-      rg_mmio_addr       <= req.addr;
-      rg_mmio_num_bytes  <= num_bytes;
-      rg_mmio_v_slices   <= unpack (0);
-      rg_mmio_err        <= False;
-      rg_mmio_num_slices <= 1;    // Current empty-count in v_slices
-
-      rg_state          <= STATE_MMIO_RD_WAIT;
    endrule
 
-   // Collect MMIO slice-read response; request next slice or finish by responding to client
-   rule rl_mmio_rd_slice_rsp (rg_state == STATE_MMIO_RD_WAIT);
-      match { .slice_err, .slice_data, .* } = mmio.result;
-      if (slice_err || (verbosity_mmio >= 1)) begin
-	 $display ("%0d: DMA_Cache.rl_mmio_rd_slice_rsp: addr %0h  slice_err %0d  slice_data %0h",
-		   cur_cycle, rg_mmio_addr, slice_err, slice_data);
+   // For MMIO ST requests, no response expected from system
+   rule rl_mmio_st_rsp (! f_mmio_rsp_is_load.first);
+      f_mmio_rsp_is_load.deq;
+      Bool err = False;
+      axi4_to_st.rsps.enq (err);
+
+      if (verbosity_MMIO_wr != 0) begin
+	 $display ("%0d: %m.rl_mmio_ST_rsp: ", cur_cycle);
+	 $display ("    err = ", fshow (err));
       end
+   endrule
 
-      // Accumulate this slice's err and data
-      let err      = (slice_err || rg_mmio_err);
-      let v_slices = shiftInAtN (rg_mmio_v_slices, slice_data);
+   // Pass AXI4 response to client
+   rule rl_mmio_axi_wr_rsp;
+      let wrr <- pop (f_wr_resp);
+      axi4_s_xactor.i_wr_resp.enq (wrr);
 
-      if (rg_mmio_num_bytes <= 8) begin
-	 // Last slice done
-
-	 // v_slices has data aligned to most-significant slice
-	 // Shift it into LSBs
-
-	 Bit #(TAdd #(1, TLog #(Slices_per_Data))) rot_amt_slices = { 1'b1, 0 } - rg_mmio_num_slices;
-
-	 let v_slices_in_lsbs = rotateBy (v_slices, unpack (truncate (rot_amt_slices)));
-	 let rdata_in_lsbs    = pack (v_slices_in_lsbs);
-
-	 // Shift rdata into proper lanes for AXI rdata.
-	 // (We do it on a byte-vector to clarify the shift is in byte-units, not bit-units,
-	 //  for a more hardware-efficient shifter)
-	 Vector #(Bytes_per_Data, Bit #(8)) v_bytes = unpack (rdata_in_lsbs);
-	 UInt #(7) rot_amt_bytes = unpack ('h40 - { 0, req.addr [5:0] });
-	 Bit #(Wd_Data_Dma) rdata = pack (rotateBy (v_bytes, truncate (rot_amt_bytes)));
-	 if (verbosity_mmio >= 1) begin
-	    $display ("    v_slices         ", fshow (v_slices));
-	    $display ("    num_slices %0d  rot_amt_slices %0d", rg_mmio_num_slices, rot_amt_slices);
-	    $display ("    v_slices_in_lsbs ", fshow (v_slices_in_lsbs));
-	    $display ("    rdata_in_lsbs %0h", rdata_in_lsbs);
-	    $display ("    v_bytes ", fshow (v_bytes));
-	    $display ("    rot_amt_bytes 0x%0h (ignore MSB)", rot_amt_bytes);
-	    $display ("    rdata %0h", rdata);
-	 end
-
-	 // Respond to client
-	 fa_respond_to_client (err, rdata);
-	 // Discard client's request
-	 f_reqs.deq;
-	 rg_state <= STATE_IDLE;
-      end
-      else begin
-	 // Issue next request and accumulate current slice
-	 let addr            = rg_mmio_addr + 8;
-	 let num_bytes       = rg_mmio_num_bytes - 8;
-	 fa_mmio_slice_req (CACHE_LD, addr, ?, num_bytes);
-
-	 rg_mmio_addr       <= addr;
-	 rg_mmio_num_bytes  <= num_bytes;
-	 rg_mmio_v_slices   <= v_slices;
-	 rg_mmio_err        <= err;
-	 rg_mmio_num_slices <= rg_mmio_num_slices + 1;
+      if (verbosity_MMIO_wr != 0) begin
+	 $display ("%0d: %m.rl_mmio_AXI_wr_rsp: ", cur_cycle);
+	 $display ("    ", fshow (wrr));
       end
    endrule
 
@@ -804,7 +765,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
    // ----------------
    // MMIO interface facing memory
 
-   interface mmio_client = mmio.mmio_client;
+   interface mmio_client = toGPClient (f_single_reqs, f_single_rsps);
 
 endmodule: mkDMA_Cache
 

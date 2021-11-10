@@ -35,7 +35,6 @@ import AXI4_to_LDST_utils :: *;
 // Stores: Interface
 
 interface AXI4_to_ST_IFC #(numeric type wd_addr_t,
-			   numeric type wd_axi_data_t,
 			   numeric type wd_ldst_data_t);
 
    interface FIFOF_O #(Tuple3 #(Bit #(2),                  // width B/H/W/D
@@ -69,7 +68,7 @@ module mkAXI4_to_ST
    #(FIFOF_O #(AXI4_Wr_Addr #(wd_id_t, wd_addr_t, wd_user_t))  o_wr_addr,
      FIFOF_O #(AXI4_Wr_Data #(wd_axi_data_t, wd_user_t))       o_wr_data,
      FIFOF_I #(AXI4_Wr_Resp #(wd_id_t, wd_user_t))             i_wr_resp)
-   (AXI4_to_ST_IFC #(wd_addr_t, wd_axi_data_t, wd_ldst_data_t))
+   (AXI4_to_ST_IFC #(wd_addr_t, wd_ldst_data_t))
 
    provisos (Add #(a__,             8,                                 wd_addr_t),
 	     Mul #(wd_ldst_data_t,  slices_per_axi_data_t,             wd_axi_data_t),
@@ -441,7 +440,7 @@ module mkAXI4_to_ST
 
    rule rl_finish_req (rg_state == STATE_FINISH_REQ);
       if (verbosity > 0)
-	 $display ("%0d: %m.AXI4_to_ST:rl_finish_st_req", cur_cycle);
+	 $display ("%0d: %m.AXI4_to_ST:rl_finish_req", cur_cycle);
 
       f_st_rsp_info.enq (1);    // 'done' sentinel
       f_axi_rsp_info.enq (tuple3 (False, wr_addr_S.awid, wr_addr_S.awuser));

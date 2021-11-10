@@ -119,13 +119,13 @@ module mkAXI4_to_LDST (AXI4_to_LDST_IFC #(wd_id_t,
       axi4_S_xactor <- mkAXI4_Slave_Xactor;
 
    // Store converter
-   AXI4_to_ST_IFC #(wd_addr_t, wd_axi_data_t, wd_ldst_data_t)
+   AXI4_to_ST_IFC #(wd_addr_t, wd_ldst_data_t)
    st_ifc <- mkAXI4_to_ST (axi4_S_xactor.o_wr_addr,
 			   axi4_S_xactor.o_wr_data,
 			   axi4_S_xactor.i_wr_resp);
 
    // Load converter
-   AXI4_to_LD_IFC #(wd_addr_t, wd_axi_data_t, wd_ldst_data_t)
+   AXI4_to_LD_IFC #(wd_addr_t, wd_ldst_data_t)
    ld_ifc <- mkAXI4_to_LD (axi4_S_xactor.o_rd_addr,
 			   axi4_S_xactor.i_rd_data);
 

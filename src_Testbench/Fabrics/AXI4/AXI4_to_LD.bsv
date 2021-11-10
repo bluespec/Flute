@@ -35,7 +35,6 @@ import AXI4_to_LDST_utils :: *;
 // Loads: Interface
 
 interface AXI4_to_LD_IFC #(numeric type wd_addr_t,
-			   numeric type wd_axi_data_t,
 			   numeric type wd_ldst_data_t);
 
    interface FIFOF_O #(Tuple2 #(Bit #(2),             // width B/H/W/D
@@ -72,7 +71,7 @@ Integer verbosity = 0;
 module mkAXI4_to_LD
    #(FIFOF_O #(AXI4_Rd_Addr #(wd_id_t, wd_addr_t, wd_user_t))  o_rd_addr,
      FIFOF_I #(AXI4_Rd_Data #(wd_id_t, wd_axi_data_t, wd_user_t))  i_rd_data)
-   (AXI4_to_LD_IFC #(wd_addr_t, wd_axi_data_t, wd_ldst_data_t))
+   (AXI4_to_LD_IFC #(wd_addr_t, wd_ldst_data_t))
 
    provisos (Add #(a__,             8,                     wd_addr_t),
 	     Mul #(wd_ldst_data_t,  slices_per_axi_data_t, wd_axi_data_t),
