@@ -1,0 +1,122 @@
+// copyright 2007--2008 Bluespec, Inc.  All rights reserved.
+
+
+`define TLM_PRM_DCL numeric type id_size,   \
+	            numeric type addr_size, \
+		    numeric type data_size, \
+		    numeric type length_size, \
+		    numeric type user_size
+
+`define TLM_PRM    id_size,   \
+	           addr_size, \
+	           data_size, \
+		   length_size, \
+		   user_size
+
+`define TLM_PRM_STD 4,  \
+                    32, \
+		    32, \
+                    8, \
+                    0
+
+////////////////////////////////////////////////////////////////////////////////
+///
+////////////////////////////////////////////////////////////////////////////////
+
+`define TLM_RR_DCL type req_t,   \
+		   type resp_t
+
+`define TLM_RR     req_t, \
+		   resp_t
+
+`define TLM_RR_NSTD TLMRequest#(`TLM_PRM), \
+		   TLMResponse#(`TLM_PRM) \
+
+`define TLM_RR_STD TLMRequest#(`TLM_PRM_STD), \
+		   TLMResponse#(`TLM_PRM_STD) \
+
+////////////////////////////////////////////////////////////////////////////////
+///
+////////////////////////////////////////////////////////////////////////////////
+
+`define TLM_XTR_DCL `TLM_RR_DCL, `TLM_PRM_DCL
+`define TLM_XTR     `TLM_RR,     `TLM_PRM
+`define TLM_XTR_STD `TLM_RR_STD, `TLM_PRM_STD
+
+////////////////////////////////////////////////////////////////////////////////
+///
+////////////////////////////////////////////////////////////////////////////////
+
+`define TLM_TYPE_PRMS `TLM_PRM_DCL
+`define TLM_TYPES     `TLM_PRM
+`define TLM_STD_TYPES `TLM_PRM_STD
+
+////////////////////////////////////////////////////////////////////////////////
+///
+////////////////////////////////////////////////////////////////////////////////
+
+`define dv deriving(Bits,Eq)
+
+`define TLM_PRM_ID_EXT id_size_ext, \
+	               addr_size, \
+	               data_size, \
+                       length_size, \
+                       user_size
+
+`define TLM_PRM_L_EXT id_size, \
+	              addr_size, \
+	              data_size, \
+                      length_size_ext, \
+                      user_size
+
+`define TLM_PRM_REST addr_size, \
+	             data_size, \
+		     length_size, \
+		     user_size
+
+////////////////////////////////////////////////////////////////////////////////
+/// Add defines for stream transfers
+////////////////////////////////////////////////////////////////////////////////
+
+`define TLM_T_DCL type trans_t
+`define TLM_T     trans_t
+
+`define TLM_XT_DCL `TLM_T_DCL, `TLM_PRM_DCL
+`define TLM_XT     `TLM_T,     `TLM_PRM
+
+////////////////////////////////////////////////////////////////////////////////
+/// Add versions with a parametrized suffix.
+////////////////////////////////////////////////////////////////////////////////
+
+`define T_PRM_(sfx) id_size_`` sfx,   \
+                    addr_size_`` sfx, \
+		    data_size_`` sfx, \
+		    length_size_`` sfx, \
+		    user_size_`` sfx
+
+`define T_PRM_DCL_(sfx) numeric type id_size_`` sfx,   \
+			numeric type addr_size_`` sfx, \
+		        numeric type data_size_`` sfx, \
+		        numeric type length_size_`` sfx, \
+		        numeric type user_size_`` sfx
+
+`define T_REQ_(sfx) req_t_`` sfx
+`define T_RSP_(sfx) resp_t_`` sfx
+
+`define T_RR_DCL_(sfx) type req_t_`` sfx,   \
+		       type resp_t_`` sfx
+
+`define T_RR_(sfx) req_t_`` sfx,   \
+		   resp_t_`` sfx
+
+`define T_XTR_DCL_(sfx) `T_RR_DCL_(sfx), `T_PRM_DCL_(sfx)
+`define T_XTR_(sfx)     `T_RR_(sfx)  ,   `T_PRM_(sfx)
+
+`define T_T_DCL_(sfx) type trans_t_`` sfx
+`define T_T_(sfx)     trans_t_`` sfx
+
+`define T_XT_DCL_(sfx) `T_T_DCL_(sfx), `T_PRM_DCL_(sfx)
+`define T_XT_(sfx)     `T_T_(sfx)  ,   `T_PRM_(sfx)
+
+
+

@@ -1,0 +1,15 @@
+// Copyright 2007--2010 Bluespec, Inc.  All rights reserved.
+
+`include "TLM.defines"
+
+
+`define AXI_PRM_STD 4,  \
+                    32, \
+		    32, \
+                    8
+
+`define AXI_RR_STD TLMRequest#(`AXI_PRM_STD), \
+		   TLMResponse#(`AXI_PRM_STD) \
+
+`define AXI_XTR_STD `AXI_RR_STD, `AXI_PRM_STD
+
