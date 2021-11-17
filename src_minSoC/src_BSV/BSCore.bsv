@@ -65,11 +65,7 @@ import AXI4_Stream ::*;
 `endif
 
 `ifdef INCLUDE_GDB_CONTROL
-import Debug_Module       :: *;
-import Debug_Interfaces   :: *;
-import Jtag               :: *;
-import JtagTap            :: *;
-import Giraffe_IFC        :: *;
+import BSDebug            :: *;
 `endif
 
 // ================================================================
