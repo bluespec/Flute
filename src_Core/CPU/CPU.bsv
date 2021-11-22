@@ -1040,10 +1040,12 @@ module mkCPU (CPU_IFC);
                                       tval:     stage1.out.trap_info.tval};
       rg_trap_interrupt <= False;
       rg_trap_instr     <= stage1.out.data_to_stage2.instr;    // TODO: this is also used for successful CSRRW
+`ifdef SHOW_COMPRESSED
+      rg_trap_traced_instr <= stage1.out.data_to_stage2.instr;
+`endif
 `ifdef INCLUDE_TANDEM_VERIF
       rg_trap_trace_data <= stage1.out.data_to_stage2.trace_data;    // TODO: this is also used for successful CSRRW
 `endif
-
       rg_state <= CPU_CSRR_S_or_C_2;
    endrule: rl_stage1_CSRR_S_or_C
 
