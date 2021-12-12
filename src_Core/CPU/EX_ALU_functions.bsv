@@ -27,9 +27,9 @@ import Vector :: *;
 // ================================================================
 // Project imports
 
-import ISA_Decls   :: *;
-import CPU_Globals :: *;
-import TV_Info     :: *;
+import ISA_Decls     :: *;
+import CPU_Globals   :: *;
+import TV_Trace_Data :: *;
 
 // ================================================================
 // ALU inputs

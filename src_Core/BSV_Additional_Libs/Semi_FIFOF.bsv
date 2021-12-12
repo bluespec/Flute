@@ -216,6 +216,18 @@ function Server_Semi_FIFOF #(req_t, rsp_t) fifofs_to_Server_Semi_FIFOF (FIFOF #(
 	  endinterface;
 endfunction
 
+Client_Semi_FIFOF #(req_t, rsp_t)
+dummy_Client_Semi_FIFOF = interface Client_Semi_FIFOF;
+			     interface FIFOF_O  request  = dummy_FIFOF_O;
+			     interface FIFOF_I  response = dummy_FIFOF_I;
+			  endinterface;
+
+Server_Semi_FIFOF #(req_t, rsp_t)
+dummy_Server_Semi_FIFOF = interface Server_Semi_FIFOF;
+			     interface FIFOF_I  request  = dummy_FIFOF_I;
+			     interface FIFOF_O  response = dummy_FIFOF_O;
+			  endinterface;
+
 // ================================================================
 
 endpackage

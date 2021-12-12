@@ -31,7 +31,7 @@ import PC_Trace :: *;
 
 `endif
 `ifdef INCLUDE_TANDEM_VERIF
-import TV_Info         :: *;
+import TV_Trace_Data :: *;
 `endif
 
 // ================================================================

@@ -44,8 +44,8 @@ import AXI4_Lite_Types :: *;
 
 import ISA_Decls :: *;
 
-import PC_Trace  :: *;
-import TV_Info   :: *;
+import PC_Trace      :: *;
+import TV_Trace_Data :: *;
 
 import GPR_RegFile :: *;
 `ifdef ISA_F
@@ -1416,6 +1416,7 @@ module mkCPU (CPU_IFC);
       near_mem.server_fence_i.request.put (?);
 
       // Notify debugger that we've halted
+      $display ("CPU halted");
       f_run_halt_rsps.enq (False);
    endrule: rl_trap_BREAK_to_Debug_Mode
 
@@ -1428,6 +1429,7 @@ module mkCPU (CPU_IFC);
       rg_state <= CPU_DEBUG_MODE;
 
       // Notify debugger that we've halted
+      $display ("CPU halted");
       f_run_halt_rsps.enq (False);
 
       if (cur_verbosity > 1)
@@ -1438,7 +1440,8 @@ module mkCPU (CPU_IFC);
    // Reset from Debug Module
 
    rule rl_reset_from_Debug_Module (f_reset_reqs.notEmpty && (rg_state != CPU_RESET1));
-      $display ("%0d: %m.rl_reset_from_Debug_Module", mcycle);
+      $display ("%0d: CPU reset from Debug Module", mcycle);
+      $display ("    At: %m.rl_reset_from_Debug_Module");
       rg_state <= CPU_RESET1;
    endrule
 `endif
@@ -1490,12 +1493,14 @@ module mkCPU (CPU_IFC);
 
       // Report CPI only stop-req, but not on step-req (where it's not very useful)
       if (rg_stop_req) begin
-	 $display ("%0d: %m.rl_stage1_stop: Stop for debugger. minstret %0d priv %0d PC 0x%0h instr 0x%0h",
-		   mcycle, minstret, rg_cur_priv, pc, instr);
+	 $display ("CPU stop for debugger: minstret %0d priv %0d PC 0x%0h instr 0x%0h",
+		   minstret, rg_cur_priv, pc, instr);
 	 fa_report_CPI;
       end
       else
-	 $display ("%0d: %m.rl_stage1_stop: Stop after single-step. PC = 0x%08h", mcycle, pc);
+	 $display ("Stop after single-step. PC = 0x%08h", mcycle, pc);
+      $display ("    %0d: %m", mcycle);
+      $display ("    Rule rl_stage1_stop");
 
       DCSR_Cause cause= (rg_stop_req ? DCSR_CAUSE_HALTREQ : DCSR_CAUSE_STEP);
       csr_regfile.write_dcsr_cause_priv (cause, rg_cur_priv);
@@ -1521,9 +1526,6 @@ module mkCPU (CPU_IFC);
 
 `ifdef INCLUDE_GDB_CONTROL
    rule rl_debug_run ((f_run_halt_reqs.first == True) && (rg_state == CPU_DEBUG_MODE));
-      if (cur_verbosity > 1)
-	 $display ("%0d: %m.rl_debug_run", mcycle);
-
       f_run_halt_reqs.deq;
 
       // Debugger 'resume' request (e.g., GDB 'continue' command)
@@ -1531,42 +1533,47 @@ module mkCPU (CPU_IFC);
       fa_restart_from_halt (dpc);
 
       // Notify debugger that we've started running
+      $display ("CPU: debugger run request: running");
       f_run_halt_rsps.enq (True);
+
+      $display ("    %0d: %m", mcycle);
+      $display ("    Rule rl_debug_run");
    endrule
 
    (* descending_urgency = "rl_debug_run_redundant, rl_pipe" *)
-   rule rl_debug_run_redundant ((f_run_halt_reqs.first == True) && fn_is_running (rg_state));
-      if (cur_verbosity > 1) $display ("%0d: %m.rl_debug_run_redundant", mcycle);
-
+   rule rl_debug_run_redundant (   (f_run_halt_reqs.first == True)
+				&& fn_is_running (rg_state));
       f_run_halt_reqs.deq;
 
       // Notify debugger that we're running
+      $display ("CPU: debugger run request: but CPU is already running.");
       f_run_halt_rsps.enq (True);
 
-      $display ("%0d: %m.debug_run_redundant: CPU already running.", mcycle);
+      $display ("    %0d: %m", mcycle);
+      $display ("    Rule rl_debug_run_redundant");
    endrule
 
    (* descending_urgency = "rl_debug_halt, rl_pipe" *)
    rule rl_debug_halt ((f_run_halt_reqs.first == False) && fn_is_running (rg_state));
-      if (cur_verbosity > 1) $display ("%0d: %m.rl_debug_halt", mcycle);
-
       f_run_halt_reqs.deq;
 
       // Debugger 'halt' request (e.g., GDB '^C' command)
       rg_stop_req <= True;
-      if (cur_verbosity > 1)
-	 $display ("%0d: %m.rl_debug_halt", mcycle);
+      $display ("CPU: debugger halt request: requested.");
+      $display ("    %d: %m", mcycle);
+      $display ("    Rule rl_debug_halt");
    endrule
 
-   rule rl_debug_halt_redundant ((f_run_halt_reqs.first == False) && (! fn_is_running (rg_state)));
-      if (cur_verbosity > 1) $display ("%0d: %m.rl_debug_halt_redundant", mcycle);
-
+   rule rl_debug_halt_redundant (   (f_run_halt_reqs.first == False)
+				 && (! fn_is_running (rg_state)));
       f_run_halt_reqs.deq;
 
       // Notify debugger that we've 'halted'
+      $display ("CPU: debugger halt request: but CPU is not currently running.");
       f_run_halt_rsps.enq (False);
 
-      $display ("%0d: %m.rl_debug_halt_redundant: CPU already halted.", mcycle);
+      $display ("    %0d: %m", mcycle);
+      $display ("    Rule rl_debug_halt_redundant");
       $display ("    state = ", fshow (rg_state));
    endrule
 
@@ -1579,6 +1586,7 @@ module mkCPU (CPU_IFC);
       let data = gpr_regfile.read_rs1_port2 (regname);
       let rsp = DM_CPU_Rsp {ok: True, data: data};
       f_gpr_rsps.enq (rsp);
+
       if (cur_verbosity > 1)
 	 $display ("%0d: %m.rl_debug_read_gpr: reg %0d => 0x%0h",
 		   mcycle, regname, data);
@@ -1603,7 +1611,8 @@ module mkCPU (CPU_IFC);
       let rsp = DM_CPU_Rsp {ok: False, data: ?};
       f_gpr_rsps.enq (rsp);
 
-      if (cur_verbosity > 1) $display ("%0d: %m.rl_debug_gpr_access_busy", mcycle);
+      $display ("%0d: debugger GPR access: CPU state: == ",
+		mcycle, fshow (rg_state), " (not in CPU_DEBUG_MODE)");
    endrule
 
    // ----------------
@@ -1640,8 +1649,8 @@ module mkCPU (CPU_IFC);
       let rsp = DM_CPU_Rsp {ok: False, data: ?};
       f_fpr_rsps.enq (rsp);
 
-      if (cur_verbosity > 1)
-	 $display ("%0d: %m.rl_debug_fpr_access_busy", mcycle);
+      $display ("%0d: debugger FPR access: CPU state: == ",
+		mcycle, fshow (rg_state), " (not in CPU_DEBUG_MODE)");
    endrule
 `endif
 
@@ -1679,8 +1688,8 @@ module mkCPU (CPU_IFC);
       let rsp = DM_CPU_Rsp {ok: False, data: ?};
       f_csr_rsps.enq (rsp);
 
-      if (cur_verbosity > 1)
-	 $display ("%0d: %m.rl_debug_csr_access_busy", mcycle);
+      $display ("%0d: debugger CSR access: CPU state: == ",
+		mcycle, fshow (rg_state), " (not in CPU_DEBUG_MODE)");
    endrule
 `endif
 

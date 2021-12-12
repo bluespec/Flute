@@ -11,6 +11,7 @@ package GetPut_Aux;
 import FIFOF        :: *;
 import GetPut       :: *;
 import ClientServer :: *;
+import Vector       :: *;
 
 // ================================================================
 // A convenience function to 'pop' a value from a FIFO, FIFOF, ...
@@ -120,6 +121,36 @@ FIFOF #(t) dummy_FIFOF = interface FIFOF;
 			       noAction;
 			    endmethod
 			 endinterface;
+
+// ================================================================
+// Mux from multiplie clients to one server.
+// Assumes in-order responses from server.
+// For full pipelining, n_in_flight be > latency of server.
+
+
+module mkMux_Clients_Server #(Integer                          n_in_flight,
+			      Vector #(nc_t, Client #(t1, t2)) v_clients,
+			      Server #(t1, t2)                 server)
+                            (Empty)
+   provisos (Log #(nc_t, lognc_t));
+
+   // These FIFOs remember, for each server, to client each response should be directed
+   FIFOF #(Bit #(lognc_t)) f_client_id <- mkFIFOF;
+
+   for (Integer j = 0; j < valueOf (nc_t); j = j + 1)
+      rule rl_cj_to_s;
+	 let req <- v_clients [j].request.get;
+	 server.request.put (req);
+	 f_client_id.enq (fromInteger (j));
+      endrule
+
+   for (Integer j = 0; j < valueOf (nc_t); j = j + 1)
+      rule rl_cj_from_s (f_client_id.first == fromInteger (j));
+	 let rsp <- server.response.get;
+	 v_clients [j].response.put (rsp);
+	 f_client_id.deq;
+      endrule
+endmodule
 
 // ================================================================
 

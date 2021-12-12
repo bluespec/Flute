@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2021 Bluespec, Inc. All Rights Reserved
 
 package CPU_Stage3;
 
@@ -44,7 +44,7 @@ import CSR_RegFile :: *;
 import CPU_Globals :: *;
 
 `ifdef INCLUDE_TANDEM_VERIF
-import TV_Info     :: *;
+import TV_Trace_Data :: *;
 `endif
 
 // ================================================================

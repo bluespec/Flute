@@ -187,8 +187,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
    SoC_Map_IFC soc_map <- mkSoC_Map;
 
    function Bool fn_is_cached_addr (Bit #(Wd_Addr_Dma) addr);
-      return ((soc_map.m_ddr4_0_cached_addr_base <= addr)
-	      && (addr < soc_map.m_ddr4_0_cached_addr_lim));
+      return soc_map.m_is_mem_addr (addr);
    endfunction
 
    // ----------------

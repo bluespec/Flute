@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2021 Bluespec, Inc. All Rights Reserved
 
 package CPU_Globals;
 
@@ -19,9 +19,8 @@ package CPU_Globals;
 // ================================================================
 // Project imports
 
-import ISA_Decls :: *;
-
-import TV_Info   :: *;
+import ISA_Decls     :: *;
+import TV_Trace_Data :: *;
 
 // ================================================================
 // Output status of each stage

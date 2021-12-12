@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2021 Bluespec, Inc. All Rights Reserved
 
 package CPU_Stage2;
 
@@ -45,7 +45,7 @@ import Cur_Cycle  :: *;
 
 import ISA_Decls     :: *;
 
-import TV_Info       :: *;
+import TV_Trace_Data :: *;
 
 import CPU_Globals      :: *;
 import Near_Mem_IFC     :: *;

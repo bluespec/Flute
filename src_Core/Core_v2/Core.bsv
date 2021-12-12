@@ -4,7 +4,6 @@ package Core;
 
 // ================================================================
 // This package defines:
-//     Core_IFC
 //     mkCore #(Core_IFC)
 //
 // mkCore instantiates:
@@ -61,6 +60,7 @@ import Dma_Server_Mux :: *;
 `endif
 
 `ifdef INCLUDE_TANDEM_VERIF
+import TV_Trace_Data :: *;
 import TV_Info   :: *;
 import TV_Encode :: *;
 `endif
