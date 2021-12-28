@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2021 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2022 Bluespec, Inc. All Rights Reserved
 
 package CPU;
 
@@ -336,7 +336,7 @@ module mkCPU (CPU_IFC);
 	 let x = (delta_CPI_cycles * 10) / delta_CPI_instrs;
 	 let cpi     = x / 10;
 	 let cpifrac = x % 10;
-	 $display ("CPI: %0d.%0d = (%0d/%0d) since last 'continue'",
+	 $display ("    CPI: %0d.%0d = (%0d/%0d) since last 'continue'",
 		   cpi, cpifrac, delta_CPI_cycles, delta_CPI_instrs);
       endaction
    endfunction
@@ -444,7 +444,7 @@ module mkCPU (CPU_IFC);
 	 $display (" (RV32)");
       else
 	 $display (" (RV64)");
-      $display ("Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved.");
+      $display ("Copyright (c) 2016-2022 Bluespec, Inc. All Rights Reserved.");
       $display ("================================================================");
 
       gpr_regfile.server_reset.request.put (?);
@@ -1404,7 +1404,11 @@ module mkCPU (CPU_IFC);
       let pc    = stage1.out.data_to_stage2.pc;
       let instr = stage1.out.data_to_stage2.instr;
 
-      $display ("%0d: %m.rl_trap_BREAK_to_Debug_Mode: PC 0x%08h instr 0x%08h", mcycle, pc, instr);
+      $display ("CPU: BREAK to Debug Mode: PC 0x%08h instr 0x%08h", pc, instr);
+      if (cur_verbosity > 0) begin
+	 $display (    "%m");
+	 $display (    "%0d: rule rl_trap_BREAK_to_Debug_Mode", mcycle);
+      end
       if (cur_verbosity > 1)
 	 $display ("    Flushing caches");
 
@@ -1414,10 +1418,6 @@ module mkCPU (CPU_IFC);
 
       // Flush both caches -- using the same interface as that used by FENCE_I
       near_mem.server_fence_i.request.put (?);
-
-      // Notify debugger that we've halted
-      $display ("CPU halted");
-      f_run_halt_rsps.enq (False);
    endrule: rl_trap_BREAK_to_Debug_Mode
 
    // ----------------
@@ -1429,11 +1429,13 @@ module mkCPU (CPU_IFC);
       rg_state <= CPU_DEBUG_MODE;
 
       // Notify debugger that we've halted
-      $display ("CPU halted");
       f_run_halt_rsps.enq (False);
 
-      if (cur_verbosity > 1)
-	 $display ("%0d: %m.rl_BREAK_cache_flush_finish", mcycle);
+      $display ("CPU halted");
+      if (cur_verbosity > 1) begin
+	 $display (    "%m");
+	 $display (    "%0d: rule rl_BREAK_cache_flush_finish", mcycle);
+      end
    endrule
 
    // ----------------
@@ -1498,7 +1500,7 @@ module mkCPU (CPU_IFC);
 	 fa_report_CPI;
       end
       else
-	 $display ("Stop after single-step. PC = 0x%08h", mcycle, pc);
+	 $display ("CPU: stop after single-step. PC = 0x%08h", pc);
       $display ("    %0d: %m", mcycle);
       $display ("    Rule rl_stage1_stop");
 
@@ -1533,11 +1535,13 @@ module mkCPU (CPU_IFC);
       fa_restart_from_halt (dpc);
 
       // Notify debugger that we've started running
-      $display ("CPU: debugger run request: running");
       f_run_halt_rsps.enq (True);
 
-      $display ("    %0d: %m", mcycle);
-      $display ("    Rule rl_debug_run");
+      $display ("CPU: Debugger run request: running: DPC = 0x%0x", dpc);
+      if (cur_verbosity > 1) begin
+	 $display ("    %m");
+	 $display ("    %0d: Rule rl_debug_run", mcycle);
+      end
    endrule
 
    (* descending_urgency = "rl_debug_run_redundant, rl_pipe" *)
@@ -1546,11 +1550,13 @@ module mkCPU (CPU_IFC);
       f_run_halt_reqs.deq;
 
       // Notify debugger that we're running
-      $display ("CPU: debugger run request: but CPU is already running.");
       f_run_halt_rsps.enq (True);
 
-      $display ("    %0d: %m", mcycle);
-      $display ("    Rule rl_debug_run_redundant");
+      $display ("CPU: Redundant debugger run request: already running.");
+      if (cur_verbosity > 1) begin
+	 $display ("    %m");
+	 $display ("    %0d: Rule rl_debug_run_redundant", mcycle);
+      end
    endrule
 
    (* descending_urgency = "rl_debug_halt, rl_pipe" *)
@@ -1559,9 +1565,11 @@ module mkCPU (CPU_IFC);
 
       // Debugger 'halt' request (e.g., GDB '^C' command)
       rg_stop_req <= True;
-      $display ("CPU: debugger halt request: requested.");
-      $display ("    %d: %m", mcycle);
-      $display ("    Rule rl_debug_halt");
+      $display ("CPU: Debugger halt request: requested.");
+      if (cur_verbosity > 1) begin
+	 $display ("    %m");
+	 $display ("    %d: Rule rl_debug_halt", mcycle);
+      end
    endrule
 
    rule rl_debug_halt_redundant (   (f_run_halt_reqs.first == False)
@@ -1569,12 +1577,14 @@ module mkCPU (CPU_IFC);
       f_run_halt_reqs.deq;
 
       // Notify debugger that we've 'halted'
-      $display ("CPU: debugger halt request: but CPU is not currently running.");
+      $display ("CPU: Debugger halt request: but CPU is not currently running.");
       f_run_halt_rsps.enq (False);
 
-      $display ("    %0d: %m", mcycle);
-      $display ("    Rule rl_debug_halt_redundant");
-      $display ("    state = ", fshow (rg_state));
+      $display ("CPU: Redundant debugger halt request: state = ", fshow (rg_state));
+      if (cur_verbosity > 1) begin
+	 $display ("    %m");
+	 $display ("    %0d: Rule rl_debug_halt_redundant", mcycle);
+      end
    endrule
 
    // ----------------
@@ -1587,9 +1597,11 @@ module mkCPU (CPU_IFC);
       let rsp = DM_CPU_Rsp {ok: True, data: data};
       f_gpr_rsps.enq (rsp);
 
-      if (cur_verbosity > 1)
-	 $display ("%0d: %m.rl_debug_read_gpr: reg %0d => 0x%0h",
-		   mcycle, regname, data);
+      $display ("CPU: Debugger read GPR %0d => 0x%0h", regname, data);
+      if (cur_verbosity > 1) begin
+	 $display ("    %m");
+	 $display ("    %0d: Rule rl_debug_read_gpr", mcycle);
+      end
    endrule
 
    rule rl_debug_write_gpr ((rg_state == CPU_DEBUG_MODE) && f_gpr_reqs.first.write);
@@ -1601,9 +1613,11 @@ module mkCPU (CPU_IFC);
       let rsp = DM_CPU_Rsp {ok: True, data: ?};
       f_gpr_rsps.enq (rsp);
 
-      if (cur_verbosity > 1)
-	 $display ("%0d: %m.rl_debug_write_gpr: reg %0d <= 0x%0h",
-		   mcycle, regname, data);
+      $display ("CPU: Debugger write GPR %0d <= 0x%0h", regname, data);
+      if (cur_verbosity > 1) begin
+	 $display ("    %m");
+	 $display ("    %0d: Rule rl_debug_write_gpr", mcycle);
+      end
    endrule
 
    rule rl_debug_gpr_access_busy (rg_state != CPU_DEBUG_MODE);
@@ -1611,8 +1625,11 @@ module mkCPU (CPU_IFC);
       let rsp = DM_CPU_Rsp {ok: False, data: ?};
       f_gpr_rsps.enq (rsp);
 
-      $display ("%0d: debugger GPR access: CPU state: == ",
-		mcycle, fshow (rg_state), " (not in CPU_DEBUG_MODE)");
+      $display ("CPU: Debugger GPR access busy: state (not CPU_DEBUG_MODE) = ", fshow (rg_state));
+      if (cur_verbosity > 1) begin
+	 $display ("    %m");
+	 $display ("    %0d: Rule rl_debug_gpr_access_busy", mcycle);
+      end
    endrule
 
    // ----------------
@@ -1625,9 +1642,12 @@ module mkCPU (CPU_IFC);
       let data = fpr_regfile.read_rs1_port2 (regname);
       let rsp = DM_CPU_Rsp {ok: True, data: data};
       f_fpr_rsps.enq (rsp);
-      if (cur_verbosity > 1)
-	 $display ("%0d: %m.rl_debug_read_fpr: reg %0d => 0x%0h",
-		   mcycle, regname, data);
+
+      $display ("CPU: Debugger read FPR %0d => 0x%0h", regname, data);
+      if (cur_verbosity > 1) begin
+	 $display ("    %m");
+	 $display ("    %0d: Rule rl_debug_read_fpr", mcycle);
+      end
    endrule
 
    rule rl_debug_write_fpr ((rg_state == CPU_DEBUG_MODE) && f_fpr_reqs.first.write);
@@ -1639,9 +1659,11 @@ module mkCPU (CPU_IFC);
       let rsp = DM_CPU_Rsp {ok: True, data: ?};
       f_fpr_rsps.enq (rsp);
 
-      if (cur_verbosity > 1)
-	 $display ("%0d: %m.rl_debug_write_fpr: reg %0d <= 0x%0h",
-		   mcycle, regname, data);
+      $display ("CPU: Debugger write FPR %0d => 0x%0h", regname, data);
+      if (cur_verbosity > 1) begin
+	 $display ("    %m");
+	 $display ("    %0d: Rule rl_debug_write_fpr", mcycle);
+      end
    endrule
 
    rule rl_debug_fpr_access_busy (rg_state != CPU_DEBUG_MODE);
@@ -1649,8 +1671,11 @@ module mkCPU (CPU_IFC);
       let rsp = DM_CPU_Rsp {ok: False, data: ?};
       f_fpr_rsps.enq (rsp);
 
-      $display ("%0d: debugger FPR access: CPU state: == ",
-		mcycle, fshow (rg_state), " (not in CPU_DEBUG_MODE)");
+      $display ("CPU: Debugger FPR access busy: state (not CPU_DEBUG_MODE) = ", fshow (rg_state));
+      if (cur_verbosity > 1) begin
+	 $display ("    %m");
+	 $display ("    %0d: Rule rl_debug_fpr_access_busy", mcycle);
+      end
    endrule
 `endif
 
@@ -1664,23 +1689,29 @@ module mkCPU (CPU_IFC);
       let data = fromMaybe (?, m_data);
       let rsp = DM_CPU_Rsp {ok: True, data: data};
       f_csr_rsps.enq (rsp);
-      if (cur_verbosity > 1)
-	 $display ("%0d: %m.rl_debug_read_csr: csr %0d => 0x%0h",
-		   mcycle, csr_addr, data);
+
+      $display ("CPU: Debugger read CSR 0x%0x => 0x%0h", csr_addr, data);
+      if (cur_verbosity > 1) begin
+	 $display ("    %m");
+	 $display ("    %0d: Rule rl_debug_read_csr", mcycle);
+      end
    endrule
 
    rule rl_debug_write_csr ((rg_state == CPU_DEBUG_MODE) && f_csr_reqs.first.write);
       let req <- pop (f_csr_reqs);
       Bit #(12) csr_addr = req.address;
       let data = req.data;
-      let new_csr_val <- csr_regfile.mav_csr_write (csr_addr, data);
+      let csr_write_result <- csr_regfile.mav_csr_write (csr_addr, data);
 
       let rsp = DM_CPU_Rsp {ok: True, data: ?};
       f_csr_rsps.enq (rsp);
 
-      if (cur_verbosity > 1)
-	 $display ("%0d: %m.rl_debug_write_csr: csr 0x%0h 0x%0h <= 0x%0h",
-		   mcycle, csr_addr, data, new_csr_val);
+      $display ("CPU: Debugger write CSR 0x%0h <= 0x%0h.  New csr contents: 0x%0h",
+		csr_addr, data, csr_write_result.new_csr_value);
+      if (cur_verbosity > 1) begin
+	 $display ("    %m");
+	 $display ("    %0d: Rule rl_debug_write_csr", mcycle);
+      end
    endrule
 
    rule rl_debug_csr_access_busy (rg_state != CPU_DEBUG_MODE);
@@ -1688,8 +1719,11 @@ module mkCPU (CPU_IFC);
       let rsp = DM_CPU_Rsp {ok: False, data: ?};
       f_csr_rsps.enq (rsp);
 
-      $display ("%0d: debugger CSR access: CPU state: == ",
-		mcycle, fshow (rg_state), " (not in CPU_DEBUG_MODE)");
+      $display ("CPU: Debugger CSR access busy: state (not CPU_DEBUG_MODE) = ", fshow (rg_state));
+      if (cur_verbosity > 1) begin
+	 $display ("    %m");
+	 $display ("    %0d: Rule rl_debug_csr_access_busy", mcycle);
+      end
    endrule
 `endif
 

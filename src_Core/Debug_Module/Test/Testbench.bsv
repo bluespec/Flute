@@ -1,3 +1,5 @@
+// Copyright (c) 2017-2022 Bluespec, Inc. All Rights Reserved.
+
 package Testbench;
 
 // ================================================================
@@ -21,8 +23,6 @@ import Semi_FIFOF :: *;
 // ================================================================
 
 import ISA_Decls :: *;
-import TRX       :: *;
-
 import Debug_Module :: *;
 
 // ================================================================
@@ -119,7 +119,7 @@ module mkTestbench (Empty);
 	 dm.write (dm_addr_abstractcs, fn_mk_abstractcs (dm_cmderr_w1c));
 	 // Perform the read
 	 dm.write (dm_addr_command,
-		   fn_mk_command_access_reg (DM_COMMAND_ACCESS_REG_SIZE_LOWER32,
+		   fn_mk_command_access_reg (DM_COMMAND_ACCESS_SIZE_LOWER32,
 					     False,                                   // postexec
 					     True,                                    // transfer
 					     False,                                   // write
@@ -156,7 +156,7 @@ module mkTestbench (Empty);
 	 dm.write (dm_addr_data0, data);
 	 // Perform the write
 	 dm.write (dm_addr_command,
-		   fn_mk_command_access_reg (DM_COMMAND_ACCESS_REG_SIZE_LOWER32,
+		   fn_mk_command_access_reg (DM_COMMAND_ACCESS_SIZE_LOWER32,
 					     False,                                   // postexec
 					     True,                                    // transfer
 					     True,                                    // write

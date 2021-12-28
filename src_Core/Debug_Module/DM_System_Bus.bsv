@@ -397,7 +397,7 @@ module mkDM_System_Bus (DM_System_Bus_IFC);
 	 // Debug announce
 	 if (verbosity != 0) begin
 	    $write ("%0d: %m.fa_rg_sbaddress_write (dm_addr 0x%08h, dm_word 0x%08h)",
-		    dm_addr, dm_word);
+		    cur_cycle, dm_addr, dm_word);
 	    if (rg_sbcs_sbreadonaddr) begin
 	       $write ("; readonaddr");
 	       if (rg_sbcs_sbautoincrement)
@@ -516,10 +516,15 @@ module mkDM_System_Bus (DM_System_Bus_IFC);
 						       rg_sbaddress_reading,
 						       rdata64);
 
-      if (rdr.rresp != axi4_resp_okay) begin
+      if (rdr.rresp == axi4_resp_decerr) begin
+	 rg_sbcs_sberror <= DM_SBERROR_BADADDR;
+	 if (verbosity != 0)
+	    $display ("%m.rl_sb_read_finish: fabric error: rg_sbcs_sberror := DM_SBERROR_BADADDR");
+      end
+      else if (rdr.rresp != axi4_resp_okay) begin
+	 rg_sbcs_sberror <= DM_SBERROR_OTHER;
 	 if (verbosity != 0)
 	    $display ("%m.rl_sb_read_finish: fabric error: rg_sbcs_sberror := DM_SBERROR_OTHER");
-	 rg_sbcs_sberror <= DM_SBERROR_OTHER;
       end
 
       rg_sbdata0 <= data [31:0];
@@ -585,8 +590,17 @@ module mkDM_System_Bus (DM_System_Bus_IFC);
 
    rule rl_sb_write_response;
       let wrr <- pop_o (master_xactor.o_wr_resp);
-      if (wrr.bresp != axi4_resp_okay)
+
+      if (wrr.bresp == axi4_resp_decerr) begin
+	 rg_sbcs_sberror <= DM_SBERROR_BADADDR;
+	 if (verbosity != 0)
+	    $display ("%m.rl_sb_write_response: rg_sbcs_sberror := DM_SBERROR_BADADDR");
+      end
+      else if (wrr.bresp != axi4_resp_okay) begin
 	 rg_sbcs_sberror <= DM_SBERROR_OTHER;
+	 if (verbosity != 0)
+	    $display ("%m.rl_sb_write_response: rg_sbcs_sberror := DM_SBERROR_OTHER");
+      end
    endrule
 
    // ================================================================

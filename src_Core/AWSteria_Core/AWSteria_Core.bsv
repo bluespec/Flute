@@ -94,6 +94,16 @@ typedef AWSteria_Core_IFC #(// AXI widths for Mem
 // The extra clocks are typically slower clocks for some components
 // that may need them.
 
+typedef enum {
+   MODULE_STATE_0A,       // start initialization actions on power-up
+   MODULE_STATE_1A,       // finish initialization actions on power-up
+
+   MODULE_STATE_1B,       // finish (re-) initialization actions
+
+   MODULE_STATE_READY
+   } Module_State
+deriving (Bits, Eq, FShow);
+
 (* synthesize *)
 module mkAWSteria_Core #(Reset dm_reset,                // reset for Debug Module
 			 Clock b_CLK, Reset b_RST_N,    // extra clock and reset b
@@ -101,6 +111,8 @@ module mkAWSteria_Core #(Reset dm_reset,                // reset for Debug Modul
                        (AWSteria_Core_IFC_Specialized);
 
    Integer verbosity = 0;    // Normally 0; non-zero for debugging
+
+   Reg #(Module_State) rg_module_state <- mkReg (MODULE_STATE_0A);
 
    // System address map
    SoC_Map_IFC  soc_map  <- mkSoC_Map;
@@ -163,37 +175,77 @@ module mkAWSteria_Core #(Reset dm_reset,                // reset for Debug Modul
    FIFOF # (TV_Info) f_tv_info <- mkFIFOF;
 
    // ================================================================
-   // RESET from host-control or from Debug Module
+   // Initialization actions
+   
+   function Action fa_initialization_start (Bool running);
+      action
+	 cpu.hart0_server_reset.request.put (running);
+	 near_mem_io.server_reset.request.put (?);
+	 plic.server_reset.request.put (?);
+	 fabric_1x3.reset;
+      endaction
+   endfunction
 
-   rule rl_reset_start;
-      let running <- dm_tv.cl_reset.request.get;
+   function ActionValue #(Bool) fav_initialization_finish;
+      actionvalue
+	 let running <- cpu.hart0_server_reset.response.get;
+	 let rsp2    <- near_mem_io.server_reset.response.get;
+	 let rsp3    <- plic.server_reset.response.get;
+	 cpu.ma_ddr4_ready;    // TODO: get rid of this
 
-      cpu.hart0_server_reset.request.put (running);    // CPU
-      near_mem_io.server_reset.request.put (?);        // Near_Mem_IO
-      plic.server_reset.request.put (?);               // PLIC
-      fabric_1x3.reset;                                // Local 1x3 Fabric
+	 near_mem_io.set_addr_map (zeroExtend (soc_map.m_near_mem_io_addr_base),
+				   zeroExtend (soc_map.m_near_mem_io_addr_lim));
 
-      $display ("%0d: core: reset start ...", cur_cycle);
-      $display ("        At: %m");
-      $display ("            rule rl_reset_start");
+	 plic.set_addr_map (zeroExtend (soc_map.m_plic_addr_base),
+			    zeroExtend (soc_map.m_plic_addr_lim));
+
+	 return running;
+      endactionvalue
+   endfunction
+
+   // ================================================================
+   // Initialization on power-up
+
+   rule rl_first_init_start (rg_module_state == MODULE_STATE_0A);
+      Bool running = True;
+      fa_initialization_start (running);
+      rg_module_state <= MODULE_STATE_1A;
+
+      $display ("AWSteria_Core: Initialization start ...");
+      $display ("    %m");
+      $display ("    %0d: rule rl_first_init_start", cur_cycle);
    endrule
 
-   rule rl_reset_finish;
-      let running <- cpu.hart0_server_reset.response.get;      // CPU
-      let rsp2    <- near_mem_io.server_reset.response.get;    // Near_Mem_IO
-      let rsp3    <- plic.server_reset.response.get;           // PLIC
-      cpu.ma_ddr4_ready;
+   rule rl_first_init_finish (rg_module_state == MODULE_STATE_1A);
+      let running <- fav_initialization_finish;
+      rg_module_state <= MODULE_STATE_READY;
 
-      near_mem_io.set_addr_map (zeroExtend (soc_map.m_near_mem_io_addr_base),
-				zeroExtend (soc_map.m_near_mem_io_addr_lim));
+      $display ("AWSteria_Core: Initialization finished ...");
+      $display ("    %m");
+      $display ("    %0d: rule rl_first_init_start", cur_cycle);
+   endrule
 
-      plic.set_addr_map (zeroExtend (soc_map.m_plic_addr_base),
-			 zeroExtend (soc_map.m_plic_addr_lim));
+   // ================================================================
+   // Post-power-up (re-)initialization on Host-Control or Debug Module
 
+   rule rl_reinitialization_start (rg_module_state == MODULE_STATE_READY);
+      let running <- dm_tv.cl_reset.request.get;
+      fa_initialization_start (running);
+      rg_module_state <= MODULE_STATE_1B;
+
+      $display ("AWSteria_Core: Re-initialization start ...");
+      $display ("    %m");
+      $display ("    %0d: rule rl_reinitialization_start", cur_cycle);
+   endrule
+
+   rule rl_reinitialization_finish (rg_module_state == MODULE_STATE_1B);
+      let running <- fav_initialization_finish;
+      rg_module_state <= MODULE_STATE_READY;
       dm_tv.cl_reset.response.put (running);
-      $display ("%0d: core: reset finish. CPU running = ", cur_cycle, fshow (running));
-      $display ("        At: %m");
-      $display ("            rule rl_reset_finish");
+
+      $display ("AWSteria_Core: Re-initialization finished ...");
+      $display ("    %m");
+      $display ("    %0d: rule rl_reinitialization_start", cur_cycle);
    endrule
 
    // ================================================================
@@ -208,22 +260,25 @@ module mkAWSteria_Core #(Reset dm_reset,                // reset for Debug Modul
    mkConnection (fabric_1x3.v_to_slaves [plic_target_num],        plic.axi4_slave);
 
    // ================================================================
-   // Connect SW, timer and external interrupts to CPU
+   // Connect various interrupts to CPU
 
-   rule rl_relay_sw_interrupt;    // from Near_Mem_IO (CLINT)
+   // from Near_Mem_IO (CLINT)
+   rule rl_relay_sw_interrupt (rg_module_state == MODULE_STATE_READY);
       Bool x <- near_mem_io.get_sw_interrupt_req.get;
       cpu.software_interrupt_req (x);
       // $display ("%0d: Core.rl_relay_sw_interrupt: %d", cur_cycle, pack (x));
    endrule
 
-   rule rl_relay_timer_interrupt;    // from Near_Mem_IO (CLINT)
+   // from Near_Mem_IO (CLINT)
+   rule rl_relay_timer_interrupt (rg_module_state == MODULE_STATE_READY);
       Bool x <- near_mem_io.get_timer_interrupt_req.get;
       cpu.timer_interrupt_req (x);
 
        // $display ("%0d: %m.rl_relay_timer_interrupt: %d", cur_cycle, pack (x));
    endrule
 
-   rule rl_relay_external_interrupt;    // from PLIC
+   // from PLIC
+   rule rl_relay_external_interrupt (rg_module_state == MODULE_STATE_READY);
       Bool meip = plic.v_targets [0].m_eip;
       cpu.m_external_interrupt_req (meip);
 
@@ -238,7 +293,7 @@ module mkAWSteria_Core #(Reset dm_reset,                // reset for Debug Modul
 
    // Register interrupt set/clear requests
    for (Integer j = 0; j < valueOf (N_External_Interrupt_Sources); j = j + 1)
-      rule rl_register_interrupt;
+      rule rl_register_interrupt (rg_module_state == MODULE_STATE_READY);
 	 Bool b <- pop (v_f_ext_intrs [j]);
 	 v_rg_ext_intrs [j] <= b;
       endrule
@@ -260,7 +315,7 @@ module mkAWSteria_Core #(Reset dm_reset,                // reset for Debug Modul
    // Non-maskable interrupts (NMI)
 
    // Register NMI set/clear requests
-   rule rl_register_nmi;
+   rule rl_register_nmi (rg_module_state == MODULE_STATE_READY);
       Bool b <- pop (f_nmi);
       rg_nmi <= b;
    endrule
@@ -295,17 +350,17 @@ module mkAWSteria_Core #(Reset dm_reset,                // reset for Debug Modul
    // =================================================================
    // Misc CPU control/status
 
-   rule rl_set_verbosity;
+   rule rl_set_verbosity (rg_module_state == MODULE_STATE_READY);
       match { .verbosity, .log_delay } <- host_cs.g_verbosity.get;
       cpu.set_verbosity (verbosity, log_delay);
    endrule
 
-   rule rl_watch_thost;
+   rule rl_watch_thost (rg_module_state == MODULE_STATE_READY);
       match { .watch, .tohost_addr } <- host_cs.g_watch_tohost.get;
       cpu.set_watch_tohost (watch, tohost_addr);
    endrule
 
-   rule rl_tohost_value;
+   rule rl_send_tohost_value;
       host_cs.ma_tohost_value (cpu.mv_tohost_value);
    endrule
 

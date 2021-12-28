@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2019 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2017-2021 Bluespec, Inc. All Rights Reserved.
 
 package Debug_Module;
 
@@ -135,7 +135,7 @@ module mkDebug_Module (Debug_Module_IFC);
    DM_Abstract_Commands_IFC  dm_abstract_commands <- mkDM_Abstract_Commands;
    DM_System_Bus_IFC         dm_system_bus        <- mkDM_System_Bus;
 
-   FIFOF#(DM_Addr) f_read_addr <- mkBypassFIFOF;
+   FIFOF #(DM_Addr) f_read_addr <- mkBypassFIFOF;
 
    // ================================================================
    // Reset all three parts when dm_run_control.dmactive is low
@@ -157,8 +157,11 @@ module mkDebug_Module (Debug_Module_IFC);
       method Action read_addr  (DM_Addr dm_addr);
 	 f_read_addr.enq(dm_addr);
 
-	 if (verbosity != 0)
-	    $display ("%0d: %m.DMI read: dm_addr 0x%0h", cur_cycle, dm_addr);
+	 if (verbosity != 0) begin
+	    $display ("DMI_READ dm_addr 0x%0h", dm_addr);
+	    $display ("    In %m");
+	    $display ("    %0d: m_read_addr", cur_cycle);
+	 end
       endmethod
 
       method ActionValue #(DM_Word) read_data;
@@ -176,8 +179,7 @@ module mkDebug_Module (Debug_Module_IFC);
 	    || (dm_addr == dm_addr_devtreeaddr0)
 	    || (dm_addr == dm_addr_authdata)
 	    || (dm_addr == dm_addr_haltregion0)
-	    || (dm_addr == dm_addr_haltregion31)
-	    || (dm_addr == dm_addr_verbosity))
+	    || (dm_addr == dm_addr_haltregion31))
 
 	    dm_word <- dm_run_control.av_read (dm_addr);
 
@@ -216,9 +218,11 @@ module mkDebug_Module (Debug_Module_IFC);
 	    dm_word = 0;
 	 end
 
-	 if (verbosity != 0)
-	    $display ("%0d: %m.DMI read response: dm_addr 0x%0h, dm_word 0x%0h",
-		      cur_cycle, dm_addr, dm_word);
+	 if (verbosity != 0) begin
+	    $display ("DMI_READ response: dm_addr 0x%0h, dm_word 0x%0h", dm_addr, dm_word);
+	    $display ("    In: %m");
+	    $display ("    %0d: m_read_data", cur_cycle);
+	 end
 
 	 return dm_word;
       endmethod
@@ -233,8 +237,7 @@ module mkDebug_Module (Debug_Module_IFC);
 	    || (dm_addr == dm_addr_devtreeaddr0)
 	    || (dm_addr == dm_addr_authdata)
 	    || (dm_addr == dm_addr_haltregion0)
-	    || (dm_addr == dm_addr_haltregion31)
-	    || (dm_addr == dm_addr_verbosity))
+	    || (dm_addr == dm_addr_haltregion31))
 
 	    dm_run_control.write (dm_addr, dm_word);
 
@@ -273,9 +276,11 @@ module mkDebug_Module (Debug_Module_IFC);
 	    noAction;
 	 end
 
-	 if (verbosity != 0)
-	    $display ("%0d: %m.DMI write: dm_addr 0x%0h, dm_word 0x%0h",
-		      cur_cycle, dm_addr, dm_word);
+	 if (verbosity != 0) begin
+	    $display ("DMI write: dm_addr 0x%0h, dm_word 0x%0h", dm_addr, dm_word);
+	    $display ("    In: %m");
+	    $display ("    %0d: m_write", cur_cycle);
+	 end
       endmethod
    endinterface
 

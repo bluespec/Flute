@@ -6,24 +6,30 @@ TOP = Testbench
 TOPFILE = $(TOP).bsv
 TOPMODULE = mk$(TOP)
 
-# BSCFLAGS = -keep-fires -aggressive-conditions -no-warn-action-shadowing -no-inline-rwire
-# BSCFLAGS = -keep-fires -aggressive-conditions -no-inline-rwire -show-range-conflict -show-schedule
-BSCFLAGS = -D RV32 \
-	   -keep-fires \
-	   -aggressive-conditions \
-	   -suppress-warnings G0020 \
-	   -show-schedule
+BSCFLAGS += -D RV64
+BSCFLAGS += -D FABRIC64
 
+BSCFLAGS += -keep-fires
+BSCFLAGS += -aggressive-conditions
+BSCFLAGS += -suppress-warnings G0020
+BSCFLAGS += -no-warn-action-shadowing
+BSCFLAGS += -no-inline-rwire
+BSCFLAGS += -show-range-conflict
+# BSCFLAGS += -show-schedule
 
 # ----------------------------------------------------------------
 # FOR BLUESIM
 
-ISA_DECLS_DIR = $(HOME)/Projects/RISCV/Bluespec_RISCV/ISA
-TRX_DIR       = $(HOME)/Projects/RISCV/Bluespec_RISCV/Fabrics/TRX
-ADDL_LIBS_DIR = $(HOME)/Projects/RISCV/Bluespec_RISCV/BSV_Additional_Libs/BSV
+FLUTE_REPO ?= PLEASE_DEFINE_FLUTE_REPO
 
 BSCDIRS_BSIM  = -simdir build_bsim -bdir build -info-dir build
-BSCPATH_BSIM  = -p .:..:$(ISA_DECLS_DIR):$(TRX_DIR):$(ADDL_LIBS_DIR):%/Prelude:%/Libraries
+
+BSCPATH_BSIM := $(BSCPATH_BSIM):..
+BSCPATH_BSIM := $(BSCPATH_BSIM):$(FLUTE_REPO)/src_Core/ISA
+BSCPATH_BSIM := $(BSCPATH_BSIM):$(FLUTE_REPO)/src_Core/Core_v2
+BSCPATH_BSIM := $(BSCPATH_BSIM):$(FLUTE_REPO)/src_Testbench/Fabrics/AXI4
+BSCPATH_BSIM := $(BSCPATH_BSIM):$(FLUTE_REPO)/src_Core/BSV_Additional_Libs
+BSCPATH_BSIM := $(BSCPATH_BSIM):+
 
 build_bsim:
 	mkdir -p $@
@@ -34,13 +40,14 @@ build:
 .PHONY: compile
 compile: build_bsim build
 	@echo Compiling...
-	bsc -u -sim $(BSCDIRS_BSIM) $(BSCFLAGS) $(BSCPATH_BSIM) $(TOPFILE)
+	bsc -u -sim $(BSCDIRS_BSIM) $(BSCFLAGS) -p $(BSCPATH_BSIM) $(TOPFILE)
 	@echo Compilation finished
 
 .PHONY: link
 link:
 	@echo Linking...
-	bsc -e $(TOPMODULE) $(BSCFLAGS) -parallel-sim-link 8 -sim  -o ./$(TOP)_bsim_exe  $(BSCDIRS_BSIM)  $(BSCPATH_BSIM)
+	bsc -e $(TOPMODULE) $(BSCFLAGS) -parallel-sim-link 8 -sim \
+		-o ./$(TOP)_bsim_exe  $(BSCDIRS_BSIM)  -p $(BSCPATH_BSIM)
 	@echo Linking finished
 
 .PHONY: simulate
@@ -53,12 +60,12 @@ simulate:
 # FOR VERILOG
 
 BSCDIRS_V = -vdir verilog  -bdir build_v  -info-dir build_v
-BSCPATH_V = -p .:./$(SRC_BSV):%/Prelude:%/Libraries:%/Libraries/TLM3
+BSCPATH_V = ..:$(ISA_DECLS_DIR):$(ADDL_LIBS_DIR):+
 
 # Set VSIM to desired Verilog simulator
 # VSIM = modelsim
-VSIM ?= cvc
-# VSIM ?= iverilog
+# VSIM ?= cvc
+VSIM ?= iverilog
 
 build_v:
 	mkdir -p $@
@@ -69,7 +76,7 @@ verilog:
 .PHONY: rtl
 rtl: build_v verilog
 	@echo Verilog generation ...
-	bsc -u -elab -verilog $(BSCDIRS_V) $(BSCFLAGS) $(BSCPATH_V) $(TOPFILE)
+	bsc -u -elab -verilog $(BSCDIRS_V) $(BSCFLAGS) -p $(BSCPATH_V) $(TOPFILE)
 	@echo Verilog generation finished
 
 .PHONY: vlink

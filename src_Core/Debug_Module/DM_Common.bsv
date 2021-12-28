@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2021 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2017-2022 Bluespec, Inc. All Rights Reserved.
 
 package DM_Common;
 
@@ -42,8 +42,6 @@ DM_Addr dm_addr_devtreeaddr0 = 'h19;
 DM_Addr dm_addr_authdata     = 'h30;
 DM_Addr dm_addr_haltregion0  = 'h40;
 DM_Addr dm_addr_haltregion31 = 'h5F;
-
-DM_Addr dm_addr_verbosity    = 'h60;    // Non-standard (not in spec)
 
 // ----------------
 // Abstract commands (read/write RISC-V registers and RISC-V CSRs)
@@ -94,7 +92,6 @@ function Fmt fshow_dm_addr (DM_Addr dm_addr);
 	     dm_addr_authdata:     $format ("dm_addr_authdata");
 	     dm_addr_haltregion0:  $format ("dm_addr_haltregion0");
 	     dm_addr_haltregion31: $format ("dm_addr_haltregion31");
-             dm_addr_verbosity:    $format ("dm_addr_verbosity");
 
 	     // Abstract Commands
 	     dm_addr_abstractcs:   $format ("dm_addr_abstractcs");
@@ -304,19 +301,21 @@ endfunction
 // 'command' register
 
 typedef enum {DM_COMMAND_CMDTYPE_ACCESS_REG,
-	      DM_COMMAND_CMDTYPE_QUICK_ACCESS
+	      DM_COMMAND_CMDTYPE_QUICK_ACCESS,
+	      DM_COMMAND_CMDTYPE_ACCESS_MEM,
+	      DM_COMMAND_CMDTYPE_UNKNOWN
    } DM_command_cmdtype
 deriving (Bits, Eq, FShow);
 
-typedef enum {DM_COMMAND_ACCESS_REG_SIZE_UNDEF0,     // 0
-	      DM_COMMAND_ACCESS_REG_SIZE_UNDEF1,     // 1
-	      DM_COMMAND_ACCESS_REG_SIZE_LOWER32,    // 2
-	      DM_COMMAND_ACCESS_REG_SIZE_LOWER64,    // 3
-	      DM_COMMAND_ACCESS_REG_SIZE_LOWER128,   // 4
-	      DM_COMMAND_ACCESS_REG_SIZE_UNDEF5,     // 5
-	      DM_COMMAND_ACCESS_REG_SIZE_UNDEF6,     // 6
-	      DM_COMMAND_ACCESS_REG_SIZE_UNDEF7      // 7
-   } DM_command_access_reg_size
+typedef enum {DM_COMMAND_ACCESS_SIZE_UNDEF0,     // 0
+	      DM_COMMAND_ACCESS_SIZE_UNDEF1,     // 1
+	      DM_COMMAND_ACCESS_SIZE_LOWER32,    // 2
+	      DM_COMMAND_ACCESS_SIZE_LOWER64,    // 3
+	      DM_COMMAND_ACCESS_SIZE_LOWER128,   // 4
+	      DM_COMMAND_ACCESS_SIZE_UNDEF5,     // 5
+	      DM_COMMAND_ACCESS_SIZE_UNDEF6,     // 6
+	      DM_COMMAND_ACCESS_SIZE_UNDEF7      // 7
+   } DM_command_access_size
 deriving (Bits, Eq, FShow);
 
 Integer dm_command_access_reg_regno_csr_0   = 'h0000;
@@ -326,11 +325,11 @@ Integer dm_command_access_reg_regno_gpr_1F  = 'h101F;
 Integer dm_command_access_reg_regno_fpr_0   = 'h1020;
 Integer dm_command_access_reg_regno_fpr_1F  = 'h103F;
 
-function DM_Word fn_mk_command_access_reg (DM_command_access_reg_size  size,
-					   Bool                        postexec,
-					   Bool                        transfer,
-					   Bool                        write,
-					   Bit #(16)                   regno);
+function DM_Word fn_mk_command_access_reg (DM_command_access_size  size,
+					   Bool                    postexec,
+					   Bool                    transfer,
+					   Bool                    write,
+					   Bit #(16)               regno);
    Bit #(8)  b8_cmdtype = zeroExtend (pack (DM_COMMAND_CMDTYPE_ACCESS_REG));
    Bit #(3)  b3_size    = pack (size);
    return {b8_cmdtype,
@@ -344,10 +343,17 @@ function DM_Word fn_mk_command_access_reg (DM_command_access_reg_size  size,
 endfunction
 
 function DM_command_cmdtype fn_command_cmdtype (DM_Word dm_word);
-   return unpack (truncate (dm_word [31:24]));
+   DM_command_cmdtype cmdtype;
+   case (dm_word [31:24])
+      0:       cmdtype = DM_COMMAND_CMDTYPE_ACCESS_REG;
+      1:       cmdtype = DM_COMMAND_CMDTYPE_QUICK_ACCESS;
+      2:       cmdtype = DM_COMMAND_CMDTYPE_ACCESS_MEM;
+      default: cmdtype = DM_COMMAND_CMDTYPE_UNKNOWN;
+   endcase
+   return cmdtype;
 endfunction
 
-function DM_command_access_reg_size fn_command_access_reg_size (DM_Word dm_word);
+function DM_command_access_size fn_command_access_size (DM_Word dm_word);
    return unpack (dm_word [22:20]);
 endfunction
 
@@ -391,14 +397,14 @@ function Integer fn_sbaccess_to_addr_incr (DM_sbaccess sbaccess);
    endcase
 endfunction
 
-typedef enum {DM_SBERROR_NONE,          // 0
-	      DM_SBERROR_TIMEOUT,       // 1
-	      DM_SBERROR_BADADDR,       // 2
-	      DM_SBERROR_OTHER,         // 3
-	      DM_SBERROR_BUSY_STALE,    // 4
-	      DM_SBERROR_UNDEF5,        // 5
-	      DM_SBERROR_UNDEF6,        // 6
-	      DM_SBERROR_UNDEF7_W1C     // 7, used in writes, to clear sberror
+typedef enum {DM_SBERROR_NONE,                // 0
+	      DM_SBERROR_TIMEOUT,             // 1
+	      DM_SBERROR_BADADDR,             // 2
+	      DM_SBERROR_ALIGNMENT_ERR,       // 3
+	      DM_SBERROR_UNSUPPORTED_SIZE,    // 4
+	      DM_SBERROR_UNDEF5,              // 5
+	      DM_SBERROR_UNDEF6,              // 6
+	      DM_SBERROR_OTHER                // 7
    } DM_sberror
 deriving (Bits, Eq, FShow);
 
