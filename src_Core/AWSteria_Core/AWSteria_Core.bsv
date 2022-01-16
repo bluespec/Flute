@@ -105,9 +105,12 @@ typedef enum {
 deriving (Bits, Eq, FShow);
 
 (* synthesize *)
-module mkAWSteria_Core #(Reset dm_reset,                // reset for Debug Module
-			 Clock b_CLK, Reset b_RST_N,    // extra clock and reset b
-			 Clock c_CLK, Reset c_RST_N)    // extra clock and reset c
+module mkAWSteria_Core #(Reset dm_reset,    // reset for Debug Module
+			 Clock clk1,        // extra clock
+			 Clock clk2,        // extra clock
+			 Clock clk3,        // extra clock
+			 Clock clk4,        // extra clock
+			 Clock clk5)        // extra clock
                        (AWSteria_Core_IFC_Specialized);
 
    Integer verbosity = 0;    // Normally 0; non-zero for debugging
