@@ -54,6 +54,8 @@ import DMI               :: *;
 import PC_Trace          :: *;
 import TV_Info           :: *;
 
+import AWSteria_Core_Reclocked :: *;
+
 // ----------------
 // RISC-V CPU and related IPs
 
@@ -91,6 +93,54 @@ typedef AWSteria_Core_IFC #(// AXI widths for Mem
 			    ) AWSteria_Core_IFC_Specialized;
 
 // ================================================================
+// This module is a thin wrapper around mkAWSteria_Core_Single_Clock,
+// selecting a slower clock at which to run the inner module.
+
+// The incoming clocks are, normally:
+// In Vivado synthesis:
+//     clk1      clk2         clk3      clk4      clk5
+//     125 MHz   100 MHz      50 MHz    25 MHz    10 MHz
+// The simulation version (though clock speed does not matter here):
+//     125 MHz    83.3 MHz    50 MHz    25 MHz    10 MHz
+
+(* synthesize *)
+module mkAWSteria_Core #(Clock clk1,        // extra clock
+			 Clock clk2,        // extra clock
+			 Clock clk3,        // extra clock
+			 Clock clk4,        // extra clock
+			 Clock clk5)        // extra clock
+                       (AWSteria_Core_IFC_Specialized);
+
+   let clk_cur  <- exposeCurrentClock;
+   let rstn_cur <- exposeCurrentReset;
+
+   // Choose clock
+   let clk_core = clk2;    // 100 MHz for Flute
+
+   MakeResetIfc reset_for_core <- mkReset (5,            // stages
+					   True,         // startInRst
+					   clk_core);    // for which this is a reset
+   // interface MakeResetIfc;
+   //     method Action assertReset();
+   //     method Bool isAsserted();
+   //     interface Reset new_rst;
+   // endinterface
+
+   let rstn_core = reset_for_core.new_rst;
+
+   AWSteria_Core_IFC_Specialized
+   core_single_clock <- mkAWSteria_Core_Single_Clock (clocked_by clk_core,
+						      reset_by   rstn_core);
+
+   AWSteria_Core_IFC_Specialized
+   core_reclocked <- mkAWSteria_Core_Reclocked (clk_cur,  rstn_cur,
+						clk_core, rstn_core,
+						core_single_clock);
+
+   return core_reclocked;
+endmodule
+
+// ================================================================
 // The extra clocks are typically slower clocks for some components
 // that may need them.
 
@@ -105,13 +155,7 @@ typedef enum {
 deriving (Bits, Eq, FShow);
 
 (* synthesize *)
-module mkAWSteria_Core #(Reset dm_reset,    // reset for Debug Module
-			 Clock clk1,        // extra clock
-			 Clock clk2,        // extra clock
-			 Clock clk3,        // extra clock
-			 Clock clk4,        // extra clock
-			 Clock clk5)        // extra clock
-                       (AWSteria_Core_IFC_Specialized);
+module mkAWSteria_Core_Single_Clock (AWSteria_Core_IFC_Specialized);
 
    Integer verbosity = 0;    // Normally 0; non-zero for debugging
 
