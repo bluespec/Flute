@@ -101,7 +101,7 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
    // Verbosity: 0: quiet; 1: reset; 2: timer interrupts, all reads and writes
    Reg #(Bit #(4)) cfg_verbosity <- mkConfigReg (0);
 
-   Reg #(Module_State) rg_state     <- mkReg (MODULE_STATE_START);
+   Reg #(Module_State) rg_state <- mkReg (MODULE_STATE_START);
 
    // ----------------
    // Soft reset requests and responses
@@ -419,7 +419,8 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
    interface  server_reset = toGPServer (f_reset_reqs, f_reset_rsps);
 
    // set_addr_map should be called after this module's reset
-   method Action  set_addr_map (Fabric_Addr addr_base, Fabric_Addr addr_lim);
+   method Action  set_addr_map (Fabric_Addr addr_base,
+				Fabric_Addr addr_lim) if (rg_state == MODULE_STATE_READY);
       if (addr_base [1:0] != 0)
 	 $display ("%0d: WARNING: Near_Mem_IO_AXI4.set_addr_map: addr_base 0x%0h is not 4-Byte-aligned",
 		   cur_cycle, addr_base);
