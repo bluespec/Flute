@@ -9,6 +9,12 @@ TOPMODULE ?= mkTop
 EXEFILE_BSIM ?= exe_HW_bsim
 EXEFILE_VSIM ?= exe_HW_vsim
 
+# Test both RV32 and RV64 versions of testbench
+# BSCFLAGS += -D RV32
+BSCFLAGS += -D RV64
+
+# Test AXI fabrics are 32-bits and 64 bits
+# BSCFLAGS += -D FABRIC32
 BSCFLAGS += -D FABRIC64
 
 BSCFLAGS += -keep-fires
