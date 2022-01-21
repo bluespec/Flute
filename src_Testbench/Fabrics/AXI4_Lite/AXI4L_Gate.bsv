@@ -1,12 +1,16 @@
-// Copyright (c) 2021 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2021-2022 Bluespec, Inc. All Rights Reserved
 // Author: Rishiyur S. Nikhil
 
 package AXI4L_Gate;
 
 // ================================================================
 // This package defines an AXI4-M-to-AXI4-S 'gate' module,
-// that either allows or blocks the 5 AXI4 buses,
+// that either allows or blocks the 5 AXI4 channels,
 // depending on a Bool 'enable' input.
+
+// An optional Bool module parameter controls whether, when the gate
+// is disabled, whether to justs block traffic or respond to M with
+// errors.
 
 // ================================================================
 // Bluespec library imports
@@ -27,7 +31,7 @@ import Semi_FIFOF :: *;
 import AXI4_Lite_Types :: *;
 
 // ================================================================
-// The interface for the widener module
+// The interface for the gate module
 
 interface AXI4L_Gate_IFC #(numeric type wd_addr_t,
 			   numeric type wd_data_t,
@@ -45,7 +49,9 @@ endinterface
 // ================================================================
 // The Gate module
 
-module mkAXI4L_Gate (AXI4L_Gate_IFC #(wd_addr_t, wd_data_t, wd_user_t));
+module mkAXI4L_Gate
+   #(Bool respond_with_err)    // False: block traffic; True: respond with err
+   (AXI4L_Gate_IFC #(wd_addr_t, wd_data_t, wd_user_t));
 
    // ----------------
    // Transactor facing master
@@ -60,7 +66,9 @@ module mkAXI4L_Gate (AXI4L_Gate_IFC #(wd_addr_t, wd_data_t, wd_user_t));
 
    // ----------------------------------------------------------------
    // BEHAVIOR
-   // Each rule is basically a mkConnection controlled by 'enabled'
+
+   // ----------------
+   // When gate is enabled: pass-through everything M-to-S and S-to-M
 
    rule rl_wr_addr (rg_enabled);
       let wra <- pop_o (xactor_from_M.o_wr_addr);
@@ -85,6 +93,54 @@ module mkAXI4L_Gate (AXI4L_Gate_IFC #(wd_addr_t, wd_data_t, wd_user_t));
    rule rl_rd_data (rg_enabled);
       let rdd <- pop_o (xactor_to_S.o_rd_data);
       xactor_from_M.i_rd_data.enq (rdd);
+   endrule
+
+   // ----------------
+   // When gate is disabled: return error responses to M;
+   //     don't send anything to S or expect anything from S.
+
+   rule rl_wr_addr_disabled (respond_with_err && (! rg_enabled));
+      let wra <- pop_o (xactor_from_M.o_wr_addr);
+      let wrr = AXI4_Lite_Wr_Resp {bresp: AXI4_LITE_SLVERR,
+				   buser: wra.awuser};
+      xactor_from_M.i_wr_resp.enq (wrr);
+
+      $display ("WARNING: rl_wr_addr_disabled: rec'd wr request from M when gate disabled.");
+      $display ("    ", fshow (wra));
+      $display ("    Returning error response.");
+      $display ("    %0d: %m", cur_cycle);
+   endrule
+
+   rule rl_wr_data_disabled (respond_with_err && (! rg_enabled));
+      let wrd <- pop_o (xactor_from_M.o_wr_data);
+      // Discard the data
+   endrule
+
+   rule rl_wr_resp_disabled_drain_S (respond_with_err && (! rg_enabled));
+      let wrr <- pop_o (xactor_to_S.o_wr_resp);
+      $display ("WARNING: rl_wr_resp_disabled: rec'd wr resp from S when gate disabled; ignoring");
+      $display ("    (there couldn't have been a request)");
+      $display ("    %0d: %m", cur_cycle);
+   endrule
+ 
+   rule rl_rd_addr_disabled (respond_with_err && (! rg_enabled));
+      let rda <- pop_o (xactor_from_M.o_rd_addr);
+      let rdd = AXI4_Lite_Rd_Data {rresp: AXI4_LITE_SLVERR,
+				   rdata: ?,
+				   ruser: rda.aruser};
+      xactor_from_M.i_rd_data.enq (rdd);
+
+      $display ("WARNING: rl_rd_addr_disabled: rec'd rd request from M when gate disabled.");
+      $display ("    ", fshow (rda));
+      $display ("    Returning error response.");
+      $display ("    %0d: %m", cur_cycle);
+   endrule
+
+   rule rl_rd_data_disabled_drain_S (respond_with_err && (! rg_enabled));
+      let rdd <- pop_o (xactor_to_S.o_rd_data);
+      $display ("WARNING: rl_rd_data_disabled: rec'd rd resp from S when gate disabled; ignoring");
+      $display ("    (there couldn't have been a request)");
+      $display ("    %0d: %m", cur_cycle);
    endrule
 
    // ----------------------------------------------------------------
