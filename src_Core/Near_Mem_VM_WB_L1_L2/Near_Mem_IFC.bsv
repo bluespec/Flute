@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2021 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2016-2022 Bluespec, Inc. All Rights Reserved.
 
 // Near_Mem_IFC encapsulates the MMU and L1 cache.
 // It is 'near' the CPU (1-cycle access in common case).

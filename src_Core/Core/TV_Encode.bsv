@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2020 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2013-2022 Bluespec, Inc. All Rights Reserved.
 
 package TV_Encode;
 
@@ -24,8 +24,9 @@ import GetPut_Aux :: *;
 // ================================================================
 // Project imports
 
-import ISA_Decls  :: *;
-import TV_Info    :: *;
+import ISA_Decls     :: *;
+import TV_Trace_Data :: *;
+import TV_Info       :: *;
 
 // ================================================================
 
@@ -100,7 +101,7 @@ module mkTV_Encode (TV_Encode_IFC);
       // Encode components of td into byte vecs
       match { .n0, .vb0 } = encode_byte (te_op_begin_group);
       match { .n1, .vb1 } = encode_byte (te_op_state_init);
-      match { .n2, .vb2 } = encode_reg (fv_fpr_regnum (td.rd), td.word1);
+      match { .n2, .vb2 } = encode_fpr (fv_fpr_regnum (td.rd), td.word5);
       match { .nN, .vbN } = encode_byte (te_op_end_group);
 
       // Concatenate components into a single byte vec
@@ -404,7 +405,8 @@ module mkTV_Encode (TV_Encode_IFC);
       // MSTATUS.FS and .SD also updated if CSR instr wrote FFLAGS, FRM or FCSR
       Bool mstatus_written = (td.word2 [1] == 1'b1);
       match { .n5, .vb5 } = (mstatus_written
-			     ? encode_reg (fv_csr_regnum (csr_addr_mstatus), td.word5)
+			     ? encode_reg (fv_csr_regnum (csr_addr_mstatus),
+					   truncate (td.word5))
 			     : tuple2 (0, ?));
 `endif
       match { .nN, .vbN } = encode_byte (te_op_end_group);

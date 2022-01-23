@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2021-2022 Bluespec, Inc. All Rights Reserved.
 // Author: Rishiyur S. Nikhil
 
 package Host_Control_Status;
@@ -213,7 +213,7 @@ module mkHost_Control_Status (Host_Control_Status_IFC);
 	 $display ("  host_to_hw_req: PC trace on");
       end
       else if (cmd == cmd_set_verbosity) begin
-	 next_state = STATE_EXEC;
+	 next_state = STATE_WORD1;
 	 $display ("  host_to_hw_req: verbosity");
       end
       else begin
@@ -276,7 +276,7 @@ module mkHost_Control_Status (Host_Control_Status_IFC);
    rule rl_CSR_write ((rg_state == STATE_EXEC) && (word0_cmd == cmd_CSR_write));
       Bit #(32) word2 <- pop (f_host_to_hw);
       Bit #(12) csr_addr = rg_word0 [31:20];
-      Bit #(64) csr_data = { word2, rg_word1 };
+      WordXL    csr_data = truncate ({ word2, rg_word1 });
       let req = DM_CPU_Req {write:   True,
 			    address: csr_addr,
 			    data:    csr_data};

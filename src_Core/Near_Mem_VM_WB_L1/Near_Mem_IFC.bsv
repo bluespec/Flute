@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2021 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2016-2022 Bluespec, Inc. All Rights Reserved.
 
 // Near_Mem_IFC encapsulates the MMU and L1 cache.
 // It is 'near' the CPU (1-cycle access in common case).
@@ -37,8 +37,8 @@ import ISA_Decls :: *;
 
 import MMU_Cache_Common :: *;
 import AXI4_Types       :: *;
-import Fabric_Defs      :: *;
 import AXI_Widths       :: *;
+import Fabric_Defs      :: *;
 
 `ifdef INCLUDE_DMEM_SLAVE
 import AXI4_Lite_Types :: *;

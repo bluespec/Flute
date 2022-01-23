@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2016-2022 Bluespec, Inc. All Rights Reserved.
 
 // Near_Mem_IFC is an abstraction of the 'near' memory subsystem (TCMs
 // (Tightly Coupled Memories), MMUs, L1 Caches, L2 caches, etc.
@@ -49,6 +49,7 @@ import D_MMU_Cache      :: *;
 import I_MMU_Cache      :: *;
 
 import AXI4_Types   :: *;
+import AXI4_Widener :: *;
 import Fabric_Defs  :: *;
 
 // System address map and pc_reset value
@@ -88,6 +89,20 @@ module mkNear_Mem (Near_Mem_IFC);
 `ifdef ISA_PRIV_S
    mkConnection (i_mmu_cache.ptw_client,      d_mmu_cache.imem_ptw_server);
    mkConnection (i_mmu_cache.pte_writeback_g, d_mmu_cache.imem_pte_writeback_p);
+`endif
+
+   // ----------------------------------------------------------------
+   // Widener, if d_mmu_cache mem ifc needs it
+
+`ifdef MEM_512b
+   AXI4_Widener_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_Data_Mem, Wd_User)
+   widener <- mkAXI4_Widener;
+
+   mkConnection (d_mmu_cache.mem_master, widener.from_master);
+
+   let d_mmu_cache_mem_master = widener.to_slave;
+`else
+   let d_mmu_cache_mem_master = d_mmu_cache.mem_master;
 `endif
 
    // ----------------------------------------------------------------
@@ -194,7 +209,7 @@ module mkNear_Mem (Near_Mem_IFC);
    endinterface
 
    // Fabric side
-   interface Near_Mem_Fabric_IFC  mem_master = d_mmu_cache.mem_master;
+   interface Near_Mem_Fabric_IFC  mem_master = d_mmu_cache_mem_master;
 
    // ----------------
    // FENCE.I: flush both IMem and DMem

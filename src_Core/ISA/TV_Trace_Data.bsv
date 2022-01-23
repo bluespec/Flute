@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2021 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2013-2022 Bluespec, Inc. All Rights Reserved
 
 // ================================================================
 // Definition of Tandem Verifier Packets.
@@ -51,7 +51,7 @@ typedef struct {
    Bit #(64)  word3;    // Wider than WordXL because can contain paddr (in RV32, paddr can be 34 bits)
    WordXL     word4;
 `ifdef ISA_F
-   Bit #(64)  word5;    // In order to accomodate RV64 MSTATUS in ISA_F system
+   Bit #(64)  word5;    // For changed RV64 MSTATUS in ISA_F system; for FPR val in RV32D
 `endif
    } Trace_Data
 deriving (Bits);
@@ -76,16 +76,20 @@ function Trace_Data mkTrace_GPR_WRITE (RegName rd, WordXL rdval);
    return td;
 endfunction
 
+`ifdef ISA_F
+
 // FPR_WRITE
-// op    pc    instr_sz    instr    rd    word1    word2    word3    word4
-// x                                 x    rdval
-function Trace_Data mkTrace_FPR_WRITE (RegName rd, WordXL rdval);
+// op    pc    instr_sz    instr    rd    word1    word2    word3    word4   word5
+// x                                 x                                       rdval
+function Trace_Data mkTrace_FPR_WRITE (RegName rd, WordFL rdval);
    Trace_Data td = ?;
    td.op       = TRACE_FPR_WRITE;
    td.rd       = rd;
-   td.word1    = rdval;
+   td.word5    = zeroExtend (rdval);    // Can be 64b double in RV32D
    return td;
 endfunction
+
+`endif
 
 // CSR_WRITE
 // op    pc    instr_sz    instr    rd    word1    word2    word3    word4

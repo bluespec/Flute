@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2021 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2018-2022 Bluespec, Inc. All Rights Reserved.
 
 package TV_Taps;
 
@@ -168,19 +168,19 @@ endmodule: mkDM_GPR_Tap
 `ifdef ISA_F
 
 interface DM_FPR_Tap_IFC;
-   interface Client #(DM_CPU_Req #(5,  XLEN), DM_CPU_Rsp #(XLEN)) client;
-   interface Server #(DM_CPU_Req #(5,  XLEN), DM_CPU_Rsp #(XLEN)) server;
+   interface Client #(DM_CPU_Req #(5,  FLEN), DM_CPU_Rsp #(FLEN)) client;
+   interface Server #(DM_CPU_Req #(5,  FLEN), DM_CPU_Rsp #(FLEN)) server;
    interface Get #(Trace_Data) trace_data_out;
 endinterface
 
 (* synthesize *)
 module mkDM_FPR_Tap (DM_FPR_Tap_IFC);
    // req from DM
-   FIFOF #(DM_CPU_Req #(5,  XLEN)) f_req_in     <- mkFIFOF;
+   FIFOF #(DM_CPU_Req #(5,  FLEN)) f_req_in     <- mkFIFOF;
    // req to CPU
-   FIFOF #(DM_CPU_Req #(5,  XLEN)) f_req_out    <- mkFIFOF;
+   FIFOF #(DM_CPU_Req #(5,  FLEN)) f_req_out    <- mkFIFOF;
    // resp CPU->DM
-   FIFOF #(DM_CPU_Rsp #(XLEN))     f_rsp        <- mkFIFOF;
+   FIFOF #(DM_CPU_Rsp #(FLEN))     f_rsp        <- mkFIFOF;
    // Tap to TV
    FIFOF #(Trace_Data)             f_trace_data <- mkFIFOF;
 

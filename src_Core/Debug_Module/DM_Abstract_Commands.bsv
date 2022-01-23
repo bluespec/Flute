@@ -286,7 +286,8 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 
       if (verbosity != 0)
 	 $display ("Debug Module: Abstract Command: csr write start: ", fshow (req));
-      fa_debug_show_location (verbosity);  if (verbosity != 0) $display ("rl_csr_write_start");
+      fa_debug_show_location (verbosity);
+      if (verbosity != 0) $display ("rl_csr_write_start");
    endrule
 
    // ----------------
@@ -302,7 +303,8 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 
       if (verbosity != 0)
 	 $display ("Debug Module: Abstract Command: csr write finish: ", fshow (rsp));
-      fa_debug_show_location (verbosity);  if (verbosity != 0) $display ("rl_csr_write_finish");
+      fa_debug_show_location (verbosity);
+      if (verbosity != 0) $display ("rl_csr_write_finish");
    endrule
 
    // ----------------------------------------------------------------
@@ -319,7 +321,8 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 
       if (verbosity != 0)
 	 $display ("Debug Module: Abstract Command: csr read start: ", fshow (req));
-      fa_debug_show_location (verbosity);  if (verbosity != 0) $display ("rl_csr_read_start");
+      fa_debug_show_location (verbosity);
+      if (verbosity != 0) $display ("rl_csr_read_start");
    endrule
 
    // ----------------
@@ -342,7 +345,8 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 
       if (verbosity != 0)
 	 $display ("Debug Module: Abstract Command: CSR read finish: ", fshow (rsp));
-      fa_debug_show_location (verbosity);  if (verbosity != 0) $display ("rl_csr_read_finish");
+      fa_debug_show_location (verbosity);
+      if (verbosity != 0) $display ("rl_csr_read_finish");
    endrule
 
    // ----------------------------------------------------------------
@@ -365,7 +369,8 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
       rg_start_reg_access <= False;
       if (verbosity != 0)
 	 $display ("Debug Module: Abstract Command: GPR write start: ", fshow (req));
-      fa_debug_show_location (verbosity);  if (verbosity != 0) $display ("rl_gpr_write_start");
+      fa_debug_show_location (verbosity);
+      if (verbosity != 0) $display ("rl_gpr_write_start");
    endrule
 
    // ----------------
@@ -381,7 +386,8 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 
       if (verbosity != 0)
 	 $display ("Debug Module: Abstract Command: GPR write finish: ", fshow (rsp));
-      fa_debug_show_location (verbosity);  if (verbosity != 0) $display ("rl_gpr_write_finish");
+      fa_debug_show_location (verbosity);
+      if (verbosity != 0) $display ("rl_gpr_write_finish");
    endrule
 
    // ----------------------------------------------------------------
@@ -398,7 +404,8 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 
       if (verbosity != 0)
 	 $display ("Debug Module: Abstract Command: GPR read start: ", fshow (req));
-      fa_debug_show_location (verbosity);  if (verbosity != 0) $display ("rl_gpr_read_start");
+      fa_debug_show_location (verbosity);
+      if (verbosity != 0) $display ("rl_gpr_read_start");
    endrule
 
    // ----------------
@@ -421,7 +428,8 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 
       if (verbosity != 0)
 	 $display ("Debug Module: Abstract Command: GPR read finish: ", fshow (rsp));
-      fa_debug_show_location (verbosity);  if (verbosity != 0) $display ("rl_gpr_read_finish");
+      fa_debug_show_location (verbosity);
+      if (verbosity != 0) $display ("rl_gpr_read_finish");
    endrule
 
    // ----------------------------------------------------------------
@@ -435,18 +443,18 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 			    && is_fpr);
       let req = DM_CPU_Req {write:   True,
 			    address: fpr_addr,
-`ifdef RV32
-			    data:    rg_data0
-`endif
-`ifdef RV64
+`ifdef ISA_D
 			    data:    {rg_data1, rg_data0}
+`else
+			    data:    rg_data0
 `endif
 			    };
       f_hart0_fpr_reqs.enq (req);
       rg_start_reg_access <= False;
       if (verbosity != 0)
 	 $display ("Debug Module: Abstract Command: FPR write start: ", fshow (req));
-      fa_debug_show_location (verbosity);  if (verbosity != 0) $display ("rl_fpr_write_start");
+      fa_debug_show_location (verbosity);
+      if (verbosity != 0) $display ("rl_fpr_write_start");
    endrule
 
    // ----------------
@@ -462,7 +470,8 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 
       if (verbosity != 0)
 	 $display ("Debug Module: Abstract Command: FPR write finish: ", fshow (rsp));
-      fa_debug_show_location (verbosity);  if (verbosity != 0) $display ("rl_fpr_write_finish");
+      fa_debug_show_location (verbosity);
+      if (verbosity != 0) $display ("rl_fpr_write_finish");
    endrule
 
    // ----------------------------------------------------------------
@@ -472,14 +481,15 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 			   && rg_start_reg_access
 			   && (! rg_command_access_reg_write)
 			   && is_fpr);
-      Bit #(XLEN) data = ?;
+      Bit #(FLEN) data = ?;
       let req = DM_CPU_Req {write: False, address: fpr_addr, data: data };
       f_hart0_fpr_reqs.enq (req);
       rg_start_reg_access <= False;
 
       if (verbosity != 0)
 	 $display ("Debug Module: Abstract Command: FPR read start: ", fshow (req));
-      fa_debug_show_location (verbosity);  if (verbosity != 0) $display ("rl_fpr_read_start");
+      fa_debug_show_location (verbosity);
+      if (verbosity != 0) $display ("rl_fpr_read_start");
    endrule
 
    // ----------------
@@ -489,19 +499,21 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 			    && is_fpr);
       let rsp <- pop (f_hart0_fpr_rsps);
 
-`ifdef RV32
-      rg_data0 <= rsp.data;
-`endif
-`ifdef RV64
+`ifdef ISA_D
       rg_data0 <= truncate (rsp.data);
       rg_data1 <= rsp.data [63:32];
+`else
+      rg_data0 <= rsp.data;
 `endif
-      rg_abstractcs_cmderr <= (rsp.ok ? DM_ABSTRACTCS_CMDERR_NONE : DM_ABSTRACTCS_CMDERR_HALT_RESUME);
+      rg_abstractcs_cmderr <= (rsp.ok
+			       ? DM_ABSTRACTCS_CMDERR_NONE
+			       : DM_ABSTRACTCS_CMDERR_HALT_RESUME);
       rg_abstractcs_busy <= False;
 
       if (verbosity != 0)
 	 $display ("Debug Module: Abstract Command: FPR read finish: ", fshow (rsp));
-      fa_debug_show_location (verbosity);  if (verbosity != 0) $display ("rl_fpr_read_finish");
+      fa_debug_show_location (verbosity);
+      if (verbosity != 0) $display ("rl_fpr_read_finish");
    endrule
 
 `endif
@@ -519,7 +531,8 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 
       $display ("ERROR: Debug Module: Abstract Command Write: unknown regno [0x%0h] <= 0x%08h",
 		rg_command_access_reg_regno, rg_data0);
-      fa_debug_show_location (verbosity); if (verbosity != 0) $display ("rl_unknown_write_start");
+      fa_debug_show_location (verbosity);
+      if (verbosity != 0) $display ("rl_unknown_write_start");
    endrule
 
    rule rl_unknown_read_start (   rg_abstractcs_busy
@@ -532,7 +545,8 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 
       $display ("ERROR: Debug Module: Abstract Command READ: unknown regno [0x%0h]",
 		rg_command_access_reg_regno);
-      fa_debug_show_location (verbosity); if (verbosity != 0) $display ("rl_unknown_read_start");
+      fa_debug_show_location (verbosity);
+      if (verbosity != 0) $display ("rl_unknown_read_start");
    endrule
 
    // ================================================================
@@ -558,7 +572,8 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
       rg_data3 <= 0;
 
       $display ("Debug Module: debug module reset");
-      fa_debug_show_location (verbosity); if (verbosity != 0) $display ("ma_reset");
+      fa_debug_show_location (verbosity);
+      if (verbosity != 0) $display ("ma_reset");
    endmethod
 
    // ----------------
@@ -582,7 +597,8 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 	 if (verbosity != 0)
 	    $display ("Debug Module: Abstract Command read: [", dm_addr_name, "]",
 		      " => 0x%08h", dm_word);
-	 fa_debug_show_location (verbosity); if (verbosity != 0) $display ("mav_read");
+	 fa_debug_show_location (verbosity);
+	 if (verbosity != 0) $display ("mav_read");
 	 return dm_word;
       endactionvalue
    endmethod
@@ -593,7 +609,8 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 	 if (verbosity != 0)
 	    $display ("Debug Module: Abstract Command write: [", dm_addr_name, "]",
 		      " <= 0x%08h", dm_word);
-	 fa_debug_show_location (verbosity); if (verbosity != 0) $display ("ma_write");
+	 fa_debug_show_location (verbosity);
+	 if (verbosity != 0) $display ("ma_write");
 
 	 if (dm_addr == dm_addr_abstractcs)
 	    fa_rg_abstractcs_write (dm_word);
@@ -601,8 +618,10 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 	 else if (rg_abstractcs_cmderr != DM_ABSTRACTCS_CMDERR_NONE) begin
 	    $display ("ERROR: Debug Module: Abstract Command write: [", dm_addr_name, "]",
 		      " <= 0x%08h", dm_word);
-	    $display ("    Ignoring due to previous cmderr ", fshow (rg_abstractcs_cmderr));
-	    fa_debug_show_location (verbosity); if (verbosity != 0) $display ("ma_write");
+	    $display ("    Ignoring due to previous cmderr ",
+		      fshow (rg_abstractcs_cmderr));
+	    fa_debug_show_location (verbosity);
+	    if (verbosity != 0) $display ("ma_write");
 	 end
 
 	 else if (dm_addr == dm_addr_command) fa_rg_command_write (dm_word);

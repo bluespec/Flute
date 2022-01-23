@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2021-2022 Bluespec, Inc. All Rights Reserved.
 // Author: Rishiyur S. Nikhil
 
 package AWSteria_Core;
@@ -400,11 +400,15 @@ module mkAWSteria_Core_Single_Clock (AWSteria_Core_IFC_Specialized);
    rule rl_set_verbosity (rg_module_state == MODULE_STATE_READY);
       match { .verbosity, .log_delay } <- host_cs.g_verbosity.get;
       cpu.set_verbosity (verbosity, log_delay);
+      $display ("AWSteria_Core: setting verbosity %0d log_delay %0d",
+		verbosity, log_delay);
    endrule
 
    rule rl_watch_thost (rg_module_state == MODULE_STATE_READY);
       match { .watch, .tohost_addr } <- host_cs.g_watch_tohost.get;
       cpu.set_watch_tohost (watch, tohost_addr);
+      $display ("AWSteria_Core: setting tohost watch %0d addr %0h",
+		watch, tohost_addr);
    endrule
 
    rule rl_send_tohost_value;

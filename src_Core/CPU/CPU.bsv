@@ -311,7 +311,9 @@ module mkCPU (CPU_IFC);
 		      instret, pc, instr, priv);
 
 `ifdef INCLUDE_PC_TRACE
-	 let pc_trace = PC_Trace {cycle: mcycle,  instret: instret, pc: pc};
+	 let pc_trace = PC_Trace {cycle:   mcycle,
+				  instret: instret,
+				  pc:      zeroExtend (pc)};
 	 f_pc_trace.enq (pc_trace);
 `endif
       endaction

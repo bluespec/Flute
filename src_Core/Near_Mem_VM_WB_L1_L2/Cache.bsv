@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2021 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2016-2022 Bluespec, Inc. All Rights Reserved.
 
 package Cache;
 
@@ -982,8 +982,8 @@ module mkCache #(parameter Bool      dcache_not_icache,
 
       // Set state for downgrade:
       rg_fsm_state     <= FSM_DOWNGRADE_B;
-      rg_va            <= addr;
-      rg_pa            <= addr;
+      rg_va            <= truncate (addr);
+      rg_pa            <= truncate (addr);
       rg_cset_in_cache <= fn_Addr_to_CSet_in_Cache (addr);
       fa_req_rams_A (truncate (addr));
    endrule: rl_downgrade_req_from_L2_A
@@ -1041,7 +1041,7 @@ module mkCache #(parameter Bool      dcache_not_icache,
 	 // Check if victim needs to be written back (if MODIFIED) or not (otherwise)
 	 if (valid_info.valid_state < META_MODIFIED) begin
 	    // Victim was SHARED/EXCLUSIVE (so, clean): respond and done
-	    let rsp = L1_to_L2_Rsp {addr:     rg_pa,
+	    let rsp = L1_to_L2_Rsp {addr:     zeroExtend (rg_pa),
 				    to_state: l2_to_l1_req.to_state,
 				    m_cline:  tagged Invalid};
 	    f_L1_to_L2_rsps.enq (rsp);

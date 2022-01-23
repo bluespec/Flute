@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2021 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2013-2022 Bluespec, Inc. All Rights Reserved
 
 // ================================================================
 // ISA defs for UC Berkeley RISC V
@@ -919,6 +919,7 @@ function Bool fv_is_fp_instr_legal (Bit #(7) funct7,
    // ----------------
    Bool is_legal_other_RV32F
    = (   isa_F
+      && (opcode == op_FP)
       && (   (funct7== f7_FADD_S)
 	  || (funct7== f7_FSUB_S)
 	  || (funct7== f7_FMUL_S)
@@ -948,6 +949,7 @@ function Bool fv_is_fp_instr_legal (Bit #(7) funct7,
    // ----------------
    Bool is_legal_other_RV64F
    = (   isa_F
+      && (opcode == op_FP)
       && rv64
       && (   ((funct7== f7_FCVT_L_S)  && (rs2 == rs2_FCVT_L_S))
 	  || ((funct7== f7_FCVT_LU_S) && (rs2 == rs2_FCVT_LU_S))
@@ -958,6 +960,7 @@ function Bool fv_is_fp_instr_legal (Bit #(7) funct7,
    // ----------------
    Bool is_legal_other_RV32D
    = (   isa_D
+      && (opcode == op_FP)
       && (   (funct7== f7_FADD_D)
 	  || (funct7== f7_FSUB_D)
 	  || (funct7== f7_FMUL_D)
@@ -987,6 +990,7 @@ function Bool fv_is_fp_instr_legal (Bit #(7) funct7,
    // ----------------
    Bool is_legal_other_RV64D
    = (   isa_D
+      && (opcode == op_FP)
       && rv64
       && (   ((funct7== f7_FCVT_L_D)  && (rs2 == rs2_FCVT_L_D))
 	  || ((funct7== f7_FCVT_LU_D) && (rs2 == rs2_FCVT_LU_D))
@@ -997,9 +1001,11 @@ function Bool fv_is_fp_instr_legal (Bit #(7) funct7,
 	  ));
 
    // ----------------
-   return (is_legal_FM_FNM
-	   || is_legal_other_RV32F || is_legal_other_RV64F
-	   || is_legal_other_RV32D || is_legal_other_RV64D);
+   return (   is_legal_FM_FNM
+	   || is_legal_other_RV32F
+	   || is_legal_other_RV64F
+	   || is_legal_other_RV32D
+	   || is_legal_other_RV64D);
 endfunction
 
 /* DELETE (OLD): radical rewrite (with more error-checking) above
