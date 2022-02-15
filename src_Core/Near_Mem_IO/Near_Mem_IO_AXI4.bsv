@@ -354,10 +354,6 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
 	       x64      = { x64 [31:0], 0 };
 	       x64_strb = { x64_strb [3:0], 0 };
 	    end
-	    // TEMPORARY DEBUG: TODO: DELETE WHEN DONE
-	    // We're seeing 'h_AAAA_AAAA written here,
-	    // which results in a huge timer interval
-	    x64 = 0;
 	    new_timecmp = fn_update_strobed_bytes (old_timecmp, x64, x64_strb);
 	 end
 
