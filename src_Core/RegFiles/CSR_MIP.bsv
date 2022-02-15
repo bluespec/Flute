@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2022 Bluespec, Inc. All Rights Reserved
 
 package CSR_MIP;
 
@@ -11,9 +11,10 @@ package CSR_MIP;
 
 // None
 
+// ----------------
 // BSV additional libs
 
-// none
+import Cur_Cycle  :: *;
 
 // ================================================================
 // Project imports
@@ -181,6 +182,8 @@ module mkCSR_MIP (CSR_MIP_IFC);
 
    method Action timer_interrupt_req (Bool req);
       rg_mtip <= pack (req);
+      if (rg_mtip != pack (req))
+	 $display ("%0d: CSR_MIP.timer_interrupt_req: req %0d", cur_cycle, pack (req));
    endmethod
 endmodule
 

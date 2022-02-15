@@ -307,32 +307,68 @@ module mkAWSteria_Core_Single_Clock (AWSteria_Core_IFC_Specialized);
    mkConnection (fabric_1x3.v_to_slaves [plic_target_num],        plic.axi4_slave);
 
    // ================================================================
+   // Connect MTIME from near_mem_io to csr_regfile in CPU
+
+   (* fire_when_enabled, no_implicit_conditions *)
+   rule rl_drive_time;
+      cpu.ma_set_csr_time (near_mem_io.mv_read_mtime);
+   endrule
+
+   // ================================================================
    // Connect various interrupts to CPU
 
-   // from Near_Mem_IO (CLINT)
+   // ----------------
+   // SW interrupt from Near_Mem_IO (CLINT)
+
+   Reg #(Bool) rg_sw_interrupt <- mkReg (False);
+
+   (* fire_when_enabled, no_implicit_conditions *)
+   rule rl_drive_sw_interrupt;
+      cpu.software_interrupt_req (rg_sw_interrupt);
+   endrule
+
    rule rl_relay_sw_interrupt (rg_module_state == MODULE_STATE_READY);
       Bool x <- near_mem_io.get_sw_interrupt_req.get;
-      cpu.software_interrupt_req (x);
+      rg_sw_interrupt <= x;
       // $display ("%0d: Core.rl_relay_sw_interrupt: %d", cur_cycle, pack (x));
    endrule
 
-   // from Near_Mem_IO (CLINT)
-   rule rl_relay_timer_interrupt (rg_module_state == MODULE_STATE_READY);
-      Bool x <- near_mem_io.get_timer_interrupt_req.get;
-      cpu.timer_interrupt_req (x);
+   // ----------------
+   // Timer interrupt from Near_Mem_IO (CLINT)
 
-       // $display ("%0d: %m.rl_relay_timer_interrupt: %d", cur_cycle, pack (x));
+   Reg #(Bool) rg_timer_interrupt <- mkReg (False);
+
+   (* fire_when_enabled, no_implicit_conditions *)
+   rule rl_drive_timer_interrupt;
+      cpu.timer_interrupt_req (rg_timer_interrupt);
    endrule
 
-   // from PLIC
+   rule rl_relay_timer_interrupt (rg_module_state == MODULE_STATE_READY);
+      Bool x <- near_mem_io.get_timer_interrupt_req.get;
+      rg_timer_interrupt <= x;
+      // $display ("%0d: Core.rl_relay_timer_interrupt: %d", cur_cycle, pack (x));
+   endrule
+
+   // ----------------
+   // External interrupts from PLIC
+
+   Reg #(Bool) rg_m_external_interrupt <- mkReg (False);
+   Reg #(Bool) rg_s_external_interrupt <- mkReg (False);
+
+   (* fire_when_enabled, no_implicit_conditions *)
+   rule rl_drive_external_interrupt;
+      cpu.m_external_interrupt_req (rg_m_external_interrupt);
+      cpu.s_external_interrupt_req (rg_s_external_interrupt);
+   endrule
+
    rule rl_relay_external_interrupt (rg_module_state == MODULE_STATE_READY);
       Bool meip = plic.v_targets [0].m_eip;
-      cpu.m_external_interrupt_req (meip);
+      rg_m_external_interrupt <= meip;
 
       Bool seip = plic.v_targets [1].m_eip;
-      cpu.s_external_interrupt_req (seip);
+      rg_s_external_interrupt <= seip;
 
-      // $display ("%0d: %m.rl_relay_external_interrupt: %d", ur_cycle, pack (x));
+      // $display ("%0d: AWSteria_Core.rl_relay_external_interrupt: %d", ur_cycle, pack (x));
    endrule
 
    // ================================================================

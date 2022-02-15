@@ -1323,6 +1323,8 @@ module mkCPU (CPU_IFC);
    // ================================================================
    // Stage1: nonpipe special: WFI
 
+   Reg #(Bit #(32)) rg_wfi_counter <- mkReg ('h_FFFF_FFFF);
+
    rule rl_stage1_WFI (   (rg_state== CPU_RUNNING)
 		       && (! halting)
 		       && (stage3.out.ostatus == OSTATUS_EMPTY)
@@ -1330,10 +1332,10 @@ module mkCPU (CPU_IFC);
 		       && (stage1.out.ostatus == OSTATUS_NONPIPE)
 		       && (stage1.out.control == CONTROL_WFI)
 		       && (stageF.out.ostatus != OSTATUS_BUSY));
-      if (cur_verbosity > 1) $display ("%0d: %m.rl_stage1_WFI", mcycle);
 
-      rg_next_pc <= stage1.out.next_pc;
-      rg_state   <= CPU_WFI_PAUSED;
+      rg_next_pc     <= stage1.out.next_pc;
+      rg_state       <= CPU_WFI_PAUSED;
+      rg_wfi_counter <= 1;
 
       stageD.set_full (False);
       stage1.set_full (False);    fa_step_check;
@@ -1350,17 +1352,35 @@ module mkCPU (CPU_IFC);
       // Debug
       fa_emit_instr_trace (minstret, stage1.out.data_to_stage2.pc, stage1.out.data_to_stage2.instr, rg_cur_priv);
       if (cur_verbosity > 1)
-	 $display ("    CPU.rl_stage1_WFI");
+	 $display ("%0d: CPU.rl_stage1_WFI: stage.out.next_pc 0x%0h",
+		   mcycle,
+		   stage1.out.data_to_stage2.priv,
+		   stage1.out.data_to_stage2.pc,
+		   stage1.out.data_to_stage2.instr,
+		   stage1.out.next_pc);
    endrule: rl_stage1_WFI
 
    // ----------------
 
+   rule rl_WFI_count (rg_state == CPU_WFI_PAUSED);
+      if ((rg_wfi_counter & 'hF_FFFF) == 0) begin
+	 $display ("%0d: CPU: rl_WFI_count: waited so far for %0d clocks",
+		   mcycle, rg_wfi_counter);
+	 $display ("    csr_regfile.wfi_resume = ", fshow (csr_regfile.wfi_resume));
+	 $display ("    stageF.out.ostatus     = ", fshow (stageF.out.ostatus));
+      end
+      rg_wfi_counter <= rg_wfi_counter + 1;
+   endrule
+
+   // ----------------
+
+   (* descending_urgency = "rl_WFI_resume, rl_WFI_count" *)
    rule rl_WFI_resume (   (rg_state == CPU_WFI_PAUSED)
 		       && (   csr_regfile.wfi_resume
 			   || stop_step_req)
 		       && (stageF.out.ostatus != OSTATUS_BUSY));
       if (cur_verbosity > 1)
-	 $display ("%0d: %m.rl_WFI_resume", mcycle);
+	 $display ("%0d: CPU: rl_WFI_resume after waiting %0d cycles", mcycle, rg_wfi_counter);
 
       // Resume pipe (it will handle the interrupt, if one is pending)
       stageD.set_full (False);
@@ -1763,6 +1783,11 @@ module mkCPU (CPU_IFC);
 
    method Action  m_external_interrupt_req (x) = csr_regfile.m_external_interrupt_req (x);
    method Action  s_external_interrupt_req (x) = csr_regfile.s_external_interrupt_req (x);
+
+   // ----------------
+   // Set CSR TIME (shadow-copy of MTIME)
+
+   method Action ma_set_csr_time (Bit #(64) t) = csr_regfile.ma_set_csr_time (t);
 
    // ----------------
    // Software and timer interrupts (from Near_Mem_IO/CLINT)

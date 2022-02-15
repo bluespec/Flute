@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2019 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2022 Bluespec, Inc. All Rights Reserved
 
 package Near_Mem_IO_AXI4;
 
@@ -85,6 +85,10 @@ interface Near_Mem_IO_AXI4_IFC;
    // Memory-mapped access
    interface AXI4_Slave_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) axi4_slave;
 
+   // Read MTIME to update shadow-copy TIME CSR
+   (* always_ready *)
+   method Bit #(64) mv_read_mtime;
+
    // Timer interrupt
    // True/False = set/clear interrupt-pending in CPU's MTIP
    interface Get #(Bool)  get_timer_interrupt_req;
@@ -99,7 +103,7 @@ endinterface
 module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
 
    // Verbosity: 0: quiet; 1: reset; 2: timer interrupts, all reads and writes
-   Reg #(Bit #(4)) cfg_verbosity <- mkConfigReg (0);
+   Reg #(Bit #(4)) cfg_verbosity <- mkConfigReg (2);
 
    Reg #(Module_State) rg_state <- mkReg (MODULE_STATE_START);
 
@@ -121,10 +125,11 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
    // ----------------
    // Timer registers
 
-   Reg #(Bit #(64)) crg_time [2]    <- mkCReg (2, 1);
-   Reg #(Bit #(64)) crg_timecmp [2] <- mkCReg (2, 0);
+   Reg #(Bit #(64)) crg_time [2]    <- mkCReg (2, 0);
+   Reg #(Bit #(64)) crg_timecmp [2] <- mkCReg (2, '1);
 
-   Reg #(Bool) rg_mtip <- mkReg (True);
+   Reg #(Bool) rg_mtip      <- mkReg (False);
+   Reg #(Bool) rg_mtip_prev <- mkReg (False);
 
    // Timer-interrupt queue
    FIFOF #(Bool) f_timer_interrupt_req <- mkFIFOF;
@@ -151,10 +156,12 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
       f_sw_interrupt_req.clear;
 
       rg_state        <= MODULE_STATE_READY;
-      crg_time [1]    <= 1;
-      crg_timecmp [1] <= 0;
-      rg_mtip         <= True;
+      crg_time [1]    <= 0;
+      crg_timecmp [1] <= '1;
       rg_msip         <= False;
+
+      rg_mtip         <= False;
+      rg_mtip_prev    <= False;
 
       f_reset_rsps.enq (?);
 
@@ -180,6 +187,7 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
 
    // Compare and generate timer interrupt request
 
+   /* OLD: DELETE AFTER DEBUG NEW
    Bool new_mtip = (crg_time [0] >= crg_timecmp [0]);
 
    rule rl_compare ((rg_state == MODULE_STATE_READY)
@@ -192,6 +200,21 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
 	 $display ("%0d: Near_Mem_IO_AXI4.rl_compare: new MTIP = %0d, time = %0d, timecmp = %0d",
 		   cur_cycle, new_mtip, crg_time [0], crg_timecmp [0]);
    endrule
+   */
+
+   rule rl_mtip ((rg_state == MODULE_STATE_READY) && (! f_reset_reqs.notEmpty));
+      rg_mtip <= (crg_time [0] >= crg_timecmp [0]);
+   endrule
+
+   rule rl_mtip_edge;
+      if (rg_mtip != rg_mtip_prev) begin
+	 f_timer_interrupt_req.enq (rg_mtip);
+	 if (cfg_verbosity > 1)
+	    $display ("%0d: Near_Mem_IO_AXI4.rl_mtip_edge: rg_mtip change to %0d",
+		      cur_cycle, rg_mtip);
+      end
+      rg_mtip_prev <= rg_mtip;
+   endrule
 
    // ----------------------------------------------------------------
    // Handle 'memory'-read requests
@@ -201,7 +224,7 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
 
       let rda <- pop_o (slave_xactor.o_rd_addr);
       if (cfg_verbosity > 1) begin
-	 $display ("%0d: Near_Mem_IO_AXI4.rl_process_rd_req: rg_mtip = %0d", cur_cycle, rg_mtip);
+	 $display ("%0d: Near_Mem_IO_AXI4.rl_process_rd_req", cur_cycle);
 	 $display ("    ", fshow (rda));
       end
 
@@ -211,7 +234,7 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
 
       if (rda.araddr < rg_addr_base) begin
 	 $display ("%0d: ERROR: Near_Mem_IO_AXI4.rl_process_rd_req: unrecognized addr", cur_cycle);
-	 $display ("            ", fshow (rda));
+	 $display ("    ", fshow (rda));
 	 rresp = axi4_resp_decerr;
       end
 
@@ -253,7 +276,7 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
 
       if (rresp != axi4_resp_okay) begin
 	 $display ("%0d: ERROR: Near_Mem_IO_AXI4.rl_process_rd_req: unrecognized addr", cur_cycle);
-	 $display ("            ", fshow (rda));
+	 $display ("    ", fshow (rda));
       end
 
       // Send read-response to bus
@@ -266,9 +289,7 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
       slave_xactor.i_rd_data.enq (rdr);
 
       if (cfg_verbosity > 1) begin
-	 $display ("%0d: Near_Mem_IO_AXI4.rl_process_rd_req", cur_cycle);
-	 $display ("            ", fshow (rda));
-	 $display ("            ", fshow (rdr));
+	 $display ("    ", fshow (rdr));
       end
    endrule
 
@@ -281,7 +302,7 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
       let wra <- pop_o (slave_xactor.o_wr_addr);
       let wrd <- pop_o (slave_xactor.o_wr_data);
       if (cfg_verbosity > 1) begin
-	 $display ("%0d: Near_Mem_IO_AXI4.rl_process_wr_req: rg_mtip = %0d", cur_cycle, rg_mtip);
+	 $display ("%0d: Near_Mem_IO_AXI4.rl_process_wr_req", cur_cycle);
 	 $display ("    ", fshow (wra));
 	 $display ("    ", fshow (wrd));
       end
@@ -300,8 +321,8 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
 	 bresp = axi4_resp_decerr;
       end
 
+      // MSIP
       else if (byte_addr == 'h_0000) begin
-	 // MSIP
 	 Bool new_msip = (wdata [0] == 1'b1);
 	 if (rg_msip != new_msip) begin
 	    rg_msip <= new_msip;
@@ -311,21 +332,50 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
 	 end
       end
 
-      else if (byte_addr == 'h_4000) begin
-	 // MTIMECMP
+      // MSIPH
+      else if (byte_addr == 'h_0004) begin
+	 noAction;    // upper 32 bits wired to 0
+      end
+
+      // MTIMECMP and MTIMECMPH
+      else if ((byte_addr == 'h_4000) || (byte_addr == 'h_4004)) begin
 	 Bit #(64) old_timecmp = crg_timecmp [1];
-	 Bit #(64) new_timecmp = fn_update_strobed_bytes (old_timecmp,
-							  zeroExtend (wdata),
-							  zeroExtend (wstrb));
+	 Bit #(64) new_timecmp = ?;
+
+	 if (byte_addr == 'h_4000) begin
+	    new_timecmp = fn_update_strobed_bytes (old_timecmp,
+						   zeroExtend (wdata),
+						   zeroExtend (wstrb));
+	 end
+	 else begin
+	    Bit #(64) x64      = zeroExtend (wdata);
+	    Bit #(8)  x64_strb = zeroExtend (wstrb);
+	    if (valueOf (Wd_Data) == 32) begin
+	       x64      = { x64 [31:0], 0 };
+	       x64_strb = { x64_strb [3:0], 0 };
+	    end
+	    // TEMPORARY DEBUG: TODO: DELETE WHEN DONE
+	    // We're seeing 'h_AAAA_AAAA written here,
+	    // which results in a huge timer interval
+	    x64 = 0;
+	    new_timecmp = fn_update_strobed_bytes (old_timecmp, x64, x64_strb);
+	 end
+
 	 crg_timecmp [1] <= new_timecmp;
+	 rg_mtip <= False;
 
 	 if (cfg_verbosity > 1) begin
 	    $display ("    Writing MTIMECMP");
-	    $display ("        old MTIMECMP         = 0x%0h", old_timecmp);
-	    $display ("        new MTIMECMP         = 0x%0h", new_timecmp);
-	    $display ("        cur MTIME            = 0x%0h", crg_time [1]);
-	    $display ("        new MTIMECMP - MTIME = 0x%0h", new_timecmp - crg_time [1]);
+	    $display ("        old MTIMECMP         = %0d", old_timecmp);
+	    $display ("        new MTIMECMP         = %0d", new_timecmp);
+	    $display ("        cur MTIME            = %0d", crg_time [1]);
 	 end
+
+	 // Simulation-only warning that timer interval is very large
+	 if ((new_timecmp > crg_time [1])
+	     && ((new_timecmp - crg_time [1]) > 'h_1_0000_0000))
+	    $display ("%0d: WARNING: very large timer interval:  time %0d  timecmp %0d",
+		      cur_cycle, crg_time [1], new_timecmp);
       end
 
       else if (byte_addr == 'h_BFF8) begin
@@ -338,35 +388,8 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
 
 	 if (cfg_verbosity > 1) begin
 	    $display ("    Writing MTIME");
-	    $display ("        old MTIME = 0x%0h", old_time);
-	    $display ("        new MTIME = 0x%0h", new_time);
-	 end
-      end
-
-      // The following ALIGN4B writes are only needed for 32b fabrics
-      else if (byte_addr == 'h_0004) begin
-	 // MSIPH
-	 noAction;    // upper 32 bits wired to 0
-      end
-
-      else if (byte_addr == 'h_4004) begin
-	 // MTIMECMPH
-	 Bit #(64) old_timecmp = crg_timecmp [1];
-	 Bit #(64) x64      = zeroExtend (wdata);
-	 Bit #(8)  x64_strb = zeroExtend (wstrb);
-	 if (valueOf (Wd_Data) == 32) begin
-	    x64      = { x64 [31:0], 0 };
-	    x64_strb = { x64_strb [3:0], 0 };
-	 end
-	 Bit #(64) new_timecmp = fn_update_strobed_bytes (old_timecmp, x64, x64_strb);
-	 crg_timecmp [1] <= new_timecmp;
-
-	 if (cfg_verbosity > 1) begin
-	    $display ("    Writing MTIMECMP");
-	    $display ("        old MTIMECMP         = 0x%0h", old_timecmp);
-	    $display ("        new MTIMECMP         = 0x%0h", new_timecmp);
-	    $display ("        cur MTIME            = 0x%0h", crg_time [1]);
-	    $display ("        new MTIMECMP - MTIME = 0x%0h", new_timecmp - crg_time [1]);
+	    $display ("        old MTIME = %0d", old_time);
+	    $display ("        new MTIME = %0d", new_time);
 	 end
       end
 
@@ -384,8 +407,8 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
 
 	 if (cfg_verbosity > 1) begin
 	    $display ("    Writing MTIME");
-	    $display ("        old MTIME = 0x%0h", old_time);
-	    $display ("        new MTIME = 0x%0h", new_time);
+	    $display ("        old MTIME = %0d", old_time);
+	    $display ("        new MTIME = %0d", new_time);
 	 end
       end
 
@@ -394,8 +417,8 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
 
       if (bresp != axi4_resp_okay) begin
 	 $display ("%0d: ERROR: Near_Mem_IO_AXI4.rl_process_wr_req: unrecognized addr", cur_cycle);
-	 $display ("            ", fshow (wra));
-	 $display ("            ", fshow (wrd));
+	 $display ("    ", fshow (wra));
+	 $display ("    ", fshow (wrd));
       end
 
       // Send write-response to bus
@@ -405,10 +428,7 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
       slave_xactor.i_wr_resp.enq (wrr);
 
       if (cfg_verbosity > 1) begin
-	 $display ("%0d: Near_Mem_IO.AXI4.rl_process_wr_req", cur_cycle);
-	 $display ("            ", fshow (wra));
-	 $display ("            ", fshow (wrd));
-	 $display ("            ", fshow (wrr));
+	 $display ("    ", fshow (wrr));
       end
    endrule
 
@@ -437,6 +457,11 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
 
    // Memory-mapped access
    interface  axi4_slave = slave_xactor.axi_side;
+
+   // Read MTIME to update shadow-copy TIME CSR
+   method Bit #(64) mv_read_mtime;
+      return crg_time [0];
+   endmethod
 
    // Timer interrupt
    interface Get get_timer_interrupt_req;

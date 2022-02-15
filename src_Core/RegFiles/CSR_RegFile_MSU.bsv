@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2022 Bluespec, Inc. All Rights Reserved
 
 package CSR_RegFile_MSU;
 
@@ -145,8 +145,10 @@ interface CSR_RegFile_IFC;
    method Bit #(64) read_csr_mcycle;
 
    // Read MTIME
+   /* TODO: OBSOLETE? DELETE?
    (* always_ready *)
    method Bit #(64) read_csr_mtime;
+   */
 
    // Access permission
    (* always_ready *)
@@ -161,6 +163,12 @@ interface CSR_RegFile_IFC;
    // Read MIP
    (* always_ready *)
    method WordXL csr_mip_read;
+
+   // ----------------
+   // Set CSR TIME (shadow-copy of MTIME)
+
+   (* always_ready, always_enabled *)
+   method Action ma_set_csr_time (Bit #(64) t);
 
    // ----------------
    // Interrupts
@@ -306,6 +314,8 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
    Reg #(Bit #(5)) rg_fflags <- mkRegU;    // floating point flags
    Reg #(Bit #(3)) rg_frm    <- mkRegU;    // floating point rounding mode
 `endif
+
+   Reg #(Bit #(64)) rg_time <- mkReg (0);    // Read-only shadow of MTIME
 
    // Supervisor-mode CSRs
    Bit #(16)  sedeleg = 0;    // hardwired to 0
@@ -500,15 +510,7 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 		     || (csr_addr == csr_addr_fcsr)
 `endif
 		     || (csr_addr == csr_addr_cycle)
-
-		     /*
-		     // NOTE: CSR_TIME should be a 'shadow copy' of the MTIME
-		     // mem-mapped location; but since both increment at the
-		     // same rate, and MTIME is never written, this is ok.
-
-		     || (csr_addr == csr_addr_time)
-		     */
-
+		     || (csr_addr == csr_addr_time)    // 'shadow copy' of mem-mapped MTIME
 		     || (csr_addr == csr_addr_instret)
 `ifdef RV32
 		     || (csr_addr == csr_addr_cycleh)
@@ -632,18 +634,12 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
 `endif
 	    csr_addr_cycle:    m_csr_value = tagged Valid (truncate (rg_mcycle));
 
-	    /*
-	    // NOTE: CSR_TIME should be a 'shadow copy' of the MTIME
-	    // mem-mapped location; but since both increment at the
-	    // same rate, and MTIME is never written, this is ok.
-
-	    csr_addr_time:     m_csr_value = tagged Valid (truncate (rg_mcycle));
-	    */
+	    csr_addr_time:     m_csr_value = tagged Valid (truncate (rg_time));
 
 	    csr_addr_instret:  m_csr_value = tagged Valid (truncate (rg_minstret));
 `ifdef RV32
 	    csr_addr_cycleh:   m_csr_value = tagged Valid (rg_mcycle   [63:32]);
-	    csr_addr_timeh:    m_csr_value = tagged Invalid;
+	    csr_addr_timeh:    m_csr_value = tagged Valid (rg_time     [63:32]);
 	    csr_addr_instreth: m_csr_value = tagged Valid (rg_minstret [63:32]);
 `endif
 
@@ -1314,10 +1310,12 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
    endmethod
 
    // Read MTIME
+   /* TODO: OBSOLETE? DELETE?
    method Bit #(64) read_csr_mtime;
       // We use mcycle as a proxy for time
       return rg_mcycle;
    endmethod
+   */
 
    // Access permission
    method Bool access_permitted_1 (Priv_Mode  priv, CSR_Addr  csr_addr,  Bool read_not_write);
@@ -1346,6 +1344,14 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
       return csr_mip.mv_read;
    endmethod
 
+   // ----------------
+   // Set CSR TIME (shadow-copy of MTIME)
+
+   method Action ma_set_csr_time (Bit #(64) t);
+      rg_time <= t;
+   endmethod
+
+   // ----------------
    // Interrupts
    method Action m_external_interrupt_req (Bool set_not_clear);
       csr_mip.m_external_interrupt_req  (set_not_clear);

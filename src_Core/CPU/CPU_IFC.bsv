@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2021 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2022 Bluespec, Inc. All Rights Reserved
 
 package CPU_IFC;
 
@@ -71,6 +71,12 @@ interface CPU_IFC;
 
    (* always_ready, always_enabled *)
    method Action  s_external_interrupt_req (Bool set_not_clear);
+
+   // ----------------
+   // Set CSR TIME (shadow-copy of MTIME)
+
+   (* always_ready, always_enabled *)
+   method Action ma_set_csr_time (Bit #(64) t);
 
    // ----------------
    // Software and timer interrupts (from Near_Mem_IO/CLINT)

@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2022 Bluespec, Inc. All Rights Reserved
 
 package CSR_MIE;
 
@@ -11,9 +11,10 @@ package CSR_MIE;
 
 // none
 
+// ----------------
 // BSV additional libs
 
-// none
+import Cur_Cycle  :: *;
 
 // ================================================================
 // Project imports
@@ -73,6 +74,7 @@ module mkCSR_MIE (CSR_MIE_IFC);
    method ActionValue #(WordXL) mav_write (MISA misa,  WordXL wordxl);
       let mie = fv_fixup_mie (misa, truncate (wordxl));
       rg_mie <= mie;
+      $display ("%0d: CSR_MIE.mav_write 0x%0h", cur_cycle, mie);
       return zeroExtend (mie);
    endmethod
 
