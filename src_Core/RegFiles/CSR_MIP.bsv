@@ -70,6 +70,8 @@ endinterface
 (* synthesize *)
 module mkCSR_MIP (CSR_MIP_IFC);
    
+   Integer verbosity = 0;
+
    Reg #(Bit #(1)) rg_meip <- mkReg (0);
    Reg #(Bit #(1)) rg_seip <- mkReg (0);
    Reg #(Bit #(1)) rg_ueip <- mkReg (0);
@@ -81,10 +83,6 @@ module mkCSR_MIP (CSR_MIP_IFC);
    Reg #(Bit #(1)) rg_msip <- mkReg (0);
    Reg #(Bit #(1)) rg_ssip <- mkReg (0);
    Reg #(Bit #(1)) rg_usip <- mkReg (0);
-
-   // FIFOF #(Bool) f_meip <- mkFIFOF;
-   // FIFOF #(Bool) f_mtip <- mkFIFOF;
-   // FIFOF #(Bool) f_msip <- mkFIFOF;
 
    // ----------------------------------------------------------------
    // INTERFACE
@@ -182,7 +180,7 @@ module mkCSR_MIP (CSR_MIP_IFC);
 
    method Action timer_interrupt_req (Bool req);
       rg_mtip <= pack (req);
-      if (rg_mtip != pack (req))
+      if ((verbosity > 0) && (rg_mtip != pack (req)))
 	 $display ("%0d: CSR_MIP.timer_interrupt_req: req %0d", cur_cycle, pack (req));
    endmethod
 endmodule

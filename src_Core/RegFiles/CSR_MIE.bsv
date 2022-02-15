@@ -58,6 +58,8 @@ endinterface
 (* synthesize *)
 module mkCSR_MIE (CSR_MIE_IFC);
    
+   Integer verbosity = 0;
+
    Reg #(Bit #(12)) rg_mie <- mkReg (mie_reset_value);
 
    // ----------------------------------------------------------------
@@ -74,7 +76,8 @@ module mkCSR_MIE (CSR_MIE_IFC);
    method ActionValue #(WordXL) mav_write (MISA misa,  WordXL wordxl);
       let mie = fv_fixup_mie (misa, truncate (wordxl));
       rg_mie <= mie;
-      $display ("%0d: CSR_MIE.mav_write 0x%0h", cur_cycle, mie);
+      if (verbosity > 0)
+	 $display ("%0d: CSR_MIE.mav_write 0x%0h", cur_cycle, mie);
       return zeroExtend (mie);
    endmethod
 

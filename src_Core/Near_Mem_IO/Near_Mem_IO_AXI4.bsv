@@ -103,7 +103,7 @@ endinterface
 module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
 
    // Verbosity: 0: quiet; 1: reset; 2: timer interrupts, all reads and writes
-   Reg #(Bit #(4)) cfg_verbosity <- mkConfigReg (2);
+   Reg #(Bit #(4)) cfg_verbosity <- mkConfigReg (0);
 
    Reg #(Module_State) rg_state <- mkReg (MODULE_STATE_START);
 
@@ -186,21 +186,6 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
    endrule
 
    // Compare and generate timer interrupt request
-
-   /* OLD: DELETE AFTER DEBUG NEW
-   Bool new_mtip = (crg_time [0] >= crg_timecmp [0]);
-
-   rule rl_compare ((rg_state == MODULE_STATE_READY)
-		    && (rg_mtip != new_mtip)
-		    && (! f_reset_reqs.notEmpty));
-
-      rg_mtip <= new_mtip;
-      f_timer_interrupt_req.enq (new_mtip);
-      if (cfg_verbosity > 1)
-	 $display ("%0d: Near_Mem_IO_AXI4.rl_compare: new MTIP = %0d, time = %0d, timecmp = %0d",
-		   cur_cycle, new_mtip, crg_time [0], crg_timecmp [0]);
-   endrule
-   */
 
    rule rl_mtip ((rg_state == MODULE_STATE_READY) && (! f_reset_reqs.notEmpty));
       rg_mtip <= (crg_time [0] >= crg_timecmp [0]);
