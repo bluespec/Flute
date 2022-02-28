@@ -30,17 +30,6 @@
 // RDY_set_watch_tohost           O     1 const
 // mv_tohost_value                O    64
 // RDY_mv_tohost_value            O     1 const
-// loader_slave_awready           O     1 reg
-// loader_slave_wready            O     1 reg
-// loader_slave_bvalid            O     1 reg
-// loader_slave_bid               O     4 reg
-// loader_slave_bresp             O     2 reg
-// loader_slave_arready           O     1 reg
-// loader_slave_rvalid            O     1 reg
-// loader_slave_rid               O     4 reg
-// loader_slave_rdata             O    32 reg
-// loader_slave_rresp             O     2 reg
-// loader_slave_rlast             O     1 reg
 // CLK                            I     1 clock
 // RST_N                          I     1 reset
 // cpu_reset_server_request_put   I     1 reg
@@ -96,34 +85,6 @@
 // set_verbosity_logdelay         I    64 reg
 // set_watch_tohost_watch_tohost  I     1 reg
 // set_watch_tohost_tohost_addr   I    64 reg
-// loader_slave_awvalid           I     1
-// loader_slave_awid              I     4 reg
-// loader_slave_awaddr            I    32 reg
-// loader_slave_awlen             I     8 reg
-// loader_slave_awsize            I     3 reg
-// loader_slave_awburst           I     2 reg
-// loader_slave_awlock            I     1 reg
-// loader_slave_awcache           I     4 reg
-// loader_slave_awprot            I     3 reg
-// loader_slave_awqos             I     4 reg
-// loader_slave_awregion          I     4 reg
-// loader_slave_wvalid            I     1
-// loader_slave_wdata             I    32 reg
-// loader_slave_wstrb             I     4 reg
-// loader_slave_wlast             I     1 reg
-// loader_slave_bready            I     1
-// loader_slave_arvalid           I     1
-// loader_slave_arid              I     4 reg
-// loader_slave_araddr            I    32 reg
-// loader_slave_arlen             I     8 reg
-// loader_slave_arsize            I     3 reg
-// loader_slave_arburst           I     2 reg
-// loader_slave_arlock            I     1 reg
-// loader_slave_arcache           I     4 reg
-// loader_slave_arprot            I     3 reg
-// loader_slave_arqos             I     4 reg
-// loader_slave_arregion          I     4 reg
-// loader_slave_rready            I     1
 // EN_cpu_reset_server_request_put  I     1
 // EN_set_verbosity               I     1
 // EN_set_watch_tohost            I     1
@@ -279,62 +240,7 @@ module mkCore(CLK,
 	      RDY_set_watch_tohost,
 
 	      mv_tohost_value,
-	      RDY_mv_tohost_value,
-
-	      loader_slave_awvalid,
-	      loader_slave_awid,
-	      loader_slave_awaddr,
-	      loader_slave_awlen,
-	      loader_slave_awsize,
-	      loader_slave_awburst,
-	      loader_slave_awlock,
-	      loader_slave_awcache,
-	      loader_slave_awprot,
-	      loader_slave_awqos,
-	      loader_slave_awregion,
-
-	      loader_slave_awready,
-
-	      loader_slave_wvalid,
-	      loader_slave_wdata,
-	      loader_slave_wstrb,
-	      loader_slave_wlast,
-
-	      loader_slave_wready,
-
-	      loader_slave_bvalid,
-
-	      loader_slave_bid,
-
-	      loader_slave_bresp,
-
-	      loader_slave_bready,
-
-	      loader_slave_arvalid,
-	      loader_slave_arid,
-	      loader_slave_araddr,
-	      loader_slave_arlen,
-	      loader_slave_arsize,
-	      loader_slave_arburst,
-	      loader_slave_arlock,
-	      loader_slave_arcache,
-	      loader_slave_arprot,
-	      loader_slave_arqos,
-	      loader_slave_arregion,
-
-	      loader_slave_arready,
-
-	      loader_slave_rvalid,
-
-	      loader_slave_rid,
-
-	      loader_slave_rdata,
-
-	      loader_slave_rresp,
-
-	      loader_slave_rlast,
-
-	      loader_slave_rready);
+	      RDY_mv_tohost_value);
   input  CLK;
   input  RST_N;
 
@@ -523,98 +429,12 @@ module mkCore(CLK,
   output [63 : 0] mv_tohost_value;
   output RDY_mv_tohost_value;
 
-  // action method loader_slave_m_awvalid
-  input  loader_slave_awvalid;
-  input  [3 : 0] loader_slave_awid;
-  input  [31 : 0] loader_slave_awaddr;
-  input  [7 : 0] loader_slave_awlen;
-  input  [2 : 0] loader_slave_awsize;
-  input  [1 : 0] loader_slave_awburst;
-  input  loader_slave_awlock;
-  input  [3 : 0] loader_slave_awcache;
-  input  [2 : 0] loader_slave_awprot;
-  input  [3 : 0] loader_slave_awqos;
-  input  [3 : 0] loader_slave_awregion;
-
-  // value method loader_slave_m_awready
-  output loader_slave_awready;
-
-  // action method loader_slave_m_wvalid
-  input  loader_slave_wvalid;
-  input  [31 : 0] loader_slave_wdata;
-  input  [3 : 0] loader_slave_wstrb;
-  input  loader_slave_wlast;
-
-  // value method loader_slave_m_wready
-  output loader_slave_wready;
-
-  // value method loader_slave_m_bvalid
-  output loader_slave_bvalid;
-
-  // value method loader_slave_m_bid
-  output [3 : 0] loader_slave_bid;
-
-  // value method loader_slave_m_bresp
-  output [1 : 0] loader_slave_bresp;
-
-  // value method loader_slave_m_buser
-
-  // action method loader_slave_m_bready
-  input  loader_slave_bready;
-
-  // action method loader_slave_m_arvalid
-  input  loader_slave_arvalid;
-  input  [3 : 0] loader_slave_arid;
-  input  [31 : 0] loader_slave_araddr;
-  input  [7 : 0] loader_slave_arlen;
-  input  [2 : 0] loader_slave_arsize;
-  input  [1 : 0] loader_slave_arburst;
-  input  loader_slave_arlock;
-  input  [3 : 0] loader_slave_arcache;
-  input  [2 : 0] loader_slave_arprot;
-  input  [3 : 0] loader_slave_arqos;
-  input  [3 : 0] loader_slave_arregion;
-
-  // value method loader_slave_m_arready
-  output loader_slave_arready;
-
-  // value method loader_slave_m_rvalid
-  output loader_slave_rvalid;
-
-  // value method loader_slave_m_rid
-  output [3 : 0] loader_slave_rid;
-
-  // value method loader_slave_m_rdata
-  output [31 : 0] loader_slave_rdata;
-
-  // value method loader_slave_m_rresp
-  output [1 : 0] loader_slave_rresp;
-
-  // value method loader_slave_m_rlast
-  output loader_slave_rlast;
-
-  // value method loader_slave_m_ruser
-
-  // action method loader_slave_m_rready
-  input  loader_slave_rready;
-
   // signals for module outputs
   wire [63 : 0] mv_tohost_value;
-  wire [31 : 0] cpu_dmem_master_HADDR,
-		cpu_dmem_master_HWDATA,
-		debug_rdata,
-		loader_slave_rdata;
-  wire [3 : 0] cpu_dmem_master_HPROT,
-	       debug_bid,
-	       debug_rid,
-	       loader_slave_bid,
-	       loader_slave_rid;
+  wire [31 : 0] cpu_dmem_master_HADDR, cpu_dmem_master_HWDATA, debug_rdata;
+  wire [3 : 0] cpu_dmem_master_HPROT, debug_bid, debug_rid;
   wire [2 : 0] cpu_dmem_master_HBURST, cpu_dmem_master_HSIZE;
-  wire [1 : 0] cpu_dmem_master_HTRANS,
-	       debug_bresp,
-	       debug_rresp,
-	       loader_slave_bresp,
-	       loader_slave_rresp;
+  wire [1 : 0] cpu_dmem_master_HTRANS, debug_bresp, debug_rresp;
   wire RDY_cpu_reset_server_request_put,
        RDY_cpu_reset_server_response_get,
        RDY_mv_tohost_value,
@@ -628,13 +448,7 @@ module mkCore(CLK,
        debug_bvalid,
        debug_rlast,
        debug_rvalid,
-       debug_wready,
-       loader_slave_arready,
-       loader_slave_awready,
-       loader_slave_bvalid,
-       loader_slave_rlast,
-       loader_slave_rvalid,
-       loader_slave_wready;
+       debug_wready;
 
   // register dm_stub_rg_bursting
   reg dm_stub_rg_bursting;
@@ -991,10 +805,6 @@ module mkCore(CLK,
 		local_fabric$v_from_masters_1_awaddr,
 		local_fabric$v_from_masters_1_rdata,
 		local_fabric$v_from_masters_1_wdata,
-		local_fabric$v_from_masters_2_araddr,
-		local_fabric$v_from_masters_2_awaddr,
-		local_fabric$v_from_masters_2_rdata,
-		local_fabric$v_from_masters_2_wdata,
 		local_fabric$v_to_slaves_0_araddr,
 		local_fabric$v_to_slaves_0_awaddr,
 		local_fabric$v_to_slaves_0_rdata,
@@ -1015,8 +825,6 @@ module mkCore(CLK,
 	       local_fabric$v_from_masters_0_awlen,
 	       local_fabric$v_from_masters_1_arlen,
 	       local_fabric$v_from_masters_1_awlen,
-	       local_fabric$v_from_masters_2_arlen,
-	       local_fabric$v_from_masters_2_awlen,
 	       local_fabric$v_to_slaves_0_arlen,
 	       local_fabric$v_to_slaves_0_awlen,
 	       local_fabric$v_to_slaves_1_arlen,
@@ -1048,17 +856,6 @@ module mkCore(CLK,
 	       local_fabric$v_from_masters_1_bid,
 	       local_fabric$v_from_masters_1_rid,
 	       local_fabric$v_from_masters_1_wstrb,
-	       local_fabric$v_from_masters_2_arcache,
-	       local_fabric$v_from_masters_2_arid,
-	       local_fabric$v_from_masters_2_arqos,
-	       local_fabric$v_from_masters_2_arregion,
-	       local_fabric$v_from_masters_2_awcache,
-	       local_fabric$v_from_masters_2_awid,
-	       local_fabric$v_from_masters_2_awqos,
-	       local_fabric$v_from_masters_2_awregion,
-	       local_fabric$v_from_masters_2_bid,
-	       local_fabric$v_from_masters_2_rid,
-	       local_fabric$v_from_masters_2_wstrb,
 	       local_fabric$v_to_slaves_0_arcache,
 	       local_fabric$v_to_slaves_0_arid,
 	       local_fabric$v_to_slaves_0_arqos,
@@ -1111,10 +908,6 @@ module mkCore(CLK,
 	       local_fabric$v_from_masters_1_arsize,
 	       local_fabric$v_from_masters_1_awprot,
 	       local_fabric$v_from_masters_1_awsize,
-	       local_fabric$v_from_masters_2_arprot,
-	       local_fabric$v_from_masters_2_arsize,
-	       local_fabric$v_from_masters_2_awprot,
-	       local_fabric$v_from_masters_2_awsize,
 	       local_fabric$v_to_slaves_0_arprot,
 	       local_fabric$v_to_slaves_0_arsize,
 	       local_fabric$v_to_slaves_0_awprot,
@@ -1139,10 +932,6 @@ module mkCore(CLK,
 	       local_fabric$v_from_masters_1_awburst,
 	       local_fabric$v_from_masters_1_bresp,
 	       local_fabric$v_from_masters_1_rresp,
-	       local_fabric$v_from_masters_2_arburst,
-	       local_fabric$v_from_masters_2_awburst,
-	       local_fabric$v_from_masters_2_bresp,
-	       local_fabric$v_from_masters_2_rresp,
 	       local_fabric$v_to_slaves_0_arburst,
 	       local_fabric$v_to_slaves_0_awburst,
 	       local_fabric$v_to_slaves_0_bresp,
@@ -1190,20 +979,6 @@ module mkCore(CLK,
        local_fabric$v_from_masters_1_wlast,
        local_fabric$v_from_masters_1_wready,
        local_fabric$v_from_masters_1_wvalid,
-       local_fabric$v_from_masters_2_arlock,
-       local_fabric$v_from_masters_2_arready,
-       local_fabric$v_from_masters_2_arvalid,
-       local_fabric$v_from_masters_2_awlock,
-       local_fabric$v_from_masters_2_awready,
-       local_fabric$v_from_masters_2_awvalid,
-       local_fabric$v_from_masters_2_bready,
-       local_fabric$v_from_masters_2_bvalid,
-       local_fabric$v_from_masters_2_rlast,
-       local_fabric$v_from_masters_2_rready,
-       local_fabric$v_from_masters_2_rvalid,
-       local_fabric$v_from_masters_2_wlast,
-       local_fabric$v_from_masters_2_wready,
-       local_fabric$v_from_masters_2_wvalid,
        local_fabric$v_to_slaves_0_arlock,
        local_fabric$v_to_slaves_0_arready,
        local_fabric$v_to_slaves_0_arvalid,
@@ -1414,11 +1189,6 @@ module mkCore(CLK,
        CAN_FIRE_debug_m_bready,
        CAN_FIRE_debug_m_rready,
        CAN_FIRE_debug_m_wvalid,
-       CAN_FIRE_loader_slave_m_arvalid,
-       CAN_FIRE_loader_slave_m_awvalid,
-       CAN_FIRE_loader_slave_m_bready,
-       CAN_FIRE_loader_slave_m_rready,
-       CAN_FIRE_loader_slave_m_wvalid,
        CAN_FIRE_nmi_req,
        CAN_FIRE_set_verbosity,
        CAN_FIRE_set_watch_tohost,
@@ -1494,11 +1264,6 @@ module mkCore(CLK,
        WILL_FIRE_debug_m_bready,
        WILL_FIRE_debug_m_rready,
        WILL_FIRE_debug_m_wvalid,
-       WILL_FIRE_loader_slave_m_arvalid,
-       WILL_FIRE_loader_slave_m_awvalid,
-       WILL_FIRE_loader_slave_m_bready,
-       WILL_FIRE_loader_slave_m_rready,
-       WILL_FIRE_loader_slave_m_wvalid,
        WILL_FIRE_nmi_req,
        WILL_FIRE_set_verbosity,
        WILL_FIRE_set_watch_tohost;
@@ -1521,20 +1286,20 @@ module mkCore(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h5676;
-  reg [31 : 0] v__h5911;
-  reg [31 : 0] v__h7910;
-  reg [31 : 0] v__h7375;
-  reg [31 : 0] v__h5670;
-  reg [31 : 0] v__h5905;
-  reg [31 : 0] v__h7369;
-  reg [31 : 0] v__h7904;
+  reg [31 : 0] v__h5325;
+  reg [31 : 0] v__h5560;
+  reg [31 : 0] v__h7559;
+  reg [31 : 0] v__h7024;
+  reg [31 : 0] v__h5319;
+  reg [31 : 0] v__h5554;
+  reg [31 : 0] v__h7018;
+  reg [31 : 0] v__h7553;
   // synopsys translate_on
 
   // remaining internal signals
   reg IF_dm_stub_input_Xactor_f_rd_addr_first__4_BIT_ETC___d54,
       IF_dm_stub_input_Xactor_f_wr_addr_first__13_BI_ETC___d123;
-  wire [31 : 0] x_rdata__h7962, x_rdata__h8012;
+  wire [31 : 0] x_rdata__h7611, x_rdata__h7661;
   wire clint_RDY_server_reset_response_get__6_AND_cpu_ETC___d22,
        local_fabric_RDY_reset_AND_cpu_RDY_debug_hart__ETC___d9;
 
@@ -1721,59 +1486,6 @@ module mkCore(CLK,
   // value method mv_tohost_value
   assign mv_tohost_value = cpu$mv_tohost_value ;
   assign RDY_mv_tohost_value = 1'd1 ;
-
-  // action method loader_slave_m_awvalid
-  assign CAN_FIRE_loader_slave_m_awvalid = 1'd1 ;
-  assign WILL_FIRE_loader_slave_m_awvalid = 1'd1 ;
-
-  // value method loader_slave_m_awready
-  assign loader_slave_awready = local_fabric$v_from_masters_2_awready ;
-
-  // action method loader_slave_m_wvalid
-  assign CAN_FIRE_loader_slave_m_wvalid = 1'd1 ;
-  assign WILL_FIRE_loader_slave_m_wvalid = 1'd1 ;
-
-  // value method loader_slave_m_wready
-  assign loader_slave_wready = local_fabric$v_from_masters_2_wready ;
-
-  // value method loader_slave_m_bvalid
-  assign loader_slave_bvalid = local_fabric$v_from_masters_2_bvalid ;
-
-  // value method loader_slave_m_bid
-  assign loader_slave_bid = local_fabric$v_from_masters_2_bid ;
-
-  // value method loader_slave_m_bresp
-  assign loader_slave_bresp = local_fabric$v_from_masters_2_bresp ;
-
-  // action method loader_slave_m_bready
-  assign CAN_FIRE_loader_slave_m_bready = 1'd1 ;
-  assign WILL_FIRE_loader_slave_m_bready = 1'd1 ;
-
-  // action method loader_slave_m_arvalid
-  assign CAN_FIRE_loader_slave_m_arvalid = 1'd1 ;
-  assign WILL_FIRE_loader_slave_m_arvalid = 1'd1 ;
-
-  // value method loader_slave_m_arready
-  assign loader_slave_arready = local_fabric$v_from_masters_2_arready ;
-
-  // value method loader_slave_m_rvalid
-  assign loader_slave_rvalid = local_fabric$v_from_masters_2_rvalid ;
-
-  // value method loader_slave_m_rid
-  assign loader_slave_rid = local_fabric$v_from_masters_2_rid ;
-
-  // value method loader_slave_m_rdata
-  assign loader_slave_rdata = local_fabric$v_from_masters_2_rdata ;
-
-  // value method loader_slave_m_rresp
-  assign loader_slave_rresp = local_fabric$v_from_masters_2_rresp ;
-
-  // value method loader_slave_m_rlast
-  assign loader_slave_rlast = local_fabric$v_from_masters_2_rlast ;
-
-  // action method loader_slave_m_rready
-  assign CAN_FIRE_loader_slave_m_rready = 1'd1 ;
-  assign WILL_FIRE_loader_slave_m_rready = 1'd1 ;
 
   // submodule clint
   mkNear_Mem_IO_AXI4 clint(.CLK(CLK),
@@ -2219,34 +1931,6 @@ module mkCore(CLK,
 			      .v_from_masters_1_wlast(local_fabric$v_from_masters_1_wlast),
 			      .v_from_masters_1_wstrb(local_fabric$v_from_masters_1_wstrb),
 			      .v_from_masters_1_wvalid(local_fabric$v_from_masters_1_wvalid),
-			      .v_from_masters_2_araddr(local_fabric$v_from_masters_2_araddr),
-			      .v_from_masters_2_arburst(local_fabric$v_from_masters_2_arburst),
-			      .v_from_masters_2_arcache(local_fabric$v_from_masters_2_arcache),
-			      .v_from_masters_2_arid(local_fabric$v_from_masters_2_arid),
-			      .v_from_masters_2_arlen(local_fabric$v_from_masters_2_arlen),
-			      .v_from_masters_2_arlock(local_fabric$v_from_masters_2_arlock),
-			      .v_from_masters_2_arprot(local_fabric$v_from_masters_2_arprot),
-			      .v_from_masters_2_arqos(local_fabric$v_from_masters_2_arqos),
-			      .v_from_masters_2_arregion(local_fabric$v_from_masters_2_arregion),
-			      .v_from_masters_2_arsize(local_fabric$v_from_masters_2_arsize),
-			      .v_from_masters_2_arvalid(local_fabric$v_from_masters_2_arvalid),
-			      .v_from_masters_2_awaddr(local_fabric$v_from_masters_2_awaddr),
-			      .v_from_masters_2_awburst(local_fabric$v_from_masters_2_awburst),
-			      .v_from_masters_2_awcache(local_fabric$v_from_masters_2_awcache),
-			      .v_from_masters_2_awid(local_fabric$v_from_masters_2_awid),
-			      .v_from_masters_2_awlen(local_fabric$v_from_masters_2_awlen),
-			      .v_from_masters_2_awlock(local_fabric$v_from_masters_2_awlock),
-			      .v_from_masters_2_awprot(local_fabric$v_from_masters_2_awprot),
-			      .v_from_masters_2_awqos(local_fabric$v_from_masters_2_awqos),
-			      .v_from_masters_2_awregion(local_fabric$v_from_masters_2_awregion),
-			      .v_from_masters_2_awsize(local_fabric$v_from_masters_2_awsize),
-			      .v_from_masters_2_awvalid(local_fabric$v_from_masters_2_awvalid),
-			      .v_from_masters_2_bready(local_fabric$v_from_masters_2_bready),
-			      .v_from_masters_2_rready(local_fabric$v_from_masters_2_rready),
-			      .v_from_masters_2_wdata(local_fabric$v_from_masters_2_wdata),
-			      .v_from_masters_2_wlast(local_fabric$v_from_masters_2_wlast),
-			      .v_from_masters_2_wstrb(local_fabric$v_from_masters_2_wstrb),
-			      .v_from_masters_2_wvalid(local_fabric$v_from_masters_2_wvalid),
 			      .v_to_slaves_0_arready(local_fabric$v_to_slaves_0_arready),
 			      .v_to_slaves_0_awready(local_fabric$v_to_slaves_0_awready),
 			      .v_to_slaves_0_bid(local_fabric$v_to_slaves_0_bid),
@@ -2317,17 +2001,6 @@ module mkCore(CLK,
 			      .v_from_masters_1_rdata(local_fabric$v_from_masters_1_rdata),
 			      .v_from_masters_1_rresp(local_fabric$v_from_masters_1_rresp),
 			      .v_from_masters_1_rlast(local_fabric$v_from_masters_1_rlast),
-			      .v_from_masters_2_awready(local_fabric$v_from_masters_2_awready),
-			      .v_from_masters_2_wready(local_fabric$v_from_masters_2_wready),
-			      .v_from_masters_2_bvalid(local_fabric$v_from_masters_2_bvalid),
-			      .v_from_masters_2_bid(local_fabric$v_from_masters_2_bid),
-			      .v_from_masters_2_bresp(local_fabric$v_from_masters_2_bresp),
-			      .v_from_masters_2_arready(local_fabric$v_from_masters_2_arready),
-			      .v_from_masters_2_rvalid(local_fabric$v_from_masters_2_rvalid),
-			      .v_from_masters_2_rid(local_fabric$v_from_masters_2_rid),
-			      .v_from_masters_2_rdata(local_fabric$v_from_masters_2_rdata),
-			      .v_from_masters_2_rresp(local_fabric$v_from_masters_2_rresp),
-			      .v_from_masters_2_rlast(local_fabric$v_from_masters_2_rlast),
 			      .v_to_slaves_0_awvalid(local_fabric$v_to_slaves_0_awvalid),
 			      .v_to_slaves_0_awid(local_fabric$v_to_slaves_0_awid),
 			      .v_to_slaves_0_awaddr(local_fabric$v_to_slaves_0_awaddr),
@@ -2734,6 +2407,7 @@ module mkCore(CLK,
 	     dm_stub_input_Xactor_f_rd_data$FULL_N ;
   assign WILL_FIRE_RL_dm_stub_runhalt_rsp_rl =
 	     CAN_FIRE_RL_dm_stub_runhalt_rsp_rl &&
+	     !WILL_FIRE_RL_dm_stub_gpr_rd_rsp_rl &&
 	     !WILL_FIRE_RL_dm_stub_reset_rsp_rl &&
 	     !WILL_FIRE_RL_dm_stub_sbus_rsp_rl ;
 
@@ -2744,7 +2418,6 @@ module mkCore(CLK,
 	     !dm_stub_rg_writing ;
   assign WILL_FIRE_RL_dm_stub_gpr_rd_rsp_rl =
 	     CAN_FIRE_RL_dm_stub_gpr_rd_rsp_rl &&
-	     !WILL_FIRE_RL_dm_stub_runhalt_rsp_rl &&
 	     !WILL_FIRE_RL_dm_stub_reset_rsp_rl &&
 	     !WILL_FIRE_RL_dm_stub_sbus_rsp_rl ;
 
@@ -2755,8 +2428,8 @@ module mkCore(CLK,
 	     !dm_stub_rg_writing ;
   assign WILL_FIRE_RL_dm_stub_csr_rd_rsp_rl =
 	     CAN_FIRE_RL_dm_stub_csr_rd_rsp_rl &&
-	     !WILL_FIRE_RL_dm_stub_gpr_rd_rsp_rl &&
 	     !WILL_FIRE_RL_dm_stub_runhalt_rsp_rl &&
+	     !WILL_FIRE_RL_dm_stub_gpr_rd_rsp_rl &&
 	     !WILL_FIRE_RL_dm_stub_reset_rsp_rl &&
 	     !WILL_FIRE_RL_dm_stub_sbus_rsp_rl ;
 
@@ -2781,6 +2454,7 @@ module mkCore(CLK,
 	     dm_stub_rg_writing ;
   assign WILL_FIRE_RL_dm_stub_gpr_wr_rsp_rl =
 	     CAN_FIRE_RL_dm_stub_gpr_wr_rsp_rl &&
+	     !WILL_FIRE_RL_dm_stub_csr_wr_rsp_rl &&
 	     !WILL_FIRE_RL_dm_stub_sbus_wr_rsp_rl ;
 
   // rule RL_dm_stub_csr_wr_rsp_rl
@@ -2790,7 +2464,6 @@ module mkCore(CLK,
 	     dm_stub_rg_writing ;
   assign WILL_FIRE_RL_dm_stub_csr_wr_rsp_rl =
 	     CAN_FIRE_RL_dm_stub_csr_wr_rsp_rl &&
-	     !WILL_FIRE_RL_dm_stub_gpr_wr_rsp_rl &&
 	     !WILL_FIRE_RL_dm_stub_sbus_wr_rsp_rl ;
 
   // rule RL_dm_stub_read_req_rl
@@ -2837,9 +2510,9 @@ module mkCore(CLK,
 	       dm_stub_input_Xactor_f_wr_addr$D_OUT[33:29],
 	       dm_stub_input_Xactor_f_wr_data$D_OUT[36:5] } ;
   assign MUX_dm_stub_input_Xactor_f_rd_data$enq_1__VAL_2 =
-	     { 4'd1, x_rdata__h7962, 3'd1 } ;
+	     { 4'd1, x_rdata__h7611, 3'd1 } ;
   assign MUX_dm_stub_input_Xactor_f_rd_data$enq_1__VAL_3 =
-	     { 4'd2, x_rdata__h8012, 3'd1 } ;
+	     { 4'd2, x_rdata__h7661, 3'd1 } ;
   assign MUX_dm_stub_input_Xactor_f_rd_data$enq_1__VAL_4 =
 	     { 4'd3,
 	       cpu$debug_hart_gpr_mem_server_response_get[31:0],
@@ -3338,34 +3011,6 @@ module mkCore(CLK,
 	     dm_stub_sbus_master_f_wr_data$D_OUT[4:1] ;
   assign local_fabric$v_from_masters_1_wvalid =
 	     dm_stub_sbus_master_f_wr_data$EMPTY_N ;
-  assign local_fabric$v_from_masters_2_araddr = loader_slave_araddr ;
-  assign local_fabric$v_from_masters_2_arburst = loader_slave_arburst ;
-  assign local_fabric$v_from_masters_2_arcache = loader_slave_arcache ;
-  assign local_fabric$v_from_masters_2_arid = loader_slave_arid ;
-  assign local_fabric$v_from_masters_2_arlen = loader_slave_arlen ;
-  assign local_fabric$v_from_masters_2_arlock = loader_slave_arlock ;
-  assign local_fabric$v_from_masters_2_arprot = loader_slave_arprot ;
-  assign local_fabric$v_from_masters_2_arqos = loader_slave_arqos ;
-  assign local_fabric$v_from_masters_2_arregion = loader_slave_arregion ;
-  assign local_fabric$v_from_masters_2_arsize = loader_slave_arsize ;
-  assign local_fabric$v_from_masters_2_arvalid = loader_slave_arvalid ;
-  assign local_fabric$v_from_masters_2_awaddr = loader_slave_awaddr ;
-  assign local_fabric$v_from_masters_2_awburst = loader_slave_awburst ;
-  assign local_fabric$v_from_masters_2_awcache = loader_slave_awcache ;
-  assign local_fabric$v_from_masters_2_awid = loader_slave_awid ;
-  assign local_fabric$v_from_masters_2_awlen = loader_slave_awlen ;
-  assign local_fabric$v_from_masters_2_awlock = loader_slave_awlock ;
-  assign local_fabric$v_from_masters_2_awprot = loader_slave_awprot ;
-  assign local_fabric$v_from_masters_2_awqos = loader_slave_awqos ;
-  assign local_fabric$v_from_masters_2_awregion = loader_slave_awregion ;
-  assign local_fabric$v_from_masters_2_awsize = loader_slave_awsize ;
-  assign local_fabric$v_from_masters_2_awvalid = loader_slave_awvalid ;
-  assign local_fabric$v_from_masters_2_bready = loader_slave_bready ;
-  assign local_fabric$v_from_masters_2_rready = loader_slave_rready ;
-  assign local_fabric$v_from_masters_2_wdata = loader_slave_wdata ;
-  assign local_fabric$v_from_masters_2_wlast = loader_slave_wlast ;
-  assign local_fabric$v_from_masters_2_wstrb = loader_slave_wstrb ;
-  assign local_fabric$v_from_masters_2_wvalid = loader_slave_wvalid ;
   assign local_fabric$v_to_slaves_0_arready = plic$axi4_slave_arready ;
   assign local_fabric$v_to_slaves_0_awready = plic$axi4_slave_awready ;
   assign local_fabric$v_to_slaves_0_bid = plic$axi4_slave_bid ;
@@ -3513,29 +3158,10 @@ module mkCore(CLK,
 	     cpu$RDY_debug_hart_reset_server_request_put &&
 	     f_reset_reqs$EMPTY_N &&
 	     f_reset_requestor$FULL_N ;
-  assign x_rdata__h7962 =
+  assign x_rdata__h7611 =
 	     { 31'd0, cpu$debug_hart_reset_server_response_get } ;
-  assign x_rdata__h8012 =
+  assign x_rdata__h7661 =
 	     { 31'd0, cpu$debug_hart_server_run_halt_response_get } ;
-  always@(dm_stub_input_Xactor_f_wr_addr$D_OUT or
-	  cpu$RDY_debug_hart_csr_mem_server_request_put or
-	  dm_stub_sbus_master_f_wr_data$FULL_N or
-	  dm_stub_sbus_master_f_wr_addr$FULL_N or
-	  cpu$RDY_debug_hart_gpr_mem_server_request_put)
-  begin
-    case (dm_stub_input_Xactor_f_wr_addr$D_OUT[64:61])
-      4'd0:
-	  IF_dm_stub_input_Xactor_f_wr_addr_first__13_BI_ETC___d123 =
-	      dm_stub_sbus_master_f_wr_data$FULL_N &&
-	      dm_stub_sbus_master_f_wr_addr$FULL_N;
-      4'd3:
-	  IF_dm_stub_input_Xactor_f_wr_addr_first__13_BI_ETC___d123 =
-	      cpu$RDY_debug_hart_gpr_mem_server_request_put;
-      default: IF_dm_stub_input_Xactor_f_wr_addr_first__13_BI_ETC___d123 =
-		   dm_stub_input_Xactor_f_wr_addr$D_OUT[64:61] != 4'd4 ||
-		   cpu$RDY_debug_hart_csr_mem_server_request_put;
-    endcase
-  end
   always@(dm_stub_input_Xactor_f_rd_addr$D_OUT or
 	  cpu$RDY_debug_hart_csr_mem_server_request_put or
 	  dm_stub_sbus_master_f_rd_addr$FULL_N or
@@ -3566,6 +3192,25 @@ module mkCore(CLK,
 	      cpu$RDY_debug_hart_gpr_mem_server_request_put;
       default: IF_dm_stub_input_Xactor_f_rd_addr_first__4_BIT_ETC___d54 =
 		   dm_stub_input_Xactor_f_rd_addr$D_OUT[64:61] != 4'd4 ||
+		   cpu$RDY_debug_hart_csr_mem_server_request_put;
+    endcase
+  end
+  always@(dm_stub_input_Xactor_f_wr_addr$D_OUT or
+	  cpu$RDY_debug_hart_csr_mem_server_request_put or
+	  dm_stub_sbus_master_f_wr_data$FULL_N or
+	  dm_stub_sbus_master_f_wr_addr$FULL_N or
+	  cpu$RDY_debug_hart_gpr_mem_server_request_put)
+  begin
+    case (dm_stub_input_Xactor_f_wr_addr$D_OUT[64:61])
+      4'd0:
+	  IF_dm_stub_input_Xactor_f_wr_addr_first__13_BI_ETC___d123 =
+	      dm_stub_sbus_master_f_wr_data$FULL_N &&
+	      dm_stub_sbus_master_f_wr_addr$FULL_N;
+      4'd3:
+	  IF_dm_stub_input_Xactor_f_wr_addr_first__13_BI_ETC___d123 =
+	      cpu$RDY_debug_hart_gpr_mem_server_request_put;
+      default: IF_dm_stub_input_Xactor_f_wr_addr_first__13_BI_ETC___d123 =
+		   dm_stub_input_Xactor_f_wr_addr$D_OUT[64:61] != 4'd4 ||
 		   cpu$RDY_debug_hart_csr_mem_server_request_put;
     endcase
   end
@@ -3608,45 +3253,45 @@ module mkCore(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_from_soc_start)
 	begin
-	  v__h5676 = $stime;
+	  v__h5325 = $stime;
 	  #0;
 	end
-    v__h5670 = v__h5676 / 32'd10;
+    v__h5319 = v__h5325 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_from_soc_start)
-	$display("%0d: Core.rl_cpu_hart0_reset_from_soc_start", v__h5670);
+	$display("%0d: Core.rl_cpu_hart0_reset_from_soc_start", v__h5319);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_complete)
 	begin
-	  v__h5911 = $stime;
+	  v__h5560 = $stime;
 	  #0;
 	end
-    v__h5905 = v__h5911 / 32'd10;
+    v__h5554 = v__h5560 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_cpu_hart0_reset_complete)
-	$display("%0d: Core.rl_cpu_hart0_reset_complete", v__h5905);
+	$display("%0d: Core.rl_cpu_hart0_reset_complete", v__h5554);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_dm_stub_reset_rsp_rl)
 	begin
-	  v__h7910 = $stime;
+	  v__h7559 = $stime;
 	  #0;
 	end
-    v__h7904 = v__h7910 / 32'd10;
+    v__h7553 = v__h7559 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_dm_stub_reset_rsp_rl)
-	$display("%0d: Core.rl_cpu_hart0_reset_complete", v__h7904);
+	$display("%0d: Core.rl_cpu_hart0_reset_complete", v__h7553);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_dm_stub_read_req_rl &&
 	  dm_stub_input_Xactor_f_rd_addr$D_OUT[64:61] == 4'd1)
 	begin
-	  v__h7375 = $stime;
+	  v__h7024 = $stime;
 	  #0;
 	end
-    v__h7369 = v__h7375 / 32'd10;
+    v__h7018 = v__h7024 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_dm_stub_read_req_rl &&
 	  dm_stub_input_Xactor_f_rd_addr$D_OUT[64:61] == 4'd1)
-	$display("%0d: Core.rl_cpu_hart0_reset_from_dm_start", v__h7369);
+	$display("%0d: Core.rl_cpu_hart0_reset_from_dm_start", v__h7018);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_dm_stub_read_req_rl &&
 	  dm_stub_input_Xactor_f_rd_addr$D_OUT[64:61] != 4'd0 &&

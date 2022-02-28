@@ -607,46 +607,46 @@ module mkITCM(verbosity,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h7818;
-  reg [31 : 0] v__h8074;
-  reg [31 : 0] v__h1958;
-  reg [31 : 0] v__h2315;
-  reg [31 : 0] v__h2638;
-  reg [31 : 0] v__h2095;
-  reg [31 : 0] v__h2945;
-  reg [31 : 0] v__h8732;
-  reg [31 : 0] v__h8825;
-  reg [31 : 0] v__h5597;
-  reg [31 : 0] v__h1952;
-  reg [31 : 0] v__h2089;
-  reg [31 : 0] v__h2309;
-  reg [31 : 0] v__h2632;
-  reg [31 : 0] v__h2939;
-  reg [31 : 0] v__h5591;
-  reg [31 : 0] v__h7812;
-  reg [31 : 0] v__h8068;
-  reg [31 : 0] v__h8726;
-  reg [31 : 0] v__h8819;
+  reg [31 : 0] v__h7822;
+  reg [31 : 0] v__h8078;
+  reg [31 : 0] v__h1962;
+  reg [31 : 0] v__h2319;
+  reg [31 : 0] v__h2642;
+  reg [31 : 0] v__h2099;
+  reg [31 : 0] v__h2949;
+  reg [31 : 0] v__h8736;
+  reg [31 : 0] v__h8829;
+  reg [31 : 0] v__h5601;
+  reg [31 : 0] v__h1956;
+  reg [31 : 0] v__h2093;
+  reg [31 : 0] v__h2313;
+  reg [31 : 0] v__h2636;
+  reg [31 : 0] v__h2943;
+  reg [31 : 0] v__h5595;
+  reg [31 : 0] v__h7816;
+  reg [31 : 0] v__h8072;
+  reg [31 : 0] v__h8730;
+  reg [31 : 0] v__h8823;
   // synopsys translate_on
 
   // remaining internal signals
-  wire [31 : 0] a_out_araddr__h6158,
-		a_out_awaddr__h5074,
-		addr___1__h5168,
-		addr___1__h6252,
-		addr__h5156,
-		addr__h6240,
-		burst_len__h5157,
-		burst_len__h6241,
-		wrap_mask__h5158,
-		wrap_mask__h6242,
-		x__h5180,
-		x__h6264,
-		y__h5181,
-		y__h5182,
-		y__h6265,
-		y__h6266;
-  wire [7 : 0] x__h5455, x__h5962, x__h6449, x__h6668;
+  wire [31 : 0] a_out_araddr__h6162,
+		a_out_awaddr__h5078,
+		addr___1__h5172,
+		addr___1__h6256,
+		addr__h5160,
+		addr__h6244,
+		burst_len__h5161,
+		burst_len__h6245,
+		wrap_mask__h5162,
+		wrap_mask__h6246,
+		x__h5184,
+		x__h6268,
+		y__h5185,
+		y__h5186,
+		y__h6269,
+		y__h6270;
+  wire [7 : 0] x__h5459, x__h5966, x__h6453, x__h6672;
   wire NOT_verbosity_ULE_1_2___d23,
        NOT_w_imem_req_wget__43_BITS_1_TO_0_46_EQ_0b0__ETC___d267,
        deburstr_rg_ar_beat_count_58_ULT_deburstr_xact_ETC___d189,
@@ -1014,23 +1014,25 @@ module mkITCM(verbosity,
 						    .EMPTY_N());
 
   // submodule itcm
-  BRAM2BE #(.PIPELINED(1'd0),
-	    .ADDR_WIDTH(32'd14),
-	    .DATA_WIDTH(32'd32),
-	    .CHUNKSIZE(32'd8),
-	    .WE_WIDTH(32'd4),
-	    .MEMSIZE(15'd16384)) itcm(.CLKA(CLK),
-				      .CLKB(CLK),
-				      .ADDRA(itcm$ADDRA),
-				      .ADDRB(itcm$ADDRB),
-				      .DIA(itcm$DIA),
-				      .DIB(itcm$DIB),
-				      .WEA(itcm$WEA),
-				      .WEB(itcm$WEB),
-				      .ENA(itcm$ENA),
-				      .ENB(itcm$ENB),
-				      .DOA(itcm$DOA),
-				      .DOB(itcm$DOB));
+  BRAM2BELoad #(.FILENAME("/foo/bar_itcm.hex"),
+		.PIPELINED(1'd0),
+		.ADDR_WIDTH(32'd14),
+		.DATA_WIDTH(32'd32),
+		.CHUNKSIZE(32'd8),
+		.WE_WIDTH(32'd4),
+		.MEMSIZE(15'd16384),
+		.BINARY(1'd0)) itcm(.CLKA(CLK),
+				    .CLKB(CLK),
+				    .ADDRA(itcm$ADDRA),
+				    .ADDRB(itcm$ADDRB),
+				    .DIA(itcm$DIA),
+				    .DIB(itcm$DIB),
+				    .WEA(itcm$WEA),
+				    .WEB(itcm$WEB),
+				    .ENA(itcm$ENA),
+				    .ENB(itcm$ENB),
+				    .DOA(itcm$DOA),
+				    .DOB(itcm$DOB));
 
   // submodule soc_map
   mkSoC_Map soc_map(.CLK(CLK),
@@ -1199,11 +1201,11 @@ module mkITCM(verbosity,
 	      !deburstr_rg_b_beat_count_34_ULT_deburstr_f_w_a_ETC___d136) ;
   assign MUX_deburstr_rg_ar_beat_count$write_1__VAL_2 =
 	     deburstr_rg_ar_beat_count_58_ULT_deburstr_xact_ETC___d189 ?
-	       x__h6449 :
+	       x__h6453 :
 	       8'd0 ;
   assign MUX_deburstr_rg_b_beat_count$write_1__VAL_2 =
 	     deburstr_rg_b_beat_count_34_ULT_deburstr_f_w_a_ETC___d136 ?
-	       x__h5962 :
+	       x__h5966 :
 	       8'd0 ;
   assign MUX_deburstr_rg_b_resp$write_1__VAL_2 =
 	     deburstr_rg_b_beat_count_34_ULT_deburstr_f_w_a_ETC___d136 ?
@@ -1211,11 +1213,11 @@ module mkITCM(verbosity,
 	       2'b0 ;
   assign MUX_deburstr_rg_r_beat_count$write_1__VAL_2 =
 	     deburstr_rg_r_beat_count_98_ULT_deburstr_f_r_a_ETC___d200 ?
-	       x__h6668 :
+	       x__h6672 :
 	       8'd0 ;
   assign MUX_deburstr_rg_w_beat_count$write_1__VAL_2 =
 	     deburstr_rg_w_beat_count_5_ULT_deburstr_xactor_ETC___d121 ?
-	       x__h5455 :
+	       x__h5459 :
 	       8'd0 ;
   assign MUX_dma_port_slave_xactor_f_rd_data$enq_1__VAL_1 =
 	     { dma_port_slave_xactor_f_rd_addr$D_OUT[64:29], 3'd5 } ;
@@ -1258,12 +1260,12 @@ module mkITCM(verbosity,
 	     MUX_deburstr_rg_b_resp$write_1__SEL_2 || deburstr_rg_reset ;
 
   // register deburstr_rg_last_beat_raddr
-  assign deburstr_rg_last_beat_raddr$D_IN = a_out_araddr__h6158 ;
+  assign deburstr_rg_last_beat_raddr$D_IN = a_out_araddr__h6162 ;
   assign deburstr_rg_last_beat_raddr$EN =
 	     CAN_FIRE_RL_deburstr_rl_rd_xaction_master_to_slave ;
 
   // register deburstr_rg_last_beat_waddr
-  assign deburstr_rg_last_beat_waddr$D_IN = a_out_awaddr__h5074 ;
+  assign deburstr_rg_last_beat_waddr$D_IN = a_out_awaddr__h5078 ;
   assign deburstr_rg_last_beat_waddr$EN =
 	     CAN_FIRE_RL_deburstr_rl_wr_xaction_master_to_slave ;
 
@@ -1439,7 +1441,7 @@ module mkITCM(verbosity,
   // submodule deburstr_xactor_to_slave_f_rd_addr
   assign deburstr_xactor_to_slave_f_rd_addr$D_IN =
 	     { deburstr_xactor_from_master_f_rd_addr$D_OUT[64:61],
-	       a_out_araddr__h6158,
+	       a_out_araddr__h6162,
 	       8'd0,
 	       deburstr_xactor_from_master_f_rd_addr$D_OUT[20:18],
 	       2'b0,
@@ -1464,7 +1466,7 @@ module mkITCM(verbosity,
   // submodule deburstr_xactor_to_slave_f_wr_addr
   assign deburstr_xactor_to_slave_f_wr_addr$D_IN =
 	     { deburstr_xactor_from_master_f_wr_addr$D_OUT[64:61],
-	       a_out_awaddr__h5074,
+	       a_out_awaddr__h5078,
 	       8'd0,
 	       deburstr_xactor_from_master_f_wr_addr$D_OUT[20:18],
 	       2'b0,
@@ -1614,32 +1616,32 @@ module mkITCM(verbosity,
 	     (w_imem_req$wget[1:0] != 2'b10 ||
 	      w_imem_req$wget[4:3] != 2'b0) &&
 	     (w_imem_req$wget[1:0] != 2'b11 || w_imem_req$wget[5:3] != 3'b0) ;
-  assign a_out_araddr__h6158 =
+  assign a_out_araddr__h6162 =
 	     (deburstr_rg_ar_beat_count == 8'd0) ?
 	       deburstr_xactor_from_master_f_rd_addr$D_OUT[60:29] :
 	       ((deburstr_xactor_from_master_f_rd_addr$D_OUT[17:16] ==
 		 2'b10) ?
-		  addr___1__h6252 :
-		  addr__h6240) ;
-  assign a_out_awaddr__h5074 =
+		  addr___1__h6256 :
+		  addr__h6244) ;
+  assign a_out_awaddr__h5078 =
 	     (deburstr_rg_w_beat_count == 8'd0) ?
 	       deburstr_xactor_from_master_f_wr_addr$D_OUT[60:29] :
 	       ((deburstr_xactor_from_master_f_wr_addr$D_OUT[17:16] ==
 		 2'b10) ?
-		  addr___1__h5168 :
-		  addr__h5156) ;
-  assign addr___1__h5168 = x__h5180 | y__h5181 ;
-  assign addr___1__h6252 = x__h6264 | y__h6265 ;
-  assign addr__h5156 =
+		  addr___1__h5172 :
+		  addr__h5160) ;
+  assign addr___1__h5172 = x__h5184 | y__h5185 ;
+  assign addr___1__h6256 = x__h6268 | y__h6269 ;
+  assign addr__h5160 =
 	     deburstr_rg_last_beat_waddr +
 	     (32'd1 << deburstr_xactor_from_master_f_wr_addr$D_OUT[20:18]) ;
-  assign addr__h6240 =
+  assign addr__h6244 =
 	     deburstr_rg_last_beat_raddr +
 	     (32'd1 << deburstr_xactor_from_master_f_rd_addr$D_OUT[20:18]) ;
-  assign burst_len__h5157 =
+  assign burst_len__h5161 =
 	     { 24'd0, deburstr_xactor_from_master_f_wr_addr$D_OUT[28:21] } +
 	     32'd1 ;
-  assign burst_len__h6241 =
+  assign burst_len__h6245 =
 	     { 24'd0, deburstr_xactor_from_master_f_rd_addr$D_OUT[28:21] } +
 	     32'd1 ;
   assign deburstr_rg_ar_beat_count_58_ULT_deburstr_xact_ETC___d189 =
@@ -1652,24 +1654,24 @@ module mkITCM(verbosity,
   assign deburstr_rg_w_beat_count_5_ULT_deburstr_xactor_ETC___d121 =
 	     deburstr_rg_w_beat_count <
 	     deburstr_xactor_from_master_f_wr_addr$D_OUT[28:21] ;
-  assign wrap_mask__h5158 =
-	     (burst_len__h5157 <<
+  assign wrap_mask__h5162 =
+	     (burst_len__h5161 <<
 	      deburstr_xactor_from_master_f_wr_addr$D_OUT[20:18]) -
 	     32'd1 ;
-  assign wrap_mask__h6242 =
-	     (burst_len__h6241 <<
+  assign wrap_mask__h6246 =
+	     (burst_len__h6245 <<
 	      deburstr_xactor_from_master_f_rd_addr$D_OUT[20:18]) -
 	     32'd1 ;
-  assign x__h5180 = deburstr_rg_last_beat_waddr & y__h5182 ;
-  assign x__h5455 = deburstr_rg_w_beat_count + 8'd1 ;
-  assign x__h5962 = deburstr_rg_b_beat_count + 8'd1 ;
-  assign x__h6264 = deburstr_rg_last_beat_raddr & y__h6266 ;
-  assign x__h6449 = deburstr_rg_ar_beat_count + 8'd1 ;
-  assign x__h6668 = deburstr_rg_r_beat_count + 8'd1 ;
-  assign y__h5181 = addr__h5156 & wrap_mask__h5158 ;
-  assign y__h5182 = ~wrap_mask__h5158 ;
-  assign y__h6265 = addr__h6240 & wrap_mask__h6242 ;
-  assign y__h6266 = ~wrap_mask__h6242 ;
+  assign x__h5184 = deburstr_rg_last_beat_waddr & y__h5186 ;
+  assign x__h5459 = deburstr_rg_w_beat_count + 8'd1 ;
+  assign x__h5966 = deburstr_rg_b_beat_count + 8'd1 ;
+  assign x__h6268 = deburstr_rg_last_beat_raddr & y__h6270 ;
+  assign x__h6453 = deburstr_rg_ar_beat_count + 8'd1 ;
+  assign x__h6672 = deburstr_rg_r_beat_count + 8'd1 ;
+  assign y__h5185 = addr__h5160 & wrap_mask__h5162 ;
+  assign y__h5186 = ~wrap_mask__h5162 ;
+  assign y__h6269 = addr__h6244 & wrap_mask__h6246 ;
+  assign y__h6270 = ~wrap_mask__h6246 ;
 
   // handling of inlined registers
 
@@ -1760,50 +1762,50 @@ module mkITCM(verbosity,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_tcm_rsp && verbosity == 2'd3)
 	begin
-	  v__h7818 = $stime;
+	  v__h7822 = $stime;
 	  #0;
 	end
-    v__h7812 = v__h7818 / 32'd10;
+    v__h7816 = v__h7822 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_tcm_rsp && verbosity == 2'd3)
 	$display("%0d: %m.rl_tcm_rsp: pc %08h data %08h",
-		 v__h7812,
+		 v__h7816,
 		 rg_imem_req[34:3],
 		 itcm$DOA);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_imem_req && NOT_verbosity_ULE_1_2___d23)
 	begin
-	  v__h8074 = $stime;
+	  v__h8078 = $stime;
 	  #0;
 	end
-    v__h8068 = v__h8074 / 32'd10;
+    v__h8072 = v__h8078 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_imem_req && NOT_verbosity_ULE_1_2___d23)
 	$display("%0d: %m.rl_req: pc 0x%08h",
-		 v__h8068,
+		 v__h8072,
 		 w_imem_req$wget[34:3]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_dma_port_rl_bad_rd_addr && verbosity != 2'd0)
 	begin
-	  v__h1958 = $stime;
+	  v__h1962 = $stime;
 	  #0;
 	end
-    v__h1952 = v__h1958 / 32'd10;
+    v__h1956 = v__h1962 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_dma_port_rl_bad_rd_addr && verbosity != 2'd0)
 	$display("%0d: %m.rl_bad_rd_addr 0x%0h",
-		 v__h1952,
+		 v__h1956,
 		 dma_port_slave_xactor_f_rd_addr$D_OUT[60:29]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_dma_port_rl_dma_rd_rsp && NOT_verbosity_ULE_1_2___d23)
 	begin
-	  v__h2315 = $stime;
+	  v__h2319 = $stime;
 	  #0;
 	end
-    v__h2309 = v__h2315 / 32'd10;
+    v__h2313 = v__h2319 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_dma_port_rl_dma_rd_rsp && NOT_verbosity_ULE_1_2___d23)
-	$display("%0d: %m.rl_dma_rd_rsp", v__h2309);
+	$display("%0d: %m.rl_dma_rd_rsp", v__h2313);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_dma_port_rl_dma_rd_rsp && NOT_verbosity_ULE_1_2___d23)
 	$write("    ");
@@ -1915,13 +1917,13 @@ module mkITCM(verbosity,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_dma_port_rl_bad_wr_addr && verbosity != 2'd0)
 	begin
-	  v__h2638 = $stime;
+	  v__h2642 = $stime;
 	  #0;
 	end
-    v__h2632 = v__h2638 / 32'd10;
+    v__h2636 = v__h2642 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_dma_port_rl_bad_wr_addr && verbosity != 2'd0)
-	$display("%0d: %m.rl_bad_wr_addr", v__h2632);
+	$display("%0d: %m.rl_bad_wr_addr", v__h2636);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_dma_port_rl_bad_wr_addr && verbosity != 2'd0)
 	$write("    ");
@@ -2056,13 +2058,13 @@ module mkITCM(verbosity,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_dma_port_rl_dma_rd_req && NOT_verbosity_ULE_1_2___d23)
 	begin
-	  v__h2095 = $stime;
+	  v__h2099 = $stime;
 	  #0;
 	end
-    v__h2089 = v__h2095 / 32'd10;
+    v__h2093 = v__h2099 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_dma_port_rl_dma_rd_req && NOT_verbosity_ULE_1_2___d23)
-	$display("%0d: %m.rl_dma_rd_req", v__h2089);
+	$display("%0d: %m.rl_dma_rd_req", v__h2093);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_dma_port_rl_dma_rd_req && NOT_verbosity_ULE_1_2___d23)
 	$write("    ");
@@ -2142,13 +2144,13 @@ module mkITCM(verbosity,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_dma_port_rl_dma_wr_req && NOT_verbosity_ULE_1_2___d23)
 	begin
-	  v__h2945 = $stime;
+	  v__h2949 = $stime;
 	  #0;
 	end
-    v__h2939 = v__h2945 / 32'd10;
+    v__h2943 = v__h2949 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_dma_port_rl_dma_wr_req && NOT_verbosity_ULE_1_2___d23)
-	$display("%0d: %m.rl_dma_wr_req", v__h2939);
+	$display("%0d: %m.rl_dma_wr_req", v__h2943);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_dma_port_rl_dma_wr_req && NOT_verbosity_ULE_1_2___d23)
 	$write("    ");
@@ -2273,38 +2275,38 @@ module mkITCM(verbosity,
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_reset && NOT_verbosity_ULE_1_2___d23)
 	begin
-	  v__h8732 = $stime;
+	  v__h8736 = $stime;
 	  #0;
 	end
-    v__h8726 = v__h8732 / 32'd10;
+    v__h8730 = v__h8736 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_reset && NOT_verbosity_ULE_1_2___d23)
-	$display("%0d: %m.reset", v__h8726);
+	$display("%0d: %m.reset", v__h8730);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_reset && NOT_verbosity_ULE_1_2___d23)
 	begin
-	  v__h8825 = $stime;
+	  v__h8829 = $stime;
 	  #0;
 	end
-    v__h8819 = v__h8825 / 32'd10;
+    v__h8823 = v__h8829 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_reset && NOT_verbosity_ULE_1_2___d23)
-	$display("%0d: %m.reset", v__h8819);
+	$display("%0d: %m.reset", v__h8823);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_deburstr_rl_wr_xaction_master_to_slave &&
 	  !deburstr_rg_w_beat_count_5_ULT_deburstr_xactor_ETC___d121 &&
 	  !deburstr_xactor_from_master_f_wr_data$D_OUT[0])
 	begin
-	  v__h5597 = $stime;
+	  v__h5601 = $stime;
 	  #0;
 	end
-    v__h5591 = v__h5597 / 32'd10;
+    v__h5595 = v__h5601 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_deburstr_rl_wr_xaction_master_to_slave &&
 	  !deburstr_rg_w_beat_count_5_ULT_deburstr_xactor_ETC___d121 &&
 	  !deburstr_xactor_from_master_f_wr_data$D_OUT[0])
 	$display("%0d: ERROR: %m::AXI4_Deburster.rl_wr_xaction_master_to_slave: m -> s",
-		 v__h5591);
+		 v__h5595);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_deburstr_rl_wr_xaction_master_to_slave &&
 	  !deburstr_rg_w_beat_count_5_ULT_deburstr_xactor_ETC___d121 &&

@@ -28,17 +28,6 @@
 // v_from_masters_1_rdata         O    32 reg
 // v_from_masters_1_rresp         O     2 reg
 // v_from_masters_1_rlast         O     1 reg
-// v_from_masters_2_awready       O     1 reg
-// v_from_masters_2_wready        O     1 reg
-// v_from_masters_2_bvalid        O     1 reg
-// v_from_masters_2_bid           O     4 reg
-// v_from_masters_2_bresp         O     2 reg
-// v_from_masters_2_arready       O     1 reg
-// v_from_masters_2_rvalid        O     1 reg
-// v_from_masters_2_rid           O     4 reg
-// v_from_masters_2_rdata         O    32 reg
-// v_from_masters_2_rresp         O     2 reg
-// v_from_masters_2_rlast         O     1 reg
 // v_to_slaves_0_awvalid          O     1 reg
 // v_to_slaves_0_awid             O     4 reg
 // v_to_slaves_0_awaddr           O    32 reg
@@ -210,34 +199,6 @@
 // v_from_masters_1_arqos         I     4 reg
 // v_from_masters_1_arregion      I     4 reg
 // v_from_masters_1_rready        I     1
-// v_from_masters_2_awvalid       I     1
-// v_from_masters_2_awid          I     4 reg
-// v_from_masters_2_awaddr        I    32 reg
-// v_from_masters_2_awlen         I     8 reg
-// v_from_masters_2_awsize        I     3 reg
-// v_from_masters_2_awburst       I     2 reg
-// v_from_masters_2_awlock        I     1 reg
-// v_from_masters_2_awcache       I     4 reg
-// v_from_masters_2_awprot        I     3 reg
-// v_from_masters_2_awqos         I     4 reg
-// v_from_masters_2_awregion      I     4 reg
-// v_from_masters_2_wvalid        I     1
-// v_from_masters_2_wdata         I    32 reg
-// v_from_masters_2_wstrb         I     4 reg
-// v_from_masters_2_wlast         I     1 reg
-// v_from_masters_2_bready        I     1
-// v_from_masters_2_arvalid       I     1
-// v_from_masters_2_arid          I     4 reg
-// v_from_masters_2_araddr        I    32 reg
-// v_from_masters_2_arlen         I     8 reg
-// v_from_masters_2_arsize        I     3 reg
-// v_from_masters_2_arburst       I     2 reg
-// v_from_masters_2_arlock        I     1 reg
-// v_from_masters_2_arcache       I     4 reg
-// v_from_masters_2_arprot        I     3 reg
-// v_from_masters_2_arqos         I     4 reg
-// v_from_masters_2_arregion      I     4 reg
-// v_from_masters_2_rready        I     1
 // v_to_slaves_0_awready          I     1
 // v_to_slaves_0_wready           I     1
 // v_to_slaves_0_bvalid           I     1
@@ -421,61 +382,6 @@ module mkLocal_Fabric(CLK,
 		      v_from_masters_1_rlast,
 
 		      v_from_masters_1_rready,
-
-		      v_from_masters_2_awvalid,
-		      v_from_masters_2_awid,
-		      v_from_masters_2_awaddr,
-		      v_from_masters_2_awlen,
-		      v_from_masters_2_awsize,
-		      v_from_masters_2_awburst,
-		      v_from_masters_2_awlock,
-		      v_from_masters_2_awcache,
-		      v_from_masters_2_awprot,
-		      v_from_masters_2_awqos,
-		      v_from_masters_2_awregion,
-
-		      v_from_masters_2_awready,
-
-		      v_from_masters_2_wvalid,
-		      v_from_masters_2_wdata,
-		      v_from_masters_2_wstrb,
-		      v_from_masters_2_wlast,
-
-		      v_from_masters_2_wready,
-
-		      v_from_masters_2_bvalid,
-
-		      v_from_masters_2_bid,
-
-		      v_from_masters_2_bresp,
-
-		      v_from_masters_2_bready,
-
-		      v_from_masters_2_arvalid,
-		      v_from_masters_2_arid,
-		      v_from_masters_2_araddr,
-		      v_from_masters_2_arlen,
-		      v_from_masters_2_arsize,
-		      v_from_masters_2_arburst,
-		      v_from_masters_2_arlock,
-		      v_from_masters_2_arcache,
-		      v_from_masters_2_arprot,
-		      v_from_masters_2_arqos,
-		      v_from_masters_2_arregion,
-
-		      v_from_masters_2_arready,
-
-		      v_from_masters_2_rvalid,
-
-		      v_from_masters_2_rid,
-
-		      v_from_masters_2_rdata,
-
-		      v_from_masters_2_rresp,
-
-		      v_from_masters_2_rlast,
-
-		      v_from_masters_2_rready,
 
 		      v_to_slaves_0_awvalid,
 
@@ -926,81 +832,6 @@ module mkLocal_Fabric(CLK,
   // action method v_from_masters_1_m_rready
   input  v_from_masters_1_rready;
 
-  // action method v_from_masters_2_m_awvalid
-  input  v_from_masters_2_awvalid;
-  input  [3 : 0] v_from_masters_2_awid;
-  input  [31 : 0] v_from_masters_2_awaddr;
-  input  [7 : 0] v_from_masters_2_awlen;
-  input  [2 : 0] v_from_masters_2_awsize;
-  input  [1 : 0] v_from_masters_2_awburst;
-  input  v_from_masters_2_awlock;
-  input  [3 : 0] v_from_masters_2_awcache;
-  input  [2 : 0] v_from_masters_2_awprot;
-  input  [3 : 0] v_from_masters_2_awqos;
-  input  [3 : 0] v_from_masters_2_awregion;
-
-  // value method v_from_masters_2_m_awready
-  output v_from_masters_2_awready;
-
-  // action method v_from_masters_2_m_wvalid
-  input  v_from_masters_2_wvalid;
-  input  [31 : 0] v_from_masters_2_wdata;
-  input  [3 : 0] v_from_masters_2_wstrb;
-  input  v_from_masters_2_wlast;
-
-  // value method v_from_masters_2_m_wready
-  output v_from_masters_2_wready;
-
-  // value method v_from_masters_2_m_bvalid
-  output v_from_masters_2_bvalid;
-
-  // value method v_from_masters_2_m_bid
-  output [3 : 0] v_from_masters_2_bid;
-
-  // value method v_from_masters_2_m_bresp
-  output [1 : 0] v_from_masters_2_bresp;
-
-  // value method v_from_masters_2_m_buser
-
-  // action method v_from_masters_2_m_bready
-  input  v_from_masters_2_bready;
-
-  // action method v_from_masters_2_m_arvalid
-  input  v_from_masters_2_arvalid;
-  input  [3 : 0] v_from_masters_2_arid;
-  input  [31 : 0] v_from_masters_2_araddr;
-  input  [7 : 0] v_from_masters_2_arlen;
-  input  [2 : 0] v_from_masters_2_arsize;
-  input  [1 : 0] v_from_masters_2_arburst;
-  input  v_from_masters_2_arlock;
-  input  [3 : 0] v_from_masters_2_arcache;
-  input  [2 : 0] v_from_masters_2_arprot;
-  input  [3 : 0] v_from_masters_2_arqos;
-  input  [3 : 0] v_from_masters_2_arregion;
-
-  // value method v_from_masters_2_m_arready
-  output v_from_masters_2_arready;
-
-  // value method v_from_masters_2_m_rvalid
-  output v_from_masters_2_rvalid;
-
-  // value method v_from_masters_2_m_rid
-  output [3 : 0] v_from_masters_2_rid;
-
-  // value method v_from_masters_2_m_rdata
-  output [31 : 0] v_from_masters_2_rdata;
-
-  // value method v_from_masters_2_m_rresp
-  output [1 : 0] v_from_masters_2_rresp;
-
-  // value method v_from_masters_2_m_rlast
-  output v_from_masters_2_rlast;
-
-  // value method v_from_masters_2_m_ruser
-
-  // action method v_from_masters_2_m_rready
-  input  v_from_masters_2_rready;
-
   // value method v_to_slaves_0_m_awvalid
   output v_to_slaves_0_awvalid;
 
@@ -1448,7 +1279,6 @@ module mkLocal_Fabric(CLK,
   // signals for module outputs
   wire [31 : 0] v_from_masters_0_rdata,
 		v_from_masters_1_rdata,
-		v_from_masters_2_rdata,
 		v_to_slaves_0_araddr,
 		v_to_slaves_0_awaddr,
 		v_to_slaves_0_wdata,
@@ -1473,8 +1303,6 @@ module mkLocal_Fabric(CLK,
 	       v_from_masters_0_rid,
 	       v_from_masters_1_bid,
 	       v_from_masters_1_rid,
-	       v_from_masters_2_bid,
-	       v_from_masters_2_rid,
 	       v_to_slaves_0_arcache,
 	       v_to_slaves_0_arid,
 	       v_to_slaves_0_arqos,
@@ -1531,8 +1359,6 @@ module mkLocal_Fabric(CLK,
 	       v_from_masters_0_rresp,
 	       v_from_masters_1_bresp,
 	       v_from_masters_1_rresp,
-	       v_from_masters_2_bresp,
-	       v_from_masters_2_rresp,
 	       v_to_slaves_0_arburst,
 	       v_to_slaves_0_awburst,
 	       v_to_slaves_1_arburst,
@@ -1555,12 +1381,6 @@ module mkLocal_Fabric(CLK,
        v_from_masters_1_rlast,
        v_from_masters_1_rvalid,
        v_from_masters_1_wready,
-       v_from_masters_2_arready,
-       v_from_masters_2_awready,
-       v_from_masters_2_bvalid,
-       v_from_masters_2_rlast,
-       v_from_masters_2_rvalid,
-       v_from_masters_2_wready,
        v_to_slaves_0_arlock,
        v_to_slaves_0_arvalid,
        v_to_slaves_0_awlock,
@@ -1633,11 +1453,6 @@ module mkLocal_Fabric(CLK,
   wire [7 : 0] fabric_v_rg_r_err_beat_count_1$D_IN;
   wire fabric_v_rg_r_err_beat_count_1$EN;
 
-  // register fabric_v_rg_r_err_beat_count_2
-  reg [7 : 0] fabric_v_rg_r_err_beat_count_2;
-  wire [7 : 0] fabric_v_rg_r_err_beat_count_2$D_IN;
-  wire fabric_v_rg_r_err_beat_count_2$EN;
-
   // register fabric_v_rg_wd_beat_count_0
   reg [7 : 0] fabric_v_rg_wd_beat_count_0;
   wire [7 : 0] fabric_v_rg_wd_beat_count_0$D_IN;
@@ -1647,11 +1462,6 @@ module mkLocal_Fabric(CLK,
   reg [7 : 0] fabric_v_rg_wd_beat_count_1;
   wire [7 : 0] fabric_v_rg_wd_beat_count_1$D_IN;
   wire fabric_v_rg_wd_beat_count_1$EN;
-
-  // register fabric_v_rg_wd_beat_count_2
-  reg [7 : 0] fabric_v_rg_wd_beat_count_2;
-  wire [7 : 0] fabric_v_rg_wd_beat_count_2$D_IN;
-  wire fabric_v_rg_wd_beat_count_2$EN;
 
   // ports of submodule fabric_v_f_rd_err_info_0
   wire [11 : 0] fabric_v_f_rd_err_info_0$D_IN, fabric_v_f_rd_err_info_0$D_OUT;
@@ -1667,16 +1477,8 @@ module mkLocal_Fabric(CLK,
        fabric_v_f_rd_err_info_1$EMPTY_N,
        fabric_v_f_rd_err_info_1$ENQ;
 
-  // ports of submodule fabric_v_f_rd_err_info_2
-  wire [11 : 0] fabric_v_f_rd_err_info_2$D_IN, fabric_v_f_rd_err_info_2$D_OUT;
-  wire fabric_v_f_rd_err_info_2$CLR,
-       fabric_v_f_rd_err_info_2$DEQ,
-       fabric_v_f_rd_err_info_2$EMPTY_N,
-       fabric_v_f_rd_err_info_2$ENQ;
-
   // ports of submodule fabric_v_f_rd_mis_0
-  reg [9 : 0] fabric_v_f_rd_mis_0$D_IN;
-  wire [9 : 0] fabric_v_f_rd_mis_0$D_OUT;
+  wire [9 : 0] fabric_v_f_rd_mis_0$D_IN, fabric_v_f_rd_mis_0$D_OUT;
   wire fabric_v_f_rd_mis_0$CLR,
        fabric_v_f_rd_mis_0$DEQ,
        fabric_v_f_rd_mis_0$EMPTY_N,
@@ -1684,8 +1486,7 @@ module mkLocal_Fabric(CLK,
        fabric_v_f_rd_mis_0$FULL_N;
 
   // ports of submodule fabric_v_f_rd_mis_1
-  reg [9 : 0] fabric_v_f_rd_mis_1$D_IN;
-  wire [9 : 0] fabric_v_f_rd_mis_1$D_OUT;
+  wire [9 : 0] fabric_v_f_rd_mis_1$D_IN, fabric_v_f_rd_mis_1$D_OUT;
   wire fabric_v_f_rd_mis_1$CLR,
        fabric_v_f_rd_mis_1$DEQ,
        fabric_v_f_rd_mis_1$EMPTY_N,
@@ -1693,8 +1494,7 @@ module mkLocal_Fabric(CLK,
        fabric_v_f_rd_mis_1$FULL_N;
 
   // ports of submodule fabric_v_f_rd_mis_2
-  reg [9 : 0] fabric_v_f_rd_mis_2$D_IN;
-  wire [9 : 0] fabric_v_f_rd_mis_2$D_OUT;
+  wire [9 : 0] fabric_v_f_rd_mis_2$D_IN, fabric_v_f_rd_mis_2$D_OUT;
   wire fabric_v_f_rd_mis_2$CLR,
        fabric_v_f_rd_mis_2$DEQ,
        fabric_v_f_rd_mis_2$EMPTY_N,
@@ -1702,8 +1502,7 @@ module mkLocal_Fabric(CLK,
        fabric_v_f_rd_mis_2$FULL_N;
 
   // ports of submodule fabric_v_f_rd_mis_3
-  reg [9 : 0] fabric_v_f_rd_mis_3$D_IN;
-  wire [9 : 0] fabric_v_f_rd_mis_3$D_OUT;
+  wire [9 : 0] fabric_v_f_rd_mis_3$D_IN, fabric_v_f_rd_mis_3$D_OUT;
   wire fabric_v_f_rd_mis_3$CLR,
        fabric_v_f_rd_mis_3$DEQ,
        fabric_v_f_rd_mis_3$EMPTY_N,
@@ -1728,15 +1527,6 @@ module mkLocal_Fabric(CLK,
        fabric_v_f_rd_sjs_1$ENQ,
        fabric_v_f_rd_sjs_1$FULL_N;
 
-  // ports of submodule fabric_v_f_rd_sjs_2
-  reg [2 : 0] fabric_v_f_rd_sjs_2$D_IN;
-  wire [2 : 0] fabric_v_f_rd_sjs_2$D_OUT;
-  wire fabric_v_f_rd_sjs_2$CLR,
-       fabric_v_f_rd_sjs_2$DEQ,
-       fabric_v_f_rd_sjs_2$EMPTY_N,
-       fabric_v_f_rd_sjs_2$ENQ,
-       fabric_v_f_rd_sjs_2$FULL_N;
-
   // ports of submodule fabric_v_f_wd_tasks_0
   reg [10 : 0] fabric_v_f_wd_tasks_0$D_IN;
   wire [10 : 0] fabric_v_f_wd_tasks_0$D_OUT;
@@ -1755,15 +1545,6 @@ module mkLocal_Fabric(CLK,
        fabric_v_f_wd_tasks_1$ENQ,
        fabric_v_f_wd_tasks_1$FULL_N;
 
-  // ports of submodule fabric_v_f_wd_tasks_2
-  reg [10 : 0] fabric_v_f_wd_tasks_2$D_IN;
-  wire [10 : 0] fabric_v_f_wd_tasks_2$D_OUT;
-  wire fabric_v_f_wd_tasks_2$CLR,
-       fabric_v_f_wd_tasks_2$DEQ,
-       fabric_v_f_wd_tasks_2$EMPTY_N,
-       fabric_v_f_wd_tasks_2$ENQ,
-       fabric_v_f_wd_tasks_2$FULL_N;
-
   // ports of submodule fabric_v_f_wr_err_info_0
   wire [3 : 0] fabric_v_f_wr_err_info_0$D_IN, fabric_v_f_wr_err_info_0$D_OUT;
   wire fabric_v_f_wr_err_info_0$CLR,
@@ -1778,16 +1559,8 @@ module mkLocal_Fabric(CLK,
        fabric_v_f_wr_err_info_1$EMPTY_N,
        fabric_v_f_wr_err_info_1$ENQ;
 
-  // ports of submodule fabric_v_f_wr_err_info_2
-  wire [3 : 0] fabric_v_f_wr_err_info_2$D_IN, fabric_v_f_wr_err_info_2$D_OUT;
-  wire fabric_v_f_wr_err_info_2$CLR,
-       fabric_v_f_wr_err_info_2$DEQ,
-       fabric_v_f_wr_err_info_2$EMPTY_N,
-       fabric_v_f_wr_err_info_2$ENQ;
-
   // ports of submodule fabric_v_f_wr_mis_0
-  reg [1 : 0] fabric_v_f_wr_mis_0$D_IN;
-  wire [1 : 0] fabric_v_f_wr_mis_0$D_OUT;
+  wire [1 : 0] fabric_v_f_wr_mis_0$D_IN, fabric_v_f_wr_mis_0$D_OUT;
   wire fabric_v_f_wr_mis_0$CLR,
        fabric_v_f_wr_mis_0$DEQ,
        fabric_v_f_wr_mis_0$EMPTY_N,
@@ -1795,8 +1568,7 @@ module mkLocal_Fabric(CLK,
        fabric_v_f_wr_mis_0$FULL_N;
 
   // ports of submodule fabric_v_f_wr_mis_1
-  reg [1 : 0] fabric_v_f_wr_mis_1$D_IN;
-  wire [1 : 0] fabric_v_f_wr_mis_1$D_OUT;
+  wire [1 : 0] fabric_v_f_wr_mis_1$D_IN, fabric_v_f_wr_mis_1$D_OUT;
   wire fabric_v_f_wr_mis_1$CLR,
        fabric_v_f_wr_mis_1$DEQ,
        fabric_v_f_wr_mis_1$EMPTY_N,
@@ -1804,8 +1576,7 @@ module mkLocal_Fabric(CLK,
        fabric_v_f_wr_mis_1$FULL_N;
 
   // ports of submodule fabric_v_f_wr_mis_2
-  reg [1 : 0] fabric_v_f_wr_mis_2$D_IN;
-  wire [1 : 0] fabric_v_f_wr_mis_2$D_OUT;
+  wire [1 : 0] fabric_v_f_wr_mis_2$D_IN, fabric_v_f_wr_mis_2$D_OUT;
   wire fabric_v_f_wr_mis_2$CLR,
        fabric_v_f_wr_mis_2$DEQ,
        fabric_v_f_wr_mis_2$EMPTY_N,
@@ -1813,8 +1584,7 @@ module mkLocal_Fabric(CLK,
        fabric_v_f_wr_mis_2$FULL_N;
 
   // ports of submodule fabric_v_f_wr_mis_3
-  reg [1 : 0] fabric_v_f_wr_mis_3$D_IN;
-  wire [1 : 0] fabric_v_f_wr_mis_3$D_OUT;
+  wire [1 : 0] fabric_v_f_wr_mis_3$D_IN, fabric_v_f_wr_mis_3$D_OUT;
   wire fabric_v_f_wr_mis_3$CLR,
        fabric_v_f_wr_mis_3$DEQ,
        fabric_v_f_wr_mis_3$EMPTY_N,
@@ -1838,15 +1608,6 @@ module mkLocal_Fabric(CLK,
        fabric_v_f_wr_sjs_1$EMPTY_N,
        fabric_v_f_wr_sjs_1$ENQ,
        fabric_v_f_wr_sjs_1$FULL_N;
-
-  // ports of submodule fabric_v_f_wr_sjs_2
-  reg [2 : 0] fabric_v_f_wr_sjs_2$D_IN;
-  wire [2 : 0] fabric_v_f_wr_sjs_2$D_OUT;
-  wire fabric_v_f_wr_sjs_2$CLR,
-       fabric_v_f_wr_sjs_2$DEQ,
-       fabric_v_f_wr_sjs_2$EMPTY_N,
-       fabric_v_f_wr_sjs_2$ENQ,
-       fabric_v_f_wr_sjs_2$FULL_N;
 
   // ports of submodule fabric_xactors_from_masters_0_f_rd_addr
   wire [64 : 0] fabric_xactors_from_masters_0_f_rd_addr$D_IN,
@@ -1938,54 +1699,9 @@ module mkLocal_Fabric(CLK,
        fabric_xactors_from_masters_1_f_wr_resp$ENQ,
        fabric_xactors_from_masters_1_f_wr_resp$FULL_N;
 
-  // ports of submodule fabric_xactors_from_masters_2_f_rd_addr
-  wire [64 : 0] fabric_xactors_from_masters_2_f_rd_addr$D_IN,
-		fabric_xactors_from_masters_2_f_rd_addr$D_OUT;
-  wire fabric_xactors_from_masters_2_f_rd_addr$CLR,
-       fabric_xactors_from_masters_2_f_rd_addr$DEQ,
-       fabric_xactors_from_masters_2_f_rd_addr$EMPTY_N,
-       fabric_xactors_from_masters_2_f_rd_addr$ENQ,
-       fabric_xactors_from_masters_2_f_rd_addr$FULL_N;
-
-  // ports of submodule fabric_xactors_from_masters_2_f_rd_data
-  reg [38 : 0] fabric_xactors_from_masters_2_f_rd_data$D_IN;
-  wire [38 : 0] fabric_xactors_from_masters_2_f_rd_data$D_OUT;
-  wire fabric_xactors_from_masters_2_f_rd_data$CLR,
-       fabric_xactors_from_masters_2_f_rd_data$DEQ,
-       fabric_xactors_from_masters_2_f_rd_data$EMPTY_N,
-       fabric_xactors_from_masters_2_f_rd_data$ENQ,
-       fabric_xactors_from_masters_2_f_rd_data$FULL_N;
-
-  // ports of submodule fabric_xactors_from_masters_2_f_wr_addr
-  wire [64 : 0] fabric_xactors_from_masters_2_f_wr_addr$D_IN,
-		fabric_xactors_from_masters_2_f_wr_addr$D_OUT;
-  wire fabric_xactors_from_masters_2_f_wr_addr$CLR,
-       fabric_xactors_from_masters_2_f_wr_addr$DEQ,
-       fabric_xactors_from_masters_2_f_wr_addr$EMPTY_N,
-       fabric_xactors_from_masters_2_f_wr_addr$ENQ,
-       fabric_xactors_from_masters_2_f_wr_addr$FULL_N;
-
-  // ports of submodule fabric_xactors_from_masters_2_f_wr_data
-  wire [36 : 0] fabric_xactors_from_masters_2_f_wr_data$D_IN,
-		fabric_xactors_from_masters_2_f_wr_data$D_OUT;
-  wire fabric_xactors_from_masters_2_f_wr_data$CLR,
-       fabric_xactors_from_masters_2_f_wr_data$DEQ,
-       fabric_xactors_from_masters_2_f_wr_data$EMPTY_N,
-       fabric_xactors_from_masters_2_f_wr_data$ENQ,
-       fabric_xactors_from_masters_2_f_wr_data$FULL_N;
-
-  // ports of submodule fabric_xactors_from_masters_2_f_wr_resp
-  reg [5 : 0] fabric_xactors_from_masters_2_f_wr_resp$D_IN;
-  wire [5 : 0] fabric_xactors_from_masters_2_f_wr_resp$D_OUT;
-  wire fabric_xactors_from_masters_2_f_wr_resp$CLR,
-       fabric_xactors_from_masters_2_f_wr_resp$DEQ,
-       fabric_xactors_from_masters_2_f_wr_resp$EMPTY_N,
-       fabric_xactors_from_masters_2_f_wr_resp$ENQ,
-       fabric_xactors_from_masters_2_f_wr_resp$FULL_N;
-
   // ports of submodule fabric_xactors_to_slaves_0_f_rd_addr
-  reg [64 : 0] fabric_xactors_to_slaves_0_f_rd_addr$D_IN;
-  wire [64 : 0] fabric_xactors_to_slaves_0_f_rd_addr$D_OUT;
+  wire [64 : 0] fabric_xactors_to_slaves_0_f_rd_addr$D_IN,
+		fabric_xactors_to_slaves_0_f_rd_addr$D_OUT;
   wire fabric_xactors_to_slaves_0_f_rd_addr$CLR,
        fabric_xactors_to_slaves_0_f_rd_addr$DEQ,
        fabric_xactors_to_slaves_0_f_rd_addr$EMPTY_N,
@@ -2002,8 +1718,8 @@ module mkLocal_Fabric(CLK,
        fabric_xactors_to_slaves_0_f_rd_data$FULL_N;
 
   // ports of submodule fabric_xactors_to_slaves_0_f_wr_addr
-  reg [64 : 0] fabric_xactors_to_slaves_0_f_wr_addr$D_IN;
-  wire [64 : 0] fabric_xactors_to_slaves_0_f_wr_addr$D_OUT;
+  wire [64 : 0] fabric_xactors_to_slaves_0_f_wr_addr$D_IN,
+		fabric_xactors_to_slaves_0_f_wr_addr$D_OUT;
   wire fabric_xactors_to_slaves_0_f_wr_addr$CLR,
        fabric_xactors_to_slaves_0_f_wr_addr$DEQ,
        fabric_xactors_to_slaves_0_f_wr_addr$EMPTY_N,
@@ -2011,8 +1727,8 @@ module mkLocal_Fabric(CLK,
        fabric_xactors_to_slaves_0_f_wr_addr$FULL_N;
 
   // ports of submodule fabric_xactors_to_slaves_0_f_wr_data
-  reg [36 : 0] fabric_xactors_to_slaves_0_f_wr_data$D_IN;
-  wire [36 : 0] fabric_xactors_to_slaves_0_f_wr_data$D_OUT;
+  wire [36 : 0] fabric_xactors_to_slaves_0_f_wr_data$D_IN,
+		fabric_xactors_to_slaves_0_f_wr_data$D_OUT;
   wire fabric_xactors_to_slaves_0_f_wr_data$CLR,
        fabric_xactors_to_slaves_0_f_wr_data$DEQ,
        fabric_xactors_to_slaves_0_f_wr_data$EMPTY_N,
@@ -2029,8 +1745,8 @@ module mkLocal_Fabric(CLK,
        fabric_xactors_to_slaves_0_f_wr_resp$FULL_N;
 
   // ports of submodule fabric_xactors_to_slaves_1_f_rd_addr
-  reg [64 : 0] fabric_xactors_to_slaves_1_f_rd_addr$D_IN;
-  wire [64 : 0] fabric_xactors_to_slaves_1_f_rd_addr$D_OUT;
+  wire [64 : 0] fabric_xactors_to_slaves_1_f_rd_addr$D_IN,
+		fabric_xactors_to_slaves_1_f_rd_addr$D_OUT;
   wire fabric_xactors_to_slaves_1_f_rd_addr$CLR,
        fabric_xactors_to_slaves_1_f_rd_addr$DEQ,
        fabric_xactors_to_slaves_1_f_rd_addr$EMPTY_N,
@@ -2047,8 +1763,8 @@ module mkLocal_Fabric(CLK,
        fabric_xactors_to_slaves_1_f_rd_data$FULL_N;
 
   // ports of submodule fabric_xactors_to_slaves_1_f_wr_addr
-  reg [64 : 0] fabric_xactors_to_slaves_1_f_wr_addr$D_IN;
-  wire [64 : 0] fabric_xactors_to_slaves_1_f_wr_addr$D_OUT;
+  wire [64 : 0] fabric_xactors_to_slaves_1_f_wr_addr$D_IN,
+		fabric_xactors_to_slaves_1_f_wr_addr$D_OUT;
   wire fabric_xactors_to_slaves_1_f_wr_addr$CLR,
        fabric_xactors_to_slaves_1_f_wr_addr$DEQ,
        fabric_xactors_to_slaves_1_f_wr_addr$EMPTY_N,
@@ -2056,8 +1772,8 @@ module mkLocal_Fabric(CLK,
        fabric_xactors_to_slaves_1_f_wr_addr$FULL_N;
 
   // ports of submodule fabric_xactors_to_slaves_1_f_wr_data
-  reg [36 : 0] fabric_xactors_to_slaves_1_f_wr_data$D_IN;
-  wire [36 : 0] fabric_xactors_to_slaves_1_f_wr_data$D_OUT;
+  wire [36 : 0] fabric_xactors_to_slaves_1_f_wr_data$D_IN,
+		fabric_xactors_to_slaves_1_f_wr_data$D_OUT;
   wire fabric_xactors_to_slaves_1_f_wr_data$CLR,
        fabric_xactors_to_slaves_1_f_wr_data$DEQ,
        fabric_xactors_to_slaves_1_f_wr_data$EMPTY_N,
@@ -2074,8 +1790,8 @@ module mkLocal_Fabric(CLK,
        fabric_xactors_to_slaves_1_f_wr_resp$FULL_N;
 
   // ports of submodule fabric_xactors_to_slaves_2_f_rd_addr
-  reg [64 : 0] fabric_xactors_to_slaves_2_f_rd_addr$D_IN;
-  wire [64 : 0] fabric_xactors_to_slaves_2_f_rd_addr$D_OUT;
+  wire [64 : 0] fabric_xactors_to_slaves_2_f_rd_addr$D_IN,
+		fabric_xactors_to_slaves_2_f_rd_addr$D_OUT;
   wire fabric_xactors_to_slaves_2_f_rd_addr$CLR,
        fabric_xactors_to_slaves_2_f_rd_addr$DEQ,
        fabric_xactors_to_slaves_2_f_rd_addr$EMPTY_N,
@@ -2092,8 +1808,8 @@ module mkLocal_Fabric(CLK,
        fabric_xactors_to_slaves_2_f_rd_data$FULL_N;
 
   // ports of submodule fabric_xactors_to_slaves_2_f_wr_addr
-  reg [64 : 0] fabric_xactors_to_slaves_2_f_wr_addr$D_IN;
-  wire [64 : 0] fabric_xactors_to_slaves_2_f_wr_addr$D_OUT;
+  wire [64 : 0] fabric_xactors_to_slaves_2_f_wr_addr$D_IN,
+		fabric_xactors_to_slaves_2_f_wr_addr$D_OUT;
   wire fabric_xactors_to_slaves_2_f_wr_addr$CLR,
        fabric_xactors_to_slaves_2_f_wr_addr$DEQ,
        fabric_xactors_to_slaves_2_f_wr_addr$EMPTY_N,
@@ -2101,8 +1817,8 @@ module mkLocal_Fabric(CLK,
        fabric_xactors_to_slaves_2_f_wr_addr$FULL_N;
 
   // ports of submodule fabric_xactors_to_slaves_2_f_wr_data
-  reg [36 : 0] fabric_xactors_to_slaves_2_f_wr_data$D_IN;
-  wire [36 : 0] fabric_xactors_to_slaves_2_f_wr_data$D_OUT;
+  wire [36 : 0] fabric_xactors_to_slaves_2_f_wr_data$D_IN,
+		fabric_xactors_to_slaves_2_f_wr_data$D_OUT;
   wire fabric_xactors_to_slaves_2_f_wr_data$CLR,
        fabric_xactors_to_slaves_2_f_wr_data$DEQ,
        fabric_xactors_to_slaves_2_f_wr_data$EMPTY_N,
@@ -2119,8 +1835,8 @@ module mkLocal_Fabric(CLK,
        fabric_xactors_to_slaves_2_f_wr_resp$FULL_N;
 
   // ports of submodule fabric_xactors_to_slaves_3_f_rd_addr
-  reg [64 : 0] fabric_xactors_to_slaves_3_f_rd_addr$D_IN;
-  wire [64 : 0] fabric_xactors_to_slaves_3_f_rd_addr$D_OUT;
+  wire [64 : 0] fabric_xactors_to_slaves_3_f_rd_addr$D_IN,
+		fabric_xactors_to_slaves_3_f_rd_addr$D_OUT;
   wire fabric_xactors_to_slaves_3_f_rd_addr$CLR,
        fabric_xactors_to_slaves_3_f_rd_addr$DEQ,
        fabric_xactors_to_slaves_3_f_rd_addr$EMPTY_N,
@@ -2137,8 +1853,8 @@ module mkLocal_Fabric(CLK,
        fabric_xactors_to_slaves_3_f_rd_data$FULL_N;
 
   // ports of submodule fabric_xactors_to_slaves_3_f_wr_addr
-  reg [64 : 0] fabric_xactors_to_slaves_3_f_wr_addr$D_IN;
-  wire [64 : 0] fabric_xactors_to_slaves_3_f_wr_addr$D_OUT;
+  wire [64 : 0] fabric_xactors_to_slaves_3_f_wr_addr$D_IN,
+		fabric_xactors_to_slaves_3_f_wr_addr$D_OUT;
   wire fabric_xactors_to_slaves_3_f_wr_addr$CLR,
        fabric_xactors_to_slaves_3_f_wr_addr$DEQ,
        fabric_xactors_to_slaves_3_f_wr_addr$EMPTY_N,
@@ -2146,8 +1862,8 @@ module mkLocal_Fabric(CLK,
        fabric_xactors_to_slaves_3_f_wr_addr$FULL_N;
 
   // ports of submodule fabric_xactors_to_slaves_3_f_wr_data
-  reg [36 : 0] fabric_xactors_to_slaves_3_f_wr_data$D_IN;
-  wire [36 : 0] fabric_xactors_to_slaves_3_f_wr_data$D_OUT;
+  wire [36 : 0] fabric_xactors_to_slaves_3_f_wr_data$D_IN,
+		fabric_xactors_to_slaves_3_f_wr_data$D_OUT;
   wire fabric_xactors_to_slaves_3_f_wr_data$CLR,
        fabric_xactors_to_slaves_3_f_wr_data$DEQ,
        fabric_xactors_to_slaves_3_f_wr_data$EMPTY_N,
@@ -2181,62 +1897,43 @@ module mkLocal_Fabric(CLK,
   // rule scheduling signals
   wire CAN_FIRE_RL_fabric_rl_rd_resp_err_to_master,
        CAN_FIRE_RL_fabric_rl_rd_resp_err_to_master_1,
-       CAN_FIRE_RL_fabric_rl_rd_resp_err_to_master_2,
        CAN_FIRE_RL_fabric_rl_rd_resp_slave_to_master,
        CAN_FIRE_RL_fabric_rl_rd_resp_slave_to_master_1,
-       CAN_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10,
-       CAN_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11,
        CAN_FIRE_RL_fabric_rl_rd_resp_slave_to_master_2,
        CAN_FIRE_RL_fabric_rl_rd_resp_slave_to_master_3,
        CAN_FIRE_RL_fabric_rl_rd_resp_slave_to_master_4,
        CAN_FIRE_RL_fabric_rl_rd_resp_slave_to_master_5,
        CAN_FIRE_RL_fabric_rl_rd_resp_slave_to_master_6,
        CAN_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7,
-       CAN_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8,
-       CAN_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9,
        CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave,
        CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_1,
-       CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10,
-       CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11,
        CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_2,
        CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_3,
        CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_4,
        CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_5,
        CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_6,
        CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_7,
-       CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8,
-       CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9,
        CAN_FIRE_RL_fabric_rl_reset,
        CAN_FIRE_RL_fabric_rl_wr_resp_err_to_master,
        CAN_FIRE_RL_fabric_rl_wr_resp_err_to_master_1,
-       CAN_FIRE_RL_fabric_rl_wr_resp_err_to_master_2,
        CAN_FIRE_RL_fabric_rl_wr_resp_slave_to_master,
        CAN_FIRE_RL_fabric_rl_wr_resp_slave_to_master_1,
-       CAN_FIRE_RL_fabric_rl_wr_resp_slave_to_master_10,
-       CAN_FIRE_RL_fabric_rl_wr_resp_slave_to_master_11,
        CAN_FIRE_RL_fabric_rl_wr_resp_slave_to_master_2,
        CAN_FIRE_RL_fabric_rl_wr_resp_slave_to_master_3,
        CAN_FIRE_RL_fabric_rl_wr_resp_slave_to_master_4,
        CAN_FIRE_RL_fabric_rl_wr_resp_slave_to_master_5,
        CAN_FIRE_RL_fabric_rl_wr_resp_slave_to_master_6,
        CAN_FIRE_RL_fabric_rl_wr_resp_slave_to_master_7,
-       CAN_FIRE_RL_fabric_rl_wr_resp_slave_to_master_8,
-       CAN_FIRE_RL_fabric_rl_wr_resp_slave_to_master_9,
        CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave,
        CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_1,
-       CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10,
-       CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11,
        CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_2,
        CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_3,
        CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_4,
        CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_5,
        CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_6,
        CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_7,
-       CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8,
-       CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9,
        CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data,
        CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1,
-       CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2,
        CAN_FIRE_reset,
        CAN_FIRE_set_verbosity,
        CAN_FIRE_v_from_masters_0_m_arvalid,
@@ -2249,11 +1946,6 @@ module mkLocal_Fabric(CLK,
        CAN_FIRE_v_from_masters_1_m_bready,
        CAN_FIRE_v_from_masters_1_m_rready,
        CAN_FIRE_v_from_masters_1_m_wvalid,
-       CAN_FIRE_v_from_masters_2_m_arvalid,
-       CAN_FIRE_v_from_masters_2_m_awvalid,
-       CAN_FIRE_v_from_masters_2_m_bready,
-       CAN_FIRE_v_from_masters_2_m_rready,
-       CAN_FIRE_v_from_masters_2_m_wvalid,
        CAN_FIRE_v_to_slaves_0_m_arready,
        CAN_FIRE_v_to_slaves_0_m_awready,
        CAN_FIRE_v_to_slaves_0_m_bvalid,
@@ -2276,62 +1968,43 @@ module mkLocal_Fabric(CLK,
        CAN_FIRE_v_to_slaves_3_m_wready,
        WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master,
        WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_1,
-       WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_2,
        WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master,
        WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_1,
-       WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10,
-       WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11,
        WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_2,
        WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_3,
        WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_4,
        WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_5,
        WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_6,
        WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7,
-       WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8,
-       WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9,
        WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave,
        WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_1,
-       WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10,
-       WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11,
        WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_2,
        WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_3,
        WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_4,
        WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_5,
        WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_6,
        WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_7,
-       WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8,
-       WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9,
        WILL_FIRE_RL_fabric_rl_reset,
        WILL_FIRE_RL_fabric_rl_wr_resp_err_to_master,
        WILL_FIRE_RL_fabric_rl_wr_resp_err_to_master_1,
-       WILL_FIRE_RL_fabric_rl_wr_resp_err_to_master_2,
        WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master,
        WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_1,
-       WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_10,
-       WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_11,
        WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_2,
        WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_3,
        WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_4,
        WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_5,
        WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_6,
        WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_7,
-       WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_8,
-       WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_9,
        WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave,
        WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_1,
-       WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10,
-       WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11,
        WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_2,
        WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_3,
        WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_4,
        WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_5,
        WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_6,
        WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_7,
-       WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8,
-       WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9,
        WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data,
        WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1,
-       WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2,
        WILL_FIRE_reset,
        WILL_FIRE_set_verbosity,
        WILL_FIRE_v_from_masters_0_m_arvalid,
@@ -2344,11 +2017,6 @@ module mkLocal_Fabric(CLK,
        WILL_FIRE_v_from_masters_1_m_bready,
        WILL_FIRE_v_from_masters_1_m_rready,
        WILL_FIRE_v_from_masters_1_m_wvalid,
-       WILL_FIRE_v_from_masters_2_m_arvalid,
-       WILL_FIRE_v_from_masters_2_m_awvalid,
-       WILL_FIRE_v_from_masters_2_m_bready,
-       WILL_FIRE_v_from_masters_2_m_rready,
-       WILL_FIRE_v_from_masters_2_m_wvalid,
        WILL_FIRE_v_to_slaves_0_m_arready,
        WILL_FIRE_v_to_slaves_0_m_awready,
        WILL_FIRE_v_to_slaves_0_m_bvalid,
@@ -2376,8 +2044,7 @@ module mkLocal_Fabric(CLK,
 		MUX_fabric_xactors_from_masters_0_f_rd_data$enq_1__VAL_3,
 		MUX_fabric_xactors_from_masters_0_f_rd_data$enq_1__VAL_4,
 		MUX_fabric_xactors_from_masters_0_f_rd_data$enq_1__VAL_5,
-		MUX_fabric_xactors_from_masters_1_f_rd_data$enq_1__VAL_5,
-		MUX_fabric_xactors_from_masters_2_f_rd_data$enq_1__VAL_5;
+		MUX_fabric_xactors_from_masters_1_f_rd_data$enq_1__VAL_5;
   wire [10 : 0] MUX_fabric_v_f_wd_tasks_0$enq_1__VAL_1,
 		MUX_fabric_v_f_wd_tasks_0$enq_1__VAL_2,
 		MUX_fabric_v_f_wd_tasks_0$enq_1__VAL_3,
@@ -2385,274 +2052,189 @@ module mkLocal_Fabric(CLK,
 		MUX_fabric_v_f_wd_tasks_1$enq_1__VAL_1,
 		MUX_fabric_v_f_wd_tasks_1$enq_1__VAL_2,
 		MUX_fabric_v_f_wd_tasks_1$enq_1__VAL_3,
-		MUX_fabric_v_f_wd_tasks_1$enq_1__VAL_4,
-		MUX_fabric_v_f_wd_tasks_2$enq_1__VAL_1,
-		MUX_fabric_v_f_wd_tasks_2$enq_1__VAL_2,
-		MUX_fabric_v_f_wd_tasks_2$enq_1__VAL_3,
-		MUX_fabric_v_f_wd_tasks_2$enq_1__VAL_4;
+		MUX_fabric_v_f_wd_tasks_1$enq_1__VAL_4;
   wire [9 : 0] MUX_fabric_v_f_rd_mis_0$enq_1__VAL_1,
-	       MUX_fabric_v_f_rd_mis_0$enq_1__VAL_2,
-	       MUX_fabric_v_f_rd_mis_0$enq_1__VAL_3;
+	       MUX_fabric_v_f_rd_mis_0$enq_1__VAL_2;
   wire [7 : 0] MUX_fabric_v_rg_r_beat_count_0$write_1__VAL_2,
-	       MUX_fabric_v_rg_r_beat_count_1$write_1__VAL_2,
+	       MUX_fabric_v_rg_r_beat_count_1$write_1__VAL_3,
 	       MUX_fabric_v_rg_r_beat_count_2$write_1__VAL_2,
 	       MUX_fabric_v_rg_r_beat_count_3$write_1__VAL_2,
 	       MUX_fabric_v_rg_wd_beat_count_0$write_1__VAL_2,
-	       MUX_fabric_v_rg_wd_beat_count_1$write_1__VAL_2,
-	       MUX_fabric_v_rg_wd_beat_count_2$write_1__VAL_2;
+	       MUX_fabric_v_rg_wd_beat_count_1$write_1__VAL_2;
   wire [5 : 0] MUX_fabric_xactors_from_masters_0_f_wr_resp$enq_1__VAL_5,
-	       MUX_fabric_xactors_from_masters_1_f_wr_resp$enq_1__VAL_5,
-	       MUX_fabric_xactors_from_masters_2_f_wr_resp$enq_1__VAL_5;
+	       MUX_fabric_xactors_from_masters_1_f_wr_resp$enq_1__VAL_5;
   wire MUX_fabric_xactors_to_slaves_0_f_wr_data$enq_1__SEL_1,
-       MUX_fabric_xactors_to_slaves_0_f_wr_data$enq_1__SEL_2,
-       MUX_fabric_xactors_to_slaves_0_f_wr_data$enq_1__SEL_3,
        MUX_fabric_xactors_to_slaves_1_f_wr_data$enq_1__SEL_1,
-       MUX_fabric_xactors_to_slaves_1_f_wr_data$enq_1__SEL_2,
-       MUX_fabric_xactors_to_slaves_1_f_wr_data$enq_1__SEL_3,
        MUX_fabric_xactors_to_slaves_2_f_wr_data$enq_1__SEL_1,
-       MUX_fabric_xactors_to_slaves_2_f_wr_data$enq_1__SEL_2,
-       MUX_fabric_xactors_to_slaves_2_f_wr_data$enq_1__SEL_3,
-       MUX_fabric_xactors_to_slaves_3_f_wr_data$enq_1__SEL_1,
-       MUX_fabric_xactors_to_slaves_3_f_wr_data$enq_1__SEL_2,
-       MUX_fabric_xactors_to_slaves_3_f_wr_data$enq_1__SEL_3;
+       MUX_fabric_xactors_to_slaves_3_f_wr_data$enq_1__SEL_1;
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h11417;
-  reg [31 : 0] v__h11814;
-  reg [31 : 0] v__h12211;
-  reg [31 : 0] v__h12608;
-  reg [31 : 0] v__h13068;
-  reg [31 : 0] v__h13459;
-  reg [31 : 0] v__h13850;
-  reg [31 : 0] v__h14241;
-  reg [31 : 0] v__h14701;
-  reg [31 : 0] v__h15092;
-  reg [31 : 0] v__h15483;
-  reg [31 : 0] v__h15874;
-  reg [31 : 0] v__h17074;
-  reg [31 : 0] v__h17321;
-  reg [31 : 0] v__h17692;
-  reg [31 : 0] v__h17939;
-  reg [31 : 0] v__h18310;
-  reg [31 : 0] v__h18557;
-  reg [31 : 0] v__h18914;
-  reg [31 : 0] v__h19184;
-  reg [31 : 0] v__h19454;
-  reg [31 : 0] v__h19724;
-  reg [31 : 0] v__h19998;
-  reg [31 : 0] v__h20242;
-  reg [31 : 0] v__h20486;
-  reg [31 : 0] v__h20730;
-  reg [31 : 0] v__h21004;
-  reg [31 : 0] v__h21248;
-  reg [31 : 0] v__h21492;
-  reg [31 : 0] v__h21736;
-  reg [31 : 0] v__h21970;
-  reg [31 : 0] v__h22180;
-  reg [31 : 0] v__h22390;
-  reg [31 : 0] v__h22840;
-  reg [31 : 0] v__h23224;
-  reg [31 : 0] v__h23608;
-  reg [31 : 0] v__h23992;
-  reg [31 : 0] v__h24430;
-  reg [31 : 0] v__h24790;
-  reg [31 : 0] v__h25150;
-  reg [31 : 0] v__h25510;
-  reg [31 : 0] v__h25948;
-  reg [31 : 0] v__h26308;
-  reg [31 : 0] v__h26668;
-  reg [31 : 0] v__h27028;
-  reg [31 : 0] v__h28151;
-  reg [31 : 0] v__h28432;
-  reg [31 : 0] v__h28800;
-  reg [31 : 0] v__h29071;
-  reg [31 : 0] v__h29439;
-  reg [31 : 0] v__h29710;
-  reg [31 : 0] v__h30078;
-  reg [31 : 0] v__h30349;
-  reg [31 : 0] v__h30697;
-  reg [31 : 0] v__h30978;
-  reg [31 : 0] v__h31301;
-  reg [31 : 0] v__h31572;
-  reg [31 : 0] v__h31895;
-  reg [31 : 0] v__h32166;
-  reg [31 : 0] v__h32489;
-  reg [31 : 0] v__h32760;
-  reg [31 : 0] v__h33108;
-  reg [31 : 0] v__h33389;
-  reg [31 : 0] v__h33712;
-  reg [31 : 0] v__h33983;
-  reg [31 : 0] v__h34306;
-  reg [31 : 0] v__h34577;
-  reg [31 : 0] v__h34900;
-  reg [31 : 0] v__h35171;
-  reg [31 : 0] v__h35678;
-  reg [31 : 0] v__h36060;
-  reg [31 : 0] v__h36442;
-  reg [31 : 0] v__h7848;
-  reg [31 : 0] v__h7842;
-  reg [31 : 0] v__h11411;
-  reg [31 : 0] v__h11808;
-  reg [31 : 0] v__h12205;
-  reg [31 : 0] v__h12602;
-  reg [31 : 0] v__h13062;
-  reg [31 : 0] v__h13453;
-  reg [31 : 0] v__h13844;
-  reg [31 : 0] v__h14235;
-  reg [31 : 0] v__h14695;
-  reg [31 : 0] v__h15086;
-  reg [31 : 0] v__h15477;
-  reg [31 : 0] v__h15868;
-  reg [31 : 0] v__h17068;
-  reg [31 : 0] v__h17315;
-  reg [31 : 0] v__h17686;
-  reg [31 : 0] v__h17933;
-  reg [31 : 0] v__h18304;
-  reg [31 : 0] v__h18551;
-  reg [31 : 0] v__h18908;
-  reg [31 : 0] v__h19178;
-  reg [31 : 0] v__h19448;
-  reg [31 : 0] v__h19718;
-  reg [31 : 0] v__h19992;
-  reg [31 : 0] v__h20236;
-  reg [31 : 0] v__h20480;
-  reg [31 : 0] v__h20724;
-  reg [31 : 0] v__h20998;
-  reg [31 : 0] v__h21242;
-  reg [31 : 0] v__h21486;
-  reg [31 : 0] v__h21730;
-  reg [31 : 0] v__h21964;
-  reg [31 : 0] v__h22174;
-  reg [31 : 0] v__h22384;
-  reg [31 : 0] v__h22834;
-  reg [31 : 0] v__h23218;
-  reg [31 : 0] v__h23602;
-  reg [31 : 0] v__h23986;
-  reg [31 : 0] v__h24424;
-  reg [31 : 0] v__h24784;
-  reg [31 : 0] v__h25144;
-  reg [31 : 0] v__h25504;
-  reg [31 : 0] v__h25942;
-  reg [31 : 0] v__h26302;
-  reg [31 : 0] v__h26662;
-  reg [31 : 0] v__h27022;
-  reg [31 : 0] v__h28145;
-  reg [31 : 0] v__h28426;
-  reg [31 : 0] v__h28794;
-  reg [31 : 0] v__h29065;
-  reg [31 : 0] v__h29433;
-  reg [31 : 0] v__h29704;
-  reg [31 : 0] v__h30072;
-  reg [31 : 0] v__h30343;
-  reg [31 : 0] v__h30691;
-  reg [31 : 0] v__h30972;
-  reg [31 : 0] v__h31295;
-  reg [31 : 0] v__h31566;
-  reg [31 : 0] v__h31889;
-  reg [31 : 0] v__h32160;
-  reg [31 : 0] v__h32483;
-  reg [31 : 0] v__h32754;
-  reg [31 : 0] v__h33102;
-  reg [31 : 0] v__h33383;
-  reg [31 : 0] v__h33706;
-  reg [31 : 0] v__h33977;
-  reg [31 : 0] v__h34300;
-  reg [31 : 0] v__h34571;
-  reg [31 : 0] v__h34894;
-  reg [31 : 0] v__h35165;
-  reg [31 : 0] v__h35672;
-  reg [31 : 0] v__h36054;
-  reg [31 : 0] v__h36436;
+  reg [31 : 0] v__h9757;
+  reg [31 : 0] v__h10154;
+  reg [31 : 0] v__h10551;
+  reg [31 : 0] v__h10948;
+  reg [31 : 0] v__h11408;
+  reg [31 : 0] v__h11799;
+  reg [31 : 0] v__h12190;
+  reg [31 : 0] v__h12581;
+  reg [31 : 0] v__h13519;
+  reg [31 : 0] v__h13766;
+  reg [31 : 0] v__h14137;
+  reg [31 : 0] v__h14384;
+  reg [31 : 0] v__h14741;
+  reg [31 : 0] v__h15011;
+  reg [31 : 0] v__h15281;
+  reg [31 : 0] v__h15551;
+  reg [31 : 0] v__h15825;
+  reg [31 : 0] v__h16069;
+  reg [31 : 0] v__h16313;
+  reg [31 : 0] v__h16557;
+  reg [31 : 0] v__h16791;
+  reg [31 : 0] v__h17001;
+  reg [31 : 0] v__h17451;
+  reg [31 : 0] v__h17835;
+  reg [31 : 0] v__h18219;
+  reg [31 : 0] v__h18603;
+  reg [31 : 0] v__h19041;
+  reg [31 : 0] v__h19401;
+  reg [31 : 0] v__h19761;
+  reg [31 : 0] v__h20121;
+  reg [31 : 0] v__h21013;
+  reg [31 : 0] v__h21294;
+  reg [31 : 0] v__h21662;
+  reg [31 : 0] v__h21933;
+  reg [31 : 0] v__h22301;
+  reg [31 : 0] v__h22572;
+  reg [31 : 0] v__h22940;
+  reg [31 : 0] v__h23211;
+  reg [31 : 0] v__h23559;
+  reg [31 : 0] v__h23840;
+  reg [31 : 0] v__h24163;
+  reg [31 : 0] v__h24434;
+  reg [31 : 0] v__h24757;
+  reg [31 : 0] v__h25028;
+  reg [31 : 0] v__h25351;
+  reg [31 : 0] v__h25622;
+  reg [31 : 0] v__h26102;
+  reg [31 : 0] v__h26484;
+  reg [31 : 0] v__h6688;
+  reg [31 : 0] v__h6682;
+  reg [31 : 0] v__h9751;
+  reg [31 : 0] v__h10148;
+  reg [31 : 0] v__h10545;
+  reg [31 : 0] v__h10942;
+  reg [31 : 0] v__h11402;
+  reg [31 : 0] v__h11793;
+  reg [31 : 0] v__h12184;
+  reg [31 : 0] v__h12575;
+  reg [31 : 0] v__h13513;
+  reg [31 : 0] v__h13760;
+  reg [31 : 0] v__h14131;
+  reg [31 : 0] v__h14378;
+  reg [31 : 0] v__h14735;
+  reg [31 : 0] v__h15005;
+  reg [31 : 0] v__h15275;
+  reg [31 : 0] v__h15545;
+  reg [31 : 0] v__h15819;
+  reg [31 : 0] v__h16063;
+  reg [31 : 0] v__h16307;
+  reg [31 : 0] v__h16551;
+  reg [31 : 0] v__h16785;
+  reg [31 : 0] v__h16995;
+  reg [31 : 0] v__h17445;
+  reg [31 : 0] v__h17829;
+  reg [31 : 0] v__h18213;
+  reg [31 : 0] v__h18597;
+  reg [31 : 0] v__h19035;
+  reg [31 : 0] v__h19395;
+  reg [31 : 0] v__h19755;
+  reg [31 : 0] v__h20115;
+  reg [31 : 0] v__h21007;
+  reg [31 : 0] v__h21288;
+  reg [31 : 0] v__h21656;
+  reg [31 : 0] v__h21927;
+  reg [31 : 0] v__h22295;
+  reg [31 : 0] v__h22566;
+  reg [31 : 0] v__h22934;
+  reg [31 : 0] v__h23205;
+  reg [31 : 0] v__h23553;
+  reg [31 : 0] v__h23834;
+  reg [31 : 0] v__h24157;
+  reg [31 : 0] v__h24428;
+  reg [31 : 0] v__h24751;
+  reg [31 : 0] v__h25022;
+  reg [31 : 0] v__h25345;
+  reg [31 : 0] v__h25616;
+  reg [31 : 0] v__h26096;
+  reg [31 : 0] v__h26478;
   // synopsys translate_on
 
   // remaining internal signals
-  reg CASE_fabric_v_f_wd_tasks_0_first__22_BITS_10_T_ETC___d230,
-      CASE_fabric_v_f_wd_tasks_1_first__61_BITS_10_T_ETC___d265,
-      CASE_fabric_v_f_wd_tasks_2_first__96_BITS_10_T_ETC___d300;
-  wire [7 : 0] x__h17223,
-	       x__h17841,
-	       x__h18459,
-	       x__h28315,
-	       x__h28964,
-	       x__h29603,
-	       x__h30242,
-	       x__h35615,
-	       x__h35997,
-	       x__h36379;
-  wire [1 : 0] IF_fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_ETC___d708,
-	       IF_fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_ETC___d743,
-	       IF_fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_ETC___d778,
-	       IF_fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_ETC___d813,
-	       x1_avValue_rresp__h28293,
-	       x1_avValue_rresp__h28942,
-	       x1_avValue_rresp__h29581,
-	       x1_avValue_rresp__h30220;
+  reg CASE_fabric_v_f_wd_tasks_0_first__59_BITS_10_T_ETC___d167,
+      CASE_fabric_v_f_wd_tasks_1_first__98_BITS_10_T_ETC___d202;
+  wire [7 : 0] x__h13668,
+	       x__h14286,
+	       x__h21177,
+	       x__h21826,
+	       x__h22465,
+	       x__h23104,
+	       x__h26039,
+	       x__h26421;
+  wire [1 : 0] IF_fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_ETC___d507,
+	       IF_fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_ETC___d542,
+	       IF_fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_ETC___d577,
+	       IF_fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_ETC___d612,
+	       x1_avValue_rresp__h21155,
+	       x1_avValue_rresp__h21804,
+	       x1_avValue_rresp__h22443,
+	       x1_avValue_rresp__h23082;
   wire NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d141,
        NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d152,
-       NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d204,
-       NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d215,
-       NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d543,
-       NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d556,
-       NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d604,
-       NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d614,
-       NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d662,
-       NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d672,
+       NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d400,
+       NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d413,
+       NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d461,
+       NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d471,
        NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d72,
        NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d88,
        _dor1fabric_v_f_rd_mis_0$EN_deq,
        _dor1fabric_v_f_rd_mis_1$EN_deq,
        _dor1fabric_v_f_rd_mis_2$EN_deq,
        _dor1fabric_v_f_rd_mis_3$EN_deq,
-       fabric_v_f_wd_tasks_0_first__22_BITS_10_TO_8_2_ETC___d224,
-       fabric_v_f_wd_tasks_1_first__61_BITS_10_TO_8_6_ETC___d263,
-       fabric_v_f_wd_tasks_2_first__96_BITS_10_TO_8_9_ETC___d298,
-       fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692,
-       fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727,
-       fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762,
-       fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797,
-       fabric_v_rg_r_err_beat_count_0_14_EQ_fabric_v__ETC___d916,
-       fabric_v_rg_r_err_beat_count_1_32_EQ_fabric_v__ETC___d934,
-       fabric_v_rg_r_err_beat_count_2_50_EQ_fabric_v__ETC___d952,
-       fabric_v_rg_wd_beat_count_0_45_EQ_fabric_v_f_w_ETC___d253,
-       fabric_v_rg_wd_beat_count_1_80_EQ_fabric_v_f_w_ETC___d288,
-       fabric_v_rg_wd_beat_count_2_15_EQ_fabric_v_f_w_ETC___d323,
-       fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d502,
-       fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d506,
-       fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d540,
+       fabric_v_f_wd_tasks_0_first__59_BITS_10_TO_8_6_ETC___d161,
+       fabric_v_f_wd_tasks_1_first__98_BITS_10_TO_8_9_ETC___d200,
+       fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491,
+       fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526,
+       fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561,
+       fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596,
+       fabric_v_rg_r_err_beat_count_0_69_EQ_fabric_v__ETC___d671,
+       fabric_v_rg_r_err_beat_count_1_87_EQ_fabric_v__ETC___d689,
+       fabric_v_rg_wd_beat_count_0_82_EQ_fabric_v_f_w_ETC___d190,
+       fabric_v_rg_wd_beat_count_1_17_EQ_fabric_v_f_w_ETC___d225,
+       fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d359,
+       fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d363,
+       fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d397,
        fabric_xactors_from_masters_0_f_wr_addr_first__ETC___d22,
        fabric_xactors_from_masters_0_f_wr_addr_first__ETC___d28,
        fabric_xactors_from_masters_0_f_wr_addr_first__ETC___d69,
-       fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d569,
-       fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d573,
-       fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d601,
+       fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d426,
+       fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d430,
+       fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d458,
        fabric_xactors_from_masters_1_f_wr_addr_first__ETC___d105,
        fabric_xactors_from_masters_1_f_wr_addr_first__ETC___d109,
        fabric_xactors_from_masters_1_f_wr_addr_first__ETC___d138,
-       fabric_xactors_from_masters_2_f_rd_addr_first__ETC___d627,
-       fabric_xactors_from_masters_2_f_rd_addr_first__ETC___d631,
-       fabric_xactors_from_masters_2_f_rd_addr_first__ETC___d659,
-       fabric_xactors_from_masters_2_f_wr_addr_first__ETC___d168,
-       fabric_xactors_from_masters_2_f_wr_addr_first__ETC___d172,
-       fabric_xactors_from_masters_2_f_wr_addr_first__ETC___d201,
        soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d103,
-       soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d166,
        soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d19,
-       soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d500,
-       soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d567,
-       soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d625,
+       soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d357,
+       soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d424,
        soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d137,
-       soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d200,
-       soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d539,
-       soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d600,
-       soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d658,
+       soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d396,
+       soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d457,
        soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d67,
        soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d108,
-       soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d171,
        soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d26,
-       soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d505,
-       soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d572,
-       soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d630;
+       soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d362,
+       soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d429;
 
   // action method reset
   assign RDY_reset = !fabric_rg_reset ;
@@ -2791,70 +2373,6 @@ module mkLocal_Fabric(CLK,
   // action method v_from_masters_1_m_rready
   assign CAN_FIRE_v_from_masters_1_m_rready = 1'd1 ;
   assign WILL_FIRE_v_from_masters_1_m_rready = 1'd1 ;
-
-  // action method v_from_masters_2_m_awvalid
-  assign CAN_FIRE_v_from_masters_2_m_awvalid = 1'd1 ;
-  assign WILL_FIRE_v_from_masters_2_m_awvalid = 1'd1 ;
-
-  // value method v_from_masters_2_m_awready
-  assign v_from_masters_2_awready =
-	     fabric_xactors_from_masters_2_f_wr_addr$FULL_N ;
-
-  // action method v_from_masters_2_m_wvalid
-  assign CAN_FIRE_v_from_masters_2_m_wvalid = 1'd1 ;
-  assign WILL_FIRE_v_from_masters_2_m_wvalid = 1'd1 ;
-
-  // value method v_from_masters_2_m_wready
-  assign v_from_masters_2_wready =
-	     fabric_xactors_from_masters_2_f_wr_data$FULL_N ;
-
-  // value method v_from_masters_2_m_bvalid
-  assign v_from_masters_2_bvalid =
-	     fabric_xactors_from_masters_2_f_wr_resp$EMPTY_N ;
-
-  // value method v_from_masters_2_m_bid
-  assign v_from_masters_2_bid =
-	     fabric_xactors_from_masters_2_f_wr_resp$D_OUT[5:2] ;
-
-  // value method v_from_masters_2_m_bresp
-  assign v_from_masters_2_bresp =
-	     fabric_xactors_from_masters_2_f_wr_resp$D_OUT[1:0] ;
-
-  // action method v_from_masters_2_m_bready
-  assign CAN_FIRE_v_from_masters_2_m_bready = 1'd1 ;
-  assign WILL_FIRE_v_from_masters_2_m_bready = 1'd1 ;
-
-  // action method v_from_masters_2_m_arvalid
-  assign CAN_FIRE_v_from_masters_2_m_arvalid = 1'd1 ;
-  assign WILL_FIRE_v_from_masters_2_m_arvalid = 1'd1 ;
-
-  // value method v_from_masters_2_m_arready
-  assign v_from_masters_2_arready =
-	     fabric_xactors_from_masters_2_f_rd_addr$FULL_N ;
-
-  // value method v_from_masters_2_m_rvalid
-  assign v_from_masters_2_rvalid =
-	     fabric_xactors_from_masters_2_f_rd_data$EMPTY_N ;
-
-  // value method v_from_masters_2_m_rid
-  assign v_from_masters_2_rid =
-	     fabric_xactors_from_masters_2_f_rd_data$D_OUT[38:35] ;
-
-  // value method v_from_masters_2_m_rdata
-  assign v_from_masters_2_rdata =
-	     fabric_xactors_from_masters_2_f_rd_data$D_OUT[34:3] ;
-
-  // value method v_from_masters_2_m_rresp
-  assign v_from_masters_2_rresp =
-	     fabric_xactors_from_masters_2_f_rd_data$D_OUT[2:1] ;
-
-  // value method v_from_masters_2_m_rlast
-  assign v_from_masters_2_rlast =
-	     fabric_xactors_from_masters_2_f_rd_data$D_OUT[0] ;
-
-  // action method v_from_masters_2_m_rready
-  assign CAN_FIRE_v_from_masters_2_m_rready = 1'd1 ;
-  assign WILL_FIRE_v_from_masters_2_m_rready = 1'd1 ;
 
   // value method v_to_slaves_0_m_awvalid
   assign v_to_slaves_0_awvalid =
@@ -3396,20 +2914,6 @@ module mkLocal_Fabric(CLK,
 						       .FULL_N(),
 						       .EMPTY_N(fabric_v_f_rd_err_info_1$EMPTY_N));
 
-  // submodule fabric_v_f_rd_err_info_2
-  SizedFIFO #(.p1width(32'd12),
-	      .p2depth(32'd8),
-	      .p3cntr_width(32'd3),
-	      .guarded(1'd1)) fabric_v_f_rd_err_info_2(.RST(RST_N),
-						       .CLK(CLK),
-						       .D_IN(fabric_v_f_rd_err_info_2$D_IN),
-						       .ENQ(fabric_v_f_rd_err_info_2$ENQ),
-						       .DEQ(fabric_v_f_rd_err_info_2$DEQ),
-						       .CLR(fabric_v_f_rd_err_info_2$CLR),
-						       .D_OUT(fabric_v_f_rd_err_info_2$D_OUT),
-						       .FULL_N(),
-						       .EMPTY_N(fabric_v_f_rd_err_info_2$EMPTY_N));
-
   // submodule fabric_v_f_rd_mis_0
   SizedFIFO #(.p1width(32'd10),
 	      .p2depth(32'd8),
@@ -3494,20 +2998,6 @@ module mkLocal_Fabric(CLK,
 						  .FULL_N(fabric_v_f_rd_sjs_1$FULL_N),
 						  .EMPTY_N(fabric_v_f_rd_sjs_1$EMPTY_N));
 
-  // submodule fabric_v_f_rd_sjs_2
-  SizedFIFO #(.p1width(32'd3),
-	      .p2depth(32'd8),
-	      .p3cntr_width(32'd3),
-	      .guarded(1'd1)) fabric_v_f_rd_sjs_2(.RST(RST_N),
-						  .CLK(CLK),
-						  .D_IN(fabric_v_f_rd_sjs_2$D_IN),
-						  .ENQ(fabric_v_f_rd_sjs_2$ENQ),
-						  .DEQ(fabric_v_f_rd_sjs_2$DEQ),
-						  .CLR(fabric_v_f_rd_sjs_2$CLR),
-						  .D_OUT(fabric_v_f_rd_sjs_2$D_OUT),
-						  .FULL_N(fabric_v_f_rd_sjs_2$FULL_N),
-						  .EMPTY_N(fabric_v_f_rd_sjs_2$EMPTY_N));
-
   // submodule fabric_v_f_wd_tasks_0
   FIFO2 #(.width(32'd11), .guarded(1'd1)) fabric_v_f_wd_tasks_0(.RST(RST_N),
 								.CLK(CLK),
@@ -3529,17 +3019,6 @@ module mkLocal_Fabric(CLK,
 								.D_OUT(fabric_v_f_wd_tasks_1$D_OUT),
 								.FULL_N(fabric_v_f_wd_tasks_1$FULL_N),
 								.EMPTY_N(fabric_v_f_wd_tasks_1$EMPTY_N));
-
-  // submodule fabric_v_f_wd_tasks_2
-  FIFO2 #(.width(32'd11), .guarded(1'd1)) fabric_v_f_wd_tasks_2(.RST(RST_N),
-								.CLK(CLK),
-								.D_IN(fabric_v_f_wd_tasks_2$D_IN),
-								.ENQ(fabric_v_f_wd_tasks_2$ENQ),
-								.DEQ(fabric_v_f_wd_tasks_2$DEQ),
-								.CLR(fabric_v_f_wd_tasks_2$CLR),
-								.D_OUT(fabric_v_f_wd_tasks_2$D_OUT),
-								.FULL_N(fabric_v_f_wd_tasks_2$FULL_N),
-								.EMPTY_N(fabric_v_f_wd_tasks_2$EMPTY_N));
 
   // submodule fabric_v_f_wr_err_info_0
   SizedFIFO #(.p1width(32'd4),
@@ -3568,20 +3047,6 @@ module mkLocal_Fabric(CLK,
 						       .D_OUT(fabric_v_f_wr_err_info_1$D_OUT),
 						       .FULL_N(),
 						       .EMPTY_N(fabric_v_f_wr_err_info_1$EMPTY_N));
-
-  // submodule fabric_v_f_wr_err_info_2
-  SizedFIFO #(.p1width(32'd4),
-	      .p2depth(32'd8),
-	      .p3cntr_width(32'd3),
-	      .guarded(1'd1)) fabric_v_f_wr_err_info_2(.RST(RST_N),
-						       .CLK(CLK),
-						       .D_IN(fabric_v_f_wr_err_info_2$D_IN),
-						       .ENQ(fabric_v_f_wr_err_info_2$ENQ),
-						       .DEQ(fabric_v_f_wr_err_info_2$DEQ),
-						       .CLR(fabric_v_f_wr_err_info_2$CLR),
-						       .D_OUT(fabric_v_f_wr_err_info_2$D_OUT),
-						       .FULL_N(),
-						       .EMPTY_N(fabric_v_f_wr_err_info_2$EMPTY_N));
 
   // submodule fabric_v_f_wr_mis_0
   SizedFIFO #(.p1width(32'd2),
@@ -3666,20 +3131,6 @@ module mkLocal_Fabric(CLK,
 						  .D_OUT(fabric_v_f_wr_sjs_1$D_OUT),
 						  .FULL_N(fabric_v_f_wr_sjs_1$FULL_N),
 						  .EMPTY_N(fabric_v_f_wr_sjs_1$EMPTY_N));
-
-  // submodule fabric_v_f_wr_sjs_2
-  SizedFIFO #(.p1width(32'd3),
-	      .p2depth(32'd8),
-	      .p3cntr_width(32'd3),
-	      .guarded(1'd1)) fabric_v_f_wr_sjs_2(.RST(RST_N),
-						  .CLK(CLK),
-						  .D_IN(fabric_v_f_wr_sjs_2$D_IN),
-						  .ENQ(fabric_v_f_wr_sjs_2$ENQ),
-						  .DEQ(fabric_v_f_wr_sjs_2$DEQ),
-						  .CLR(fabric_v_f_wr_sjs_2$CLR),
-						  .D_OUT(fabric_v_f_wr_sjs_2$D_OUT),
-						  .FULL_N(fabric_v_f_wr_sjs_2$FULL_N),
-						  .EMPTY_N(fabric_v_f_wr_sjs_2$EMPTY_N));
 
   // submodule fabric_xactors_from_masters_0_f_rd_addr
   FIFO2 #(.width(32'd65),
@@ -3800,66 +3251,6 @@ module mkLocal_Fabric(CLK,
 								  .D_OUT(fabric_xactors_from_masters_1_f_wr_resp$D_OUT),
 								  .FULL_N(fabric_xactors_from_masters_1_f_wr_resp$FULL_N),
 								  .EMPTY_N(fabric_xactors_from_masters_1_f_wr_resp$EMPTY_N));
-
-  // submodule fabric_xactors_from_masters_2_f_rd_addr
-  FIFO2 #(.width(32'd65),
-	  .guarded(1'd1)) fabric_xactors_from_masters_2_f_rd_addr(.RST(RST_N),
-								  .CLK(CLK),
-								  .D_IN(fabric_xactors_from_masters_2_f_rd_addr$D_IN),
-								  .ENQ(fabric_xactors_from_masters_2_f_rd_addr$ENQ),
-								  .DEQ(fabric_xactors_from_masters_2_f_rd_addr$DEQ),
-								  .CLR(fabric_xactors_from_masters_2_f_rd_addr$CLR),
-								  .D_OUT(fabric_xactors_from_masters_2_f_rd_addr$D_OUT),
-								  .FULL_N(fabric_xactors_from_masters_2_f_rd_addr$FULL_N),
-								  .EMPTY_N(fabric_xactors_from_masters_2_f_rd_addr$EMPTY_N));
-
-  // submodule fabric_xactors_from_masters_2_f_rd_data
-  FIFO2 #(.width(32'd39),
-	  .guarded(1'd1)) fabric_xactors_from_masters_2_f_rd_data(.RST(RST_N),
-								  .CLK(CLK),
-								  .D_IN(fabric_xactors_from_masters_2_f_rd_data$D_IN),
-								  .ENQ(fabric_xactors_from_masters_2_f_rd_data$ENQ),
-								  .DEQ(fabric_xactors_from_masters_2_f_rd_data$DEQ),
-								  .CLR(fabric_xactors_from_masters_2_f_rd_data$CLR),
-								  .D_OUT(fabric_xactors_from_masters_2_f_rd_data$D_OUT),
-								  .FULL_N(fabric_xactors_from_masters_2_f_rd_data$FULL_N),
-								  .EMPTY_N(fabric_xactors_from_masters_2_f_rd_data$EMPTY_N));
-
-  // submodule fabric_xactors_from_masters_2_f_wr_addr
-  FIFO2 #(.width(32'd65),
-	  .guarded(1'd1)) fabric_xactors_from_masters_2_f_wr_addr(.RST(RST_N),
-								  .CLK(CLK),
-								  .D_IN(fabric_xactors_from_masters_2_f_wr_addr$D_IN),
-								  .ENQ(fabric_xactors_from_masters_2_f_wr_addr$ENQ),
-								  .DEQ(fabric_xactors_from_masters_2_f_wr_addr$DEQ),
-								  .CLR(fabric_xactors_from_masters_2_f_wr_addr$CLR),
-								  .D_OUT(fabric_xactors_from_masters_2_f_wr_addr$D_OUT),
-								  .FULL_N(fabric_xactors_from_masters_2_f_wr_addr$FULL_N),
-								  .EMPTY_N(fabric_xactors_from_masters_2_f_wr_addr$EMPTY_N));
-
-  // submodule fabric_xactors_from_masters_2_f_wr_data
-  FIFO2 #(.width(32'd37),
-	  .guarded(1'd1)) fabric_xactors_from_masters_2_f_wr_data(.RST(RST_N),
-								  .CLK(CLK),
-								  .D_IN(fabric_xactors_from_masters_2_f_wr_data$D_IN),
-								  .ENQ(fabric_xactors_from_masters_2_f_wr_data$ENQ),
-								  .DEQ(fabric_xactors_from_masters_2_f_wr_data$DEQ),
-								  .CLR(fabric_xactors_from_masters_2_f_wr_data$CLR),
-								  .D_OUT(fabric_xactors_from_masters_2_f_wr_data$D_OUT),
-								  .FULL_N(fabric_xactors_from_masters_2_f_wr_data$FULL_N),
-								  .EMPTY_N(fabric_xactors_from_masters_2_f_wr_data$EMPTY_N));
-
-  // submodule fabric_xactors_from_masters_2_f_wr_resp
-  FIFO2 #(.width(32'd6),
-	  .guarded(1'd1)) fabric_xactors_from_masters_2_f_wr_resp(.RST(RST_N),
-								  .CLK(CLK),
-								  .D_IN(fabric_xactors_from_masters_2_f_wr_resp$D_IN),
-								  .ENQ(fabric_xactors_from_masters_2_f_wr_resp$ENQ),
-								  .DEQ(fabric_xactors_from_masters_2_f_wr_resp$DEQ),
-								  .CLR(fabric_xactors_from_masters_2_f_wr_resp$CLR),
-								  .D_OUT(fabric_xactors_from_masters_2_f_wr_resp$D_OUT),
-								  .FULL_N(fabric_xactors_from_masters_2_f_wr_resp$FULL_N),
-								  .EMPTY_N(fabric_xactors_from_masters_2_f_wr_resp$EMPTY_N));
 
   // submodule fabric_xactors_to_slaves_0_f_rd_addr
   FIFO2 #(.width(32'd65),
@@ -4246,68 +3637,12 @@ module mkLocal_Fabric(CLK,
 	     CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_7 &&
 	     !WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_3 ;
 
-  // rule RL_fabric_rl_wr_xaction_master_to_slave_8
-  assign CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 =
-	     fabric_xactors_to_slaves_0_f_wr_addr$FULL_N &&
-	     fabric_v_f_wr_mis_0$FULL_N &&
-	     fabric_xactors_from_masters_2_f_wr_addr$EMPTY_N &&
-	     fabric_v_f_wd_tasks_2$FULL_N &&
-	     fabric_v_f_wr_sjs_2$FULL_N &&
-	     (!soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d166 ||
-	      !fabric_xactors_from_masters_2_f_wr_addr_first__ETC___d168) &&
-	     soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d171 &&
-	     fabric_xactors_from_masters_2_f_wr_addr_first__ETC___d172 ;
-  assign WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 =
-	     CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 &&
-	     !WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_4 &&
-	     !WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave ;
-
-  // rule RL_fabric_rl_wr_xaction_master_to_slave_9
-  assign CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 =
-	     fabric_xactors_to_slaves_1_f_wr_addr$FULL_N &&
-	     fabric_v_f_wr_mis_1$FULL_N &&
-	     fabric_xactors_from_masters_2_f_wr_addr$EMPTY_N &&
-	     fabric_v_f_wd_tasks_2$FULL_N &&
-	     fabric_v_f_wr_sjs_2$FULL_N &&
-	     soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d166 &&
-	     fabric_xactors_from_masters_2_f_wr_addr_first__ETC___d168 ;
-  assign WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 =
-	     CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 &&
-	     !WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_5 &&
-	     !WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_1 ;
-
-  // rule RL_fabric_rl_wr_xaction_master_to_slave_10
-  assign CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 =
-	     fabric_xactors_to_slaves_2_f_wr_addr$FULL_N &&
-	     fabric_v_f_wr_mis_2$FULL_N &&
-	     fabric_xactors_from_masters_2_f_wr_addr$EMPTY_N &&
-	     fabric_v_f_wd_tasks_2$FULL_N &&
-	     fabric_v_f_wr_sjs_2$FULL_N &&
-	     NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d204 ;
-  assign WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 =
-	     CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 &&
-	     !WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_6 &&
-	     !WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_2 ;
-
-  // rule RL_fabric_rl_wr_xaction_master_to_slave_11
-  assign CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 =
-	     fabric_xactors_to_slaves_3_f_wr_addr$FULL_N &&
-	     fabric_v_f_wr_mis_3$FULL_N &&
-	     fabric_xactors_from_masters_2_f_wr_addr$EMPTY_N &&
-	     fabric_v_f_wd_tasks_2$FULL_N &&
-	     fabric_v_f_wr_sjs_2$FULL_N &&
-	     NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d215 ;
-  assign WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 =
-	     CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 &&
-	     !WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_7 &&
-	     !WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_3 ;
-
   // rule RL_fabric_rl_wr_xaction_master_to_slave_data
   assign CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data =
 	     fabric_xactors_from_masters_0_f_wr_data$EMPTY_N &&
 	     fabric_v_f_wd_tasks_0$EMPTY_N &&
-	     (!fabric_v_f_wd_tasks_0_first__22_BITS_10_TO_8_2_ETC___d224 ||
-	      CASE_fabric_v_f_wd_tasks_0_first__22_BITS_10_T_ETC___d230) ;
+	     (!fabric_v_f_wd_tasks_0_first__59_BITS_10_TO_8_6_ETC___d161 ||
+	      CASE_fabric_v_f_wd_tasks_0_first__59_BITS_10_T_ETC___d167) ;
   assign WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data =
 	     CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data ;
 
@@ -4315,21 +3650,10 @@ module mkLocal_Fabric(CLK,
   assign CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 =
 	     fabric_xactors_from_masters_1_f_wr_data$EMPTY_N &&
 	     fabric_v_f_wd_tasks_1$EMPTY_N &&
-	     (!fabric_v_f_wd_tasks_1_first__61_BITS_10_TO_8_6_ETC___d263 ||
-	      CASE_fabric_v_f_wd_tasks_1_first__61_BITS_10_T_ETC___d265) ;
+	     (!fabric_v_f_wd_tasks_1_first__98_BITS_10_TO_8_9_ETC___d200 ||
+	      CASE_fabric_v_f_wd_tasks_1_first__98_BITS_10_T_ETC___d202) ;
   assign WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 =
 	     CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 &&
-	     !WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data ;
-
-  // rule RL_fabric_rl_wr_xaction_master_to_slave_data_2
-  assign CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 =
-	     fabric_xactors_from_masters_2_f_wr_data$EMPTY_N &&
-	     fabric_v_f_wd_tasks_2$EMPTY_N &&
-	     (!fabric_v_f_wd_tasks_2_first__96_BITS_10_TO_8_9_ETC___d298 ||
-	      CASE_fabric_v_f_wd_tasks_2_first__96_BITS_10_T_ETC___d300) ;
-  assign WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 =
-	     CAN_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	     !WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 &&
 	     !WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data ;
 
   // rule RL_fabric_rl_wr_resp_slave_to_master
@@ -4419,50 +3743,6 @@ module mkLocal_Fabric(CLK,
   assign WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_7 =
 	     CAN_FIRE_RL_fabric_rl_wr_resp_slave_to_master_7 ;
 
-  // rule RL_fabric_rl_wr_resp_slave_to_master_8
-  assign CAN_FIRE_RL_fabric_rl_wr_resp_slave_to_master_8 =
-	     fabric_v_f_wr_mis_0$EMPTY_N &&
-	     fabric_xactors_to_slaves_0_f_wr_resp$EMPTY_N &&
-	     fabric_v_f_wr_sjs_2$EMPTY_N &&
-	     fabric_xactors_from_masters_2_f_wr_resp$FULL_N &&
-	     fabric_v_f_wr_mis_0$D_OUT == 2'd2 &&
-	     fabric_v_f_wr_sjs_2$D_OUT == 3'd0 ;
-  assign WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_8 =
-	     CAN_FIRE_RL_fabric_rl_wr_resp_slave_to_master_8 ;
-
-  // rule RL_fabric_rl_wr_resp_slave_to_master_9
-  assign CAN_FIRE_RL_fabric_rl_wr_resp_slave_to_master_9 =
-	     fabric_v_f_wr_mis_1$EMPTY_N &&
-	     fabric_xactors_to_slaves_1_f_wr_resp$EMPTY_N &&
-	     fabric_v_f_wr_sjs_2$EMPTY_N &&
-	     fabric_xactors_from_masters_2_f_wr_resp$FULL_N &&
-	     fabric_v_f_wr_mis_1$D_OUT == 2'd2 &&
-	     fabric_v_f_wr_sjs_2$D_OUT == 3'd1 ;
-  assign WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_9 =
-	     CAN_FIRE_RL_fabric_rl_wr_resp_slave_to_master_9 ;
-
-  // rule RL_fabric_rl_wr_resp_slave_to_master_10
-  assign CAN_FIRE_RL_fabric_rl_wr_resp_slave_to_master_10 =
-	     fabric_v_f_wr_mis_2$EMPTY_N &&
-	     fabric_xactors_to_slaves_2_f_wr_resp$EMPTY_N &&
-	     fabric_v_f_wr_sjs_2$EMPTY_N &&
-	     fabric_xactors_from_masters_2_f_wr_resp$FULL_N &&
-	     fabric_v_f_wr_mis_2$D_OUT == 2'd2 &&
-	     fabric_v_f_wr_sjs_2$D_OUT == 3'd2 ;
-  assign WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_10 =
-	     CAN_FIRE_RL_fabric_rl_wr_resp_slave_to_master_10 ;
-
-  // rule RL_fabric_rl_wr_resp_slave_to_master_11
-  assign CAN_FIRE_RL_fabric_rl_wr_resp_slave_to_master_11 =
-	     fabric_v_f_wr_mis_3$EMPTY_N &&
-	     fabric_xactors_to_slaves_3_f_wr_resp$EMPTY_N &&
-	     fabric_v_f_wr_sjs_2$EMPTY_N &&
-	     fabric_xactors_from_masters_2_f_wr_resp$FULL_N &&
-	     fabric_v_f_wr_mis_3$D_OUT == 2'd2 &&
-	     fabric_v_f_wr_sjs_2$D_OUT == 3'd3 ;
-  assign WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_11 =
-	     CAN_FIRE_RL_fabric_rl_wr_resp_slave_to_master_11 ;
-
   // rule RL_fabric_rl_wr_resp_err_to_master
   assign CAN_FIRE_RL_fabric_rl_wr_resp_err_to_master =
 	     fabric_v_f_wr_sjs_0$EMPTY_N &&
@@ -4481,25 +3761,16 @@ module mkLocal_Fabric(CLK,
   assign WILL_FIRE_RL_fabric_rl_wr_resp_err_to_master_1 =
 	     CAN_FIRE_RL_fabric_rl_wr_resp_err_to_master_1 ;
 
-  // rule RL_fabric_rl_wr_resp_err_to_master_2
-  assign CAN_FIRE_RL_fabric_rl_wr_resp_err_to_master_2 =
-	     fabric_v_f_wr_sjs_2$EMPTY_N &&
-	     fabric_xactors_from_masters_2_f_wr_resp$FULL_N &&
-	     fabric_v_f_wr_err_info_2$EMPTY_N &&
-	     fabric_v_f_wr_sjs_2$D_OUT == 3'd4 ;
-  assign WILL_FIRE_RL_fabric_rl_wr_resp_err_to_master_2 =
-	     CAN_FIRE_RL_fabric_rl_wr_resp_err_to_master_2 ;
-
   // rule RL_fabric_rl_rd_xaction_master_to_slave
   assign CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave =
 	     fabric_xactors_from_masters_0_f_rd_addr$EMPTY_N &&
 	     fabric_xactors_to_slaves_0_f_rd_addr$FULL_N &&
 	     fabric_v_f_rd_mis_0$FULL_N &&
 	     fabric_v_f_rd_sjs_0$FULL_N &&
-	     (!soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d500 ||
-	      !fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d502) &&
-	     soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d505 &&
-	     fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d506 ;
+	     (!soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d357 ||
+	      !fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d359) &&
+	     soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d362 &&
+	     fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d363 ;
   assign WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave =
 	     CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave ;
 
@@ -4509,8 +3780,8 @@ module mkLocal_Fabric(CLK,
 	     fabric_v_f_rd_sjs_0$FULL_N &&
 	     fabric_xactors_to_slaves_1_f_rd_addr$FULL_N &&
 	     fabric_v_f_rd_mis_1$FULL_N &&
-	     soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d500 &&
-	     fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d502 ;
+	     soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d357 &&
+	     fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d359 ;
   assign WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_1 =
 	     CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_1 ;
 
@@ -4520,7 +3791,7 @@ module mkLocal_Fabric(CLK,
 	     fabric_v_f_rd_sjs_0$FULL_N &&
 	     fabric_xactors_to_slaves_2_f_rd_addr$FULL_N &&
 	     fabric_v_f_rd_mis_2$FULL_N &&
-	     NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d543 ;
+	     NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d400 ;
   assign WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_2 =
 	     CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_2 ;
 
@@ -4530,7 +3801,7 @@ module mkLocal_Fabric(CLK,
 	     fabric_v_f_rd_sjs_0$FULL_N &&
 	     fabric_xactors_to_slaves_3_f_rd_addr$FULL_N &&
 	     fabric_v_f_rd_mis_3$FULL_N &&
-	     NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d556 ;
+	     NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d413 ;
   assign WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_3 =
 	     CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_3 ;
 
@@ -4540,10 +3811,10 @@ module mkLocal_Fabric(CLK,
 	     fabric_v_f_rd_mis_0$FULL_N &&
 	     fabric_xactors_from_masters_1_f_rd_addr$EMPTY_N &&
 	     fabric_v_f_rd_sjs_1$FULL_N &&
-	     (!soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d567 ||
-	      !fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d569) &&
-	     soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d572 &&
-	     fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d573 ;
+	     (!soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d424 ||
+	      !fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d426) &&
+	     soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d429 &&
+	     fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d430 ;
   assign WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_4 =
 	     CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_4 &&
 	     !WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave ;
@@ -4554,8 +3825,8 @@ module mkLocal_Fabric(CLK,
 	     fabric_v_f_rd_mis_1$FULL_N &&
 	     fabric_xactors_from_masters_1_f_rd_addr$EMPTY_N &&
 	     fabric_v_f_rd_sjs_1$FULL_N &&
-	     soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d567 &&
-	     fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d569 ;
+	     soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d424 &&
+	     fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d426 ;
   assign WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_5 =
 	     CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_5 &&
 	     !WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_1 ;
@@ -4566,7 +3837,7 @@ module mkLocal_Fabric(CLK,
 	     fabric_v_f_rd_mis_2$FULL_N &&
 	     fabric_xactors_from_masters_1_f_rd_addr$EMPTY_N &&
 	     fabric_v_f_rd_sjs_1$FULL_N &&
-	     NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d604 ;
+	     NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d461 ;
   assign WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_6 =
 	     CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_6 &&
 	     !WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_2 ;
@@ -4577,61 +3848,9 @@ module mkLocal_Fabric(CLK,
 	     fabric_v_f_rd_mis_3$FULL_N &&
 	     fabric_xactors_from_masters_1_f_rd_addr$EMPTY_N &&
 	     fabric_v_f_rd_sjs_1$FULL_N &&
-	     NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d614 ;
+	     NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d471 ;
   assign WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_7 =
 	     CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_7 &&
-	     !WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_3 ;
-
-  // rule RL_fabric_rl_rd_xaction_master_to_slave_8
-  assign CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 =
-	     fabric_xactors_to_slaves_0_f_rd_addr$FULL_N &&
-	     fabric_v_f_rd_mis_0$FULL_N &&
-	     fabric_xactors_from_masters_2_f_rd_addr$EMPTY_N &&
-	     fabric_v_f_rd_sjs_2$FULL_N &&
-	     (!soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d625 ||
-	      !fabric_xactors_from_masters_2_f_rd_addr_first__ETC___d627) &&
-	     soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d630 &&
-	     fabric_xactors_from_masters_2_f_rd_addr_first__ETC___d631 ;
-  assign WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 =
-	     CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 &&
-	     !WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_4 &&
-	     !WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave ;
-
-  // rule RL_fabric_rl_rd_xaction_master_to_slave_9
-  assign CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 =
-	     fabric_xactors_to_slaves_1_f_rd_addr$FULL_N &&
-	     fabric_v_f_rd_mis_1$FULL_N &&
-	     fabric_xactors_from_masters_2_f_rd_addr$EMPTY_N &&
-	     fabric_v_f_rd_sjs_2$FULL_N &&
-	     soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d625 &&
-	     fabric_xactors_from_masters_2_f_rd_addr_first__ETC___d627 ;
-  assign WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 =
-	     CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 &&
-	     !WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_5 &&
-	     !WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_1 ;
-
-  // rule RL_fabric_rl_rd_xaction_master_to_slave_10
-  assign CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 =
-	     fabric_xactors_to_slaves_2_f_rd_addr$FULL_N &&
-	     fabric_v_f_rd_mis_2$FULL_N &&
-	     fabric_xactors_from_masters_2_f_rd_addr$EMPTY_N &&
-	     fabric_v_f_rd_sjs_2$FULL_N &&
-	     NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d662 ;
-  assign WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 =
-	     CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 &&
-	     !WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_6 &&
-	     !WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_2 ;
-
-  // rule RL_fabric_rl_rd_xaction_master_to_slave_11
-  assign CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 =
-	     fabric_xactors_to_slaves_3_f_rd_addr$FULL_N &&
-	     fabric_v_f_rd_mis_3$FULL_N &&
-	     fabric_xactors_from_masters_2_f_rd_addr$EMPTY_N &&
-	     fabric_v_f_rd_sjs_2$FULL_N &&
-	     NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d672 ;
-  assign WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 =
-	     CAN_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 &&
-	     !WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_7 &&
 	     !WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_3 ;
 
   // rule RL_fabric_rl_rd_resp_slave_to_master
@@ -4722,50 +3941,6 @@ module mkLocal_Fabric(CLK,
   assign WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7 =
 	     CAN_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7 ;
 
-  // rule RL_fabric_rl_rd_resp_slave_to_master_8
-  assign CAN_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 =
-	     fabric_v_f_rd_mis_0$EMPTY_N &&
-	     fabric_xactors_to_slaves_0_f_rd_data$EMPTY_N &&
-	     fabric_xactors_from_masters_2_f_rd_data$FULL_N &&
-	     fabric_v_f_rd_sjs_2$EMPTY_N &&
-	     fabric_v_f_rd_mis_0$D_OUT[9:8] == 2'd2 &&
-	     fabric_v_f_rd_sjs_2$D_OUT == 3'd0 ;
-  assign WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 =
-	     CAN_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 ;
-
-  // rule RL_fabric_rl_rd_resp_slave_to_master_9
-  assign CAN_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 =
-	     fabric_v_f_rd_mis_1$EMPTY_N &&
-	     fabric_xactors_to_slaves_1_f_rd_data$EMPTY_N &&
-	     fabric_xactors_from_masters_2_f_rd_data$FULL_N &&
-	     fabric_v_f_rd_sjs_2$EMPTY_N &&
-	     fabric_v_f_rd_mis_1$D_OUT[9:8] == 2'd2 &&
-	     fabric_v_f_rd_sjs_2$D_OUT == 3'd1 ;
-  assign WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 =
-	     CAN_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 ;
-
-  // rule RL_fabric_rl_rd_resp_slave_to_master_10
-  assign CAN_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 =
-	     fabric_v_f_rd_mis_2$EMPTY_N &&
-	     fabric_xactors_to_slaves_2_f_rd_data$EMPTY_N &&
-	     fabric_xactors_from_masters_2_f_rd_data$FULL_N &&
-	     fabric_v_f_rd_sjs_2$EMPTY_N &&
-	     fabric_v_f_rd_mis_2$D_OUT[9:8] == 2'd2 &&
-	     fabric_v_f_rd_sjs_2$D_OUT == 3'd2 ;
-  assign WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 =
-	     CAN_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 ;
-
-  // rule RL_fabric_rl_rd_resp_slave_to_master_11
-  assign CAN_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 =
-	     fabric_v_f_rd_mis_3$EMPTY_N &&
-	     fabric_xactors_to_slaves_3_f_rd_data$EMPTY_N &&
-	     fabric_xactors_from_masters_2_f_rd_data$FULL_N &&
-	     fabric_v_f_rd_sjs_2$EMPTY_N &&
-	     fabric_v_f_rd_mis_3$D_OUT[9:8] == 2'd2 &&
-	     fabric_v_f_rd_sjs_2$D_OUT == 3'd3 ;
-  assign WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 =
-	     CAN_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 ;
-
   // rule RL_fabric_rl_rd_resp_err_to_master
   assign CAN_FIRE_RL_fabric_rl_rd_resp_err_to_master =
 	     fabric_v_f_rd_sjs_0$EMPTY_N &&
@@ -4784,15 +3959,6 @@ module mkLocal_Fabric(CLK,
   assign WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_1 =
 	     CAN_FIRE_RL_fabric_rl_rd_resp_err_to_master_1 ;
 
-  // rule RL_fabric_rl_rd_resp_err_to_master_2
-  assign CAN_FIRE_RL_fabric_rl_rd_resp_err_to_master_2 =
-	     fabric_v_f_rd_sjs_2$EMPTY_N &&
-	     fabric_xactors_from_masters_2_f_rd_data$FULL_N &&
-	     fabric_v_f_rd_err_info_2$EMPTY_N &&
-	     fabric_v_f_rd_sjs_2$D_OUT == 3'd4 ;
-  assign WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_2 =
-	     CAN_FIRE_RL_fabric_rl_rd_resp_err_to_master_2 ;
-
   // rule RL_fabric_rl_reset
   assign CAN_FIRE_RL_fabric_rl_reset = fabric_rg_reset ;
   assign WILL_FIRE_RL_fabric_rl_reset = fabric_rg_reset ;
@@ -4801,57 +3967,23 @@ module mkLocal_Fabric(CLK,
   assign MUX_fabric_xactors_to_slaves_0_f_wr_data$enq_1__SEL_1 =
 	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data &&
 	     fabric_v_f_wd_tasks_0$D_OUT[10:8] == 3'd0 &&
-	     fabric_v_f_wd_tasks_0_first__22_BITS_10_TO_8_2_ETC___d224 ;
-  assign MUX_fabric_xactors_to_slaves_0_f_wr_data$enq_1__SEL_2 =
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 &&
-	     fabric_v_f_wd_tasks_1$D_OUT[10:8] == 3'd0 &&
-	     fabric_v_f_wd_tasks_1_first__61_BITS_10_TO_8_6_ETC___d263 ;
-  assign MUX_fabric_xactors_to_slaves_0_f_wr_data$enq_1__SEL_3 =
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	     fabric_v_f_wd_tasks_2$D_OUT[10:8] == 3'd0 &&
-	     fabric_v_f_wd_tasks_2_first__96_BITS_10_TO_8_9_ETC___d298 ;
+	     fabric_v_f_wd_tasks_0_first__59_BITS_10_TO_8_6_ETC___d161 ;
   assign MUX_fabric_xactors_to_slaves_1_f_wr_data$enq_1__SEL_1 =
 	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data &&
 	     fabric_v_f_wd_tasks_0$D_OUT[10:8] == 3'd1 &&
-	     fabric_v_f_wd_tasks_0_first__22_BITS_10_TO_8_2_ETC___d224 ;
-  assign MUX_fabric_xactors_to_slaves_1_f_wr_data$enq_1__SEL_2 =
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 &&
-	     fabric_v_f_wd_tasks_1$D_OUT[10:8] == 3'd1 &&
-	     fabric_v_f_wd_tasks_1_first__61_BITS_10_TO_8_6_ETC___d263 ;
-  assign MUX_fabric_xactors_to_slaves_1_f_wr_data$enq_1__SEL_3 =
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	     fabric_v_f_wd_tasks_2$D_OUT[10:8] == 3'd1 &&
-	     fabric_v_f_wd_tasks_2_first__96_BITS_10_TO_8_9_ETC___d298 ;
+	     fabric_v_f_wd_tasks_0_first__59_BITS_10_TO_8_6_ETC___d161 ;
   assign MUX_fabric_xactors_to_slaves_2_f_wr_data$enq_1__SEL_1 =
 	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data &&
 	     fabric_v_f_wd_tasks_0$D_OUT[10:8] == 3'd2 &&
-	     fabric_v_f_wd_tasks_0_first__22_BITS_10_TO_8_2_ETC___d224 ;
-  assign MUX_fabric_xactors_to_slaves_2_f_wr_data$enq_1__SEL_2 =
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 &&
-	     fabric_v_f_wd_tasks_1$D_OUT[10:8] == 3'd2 &&
-	     fabric_v_f_wd_tasks_1_first__61_BITS_10_TO_8_6_ETC___d263 ;
-  assign MUX_fabric_xactors_to_slaves_2_f_wr_data$enq_1__SEL_3 =
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	     fabric_v_f_wd_tasks_2$D_OUT[10:8] == 3'd2 &&
-	     fabric_v_f_wd_tasks_2_first__96_BITS_10_TO_8_9_ETC___d298 ;
+	     fabric_v_f_wd_tasks_0_first__59_BITS_10_TO_8_6_ETC___d161 ;
   assign MUX_fabric_xactors_to_slaves_3_f_wr_data$enq_1__SEL_1 =
 	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data &&
 	     fabric_v_f_wd_tasks_0$D_OUT[10:8] == 3'd3 &&
-	     fabric_v_f_wd_tasks_0_first__22_BITS_10_TO_8_2_ETC___d224 ;
-  assign MUX_fabric_xactors_to_slaves_3_f_wr_data$enq_1__SEL_2 =
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 &&
-	     fabric_v_f_wd_tasks_1$D_OUT[10:8] == 3'd3 &&
-	     fabric_v_f_wd_tasks_1_first__61_BITS_10_TO_8_6_ETC___d263 ;
-  assign MUX_fabric_xactors_to_slaves_3_f_wr_data$enq_1__SEL_3 =
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	     fabric_v_f_wd_tasks_2$D_OUT[10:8] == 3'd3 &&
-	     fabric_v_f_wd_tasks_2_first__96_BITS_10_TO_8_9_ETC___d298 ;
+	     fabric_v_f_wd_tasks_0_first__59_BITS_10_TO_8_6_ETC___d161 ;
   assign MUX_fabric_v_f_rd_mis_0$enq_1__VAL_1 =
 	     { 2'd0, fabric_xactors_from_masters_0_f_rd_addr$D_OUT[28:21] } ;
   assign MUX_fabric_v_f_rd_mis_0$enq_1__VAL_2 =
 	     { 2'd1, fabric_xactors_from_masters_1_f_rd_addr$D_OUT[28:21] } ;
-  assign MUX_fabric_v_f_rd_mis_0$enq_1__VAL_3 =
-	     { 2'd2, fabric_xactors_from_masters_2_f_rd_addr$D_OUT[28:21] } ;
   assign MUX_fabric_v_f_wd_tasks_0$enq_1__VAL_1 =
 	     { 3'd0, fabric_xactors_from_masters_0_f_wr_addr$D_OUT[28:21] } ;
   assign MUX_fabric_v_f_wd_tasks_0$enq_1__VAL_2 =
@@ -4868,76 +4000,58 @@ module mkLocal_Fabric(CLK,
 	     { 3'd2, fabric_xactors_from_masters_1_f_wr_addr$D_OUT[28:21] } ;
   assign MUX_fabric_v_f_wd_tasks_1$enq_1__VAL_4 =
 	     { 3'd3, fabric_xactors_from_masters_1_f_wr_addr$D_OUT[28:21] } ;
-  assign MUX_fabric_v_f_wd_tasks_2$enq_1__VAL_1 =
-	     { 3'd0, fabric_xactors_from_masters_2_f_wr_addr$D_OUT[28:21] } ;
-  assign MUX_fabric_v_f_wd_tasks_2$enq_1__VAL_2 =
-	     { 3'd1, fabric_xactors_from_masters_2_f_wr_addr$D_OUT[28:21] } ;
-  assign MUX_fabric_v_f_wd_tasks_2$enq_1__VAL_3 =
-	     { 3'd2, fabric_xactors_from_masters_2_f_wr_addr$D_OUT[28:21] } ;
-  assign MUX_fabric_v_f_wd_tasks_2$enq_1__VAL_4 =
-	     { 3'd3, fabric_xactors_from_masters_2_f_wr_addr$D_OUT[28:21] } ;
   assign MUX_fabric_v_rg_r_beat_count_0$write_1__VAL_2 =
-	     fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 ?
+	     fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 ?
 	       8'd0 :
-	       x__h28315 ;
-  assign MUX_fabric_v_rg_r_beat_count_1$write_1__VAL_2 =
-	     fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 ?
+	       x__h21177 ;
+  assign MUX_fabric_v_rg_r_beat_count_1$write_1__VAL_3 =
+	     fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 ?
 	       8'd0 :
-	       x__h28964 ;
+	       x__h21826 ;
   assign MUX_fabric_v_rg_r_beat_count_2$write_1__VAL_2 =
-	     fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 ?
+	     fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 ?
 	       8'd0 :
-	       x__h29603 ;
+	       x__h22465 ;
   assign MUX_fabric_v_rg_r_beat_count_3$write_1__VAL_2 =
-	     fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 ?
+	     fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 ?
 	       8'd0 :
-	       x__h30242 ;
+	       x__h23104 ;
   assign MUX_fabric_v_rg_wd_beat_count_0$write_1__VAL_2 =
-	     fabric_v_rg_wd_beat_count_0_45_EQ_fabric_v_f_w_ETC___d253 ?
+	     fabric_v_rg_wd_beat_count_0_82_EQ_fabric_v_f_w_ETC___d190 ?
 	       8'd0 :
-	       x__h17223 ;
+	       x__h13668 ;
   assign MUX_fabric_v_rg_wd_beat_count_1$write_1__VAL_2 =
-	     fabric_v_rg_wd_beat_count_1_80_EQ_fabric_v_f_w_ETC___d288 ?
+	     fabric_v_rg_wd_beat_count_1_17_EQ_fabric_v_f_w_ETC___d225 ?
 	       8'd0 :
-	       x__h17841 ;
-  assign MUX_fabric_v_rg_wd_beat_count_2$write_1__VAL_2 =
-	     fabric_v_rg_wd_beat_count_2_15_EQ_fabric_v_f_w_ETC___d323 ?
-	       8'd0 :
-	       x__h18459 ;
+	       x__h14286 ;
   assign MUX_fabric_xactors_from_masters_0_f_rd_data$enq_1__VAL_1 =
 	     { fabric_xactors_to_slaves_0_f_rd_data$D_OUT[38:3],
-	       IF_fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_ETC___d708,
+	       IF_fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_ETC___d507,
 	       fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0] } ;
   assign MUX_fabric_xactors_from_masters_0_f_rd_data$enq_1__VAL_2 =
 	     { fabric_xactors_to_slaves_1_f_rd_data$D_OUT[38:3],
-	       IF_fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_ETC___d743,
+	       IF_fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_ETC___d542,
 	       fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0] } ;
   assign MUX_fabric_xactors_from_masters_0_f_rd_data$enq_1__VAL_3 =
 	     { fabric_xactors_to_slaves_2_f_rd_data$D_OUT[38:3],
-	       IF_fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_ETC___d778,
+	       IF_fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_ETC___d577,
 	       fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0] } ;
   assign MUX_fabric_xactors_from_masters_0_f_rd_data$enq_1__VAL_4 =
 	     { fabric_xactors_to_slaves_3_f_rd_data$D_OUT[38:3],
-	       IF_fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_ETC___d813,
+	       IF_fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_ETC___d612,
 	       fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0] } ;
   assign MUX_fabric_xactors_from_masters_0_f_rd_data$enq_1__VAL_5 =
 	     { fabric_v_f_rd_err_info_0$D_OUT[3:0],
 	       34'd3,
-	       fabric_v_rg_r_err_beat_count_0_14_EQ_fabric_v__ETC___d916 } ;
+	       fabric_v_rg_r_err_beat_count_0_69_EQ_fabric_v__ETC___d671 } ;
   assign MUX_fabric_xactors_from_masters_0_f_wr_resp$enq_1__VAL_5 =
 	     { fabric_v_f_wr_err_info_0$D_OUT, 2'd3 } ;
   assign MUX_fabric_xactors_from_masters_1_f_rd_data$enq_1__VAL_5 =
 	     { fabric_v_f_rd_err_info_1$D_OUT[3:0],
 	       34'd3,
-	       fabric_v_rg_r_err_beat_count_1_32_EQ_fabric_v__ETC___d934 } ;
+	       fabric_v_rg_r_err_beat_count_1_87_EQ_fabric_v__ETC___d689 } ;
   assign MUX_fabric_xactors_from_masters_1_f_wr_resp$enq_1__VAL_5 =
 	     { fabric_v_f_wr_err_info_1$D_OUT, 2'd3 } ;
-  assign MUX_fabric_xactors_from_masters_2_f_rd_data$enq_1__VAL_5 =
-	     { fabric_v_f_rd_err_info_2$D_OUT[3:0],
-	       34'd3,
-	       fabric_v_rg_r_err_beat_count_2_50_EQ_fabric_v__ETC___d952 } ;
-  assign MUX_fabric_xactors_from_masters_2_f_wr_resp$enq_1__VAL_5 =
-	     { fabric_v_f_wr_err_info_2$D_OUT, 2'd3 } ;
 
   // register fabric_cfg_verbosity
   assign fabric_cfg_verbosity$D_IN = set_verbosity_verbosity ;
@@ -4949,15 +4063,11 @@ module mkLocal_Fabric(CLK,
 
   // register fabric_v_rg_r_beat_count_0
   always@(fabric_rg_reset or
-	  WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 or
-	  MUX_fabric_v_rg_r_beat_count_0$write_1__VAL_2 or
 	  WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_4 or
+	  MUX_fabric_v_rg_r_beat_count_0$write_1__VAL_2 or
 	  WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master)
   case (1'b1)
     fabric_rg_reset: fabric_v_rg_r_beat_count_0$D_IN = 8'd0;
-    WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8:
-	fabric_v_rg_r_beat_count_0$D_IN =
-	    MUX_fabric_v_rg_r_beat_count_0$write_1__VAL_2;
     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_4:
 	fabric_v_rg_r_beat_count_0$D_IN =
 	    MUX_fabric_v_rg_r_beat_count_0$write_1__VAL_2;
@@ -4968,48 +4078,38 @@ module mkLocal_Fabric(CLK,
 		 8'b10101010 /* unspecified value */ ;
   endcase
   assign fabric_v_rg_r_beat_count_0$EN =
-	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_4 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master ||
 	     fabric_rg_reset ;
 
   // register fabric_v_rg_r_beat_count_1
   always@(fabric_rg_reset or
-	  WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 or
-	  MUX_fabric_v_rg_r_beat_count_1$write_1__VAL_2 or
 	  WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_5 or
+	  MUX_fabric_v_rg_r_beat_count_1$write_1__VAL_3 or
 	  WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_1)
   case (1'b1)
     fabric_rg_reset: fabric_v_rg_r_beat_count_1$D_IN = 8'd0;
-    WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9:
-	fabric_v_rg_r_beat_count_1$D_IN =
-	    MUX_fabric_v_rg_r_beat_count_1$write_1__VAL_2;
     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_5:
 	fabric_v_rg_r_beat_count_1$D_IN =
-	    MUX_fabric_v_rg_r_beat_count_1$write_1__VAL_2;
+	    MUX_fabric_v_rg_r_beat_count_1$write_1__VAL_3;
     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_1:
 	fabric_v_rg_r_beat_count_1$D_IN =
-	    MUX_fabric_v_rg_r_beat_count_1$write_1__VAL_2;
+	    MUX_fabric_v_rg_r_beat_count_1$write_1__VAL_3;
     default: fabric_v_rg_r_beat_count_1$D_IN =
 		 8'b10101010 /* unspecified value */ ;
   endcase
   assign fabric_v_rg_r_beat_count_1$EN =
-	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_5 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_1 ||
 	     fabric_rg_reset ;
 
   // register fabric_v_rg_r_beat_count_2
   always@(fabric_rg_reset or
-	  WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 or
-	  MUX_fabric_v_rg_r_beat_count_2$write_1__VAL_2 or
 	  WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_6 or
+	  MUX_fabric_v_rg_r_beat_count_2$write_1__VAL_2 or
 	  WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_2)
   case (1'b1)
     fabric_rg_reset: fabric_v_rg_r_beat_count_2$D_IN = 8'd0;
-    WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10:
-	fabric_v_rg_r_beat_count_2$D_IN =
-	    MUX_fabric_v_rg_r_beat_count_2$write_1__VAL_2;
     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_6:
 	fabric_v_rg_r_beat_count_2$D_IN =
 	    MUX_fabric_v_rg_r_beat_count_2$write_1__VAL_2;
@@ -5020,22 +4120,17 @@ module mkLocal_Fabric(CLK,
 		 8'b10101010 /* unspecified value */ ;
   endcase
   assign fabric_v_rg_r_beat_count_2$EN =
-	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_6 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_2 ||
 	     fabric_rg_reset ;
 
   // register fabric_v_rg_r_beat_count_3
   always@(fabric_rg_reset or
-	  WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 or
-	  MUX_fabric_v_rg_r_beat_count_3$write_1__VAL_2 or
 	  WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7 or
+	  MUX_fabric_v_rg_r_beat_count_3$write_1__VAL_2 or
 	  WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_3)
   case (1'b1)
     fabric_rg_reset: fabric_v_rg_r_beat_count_3$D_IN = 8'd0;
-    WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11:
-	fabric_v_rg_r_beat_count_3$D_IN =
-	    MUX_fabric_v_rg_r_beat_count_3$write_1__VAL_2;
     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7:
 	fabric_v_rg_r_beat_count_3$D_IN =
 	    MUX_fabric_v_rg_r_beat_count_3$write_1__VAL_2;
@@ -5046,34 +4141,25 @@ module mkLocal_Fabric(CLK,
 		 8'b10101010 /* unspecified value */ ;
   endcase
   assign fabric_v_rg_r_beat_count_3$EN =
-	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_3 ||
 	     fabric_rg_reset ;
 
   // register fabric_v_rg_r_err_beat_count_0
   assign fabric_v_rg_r_err_beat_count_0$D_IN =
-	     fabric_v_rg_r_err_beat_count_0_14_EQ_fabric_v__ETC___d916 ?
+	     fabric_v_rg_r_err_beat_count_0_69_EQ_fabric_v__ETC___d671 ?
 	       8'd0 :
-	       x__h35615 ;
+	       x__h26039 ;
   assign fabric_v_rg_r_err_beat_count_0$EN =
 	     CAN_FIRE_RL_fabric_rl_rd_resp_err_to_master ;
 
   // register fabric_v_rg_r_err_beat_count_1
   assign fabric_v_rg_r_err_beat_count_1$D_IN =
-	     fabric_v_rg_r_err_beat_count_1_32_EQ_fabric_v__ETC___d934 ?
+	     fabric_v_rg_r_err_beat_count_1_87_EQ_fabric_v__ETC___d689 ?
 	       8'd0 :
-	       x__h35997 ;
+	       x__h26421 ;
   assign fabric_v_rg_r_err_beat_count_1$EN =
 	     CAN_FIRE_RL_fabric_rl_rd_resp_err_to_master_1 ;
-
-  // register fabric_v_rg_r_err_beat_count_2
-  assign fabric_v_rg_r_err_beat_count_2$D_IN =
-	     fabric_v_rg_r_err_beat_count_2_50_EQ_fabric_v__ETC___d952 ?
-	       8'd0 :
-	       x__h36379 ;
-  assign fabric_v_rg_r_err_beat_count_2$EN =
-	     CAN_FIRE_RL_fabric_rl_rd_resp_err_to_master_2 ;
 
   // register fabric_v_rg_wd_beat_count_0
   assign fabric_v_rg_wd_beat_count_0$D_IN =
@@ -5093,21 +4179,12 @@ module mkLocal_Fabric(CLK,
 	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 ||
 	     fabric_rg_reset ;
 
-  // register fabric_v_rg_wd_beat_count_2
-  assign fabric_v_rg_wd_beat_count_2$D_IN =
-	     fabric_rg_reset ?
-	       8'd0 :
-	       MUX_fabric_v_rg_wd_beat_count_2$write_1__VAL_2 ;
-  assign fabric_v_rg_wd_beat_count_2$EN =
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 ||
-	     fabric_rg_reset ;
-
   // submodule fabric_v_f_rd_err_info_0
   assign fabric_v_f_rd_err_info_0$D_IN = 12'h0 ;
   assign fabric_v_f_rd_err_info_0$ENQ = 1'b0 ;
   assign fabric_v_f_rd_err_info_0$DEQ =
 	     WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master &&
-	     fabric_v_rg_r_err_beat_count_0_14_EQ_fabric_v__ETC___d916 ;
+	     fabric_v_rg_r_err_beat_count_0_69_EQ_fabric_v__ETC___d671 ;
   assign fabric_v_f_rd_err_info_0$CLR = fabric_rg_reset ;
 
   // submodule fabric_v_f_rd_err_info_1
@@ -5115,127 +4192,59 @@ module mkLocal_Fabric(CLK,
   assign fabric_v_f_rd_err_info_1$ENQ = 1'b0 ;
   assign fabric_v_f_rd_err_info_1$DEQ =
 	     WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_1 &&
-	     fabric_v_rg_r_err_beat_count_1_32_EQ_fabric_v__ETC___d934 ;
+	     fabric_v_rg_r_err_beat_count_1_87_EQ_fabric_v__ETC___d689 ;
   assign fabric_v_f_rd_err_info_1$CLR = fabric_rg_reset ;
 
-  // submodule fabric_v_f_rd_err_info_2
-  assign fabric_v_f_rd_err_info_2$D_IN = 12'h0 ;
-  assign fabric_v_f_rd_err_info_2$ENQ = 1'b0 ;
-  assign fabric_v_f_rd_err_info_2$DEQ =
-	     WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_2 &&
-	     fabric_v_rg_r_err_beat_count_2_50_EQ_fabric_v__ETC___d952 ;
-  assign fabric_v_f_rd_err_info_2$CLR = fabric_rg_reset ;
-
   // submodule fabric_v_f_rd_mis_0
-  always@(WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave or
-	  MUX_fabric_v_f_rd_mis_0$enq_1__VAL_1 or
-	  WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_4 or
-	  MUX_fabric_v_f_rd_mis_0$enq_1__VAL_2 or
-	  WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 or
-	  MUX_fabric_v_f_rd_mis_0$enq_1__VAL_3)
-  begin
-    case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave:
-	  fabric_v_f_rd_mis_0$D_IN = MUX_fabric_v_f_rd_mis_0$enq_1__VAL_1;
-      WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_4:
-	  fabric_v_f_rd_mis_0$D_IN = MUX_fabric_v_f_rd_mis_0$enq_1__VAL_2;
-      WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8:
-	  fabric_v_f_rd_mis_0$D_IN = MUX_fabric_v_f_rd_mis_0$enq_1__VAL_3;
-      default: fabric_v_f_rd_mis_0$D_IN =
-		   10'b1010101010 /* unspecified value */ ;
-    endcase
-  end
+  assign fabric_v_f_rd_mis_0$D_IN =
+	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave ?
+	       MUX_fabric_v_f_rd_mis_0$enq_1__VAL_1 :
+	       MUX_fabric_v_f_rd_mis_0$enq_1__VAL_2 ;
   assign fabric_v_f_rd_mis_0$ENQ =
 	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave ||
-	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_4 ||
-	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 ;
+	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_4 ;
   assign fabric_v_f_rd_mis_0$DEQ =
 	     _dor1fabric_v_f_rd_mis_0$EN_deq &&
-	     fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 ;
+	     fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 ;
   assign fabric_v_f_rd_mis_0$CLR = fabric_rg_reset ;
 
   // submodule fabric_v_f_rd_mis_1
-  always@(WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_1 or
-	  MUX_fabric_v_f_rd_mis_0$enq_1__VAL_1 or
-	  WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_5 or
-	  MUX_fabric_v_f_rd_mis_0$enq_1__VAL_2 or
-	  WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 or
-	  MUX_fabric_v_f_rd_mis_0$enq_1__VAL_3)
-  begin
-    case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_1:
-	  fabric_v_f_rd_mis_1$D_IN = MUX_fabric_v_f_rd_mis_0$enq_1__VAL_1;
-      WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_5:
-	  fabric_v_f_rd_mis_1$D_IN = MUX_fabric_v_f_rd_mis_0$enq_1__VAL_2;
-      WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9:
-	  fabric_v_f_rd_mis_1$D_IN = MUX_fabric_v_f_rd_mis_0$enq_1__VAL_3;
-      default: fabric_v_f_rd_mis_1$D_IN =
-		   10'b1010101010 /* unspecified value */ ;
-    endcase
-  end
+  assign fabric_v_f_rd_mis_1$D_IN =
+	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_1 ?
+	       MUX_fabric_v_f_rd_mis_0$enq_1__VAL_1 :
+	       MUX_fabric_v_f_rd_mis_0$enq_1__VAL_2 ;
   assign fabric_v_f_rd_mis_1$ENQ =
 	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_1 ||
-	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_5 ||
-	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 ;
+	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_5 ;
   assign fabric_v_f_rd_mis_1$DEQ =
 	     _dor1fabric_v_f_rd_mis_1$EN_deq &&
-	     fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 ;
+	     fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 ;
   assign fabric_v_f_rd_mis_1$CLR = fabric_rg_reset ;
 
   // submodule fabric_v_f_rd_mis_2
-  always@(WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_2 or
-	  MUX_fabric_v_f_rd_mis_0$enq_1__VAL_1 or
-	  WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_6 or
-	  MUX_fabric_v_f_rd_mis_0$enq_1__VAL_2 or
-	  WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 or
-	  MUX_fabric_v_f_rd_mis_0$enq_1__VAL_3)
-  begin
-    case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_2:
-	  fabric_v_f_rd_mis_2$D_IN = MUX_fabric_v_f_rd_mis_0$enq_1__VAL_1;
-      WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_6:
-	  fabric_v_f_rd_mis_2$D_IN = MUX_fabric_v_f_rd_mis_0$enq_1__VAL_2;
-      WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10:
-	  fabric_v_f_rd_mis_2$D_IN = MUX_fabric_v_f_rd_mis_0$enq_1__VAL_3;
-      default: fabric_v_f_rd_mis_2$D_IN =
-		   10'b1010101010 /* unspecified value */ ;
-    endcase
-  end
+  assign fabric_v_f_rd_mis_2$D_IN =
+	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_2 ?
+	       MUX_fabric_v_f_rd_mis_0$enq_1__VAL_1 :
+	       MUX_fabric_v_f_rd_mis_0$enq_1__VAL_2 ;
   assign fabric_v_f_rd_mis_2$ENQ =
 	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_2 ||
-	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_6 ||
-	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 ;
+	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_6 ;
   assign fabric_v_f_rd_mis_2$DEQ =
 	     _dor1fabric_v_f_rd_mis_2$EN_deq &&
-	     fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 ;
+	     fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 ;
   assign fabric_v_f_rd_mis_2$CLR = fabric_rg_reset ;
 
   // submodule fabric_v_f_rd_mis_3
-  always@(WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_3 or
-	  MUX_fabric_v_f_rd_mis_0$enq_1__VAL_1 or
-	  WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_7 or
-	  MUX_fabric_v_f_rd_mis_0$enq_1__VAL_2 or
-	  WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 or
-	  MUX_fabric_v_f_rd_mis_0$enq_1__VAL_3)
-  begin
-    case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_3:
-	  fabric_v_f_rd_mis_3$D_IN = MUX_fabric_v_f_rd_mis_0$enq_1__VAL_1;
-      WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_7:
-	  fabric_v_f_rd_mis_3$D_IN = MUX_fabric_v_f_rd_mis_0$enq_1__VAL_2;
-      WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11:
-	  fabric_v_f_rd_mis_3$D_IN = MUX_fabric_v_f_rd_mis_0$enq_1__VAL_3;
-      default: fabric_v_f_rd_mis_3$D_IN =
-		   10'b1010101010 /* unspecified value */ ;
-    endcase
-  end
+  assign fabric_v_f_rd_mis_3$D_IN =
+	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_3 ?
+	       MUX_fabric_v_f_rd_mis_0$enq_1__VAL_1 :
+	       MUX_fabric_v_f_rd_mis_0$enq_1__VAL_2 ;
   assign fabric_v_f_rd_mis_3$ENQ =
 	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_3 ||
-	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_7 ||
-	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 ;
+	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_7 ;
   assign fabric_v_f_rd_mis_3$DEQ =
 	     _dor1fabric_v_f_rd_mis_3$EN_deq &&
-	     fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 ;
+	     fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 ;
   assign fabric_v_f_rd_mis_3$CLR = fabric_rg_reset ;
 
   // submodule fabric_v_f_rd_sjs_0
@@ -5263,15 +4272,15 @@ module mkLocal_Fabric(CLK,
 	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_3 ;
   assign fabric_v_f_rd_sjs_0$DEQ =
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master &&
-	     fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 ||
+	     fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_1 &&
-	     fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 ||
+	     fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_2 &&
-	     fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 ||
+	     fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_3 &&
-	     fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 ||
+	     fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master &&
-	     fabric_v_rg_r_err_beat_count_0_14_EQ_fabric_v__ETC___d916 ;
+	     fabric_v_rg_r_err_beat_count_0_69_EQ_fabric_v__ETC___d671 ;
   assign fabric_v_f_rd_sjs_0$CLR = fabric_rg_reset ;
 
   // submodule fabric_v_f_rd_sjs_1
@@ -5299,52 +4308,16 @@ module mkLocal_Fabric(CLK,
 	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_7 ;
   assign fabric_v_f_rd_sjs_1$DEQ =
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_4 &&
-	     fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 ||
+	     fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_5 &&
-	     fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 ||
+	     fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_6 &&
-	     fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 ||
+	     fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7 &&
-	     fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 ||
+	     fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_1 &&
-	     fabric_v_rg_r_err_beat_count_1_32_EQ_fabric_v__ETC___d934 ;
+	     fabric_v_rg_r_err_beat_count_1_87_EQ_fabric_v__ETC___d689 ;
   assign fabric_v_f_rd_sjs_1$CLR = fabric_rg_reset ;
-
-  // submodule fabric_v_f_rd_sjs_2
-  always@(WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 or
-	  WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 or
-	  WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 or
-	  WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11)
-  begin
-    case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8:
-	  fabric_v_f_rd_sjs_2$D_IN = 3'd0;
-      WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9:
-	  fabric_v_f_rd_sjs_2$D_IN = 3'd1;
-      WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10:
-	  fabric_v_f_rd_sjs_2$D_IN = 3'd2;
-      WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11:
-	  fabric_v_f_rd_sjs_2$D_IN = 3'd3;
-      default: fabric_v_f_rd_sjs_2$D_IN = 3'b010 /* unspecified value */ ;
-    endcase
-  end
-  assign fabric_v_f_rd_sjs_2$ENQ =
-	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 ||
-	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 ||
-	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 ||
-	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 ;
-  assign fabric_v_f_rd_sjs_2$DEQ =
-	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	     fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 ||
-	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	     fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 ||
-	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	     fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 ||
-	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	     fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 ||
-	     WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_2 &&
-	     fabric_v_rg_r_err_beat_count_2_50_EQ_fabric_v__ETC___d952 ;
-  assign fabric_v_f_rd_sjs_2$CLR = fabric_rg_reset ;
 
   // submodule fabric_v_f_wd_tasks_0
   always@(WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave or
@@ -5376,7 +4349,7 @@ module mkLocal_Fabric(CLK,
 	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_3 ;
   assign fabric_v_f_wd_tasks_0$DEQ =
 	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data &&
-	     fabric_v_rg_wd_beat_count_0_45_EQ_fabric_v_f_w_ETC___d253 ;
+	     fabric_v_rg_wd_beat_count_0_82_EQ_fabric_v_f_w_ETC___d190 ;
   assign fabric_v_f_wd_tasks_0$CLR = fabric_rg_reset ;
 
   // submodule fabric_v_f_wd_tasks_1
@@ -5409,41 +4382,8 @@ module mkLocal_Fabric(CLK,
 	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_7 ;
   assign fabric_v_f_wd_tasks_1$DEQ =
 	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 &&
-	     fabric_v_rg_wd_beat_count_1_80_EQ_fabric_v_f_w_ETC___d288 ;
+	     fabric_v_rg_wd_beat_count_1_17_EQ_fabric_v_f_w_ETC___d225 ;
   assign fabric_v_f_wd_tasks_1$CLR = fabric_rg_reset ;
-
-  // submodule fabric_v_f_wd_tasks_2
-  always@(WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 or
-	  MUX_fabric_v_f_wd_tasks_2$enq_1__VAL_1 or
-	  WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 or
-	  MUX_fabric_v_f_wd_tasks_2$enq_1__VAL_2 or
-	  WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 or
-	  MUX_fabric_v_f_wd_tasks_2$enq_1__VAL_3 or
-	  WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 or
-	  MUX_fabric_v_f_wd_tasks_2$enq_1__VAL_4)
-  begin
-    case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8:
-	  fabric_v_f_wd_tasks_2$D_IN = MUX_fabric_v_f_wd_tasks_2$enq_1__VAL_1;
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9:
-	  fabric_v_f_wd_tasks_2$D_IN = MUX_fabric_v_f_wd_tasks_2$enq_1__VAL_2;
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10:
-	  fabric_v_f_wd_tasks_2$D_IN = MUX_fabric_v_f_wd_tasks_2$enq_1__VAL_3;
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11:
-	  fabric_v_f_wd_tasks_2$D_IN = MUX_fabric_v_f_wd_tasks_2$enq_1__VAL_4;
-      default: fabric_v_f_wd_tasks_2$D_IN =
-		   11'b01010101010 /* unspecified value */ ;
-    endcase
-  end
-  assign fabric_v_f_wd_tasks_2$ENQ =
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 ;
-  assign fabric_v_f_wd_tasks_2$DEQ =
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	     fabric_v_rg_wd_beat_count_2_15_EQ_fabric_v_f_w_ETC___d323 ;
-  assign fabric_v_f_wd_tasks_2$CLR = fabric_rg_reset ;
 
   // submodule fabric_v_f_wr_err_info_0
   assign fabric_v_f_wr_err_info_0$D_IN = 4'h0 ;
@@ -5459,109 +4399,52 @@ module mkLocal_Fabric(CLK,
 	     CAN_FIRE_RL_fabric_rl_wr_resp_err_to_master_1 ;
   assign fabric_v_f_wr_err_info_1$CLR = fabric_rg_reset ;
 
-  // submodule fabric_v_f_wr_err_info_2
-  assign fabric_v_f_wr_err_info_2$D_IN = 4'h0 ;
-  assign fabric_v_f_wr_err_info_2$ENQ = 1'b0 ;
-  assign fabric_v_f_wr_err_info_2$DEQ =
-	     CAN_FIRE_RL_fabric_rl_wr_resp_err_to_master_2 ;
-  assign fabric_v_f_wr_err_info_2$CLR = fabric_rg_reset ;
-
   // submodule fabric_v_f_wr_mis_0
-  always@(WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave or
-	  WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_4 or
-	  WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8)
-  begin
-    case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave:
-	  fabric_v_f_wr_mis_0$D_IN = 2'd0;
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_4:
-	  fabric_v_f_wr_mis_0$D_IN = 2'd1;
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8:
-	  fabric_v_f_wr_mis_0$D_IN = 2'd2;
-      default: fabric_v_f_wr_mis_0$D_IN = 2'b10 /* unspecified value */ ;
-    endcase
-  end
+  assign fabric_v_f_wr_mis_0$D_IN =
+	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave ? 2'd0 : 2'd1 ;
   assign fabric_v_f_wr_mis_0$ENQ =
 	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_4 ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 ;
+	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_4 ;
   assign fabric_v_f_wr_mis_0$DEQ =
-	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_8 ||
 	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_4 ||
 	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master ;
   assign fabric_v_f_wr_mis_0$CLR = fabric_rg_reset ;
 
   // submodule fabric_v_f_wr_mis_1
-  always@(WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_1 or
-	  WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_5 or
-	  WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9)
-  begin
-    case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_1:
-	  fabric_v_f_wr_mis_1$D_IN = 2'd0;
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_5:
-	  fabric_v_f_wr_mis_1$D_IN = 2'd1;
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9:
-	  fabric_v_f_wr_mis_1$D_IN = 2'd2;
-      default: fabric_v_f_wr_mis_1$D_IN = 2'b10 /* unspecified value */ ;
-    endcase
-  end
+  assign fabric_v_f_wr_mis_1$D_IN =
+	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_1 ?
+	       2'd0 :
+	       2'd1 ;
   assign fabric_v_f_wr_mis_1$ENQ =
 	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_1 ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_5 ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 ;
+	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_5 ;
   assign fabric_v_f_wr_mis_1$DEQ =
-	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_9 ||
 	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_5 ||
 	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_1 ;
   assign fabric_v_f_wr_mis_1$CLR = fabric_rg_reset ;
 
   // submodule fabric_v_f_wr_mis_2
-  always@(WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_2 or
-	  WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_6 or
-	  WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10)
-  begin
-    case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_2:
-	  fabric_v_f_wr_mis_2$D_IN = 2'd0;
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_6:
-	  fabric_v_f_wr_mis_2$D_IN = 2'd1;
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10:
-	  fabric_v_f_wr_mis_2$D_IN = 2'd2;
-      default: fabric_v_f_wr_mis_2$D_IN = 2'b10 /* unspecified value */ ;
-    endcase
-  end
+  assign fabric_v_f_wr_mis_2$D_IN =
+	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_2 ?
+	       2'd0 :
+	       2'd1 ;
   assign fabric_v_f_wr_mis_2$ENQ =
 	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_2 ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_6 ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 ;
+	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_6 ;
   assign fabric_v_f_wr_mis_2$DEQ =
-	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_10 ||
 	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_6 ||
 	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_2 ;
   assign fabric_v_f_wr_mis_2$CLR = fabric_rg_reset ;
 
   // submodule fabric_v_f_wr_mis_3
-  always@(WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_3 or
-	  WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_7 or
-	  WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11)
-  begin
-    case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_3:
-	  fabric_v_f_wr_mis_3$D_IN = 2'd0;
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_7:
-	  fabric_v_f_wr_mis_3$D_IN = 2'd1;
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11:
-	  fabric_v_f_wr_mis_3$D_IN = 2'd2;
-      default: fabric_v_f_wr_mis_3$D_IN = 2'b10 /* unspecified value */ ;
-    endcase
-  end
+  assign fabric_v_f_wr_mis_3$D_IN =
+	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_3 ?
+	       2'd0 :
+	       2'd1 ;
   assign fabric_v_f_wr_mis_3$ENQ =
 	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_3 ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_7 ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 ;
+	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_7 ;
   assign fabric_v_f_wr_mis_3$DEQ =
-	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_11 ||
 	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_7 ||
 	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_3 ;
   assign fabric_v_f_wr_mis_3$CLR = fabric_rg_reset ;
@@ -5627,37 +4510,6 @@ module mkLocal_Fabric(CLK,
 	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_5 ||
 	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_4 ;
   assign fabric_v_f_wr_sjs_1$CLR = fabric_rg_reset ;
-
-  // submodule fabric_v_f_wr_sjs_2
-  always@(WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 or
-	  WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 or
-	  WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 or
-	  WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11)
-  begin
-    case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8:
-	  fabric_v_f_wr_sjs_2$D_IN = 3'd0;
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9:
-	  fabric_v_f_wr_sjs_2$D_IN = 3'd1;
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10:
-	  fabric_v_f_wr_sjs_2$D_IN = 3'd2;
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11:
-	  fabric_v_f_wr_sjs_2$D_IN = 3'd3;
-      default: fabric_v_f_wr_sjs_2$D_IN = 3'b010 /* unspecified value */ ;
-    endcase
-  end
-  assign fabric_v_f_wr_sjs_2$ENQ =
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 ;
-  assign fabric_v_f_wr_sjs_2$DEQ =
-	     WILL_FIRE_RL_fabric_rl_wr_resp_err_to_master_2 ||
-	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_11 ||
-	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_10 ||
-	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_9 ||
-	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_8 ;
-  assign fabric_v_f_wr_sjs_2$CLR = fabric_rg_reset ;
 
   // submodule fabric_xactors_from_masters_0_f_rd_addr
   assign fabric_xactors_from_masters_0_f_rd_addr$D_IN =
@@ -5943,174 +4795,14 @@ module mkLocal_Fabric(CLK,
 	     fabric_xactors_from_masters_1_f_wr_resp$EMPTY_N ;
   assign fabric_xactors_from_masters_1_f_wr_resp$CLR = fabric_rg_reset ;
 
-  // submodule fabric_xactors_from_masters_2_f_rd_addr
-  assign fabric_xactors_from_masters_2_f_rd_addr$D_IN =
-	     { v_from_masters_2_arid,
-	       v_from_masters_2_araddr,
-	       v_from_masters_2_arlen,
-	       v_from_masters_2_arsize,
-	       v_from_masters_2_arburst,
-	       v_from_masters_2_arlock,
-	       v_from_masters_2_arcache,
-	       v_from_masters_2_arprot,
-	       v_from_masters_2_arqos,
-	       v_from_masters_2_arregion } ;
-  assign fabric_xactors_from_masters_2_f_rd_addr$ENQ =
-	     v_from_masters_2_arvalid &&
-	     fabric_xactors_from_masters_2_f_rd_addr$FULL_N ;
-  assign fabric_xactors_from_masters_2_f_rd_addr$DEQ =
-	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 ||
-	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 ||
-	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 ||
-	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 ;
-  assign fabric_xactors_from_masters_2_f_rd_addr$CLR = fabric_rg_reset ;
-
-  // submodule fabric_xactors_from_masters_2_f_rd_data
-  always@(WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 or
-	  MUX_fabric_xactors_from_masters_0_f_rd_data$enq_1__VAL_1 or
-	  WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 or
-	  MUX_fabric_xactors_from_masters_0_f_rd_data$enq_1__VAL_2 or
-	  WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 or
-	  MUX_fabric_xactors_from_masters_0_f_rd_data$enq_1__VAL_3 or
-	  WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 or
-	  MUX_fabric_xactors_from_masters_0_f_rd_data$enq_1__VAL_4 or
-	  WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_2 or
-	  MUX_fabric_xactors_from_masters_2_f_rd_data$enq_1__VAL_5)
-  begin
-    case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8:
-	  fabric_xactors_from_masters_2_f_rd_data$D_IN =
-	      MUX_fabric_xactors_from_masters_0_f_rd_data$enq_1__VAL_1;
-      WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9:
-	  fabric_xactors_from_masters_2_f_rd_data$D_IN =
-	      MUX_fabric_xactors_from_masters_0_f_rd_data$enq_1__VAL_2;
-      WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10:
-	  fabric_xactors_from_masters_2_f_rd_data$D_IN =
-	      MUX_fabric_xactors_from_masters_0_f_rd_data$enq_1__VAL_3;
-      WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11:
-	  fabric_xactors_from_masters_2_f_rd_data$D_IN =
-	      MUX_fabric_xactors_from_masters_0_f_rd_data$enq_1__VAL_4;
-      WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_2:
-	  fabric_xactors_from_masters_2_f_rd_data$D_IN =
-	      MUX_fabric_xactors_from_masters_2_f_rd_data$enq_1__VAL_5;
-      default: fabric_xactors_from_masters_2_f_rd_data$D_IN =
-		   39'h2AAAAAAAAA /* unspecified value */ ;
-    endcase
-  end
-  assign fabric_xactors_from_masters_2_f_rd_data$ENQ =
-	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 ||
-	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 ||
-	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 ||
-	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 ||
-	     WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_2 ;
-  assign fabric_xactors_from_masters_2_f_rd_data$DEQ =
-	     v_from_masters_2_rready &&
-	     fabric_xactors_from_masters_2_f_rd_data$EMPTY_N ;
-  assign fabric_xactors_from_masters_2_f_rd_data$CLR = fabric_rg_reset ;
-
-  // submodule fabric_xactors_from_masters_2_f_wr_addr
-  assign fabric_xactors_from_masters_2_f_wr_addr$D_IN =
-	     { v_from_masters_2_awid,
-	       v_from_masters_2_awaddr,
-	       v_from_masters_2_awlen,
-	       v_from_masters_2_awsize,
-	       v_from_masters_2_awburst,
-	       v_from_masters_2_awlock,
-	       v_from_masters_2_awcache,
-	       v_from_masters_2_awprot,
-	       v_from_masters_2_awqos,
-	       v_from_masters_2_awregion } ;
-  assign fabric_xactors_from_masters_2_f_wr_addr$ENQ =
-	     v_from_masters_2_awvalid &&
-	     fabric_xactors_from_masters_2_f_wr_addr$FULL_N ;
-  assign fabric_xactors_from_masters_2_f_wr_addr$DEQ =
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 ;
-  assign fabric_xactors_from_masters_2_f_wr_addr$CLR = fabric_rg_reset ;
-
-  // submodule fabric_xactors_from_masters_2_f_wr_data
-  assign fabric_xactors_from_masters_2_f_wr_data$D_IN =
-	     { v_from_masters_2_wdata,
-	       v_from_masters_2_wstrb,
-	       v_from_masters_2_wlast } ;
-  assign fabric_xactors_from_masters_2_f_wr_data$ENQ =
-	     v_from_masters_2_wvalid &&
-	     fabric_xactors_from_masters_2_f_wr_data$FULL_N ;
-  assign fabric_xactors_from_masters_2_f_wr_data$DEQ =
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 ;
-  assign fabric_xactors_from_masters_2_f_wr_data$CLR = fabric_rg_reset ;
-
-  // submodule fabric_xactors_from_masters_2_f_wr_resp
-  always@(WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_9 or
-	  fabric_xactors_to_slaves_1_f_wr_resp$D_OUT or
-	  WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_8 or
-	  fabric_xactors_to_slaves_0_f_wr_resp$D_OUT or
-	  WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_10 or
-	  fabric_xactors_to_slaves_2_f_wr_resp$D_OUT or
-	  WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_11 or
-	  fabric_xactors_to_slaves_3_f_wr_resp$D_OUT or
-	  WILL_FIRE_RL_fabric_rl_wr_resp_err_to_master_2 or
-	  MUX_fabric_xactors_from_masters_2_f_wr_resp$enq_1__VAL_5)
-  begin
-    case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_9:
-	  fabric_xactors_from_masters_2_f_wr_resp$D_IN =
-	      fabric_xactors_to_slaves_1_f_wr_resp$D_OUT;
-      WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_8:
-	  fabric_xactors_from_masters_2_f_wr_resp$D_IN =
-	      fabric_xactors_to_slaves_0_f_wr_resp$D_OUT;
-      WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_10:
-	  fabric_xactors_from_masters_2_f_wr_resp$D_IN =
-	      fabric_xactors_to_slaves_2_f_wr_resp$D_OUT;
-      WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_11:
-	  fabric_xactors_from_masters_2_f_wr_resp$D_IN =
-	      fabric_xactors_to_slaves_3_f_wr_resp$D_OUT;
-      WILL_FIRE_RL_fabric_rl_wr_resp_err_to_master_2:
-	  fabric_xactors_from_masters_2_f_wr_resp$D_IN =
-	      MUX_fabric_xactors_from_masters_2_f_wr_resp$enq_1__VAL_5;
-      default: fabric_xactors_from_masters_2_f_wr_resp$D_IN =
-		   6'b101010 /* unspecified value */ ;
-    endcase
-  end
-  assign fabric_xactors_from_masters_2_f_wr_resp$ENQ =
-	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_9 ||
-	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_8 ||
-	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_10 ||
-	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_11 ||
-	     WILL_FIRE_RL_fabric_rl_wr_resp_err_to_master_2 ;
-  assign fabric_xactors_from_masters_2_f_wr_resp$DEQ =
-	     v_from_masters_2_bready &&
-	     fabric_xactors_from_masters_2_f_wr_resp$EMPTY_N ;
-  assign fabric_xactors_from_masters_2_f_wr_resp$CLR = fabric_rg_reset ;
-
   // submodule fabric_xactors_to_slaves_0_f_rd_addr
-  always@(WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave or
-	  fabric_xactors_from_masters_0_f_rd_addr$D_OUT or
-	  WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_4 or
-	  fabric_xactors_from_masters_1_f_rd_addr$D_OUT or
-	  WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 or
-	  fabric_xactors_from_masters_2_f_rd_addr$D_OUT)
-  begin
-    case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave:
-	  fabric_xactors_to_slaves_0_f_rd_addr$D_IN =
-	      fabric_xactors_from_masters_0_f_rd_addr$D_OUT;
-      WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_4:
-	  fabric_xactors_to_slaves_0_f_rd_addr$D_IN =
-	      fabric_xactors_from_masters_1_f_rd_addr$D_OUT;
-      WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8:
-	  fabric_xactors_to_slaves_0_f_rd_addr$D_IN =
-	      fabric_xactors_from_masters_2_f_rd_addr$D_OUT;
-      default: fabric_xactors_to_slaves_0_f_rd_addr$D_IN =
-		   65'h0AAAAAAAAAAAAAAAA /* unspecified value */ ;
-    endcase
-  end
+  assign fabric_xactors_to_slaves_0_f_rd_addr$D_IN =
+	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave ?
+	       fabric_xactors_from_masters_0_f_rd_addr$D_OUT :
+	       fabric_xactors_from_masters_1_f_rd_addr$D_OUT ;
   assign fabric_xactors_to_slaves_0_f_rd_addr$ENQ =
 	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave ||
-	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_4 ||
-	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 ;
+	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_4 ;
   assign fabric_xactors_to_slaves_0_f_rd_addr$DEQ =
 	     fabric_xactors_to_slaves_0_f_rd_addr$EMPTY_N &&
 	     v_to_slaves_0_arready ;
@@ -6126,74 +4818,35 @@ module mkLocal_Fabric(CLK,
 	     v_to_slaves_0_rvalid &&
 	     fabric_xactors_to_slaves_0_f_rd_data$FULL_N ;
   assign fabric_xactors_to_slaves_0_f_rd_data$DEQ =
-	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_4 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master ;
   assign fabric_xactors_to_slaves_0_f_rd_data$CLR = fabric_rg_reset ;
 
   // submodule fabric_xactors_to_slaves_0_f_wr_addr
-  always@(WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave or
-	  fabric_xactors_from_masters_0_f_wr_addr$D_OUT or
-	  WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_4 or
-	  fabric_xactors_from_masters_1_f_wr_addr$D_OUT or
-	  WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 or
-	  fabric_xactors_from_masters_2_f_wr_addr$D_OUT)
-  begin
-    case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave:
-	  fabric_xactors_to_slaves_0_f_wr_addr$D_IN =
-	      fabric_xactors_from_masters_0_f_wr_addr$D_OUT;
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_4:
-	  fabric_xactors_to_slaves_0_f_wr_addr$D_IN =
-	      fabric_xactors_from_masters_1_f_wr_addr$D_OUT;
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8:
-	  fabric_xactors_to_slaves_0_f_wr_addr$D_IN =
-	      fabric_xactors_from_masters_2_f_wr_addr$D_OUT;
-      default: fabric_xactors_to_slaves_0_f_wr_addr$D_IN =
-		   65'h0AAAAAAAAAAAAAAAA /* unspecified value */ ;
-    endcase
-  end
+  assign fabric_xactors_to_slaves_0_f_wr_addr$D_IN =
+	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave ?
+	       fabric_xactors_from_masters_0_f_wr_addr$D_OUT :
+	       fabric_xactors_from_masters_1_f_wr_addr$D_OUT ;
   assign fabric_xactors_to_slaves_0_f_wr_addr$ENQ =
 	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_4 ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 ;
+	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_4 ;
   assign fabric_xactors_to_slaves_0_f_wr_addr$DEQ =
 	     fabric_xactors_to_slaves_0_f_wr_addr$EMPTY_N &&
 	     v_to_slaves_0_awready ;
   assign fabric_xactors_to_slaves_0_f_wr_addr$CLR = fabric_rg_reset ;
 
   // submodule fabric_xactors_to_slaves_0_f_wr_data
-  always@(MUX_fabric_xactors_to_slaves_0_f_wr_data$enq_1__SEL_1 or
-	  fabric_xactors_from_masters_0_f_wr_data$D_OUT or
-	  MUX_fabric_xactors_to_slaves_0_f_wr_data$enq_1__SEL_2 or
-	  fabric_xactors_from_masters_1_f_wr_data$D_OUT or
-	  MUX_fabric_xactors_to_slaves_0_f_wr_data$enq_1__SEL_3 or
-	  fabric_xactors_from_masters_2_f_wr_data$D_OUT)
-  begin
-    case (1'b1) // synopsys parallel_case
-      MUX_fabric_xactors_to_slaves_0_f_wr_data$enq_1__SEL_1:
-	  fabric_xactors_to_slaves_0_f_wr_data$D_IN =
-	      fabric_xactors_from_masters_0_f_wr_data$D_OUT;
-      MUX_fabric_xactors_to_slaves_0_f_wr_data$enq_1__SEL_2:
-	  fabric_xactors_to_slaves_0_f_wr_data$D_IN =
-	      fabric_xactors_from_masters_1_f_wr_data$D_OUT;
-      MUX_fabric_xactors_to_slaves_0_f_wr_data$enq_1__SEL_3:
-	  fabric_xactors_to_slaves_0_f_wr_data$D_IN =
-	      fabric_xactors_from_masters_2_f_wr_data$D_OUT;
-      default: fabric_xactors_to_slaves_0_f_wr_data$D_IN =
-		   37'h0AAAAAAAAA /* unspecified value */ ;
-    endcase
-  end
+  assign fabric_xactors_to_slaves_0_f_wr_data$D_IN =
+	     MUX_fabric_xactors_to_slaves_0_f_wr_data$enq_1__SEL_1 ?
+	       fabric_xactors_from_masters_0_f_wr_data$D_OUT :
+	       fabric_xactors_from_masters_1_f_wr_data$D_OUT ;
   assign fabric_xactors_to_slaves_0_f_wr_data$ENQ =
 	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data &&
 	     fabric_v_f_wd_tasks_0$D_OUT[10:8] == 3'd0 &&
-	     fabric_v_f_wd_tasks_0_first__22_BITS_10_TO_8_2_ETC___d224 ||
+	     fabric_v_f_wd_tasks_0_first__59_BITS_10_TO_8_6_ETC___d161 ||
 	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 &&
 	     fabric_v_f_wd_tasks_1$D_OUT[10:8] == 3'd0 &&
-	     fabric_v_f_wd_tasks_1_first__61_BITS_10_TO_8_6_ETC___d263 ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	     fabric_v_f_wd_tasks_2$D_OUT[10:8] == 3'd0 &&
-	     fabric_v_f_wd_tasks_2_first__96_BITS_10_TO_8_9_ETC___d298 ;
+	     fabric_v_f_wd_tasks_1_first__98_BITS_10_TO_8_9_ETC___d200 ;
   assign fabric_xactors_to_slaves_0_f_wr_data$DEQ =
 	     fabric_xactors_to_slaves_0_f_wr_data$EMPTY_N &&
 	     v_to_slaves_0_wready ;
@@ -6206,37 +4859,18 @@ module mkLocal_Fabric(CLK,
 	     v_to_slaves_0_bvalid &&
 	     fabric_xactors_to_slaves_0_f_wr_resp$FULL_N ;
   assign fabric_xactors_to_slaves_0_f_wr_resp$DEQ =
-	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_8 ||
 	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_4 ||
 	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master ;
   assign fabric_xactors_to_slaves_0_f_wr_resp$CLR = fabric_rg_reset ;
 
   // submodule fabric_xactors_to_slaves_1_f_rd_addr
-  always@(WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_1 or
-	  fabric_xactors_from_masters_0_f_rd_addr$D_OUT or
-	  WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_5 or
-	  fabric_xactors_from_masters_1_f_rd_addr$D_OUT or
-	  WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 or
-	  fabric_xactors_from_masters_2_f_rd_addr$D_OUT)
-  begin
-    case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_1:
-	  fabric_xactors_to_slaves_1_f_rd_addr$D_IN =
-	      fabric_xactors_from_masters_0_f_rd_addr$D_OUT;
-      WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_5:
-	  fabric_xactors_to_slaves_1_f_rd_addr$D_IN =
-	      fabric_xactors_from_masters_1_f_rd_addr$D_OUT;
-      WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9:
-	  fabric_xactors_to_slaves_1_f_rd_addr$D_IN =
-	      fabric_xactors_from_masters_2_f_rd_addr$D_OUT;
-      default: fabric_xactors_to_slaves_1_f_rd_addr$D_IN =
-		   65'h0AAAAAAAAAAAAAAAA /* unspecified value */ ;
-    endcase
-  end
+  assign fabric_xactors_to_slaves_1_f_rd_addr$D_IN =
+	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_1 ?
+	       fabric_xactors_from_masters_0_f_rd_addr$D_OUT :
+	       fabric_xactors_from_masters_1_f_rd_addr$D_OUT ;
   assign fabric_xactors_to_slaves_1_f_rd_addr$ENQ =
 	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_1 ||
-	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_5 ||
-	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 ;
+	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_5 ;
   assign fabric_xactors_to_slaves_1_f_rd_addr$DEQ =
 	     fabric_xactors_to_slaves_1_f_rd_addr$EMPTY_N &&
 	     v_to_slaves_1_arready ;
@@ -6252,74 +4886,35 @@ module mkLocal_Fabric(CLK,
 	     v_to_slaves_1_rvalid &&
 	     fabric_xactors_to_slaves_1_f_rd_data$FULL_N ;
   assign fabric_xactors_to_slaves_1_f_rd_data$DEQ =
-	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_5 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_1 ;
   assign fabric_xactors_to_slaves_1_f_rd_data$CLR = fabric_rg_reset ;
 
   // submodule fabric_xactors_to_slaves_1_f_wr_addr
-  always@(WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_1 or
-	  fabric_xactors_from_masters_0_f_wr_addr$D_OUT or
-	  WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_5 or
-	  fabric_xactors_from_masters_1_f_wr_addr$D_OUT or
-	  WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 or
-	  fabric_xactors_from_masters_2_f_wr_addr$D_OUT)
-  begin
-    case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_1:
-	  fabric_xactors_to_slaves_1_f_wr_addr$D_IN =
-	      fabric_xactors_from_masters_0_f_wr_addr$D_OUT;
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_5:
-	  fabric_xactors_to_slaves_1_f_wr_addr$D_IN =
-	      fabric_xactors_from_masters_1_f_wr_addr$D_OUT;
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9:
-	  fabric_xactors_to_slaves_1_f_wr_addr$D_IN =
-	      fabric_xactors_from_masters_2_f_wr_addr$D_OUT;
-      default: fabric_xactors_to_slaves_1_f_wr_addr$D_IN =
-		   65'h0AAAAAAAAAAAAAAAA /* unspecified value */ ;
-    endcase
-  end
+  assign fabric_xactors_to_slaves_1_f_wr_addr$D_IN =
+	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_1 ?
+	       fabric_xactors_from_masters_0_f_wr_addr$D_OUT :
+	       fabric_xactors_from_masters_1_f_wr_addr$D_OUT ;
   assign fabric_xactors_to_slaves_1_f_wr_addr$ENQ =
 	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_1 ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_5 ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 ;
+	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_5 ;
   assign fabric_xactors_to_slaves_1_f_wr_addr$DEQ =
 	     fabric_xactors_to_slaves_1_f_wr_addr$EMPTY_N &&
 	     v_to_slaves_1_awready ;
   assign fabric_xactors_to_slaves_1_f_wr_addr$CLR = fabric_rg_reset ;
 
   // submodule fabric_xactors_to_slaves_1_f_wr_data
-  always@(MUX_fabric_xactors_to_slaves_1_f_wr_data$enq_1__SEL_1 or
-	  fabric_xactors_from_masters_0_f_wr_data$D_OUT or
-	  MUX_fabric_xactors_to_slaves_1_f_wr_data$enq_1__SEL_2 or
-	  fabric_xactors_from_masters_1_f_wr_data$D_OUT or
-	  MUX_fabric_xactors_to_slaves_1_f_wr_data$enq_1__SEL_3 or
-	  fabric_xactors_from_masters_2_f_wr_data$D_OUT)
-  begin
-    case (1'b1) // synopsys parallel_case
-      MUX_fabric_xactors_to_slaves_1_f_wr_data$enq_1__SEL_1:
-	  fabric_xactors_to_slaves_1_f_wr_data$D_IN =
-	      fabric_xactors_from_masters_0_f_wr_data$D_OUT;
-      MUX_fabric_xactors_to_slaves_1_f_wr_data$enq_1__SEL_2:
-	  fabric_xactors_to_slaves_1_f_wr_data$D_IN =
-	      fabric_xactors_from_masters_1_f_wr_data$D_OUT;
-      MUX_fabric_xactors_to_slaves_1_f_wr_data$enq_1__SEL_3:
-	  fabric_xactors_to_slaves_1_f_wr_data$D_IN =
-	      fabric_xactors_from_masters_2_f_wr_data$D_OUT;
-      default: fabric_xactors_to_slaves_1_f_wr_data$D_IN =
-		   37'h0AAAAAAAAA /* unspecified value */ ;
-    endcase
-  end
+  assign fabric_xactors_to_slaves_1_f_wr_data$D_IN =
+	     MUX_fabric_xactors_to_slaves_1_f_wr_data$enq_1__SEL_1 ?
+	       fabric_xactors_from_masters_0_f_wr_data$D_OUT :
+	       fabric_xactors_from_masters_1_f_wr_data$D_OUT ;
   assign fabric_xactors_to_slaves_1_f_wr_data$ENQ =
 	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data &&
 	     fabric_v_f_wd_tasks_0$D_OUT[10:8] == 3'd1 &&
-	     fabric_v_f_wd_tasks_0_first__22_BITS_10_TO_8_2_ETC___d224 ||
+	     fabric_v_f_wd_tasks_0_first__59_BITS_10_TO_8_6_ETC___d161 ||
 	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 &&
 	     fabric_v_f_wd_tasks_1$D_OUT[10:8] == 3'd1 &&
-	     fabric_v_f_wd_tasks_1_first__61_BITS_10_TO_8_6_ETC___d263 ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	     fabric_v_f_wd_tasks_2$D_OUT[10:8] == 3'd1 &&
-	     fabric_v_f_wd_tasks_2_first__96_BITS_10_TO_8_9_ETC___d298 ;
+	     fabric_v_f_wd_tasks_1_first__98_BITS_10_TO_8_9_ETC___d200 ;
   assign fabric_xactors_to_slaves_1_f_wr_data$DEQ =
 	     fabric_xactors_to_slaves_1_f_wr_data$EMPTY_N &&
 	     v_to_slaves_1_wready ;
@@ -6332,37 +4927,18 @@ module mkLocal_Fabric(CLK,
 	     v_to_slaves_1_bvalid &&
 	     fabric_xactors_to_slaves_1_f_wr_resp$FULL_N ;
   assign fabric_xactors_to_slaves_1_f_wr_resp$DEQ =
-	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_9 ||
 	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_5 ||
 	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_1 ;
   assign fabric_xactors_to_slaves_1_f_wr_resp$CLR = fabric_rg_reset ;
 
   // submodule fabric_xactors_to_slaves_2_f_rd_addr
-  always@(WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_2 or
-	  fabric_xactors_from_masters_0_f_rd_addr$D_OUT or
-	  WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_6 or
-	  fabric_xactors_from_masters_1_f_rd_addr$D_OUT or
-	  WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 or
-	  fabric_xactors_from_masters_2_f_rd_addr$D_OUT)
-  begin
-    case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_2:
-	  fabric_xactors_to_slaves_2_f_rd_addr$D_IN =
-	      fabric_xactors_from_masters_0_f_rd_addr$D_OUT;
-      WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_6:
-	  fabric_xactors_to_slaves_2_f_rd_addr$D_IN =
-	      fabric_xactors_from_masters_1_f_rd_addr$D_OUT;
-      WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10:
-	  fabric_xactors_to_slaves_2_f_rd_addr$D_IN =
-	      fabric_xactors_from_masters_2_f_rd_addr$D_OUT;
-      default: fabric_xactors_to_slaves_2_f_rd_addr$D_IN =
-		   65'h0AAAAAAAAAAAAAAAA /* unspecified value */ ;
-    endcase
-  end
+  assign fabric_xactors_to_slaves_2_f_rd_addr$D_IN =
+	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_2 ?
+	       fabric_xactors_from_masters_0_f_rd_addr$D_OUT :
+	       fabric_xactors_from_masters_1_f_rd_addr$D_OUT ;
   assign fabric_xactors_to_slaves_2_f_rd_addr$ENQ =
 	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_2 ||
-	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_6 ||
-	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 ;
+	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_6 ;
   assign fabric_xactors_to_slaves_2_f_rd_addr$DEQ =
 	     fabric_xactors_to_slaves_2_f_rd_addr$EMPTY_N &&
 	     v_to_slaves_2_arready ;
@@ -6378,74 +4954,35 @@ module mkLocal_Fabric(CLK,
 	     v_to_slaves_2_rvalid &&
 	     fabric_xactors_to_slaves_2_f_rd_data$FULL_N ;
   assign fabric_xactors_to_slaves_2_f_rd_data$DEQ =
-	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_6 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_2 ;
   assign fabric_xactors_to_slaves_2_f_rd_data$CLR = fabric_rg_reset ;
 
   // submodule fabric_xactors_to_slaves_2_f_wr_addr
-  always@(WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_2 or
-	  fabric_xactors_from_masters_0_f_wr_addr$D_OUT or
-	  WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_6 or
-	  fabric_xactors_from_masters_1_f_wr_addr$D_OUT or
-	  WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 or
-	  fabric_xactors_from_masters_2_f_wr_addr$D_OUT)
-  begin
-    case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_2:
-	  fabric_xactors_to_slaves_2_f_wr_addr$D_IN =
-	      fabric_xactors_from_masters_0_f_wr_addr$D_OUT;
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_6:
-	  fabric_xactors_to_slaves_2_f_wr_addr$D_IN =
-	      fabric_xactors_from_masters_1_f_wr_addr$D_OUT;
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10:
-	  fabric_xactors_to_slaves_2_f_wr_addr$D_IN =
-	      fabric_xactors_from_masters_2_f_wr_addr$D_OUT;
-      default: fabric_xactors_to_slaves_2_f_wr_addr$D_IN =
-		   65'h0AAAAAAAAAAAAAAAA /* unspecified value */ ;
-    endcase
-  end
+  assign fabric_xactors_to_slaves_2_f_wr_addr$D_IN =
+	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_2 ?
+	       fabric_xactors_from_masters_0_f_wr_addr$D_OUT :
+	       fabric_xactors_from_masters_1_f_wr_addr$D_OUT ;
   assign fabric_xactors_to_slaves_2_f_wr_addr$ENQ =
 	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_2 ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_6 ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 ;
+	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_6 ;
   assign fabric_xactors_to_slaves_2_f_wr_addr$DEQ =
 	     fabric_xactors_to_slaves_2_f_wr_addr$EMPTY_N &&
 	     v_to_slaves_2_awready ;
   assign fabric_xactors_to_slaves_2_f_wr_addr$CLR = fabric_rg_reset ;
 
   // submodule fabric_xactors_to_slaves_2_f_wr_data
-  always@(MUX_fabric_xactors_to_slaves_2_f_wr_data$enq_1__SEL_1 or
-	  fabric_xactors_from_masters_0_f_wr_data$D_OUT or
-	  MUX_fabric_xactors_to_slaves_2_f_wr_data$enq_1__SEL_2 or
-	  fabric_xactors_from_masters_1_f_wr_data$D_OUT or
-	  MUX_fabric_xactors_to_slaves_2_f_wr_data$enq_1__SEL_3 or
-	  fabric_xactors_from_masters_2_f_wr_data$D_OUT)
-  begin
-    case (1'b1) // synopsys parallel_case
-      MUX_fabric_xactors_to_slaves_2_f_wr_data$enq_1__SEL_1:
-	  fabric_xactors_to_slaves_2_f_wr_data$D_IN =
-	      fabric_xactors_from_masters_0_f_wr_data$D_OUT;
-      MUX_fabric_xactors_to_slaves_2_f_wr_data$enq_1__SEL_2:
-	  fabric_xactors_to_slaves_2_f_wr_data$D_IN =
-	      fabric_xactors_from_masters_1_f_wr_data$D_OUT;
-      MUX_fabric_xactors_to_slaves_2_f_wr_data$enq_1__SEL_3:
-	  fabric_xactors_to_slaves_2_f_wr_data$D_IN =
-	      fabric_xactors_from_masters_2_f_wr_data$D_OUT;
-      default: fabric_xactors_to_slaves_2_f_wr_data$D_IN =
-		   37'h0AAAAAAAAA /* unspecified value */ ;
-    endcase
-  end
+  assign fabric_xactors_to_slaves_2_f_wr_data$D_IN =
+	     MUX_fabric_xactors_to_slaves_2_f_wr_data$enq_1__SEL_1 ?
+	       fabric_xactors_from_masters_0_f_wr_data$D_OUT :
+	       fabric_xactors_from_masters_1_f_wr_data$D_OUT ;
   assign fabric_xactors_to_slaves_2_f_wr_data$ENQ =
 	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data &&
 	     fabric_v_f_wd_tasks_0$D_OUT[10:8] == 3'd2 &&
-	     fabric_v_f_wd_tasks_0_first__22_BITS_10_TO_8_2_ETC___d224 ||
+	     fabric_v_f_wd_tasks_0_first__59_BITS_10_TO_8_6_ETC___d161 ||
 	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 &&
 	     fabric_v_f_wd_tasks_1$D_OUT[10:8] == 3'd2 &&
-	     fabric_v_f_wd_tasks_1_first__61_BITS_10_TO_8_6_ETC___d263 ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	     fabric_v_f_wd_tasks_2$D_OUT[10:8] == 3'd2 &&
-	     fabric_v_f_wd_tasks_2_first__96_BITS_10_TO_8_9_ETC___d298 ;
+	     fabric_v_f_wd_tasks_1_first__98_BITS_10_TO_8_9_ETC___d200 ;
   assign fabric_xactors_to_slaves_2_f_wr_data$DEQ =
 	     fabric_xactors_to_slaves_2_f_wr_data$EMPTY_N &&
 	     v_to_slaves_2_wready ;
@@ -6458,37 +4995,18 @@ module mkLocal_Fabric(CLK,
 	     v_to_slaves_2_bvalid &&
 	     fabric_xactors_to_slaves_2_f_wr_resp$FULL_N ;
   assign fabric_xactors_to_slaves_2_f_wr_resp$DEQ =
-	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_10 ||
 	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_6 ||
 	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_2 ;
   assign fabric_xactors_to_slaves_2_f_wr_resp$CLR = fabric_rg_reset ;
 
   // submodule fabric_xactors_to_slaves_3_f_rd_addr
-  always@(WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_3 or
-	  fabric_xactors_from_masters_0_f_rd_addr$D_OUT or
-	  WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_7 or
-	  fabric_xactors_from_masters_1_f_rd_addr$D_OUT or
-	  WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 or
-	  fabric_xactors_from_masters_2_f_rd_addr$D_OUT)
-  begin
-    case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_3:
-	  fabric_xactors_to_slaves_3_f_rd_addr$D_IN =
-	      fabric_xactors_from_masters_0_f_rd_addr$D_OUT;
-      WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_7:
-	  fabric_xactors_to_slaves_3_f_rd_addr$D_IN =
-	      fabric_xactors_from_masters_1_f_rd_addr$D_OUT;
-      WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11:
-	  fabric_xactors_to_slaves_3_f_rd_addr$D_IN =
-	      fabric_xactors_from_masters_2_f_rd_addr$D_OUT;
-      default: fabric_xactors_to_slaves_3_f_rd_addr$D_IN =
-		   65'h0AAAAAAAAAAAAAAAA /* unspecified value */ ;
-    endcase
-  end
+  assign fabric_xactors_to_slaves_3_f_rd_addr$D_IN =
+	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_3 ?
+	       fabric_xactors_from_masters_0_f_rd_addr$D_OUT :
+	       fabric_xactors_from_masters_1_f_rd_addr$D_OUT ;
   assign fabric_xactors_to_slaves_3_f_rd_addr$ENQ =
 	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_3 ||
-	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_7 ||
-	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 ;
+	     WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_7 ;
   assign fabric_xactors_to_slaves_3_f_rd_addr$DEQ =
 	     fabric_xactors_to_slaves_3_f_rd_addr$EMPTY_N &&
 	     v_to_slaves_3_arready ;
@@ -6504,74 +5022,35 @@ module mkLocal_Fabric(CLK,
 	     v_to_slaves_3_rvalid &&
 	     fabric_xactors_to_slaves_3_f_rd_data$FULL_N ;
   assign fabric_xactors_to_slaves_3_f_rd_data$DEQ =
-	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_3 ;
   assign fabric_xactors_to_slaves_3_f_rd_data$CLR = fabric_rg_reset ;
 
   // submodule fabric_xactors_to_slaves_3_f_wr_addr
-  always@(WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_3 or
-	  fabric_xactors_from_masters_0_f_wr_addr$D_OUT or
-	  WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_7 or
-	  fabric_xactors_from_masters_1_f_wr_addr$D_OUT or
-	  WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 or
-	  fabric_xactors_from_masters_2_f_wr_addr$D_OUT)
-  begin
-    case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_3:
-	  fabric_xactors_to_slaves_3_f_wr_addr$D_IN =
-	      fabric_xactors_from_masters_0_f_wr_addr$D_OUT;
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_7:
-	  fabric_xactors_to_slaves_3_f_wr_addr$D_IN =
-	      fabric_xactors_from_masters_1_f_wr_addr$D_OUT;
-      WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11:
-	  fabric_xactors_to_slaves_3_f_wr_addr$D_IN =
-	      fabric_xactors_from_masters_2_f_wr_addr$D_OUT;
-      default: fabric_xactors_to_slaves_3_f_wr_addr$D_IN =
-		   65'h0AAAAAAAAAAAAAAAA /* unspecified value */ ;
-    endcase
-  end
+  assign fabric_xactors_to_slaves_3_f_wr_addr$D_IN =
+	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_3 ?
+	       fabric_xactors_from_masters_0_f_wr_addr$D_OUT :
+	       fabric_xactors_from_masters_1_f_wr_addr$D_OUT ;
   assign fabric_xactors_to_slaves_3_f_wr_addr$ENQ =
 	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_3 ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_7 ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 ;
+	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_7 ;
   assign fabric_xactors_to_slaves_3_f_wr_addr$DEQ =
 	     fabric_xactors_to_slaves_3_f_wr_addr$EMPTY_N &&
 	     v_to_slaves_3_awready ;
   assign fabric_xactors_to_slaves_3_f_wr_addr$CLR = fabric_rg_reset ;
 
   // submodule fabric_xactors_to_slaves_3_f_wr_data
-  always@(MUX_fabric_xactors_to_slaves_3_f_wr_data$enq_1__SEL_1 or
-	  fabric_xactors_from_masters_0_f_wr_data$D_OUT or
-	  MUX_fabric_xactors_to_slaves_3_f_wr_data$enq_1__SEL_2 or
-	  fabric_xactors_from_masters_1_f_wr_data$D_OUT or
-	  MUX_fabric_xactors_to_slaves_3_f_wr_data$enq_1__SEL_3 or
-	  fabric_xactors_from_masters_2_f_wr_data$D_OUT)
-  begin
-    case (1'b1) // synopsys parallel_case
-      MUX_fabric_xactors_to_slaves_3_f_wr_data$enq_1__SEL_1:
-	  fabric_xactors_to_slaves_3_f_wr_data$D_IN =
-	      fabric_xactors_from_masters_0_f_wr_data$D_OUT;
-      MUX_fabric_xactors_to_slaves_3_f_wr_data$enq_1__SEL_2:
-	  fabric_xactors_to_slaves_3_f_wr_data$D_IN =
-	      fabric_xactors_from_masters_1_f_wr_data$D_OUT;
-      MUX_fabric_xactors_to_slaves_3_f_wr_data$enq_1__SEL_3:
-	  fabric_xactors_to_slaves_3_f_wr_data$D_IN =
-	      fabric_xactors_from_masters_2_f_wr_data$D_OUT;
-      default: fabric_xactors_to_slaves_3_f_wr_data$D_IN =
-		   37'h0AAAAAAAAA /* unspecified value */ ;
-    endcase
-  end
+  assign fabric_xactors_to_slaves_3_f_wr_data$D_IN =
+	     MUX_fabric_xactors_to_slaves_3_f_wr_data$enq_1__SEL_1 ?
+	       fabric_xactors_from_masters_0_f_wr_data$D_OUT :
+	       fabric_xactors_from_masters_1_f_wr_data$D_OUT ;
   assign fabric_xactors_to_slaves_3_f_wr_data$ENQ =
 	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data &&
 	     fabric_v_f_wd_tasks_0$D_OUT[10:8] == 3'd3 &&
-	     fabric_v_f_wd_tasks_0_first__22_BITS_10_TO_8_2_ETC___d224 ||
+	     fabric_v_f_wd_tasks_0_first__59_BITS_10_TO_8_6_ETC___d161 ||
 	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 &&
 	     fabric_v_f_wd_tasks_1$D_OUT[10:8] == 3'd3 &&
-	     fabric_v_f_wd_tasks_1_first__61_BITS_10_TO_8_6_ETC___d263 ||
-	     WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	     fabric_v_f_wd_tasks_2$D_OUT[10:8] == 3'd3 &&
-	     fabric_v_f_wd_tasks_2_first__96_BITS_10_TO_8_9_ETC___d298 ;
+	     fabric_v_f_wd_tasks_1_first__98_BITS_10_TO_8_9_ETC___d200 ;
   assign fabric_xactors_to_slaves_3_f_wr_data$DEQ =
 	     fabric_xactors_to_slaves_3_f_wr_data$EMPTY_N &&
 	     v_to_slaves_3_wready ;
@@ -6584,7 +5063,6 @@ module mkLocal_Fabric(CLK,
 	     v_to_slaves_3_bvalid &&
 	     fabric_xactors_to_slaves_3_f_wr_resp$FULL_N ;
   assign fabric_xactors_to_slaves_3_f_wr_resp$DEQ =
-	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_11 ||
 	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_7 ||
 	     WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_3 ;
   assign fabric_xactors_to_slaves_3_f_wr_resp$CLR = fabric_rg_reset ;
@@ -6599,21 +5077,21 @@ module mkLocal_Fabric(CLK,
   assign soc_map$m_is_tcm_addr_addr = 32'h0 ;
 
   // remaining internal signals
-  assign IF_fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_ETC___d708 =
-	     fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 ?
-	       x1_avValue_rresp__h28293 :
+  assign IF_fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_ETC___d507 =
+	     fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 ?
+	       x1_avValue_rresp__h21155 :
 	       fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] ;
-  assign IF_fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_ETC___d743 =
-	     fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 ?
-	       x1_avValue_rresp__h28942 :
+  assign IF_fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_ETC___d542 =
+	     fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 ?
+	       x1_avValue_rresp__h21804 :
 	       fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] ;
-  assign IF_fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_ETC___d778 =
-	     fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 ?
-	       x1_avValue_rresp__h29581 :
+  assign IF_fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_ETC___d577 =
+	     fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 ?
+	       x1_avValue_rresp__h22443 :
 	       fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] ;
-  assign IF_fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_ETC___d813 =
-	     fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 ?
-	       x1_avValue_rresp__h30220 :
+  assign IF_fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_ETC___d612 =
+	     fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 ?
+	       x1_avValue_rresp__h23082 :
 	       fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] ;
   assign NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d141 =
 	     (!soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d103 ||
@@ -6629,62 +5107,34 @@ module mkLocal_Fabric(CLK,
 	      !fabric_xactors_from_masters_1_f_wr_addr_first__ETC___d109) &&
 	     (!soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d137 ||
 	      !fabric_xactors_from_masters_1_f_wr_addr_first__ETC___d138) ;
-  assign NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d204 =
-	     (!soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d166 ||
-	      !fabric_xactors_from_masters_2_f_wr_addr_first__ETC___d168) &&
-	     (!soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d171 ||
-	      !fabric_xactors_from_masters_2_f_wr_addr_first__ETC___d172) &&
-	     soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d200 &&
-	     fabric_xactors_from_masters_2_f_wr_addr_first__ETC___d201 ;
-  assign NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d215 =
-	     (!soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d166 ||
-	      !fabric_xactors_from_masters_2_f_wr_addr_first__ETC___d168) &&
-	     (!soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d171 ||
-	      !fabric_xactors_from_masters_2_f_wr_addr_first__ETC___d172) &&
-	     (!soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d200 ||
-	      !fabric_xactors_from_masters_2_f_wr_addr_first__ETC___d201) ;
-  assign NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d543 =
-	     (!soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d500 ||
-	      !fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d502) &&
-	     (!soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d505 ||
-	      !fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d506) &&
-	     soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d539 &&
-	     fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d540 ;
-  assign NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d556 =
-	     (!soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d500 ||
-	      !fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d502) &&
-	     (!soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d505 ||
-	      !fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d506) &&
-	     (!soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d539 ||
-	      !fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d540) ;
-  assign NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d604 =
-	     (!soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d567 ||
-	      !fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d569) &&
-	     (!soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d572 ||
-	      !fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d573) &&
-	     soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d600 &&
-	     fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d601 ;
-  assign NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d614 =
-	     (!soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d567 ||
-	      !fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d569) &&
-	     (!soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d572 ||
-	      !fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d573) &&
-	     (!soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d600 ||
-	      !fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d601) ;
-  assign NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d662 =
-	     (!soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d625 ||
-	      !fabric_xactors_from_masters_2_f_rd_addr_first__ETC___d627) &&
-	     (!soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d630 ||
-	      !fabric_xactors_from_masters_2_f_rd_addr_first__ETC___d631) &&
-	     soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d658 &&
-	     fabric_xactors_from_masters_2_f_rd_addr_first__ETC___d659 ;
-  assign NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d672 =
-	     (!soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d625 ||
-	      !fabric_xactors_from_masters_2_f_rd_addr_first__ETC___d627) &&
-	     (!soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d630 ||
-	      !fabric_xactors_from_masters_2_f_rd_addr_first__ETC___d631) &&
-	     (!soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d658 ||
-	      !fabric_xactors_from_masters_2_f_rd_addr_first__ETC___d659) ;
+  assign NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d400 =
+	     (!soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d357 ||
+	      !fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d359) &&
+	     (!soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d362 ||
+	      !fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d363) &&
+	     soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d396 &&
+	     fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d397 ;
+  assign NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d413 =
+	     (!soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d357 ||
+	      !fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d359) &&
+	     (!soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d362 ||
+	      !fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d363) &&
+	     (!soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d396 ||
+	      !fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d397) ;
+  assign NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d461 =
+	     (!soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d424 ||
+	      !fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d426) &&
+	     (!soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d429 ||
+	      !fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d430) &&
+	     soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d457 &&
+	     fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d458 ;
+  assign NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d471 =
+	     (!soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d424 ||
+	      !fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d426) &&
+	     (!soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d429 ||
+	      !fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d430) &&
+	     (!soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d457 ||
+	      !fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d458) ;
   assign NOT_soc_map_m_clint_addr_base__6_ULE_fabric_xa_ETC___d72 =
 	     (!soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d19 ||
 	      !fabric_xactors_from_masters_0_f_wr_addr_first__ETC___d22) &&
@@ -6700,57 +5150,46 @@ module mkLocal_Fabric(CLK,
 	     (!soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d67 ||
 	      !fabric_xactors_from_masters_0_f_wr_addr_first__ETC___d69) ;
   assign _dor1fabric_v_f_rd_mis_0$EN_deq =
-	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_4 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master ;
   assign _dor1fabric_v_f_rd_mis_1$EN_deq =
-	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_5 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_1 ;
   assign _dor1fabric_v_f_rd_mis_2$EN_deq =
-	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_6 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_2 ;
   assign _dor1fabric_v_f_rd_mis_3$EN_deq =
-	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7 ||
 	     WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_3 ;
-  assign fabric_v_f_wd_tasks_0_first__22_BITS_10_TO_8_2_ETC___d224 =
+  assign fabric_v_f_wd_tasks_0_first__59_BITS_10_TO_8_6_ETC___d161 =
 	     fabric_v_f_wd_tasks_0$D_OUT[10:8] < 3'd4 ;
-  assign fabric_v_f_wd_tasks_1_first__61_BITS_10_TO_8_6_ETC___d263 =
+  assign fabric_v_f_wd_tasks_1_first__98_BITS_10_TO_8_9_ETC___d200 =
 	     fabric_v_f_wd_tasks_1$D_OUT[10:8] < 3'd4 ;
-  assign fabric_v_f_wd_tasks_2_first__96_BITS_10_TO_8_9_ETC___d298 =
-	     fabric_v_f_wd_tasks_2$D_OUT[10:8] < 3'd4 ;
-  assign fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 =
+  assign fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 =
 	     fabric_v_rg_r_beat_count_0 == fabric_v_f_rd_mis_0$D_OUT[7:0] ;
-  assign fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 =
+  assign fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 =
 	     fabric_v_rg_r_beat_count_1 == fabric_v_f_rd_mis_1$D_OUT[7:0] ;
-  assign fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 =
+  assign fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 =
 	     fabric_v_rg_r_beat_count_2 == fabric_v_f_rd_mis_2$D_OUT[7:0] ;
-  assign fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 =
+  assign fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 =
 	     fabric_v_rg_r_beat_count_3 == fabric_v_f_rd_mis_3$D_OUT[7:0] ;
-  assign fabric_v_rg_r_err_beat_count_0_14_EQ_fabric_v__ETC___d916 =
+  assign fabric_v_rg_r_err_beat_count_0_69_EQ_fabric_v__ETC___d671 =
 	     fabric_v_rg_r_err_beat_count_0 ==
 	     fabric_v_f_rd_err_info_0$D_OUT[11:4] ;
-  assign fabric_v_rg_r_err_beat_count_1_32_EQ_fabric_v__ETC___d934 =
+  assign fabric_v_rg_r_err_beat_count_1_87_EQ_fabric_v__ETC___d689 =
 	     fabric_v_rg_r_err_beat_count_1 ==
 	     fabric_v_f_rd_err_info_1$D_OUT[11:4] ;
-  assign fabric_v_rg_r_err_beat_count_2_50_EQ_fabric_v__ETC___d952 =
-	     fabric_v_rg_r_err_beat_count_2 ==
-	     fabric_v_f_rd_err_info_2$D_OUT[11:4] ;
-  assign fabric_v_rg_wd_beat_count_0_45_EQ_fabric_v_f_w_ETC___d253 =
+  assign fabric_v_rg_wd_beat_count_0_82_EQ_fabric_v_f_w_ETC___d190 =
 	     fabric_v_rg_wd_beat_count_0 == fabric_v_f_wd_tasks_0$D_OUT[7:0] ;
-  assign fabric_v_rg_wd_beat_count_1_80_EQ_fabric_v_f_w_ETC___d288 =
+  assign fabric_v_rg_wd_beat_count_1_17_EQ_fabric_v_f_w_ETC___d225 =
 	     fabric_v_rg_wd_beat_count_1 == fabric_v_f_wd_tasks_1$D_OUT[7:0] ;
-  assign fabric_v_rg_wd_beat_count_2_15_EQ_fabric_v_f_w_ETC___d323 =
-	     fabric_v_rg_wd_beat_count_2 == fabric_v_f_wd_tasks_2$D_OUT[7:0] ;
-  assign fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d502 =
+  assign fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d359 =
 	     fabric_xactors_from_masters_0_f_rd_addr$D_OUT[60:29] <
 	     soc_map$m_clint_addr_lim ;
-  assign fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d506 =
+  assign fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d363 =
 	     fabric_xactors_from_masters_0_f_rd_addr$D_OUT[60:29] <
 	     soc_map$m_plic_addr_lim ;
-  assign fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d540 =
+  assign fabric_xactors_from_masters_0_f_rd_addr_first__ETC___d397 =
 	     fabric_xactors_from_masters_0_f_rd_addr$D_OUT[60:29] <
 	     soc_map$m_itcm_addr_lim ;
   assign fabric_xactors_from_masters_0_f_wr_addr_first__ETC___d22 =
@@ -6762,13 +5201,13 @@ module mkLocal_Fabric(CLK,
   assign fabric_xactors_from_masters_0_f_wr_addr_first__ETC___d69 =
 	     fabric_xactors_from_masters_0_f_wr_addr$D_OUT[60:29] <
 	     soc_map$m_itcm_addr_lim ;
-  assign fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d569 =
+  assign fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d426 =
 	     fabric_xactors_from_masters_1_f_rd_addr$D_OUT[60:29] <
 	     soc_map$m_clint_addr_lim ;
-  assign fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d573 =
+  assign fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d430 =
 	     fabric_xactors_from_masters_1_f_rd_addr$D_OUT[60:29] <
 	     soc_map$m_plic_addr_lim ;
-  assign fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d601 =
+  assign fabric_xactors_from_masters_1_f_rd_addr_first__ETC___d458 =
 	     fabric_xactors_from_masters_1_f_rd_addr$D_OUT[60:29] <
 	     soc_map$m_itcm_addr_lim ;
   assign fabric_xactors_from_masters_1_f_wr_addr_first__ETC___d105 =
@@ -6780,108 +5219,70 @@ module mkLocal_Fabric(CLK,
   assign fabric_xactors_from_masters_1_f_wr_addr_first__ETC___d138 =
 	     fabric_xactors_from_masters_1_f_wr_addr$D_OUT[60:29] <
 	     soc_map$m_itcm_addr_lim ;
-  assign fabric_xactors_from_masters_2_f_rd_addr_first__ETC___d627 =
-	     fabric_xactors_from_masters_2_f_rd_addr$D_OUT[60:29] <
-	     soc_map$m_clint_addr_lim ;
-  assign fabric_xactors_from_masters_2_f_rd_addr_first__ETC___d631 =
-	     fabric_xactors_from_masters_2_f_rd_addr$D_OUT[60:29] <
-	     soc_map$m_plic_addr_lim ;
-  assign fabric_xactors_from_masters_2_f_rd_addr_first__ETC___d659 =
-	     fabric_xactors_from_masters_2_f_rd_addr$D_OUT[60:29] <
-	     soc_map$m_itcm_addr_lim ;
-  assign fabric_xactors_from_masters_2_f_wr_addr_first__ETC___d168 =
-	     fabric_xactors_from_masters_2_f_wr_addr$D_OUT[60:29] <
-	     soc_map$m_clint_addr_lim ;
-  assign fabric_xactors_from_masters_2_f_wr_addr_first__ETC___d172 =
-	     fabric_xactors_from_masters_2_f_wr_addr$D_OUT[60:29] <
-	     soc_map$m_plic_addr_lim ;
-  assign fabric_xactors_from_masters_2_f_wr_addr_first__ETC___d201 =
-	     fabric_xactors_from_masters_2_f_wr_addr$D_OUT[60:29] <
-	     soc_map$m_itcm_addr_lim ;
   assign soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d103 =
 	     soc_map$m_clint_addr_base <=
 	     fabric_xactors_from_masters_1_f_wr_addr$D_OUT[60:29] ;
-  assign soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d166 =
-	     soc_map$m_clint_addr_base <=
-	     fabric_xactors_from_masters_2_f_wr_addr$D_OUT[60:29] ;
   assign soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d19 =
 	     soc_map$m_clint_addr_base <=
 	     fabric_xactors_from_masters_0_f_wr_addr$D_OUT[60:29] ;
-  assign soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d500 =
+  assign soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d357 =
 	     soc_map$m_clint_addr_base <=
 	     fabric_xactors_from_masters_0_f_rd_addr$D_OUT[60:29] ;
-  assign soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d567 =
+  assign soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d424 =
 	     soc_map$m_clint_addr_base <=
 	     fabric_xactors_from_masters_1_f_rd_addr$D_OUT[60:29] ;
-  assign soc_map_m_clint_addr_base__6_ULE_fabric_xactor_ETC___d625 =
-	     soc_map$m_clint_addr_base <=
-	     fabric_xactors_from_masters_2_f_rd_addr$D_OUT[60:29] ;
   assign soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d137 =
 	     soc_map$m_itcm_addr_base <=
 	     fabric_xactors_from_masters_1_f_wr_addr$D_OUT[60:29] ;
-  assign soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d200 =
-	     soc_map$m_itcm_addr_base <=
-	     fabric_xactors_from_masters_2_f_wr_addr$D_OUT[60:29] ;
-  assign soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d539 =
+  assign soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d396 =
 	     soc_map$m_itcm_addr_base <=
 	     fabric_xactors_from_masters_0_f_rd_addr$D_OUT[60:29] ;
-  assign soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d600 =
+  assign soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d457 =
 	     soc_map$m_itcm_addr_base <=
 	     fabric_xactors_from_masters_1_f_rd_addr$D_OUT[60:29] ;
-  assign soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d658 =
-	     soc_map$m_itcm_addr_base <=
-	     fabric_xactors_from_masters_2_f_rd_addr$D_OUT[60:29] ;
   assign soc_map_m_itcm_addr_base__6_ULE_fabric_xactors_ETC___d67 =
 	     soc_map$m_itcm_addr_base <=
 	     fabric_xactors_from_masters_0_f_wr_addr$D_OUT[60:29] ;
   assign soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d108 =
 	     soc_map$m_plic_addr_base <=
 	     fabric_xactors_from_masters_1_f_wr_addr$D_OUT[60:29] ;
-  assign soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d171 =
-	     soc_map$m_plic_addr_base <=
-	     fabric_xactors_from_masters_2_f_wr_addr$D_OUT[60:29] ;
   assign soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d26 =
 	     soc_map$m_plic_addr_base <=
 	     fabric_xactors_from_masters_0_f_wr_addr$D_OUT[60:29] ;
-  assign soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d505 =
+  assign soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d362 =
 	     soc_map$m_plic_addr_base <=
 	     fabric_xactors_from_masters_0_f_rd_addr$D_OUT[60:29] ;
-  assign soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d572 =
+  assign soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d429 =
 	     soc_map$m_plic_addr_base <=
 	     fabric_xactors_from_masters_1_f_rd_addr$D_OUT[60:29] ;
-  assign soc_map_m_plic_addr_base__5_ULE_fabric_xactors_ETC___d630 =
-	     soc_map$m_plic_addr_base <=
-	     fabric_xactors_from_masters_2_f_rd_addr$D_OUT[60:29] ;
-  assign x1_avValue_rresp__h28293 =
+  assign x1_avValue_rresp__h21155 =
 	     (fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	      !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0]) ?
 	       2'b10 :
 	       fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] ;
-  assign x1_avValue_rresp__h28942 =
+  assign x1_avValue_rresp__h21804 =
 	     (fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	      !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0]) ?
 	       2'b10 :
 	       fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] ;
-  assign x1_avValue_rresp__h29581 =
+  assign x1_avValue_rresp__h22443 =
 	     (fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	      !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0]) ?
 	       2'b10 :
 	       fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] ;
-  assign x1_avValue_rresp__h30220 =
+  assign x1_avValue_rresp__h23082 =
 	     (fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	      !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0]) ?
 	       2'b10 :
 	       fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] ;
-  assign x__h17223 = fabric_v_rg_wd_beat_count_0 + 8'd1 ;
-  assign x__h17841 = fabric_v_rg_wd_beat_count_1 + 8'd1 ;
-  assign x__h18459 = fabric_v_rg_wd_beat_count_2 + 8'd1 ;
-  assign x__h28315 = fabric_v_rg_r_beat_count_0 + 8'd1 ;
-  assign x__h28964 = fabric_v_rg_r_beat_count_1 + 8'd1 ;
-  assign x__h29603 = fabric_v_rg_r_beat_count_2 + 8'd1 ;
-  assign x__h30242 = fabric_v_rg_r_beat_count_3 + 8'd1 ;
-  assign x__h35615 = fabric_v_rg_r_err_beat_count_0 + 8'd1 ;
-  assign x__h35997 = fabric_v_rg_r_err_beat_count_1 + 8'd1 ;
-  assign x__h36379 = fabric_v_rg_r_err_beat_count_2 + 8'd1 ;
+  assign x__h13668 = fabric_v_rg_wd_beat_count_0 + 8'd1 ;
+  assign x__h14286 = fabric_v_rg_wd_beat_count_1 + 8'd1 ;
+  assign x__h21177 = fabric_v_rg_r_beat_count_0 + 8'd1 ;
+  assign x__h21826 = fabric_v_rg_r_beat_count_1 + 8'd1 ;
+  assign x__h22465 = fabric_v_rg_r_beat_count_2 + 8'd1 ;
+  assign x__h23104 = fabric_v_rg_r_beat_count_3 + 8'd1 ;
+  assign x__h26039 = fabric_v_rg_r_err_beat_count_0 + 8'd1 ;
+  assign x__h26421 = fabric_v_rg_r_err_beat_count_1 + 8'd1 ;
   always@(fabric_v_f_wd_tasks_0$D_OUT or
 	  fabric_xactors_to_slaves_0_f_wr_data$FULL_N or
 	  fabric_xactors_to_slaves_1_f_wr_data$FULL_N or
@@ -6890,18 +5291,18 @@ module mkLocal_Fabric(CLK,
   begin
     case (fabric_v_f_wd_tasks_0$D_OUT[10:8])
       3'd0:
-	  CASE_fabric_v_f_wd_tasks_0_first__22_BITS_10_T_ETC___d230 =
+	  CASE_fabric_v_f_wd_tasks_0_first__59_BITS_10_T_ETC___d167 =
 	      fabric_xactors_to_slaves_0_f_wr_data$FULL_N;
       3'd1:
-	  CASE_fabric_v_f_wd_tasks_0_first__22_BITS_10_T_ETC___d230 =
+	  CASE_fabric_v_f_wd_tasks_0_first__59_BITS_10_T_ETC___d167 =
 	      fabric_xactors_to_slaves_1_f_wr_data$FULL_N;
       3'd2:
-	  CASE_fabric_v_f_wd_tasks_0_first__22_BITS_10_T_ETC___d230 =
+	  CASE_fabric_v_f_wd_tasks_0_first__59_BITS_10_T_ETC___d167 =
 	      fabric_xactors_to_slaves_2_f_wr_data$FULL_N;
       3'd3:
-	  CASE_fabric_v_f_wd_tasks_0_first__22_BITS_10_T_ETC___d230 =
+	  CASE_fabric_v_f_wd_tasks_0_first__59_BITS_10_T_ETC___d167 =
 	      fabric_xactors_to_slaves_3_f_wr_data$FULL_N;
-      default: CASE_fabric_v_f_wd_tasks_0_first__22_BITS_10_T_ETC___d230 =
+      default: CASE_fabric_v_f_wd_tasks_0_first__59_BITS_10_T_ETC___d167 =
 		   1'd1;
     endcase
   end
@@ -6913,41 +5314,18 @@ module mkLocal_Fabric(CLK,
   begin
     case (fabric_v_f_wd_tasks_1$D_OUT[10:8])
       3'd0:
-	  CASE_fabric_v_f_wd_tasks_1_first__61_BITS_10_T_ETC___d265 =
+	  CASE_fabric_v_f_wd_tasks_1_first__98_BITS_10_T_ETC___d202 =
 	      fabric_xactors_to_slaves_0_f_wr_data$FULL_N;
       3'd1:
-	  CASE_fabric_v_f_wd_tasks_1_first__61_BITS_10_T_ETC___d265 =
+	  CASE_fabric_v_f_wd_tasks_1_first__98_BITS_10_T_ETC___d202 =
 	      fabric_xactors_to_slaves_1_f_wr_data$FULL_N;
       3'd2:
-	  CASE_fabric_v_f_wd_tasks_1_first__61_BITS_10_T_ETC___d265 =
+	  CASE_fabric_v_f_wd_tasks_1_first__98_BITS_10_T_ETC___d202 =
 	      fabric_xactors_to_slaves_2_f_wr_data$FULL_N;
       3'd3:
-	  CASE_fabric_v_f_wd_tasks_1_first__61_BITS_10_T_ETC___d265 =
+	  CASE_fabric_v_f_wd_tasks_1_first__98_BITS_10_T_ETC___d202 =
 	      fabric_xactors_to_slaves_3_f_wr_data$FULL_N;
-      default: CASE_fabric_v_f_wd_tasks_1_first__61_BITS_10_T_ETC___d265 =
-		   1'd1;
-    endcase
-  end
-  always@(fabric_v_f_wd_tasks_2$D_OUT or
-	  fabric_xactors_to_slaves_0_f_wr_data$FULL_N or
-	  fabric_xactors_to_slaves_1_f_wr_data$FULL_N or
-	  fabric_xactors_to_slaves_2_f_wr_data$FULL_N or
-	  fabric_xactors_to_slaves_3_f_wr_data$FULL_N)
-  begin
-    case (fabric_v_f_wd_tasks_2$D_OUT[10:8])
-      3'd0:
-	  CASE_fabric_v_f_wd_tasks_2_first__96_BITS_10_T_ETC___d300 =
-	      fabric_xactors_to_slaves_0_f_wr_data$FULL_N;
-      3'd1:
-	  CASE_fabric_v_f_wd_tasks_2_first__96_BITS_10_T_ETC___d300 =
-	      fabric_xactors_to_slaves_1_f_wr_data$FULL_N;
-      3'd2:
-	  CASE_fabric_v_f_wd_tasks_2_first__96_BITS_10_T_ETC___d300 =
-	      fabric_xactors_to_slaves_2_f_wr_data$FULL_N;
-      3'd3:
-	  CASE_fabric_v_f_wd_tasks_2_first__96_BITS_10_T_ETC___d300 =
-	      fabric_xactors_to_slaves_3_f_wr_data$FULL_N;
-      default: CASE_fabric_v_f_wd_tasks_2_first__96_BITS_10_T_ETC___d300 =
+      default: CASE_fabric_v_f_wd_tasks_1_first__98_BITS_10_T_ETC___d202 =
 		   1'd1;
     endcase
   end
@@ -6966,10 +5344,8 @@ module mkLocal_Fabric(CLK,
 	fabric_v_rg_r_beat_count_3 <= `BSV_ASSIGNMENT_DELAY 8'd0;
 	fabric_v_rg_r_err_beat_count_0 <= `BSV_ASSIGNMENT_DELAY 8'd0;
 	fabric_v_rg_r_err_beat_count_1 <= `BSV_ASSIGNMENT_DELAY 8'd0;
-	fabric_v_rg_r_err_beat_count_2 <= `BSV_ASSIGNMENT_DELAY 8'd0;
 	fabric_v_rg_wd_beat_count_0 <= `BSV_ASSIGNMENT_DELAY 8'd0;
 	fabric_v_rg_wd_beat_count_1 <= `BSV_ASSIGNMENT_DELAY 8'd0;
-	fabric_v_rg_wd_beat_count_2 <= `BSV_ASSIGNMENT_DELAY 8'd0;
       end
     else
       begin
@@ -6996,18 +5372,12 @@ module mkLocal_Fabric(CLK,
 	if (fabric_v_rg_r_err_beat_count_1$EN)
 	  fabric_v_rg_r_err_beat_count_1 <= `BSV_ASSIGNMENT_DELAY
 	      fabric_v_rg_r_err_beat_count_1$D_IN;
-	if (fabric_v_rg_r_err_beat_count_2$EN)
-	  fabric_v_rg_r_err_beat_count_2 <= `BSV_ASSIGNMENT_DELAY
-	      fabric_v_rg_r_err_beat_count_2$D_IN;
 	if (fabric_v_rg_wd_beat_count_0$EN)
 	  fabric_v_rg_wd_beat_count_0 <= `BSV_ASSIGNMENT_DELAY
 	      fabric_v_rg_wd_beat_count_0$D_IN;
 	if (fabric_v_rg_wd_beat_count_1$EN)
 	  fabric_v_rg_wd_beat_count_1 <= `BSV_ASSIGNMENT_DELAY
 	      fabric_v_rg_wd_beat_count_1$D_IN;
-	if (fabric_v_rg_wd_beat_count_2$EN)
-	  fabric_v_rg_wd_beat_count_2 <= `BSV_ASSIGNMENT_DELAY
-	      fabric_v_rg_wd_beat_count_2$D_IN;
       end
   end
 
@@ -7024,10 +5394,8 @@ module mkLocal_Fabric(CLK,
     fabric_v_rg_r_beat_count_3 = 8'hAA;
     fabric_v_rg_r_err_beat_count_0 = 8'hAA;
     fabric_v_rg_r_err_beat_count_1 = 8'hAA;
-    fabric_v_rg_r_err_beat_count_2 = 8'hAA;
     fabric_v_rg_wd_beat_count_0 = 8'hAA;
     fabric_v_rg_wd_beat_count_1 = 8'hAA;
-    fabric_v_rg_wd_beat_count_2 = 8'hAA;
   end
   `endif // BSV_NO_INITIAL_BLOCKS
   // synopsys translate_on
@@ -7042,15 +5410,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h11417 = $stime;
+	  v__h9757 = $stime;
 	  #0;
 	end
-    v__h11411 = v__h11417 / 32'd10;
+    v__h9751 = v__h9757 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_wr_xaction_master_to_slave: m%0d -> s%0d",
-		 v__h11411,
+		 v__h9751,
 		 $signed(32'd0),
 		 $signed(32'd0));
     if (RST_N != `BSV_RESET_VALUE)
@@ -7153,15 +5521,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_1 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h11814 = $stime;
+	  v__h10154 = $stime;
 	  #0;
 	end
-    v__h11808 = v__h11814 / 32'd10;
+    v__h10148 = v__h10154 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_1 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_wr_xaction_master_to_slave: m%0d -> s%0d",
-		 v__h11808,
+		 v__h10148,
 		 $signed(32'd0),
 		 $signed(32'd1));
     if (RST_N != `BSV_RESET_VALUE)
@@ -7264,15 +5632,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_2 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h12211 = $stime;
+	  v__h10551 = $stime;
 	  #0;
 	end
-    v__h12205 = v__h12211 / 32'd10;
+    v__h10545 = v__h10551 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_2 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_wr_xaction_master_to_slave: m%0d -> s%0d",
-		 v__h12205,
+		 v__h10545,
 		 $signed(32'd0),
 		 $signed(32'd2));
     if (RST_N != `BSV_RESET_VALUE)
@@ -7375,15 +5743,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_3 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h12608 = $stime;
+	  v__h10948 = $stime;
 	  #0;
 	end
-    v__h12602 = v__h12608 / 32'd10;
+    v__h10942 = v__h10948 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_3 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_wr_xaction_master_to_slave: m%0d -> s%0d",
-		 v__h12602,
+		 v__h10942,
 		 $signed(32'd0),
 		 $signed(32'd3));
     if (RST_N != `BSV_RESET_VALUE)
@@ -7486,15 +5854,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_4 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h13068 = $stime;
+	  v__h11408 = $stime;
 	  #0;
 	end
-    v__h13062 = v__h13068 / 32'd10;
+    v__h11402 = v__h11408 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_4 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_wr_xaction_master_to_slave: m%0d -> s%0d",
-		 v__h13062,
+		 v__h11402,
 		 $signed(32'd1),
 		 $signed(32'd0));
     if (RST_N != `BSV_RESET_VALUE)
@@ -7597,15 +5965,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_5 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h13459 = $stime;
+	  v__h11799 = $stime;
 	  #0;
 	end
-    v__h13453 = v__h13459 / 32'd10;
+    v__h11793 = v__h11799 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_5 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_wr_xaction_master_to_slave: m%0d -> s%0d",
-		 v__h13453,
+		 v__h11793,
 		 $signed(32'd1),
 		 $signed(32'd1));
     if (RST_N != `BSV_RESET_VALUE)
@@ -7708,15 +6076,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_6 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h13850 = $stime;
+	  v__h12190 = $stime;
 	  #0;
 	end
-    v__h13844 = v__h13850 / 32'd10;
+    v__h12184 = v__h12190 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_6 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_wr_xaction_master_to_slave: m%0d -> s%0d",
-		 v__h13844,
+		 v__h12184,
 		 $signed(32'd1),
 		 $signed(32'd2));
     if (RST_N != `BSV_RESET_VALUE)
@@ -7819,15 +6187,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_7 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h14241 = $stime;
+	  v__h12581 = $stime;
 	  #0;
 	end
-    v__h14235 = v__h14241 / 32'd10;
+    v__h12575 = v__h12581 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_7 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_wr_xaction_master_to_slave: m%0d -> s%0d",
-		 v__h14235,
+		 v__h12575,
 		 $signed(32'd1),
 		 $signed(32'd3));
     if (RST_N != `BSV_RESET_VALUE)
@@ -7924,465 +6292,21 @@ module mkLocal_Fabric(CLK,
 	$write("'h%h", 1'd0, " }");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_7 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("\n");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	begin
-	  v__h14701 = $stime;
-	  #0;
-	end
-    v__h14695 = v__h14701 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$display("%0d: %m.rl_wr_xaction_master_to_slave: m%0d -> s%0d",
-		 v__h14695,
-		 $signed(32'd2),
-		 $signed(32'd0));
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("    ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("AXI4_Wr_Addr { ", "awid: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[64:61]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awaddr: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[60:29]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awlen: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[28:21]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awsize: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[20:18]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awburst: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[17:16]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awlock: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[15]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awcache: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[14:11]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awprot: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[10:8]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awqos: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[7:4]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awregion: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[3:0]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awuser: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", 1'd0, " }");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("\n");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	begin
-	  v__h15092 = $stime;
-	  #0;
-	end
-    v__h15086 = v__h15092 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$display("%0d: %m.rl_wr_xaction_master_to_slave: m%0d -> s%0d",
-		 v__h15086,
-		 $signed(32'd2),
-		 $signed(32'd1));
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("    ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("AXI4_Wr_Addr { ", "awid: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[64:61]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awaddr: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[60:29]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awlen: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[28:21]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awsize: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[20:18]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awburst: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[17:16]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awlock: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[15]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awcache: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[14:11]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awprot: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[10:8]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awqos: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[7:4]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awregion: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[3:0]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awuser: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", 1'd0, " }");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("\n");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	begin
-	  v__h15483 = $stime;
-	  #0;
-	end
-    v__h15477 = v__h15483 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$display("%0d: %m.rl_wr_xaction_master_to_slave: m%0d -> s%0d",
-		 v__h15477,
-		 $signed(32'd2),
-		 $signed(32'd2));
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("    ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("AXI4_Wr_Addr { ", "awid: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[64:61]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awaddr: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[60:29]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awlen: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[28:21]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awsize: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[20:18]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awburst: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[17:16]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awlock: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[15]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awcache: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[14:11]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awprot: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[10:8]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awqos: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[7:4]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awregion: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[3:0]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awuser: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", 1'd0, " }");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("\n");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	begin
-	  v__h15874 = $stime;
-	  #0;
-	end
-    v__h15868 = v__h15874 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$display("%0d: %m.rl_wr_xaction_master_to_slave: m%0d -> s%0d",
-		 v__h15868,
-		 $signed(32'd2),
-		 $signed(32'd3));
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("    ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("AXI4_Wr_Addr { ", "awid: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[64:61]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awaddr: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[60:29]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awlen: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[28:21]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awsize: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[20:18]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awburst: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[17:16]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awlock: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[15]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awcache: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[14:11]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awprot: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[10:8]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awqos: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[7:4]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awregion: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_addr$D_OUT[3:0]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "awuser: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", 1'd0, " }");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_11 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$write("\n");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h17074 = $stime;
+	  v__h13519 = $stime;
 	  #0;
 	end
-    v__h17068 = v__h17074 / 32'd10;
+    v__h13513 = v__h13519 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_wr_xaction_master_to_slave_data: m%0d -> s%0d, beat %0d/%0d",
-		 v__h17068,
+		 v__h13513,
 		 $signed(32'd0),
 		 fabric_v_f_wd_tasks_0$D_OUT[10:8],
 		 fabric_v_rg_wd_beat_count_0,
@@ -8435,90 +6359,90 @@ module mkLocal_Fabric(CLK,
 	$write("\n");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data &&
-	  fabric_v_rg_wd_beat_count_0_45_EQ_fabric_v_f_w_ETC___d253 &&
+	  fabric_v_rg_wd_beat_count_0_82_EQ_fabric_v_f_w_ETC___d190 &&
 	  !fabric_xactors_from_masters_0_f_wr_data$D_OUT[0])
 	begin
-	  v__h17321 = $stime;
+	  v__h13766 = $stime;
 	  #0;
 	end
-    v__h17315 = v__h17321 / 32'd10;
+    v__h13760 = v__h13766 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data &&
-	  fabric_v_rg_wd_beat_count_0_45_EQ_fabric_v_f_w_ETC___d253 &&
+	  fabric_v_rg_wd_beat_count_0_82_EQ_fabric_v_f_w_ETC___d190 &&
 	  !fabric_xactors_from_masters_0_f_wr_data$D_OUT[0])
 	$display("%0d: %m.rl_wr_xaction_master_to_slave_data: ERROR: m%0d -> s%0d",
-		 v__h17315,
+		 v__h13760,
 		 $signed(32'd0),
 		 fabric_v_f_wd_tasks_0$D_OUT[10:8]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data &&
-	  fabric_v_rg_wd_beat_count_0_45_EQ_fabric_v_f_w_ETC___d253 &&
+	  fabric_v_rg_wd_beat_count_0_82_EQ_fabric_v_f_w_ETC___d190 &&
 	  !fabric_xactors_from_masters_0_f_wr_data$D_OUT[0])
 	$display("    WLAST not set on final data beat (awlen = %0d)",
 		 fabric_v_f_wd_tasks_0$D_OUT[7:0]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data &&
-	  fabric_v_rg_wd_beat_count_0_45_EQ_fabric_v_f_w_ETC___d253 &&
+	  fabric_v_rg_wd_beat_count_0_82_EQ_fabric_v_f_w_ETC___d190 &&
 	  !fabric_xactors_from_masters_0_f_wr_data$D_OUT[0])
 	$write("    ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data &&
-	  fabric_v_rg_wd_beat_count_0_45_EQ_fabric_v_f_w_ETC___d253 &&
+	  fabric_v_rg_wd_beat_count_0_82_EQ_fabric_v_f_w_ETC___d190 &&
 	  !fabric_xactors_from_masters_0_f_wr_data$D_OUT[0])
 	$write("AXI4_Wr_Data { ", "wdata: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data &&
-	  fabric_v_rg_wd_beat_count_0_45_EQ_fabric_v_f_w_ETC___d253 &&
+	  fabric_v_rg_wd_beat_count_0_82_EQ_fabric_v_f_w_ETC___d190 &&
 	  !fabric_xactors_from_masters_0_f_wr_data$D_OUT[0])
 	$write("'h%h", fabric_xactors_from_masters_0_f_wr_data$D_OUT[36:5]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data &&
-	  fabric_v_rg_wd_beat_count_0_45_EQ_fabric_v_f_w_ETC___d253 &&
+	  fabric_v_rg_wd_beat_count_0_82_EQ_fabric_v_f_w_ETC___d190 &&
 	  !fabric_xactors_from_masters_0_f_wr_data$D_OUT[0])
 	$write(", ", "wstrb: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data &&
-	  fabric_v_rg_wd_beat_count_0_45_EQ_fabric_v_f_w_ETC___d253 &&
+	  fabric_v_rg_wd_beat_count_0_82_EQ_fabric_v_f_w_ETC___d190 &&
 	  !fabric_xactors_from_masters_0_f_wr_data$D_OUT[0])
 	$write("'h%h", fabric_xactors_from_masters_0_f_wr_data$D_OUT[4:1]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data &&
-	  fabric_v_rg_wd_beat_count_0_45_EQ_fabric_v_f_w_ETC___d253 &&
+	  fabric_v_rg_wd_beat_count_0_82_EQ_fabric_v_f_w_ETC___d190 &&
 	  !fabric_xactors_from_masters_0_f_wr_data$D_OUT[0])
 	$write(", ", "wlast: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data &&
-	  fabric_v_rg_wd_beat_count_0_45_EQ_fabric_v_f_w_ETC___d253 &&
+	  fabric_v_rg_wd_beat_count_0_82_EQ_fabric_v_f_w_ETC___d190 &&
 	  !fabric_xactors_from_masters_0_f_wr_data$D_OUT[0])
 	$write("False");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data &&
-	  fabric_v_rg_wd_beat_count_0_45_EQ_fabric_v_f_w_ETC___d253 &&
+	  fabric_v_rg_wd_beat_count_0_82_EQ_fabric_v_f_w_ETC___d190 &&
 	  !fabric_xactors_from_masters_0_f_wr_data$D_OUT[0])
 	$write(", ", "wuser: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data &&
-	  fabric_v_rg_wd_beat_count_0_45_EQ_fabric_v_f_w_ETC___d253 &&
+	  fabric_v_rg_wd_beat_count_0_82_EQ_fabric_v_f_w_ETC___d190 &&
 	  !fabric_xactors_from_masters_0_f_wr_data$D_OUT[0])
 	$write("'h%h", 1'd0, " }");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data &&
-	  fabric_v_rg_wd_beat_count_0_45_EQ_fabric_v_f_w_ETC___d253 &&
+	  fabric_v_rg_wd_beat_count_0_82_EQ_fabric_v_f_w_ETC___d190 &&
 	  !fabric_xactors_from_masters_0_f_wr_data$D_OUT[0])
 	$write("\n");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h17692 = $stime;
+	  v__h14137 = $stime;
 	  #0;
 	end
-    v__h17686 = v__h17692 / 32'd10;
+    v__h14131 = v__h14137 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_wr_xaction_master_to_slave_data: m%0d -> s%0d, beat %0d/%0d",
-		 v__h17686,
+		 v__h14131,
 		 $signed(32'd1),
 		 fabric_v_f_wd_tasks_1$D_OUT[10:8],
 		 fabric_v_rg_wd_beat_count_1,
@@ -8571,226 +6495,90 @@ module mkLocal_Fabric(CLK,
 	$write("\n");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 &&
-	  fabric_v_rg_wd_beat_count_1_80_EQ_fabric_v_f_w_ETC___d288 &&
+	  fabric_v_rg_wd_beat_count_1_17_EQ_fabric_v_f_w_ETC___d225 &&
 	  !fabric_xactors_from_masters_1_f_wr_data$D_OUT[0])
 	begin
-	  v__h17939 = $stime;
+	  v__h14384 = $stime;
 	  #0;
 	end
-    v__h17933 = v__h17939 / 32'd10;
+    v__h14378 = v__h14384 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 &&
-	  fabric_v_rg_wd_beat_count_1_80_EQ_fabric_v_f_w_ETC___d288 &&
+	  fabric_v_rg_wd_beat_count_1_17_EQ_fabric_v_f_w_ETC___d225 &&
 	  !fabric_xactors_from_masters_1_f_wr_data$D_OUT[0])
 	$display("%0d: %m.rl_wr_xaction_master_to_slave_data: ERROR: m%0d -> s%0d",
-		 v__h17933,
+		 v__h14378,
 		 $signed(32'd1),
 		 fabric_v_f_wd_tasks_1$D_OUT[10:8]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 &&
-	  fabric_v_rg_wd_beat_count_1_80_EQ_fabric_v_f_w_ETC___d288 &&
+	  fabric_v_rg_wd_beat_count_1_17_EQ_fabric_v_f_w_ETC___d225 &&
 	  !fabric_xactors_from_masters_1_f_wr_data$D_OUT[0])
 	$display("    WLAST not set on final data beat (awlen = %0d)",
 		 fabric_v_f_wd_tasks_1$D_OUT[7:0]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 &&
-	  fabric_v_rg_wd_beat_count_1_80_EQ_fabric_v_f_w_ETC___d288 &&
+	  fabric_v_rg_wd_beat_count_1_17_EQ_fabric_v_f_w_ETC___d225 &&
 	  !fabric_xactors_from_masters_1_f_wr_data$D_OUT[0])
 	$write("    ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 &&
-	  fabric_v_rg_wd_beat_count_1_80_EQ_fabric_v_f_w_ETC___d288 &&
+	  fabric_v_rg_wd_beat_count_1_17_EQ_fabric_v_f_w_ETC___d225 &&
 	  !fabric_xactors_from_masters_1_f_wr_data$D_OUT[0])
 	$write("AXI4_Wr_Data { ", "wdata: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 &&
-	  fabric_v_rg_wd_beat_count_1_80_EQ_fabric_v_f_w_ETC___d288 &&
+	  fabric_v_rg_wd_beat_count_1_17_EQ_fabric_v_f_w_ETC___d225 &&
 	  !fabric_xactors_from_masters_1_f_wr_data$D_OUT[0])
 	$write("'h%h", fabric_xactors_from_masters_1_f_wr_data$D_OUT[36:5]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 &&
-	  fabric_v_rg_wd_beat_count_1_80_EQ_fabric_v_f_w_ETC___d288 &&
+	  fabric_v_rg_wd_beat_count_1_17_EQ_fabric_v_f_w_ETC___d225 &&
 	  !fabric_xactors_from_masters_1_f_wr_data$D_OUT[0])
 	$write(", ", "wstrb: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 &&
-	  fabric_v_rg_wd_beat_count_1_80_EQ_fabric_v_f_w_ETC___d288 &&
+	  fabric_v_rg_wd_beat_count_1_17_EQ_fabric_v_f_w_ETC___d225 &&
 	  !fabric_xactors_from_masters_1_f_wr_data$D_OUT[0])
 	$write("'h%h", fabric_xactors_from_masters_1_f_wr_data$D_OUT[4:1]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 &&
-	  fabric_v_rg_wd_beat_count_1_80_EQ_fabric_v_f_w_ETC___d288 &&
+	  fabric_v_rg_wd_beat_count_1_17_EQ_fabric_v_f_w_ETC___d225 &&
 	  !fabric_xactors_from_masters_1_f_wr_data$D_OUT[0])
 	$write(", ", "wlast: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 &&
-	  fabric_v_rg_wd_beat_count_1_80_EQ_fabric_v_f_w_ETC___d288 &&
+	  fabric_v_rg_wd_beat_count_1_17_EQ_fabric_v_f_w_ETC___d225 &&
 	  !fabric_xactors_from_masters_1_f_wr_data$D_OUT[0])
 	$write("False");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 &&
-	  fabric_v_rg_wd_beat_count_1_80_EQ_fabric_v_f_w_ETC___d288 &&
+	  fabric_v_rg_wd_beat_count_1_17_EQ_fabric_v_f_w_ETC___d225 &&
 	  !fabric_xactors_from_masters_1_f_wr_data$D_OUT[0])
 	$write(", ", "wuser: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 &&
-	  fabric_v_rg_wd_beat_count_1_80_EQ_fabric_v_f_w_ETC___d288 &&
+	  fabric_v_rg_wd_beat_count_1_17_EQ_fabric_v_f_w_ETC___d225 &&
 	  !fabric_xactors_from_masters_1_f_wr_data$D_OUT[0])
 	$write("'h%h", 1'd0, " }");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_1 &&
-	  fabric_v_rg_wd_beat_count_1_80_EQ_fabric_v_f_w_ETC___d288 &&
+	  fabric_v_rg_wd_beat_count_1_17_EQ_fabric_v_f_w_ETC___d225 &&
 	  !fabric_xactors_from_masters_1_f_wr_data$D_OUT[0])
-	$write("\n");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	begin
-	  v__h18310 = $stime;
-	  #0;
-	end
-    v__h18304 = v__h18310 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$display("%0d: %m.rl_wr_xaction_master_to_slave_data: m%0d -> s%0d, beat %0d/%0d",
-		 v__h18304,
-		 $signed(32'd2),
-		 fabric_v_f_wd_tasks_2$D_OUT[10:8],
-		 fabric_v_rg_wd_beat_count_2,
-		 fabric_v_f_wd_tasks_2$D_OUT[7:0]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("    ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("AXI4_Wr_Data { ", "wdata: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_data$D_OUT[36:5]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "wstrb: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_data$D_OUT[4:1]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "wlast: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	  fabric_cfg_verbosity != 4'd0 &&
-	  fabric_xactors_from_masters_2_f_wr_data$D_OUT[0])
-	$write("True");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	  fabric_cfg_verbosity != 4'd0 &&
-	  !fabric_xactors_from_masters_2_f_wr_data$D_OUT[0])
-	$write("False");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "wuser: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", 1'd0, " }");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("\n");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	  fabric_v_rg_wd_beat_count_2_15_EQ_fabric_v_f_w_ETC___d323 &&
-	  !fabric_xactors_from_masters_2_f_wr_data$D_OUT[0])
-	begin
-	  v__h18557 = $stime;
-	  #0;
-	end
-    v__h18551 = v__h18557 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	  fabric_v_rg_wd_beat_count_2_15_EQ_fabric_v_f_w_ETC___d323 &&
-	  !fabric_xactors_from_masters_2_f_wr_data$D_OUT[0])
-	$display("%0d: %m.rl_wr_xaction_master_to_slave_data: ERROR: m%0d -> s%0d",
-		 v__h18551,
-		 $signed(32'd2),
-		 fabric_v_f_wd_tasks_2$D_OUT[10:8]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	  fabric_v_rg_wd_beat_count_2_15_EQ_fabric_v_f_w_ETC___d323 &&
-	  !fabric_xactors_from_masters_2_f_wr_data$D_OUT[0])
-	$display("    WLAST not set on final data beat (awlen = %0d)",
-		 fabric_v_f_wd_tasks_2$D_OUT[7:0]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	  fabric_v_rg_wd_beat_count_2_15_EQ_fabric_v_f_w_ETC___d323 &&
-	  !fabric_xactors_from_masters_2_f_wr_data$D_OUT[0])
-	$write("    ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	  fabric_v_rg_wd_beat_count_2_15_EQ_fabric_v_f_w_ETC___d323 &&
-	  !fabric_xactors_from_masters_2_f_wr_data$D_OUT[0])
-	$write("AXI4_Wr_Data { ", "wdata: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	  fabric_v_rg_wd_beat_count_2_15_EQ_fabric_v_f_w_ETC___d323 &&
-	  !fabric_xactors_from_masters_2_f_wr_data$D_OUT[0])
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_data$D_OUT[36:5]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	  fabric_v_rg_wd_beat_count_2_15_EQ_fabric_v_f_w_ETC___d323 &&
-	  !fabric_xactors_from_masters_2_f_wr_data$D_OUT[0])
-	$write(", ", "wstrb: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	  fabric_v_rg_wd_beat_count_2_15_EQ_fabric_v_f_w_ETC___d323 &&
-	  !fabric_xactors_from_masters_2_f_wr_data$D_OUT[0])
-	$write("'h%h", fabric_xactors_from_masters_2_f_wr_data$D_OUT[4:1]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	  fabric_v_rg_wd_beat_count_2_15_EQ_fabric_v_f_w_ETC___d323 &&
-	  !fabric_xactors_from_masters_2_f_wr_data$D_OUT[0])
-	$write(", ", "wlast: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	  fabric_v_rg_wd_beat_count_2_15_EQ_fabric_v_f_w_ETC___d323 &&
-	  !fabric_xactors_from_masters_2_f_wr_data$D_OUT[0])
-	$write("False");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	  fabric_v_rg_wd_beat_count_2_15_EQ_fabric_v_f_w_ETC___d323 &&
-	  !fabric_xactors_from_masters_2_f_wr_data$D_OUT[0])
-	$write(", ", "wuser: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	  fabric_v_rg_wd_beat_count_2_15_EQ_fabric_v_f_w_ETC___d323 &&
-	  !fabric_xactors_from_masters_2_f_wr_data$D_OUT[0])
-	$write("'h%h", 1'd0, " }");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_xaction_master_to_slave_data_2 &&
-	  fabric_v_rg_wd_beat_count_2_15_EQ_fabric_v_f_w_ETC___d323 &&
-	  !fabric_xactors_from_masters_2_f_wr_data$D_OUT[0])
 	$write("\n");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h18914 = $stime;
+	  v__h14741 = $stime;
 	  #0;
 	end
-    v__h18908 = v__h18914 / 32'd10;
+    v__h14735 = v__h14741 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_wr_resp_slave_to_master: m%0d <- s%0d",
-		 v__h18908,
+		 v__h14735,
 		 $signed(32'd0),
 		 $signed(32'd0));
     if (RST_N != `BSV_RESET_VALUE)
@@ -8829,15 +6617,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_1 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h19184 = $stime;
+	  v__h15011 = $stime;
 	  #0;
 	end
-    v__h19178 = v__h19184 / 32'd10;
+    v__h15005 = v__h15011 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_1 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_wr_resp_slave_to_master: m%0d <- s%0d",
-		 v__h19178,
+		 v__h15005,
 		 $signed(32'd0),
 		 $signed(32'd1));
     if (RST_N != `BSV_RESET_VALUE)
@@ -8876,15 +6664,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_2 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h19454 = $stime;
+	  v__h15281 = $stime;
 	  #0;
 	end
-    v__h19448 = v__h19454 / 32'd10;
+    v__h15275 = v__h15281 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_2 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_wr_resp_slave_to_master: m%0d <- s%0d",
-		 v__h19448,
+		 v__h15275,
 		 $signed(32'd0),
 		 $signed(32'd2));
     if (RST_N != `BSV_RESET_VALUE)
@@ -8923,15 +6711,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_3 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h19724 = $stime;
+	  v__h15551 = $stime;
 	  #0;
 	end
-    v__h19718 = v__h19724 / 32'd10;
+    v__h15545 = v__h15551 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_3 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_wr_resp_slave_to_master: m%0d <- s%0d",
-		 v__h19718,
+		 v__h15545,
 		 $signed(32'd0),
 		 $signed(32'd3));
     if (RST_N != `BSV_RESET_VALUE)
@@ -8970,15 +6758,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_4 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h19998 = $stime;
+	  v__h15825 = $stime;
 	  #0;
 	end
-    v__h19992 = v__h19998 / 32'd10;
+    v__h15819 = v__h15825 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_4 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_wr_resp_slave_to_master: m%0d <- s%0d",
-		 v__h19992,
+		 v__h15819,
 		 $signed(32'd1),
 		 $signed(32'd0));
     if (RST_N != `BSV_RESET_VALUE)
@@ -9017,15 +6805,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_5 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h20242 = $stime;
+	  v__h16069 = $stime;
 	  #0;
 	end
-    v__h20236 = v__h20242 / 32'd10;
+    v__h16063 = v__h16069 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_5 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_wr_resp_slave_to_master: m%0d <- s%0d",
-		 v__h20236,
+		 v__h16063,
 		 $signed(32'd1),
 		 $signed(32'd1));
     if (RST_N != `BSV_RESET_VALUE)
@@ -9064,15 +6852,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_6 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h20486 = $stime;
+	  v__h16313 = $stime;
 	  #0;
 	end
-    v__h20480 = v__h20486 / 32'd10;
+    v__h16307 = v__h16313 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_6 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_wr_resp_slave_to_master: m%0d <- s%0d",
-		 v__h20480,
+		 v__h16307,
 		 $signed(32'd1),
 		 $signed(32'd2));
     if (RST_N != `BSV_RESET_VALUE)
@@ -9111,15 +6899,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_7 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h20730 = $stime;
+	  v__h16557 = $stime;
 	  #0;
 	end
-    v__h20724 = v__h20730 / 32'd10;
+    v__h16551 = v__h16557 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_7 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_wr_resp_slave_to_master: m%0d <- s%0d",
-		 v__h20724,
+		 v__h16551,
 		 $signed(32'd1),
 		 $signed(32'd3));
     if (RST_N != `BSV_RESET_VALUE)
@@ -9152,209 +6940,21 @@ module mkLocal_Fabric(CLK,
 	$write("'h%h", 1'd0, " }");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_7 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("\n");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	begin
-	  v__h21004 = $stime;
-	  #0;
-	end
-    v__h20998 = v__h21004 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$display("%0d: %m.rl_wr_resp_slave_to_master: m%0d <- s%0d",
-		 v__h20998,
-		 $signed(32'd2),
-		 $signed(32'd0));
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("        ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("AXI4_Wr_Resp { ", "bid: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_to_slaves_0_f_wr_resp$D_OUT[5:2]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "bresp: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_to_slaves_0_f_wr_resp$D_OUT[1:0]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "buser: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", 1'd0, " }");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("\n");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	begin
-	  v__h21248 = $stime;
-	  #0;
-	end
-    v__h21242 = v__h21248 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$display("%0d: %m.rl_wr_resp_slave_to_master: m%0d <- s%0d",
-		 v__h21242,
-		 $signed(32'd2),
-		 $signed(32'd1));
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("        ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("AXI4_Wr_Resp { ", "bid: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_to_slaves_1_f_wr_resp$D_OUT[5:2]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "bresp: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_to_slaves_1_f_wr_resp$D_OUT[1:0]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "buser: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", 1'd0, " }");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("\n");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	begin
-	  v__h21492 = $stime;
-	  #0;
-	end
-    v__h21486 = v__h21492 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$display("%0d: %m.rl_wr_resp_slave_to_master: m%0d <- s%0d",
-		 v__h21486,
-		 $signed(32'd2),
-		 $signed(32'd2));
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("        ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("AXI4_Wr_Resp { ", "bid: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_to_slaves_2_f_wr_resp$D_OUT[5:2]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "bresp: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_to_slaves_2_f_wr_resp$D_OUT[1:0]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "buser: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", 1'd0, " }");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("\n");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	begin
-	  v__h21736 = $stime;
-	  #0;
-	end
-    v__h21730 = v__h21736 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$display("%0d: %m.rl_wr_resp_slave_to_master: m%0d <- s%0d",
-		 v__h21730,
-		 $signed(32'd2),
-		 $signed(32'd3));
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("        ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("AXI4_Wr_Resp { ", "bid: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_to_slaves_3_f_wr_resp$D_OUT[5:2]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "bresp: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_to_slaves_3_f_wr_resp$D_OUT[1:0]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "buser: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", 1'd0, " }");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_slave_to_master_11 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$write("\n");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_resp_err_to_master &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h21970 = $stime;
+	  v__h16791 = $stime;
 	  #0;
 	end
-    v__h21964 = v__h21970 / 32'd10;
+    v__h16785 = v__h16791 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_resp_err_to_master &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_wr_resp_err_to_master: m%0d <- err",
-		 v__h21964,
+		 v__h16785,
 		 $signed(32'd0));
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_resp_err_to_master &&
@@ -9392,15 +6992,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_wr_resp_err_to_master_1 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h22180 = $stime;
+	  v__h17001 = $stime;
 	  #0;
 	end
-    v__h22174 = v__h22180 / 32'd10;
+    v__h16995 = v__h17001 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_resp_err_to_master_1 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_wr_resp_err_to_master: m%0d <- err",
-		 v__h22174,
+		 v__h16995,
 		 $signed(32'd1));
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_wr_resp_err_to_master_1 &&
@@ -9435,64 +7035,18 @@ module mkLocal_Fabric(CLK,
 	  fabric_cfg_verbosity != 4'd0)
 	$write("\n");
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_err_to_master_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	begin
-	  v__h22390 = $stime;
-	  #0;
-	end
-    v__h22384 = v__h22390 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_err_to_master_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$display("%0d: %m.rl_wr_resp_err_to_master: m%0d <- err",
-		 v__h22384,
-		 $signed(32'd2));
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_err_to_master_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("        ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_err_to_master_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("AXI4_Wr_Resp { ", "bid: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_err_to_master_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_v_f_wr_err_info_2$D_OUT);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_err_to_master_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "bresp: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_err_to_master_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", 2'b11);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_err_to_master_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "buser: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_err_to_master_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", 1'd0, " }");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_wr_resp_err_to_master_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("\n");
-    if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h22840 = $stime;
+	  v__h17451 = $stime;
 	  #0;
 	end
-    v__h22834 = v__h22840 / 32'd10;
+    v__h17445 = v__h17451 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_rd_xaction_master_to_slave: m%0d -> s%0d",
-		 v__h22834,
+		 v__h17445,
 		 $signed(32'd0),
 		 $signed(32'd0));
     if (RST_N != `BSV_RESET_VALUE)
@@ -9595,15 +7149,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_1 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h23224 = $stime;
+	  v__h17835 = $stime;
 	  #0;
 	end
-    v__h23218 = v__h23224 / 32'd10;
+    v__h17829 = v__h17835 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_1 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_rd_xaction_master_to_slave: m%0d -> s%0d",
-		 v__h23218,
+		 v__h17829,
 		 $signed(32'd0),
 		 $signed(32'd1));
     if (RST_N != `BSV_RESET_VALUE)
@@ -9706,15 +7260,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_2 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h23608 = $stime;
+	  v__h18219 = $stime;
 	  #0;
 	end
-    v__h23602 = v__h23608 / 32'd10;
+    v__h18213 = v__h18219 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_2 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_rd_xaction_master_to_slave: m%0d -> s%0d",
-		 v__h23602,
+		 v__h18213,
 		 $signed(32'd0),
 		 $signed(32'd2));
     if (RST_N != `BSV_RESET_VALUE)
@@ -9817,15 +7371,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_3 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h23992 = $stime;
+	  v__h18603 = $stime;
 	  #0;
 	end
-    v__h23986 = v__h23992 / 32'd10;
+    v__h18597 = v__h18603 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_3 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_rd_xaction_master_to_slave: m%0d -> s%0d",
-		 v__h23986,
+		 v__h18597,
 		 $signed(32'd0),
 		 $signed(32'd3));
     if (RST_N != `BSV_RESET_VALUE)
@@ -9928,15 +7482,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_4 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h24430 = $stime;
+	  v__h19041 = $stime;
 	  #0;
 	end
-    v__h24424 = v__h24430 / 32'd10;
+    v__h19035 = v__h19041 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_4 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_rd_xaction_master_to_slave: m%0d -> s%0d",
-		 v__h24424,
+		 v__h19035,
 		 $signed(32'd1),
 		 $signed(32'd0));
     if (RST_N != `BSV_RESET_VALUE)
@@ -10039,15 +7593,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_5 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h24790 = $stime;
+	  v__h19401 = $stime;
 	  #0;
 	end
-    v__h24784 = v__h24790 / 32'd10;
+    v__h19395 = v__h19401 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_5 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_rd_xaction_master_to_slave: m%0d -> s%0d",
-		 v__h24784,
+		 v__h19395,
 		 $signed(32'd1),
 		 $signed(32'd1));
     if (RST_N != `BSV_RESET_VALUE)
@@ -10150,15 +7704,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_6 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h25150 = $stime;
+	  v__h19761 = $stime;
 	  #0;
 	end
-    v__h25144 = v__h25150 / 32'd10;
+    v__h19755 = v__h19761 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_6 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_rd_xaction_master_to_slave: m%0d -> s%0d",
-		 v__h25144,
+		 v__h19755,
 		 $signed(32'd1),
 		 $signed(32'd2));
     if (RST_N != `BSV_RESET_VALUE)
@@ -10261,15 +7815,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_7 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h25510 = $stime;
+	  v__h20121 = $stime;
 	  #0;
 	end
-    v__h25504 = v__h25510 / 32'd10;
+    v__h20115 = v__h20121 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_7 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_rd_xaction_master_to_slave: m%0d -> s%0d",
-		 v__h25504,
+		 v__h20115,
 		 $signed(32'd1),
 		 $signed(32'd3));
     if (RST_N != `BSV_RESET_VALUE)
@@ -10366,547 +7920,103 @@ module mkLocal_Fabric(CLK,
 	$write("'h%h", 1'd0, " }");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_7 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("\n");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	begin
-	  v__h25948 = $stime;
-	  #0;
-	end
-    v__h25942 = v__h25948 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$display("%0d: %m.rl_rd_xaction_master_to_slave: m%0d -> s%0d",
-		 v__h25942,
-		 $signed(32'd2),
-		 $signed(32'd0));
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("        ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("AXI4_Rd_Addr { ", "arid: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[64:61]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "araddr: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[60:29]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arlen: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[28:21]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arsize: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[20:18]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arburst: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[17:16]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arlock: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[15]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arcache: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[14:11]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arprot: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[10:8]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arqos: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[7:4]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arregion: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[3:0]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "aruser: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", 1'd0, " }");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("\n");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	begin
-	  v__h26308 = $stime;
-	  #0;
-	end
-    v__h26302 = v__h26308 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$display("%0d: %m.rl_rd_xaction_master_to_slave: m%0d -> s%0d",
-		 v__h26302,
-		 $signed(32'd2),
-		 $signed(32'd1));
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("        ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("AXI4_Rd_Addr { ", "arid: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[64:61]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "araddr: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[60:29]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arlen: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[28:21]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arsize: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[20:18]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arburst: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[17:16]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arlock: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[15]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arcache: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[14:11]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arprot: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[10:8]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arqos: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[7:4]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arregion: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[3:0]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "aruser: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", 1'd0, " }");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("\n");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	begin
-	  v__h26668 = $stime;
-	  #0;
-	end
-    v__h26662 = v__h26668 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$display("%0d: %m.rl_rd_xaction_master_to_slave: m%0d -> s%0d",
-		 v__h26662,
-		 $signed(32'd2),
-		 $signed(32'd2));
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("        ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("AXI4_Rd_Addr { ", "arid: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[64:61]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "araddr: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[60:29]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arlen: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[28:21]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arsize: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[20:18]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arburst: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[17:16]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arlock: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[15]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arcache: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[14:11]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arprot: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[10:8]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arqos: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[7:4]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arregion: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[3:0]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "aruser: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", 1'd0, " }");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("\n");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	begin
-	  v__h27028 = $stime;
-	  #0;
-	end
-    v__h27022 = v__h27028 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$display("%0d: %m.rl_rd_xaction_master_to_slave: m%0d -> s%0d",
-		 v__h27022,
-		 $signed(32'd2),
-		 $signed(32'd3));
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("        ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("AXI4_Rd_Addr { ", "arid: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[64:61]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "araddr: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[60:29]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arlen: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[28:21]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arsize: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[20:18]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arburst: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[17:16]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arlock: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[15]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arcache: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[14:11]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arprot: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[10:8]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arqos: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[7:4]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "arregion: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_from_masters_2_f_rd_addr$D_OUT[3:0]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "aruser: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", 1'd0, " }");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_xaction_master_to_slave_11 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$write("\n");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	begin
-	  v__h28151 = $stime;
+	  v__h21013 = $stime;
 	  #0;
 	end
-    v__h28145 = v__h28151 / 32'd10;
+    v__h21007 = v__h21013 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	$display("%0d: %m.rl_rd_resp_slave_to_master: ERROR: m%0d <- s%0d",
-		 v__h28145,
+		 v__h21007,
 		 $signed(32'd0),
 		 $signed(32'd0));
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	$display("    RLAST not set on final data beat (arlen = %0d)",
 		 fabric_v_f_rd_mis_0$D_OUT[7:0]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	$write("    ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	$write("AXI4_Rd_Data { ", "rid: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	$write("'h%h", fabric_xactors_to_slaves_0_f_rd_data$D_OUT[38:35]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	$write(", ", "rdata: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	$write("'h%h", fabric_xactors_to_slaves_0_f_rd_data$D_OUT[34:3]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	$write(", ", "rresp: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	$write("'h%h", 2'b10);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	$write(", ", "rlast: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	$write("False");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	$write(", ", "ruser: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	$write("'h%h", 1'd0, " }");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	$write("\n");
@@ -10914,15 +8024,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h28432 = $stime;
+	  v__h21294 = $stime;
 	  #0;
 	end
-    v__h28426 = v__h28432 / 32'd10;
+    v__h21288 = v__h21294 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_rd_resp_slave_to_master: m%0d <- s%0d",
-		 v__h28426,
+		 v__h21288,
 		 $signed(32'd0),
 		 $signed(32'd0));
     if (RST_N != `BSV_RESET_VALUE)
@@ -10953,7 +8063,7 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master &&
 	  fabric_cfg_verbosity != 4'd0)
 	$write("'h%h",
-	       IF_fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_ETC___d708);
+	       IF_fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_ETC___d507);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master &&
 	  fabric_cfg_verbosity != 4'd0)
@@ -10982,99 +8092,99 @@ module mkLocal_Fabric(CLK,
 	$write("\n");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_1 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	begin
-	  v__h28800 = $stime;
+	  v__h21662 = $stime;
 	  #0;
 	end
-    v__h28794 = v__h28800 / 32'd10;
+    v__h21656 = v__h21662 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_1 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	$display("%0d: %m.rl_rd_resp_slave_to_master: ERROR: m%0d <- s%0d",
-		 v__h28794,
+		 v__h21656,
 		 $signed(32'd0),
 		 $signed(32'd1));
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_1 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	$display("    RLAST not set on final data beat (arlen = %0d)",
 		 fabric_v_f_rd_mis_1$D_OUT[7:0]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_1 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	$write("    ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_1 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	$write("AXI4_Rd_Data { ", "rid: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_1 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	$write("'h%h", fabric_xactors_to_slaves_1_f_rd_data$D_OUT[38:35]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_1 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	$write(", ", "rdata: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_1 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	$write("'h%h", fabric_xactors_to_slaves_1_f_rd_data$D_OUT[34:3]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_1 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	$write(", ", "rresp: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_1 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	$write("'h%h", 2'b10);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_1 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	$write(", ", "rlast: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_1 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	$write("False");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_1 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	$write(", ", "ruser: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_1 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	$write("'h%h", 1'd0, " }");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_1 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	$write("\n");
@@ -11082,15 +8192,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_1 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h29071 = $stime;
+	  v__h21933 = $stime;
 	  #0;
 	end
-    v__h29065 = v__h29071 / 32'd10;
+    v__h21927 = v__h21933 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_1 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_rd_resp_slave_to_master: m%0d <- s%0d",
-		 v__h29065,
+		 v__h21927,
 		 $signed(32'd0),
 		 $signed(32'd1));
     if (RST_N != `BSV_RESET_VALUE)
@@ -11121,7 +8231,7 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_1 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$write("'h%h",
-	       IF_fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_ETC___d743);
+	       IF_fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_ETC___d542);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_1 &&
 	  fabric_cfg_verbosity != 4'd0)
@@ -11150,99 +8260,99 @@ module mkLocal_Fabric(CLK,
 	$write("\n");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_2 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	begin
-	  v__h29439 = $stime;
+	  v__h22301 = $stime;
 	  #0;
 	end
-    v__h29433 = v__h29439 / 32'd10;
+    v__h22295 = v__h22301 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_2 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	$display("%0d: %m.rl_rd_resp_slave_to_master: ERROR: m%0d <- s%0d",
-		 v__h29433,
+		 v__h22295,
 		 $signed(32'd0),
 		 $signed(32'd2));
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_2 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	$display("    RLAST not set on final data beat (arlen = %0d)",
 		 fabric_v_f_rd_mis_2$D_OUT[7:0]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_2 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	$write("    ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_2 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	$write("AXI4_Rd_Data { ", "rid: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_2 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	$write("'h%h", fabric_xactors_to_slaves_2_f_rd_data$D_OUT[38:35]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_2 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	$write(", ", "rdata: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_2 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	$write("'h%h", fabric_xactors_to_slaves_2_f_rd_data$D_OUT[34:3]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_2 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	$write(", ", "rresp: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_2 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	$write("'h%h", 2'b10);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_2 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	$write(", ", "rlast: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_2 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	$write("False");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_2 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	$write(", ", "ruser: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_2 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	$write("'h%h", 1'd0, " }");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_2 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	$write("\n");
@@ -11250,15 +8360,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_2 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h29710 = $stime;
+	  v__h22572 = $stime;
 	  #0;
 	end
-    v__h29704 = v__h29710 / 32'd10;
+    v__h22566 = v__h22572 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_2 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_rd_resp_slave_to_master: m%0d <- s%0d",
-		 v__h29704,
+		 v__h22566,
 		 $signed(32'd0),
 		 $signed(32'd2));
     if (RST_N != `BSV_RESET_VALUE)
@@ -11289,7 +8399,7 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_2 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$write("'h%h",
-	       IF_fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_ETC___d778);
+	       IF_fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_ETC___d577);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_2 &&
 	  fabric_cfg_verbosity != 4'd0)
@@ -11318,99 +8428,99 @@ module mkLocal_Fabric(CLK,
 	$write("\n");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_3 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	begin
-	  v__h30078 = $stime;
+	  v__h22940 = $stime;
 	  #0;
 	end
-    v__h30072 = v__h30078 / 32'd10;
+    v__h22934 = v__h22940 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_3 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	$display("%0d: %m.rl_rd_resp_slave_to_master: ERROR: m%0d <- s%0d",
-		 v__h30072,
+		 v__h22934,
 		 $signed(32'd0),
 		 $signed(32'd3));
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_3 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	$display("    RLAST not set on final data beat (arlen = %0d)",
 		 fabric_v_f_rd_mis_3$D_OUT[7:0]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_3 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	$write("    ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_3 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	$write("AXI4_Rd_Data { ", "rid: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_3 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	$write("'h%h", fabric_xactors_to_slaves_3_f_rd_data$D_OUT[38:35]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_3 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	$write(", ", "rdata: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_3 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	$write("'h%h", fabric_xactors_to_slaves_3_f_rd_data$D_OUT[34:3]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_3 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	$write(", ", "rresp: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_3 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	$write("'h%h", 2'b10);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_3 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	$write(", ", "rlast: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_3 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	$write("False");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_3 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	$write(", ", "ruser: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_3 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	$write("'h%h", 1'd0, " }");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_3 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	$write("\n");
@@ -11418,15 +8528,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_3 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h30349 = $stime;
+	  v__h23211 = $stime;
 	  #0;
 	end
-    v__h30343 = v__h30349 / 32'd10;
+    v__h23205 = v__h23211 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_3 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_rd_resp_slave_to_master: m%0d <- s%0d",
-		 v__h30343,
+		 v__h23205,
 		 $signed(32'd0),
 		 $signed(32'd3));
     if (RST_N != `BSV_RESET_VALUE)
@@ -11457,7 +8567,7 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_3 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$write("'h%h",
-	       IF_fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_ETC___d813);
+	       IF_fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_ETC___d612);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_3 &&
 	  fabric_cfg_verbosity != 4'd0)
@@ -11486,99 +8596,99 @@ module mkLocal_Fabric(CLK,
 	$write("\n");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_4 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	begin
-	  v__h30697 = $stime;
+	  v__h23559 = $stime;
 	  #0;
 	end
-    v__h30691 = v__h30697 / 32'd10;
+    v__h23553 = v__h23559 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_4 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	$display("%0d: %m.rl_rd_resp_slave_to_master: ERROR: m%0d <- s%0d",
-		 v__h30691,
+		 v__h23553,
 		 $signed(32'd1),
 		 $signed(32'd0));
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_4 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	$display("    RLAST not set on final data beat (arlen = %0d)",
 		 fabric_v_f_rd_mis_0$D_OUT[7:0]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_4 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	$write("    ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_4 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	$write("AXI4_Rd_Data { ", "rid: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_4 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	$write("'h%h", fabric_xactors_to_slaves_0_f_rd_data$D_OUT[38:35]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_4 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	$write(", ", "rdata: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_4 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	$write("'h%h", fabric_xactors_to_slaves_0_f_rd_data$D_OUT[34:3]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_4 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	$write(", ", "rresp: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_4 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	$write("'h%h", 2'b10);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_4 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	$write(", ", "rlast: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_4 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	$write("False");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_4 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	$write(", ", "ruser: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_4 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	$write("'h%h", 1'd0, " }");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_4 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
+	  fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_rd_ETC___d491 &&
 	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
 	$write("\n");
@@ -11586,15 +8696,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_4 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h30978 = $stime;
+	  v__h23840 = $stime;
 	  #0;
 	end
-    v__h30972 = v__h30978 / 32'd10;
+    v__h23834 = v__h23840 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_4 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_rd_resp_slave_to_master: m%0d <- s%0d",
-		 v__h30972,
+		 v__h23834,
 		 $signed(32'd1),
 		 $signed(32'd0));
     if (RST_N != `BSV_RESET_VALUE)
@@ -11625,7 +8735,7 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_4 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$write("'h%h",
-	       IF_fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_ETC___d708);
+	       IF_fabric_v_rg_r_beat_count_0_89_EQ_fabric_v_f_ETC___d507);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_4 &&
 	  fabric_cfg_verbosity != 4'd0)
@@ -11654,99 +8764,99 @@ module mkLocal_Fabric(CLK,
 	$write("\n");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_5 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	begin
-	  v__h31301 = $stime;
+	  v__h24163 = $stime;
 	  #0;
 	end
-    v__h31295 = v__h31301 / 32'd10;
+    v__h24157 = v__h24163 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_5 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	$display("%0d: %m.rl_rd_resp_slave_to_master: ERROR: m%0d <- s%0d",
-		 v__h31295,
+		 v__h24157,
 		 $signed(32'd1),
 		 $signed(32'd1));
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_5 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	$display("    RLAST not set on final data beat (arlen = %0d)",
 		 fabric_v_f_rd_mis_1$D_OUT[7:0]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_5 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	$write("    ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_5 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	$write("AXI4_Rd_Data { ", "rid: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_5 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	$write("'h%h", fabric_xactors_to_slaves_1_f_rd_data$D_OUT[38:35]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_5 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	$write(", ", "rdata: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_5 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	$write("'h%h", fabric_xactors_to_slaves_1_f_rd_data$D_OUT[34:3]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_5 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	$write(", ", "rresp: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_5 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	$write("'h%h", 2'b10);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_5 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	$write(", ", "rlast: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_5 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	$write("False");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_5 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	$write(", ", "ruser: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_5 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	$write("'h%h", 1'd0, " }");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_5 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
+	  fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_rd_ETC___d526 &&
 	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
 	$write("\n");
@@ -11754,15 +8864,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_5 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h31572 = $stime;
+	  v__h24434 = $stime;
 	  #0;
 	end
-    v__h31566 = v__h31572 / 32'd10;
+    v__h24428 = v__h24434 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_5 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_rd_resp_slave_to_master: m%0d <- s%0d",
-		 v__h31566,
+		 v__h24428,
 		 $signed(32'd1),
 		 $signed(32'd1));
     if (RST_N != `BSV_RESET_VALUE)
@@ -11793,7 +8903,7 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_5 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$write("'h%h",
-	       IF_fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_ETC___d743);
+	       IF_fabric_v_rg_r_beat_count_1_24_EQ_fabric_v_f_ETC___d542);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_5 &&
 	  fabric_cfg_verbosity != 4'd0)
@@ -11822,99 +8932,99 @@ module mkLocal_Fabric(CLK,
 	$write("\n");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_6 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	begin
-	  v__h31895 = $stime;
+	  v__h24757 = $stime;
 	  #0;
 	end
-    v__h31889 = v__h31895 / 32'd10;
+    v__h24751 = v__h24757 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_6 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	$display("%0d: %m.rl_rd_resp_slave_to_master: ERROR: m%0d <- s%0d",
-		 v__h31889,
+		 v__h24751,
 		 $signed(32'd1),
 		 $signed(32'd2));
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_6 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	$display("    RLAST not set on final data beat (arlen = %0d)",
 		 fabric_v_f_rd_mis_2$D_OUT[7:0]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_6 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	$write("    ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_6 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	$write("AXI4_Rd_Data { ", "rid: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_6 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	$write("'h%h", fabric_xactors_to_slaves_2_f_rd_data$D_OUT[38:35]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_6 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	$write(", ", "rdata: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_6 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	$write("'h%h", fabric_xactors_to_slaves_2_f_rd_data$D_OUT[34:3]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_6 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	$write(", ", "rresp: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_6 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	$write("'h%h", 2'b10);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_6 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	$write(", ", "rlast: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_6 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	$write("False");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_6 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	$write(", ", "ruser: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_6 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	$write("'h%h", 1'd0, " }");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_6 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
+	  fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_rd_ETC___d561 &&
 	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
 	$write("\n");
@@ -11922,15 +9032,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_6 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h32166 = $stime;
+	  v__h25028 = $stime;
 	  #0;
 	end
-    v__h32160 = v__h32166 / 32'd10;
+    v__h25022 = v__h25028 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_6 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_rd_resp_slave_to_master: m%0d <- s%0d",
-		 v__h32160,
+		 v__h25022,
 		 $signed(32'd1),
 		 $signed(32'd2));
     if (RST_N != `BSV_RESET_VALUE)
@@ -11961,7 +9071,7 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_6 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$write("'h%h",
-	       IF_fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_ETC___d778);
+	       IF_fabric_v_rg_r_beat_count_2_59_EQ_fabric_v_f_ETC___d577);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_6 &&
 	  fabric_cfg_verbosity != 4'd0)
@@ -11990,99 +9100,99 @@ module mkLocal_Fabric(CLK,
 	$write("\n");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	begin
-	  v__h32489 = $stime;
+	  v__h25351 = $stime;
 	  #0;
 	end
-    v__h32483 = v__h32489 / 32'd10;
+    v__h25345 = v__h25351 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	$display("%0d: %m.rl_rd_resp_slave_to_master: ERROR: m%0d <- s%0d",
-		 v__h32483,
+		 v__h25345,
 		 $signed(32'd1),
 		 $signed(32'd3));
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	$display("    RLAST not set on final data beat (arlen = %0d)",
 		 fabric_v_f_rd_mis_3$D_OUT[7:0]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	$write("    ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	$write("AXI4_Rd_Data { ", "rid: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	$write("'h%h", fabric_xactors_to_slaves_3_f_rd_data$D_OUT[38:35]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	$write(", ", "rdata: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	$write("'h%h", fabric_xactors_to_slaves_3_f_rd_data$D_OUT[34:3]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	$write(", ", "rresp: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	$write("'h%h", 2'b10);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	$write(", ", "rlast: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	$write("False");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	$write(", ", "ruser: ");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	$write("'h%h", 1'd0, " }");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
+	  fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_rd_ETC___d596 &&
 	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
 	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
 	$write("\n");
@@ -12090,15 +9200,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h32760 = $stime;
+	  v__h25622 = $stime;
 	  #0;
 	end
-    v__h32754 = v__h32760 / 32'd10;
+    v__h25616 = v__h25622 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_rd_resp_slave_to_master: m%0d <- s%0d",
-		 v__h32754,
+		 v__h25616,
 		 $signed(32'd1),
 		 $signed(32'd3));
     if (RST_N != `BSV_RESET_VALUE)
@@ -12129,7 +9239,7 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$write("'h%h",
-	       IF_fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_ETC___d813);
+	       IF_fabric_v_rg_r_beat_count_3_94_EQ_fabric_v_f_ETC___d612);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7 &&
 	  fabric_cfg_verbosity != 4'd0)
@@ -12154,693 +9264,21 @@ module mkLocal_Fabric(CLK,
 	$write("'h%h", 1'd0, " }");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_7 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("\n");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
-	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
-	begin
-	  v__h33108 = $stime;
-	  #0;
-	end
-    v__h33102 = v__h33108 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
-	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
-	$display("%0d: %m.rl_rd_resp_slave_to_master: ERROR: m%0d <- s%0d",
-		 v__h33102,
-		 $signed(32'd2),
-		 $signed(32'd0));
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
-	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
-	$display("    RLAST not set on final data beat (arlen = %0d)",
-		 fabric_v_f_rd_mis_0$D_OUT[7:0]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
-	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
-	$write("    ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
-	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
-	$write("AXI4_Rd_Data { ", "rid: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
-	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
-	$write("'h%h", fabric_xactors_to_slaves_0_f_rd_data$D_OUT[38:35]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
-	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
-	$write(", ", "rdata: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
-	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
-	$write("'h%h", fabric_xactors_to_slaves_0_f_rd_data$D_OUT[34:3]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
-	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
-	$write(", ", "rresp: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
-	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
-	$write("'h%h", 2'b10);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
-	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
-	$write(", ", "rlast: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
-	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
-	$write("False");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
-	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
-	$write(", ", "ruser: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
-	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
-	$write("'h%h", 1'd0, " }");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_rd_ETC___d692 &&
-	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
-	$write("\n");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	begin
-	  v__h33389 = $stime;
-	  #0;
-	end
-    v__h33383 = v__h33389 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$display("%0d: %m.rl_rd_resp_slave_to_master: m%0d <- s%0d",
-		 v__h33383,
-		 $signed(32'd2),
-		 $signed(32'd0));
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("    r: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("AXI4_Rd_Data { ", "rid: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_to_slaves_0_f_rd_data$D_OUT[38:35]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "rdata: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_to_slaves_0_f_rd_data$D_OUT[34:3]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "rresp: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h",
-	       IF_fabric_v_rg_r_beat_count_0_90_EQ_fabric_v_f_ETC___d708);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "rlast: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_cfg_verbosity != 4'd0 &&
-	  fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
-	$write("True");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_cfg_verbosity != 4'd0 &&
-	  !fabric_xactors_to_slaves_0_f_rd_data$D_OUT[0])
-	$write("False");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "ruser: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", 1'd0, " }");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_8 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("\n");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
-	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
-	begin
-	  v__h33712 = $stime;
-	  #0;
-	end
-    v__h33706 = v__h33712 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
-	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
-	$display("%0d: %m.rl_rd_resp_slave_to_master: ERROR: m%0d <- s%0d",
-		 v__h33706,
-		 $signed(32'd2),
-		 $signed(32'd1));
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
-	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
-	$display("    RLAST not set on final data beat (arlen = %0d)",
-		 fabric_v_f_rd_mis_1$D_OUT[7:0]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
-	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
-	$write("    ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
-	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
-	$write("AXI4_Rd_Data { ", "rid: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
-	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
-	$write("'h%h", fabric_xactors_to_slaves_1_f_rd_data$D_OUT[38:35]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
-	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
-	$write(", ", "rdata: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
-	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
-	$write("'h%h", fabric_xactors_to_slaves_1_f_rd_data$D_OUT[34:3]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
-	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
-	$write(", ", "rresp: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
-	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
-	$write("'h%h", 2'b10);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
-	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
-	$write(", ", "rlast: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
-	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
-	$write("False");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
-	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
-	$write(", ", "ruser: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
-	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
-	$write("'h%h", 1'd0, " }");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_rd_ETC___d727 &&
-	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
-	$write("\n");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	begin
-	  v__h33983 = $stime;
-	  #0;
-	end
-    v__h33977 = v__h33983 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$display("%0d: %m.rl_rd_resp_slave_to_master: m%0d <- s%0d",
-		 v__h33977,
-		 $signed(32'd2),
-		 $signed(32'd1));
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("    r: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("AXI4_Rd_Data { ", "rid: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_to_slaves_1_f_rd_data$D_OUT[38:35]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "rdata: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_to_slaves_1_f_rd_data$D_OUT[34:3]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "rresp: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h",
-	       IF_fabric_v_rg_r_beat_count_1_25_EQ_fabric_v_f_ETC___d743);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "rlast: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_cfg_verbosity != 4'd0 &&
-	  fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
-	$write("True");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_cfg_verbosity != 4'd0 &&
-	  !fabric_xactors_to_slaves_1_f_rd_data$D_OUT[0])
-	$write("False");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "ruser: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", 1'd0, " }");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_9 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("\n");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
-	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
-	begin
-	  v__h34306 = $stime;
-	  #0;
-	end
-    v__h34300 = v__h34306 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
-	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
-	$display("%0d: %m.rl_rd_resp_slave_to_master: ERROR: m%0d <- s%0d",
-		 v__h34300,
-		 $signed(32'd2),
-		 $signed(32'd2));
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
-	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
-	$display("    RLAST not set on final data beat (arlen = %0d)",
-		 fabric_v_f_rd_mis_2$D_OUT[7:0]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
-	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
-	$write("    ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
-	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
-	$write("AXI4_Rd_Data { ", "rid: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
-	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
-	$write("'h%h", fabric_xactors_to_slaves_2_f_rd_data$D_OUT[38:35]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
-	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
-	$write(", ", "rdata: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
-	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
-	$write("'h%h", fabric_xactors_to_slaves_2_f_rd_data$D_OUT[34:3]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
-	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
-	$write(", ", "rresp: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
-	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
-	$write("'h%h", 2'b10);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
-	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
-	$write(", ", "rlast: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
-	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
-	$write("False");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
-	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
-	$write(", ", "ruser: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
-	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
-	$write("'h%h", 1'd0, " }");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_rd_ETC___d762 &&
-	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
-	$write("\n");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	begin
-	  v__h34577 = $stime;
-	  #0;
-	end
-    v__h34571 = v__h34577 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$display("%0d: %m.rl_rd_resp_slave_to_master: m%0d <- s%0d",
-		 v__h34571,
-		 $signed(32'd2),
-		 $signed(32'd2));
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("    r: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("AXI4_Rd_Data { ", "rid: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_to_slaves_2_f_rd_data$D_OUT[38:35]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "rdata: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_to_slaves_2_f_rd_data$D_OUT[34:3]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "rresp: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h",
-	       IF_fabric_v_rg_r_beat_count_2_60_EQ_fabric_v_f_ETC___d778);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "rlast: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_cfg_verbosity != 4'd0 &&
-	  fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
-	$write("True");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_cfg_verbosity != 4'd0 &&
-	  !fabric_xactors_to_slaves_2_f_rd_data$D_OUT[0])
-	$write("False");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "ruser: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", 1'd0, " }");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_10 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("\n");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
-	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
-	begin
-	  v__h34900 = $stime;
-	  #0;
-	end
-    v__h34894 = v__h34900 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
-	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
-	$display("%0d: %m.rl_rd_resp_slave_to_master: ERROR: m%0d <- s%0d",
-		 v__h34894,
-		 $signed(32'd2),
-		 $signed(32'd3));
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
-	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
-	$display("    RLAST not set on final data beat (arlen = %0d)",
-		 fabric_v_f_rd_mis_3$D_OUT[7:0]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
-	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
-	$write("    ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
-	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
-	$write("AXI4_Rd_Data { ", "rid: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
-	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
-	$write("'h%h", fabric_xactors_to_slaves_3_f_rd_data$D_OUT[38:35]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
-	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
-	$write(", ", "rdata: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
-	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
-	$write("'h%h", fabric_xactors_to_slaves_3_f_rd_data$D_OUT[34:3]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
-	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
-	$write(", ", "rresp: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
-	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
-	$write("'h%h", 2'b10);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
-	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
-	$write(", ", "rlast: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
-	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
-	$write("False");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
-	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
-	$write(", ", "ruser: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
-	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
-	$write("'h%h", 1'd0, " }");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_rd_ETC___d797 &&
-	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[2:1] == 2'b0 &&
-	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
-	$write("\n");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	begin
-	  v__h35171 = $stime;
-	  #0;
-	end
-    v__h35165 = v__h35171 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$display("%0d: %m.rl_rd_resp_slave_to_master: m%0d <- s%0d",
-		 v__h35165,
-		 $signed(32'd2),
-		 $signed(32'd3));
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("    r: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("AXI4_Rd_Data { ", "rid: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_to_slaves_3_f_rd_data$D_OUT[38:35]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "rdata: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_xactors_to_slaves_3_f_rd_data$D_OUT[34:3]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "rresp: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h",
-	       IF_fabric_v_rg_r_beat_count_3_95_EQ_fabric_v_f_ETC___d813);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "rlast: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_cfg_verbosity != 4'd0 &&
-	  fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
-	$write("True");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_cfg_verbosity != 4'd0 &&
-	  !fabric_xactors_to_slaves_3_f_rd_data$D_OUT[0])
-	$write("False");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "ruser: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", 1'd0, " }");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_slave_to_master_11 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$write("\n");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h35678 = $stime;
+	  v__h26102 = $stime;
 	  #0;
 	end
-    v__h35672 = v__h35678 / 32'd10;
+    v__h26096 = v__h26102 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_rd_resp_err_to_master: m%0d <- err",
-		 v__h35672,
+		 v__h26096,
 		 $signed(32'd0));
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master &&
@@ -12877,12 +9315,12 @@ module mkLocal_Fabric(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master &&
 	  fabric_cfg_verbosity != 4'd0 &&
-	  fabric_v_rg_r_err_beat_count_0_14_EQ_fabric_v__ETC___d916)
+	  fabric_v_rg_r_err_beat_count_0_69_EQ_fabric_v__ETC___d671)
 	$write("True");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master &&
 	  fabric_cfg_verbosity != 4'd0 &&
-	  !fabric_v_rg_r_err_beat_count_0_14_EQ_fabric_v__ETC___d916)
+	  !fabric_v_rg_r_err_beat_count_0_69_EQ_fabric_v__ETC___d671)
 	$write("False");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master &&
@@ -12900,15 +9338,15 @@ module mkLocal_Fabric(CLK,
       if (WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_1 &&
 	  fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h36060 = $stime;
+	  v__h26484 = $stime;
 	  #0;
 	end
-    v__h36054 = v__h36060 / 32'd10;
+    v__h26478 = v__h26484 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_1 &&
 	  fabric_cfg_verbosity != 4'd0)
 	$display("%0d: %m.rl_rd_resp_err_to_master: m%0d <- err",
-		 v__h36054,
+		 v__h26478,
 		 $signed(32'd1));
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_1 &&
@@ -12945,12 +9383,12 @@ module mkLocal_Fabric(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_1 &&
 	  fabric_cfg_verbosity != 4'd0 &&
-	  fabric_v_rg_r_err_beat_count_1_32_EQ_fabric_v__ETC___d934)
+	  fabric_v_rg_r_err_beat_count_1_87_EQ_fabric_v__ETC___d689)
 	$write("True");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_1 &&
 	  fabric_cfg_verbosity != 4'd0 &&
-	  !fabric_v_rg_r_err_beat_count_1_32_EQ_fabric_v__ETC___d934)
+	  !fabric_v_rg_r_err_beat_count_1_87_EQ_fabric_v__ETC___d689)
 	$write("False");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_1 &&
@@ -12965,83 +9403,15 @@ module mkLocal_Fabric(CLK,
 	  fabric_cfg_verbosity != 4'd0)
 	$write("\n");
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	begin
-	  v__h36442 = $stime;
-	  #0;
-	end
-    v__h36436 = v__h36442 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$display("%0d: %m.rl_rd_resp_err_to_master: m%0d <- err",
-		 v__h36436,
-		 $signed(32'd2));
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("    r: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("AXI4_Rd_Data { ", "rid: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", fabric_v_f_rd_err_info_2$D_OUT[3:0]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "rdata: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", 32'd0);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "rresp: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", 2'b11);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "rlast: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_2 &&
-	  fabric_cfg_verbosity != 4'd0 &&
-	  fabric_v_rg_r_err_beat_count_2_50_EQ_fabric_v__ETC___d952)
-	$write("True");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_2 &&
-	  fabric_cfg_verbosity != 4'd0 &&
-	  !fabric_v_rg_r_err_beat_count_2_50_EQ_fabric_v__ETC___d952)
-	$write("False");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write(", ", "ruser: ");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("'h%h", 1'd0, " }");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_fabric_rl_rd_resp_err_to_master_2 &&
-	  fabric_cfg_verbosity != 4'd0)
-	$write("\n");
-    if (RST_N != `BSV_RESET_VALUE)
       if (fabric_rg_reset && fabric_cfg_verbosity != 4'd0)
 	begin
-	  v__h7848 = $stime;
+	  v__h6688 = $stime;
 	  #0;
 	end
-    v__h7842 = v__h7848 / 32'd10;
+    v__h6682 = v__h6688 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (fabric_rg_reset && fabric_cfg_verbosity != 4'd0)
-	$display("%0d: %m.rl_reset", v__h7842);
+	$display("%0d: %m.rl_reset", v__h6682);
   end
   // synopsys translate_on
 endmodule  // mkLocal_Fabric

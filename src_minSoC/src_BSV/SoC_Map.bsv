@@ -43,8 +43,8 @@ export  accel0_slave_num;
 export  dma_server_num;
 `endif
 
-//export  N_External_Interrupt_Sources;
-//export  n_external_interrupt_sources;
+export  N_External_Interrupt_Sources;
+export  n_external_interrupt_sources;
 export  irq_num_uart0;
 export  irq_num_gpio0;
 `ifdef INCLUDE_ACCEL0
@@ -233,17 +233,17 @@ module mkSoC_Map (SoC_Map_IFC);
 
    function Bool fn_is_dtcm_addr (Fabric_Addr addr);
       Bit #(TSub #(Wd_Addr, DTCM_Addr_LSB)) dtcm_base_msb = truncate (
-         dtcm_addr_base >> dtcm_addr_lsb); 
+         dtcm_addr_base >> dtcm_addr_lsb);
       Bit #(TSub #(Wd_Addr, DTCM_Addr_LSB)) addr_msb = truncate (
-         addr >> dtcm_addr_lsb); 
+         addr >> dtcm_addr_lsb);
       return (dtcm_base_msb == addr_msb);
    endfunction
 
    function Bool fn_is_itcm_addr (Fabric_Addr addr);
       Bit #(TSub #(Wd_Addr, ITCM_Addr_LSB)) itcm_base_msb = truncate (
-         itcm_addr_base >> itcm_addr_lsb); 
+         itcm_addr_base >> itcm_addr_lsb);
       Bit #(TSub #(Wd_Addr, ITCM_Addr_LSB)) addr_msb = truncate (
-         addr >> itcm_addr_lsb); 
+         addr >> itcm_addr_lsb);
       return (itcm_base_msb == addr_msb);
    endfunction
 
@@ -421,7 +421,7 @@ Integer accel0_slave_num          = 5;
 // Interrupt request numbers (== index in to vector of
 // interrupt-request lines in Core)
 
-typedef  32  N_External_Interrupt_Sources;
+typedef  16  N_External_Interrupt_Sources;
 Integer  n_external_interrupt_sources = valueOf (N_External_Interrupt_Sources);
 
 Integer irq_num_uart0  = 0;
