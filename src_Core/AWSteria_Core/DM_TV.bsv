@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2021-2022 Bluespec, Inc. All Rights Reserved.
 // Author: Rishiyur S. Nikhil
 
 package DM_TV;
@@ -271,7 +271,7 @@ module mkDM_and_TV #(DM_TV_Param param) (DM_TV_IFC);
    // but using rules allows us to name them in scheduling attributes.
 
    // Merge-in CPU's TV data.
-  rule merge_cpu_trace_data;
+   rule merge_cpu_trace_data;
       let tmp <- param.cpu_trace_data_out.get;
       f_trace_data_merged.enq (tmp);
    endrule

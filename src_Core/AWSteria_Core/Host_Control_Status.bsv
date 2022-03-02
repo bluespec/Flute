@@ -151,43 +151,44 @@ module mkHost_Control_Status (Host_Control_Status_IFC);
 
       if (cmd == cmd_noop) begin
 	 f_hw_to_host.enq (status_ok);
-	 $display ("  host_to_hw_req: noop");
+	 $display ("  mkHost_Control_Status: host_to_hw_req: noop");
       end
       else if (cmd == cmd_CPU_stop) begin
 	 f_run_halt_reqs.enq (False);
 	 next_state = STATE_EXEC;
-	 $display ("  host_to_hw_req: CPU_stop");
+	 $display ("  mkHost_Control_Status: host_to_hw_req: CPU_stop");
       end
       else if (cmd == cmd_CPU_start) begin
 	 f_run_halt_reqs.enq (True);
 	 next_state = STATE_EXEC;
-	 $display ("  host_to_hw_req: CPU_start");
+	 $display ("  mkHost_Control_Status: host_to_hw_req: CPU_start");
       end
       else if (cmd == cmd_CPU_reset) begin
 	 f_cpu_reset_reqs.enq (True);
 	 next_state = STATE_EXEC;
-	 $display ("  host_to_hw_req: CPU_reset");
+	 $display ("  mkHost_Control_Status: host_to_hw_req: CPU_reset");
       end
       else if (cmd == cmd_CPU_fence) begin
 	 f_hw_to_host.enq (status_ok);
-	 $display ("  host_to_hw_req: CPU_fence: no-op on this system (coherent access)");
+	 $display ("  mkHost_Control_Status: host_to_hw_req: CPU_fence:");
+	 $display ("    no-op on this system (coherent access)");
       end
       else if (cmd == cmd_CSR_write) begin
 	 next_state = STATE_WORD1;
-	 $display ("  host_to_hw_req: CSR_write");
+	 $display ("  mkHost_Control_Status: host_to_hw_req: CSR_write");
       end
       else if (cmd == cmd_CSR_read) begin
 	 next_state = STATE_EXEC;
-	 $display ("  host_to_hw_req: CSR_read");
+	 $display ("  mkHost_Control_Status: host_to_hw_req: CSR_read");
       end
       else if (cmd == cmd_watch_tohost_off) begin
 	 f_watch_tohost.enq (tuple2 (False, ?));
 	 f_hw_to_host.enq (status_ok);
-	 $display ("  host_to_hw_req: watch_tohost_off");
+	 $display ("  mkHost_Control_Status: host_to_hw_req: watch_tohost_off");
       end
       else if (cmd == cmd_watch_tohost_on) begin
 	 next_state = STATE_WORD1;
-	 $display ("  host_to_hw_req: watch_tohost_on");
+	 $display ("  mkHost_Control_Status: host_to_hw_req: watch_tohost_on");
       end
       else if (cmd == cmd_read_tohost) begin
 	 let tohost_value = dw_tohost_value [15:0];
@@ -197,7 +198,8 @@ module mkHost_Control_Status (Host_Control_Status_IFC);
 
 	 // Only report changes to non-zero
 	 if ((tohost_value != 0) && (tohost_value != rg_prev_tohost_value)) begin
-	    $display ("  host_to_hw_req: read_tohost = %0h", tohost_value);
+	    $display ("  mkHost_Control_Status: host_to_hw_req: read_tohost = %0h",
+		      tohost_value);
 	    let test_num = (tohost_value >> 1);
 	    if (test_num == 0) $display ("  = PASS");
 	    else               $display ("  = FAIL on test %0d", test_num);
@@ -206,19 +208,20 @@ module mkHost_Control_Status (Host_Control_Status_IFC);
       else if (cmd == cmd_pc_trace_off) begin
 	 rg_pc_trace_on <= True;
 	 f_hw_to_host.enq (status_ok);
-	 $display ("  host_to_hw_req: PC trace off");
+	 $display ("  mkHost_Control_Status: host_to_hw_req: PC trace off");
       end
       else if (cmd == cmd_pc_trace_on) begin
 	 next_state = STATE_EXEC;
-	 $display ("  host_to_hw_req: PC trace on");
+	 $display ("  mkHost_Control_Status: host_to_hw_req: PC trace on");
       end
       else if (cmd == cmd_set_verbosity) begin
 	 next_state = STATE_WORD1;
-	 $display ("  host_to_hw_req: verbosity");
+	 $display ("  mkHost_Control_Status: host_to_hw_req: verbosity");
       end
       else begin
 	 f_hw_to_host.enq (status_unrecognized);
-	 $display ("  host_to_hw_req: ERROR: unrecognized command %0h", word0);
+	 $display ("ERROR: mkHost_Control_Status: host_to_hw_req: unrecognized command %0h",
+		   word0);
       end
       rg_state <= next_state;
    endrule

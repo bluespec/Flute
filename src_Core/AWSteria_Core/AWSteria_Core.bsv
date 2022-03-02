@@ -218,9 +218,6 @@ module mkAWSteria_Core_Single_Clock (AWSteria_Core_IFC_Specialized);
    FIFOF #(Bool) f_nmi  <- mkFIFOF;
    Reg #(Bool)   rg_nmi <- mkReg (False);
 
-   // TV Info
-   FIFOF # (TV_Info) f_tv_info <- mkFIFOF;
-
    // ================================================================
    // Initialization actions
    
@@ -476,7 +473,7 @@ module mkAWSteria_Core_Single_Clock (AWSteria_Core_IFC_Specialized);
    // Trace and Tandem Verification output
 
    interface fo_pc_trace = to_FIFOF_O (f_pc_trace);
-   interface fo_tv_info  = to_FIFOF_O (f_tv_info);
+   interface fo_tv_info  = dm_tv.fo_tv_info;
 
    // ----------------------------------------------------------------
    // Debug Module interfaces
