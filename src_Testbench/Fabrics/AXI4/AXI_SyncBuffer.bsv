@@ -1,10 +1,10 @@
-// Copyright (c) 2021 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2021-2022 Bluespec, Inc. All Rights Reserved
 // Author: Rishiyur S. Nikhil
 
 package AXI_SyncBuffer;
 
 // ================================================================
-// This package defines an clock-domain-crossing buffer for an AXI bus
+// This package defines a clock-domain-crossing buffer for an AXI bus
 // (parameterized, so can be used for AXI4 and AXI4 Lite).
 
 // The interfaces are FIFOF-like (not raw AXI4 signals).
