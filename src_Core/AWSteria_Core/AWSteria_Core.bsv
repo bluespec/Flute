@@ -93,8 +93,9 @@ typedef AWSteria_Core_IFC #(// AXI widths for Mem
 			    ) AWSteria_Core_IFC_Specialized;
 
 // ================================================================
-// This module is a thin wrapper around mkAWSteria_Core_Single_Clock,
-// selecting a slower clock at which to run the inner module.
+// This module is an optional thin wrapper around
+// mkAWSteria_Core_Single_Clock, selecting a slower clock at which to
+// run the inner module.
 
 // The incoming clocks are, normally:
 // In Vivado synthesis:
@@ -103,6 +104,9 @@ typedef AWSteria_Core_IFC #(// AXI widths for Mem
 // The simulation version (though clock speed does not matter here):
 //     125 MHz    83.3 MHz    50 MHz    25 MHz    10 MHz
 
+`ifndef INCLUDE_AWSTERIA_SYSTEM_TO_CORE_CLOCK_CROSSING
+//----------------------------------------------------------------
+
 (* synthesize *)
 module mkAWSteria_Core #(Clock clk1,        // extra clock
 			 Clock clk2,        // extra clock
@@ -110,6 +114,27 @@ module mkAWSteria_Core #(Clock clk1,        // extra clock
 			 Clock clk4,        // extra clock
 			 Clock clk5)        // extra clock
                        (AWSteria_Core_IFC_Specialized);
+
+   messageM ("\n    INFO: mkAWSteria_System --> AWSteria_Core: no clock crossing.");
+
+   AWSteria_Core_IFC_Specialized
+   core_single_clock <- mkAWSteria_Core_Single_Clock;
+   return core_single_clock;
+endmodule
+
+//----------------------------------------------------------------
+`else
+//----------------------------------------------------------------
+
+(* synthesize *)
+module mkAWSteria_Core #(Clock clk1,        // extra clock
+			 Clock clk2,        // extra clock
+			 Clock clk3,        // extra clock
+			 Clock clk4,        // extra clock
+			 Clock clk5)        // extra clock
+                       (AWSteria_Core_IFC_Specialized);
+
+   messageM ("\n    INFO: mkAWSteria_System --> AWSteria_Core: crossing to clk2.");
 
    let clk_cur  <- exposeCurrentClock;
    let rstn_cur <- exposeCurrentReset;
@@ -139,6 +164,9 @@ module mkAWSteria_Core #(Clock clk1,        // extra clock
 
    return core_reclocked;
 endmodule
+
+//----------------------------------------------------------------
+`endif
 
 // ================================================================
 // The extra clocks are typically slower clocks for some components
