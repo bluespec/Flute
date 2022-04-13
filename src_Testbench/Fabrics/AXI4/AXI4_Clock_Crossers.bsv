@@ -1,5 +1,6 @@
 // Copyright (c) 2022 Bluespec, Inc. All Rights Reserved
 // Author: Rishiyur S. Nikhil
+// (original code for mkAXI4_Clock_Crossing from Joe Stoy)
 
 package AXI4_Clock_Crossers;
 
@@ -12,6 +13,14 @@ export mkAXI4_M_Clock_Crosser;
 
 //   Clock -> Clock -> AXI4_S_IFC -> Module #(AXI4_S_IFC)
 export mkAXI4_S_Clock_Crosser;
+
+export AXI4_ClockCrossing_IFC (..);
+
+//   Clock1 -> Clock2 -> Module #(AXI4_Clock_Crossing_IFC)
+export mkAXI4_ClockCrossing;
+
+//   Clock1 ->           Module #(AXI4_Clock_Crossing_IFC)
+export mkAXI4_ClockCrossingToCC;
 
 // ================================================================
 // Bluespec library imports
@@ -31,6 +40,7 @@ import Semi_FIFOF :: *;
 
 import AXI4_Types     :: *;
 import AXI_SyncBuffer :: *;
+import AXI4_Xactors   :: *;
 
 // ================================================================
 // Clock1 -> Clock2 -> AXI4_S_IFC_1 -> Module #(AXI4_S_IFC_2)
@@ -132,6 +142,75 @@ module mkAXI4_M_Clock_Crosser
 
    let axi4_M_2 = axi4_M_xactor.axi_side;
    return axi4_M_2;
+endmodule
+
+// ================================================================
+// Clock1 -> Clock2 -> Module #(AXI4_Clock_Crossing_IFC)
+
+// ----------------
+
+interface AXI4_ClockCrossing_IFC #(numeric type id_,
+				   numeric type addr_,
+				   numeric type data_,
+				   numeric type user_);
+   interface AXI4_Slave_IFC  #(id_, addr_, data_, user_) from_M;
+   interface AXI4_Master_IFC #(id_, addr_, data_, user_) to_S;
+endinterface
+
+// ----------------
+
+module mkAXI4_ClockCrossing
+   #(Clock clock_M, Reset reset_M,
+     Clock clock_S, Reset reset_S)
+   (AXI4_ClockCrossing_IFC #(id_, addr_, data_, user_));
+
+   // SyncFIFOs for the 5 channels
+
+   SyncFIFOIfc #(AXI4_Wr_Addr #(id_, addr_, user_))
+   f_aw <- mkSyncFIFO (4, clock_M, reset_M,  clock_S);
+
+   SyncFIFOIfc #(AXI4_Wr_Data #(data_, user_))
+   f_w  <- mkSyncFIFO (4, clock_M, reset_M,  clock_S);
+
+   SyncFIFOIfc #(AXI4_Wr_Resp #(id_, user_))
+   f_b  <- mkSyncFIFO (4,  clock_S,  reset_S, clock_M);
+
+   SyncFIFOIfc #(AXI4_Rd_Addr #(id_, addr_, user_))
+   f_ar <- mkSyncFIFO (4, clock_M, reset_M,  clock_S);
+
+   SyncFIFOIfc #(AXI4_Rd_Data #(id_, data_, user_))
+   f_r  <- mkSyncFIFO (4,  clock_S,  reset_S, clock_M);
+
+   // Transactors for each end
+
+   AXI4_Slave_IFC  #(id_, addr_, data_, user_)
+   xactor_S <- mkAXI4_Xactor_S_3 (f_aw, f_w, f_b, f_ar, f_r,
+				  clocked_by clock_M,
+				  reset_by   reset_M);
+   AXI4_Master_IFC #(id_, addr_, data_, user_)
+   xactor_M <- mkAXI4_Xactor_M_3 (f_aw, f_w, f_b, f_ar, f_r,
+				  clocked_by clock_S,
+				  reset_by reset_S);
+
+   // ----------------
+   interface AXI4_Slave_IFC  from_M =  xactor_S;
+   interface AXI4_Master_IFC to_S   = xactor_M;
+endmodule
+
+// ----------------------------------------------------------------
+// Same as above, with slave-side using current-clock
+
+module mkAXI4_ClockCrossingToCC
+   #(Clock clock_M, Reset reset_M)
+   (AXI4_ClockCrossing_IFC #(id_, addr_, data_, user_));
+
+   let clock_S <- exposeCurrentClock;
+   let reset_S <- exposeCurrentReset;
+
+   let crossing <- mkAXI4_ClockCrossing (clock_M, reset_M,
+					 clock_S, reset_S);
+
+   return crossing;
 endmodule
 
 // ================================================================

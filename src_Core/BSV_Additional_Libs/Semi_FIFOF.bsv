@@ -13,6 +13,7 @@ import FIFOF       :: *;
 import Connectable :: *;
 import GetPut      :: *;
 import FIFOLevel   :: *;
+import Clocks      :: *;
 
 // ================================================================
 // Semi-FIFOF interfaces
@@ -38,7 +39,10 @@ typeclass To_FIFOF_IO#(type tf, type t)
    function FIFOF_O #(t) to_FIFOF_O (tf f);
 endtypeclass
 
-instance To_FIFOF_IO#(FIFOF#(t), t);
+// ----------------
+// FIFOFs as Semi-FIFOFs
+
+instance To_FIFOF_IO #(FIFOF #(t), t);
    function FIFOF_I #(t) to_FIFOF_I (FIFOF #(t) f);
       return interface FIFOF_I;
 		method enq (x) = f.enq (x);
@@ -55,7 +59,10 @@ instance To_FIFOF_IO#(FIFOF#(t), t);
    endfunction
 endinstance
 
-instance To_FIFOF_IO#(FIFOLevelIfc#(t,n), t);
+// ----------------
+// LevelFIFOs as Semi-FIFOFs
+
+instance To_FIFOF_IO #(FIFOLevelIfc #(t,n), t);
    function FIFOF_I #(t) to_FIFOF_I (FIFOLevelIfc #(t,n) f);
       return interface FIFOF_I;
 		method enq (x) = f.enq (x);
@@ -64,6 +71,26 @@ instance To_FIFOF_IO#(FIFOLevelIfc#(t,n), t);
    endfunction
 
    function FIFOF_O #(t) to_FIFOF_O (FIFOLevelIfc #(t,n) f);
+      return interface FIFOF_O;
+		method first    = f.first;
+		method deq      = f.deq;
+		method notEmpty = f.notEmpty;
+	     endinterface;
+   endfunction
+endinstance
+
+// ----------------
+// SyncFIFOs as Semi-FIFOFs
+
+instance To_FIFOF_IO #(SyncFIFOIfc #(t), t);
+   function FIFOF_I #(t) to_FIFOF_I (SyncFIFOIfc #(t) f);
+      return interface FIFOF_I;
+		method enq (x) = f.enq (x);
+		method notFull = f.notFull;
+	     endinterface;
+   endfunction
+
+   function FIFOF_O #(t) to_FIFOF_O (SyncFIFOIfc #(t) f);
       return interface FIFOF_O;
 		method first    = f.first;
 		method deq      = f.deq;
