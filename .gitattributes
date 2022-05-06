@@ -1,2 +1,3 @@
-src_SSITH_P2/Verilog_RTL linguist-vendored
-builds/*/Verilog_RTL linguist-vendored
+src_SSITH_P2/Verilog_RTL/**    linguist-vendored
+src_SSITH_P2/xilinx_ip/hdl/**  linguist-vendored
+builds/*/Verilog_RTL/**        linguist-vendored
