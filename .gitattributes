@@ -1,1 +1,2 @@
-builds/** linguist-vendored
+src_SSITH_P2/Verilog_RTL linguist-vendored
+builds/*/Verilog_RTL linguist-vendored
