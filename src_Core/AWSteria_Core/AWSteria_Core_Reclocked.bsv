@@ -1,9 +1,10 @@
 // Copyright (c) 2022 Bluespec, Inc. All Rights Reserved.
+// Author: Rishiyur S. Nikhil
 
 package AWSteria_Core_Reclocked;
 
 // ================================================================
-// This package defines an 'reclocking' module, i.e., a function
+// This package defines a 'reclocking' module, i.e., a function
 //
 //    Clock -> Clock -> AWSteria_Core_IFC -> Module (AWSteria_Core_IFC)
 //
@@ -188,13 +189,17 @@ module mkAWSteria_Core_Reclocked
    // ----------------------------------------------------------------
    // External interrupt sources
 
-   Vector #(t_n_interrupt_sources, SyncFIFOIfc #(Bool)) v_irqs
-   <- replicateM (mkSyncFIFO (depth, clk_fast, rst_fast, clk_slow));
+   // Wire (bus) driven by 'ext_interrupts' method
+   Wire #(Bit #(t_n_interrupt_sources)) w_irqs <- mkBypassWire;
 
-   for (Integer j = 0; j < valueOf (t_n_interrupt_sources); j = j + 1) begin
-      mkConnection (fn_SyncFIFOIfc_to_FIFOF_O (v_irqs [j]),
-		    core.v_fi_external_interrupt_reqs [j]);
-   end
+   // Clock-crossing for wire (bus)
+   ReadOnly #(Bit #(t_n_interrupt_sources)) ro_sync_irqs
+   <- mkNullCrossingWire (clocked_by clk_fast, clk_slow, w_irqs);
+
+   (* fire_when_enabled, no_implicit_conditions *)
+   rule rl_relay_interrupts;
+      core.ext_interrupts (ro_sync_irqs);
+   endrule
 
    // ----------------------------------------------------------------
    // Non-maskable interrupt
@@ -267,7 +272,9 @@ module mkAWSteria_Core_Reclocked
    // ----------------
    // External interrupt sources
 
-   interface v_fi_external_interrupt_reqs = map (fn_SyncFIFOIfc_to_FIFOF_I, v_irqs);
+   method Action ext_interrupts (Bit #(t_n_interrupt_sources) x);
+      w_irqs <= x;
+   endmethod
 
    // ----------------
    // Non-maskable interrupt request

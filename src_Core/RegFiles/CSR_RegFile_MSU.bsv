@@ -144,12 +144,6 @@ interface CSR_RegFile_IFC;
    (* always_ready *)
    method Bit #(64) read_csr_mcycle;
 
-   // Read MTIME
-   /* TODO: OBSOLETE? DELETE?
-   (* always_ready *)
-   method Bit #(64) read_csr_mtime;
-   */
-
    // Access permission
    (* always_ready *)
    method Bool access_permitted_1 (Priv_Mode  priv, CSR_Addr  csr_addr, Bool  read_not_write);
@@ -1308,14 +1302,6 @@ module mkCSR_RegFile (CSR_RegFile_IFC);
    method Bit #(64) read_csr_mcycle;
       return rg_mcycle;
    endmethod
-
-   // Read MTIME
-   /* TODO: OBSOLETE? DELETE?
-   method Bit #(64) read_csr_mtime;
-      // We use mcycle as a proxy for time
-      return rg_mcycle;
-   endmethod
-   */
 
    // Access permission
    method Bool access_permitted_1 (Priv_Mode  priv, CSR_Addr  csr_addr,  Bool read_not_write);

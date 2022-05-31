@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2020 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2016-2022 Bluespec, Inc. All Rights Reserved.
 
 package MMU_Cache;
 
@@ -67,14 +67,6 @@ import Cache_Decls      :: *;
 `ifdef ISA_PRIV_S
 import TLB :: *;
 `endif
-
-/* DELETE
-`ifdef RV32
-import Cache_Decls_RV32 :: *;
-`elsif RV64
-import Cache_Decls_RV64 :: *;
-`endif
-*/
 
 import SoC_Map      :: *;
 import AXI4_Types   :: *;
@@ -1464,26 +1456,6 @@ module mkMMU_Cache  #(parameter Bool dmem_not_imem)  (MMU_Cache_IFC);
       if (cfg_verbosity > 1)
 	 $display ("    Victim way %0d; => CACHE_REFILL", new_victim_way);
    endrule: rl_start_cache_refill
-
-   /* TODO: Remove; this was used before support for read-bursts
-   // Loop that issues requests for subsequent fabric-words in cline refill
-   rule rl_cache_refill_req_loop (rg_requesting_cline);
-      if (cfg_verbosity > 2)
-	 $display ("%0d: %s.rl_cache_refill_req_loop", cur_cycle, d_or_i);
-
-      // Send request into fabric for next fabric-word of cache line
-      PA          cline_addr        = fn_align_Addr_to_CLine (rg_pa);
-      Fabric_Addr cline_fabric_addr = (fn_PA_to_Fabric_Addr (cline_addr) | rg_req_byte_in_cline);
-      AXI4_Size   axi4_size         = ((bytes_per_fabric_data == 4) ? axsize_4 : axsize_8);
-      fa_fabric_send_read_req (cline_fabric_addr, axi4_size);
-
-      // Check if end of refill loop (req_byte_in_cline is last one)
-      Fabric_Addr last_byte_offset_in_cline = fromInteger (bytes_per_cline - bytes_per_fabric_data);
-
-      rg_requesting_cline  <= (rg_req_byte_in_cline != last_byte_offset_in_cline);
-      rg_req_byte_in_cline <= rg_req_byte_in_cline + fromInteger (bytes_per_fabric_data);
-   endrule
-   */
 
    // ----------------------------------------------------------------
    // TODO (possibly): we complete a cache refill (in rl_cache_refill_loop) and

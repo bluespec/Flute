@@ -232,8 +232,6 @@ typedef struct {
    Meta_State  from_state;
    Meta_State  to_state;       // Upgrade requested
    Bool        can_up_to_E;
-   // Bool       is_read;    // TODO DELETE
-   // CLine      cline;      // TODO DELETE For requests where is_read is False (i.e., write request)
    } L1_to_L2_Req
 deriving (Bits, FShow);
 
@@ -253,9 +251,6 @@ typedef struct {
    Meta_State      to_state;   // Upgraded state
    Maybe #(CLine)  m_cline;    // possible write-back data
    // id                       // Future (when L1 becomes non-blocking, out-of-order
-
-   // Bool       ok;       // TODO DELETE
-   // CLine      cline;    // TODO DELETE For requests where is_read is True (i.e., read request)
    } L2_to_L1_Rsp
 deriving (Bits, FShow);
 
@@ -281,7 +276,7 @@ endfunction
 typedef struct {
    Bit #(64)   addr;
    Meta_State  to_state;    // Downgrade demanded
-   // id                    // TODO: Future (when L1 becomes non-blocking, out-of-order
+   // id                    // Future (when L1 becomes non-blocking, out-of-order
    } L2_to_L1_Req
 deriving (Bits, FShow);
 

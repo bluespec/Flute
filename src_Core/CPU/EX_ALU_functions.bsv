@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2021 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2022 Bluespec, Inc. All Rights Reserved
 
 package EX_ALU_functions;
 
@@ -160,9 +160,7 @@ endfunction
 // Alternate implementation of shifts using multiplication in DSPs
 
 // ----------------------------------------------------------------
-/* TODO: DELETE? 'factor' RegFile for shift ops
-
-// ----------------------------------------------------------------
+/*
 // The following is a lookup table of multiplication factors used by the "shift" ops
 RegFile #(Bit #(TLog #(XLEN)), Bit #(XLEN))  rf_sh_factors <- mkRegFileFull;
 // The following is used during reset to initialize rf_sh_factors
@@ -1211,15 +1209,6 @@ function ALU_Outputs fv_ALU (ALU_Inputs inputs);
 				     inputs.decoded_instr.rs2,
 				     inputs.decoded_instr.opcode))
       alu_outputs = fv_FP (inputs, rm);
-
-   /* DELETE: OLD
-   else if (   (inputs.decoded_instr.opcode == op_FP)
-            || (inputs.decoded_instr.opcode == op_FMADD)
-            || (inputs.decoded_instr.opcode == op_FMSUB)
-            || (inputs.decoded_instr.opcode == op_FNMSUB)
-            || (inputs.decoded_instr.opcode == op_FNMADD))
-      alu_outputs = fv_FP (inputs);
-   */
 `endif
 
    else begin

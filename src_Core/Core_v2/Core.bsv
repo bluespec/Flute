@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2021 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2018-2022 Bluespec, Inc. All Rights Reserved.
 
 package Core;
 
@@ -333,6 +333,14 @@ module mkCore
    // default target is taken out directly to Core interface
    mkConnection (fabric_1x3.v_to_slaves [near_mem_io_target_num], near_mem_io.axi4_slave);
    mkConnection (fabric_1x3.v_to_slaves [plic_target_num],        plic.axi4_slave);
+
+   // ================================================================
+   // Connect MTIME from near_mem_io to csr_regfile in CPU
+
+   (* fire_when_enabled, no_implicit_conditions *)
+   rule rl_drive_time;
+      cpu.ma_set_csr_time (near_mem_io.mv_read_mtime);
+   endrule
 
    // ================================================================
    // Connect interrupt lines from near_mem_io and PLIC to CPU

@@ -89,7 +89,7 @@ typedef AWSteria_Core_IFC #(// AXI widths for Mem
 			    AXI4_Wd_Id, AXI4_Wd_Addr, AXI4_Wd_Data_A, AXI4_Wd_User,
 
 			    // UART, virtio 1,2,3,4
-			    N_External_Interrupt_Sources
+			    5
 			    ) AWSteria_Core_IFC_Specialized;
 
 // ================================================================
@@ -236,11 +236,7 @@ module mkAWSteria_Core_Single_Clock (AWSteria_Core_IFC_Specialized);
    DM_TV_IFC dm_tv <- mkDM_TV (dm_tv_param);
 
    // External interrupts
-   Vector #(N_External_Interrupt_Sources, FIFOF #(Bool))
-   v_f_ext_intrs <- replicateM (mkFIFOF);
-
-   Vector #(N_External_Interrupt_Sources, Reg #(Bool))
-   v_rg_ext_intrs <- replicateM (mkReg (False));
+   Reg #(Bit #(N_External_Interrupt_Sources)) rg_ext_intrs <- mkReg (0);
 
    // Non-maskable interrupts
    FIFOF #(Bool) f_nmi  <- mkFIFOF;
@@ -399,25 +395,12 @@ module mkAWSteria_Core_Single_Clock (AWSteria_Core_IFC_Specialized);
    // ================================================================
    // Connect external interrupts to PLIC
 
-   // Register interrupt set/clear requests
-   for (Integer j = 0; j < valueOf (N_External_Interrupt_Sources); j = j + 1)
-      rule rl_register_interrupt (rg_module_state == MODULE_STATE_READY);
-	 Bool b <- pop (v_f_ext_intrs [j]);
-	 v_rg_ext_intrs [j] <= b;
-      endrule
-
    // Drive PLIC's interrupt lines
-   for (Integer j = 0; j < valueOf (N_External_Interrupt_Sources); j = j + 1)
-      (* fire_when_enabled, no_implicit_conditions *)
-      rule rl_drive_interrupt;
-	 plic.v_sources [j].m_interrupt_req (v_rg_ext_intrs [j]);
-      endrule
-
-   // Tie-off PLIC's unused interrupts
-   for (Integer j = valueOf (N_External_Interrupt_Sources); j < 16; j = j + 1)
-      rule rl_drive_no_interrupt;
-	 plic.v_sources [j].m_interrupt_req (False);
-      endrule
+   (* fire_when_enabled, no_implicit_conditions *)
+   rule rl_drive_interrupt;
+      for (Integer j = 0; j < valueOf (N_External_Interrupt_Sources); j = j + 1)
+	 plic.v_sources [j].m_interrupt_req (unpack (rg_ext_intrs [j]));
+   endrule
 
    // ================================================================
    // Non-maskable interrupts (NMI)
@@ -490,7 +473,9 @@ module mkAWSteria_Core_Single_Clock (AWSteria_Core_IFC_Specialized);
    // ----------------------------------------------------------------
    // External interrupt sources
 
-   interface v_fi_external_interrupt_reqs = map (to_FIFOF_I, v_f_ext_intrs);
+   method Action ext_interrupts (Bit #(5) x);
+      rg_ext_intrs <= zeroExtend (x);
+   endmethod
 
    // ----------------------------------------------------------------
    // Non-maskable interrupt request
