@@ -11,6 +11,10 @@ package DM_Common;
 
 // None
 
+// BSV Additional Libs
+
+import Semi_FIFOF :: *;
+
 // ================================================================
 // Project imports
 
@@ -512,6 +516,32 @@ DMI dummy_DMI_ifc = interface DMI;
 								 endactionvalue;
 		       method Action                 write    (DM_Addr dm_addr, DM_Word dm_word) = noAction;
 		    endinterface;
+
+// ----------------------------------------------------------------
+// Server_DMI is a more BSV-style (FIFO-based) DMI interface
+
+typedef struct {
+   Bool      is_read;    // True => read; False => Write
+   Bit #(7)  addr;       // Debug Module register address
+   Bit #(32) wdata;      // Debug Module reqister write-data (relevant only for Writes)
+   } DMI_Req
+deriving (Bits, FShow);
+
+typedef struct {
+   Bit #(32) rdata;   // Debug Module register read-data (relevant only for Reads)
+   } DMI_Rsp
+deriving (Bits, FShow);
+
+// Interface of Debug Module facing remote debugger (e.g. GDB)
+
+typedef Server_Semi_FIFOF #(DMI_Req, DMI_Rsp) Server_DMI;
+
+// A dummy interface to tie off DMI if it is not used.
+
+Server_DMI dummy_DMI_Req_Rsp_ifc = interface Server_DMI;
+				      interface request  = dummy_FIFOF_I;
+				      interface response = dummy_FIFOF_O;
+				   endinterface;
 
 // ================================================================
 

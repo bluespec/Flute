@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2021 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2018-2022 Bluespec, Inc. All Rights Reserved.
 
 package Core_IFC;
 
@@ -93,7 +93,7 @@ interface Core_IFC #(numeric type t_n_interrupt_sources);
    // with relevant bytes in locations [0]..[n-1]
 
 `ifdef INCLUDE_TANDEM_VERIF
-   interface Get #(Info_CPU_to_Verifier)  tv_verifier_info_get;
+   interface Get #(TV_Info)  tv_verifier_info_get;
 `endif
 
    // ----------------------------------------------------------------

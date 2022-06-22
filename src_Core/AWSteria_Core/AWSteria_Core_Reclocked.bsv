@@ -25,9 +25,8 @@ import Clocks      :: *;
 import Semi_FIFOF :: *;
 
 // AXI
-import AXI4_Types      :: *;
-import AXI4_Lite_Types :: *;
-import AXI_SyncBuffer  :: *;
+import AXI4_Types         :: *;
+import AXI4_ClockCrossing :: *;
 
 // ================================================================
 // Project imports
@@ -35,7 +34,7 @@ import AXI_SyncBuffer  :: *;
 import AWSteria_Core_IFC :: *;
 
 // Debug Module interface
-import DMI :: *;
+import DM_Common :: *;
 
 // Trace and Tandem Verification
 import PC_Trace :: *;
@@ -73,128 +72,38 @@ module mkAWSteria_Core_Reclocked
 			wd_id_dma,  wd_addr_dma,  wd_data_dma,  wd_user_dma,
 			t_n_interrupt_sources));
 
-   Integer depth = 2;
+   Integer depth = 2;    // For SyncFIFOs
 
    // ----------------------------------------------------------------
-   // AXI4 interface for memory
+   // AXI4 interface: Core (M) to DDR (S)
 
-   // Towards AWSteria_Core
-   AXI4_Slave_Xactor_IFC #(wd_id_mem,  wd_addr_mem,  wd_data_mem,  wd_user_mem)
-   mem_axi4_S_xactor <- mkAXI4_Slave_Xactor (clocked_by clk_slow,
-					     reset_by   rst_slow);
-
-   AXI_SyncBuffer_IFC #(AXI4_Wr_Addr #(wd_id_mem, wd_addr_mem, wd_user_mem),
-			AXI4_Wr_Data #(wd_data_mem, wd_user_mem),
-			AXI4_Wr_Resp #(wd_id_mem, wd_user_mem),
-			AXI4_Rd_Addr #(wd_id_mem, wd_addr_mem, wd_user_mem),
-			AXI4_Rd_Data #(wd_id_mem, wd_data_mem, wd_user_mem))
-   mem_axi4_syncbuf <- mkAXI_SyncBuffer (depth,
-					 clk_slow, rst_slow,
-					 clk_fast, rst_fast);
-
-   // Towards AWSteria_System
-   AXI4_Master_Xactor_IFC #(wd_id_mem,  wd_addr_mem,  wd_data_mem,  wd_user_mem)
-   mem_axi4_M_xactor <- mkAXI4_Master_Xactor;
-
-   // ----------------
-
-   mkConnection (core.mem_M, mem_axi4_S_xactor.axi_side);
-
-   mkConnection (mem_axi4_S_xactor.o_wr_addr, mem_axi4_syncbuf.from_M.i_aw);
-   mkConnection (mem_axi4_S_xactor.o_wr_data, mem_axi4_syncbuf.from_M.i_w);
-   mkConnection (mem_axi4_S_xactor.i_wr_resp, mem_axi4_syncbuf.from_M.o_b);
-   mkConnection (mem_axi4_S_xactor.o_rd_addr, mem_axi4_syncbuf.from_M.i_ar);
-   mkConnection (mem_axi4_S_xactor.i_rd_data, mem_axi4_syncbuf.from_M.o_r);
-
-   mkConnection (mem_axi4_syncbuf.to_S.o_aw, mem_axi4_M_xactor.i_wr_addr);
-   mkConnection (mem_axi4_syncbuf.to_S.o_w,  mem_axi4_M_xactor.i_wr_data);
-   mkConnection (mem_axi4_syncbuf.to_S.i_b,  mem_axi4_M_xactor.o_wr_resp);
-   mkConnection (mem_axi4_syncbuf.to_S.o_ar, mem_axi4_M_xactor.i_rd_addr);
-   mkConnection (mem_axi4_syncbuf.to_S.i_r,  mem_axi4_M_xactor.o_rd_data);
+   let ddr_AXI4_clock_crossing <- mkAXI4_ClockCrossing (clk_slow, rst_slow,
+							clk_fast, rst_fast);
+   mkConnection (core.mem_M, ddr_AXI4_clock_crossing.from_M);
 
    // ----------------------------------------------------------------
-   // AXI4 interface for MMIO
+   // AXI4 interface: Core (M) to MMIO (S)
 
-   // Towards AWSteria_Core
-   AXI4_Slave_Xactor_IFC #(wd_id_mmio,  wd_addr_mmio,  wd_data_mmio,  wd_user_mmio)
-   mmio_axi4_S_xactor <- mkAXI4_Slave_Xactor (clocked_by clk_slow,
-					      reset_by   rst_slow);
-
-   AXI_SyncBuffer_IFC #(AXI4_Wr_Addr #(wd_id_mmio, wd_addr_mmio, wd_user_mmio),
-			AXI4_Wr_Data #(wd_data_mmio, wd_user_mmio),
-			AXI4_Wr_Resp #(wd_id_mmio, wd_user_mmio),
-			AXI4_Rd_Addr #(wd_id_mmio, wd_addr_mmio, wd_user_mmio),
-			AXI4_Rd_Data #(wd_id_mmio, wd_data_mmio, wd_user_mmio))
-   mmio_axi4_syncbuf <- mkAXI_SyncBuffer (depth,
-					  clk_slow, rst_slow,
-					  clk_fast, rst_fast);
-
-   // Towards AWSteria_System
-   AXI4_Master_Xactor_IFC #(wd_id_mmio,  wd_addr_mmio,  wd_data_mmio,  wd_user_mmio)
-   mmio_axi4_M_xactor <- mkAXI4_Master_Xactor;
-
-   // ----------------
-
-   mkConnection (core.mmio_M, mmio_axi4_S_xactor.axi_side);
-
-   mkConnection (mmio_axi4_S_xactor.o_wr_addr, mmio_axi4_syncbuf.from_M.i_aw);
-   mkConnection (mmio_axi4_S_xactor.o_wr_data, mmio_axi4_syncbuf.from_M.i_w);
-   mkConnection (mmio_axi4_S_xactor.i_wr_resp, mmio_axi4_syncbuf.from_M.o_b);
-   mkConnection (mmio_axi4_S_xactor.o_rd_addr, mmio_axi4_syncbuf.from_M.i_ar);
-   mkConnection (mmio_axi4_S_xactor.i_rd_data, mmio_axi4_syncbuf.from_M.o_r);
-
-   mkConnection (mmio_axi4_syncbuf.to_S.o_aw, mmio_axi4_M_xactor.i_wr_addr);
-   mkConnection (mmio_axi4_syncbuf.to_S.o_w,  mmio_axi4_M_xactor.i_wr_data);
-   mkConnection (mmio_axi4_syncbuf.to_S.i_b,  mmio_axi4_M_xactor.o_wr_resp);
-   mkConnection (mmio_axi4_syncbuf.to_S.o_ar, mmio_axi4_M_xactor.i_rd_addr);
-   mkConnection (mmio_axi4_syncbuf.to_S.i_r,  mmio_axi4_M_xactor.o_rd_data);
+   let mmio_AXI4_clock_crossing <- mkAXI4_ClockCrossing (clk_slow, rst_slow,
+							 clk_fast, rst_fast);
+   mkConnection (core.mmio_M, mmio_AXI4_clock_crossing.from_M);
 
    // ----------------------------------------------------------------
-   // AXI4 interface for DMA
+   // AXI4 interface: System (M) to Core (S)
 
-   // Towards AWSteria_Core
-   AXI4_Master_Xactor_IFC #(wd_id_dma,  wd_addr_dma,  wd_data_dma,  wd_user_dma)
-   dma_axi4_M_xactor <- mkAXI4_Master_Xactor (clocked_by clk_slow,
-					      reset_by   rst_slow);
-
-   AXI_SyncBuffer_IFC #(AXI4_Wr_Addr #(wd_id_dma, wd_addr_dma, wd_user_dma),
-			AXI4_Wr_Data #(wd_data_dma, wd_user_dma),
-			AXI4_Wr_Resp #(wd_id_dma, wd_user_dma),
-			AXI4_Rd_Addr #(wd_id_dma, wd_addr_dma, wd_user_dma),
-			AXI4_Rd_Data #(wd_id_dma, wd_data_dma, wd_user_dma))
-   dma_axi4_syncbuf <- mkAXI_SyncBuffer (depth,
-					 clk_fast, rst_fast,
-					 clk_slow, rst_slow);
-
-   // Towards AWSteria_System
-   AXI4_Slave_Xactor_IFC #(wd_id_dma,  wd_addr_dma,  wd_data_dma,  wd_user_dma)
-   dma_axi4_S_xactor <- mkAXI4_Slave_Xactor;
-
-   // ----------------
-
-   mkConnection (dma_axi4_M_xactor.axi_side, core.dma_S);
-
-   mkConnection (dma_axi4_M_xactor.i_wr_addr, dma_axi4_syncbuf.to_S.o_aw);
-   mkConnection (dma_axi4_M_xactor.i_wr_data, dma_axi4_syncbuf.to_S.o_w);
-   mkConnection (dma_axi4_M_xactor.o_wr_resp, dma_axi4_syncbuf.to_S.i_b);
-   mkConnection (dma_axi4_M_xactor.i_rd_addr, dma_axi4_syncbuf.to_S.o_ar);
-   mkConnection (dma_axi4_M_xactor.o_rd_data, dma_axi4_syncbuf.to_S.i_r);
-
-   mkConnection (dma_axi4_syncbuf.from_M.i_aw, dma_axi4_S_xactor.o_wr_addr);
-   mkConnection (dma_axi4_syncbuf.from_M.i_w,  dma_axi4_S_xactor.o_wr_data);
-   mkConnection (dma_axi4_syncbuf.from_M.o_b,  dma_axi4_S_xactor.i_wr_resp);
-   mkConnection (dma_axi4_syncbuf.from_M.i_ar, dma_axi4_S_xactor.o_rd_addr);
-   mkConnection (dma_axi4_syncbuf.from_M.o_r,  dma_axi4_S_xactor.i_rd_data);
+   let dma_AXI4_clock_crossing <- mkAXI4_ClockCrossing (clk_fast, rst_fast,
+							clk_slow, rst_slow);
+   mkConnection (dma_AXI4_clock_crossing.to_S, core.dma_S);
 
    // ----------------------------------------------------------------
    // External interrupt sources
 
-   // Wire (bus) driven by 'ext_interrupts' method
-   Wire #(Bit #(t_n_interrupt_sources)) w_irqs <- mkBypassWire;
+   // Register Wire (bus) driven by 'ext_interrupts' method
+   Reg #(Bit #(t_n_interrupt_sources)) rg_irqs <- mkReg (0);
 
    // Clock-crossing for wire (bus)
    ReadOnly #(Bit #(t_n_interrupt_sources)) ro_sync_irqs
-   <- mkNullCrossingWire (clocked_by clk_fast, clk_slow, w_irqs);
+   <- mkNullCrossingWire (clocked_by clk_fast, clk_slow, rg_irqs);
 
    (* fire_when_enabled, no_implicit_conditions *)
    rule rl_relay_interrupts;
@@ -262,18 +171,18 @@ module mkAWSteria_Core_Reclocked
    // INTERFACE
 
    // ----------------
-   // AXI4 interfaces for memory, MMIO, and DMA
+   // AXI4 interfaces for DDR memory, MMIO, and DMA
    // Note: DMA may or may not be coherent, depending on internal Core architecture.
 
-   interface AXI4_Master_IFC mem_M  = mem_axi4_M_xactor.axi_side;
-   interface AXI4_Master_IFC mmio_M = mmio_axi4_M_xactor.axi_side;
-   interface AXI4_Master_IFC dma_S  = dma_axi4_S_xactor.axi_side;
+   interface AXI4_Master_IFC mem_M  = ddr_AXI4_clock_crossing.to_S;
+   interface AXI4_Master_IFC mmio_M = mmio_AXI4_clock_crossing.to_S;
+   interface AXI4_Master_IFC dma_S  = dma_AXI4_clock_crossing.from_M;
 
    // ----------------
    // External interrupt sources
 
    method Action ext_interrupts (Bit #(t_n_interrupt_sources) x);
-      w_irqs <= x;
+      rg_irqs <= x;
    endmethod
 
    // ----------------

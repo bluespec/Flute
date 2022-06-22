@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2021 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2018-2022 Bluespec, Inc. All Rights Reserved.
 
 package Core;
 
@@ -393,9 +393,9 @@ module mkCore
 
 `ifdef INCLUDE_TANDEM_VERIF
    interface Get tv_verifier_info_get;
-      method ActionValue #(Info_CPU_to_Verifier) get();
+      method ActionValue #(TV_Info) get();
          match { .n, .v } <- tv_encode.tv_vb_out.get;
-         return (Info_CPU_to_Verifier { num_bytes: n, vec_bytes: v });
+         return (TV_Info { num_bytes: n, vec_bytes: v });
       endmethod
    endinterface
 `endif

@@ -13,7 +13,7 @@
    version="1.1"
    id="svg8"
    sodipodi:docname="Fig_300_mkCore.svg"
-   inkscape:version="1.0 (b51213c273, 2020-08-10)"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
    inkscape:export-filename="/home/nikhil/git_clones/AWS/BESSPIN-CloudGFE_rsn2/AWSteria_vanilla/Doc/Fig_5_Host_Side.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96">
@@ -977,16 +977,16 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.79545455"
-     inkscape:cx="408"
-     inkscape:cy="528"
+     inkscape:zoom="2.2498852"
+     inkscape:cx="453.66528"
+     inkscape:cy="693.46584"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
      units="in"
      inkscape:showpageshadow="false"
-     inkscape:window-width="1402"
-     inkscape:window-height="1023"
+     inkscape:window-width="2535"
+     inkscape:window-height="1617"
      inkscape:window-x="165"
      inkscape:window-y="3"
      inkscape:window-maximized="0"
@@ -1048,8 +1048,7 @@
            height="88.413681"
            x="371.76654"
            y="181.8848" /></flowRegion><flowPara
-         id="flowPara1065" /></flowRoot>
-    <text
+         id="flowPara1065" /></flowRoot>    <text
        id="text1091"
        y="39.857471"
        x="113.19865"
@@ -2279,16 +2278,16 @@
          id="tspan14722">hart0_csr_mem_server</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.11667px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.11666989px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458299"
        x="14.542541"
        y="102.95796"
        id="text14734"><tspan
          sodipodi:role="line"
          x="14.542541"
          y="102.95796"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.11667px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;stroke-width:0.264583"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.11666989px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;text-align:start;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458299"
          id="tspan14732"
-         rotate="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0">:: Info_CPU_to_Verifier</tspan></text>
+         rotate="0 0 0 0 0 0 0 0 0 0 0">:: TV_Info</tspan></text>
     <rect
        style="opacity:0.999;fill:#fff6d5;fill-opacity:1;stroke:#000000;stroke-width:0.170001;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
        id="rect15463"

@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2020 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2013-2022 Bluespec, Inc. All Rights Reserved
 // Author: Rishiyur S. Nikhil
 
 package TV_Info;
@@ -21,7 +21,7 @@ typedef  Vector #(TV_VB_SIZE, Bit #(8))  TV_Vec_Bytes;
 typedef struct {
    Bit #(32)     num_bytes;
    TV_Vec_Bytes  vec_bytes;
-} Info_CPU_to_Verifier deriving (Bits, FShow);
+} TV_Info deriving (Bits, FShow);
 
 // ================================================================
 

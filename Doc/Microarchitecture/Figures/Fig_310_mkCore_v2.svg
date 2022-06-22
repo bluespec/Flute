@@ -13,7 +13,7 @@
    version="1.1"
    id="svg8"
    sodipodi:docname="Fig_310_mkCore_v2.svg"
-   inkscape:version="1.0.1 (0767f8302a, 2020-10-17)"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
    inkscape:export-filename="/home/nikhil/git_clones/AWS/BESSPIN-CloudGFE_rsn2/AWSteria_vanilla/Doc/Fig_5_Host_Side.png"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96">
@@ -1028,9 +1028,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.0559378"
-     inkscape:cx="406.40113"
-     inkscape:cy="373.32597"
+     inkscape:zoom="5.9732862"
+     inkscape:cx="81.175601"
+     inkscape:cy="619.24595"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -1099,8 +1099,7 @@
            height="88.413681"
            x="371.76654"
            y="181.8848" /></flowRegion><flowPara
-         id="flowPara1065" /></flowRoot>
-    <text
+         id="flowPara1065" /></flowRoot>    <text
        id="text1091"
        y="36.153301"
        x="113.19865"
@@ -2333,16 +2332,16 @@
          id="tspan14722">hart0_csr_mem_server</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.11667px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.11666989px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458299"
        x="14.542541"
        y="129.94543"
        id="text14734"><tspan
          sodipodi:role="line"
          x="14.542541"
          y="129.94543"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.11667px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;stroke-width:0.264583"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.11666989px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;text-align:start;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;stroke-width:0.26458299"
          id="tspan14732"
-         rotate="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0">:: Info_CPU_to_Verifier</tspan></text>
+         rotate="0 0 0 0 0 0 0 0 0 0 0">:: TV_Info</tspan></text>
     <rect
        style="opacity:0.999;fill:#fff6d5;fill-opacity:1;stroke:#000000;stroke-width:0.170001;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
        id="rect15463"

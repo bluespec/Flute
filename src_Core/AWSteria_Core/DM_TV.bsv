@@ -50,7 +50,7 @@ import SoC_Map     :: *;
 import ISA_Decls :: *;
 import CPU_IFC   :: *;
 
-import DMI            :: *;
+import DM_Common      :: *;    // For Server_DMI
 import Debug_Module   :: *;
 import DM_CPU_Req_Rsp :: *;
 

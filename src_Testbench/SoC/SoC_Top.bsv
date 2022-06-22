@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2021 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2016-2022 Bluespec, Inc. All Rights Reserved.
 
 package SoC_Top;
 
@@ -85,7 +85,7 @@ interface SoC_Top_IFC;
 
 `ifdef INCLUDE_TANDEM_VERIF
    // To tandem verifier
-   interface Get #(Info_CPU_to_Verifier) tv_verifier_info_get;
+   interface Get #(TV_Info) tv_verifier_info_get;
 `endif
 
    // External real memory

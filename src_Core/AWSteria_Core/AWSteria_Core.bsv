@@ -48,9 +48,7 @@ import SoC_Map     :: *;
 // AWSteria_Core interface and related defs
 
 import AWSteria_Core_IFC :: *;
-import Interrupt_Defs    :: *;
-import AXI_Param_Defs    :: *;
-import DMI               :: *;
+import DM_Common         :: *;
 import PC_Trace          :: *;
 import TV_Info           :: *;
 
@@ -89,7 +87,7 @@ typedef AWSteria_Core_IFC #(// AXI widths for Mem
 			    AXI4_Wd_Id, AXI4_Wd_Addr, AXI4_Wd_Data_A, AXI4_Wd_User,
 
 			    // UART, virtio 1,2,3,4
-			    5
+			    N_Core_External_Interrupt_Sources
 			    ) AWSteria_Core_IFC_Specialized;
 
 // ================================================================
@@ -104,7 +102,7 @@ typedef AWSteria_Core_IFC #(// AXI widths for Mem
 // The simulation version (though clock speed does not matter here):
 //     125 MHz    83.3 MHz    50 MHz    25 MHz    10 MHz
 
-`ifndef INCLUDE_AWSTERIA_SYSTEM_TO_CORE_CLOCK_CROSSING
+`ifndef INCLUDE_AWSTERIA_CORE_IFC_CLOCK_CROSSING
 //----------------------------------------------------------------
 
 (* synthesize *)
@@ -134,7 +132,7 @@ module mkAWSteria_Core #(Clock clk1,        // extra clock
 			 Clock clk5)        // extra clock
                        (AWSteria_Core_IFC_Specialized);
 
-   messageM ("\n    INFO: mkAWSteria_System --> AWSteria_Core: crossing to clk2.");
+   messageM ("\nINFO: mkAWSteria_Core: Using clk2 for Core.");
 
    let clk_cur  <- exposeCurrentClock;
    let rstn_cur <- exposeCurrentReset;
@@ -473,7 +471,7 @@ module mkAWSteria_Core_Single_Clock (AWSteria_Core_IFC_Specialized);
    // ----------------------------------------------------------------
    // External interrupt sources
 
-   method Action ext_interrupts (Bit #(5) x);
+   method Action ext_interrupts (Bit #(N_Core_External_Interrupt_Sources) x);
       rg_ext_intrs <= zeroExtend (x);
    endmethod
 

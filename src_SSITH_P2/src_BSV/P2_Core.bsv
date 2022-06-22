@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2020 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2018-2022 Bluespec, Inc. All Rights Reserved.
 
 package P2_Core;
 
@@ -292,7 +292,7 @@ endmodule
 // ================================================================
 // TV AXI4 Stream Parameters
 
-typedef SizeOf #(Info_CPU_to_Verifier)Wd_SData;
+typedef SizeOf #(TV_Info)Wd_SData;
 typedef 0 Wd_SDest;
 typedef 0 Wd_SUser;
 typedef 0 Wd_SId;
@@ -300,11 +300,11 @@ typedef 0 Wd_SId;
 // ================================================================
 
 interface TV_Xactor;
-   interface Put #(Info_CPU_to_Verifier) tv_in;
+   interface Put #(TV_Info) tv_in;
    interface AXI4_Stream_Master_IFC #(Wd_SId, Wd_SDest, Wd_SData, Wd_SUser)  axi_out;
 endinterface
 
-function AXI4_Stream #(Wd_SId, Wd_SDest, Wd_SData, Wd_SUser) fn_TVToAxiS (Info_CPU_to_Verifier x);
+function AXI4_Stream #(Wd_SId, Wd_SDest, Wd_SData, Wd_SUser) fn_TVToAxiS (TV_Info x);
    return AXI4_Stream {tid: ?,
 		       tdata: pack(x),
 		       tstrb: '1,
