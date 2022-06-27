@@ -48,9 +48,13 @@ import SoC_Map     :: *;
 // AWSteria_Core interface and related defs
 
 import AWSteria_Core_IFC :: *;
-import DM_Common         :: *;
-import PC_Trace          :: *;
-import TV_Info           :: *;
+import DM_Common         :: *;    // Debug Module interface etc.
+
+`ifdef INCLUDE_PC_TRACE
+import PC_Trace          :: *;    // Lightweight PC trace info
+`endif
+
+import TV_Info           :: *;    // Tandem Verification info
 
 import AWSteria_Core_Reclocked :: *;
 
@@ -418,7 +422,7 @@ module mkAWSteria_Core_Single_Clock (AWSteria_Core_IFC_Specialized);
    // =================================================================
    // PC trace output
 
-   // PC Trace
+`ifdef INCLUDE_PC_TRACE
    FIFOF #(PC_Trace) f_pc_trace               <- mkFIFOF;
    Reg #(Bit #(64))  rg_pc_trace_interval_ctr <- mkReg (0);
 
@@ -435,6 +439,7 @@ module mkAWSteria_Core_Single_Clock (AWSteria_Core_IFC_Specialized);
 	 rg_pc_trace_interval_ctr <= rg_pc_trace_interval_ctr - 1;
       end
    endrule
+`endif
 
    // =================================================================
    // Misc CPU control/status
@@ -483,7 +488,12 @@ module mkAWSteria_Core_Single_Clock (AWSteria_Core_IFC_Specialized);
    // ----------------------------------------------------------------
    // Trace and Tandem Verification output
 
+`ifdef INCLUDE_PC_TRACE
    interface fo_pc_trace = to_FIFOF_O (f_pc_trace);
+`else
+   interface fo_pc_trace = dummy_FIFOF_O;
+`endif
+
    interface fo_tv_info  = dm_tv.fo_tv_info;
 
    // ----------------------------------------------------------------

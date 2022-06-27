@@ -95,6 +95,7 @@ module mkTV_Encode (TV_Encode_IFC);
       f_vb.enq (tuple2 (nnN, xN));
    endrule
 
+`ifdef ISA_F
    rule rl_log_trace_FPR_WRITE (rg_reset_done && (f_trace_data.first.op == TRACE_FPR_WRITE));
       let td <- pop (f_trace_data);
 
@@ -112,6 +113,7 @@ module mkTV_Encode (TV_Encode_IFC);
 
       f_vb.enq (tuple2 (nnN, xN));
    endrule
+`endif
 
    rule rl_log_trace_CSR_WRITE (rg_reset_done && (f_trace_data.first.op == TRACE_CSR_WRITE));
       let td <- pop (f_trace_data);
