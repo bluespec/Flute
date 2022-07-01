@@ -74,6 +74,10 @@ BSC_COMPILATION_FLAGS += -D MEM_512b
 # With this flag, interpose clock-crossings on interface AWSteria_Core_IFC
 BSC_COMPILATION_FLAGS += -D INCLUDE_AWSTERIA_CORE_IFC_CLOCK_CROSSING
 
+# Target platform (chooses clock speed etc.)
+BSC_COMPILATION_FLAGS += -D AWSF1
+# BSC_COMPILATION_FLAGS += -D VCU118
+
 # Debugging and tracing
 BSC_COMPILATION_FLAGS += -D INCLUDE_PC_TRACE
 BSC_COMPILATION_FLAGS += -D INCLUDE_GDB_CONTROL

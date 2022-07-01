@@ -97,17 +97,11 @@ typedef AWSteria_Core_IFC #(// AXI widths for Mem
 // ================================================================
 // This module is an optional thin wrapper around
 // mkAWSteria_Core_Single_Clock, selecting a slower clock at which to
-// run the inner module.
-
-// The incoming clocks are, normally:
-// In Vivado synthesis:
-//     clk1      clk2         clk3      clk4      clk5
-//     125 MHz   100 MHz      50 MHz    25 MHz    10 MHz
-// The simulation version (though clock speed does not matter here):
-//     125 MHz    83.3 MHz    50 MHz    25 MHz    10 MHz
+// run the inner module 'mkAWSteria_Core_Single_Clock'.
 
 `ifndef INCLUDE_AWSTERIA_CORE_IFC_CLOCK_CROSSING
 //----------------------------------------------------------------
+// No clock crossing
 
 (* synthesize *)
 module mkAWSteria_Core #(Clock clk1,        // extra clock
@@ -127,6 +121,9 @@ endmodule
 //----------------------------------------------------------------
 `else
 //----------------------------------------------------------------
+// With clock crossings
+// Please see:  BlueCloudV_Infra/Doc/Clocks_in_AWSteria_HW_IFC.txt
+// for details about frequencies of these incoming clocks.
 
 (* synthesize *)
 module mkAWSteria_Core #(Clock clk1,        // extra clock
@@ -141,8 +138,16 @@ module mkAWSteria_Core #(Clock clk1,        // extra clock
    let clk_cur  <- exposeCurrentClock;
    let rstn_cur <- exposeCurrentReset;
 
-   // Choose clock
-   let clk_core = clk2;    // 100 MHz for Flute
+   // Choose clock, depending on target platform.
+   // One of these must be defined.
+`ifdef AWSF1
+   let clk_core = clk1;    // 125 MHz
+   messageM ("    Core clock is clk1");
+`endif
+`ifdef VCU118
+   let clk_core = clk2;    // 100 MHz
+   messageM ("    Core clock is clk2");
+`endif
 
    MakeResetIfc reset_for_core <- mkReset (5,            // stages
 					   True,         // startInRst
