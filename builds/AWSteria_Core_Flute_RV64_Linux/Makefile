@@ -3,40 +3,38 @@
 # Copyright (c) 2022 Bluespec, Inc.  All Rights Reserved
 
 # ================================================================
-
 .PHONY: help
 help:
 	@echo "Usage:"
-	@echo "  make compile      Compile Flute to to RTL"
-	@echo "  make clean        Remove build_dir (for intermediate files)"
-	@echo "  make full_clean   Restore to pristine state"
+	@echo "  help                Show this help info"
+	@echo "  help_v              Show this help info plus more detail"
+	@echo ""
+	@echo "  generate_verilog    Generate RTL (using bsc) from Flute BSV sources"
+	@echo ""
+	@echo "  make clean          Remove intermediate files"
+	@echo "  make full_clean     Restore to pristine state"
+
+.PHONY: help_v
+help_v: help  show_Makefile_Params
+	@echo ""
+	@echo "  BSC_PATH = $(BSC_PATH)"
+	@echo ""
+	@echo "  BSC_COMPILATION_FLAGS = $(BSC_COMPILATION_FLAGS)"
 
 # ================================================================
-# Dependencies on other repos
+# Defs of resources etc.
 
-BSV_ADDITIONAL_LIBS=$(HOME)/Git/BSV_Additional_Libs
-AMBA_FABRICS=$(HOME)/Git/AMBA_Fabrics
+$(info INFO: use 'make help' to show current settings.)
+$(info INFO: Including Makefile_Params.mk which should define paths to external resources.)
 
-ifndef FLUTE_REPO
-  $(error ERROR: please define FLUTE_REPO, i.e., path to Flute repo)
-else
-  $(info  INFO: FLUTE_REPO is $(FLUTE_REPO))
-endif
+include Makefile_Params.mk
 
-ifndef BSV_ADDITIONAL_LIBS
-  $(error ERROR: please define BSV_ADDITIONAL_LIBS, i.e., path to repo)
-else
-  $(info  INFO: BSV_ADDITIONAL_LIBS is $(BSV_ADDITIONAL_LIBS))
-endif
+# Target platform (chooses clock speed etc.)
+PLATFORM_TARGET = PLATFORM_VCU118
+# PLATFORM_TARGET = PLATFORM_AWSF1
 
-ifndef AMBA_FABRICS
-  $(error ERROR: please define AMBA_FABRICS, i.e., path to repo)
-else
-  $(info  INFO: AMBA_FABRICS is $(AMBA_FABRICS))
-endif
-
-#================================================================
-# Architectural configs
+# ================================================================
+# Core/CPU architectural configs
 
 RV = RV64
 ARCH ?= RV64ACDFIMSU
@@ -74,16 +72,14 @@ BSC_COMPILATION_FLAGS += -D MEM_512b
 # With this flag, interpose clock-crossings on interface AWSteria_Core_IFC
 BSC_COMPILATION_FLAGS += -D INCLUDE_AWSTERIA_CORE_IFC_CLOCK_CROSSING
 
-# Target platform (chooses clock speed etc.)
-BSC_COMPILATION_FLAGS += -D AWSF1
-# BSC_COMPILATION_FLAGS += -D VCU118
+BSC_COMPILATION_FLAGS += -D $(PLATFORM_TARGET)
 
 # Debugging and tracing
 BSC_COMPILATION_FLAGS += -D INCLUDE_PC_TRACE
 BSC_COMPILATION_FLAGS += -D INCLUDE_GDB_CONTROL
 # BSC_COMPILATION_FLAGS += -D INCLUDE_TANDEM_VERIF
 
-#================================================================
+# ================================================================
 # For LLCache    (only needed for WB_L1_L2)
 
 # core size
@@ -103,10 +99,10 @@ PROCS_LIB_DIR = $(LLCACHE_DIR)/procs/lib
 PROCS_OOO_DIR = $(LLCACHE_DIR)/procs/RV64G_OOO
 COHERENCE_DIR = $(LLCACHE_DIR)/coherence/src
 
-BSC_PATH := $(BSC_PATH):$(LLCACHE_DIR):$(PROCS_LIB_DIR):$(PROCS_OOO_DIR):$(COHERENCE_DIR)
+BSC_PATH := $(LLCACHE_DIR):$(PROCS_LIB_DIR):$(PROCS_OOO_DIR):$(COHERENCE_DIR)
 
-#================================================================
-# BSC_PATH for AWSteria/Flute/Virtio system
+# ================================================================
+# BSV-file search path
 
 # From Flute
 BSC_PATH := $(BSC_PATH):$(FLUTE_REPO)/src_Core/AWSteria_Core
@@ -119,18 +115,18 @@ BSC_PATH := $(BSC_PATH):$(FLUTE_REPO)/src_Core/PLIC
 BSC_PATH := $(BSC_PATH):$(FLUTE_REPO)/src_Core/Near_Mem_IO
 BSC_PATH := $(BSC_PATH):$(FLUTE_REPO)/src_Core/Debug_Module
 
-# BSV_Additional_Libs
+# Additional libs
 BSC_PATH := $(BSC_PATH):$(BSV_ADDITIONAL_LIBS)
 
-# AXI
+# Fabrics
 BSC_PATH := $(BSC_PATH):$(AMBA_FABRICS)/AXI4
 BSC_PATH := $(BSC_PATH):$(AMBA_FABRICS)/AXI4_Lite
 
 # bsc standard libs
 BSC_PATH := $(BSC_PATH):+
 
-#================================================================
-# Top-level file and module
+# ================================================================
+# Top-level BSV file and module
 
 TOPFILE   = $(FLUTE_REPO)/src_Core/AWSteria_Core/AWSteria_Core.bsv
 TOPMODULE = mkAWSteria_Core
@@ -148,8 +144,8 @@ BSC_COMPILATION_FLAGS += +RTS -K128M -RTS  -show-range-conflict
 
 RTL_GEN_DIRS = -vdir Verilog_RTL  -bdir build_dir  -info-dir build_dir
 
-.PHONY: compile
-compile:
+.PHONY: generate_verilog
+generate_verilog:
 	mkdir -p  build_dir
 	mkdir -p  Verilog_RTL
 	@echo  "INFO: RTL generation ..."
@@ -160,10 +156,10 @@ compile:
 
 .PHONY: clean
 clean:
-	rm -r -f  *~  tmp_all_srcs  build_dir
+	rm -r -f  *~  build_dir
 
 .PHONY: full_clean
 full_clean: clean
-	rm -r -f  *~  tmp_all_srcs  build_dir  Verilog_RTL  example_AWSteria_HW  example_AWSteria_HW_reclocked $(FOR_GARNET_DIR)
+	rm -r -f  Verilog_RTL
 
 # ================================================================

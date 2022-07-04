@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2021 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2016-2022 Bluespec, Inc. All Rights Reserved.
 
 package DMA_Cache;
 
@@ -177,7 +177,7 @@ deriving (Bits, FShow);
 module mkDMA_Cache (DMA_Cache_IFC);
 
    // For debugging: 0: quiet 1: rules
-   Integer verbosity         = 0;
+   Integer verbosity         = 0;    // 1 = AXI xactions; 2 = L1 actions
    Integer verbosity_merge   = 0;
    Integer verbosity_MMIO_rd = 0;
    Integer verbosity_MMIO_wr = 0;
@@ -320,7 +320,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
 
    rule rl_downgrade (rg_state != STATE_INITIALIZING);
       let l2_to_l1_req <- pop (f_L2_to_L1_Reqs);
-      if (verbosity >= 1) begin
+      if (verbosity >= 2) begin
 	 $display ("%0d: %m.rl_downgrade", cur_cycle);
 	 $display ("    ", fshow (l2_to_l1_req));
       end
@@ -332,7 +332,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
       let             data_set  = rf_data_sets.sub (index);
       let             tag       = tag_set  [0];    // For now, direct mapped only
       let             data      = data_set [0];    // For now, direct mapped only
-      if (verbosity >= 1) begin
+      if (verbosity >= 2) begin
 	 $display ("    Index %0h  ", index, fshow (tag));
       end
 
@@ -343,7 +343,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
 		     || (tag.tag_addr != line_addr));
 
       if (ignore) begin
-	 if (verbosity >= 1) begin
+	 if (verbosity >= 2) begin
 	    $display ("    Miss (already evicted/downgraded); no action");
 	 end
       end
@@ -357,7 +357,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
 				 m_cline:  m_cline};
 	 f_L1_to_L2_Rsps.enq (rsp);
 
-	 if (verbosity >= 1)
+	 if (verbosity >= 2)
 	    $display ("    Send ", fshow (rsp));
 
 	 // Update cache tag to state requested by L2
@@ -406,7 +406,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
       let new_tag_set = fn_mk_Tag_Set (new_tag);
       rf_tag_sets.upd (index, new_tag_set);
 
-      if (verbosity >= 1) begin
+      if (verbosity >= 2) begin
 	 $display ("%0d: %m.rl_evict", cur_cycle);
 	 $display ("    ", fshow (l1_to_l2_rsp));
       end
@@ -453,7 +453,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
 				      tag_addr: line_addr};
 	 let new_tag_set = fn_mk_Tag_Set (new_tag);
 	 rf_tag_sets.upd (index, new_tag_set);
-	 if(verbosity >= 1)
+	 if(verbosity >= 2)
             $display("    new_tag_set = ", fshow (new_tag_set));
 
 	 // For writes, modify cache using rdata, write-data, wstrb
@@ -470,7 +470,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
 	 // Update data in cache
 	 let new_data_set = fn_mk_Data_Set (new_data);
 	 rf_data_sets.upd (index, new_data_set);
-	 if(verbosity >= 1)
+	 if(verbosity >= 2)
             $display("    new_data_set = ", fshow (new_data_set));
 
 	 // Send response to client
@@ -495,7 +495,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
       let data_set = rf_data_sets.sub (index);
       let old_data = data_set [0];    // Direct-mapped only, for now
 
-      if (verbosity >= 1) begin
+      if (verbosity >= 2) begin
 	 $display ("%0d: %m.rl_hit", cur_cycle);
       end
       fa_upd_cache_and_respond (new_tag_state, old_data);
@@ -541,7 +541,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
       f_L1_to_L2_Reqs.enq (l1_to_l2_req);
       rg_state <= STATE_UPGRADE;
 
-      if (verbosity >= 1) begin
+      if (verbosity >= 2) begin
 	 $display ("%0d: %m.rl_upgrade_req", cur_cycle);
 	 $display ("    ", fshow (l1_to_l2_req));
       end
@@ -583,7 +583,7 @@ module mkDMA_Cache (DMA_Cache_IFC);
 	 old_data = rf_data_sets.sub (index) [0];    // Direct-mapped only, for now
       end
 
-      if (verbosity >= 1) begin
+      if (verbosity >= 2) begin
 	 $display ("%0d: %m.rl_upgrade_rsp", cur_cycle);
       end
       fa_upd_cache_and_respond (rsp.to_state, old_data);
