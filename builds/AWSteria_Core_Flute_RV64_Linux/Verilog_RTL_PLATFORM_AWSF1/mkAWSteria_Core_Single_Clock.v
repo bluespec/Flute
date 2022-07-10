@@ -1007,6 +1007,50 @@ module mkAWSteria_Core_Single_Clock(CLK,
   reg rg_timer_interrupt;
   wire rg_timer_interrupt$D_IN, rg_timer_interrupt$EN;
 
+  // ports of submodule boot_rom
+  wire [63 : 0] boot_rom$set_addr_map_addr_base,
+		boot_rom$set_addr_map_addr_lim,
+		boot_rom$slave_araddr,
+		boot_rom$slave_awaddr,
+		boot_rom$slave_rdata,
+		boot_rom$slave_wdata;
+  wire [15 : 0] boot_rom$slave_arid,
+		boot_rom$slave_awid,
+		boot_rom$slave_bid,
+		boot_rom$slave_rid;
+  wire [7 : 0] boot_rom$slave_arlen,
+	       boot_rom$slave_awlen,
+	       boot_rom$slave_wstrb;
+  wire [3 : 0] boot_rom$slave_arcache,
+	       boot_rom$slave_arqos,
+	       boot_rom$slave_arregion,
+	       boot_rom$slave_awcache,
+	       boot_rom$slave_awqos,
+	       boot_rom$slave_awregion;
+  wire [2 : 0] boot_rom$slave_arprot,
+	       boot_rom$slave_arsize,
+	       boot_rom$slave_awprot,
+	       boot_rom$slave_awsize;
+  wire [1 : 0] boot_rom$slave_arburst,
+	       boot_rom$slave_awburst,
+	       boot_rom$slave_bresp,
+	       boot_rom$slave_rresp;
+  wire boot_rom$EN_set_addr_map,
+       boot_rom$slave_arlock,
+       boot_rom$slave_arready,
+       boot_rom$slave_arvalid,
+       boot_rom$slave_awlock,
+       boot_rom$slave_awready,
+       boot_rom$slave_awvalid,
+       boot_rom$slave_bready,
+       boot_rom$slave_bvalid,
+       boot_rom$slave_rlast,
+       boot_rom$slave_rready,
+       boot_rom$slave_rvalid,
+       boot_rom$slave_wlast,
+       boot_rom$slave_wready,
+       boot_rom$slave_wvalid;
+
   // ports of submodule cpu
   wire [511 : 0] cpu$dma_server_rdata,
 		 cpu$dma_server_wdata,
@@ -1556,168 +1600,6 @@ module mkAWSteria_Core_Single_Clock(CLK,
        f_pc_trace$ENQ,
        f_pc_trace$FULL_N;
 
-  // ports of submodule fabric_1x3
-  wire [63 : 0] fabric_1x3$v_from_masters_0_araddr,
-		fabric_1x3$v_from_masters_0_awaddr,
-		fabric_1x3$v_from_masters_0_rdata,
-		fabric_1x3$v_from_masters_0_wdata,
-		fabric_1x3$v_to_slaves_0_araddr,
-		fabric_1x3$v_to_slaves_0_awaddr,
-		fabric_1x3$v_to_slaves_0_rdata,
-		fabric_1x3$v_to_slaves_0_wdata,
-		fabric_1x3$v_to_slaves_1_araddr,
-		fabric_1x3$v_to_slaves_1_awaddr,
-		fabric_1x3$v_to_slaves_1_rdata,
-		fabric_1x3$v_to_slaves_1_wdata,
-		fabric_1x3$v_to_slaves_2_araddr,
-		fabric_1x3$v_to_slaves_2_awaddr,
-		fabric_1x3$v_to_slaves_2_rdata,
-		fabric_1x3$v_to_slaves_2_wdata;
-  wire [15 : 0] fabric_1x3$v_from_masters_0_arid,
-		fabric_1x3$v_from_masters_0_awid,
-		fabric_1x3$v_from_masters_0_bid,
-		fabric_1x3$v_from_masters_0_rid,
-		fabric_1x3$v_to_slaves_0_arid,
-		fabric_1x3$v_to_slaves_0_awid,
-		fabric_1x3$v_to_slaves_0_bid,
-		fabric_1x3$v_to_slaves_0_rid,
-		fabric_1x3$v_to_slaves_1_arid,
-		fabric_1x3$v_to_slaves_1_awid,
-		fabric_1x3$v_to_slaves_1_bid,
-		fabric_1x3$v_to_slaves_1_rid,
-		fabric_1x3$v_to_slaves_2_arid,
-		fabric_1x3$v_to_slaves_2_awid,
-		fabric_1x3$v_to_slaves_2_bid,
-		fabric_1x3$v_to_slaves_2_rid;
-  wire [7 : 0] fabric_1x3$v_from_masters_0_arlen,
-	       fabric_1x3$v_from_masters_0_awlen,
-	       fabric_1x3$v_from_masters_0_wstrb,
-	       fabric_1x3$v_to_slaves_0_arlen,
-	       fabric_1x3$v_to_slaves_0_awlen,
-	       fabric_1x3$v_to_slaves_0_wstrb,
-	       fabric_1x3$v_to_slaves_1_arlen,
-	       fabric_1x3$v_to_slaves_1_awlen,
-	       fabric_1x3$v_to_slaves_1_wstrb,
-	       fabric_1x3$v_to_slaves_2_arlen,
-	       fabric_1x3$v_to_slaves_2_awlen,
-	       fabric_1x3$v_to_slaves_2_wstrb;
-  wire [3 : 0] fabric_1x3$set_verbosity_verbosity,
-	       fabric_1x3$v_from_masters_0_arcache,
-	       fabric_1x3$v_from_masters_0_arqos,
-	       fabric_1x3$v_from_masters_0_arregion,
-	       fabric_1x3$v_from_masters_0_awcache,
-	       fabric_1x3$v_from_masters_0_awqos,
-	       fabric_1x3$v_from_masters_0_awregion,
-	       fabric_1x3$v_to_slaves_0_arcache,
-	       fabric_1x3$v_to_slaves_0_arqos,
-	       fabric_1x3$v_to_slaves_0_arregion,
-	       fabric_1x3$v_to_slaves_0_awcache,
-	       fabric_1x3$v_to_slaves_0_awqos,
-	       fabric_1x3$v_to_slaves_0_awregion,
-	       fabric_1x3$v_to_slaves_1_arcache,
-	       fabric_1x3$v_to_slaves_1_arqos,
-	       fabric_1x3$v_to_slaves_1_arregion,
-	       fabric_1x3$v_to_slaves_1_awcache,
-	       fabric_1x3$v_to_slaves_1_awqos,
-	       fabric_1x3$v_to_slaves_1_awregion,
-	       fabric_1x3$v_to_slaves_2_arcache,
-	       fabric_1x3$v_to_slaves_2_arqos,
-	       fabric_1x3$v_to_slaves_2_arregion,
-	       fabric_1x3$v_to_slaves_2_awcache,
-	       fabric_1x3$v_to_slaves_2_awqos,
-	       fabric_1x3$v_to_slaves_2_awregion;
-  wire [2 : 0] fabric_1x3$v_from_masters_0_arprot,
-	       fabric_1x3$v_from_masters_0_arsize,
-	       fabric_1x3$v_from_masters_0_awprot,
-	       fabric_1x3$v_from_masters_0_awsize,
-	       fabric_1x3$v_to_slaves_0_arprot,
-	       fabric_1x3$v_to_slaves_0_arsize,
-	       fabric_1x3$v_to_slaves_0_awprot,
-	       fabric_1x3$v_to_slaves_0_awsize,
-	       fabric_1x3$v_to_slaves_1_arprot,
-	       fabric_1x3$v_to_slaves_1_arsize,
-	       fabric_1x3$v_to_slaves_1_awprot,
-	       fabric_1x3$v_to_slaves_1_awsize,
-	       fabric_1x3$v_to_slaves_2_arprot,
-	       fabric_1x3$v_to_slaves_2_arsize,
-	       fabric_1x3$v_to_slaves_2_awprot,
-	       fabric_1x3$v_to_slaves_2_awsize;
-  wire [1 : 0] fabric_1x3$v_from_masters_0_arburst,
-	       fabric_1x3$v_from_masters_0_awburst,
-	       fabric_1x3$v_from_masters_0_bresp,
-	       fabric_1x3$v_from_masters_0_rresp,
-	       fabric_1x3$v_to_slaves_0_arburst,
-	       fabric_1x3$v_to_slaves_0_awburst,
-	       fabric_1x3$v_to_slaves_0_bresp,
-	       fabric_1x3$v_to_slaves_0_rresp,
-	       fabric_1x3$v_to_slaves_1_arburst,
-	       fabric_1x3$v_to_slaves_1_awburst,
-	       fabric_1x3$v_to_slaves_1_bresp,
-	       fabric_1x3$v_to_slaves_1_rresp,
-	       fabric_1x3$v_to_slaves_2_arburst,
-	       fabric_1x3$v_to_slaves_2_awburst,
-	       fabric_1x3$v_to_slaves_2_bresp,
-	       fabric_1x3$v_to_slaves_2_rresp;
-  wire fabric_1x3$EN_reset,
-       fabric_1x3$EN_set_verbosity,
-       fabric_1x3$RDY_reset,
-       fabric_1x3$v_from_masters_0_arlock,
-       fabric_1x3$v_from_masters_0_arready,
-       fabric_1x3$v_from_masters_0_arvalid,
-       fabric_1x3$v_from_masters_0_awlock,
-       fabric_1x3$v_from_masters_0_awready,
-       fabric_1x3$v_from_masters_0_awvalid,
-       fabric_1x3$v_from_masters_0_bready,
-       fabric_1x3$v_from_masters_0_bvalid,
-       fabric_1x3$v_from_masters_0_rlast,
-       fabric_1x3$v_from_masters_0_rready,
-       fabric_1x3$v_from_masters_0_rvalid,
-       fabric_1x3$v_from_masters_0_wlast,
-       fabric_1x3$v_from_masters_0_wready,
-       fabric_1x3$v_from_masters_0_wvalid,
-       fabric_1x3$v_to_slaves_0_arlock,
-       fabric_1x3$v_to_slaves_0_arready,
-       fabric_1x3$v_to_slaves_0_arvalid,
-       fabric_1x3$v_to_slaves_0_awlock,
-       fabric_1x3$v_to_slaves_0_awready,
-       fabric_1x3$v_to_slaves_0_awvalid,
-       fabric_1x3$v_to_slaves_0_bready,
-       fabric_1x3$v_to_slaves_0_bvalid,
-       fabric_1x3$v_to_slaves_0_rlast,
-       fabric_1x3$v_to_slaves_0_rready,
-       fabric_1x3$v_to_slaves_0_rvalid,
-       fabric_1x3$v_to_slaves_0_wlast,
-       fabric_1x3$v_to_slaves_0_wready,
-       fabric_1x3$v_to_slaves_0_wvalid,
-       fabric_1x3$v_to_slaves_1_arlock,
-       fabric_1x3$v_to_slaves_1_arready,
-       fabric_1x3$v_to_slaves_1_arvalid,
-       fabric_1x3$v_to_slaves_1_awlock,
-       fabric_1x3$v_to_slaves_1_awready,
-       fabric_1x3$v_to_slaves_1_awvalid,
-       fabric_1x3$v_to_slaves_1_bready,
-       fabric_1x3$v_to_slaves_1_bvalid,
-       fabric_1x3$v_to_slaves_1_rlast,
-       fabric_1x3$v_to_slaves_1_rready,
-       fabric_1x3$v_to_slaves_1_rvalid,
-       fabric_1x3$v_to_slaves_1_wlast,
-       fabric_1x3$v_to_slaves_1_wready,
-       fabric_1x3$v_to_slaves_1_wvalid,
-       fabric_1x3$v_to_slaves_2_arlock,
-       fabric_1x3$v_to_slaves_2_arready,
-       fabric_1x3$v_to_slaves_2_arvalid,
-       fabric_1x3$v_to_slaves_2_awlock,
-       fabric_1x3$v_to_slaves_2_awready,
-       fabric_1x3$v_to_slaves_2_awvalid,
-       fabric_1x3$v_to_slaves_2_bready,
-       fabric_1x3$v_to_slaves_2_bvalid,
-       fabric_1x3$v_to_slaves_2_rlast,
-       fabric_1x3$v_to_slaves_2_rready,
-       fabric_1x3$v_to_slaves_2_rvalid,
-       fabric_1x3$v_to_slaves_2_wlast,
-       fabric_1x3$v_to_slaves_2_wready,
-       fabric_1x3$v_to_slaves_2_wvalid;
-
   // ports of submodule host_cs
   wire [76 : 0] host_cs$cl_csr_rw_request_get;
   wire [67 : 0] host_cs$g_verbosity_get;
@@ -1754,6 +1636,207 @@ module mkAWSteria_Core_Single_Clock(CLK,
        host_cs$mv_pc_trace_fst,
        host_cs$se_control_status_request_notFull,
        host_cs$se_control_status_response_notEmpty;
+
+  // ports of submodule mmio_fabric
+  wire [63 : 0] mmio_fabric$v_from_masters_0_araddr,
+		mmio_fabric$v_from_masters_0_awaddr,
+		mmio_fabric$v_from_masters_0_rdata,
+		mmio_fabric$v_from_masters_0_wdata,
+		mmio_fabric$v_to_slaves_0_araddr,
+		mmio_fabric$v_to_slaves_0_awaddr,
+		mmio_fabric$v_to_slaves_0_rdata,
+		mmio_fabric$v_to_slaves_0_wdata,
+		mmio_fabric$v_to_slaves_1_araddr,
+		mmio_fabric$v_to_slaves_1_awaddr,
+		mmio_fabric$v_to_slaves_1_rdata,
+		mmio_fabric$v_to_slaves_1_wdata,
+		mmio_fabric$v_to_slaves_2_araddr,
+		mmio_fabric$v_to_slaves_2_awaddr,
+		mmio_fabric$v_to_slaves_2_rdata,
+		mmio_fabric$v_to_slaves_2_wdata,
+		mmio_fabric$v_to_slaves_3_araddr,
+		mmio_fabric$v_to_slaves_3_awaddr,
+		mmio_fabric$v_to_slaves_3_rdata,
+		mmio_fabric$v_to_slaves_3_wdata;
+  wire [15 : 0] mmio_fabric$v_from_masters_0_arid,
+		mmio_fabric$v_from_masters_0_awid,
+		mmio_fabric$v_from_masters_0_bid,
+		mmio_fabric$v_from_masters_0_rid,
+		mmio_fabric$v_to_slaves_0_arid,
+		mmio_fabric$v_to_slaves_0_awid,
+		mmio_fabric$v_to_slaves_0_bid,
+		mmio_fabric$v_to_slaves_0_rid,
+		mmio_fabric$v_to_slaves_1_arid,
+		mmio_fabric$v_to_slaves_1_awid,
+		mmio_fabric$v_to_slaves_1_bid,
+		mmio_fabric$v_to_slaves_1_rid,
+		mmio_fabric$v_to_slaves_2_arid,
+		mmio_fabric$v_to_slaves_2_awid,
+		mmio_fabric$v_to_slaves_2_bid,
+		mmio_fabric$v_to_slaves_2_rid,
+		mmio_fabric$v_to_slaves_3_arid,
+		mmio_fabric$v_to_slaves_3_awid,
+		mmio_fabric$v_to_slaves_3_bid,
+		mmio_fabric$v_to_slaves_3_rid;
+  wire [7 : 0] mmio_fabric$v_from_masters_0_arlen,
+	       mmio_fabric$v_from_masters_0_awlen,
+	       mmio_fabric$v_from_masters_0_wstrb,
+	       mmio_fabric$v_to_slaves_0_arlen,
+	       mmio_fabric$v_to_slaves_0_awlen,
+	       mmio_fabric$v_to_slaves_0_wstrb,
+	       mmio_fabric$v_to_slaves_1_arlen,
+	       mmio_fabric$v_to_slaves_1_awlen,
+	       mmio_fabric$v_to_slaves_1_wstrb,
+	       mmio_fabric$v_to_slaves_2_arlen,
+	       mmio_fabric$v_to_slaves_2_awlen,
+	       mmio_fabric$v_to_slaves_2_wstrb,
+	       mmio_fabric$v_to_slaves_3_arlen,
+	       mmio_fabric$v_to_slaves_3_awlen,
+	       mmio_fabric$v_to_slaves_3_wstrb;
+  wire [3 : 0] mmio_fabric$set_verbosity_verbosity,
+	       mmio_fabric$v_from_masters_0_arcache,
+	       mmio_fabric$v_from_masters_0_arqos,
+	       mmio_fabric$v_from_masters_0_arregion,
+	       mmio_fabric$v_from_masters_0_awcache,
+	       mmio_fabric$v_from_masters_0_awqos,
+	       mmio_fabric$v_from_masters_0_awregion,
+	       mmio_fabric$v_to_slaves_0_arcache,
+	       mmio_fabric$v_to_slaves_0_arqos,
+	       mmio_fabric$v_to_slaves_0_arregion,
+	       mmio_fabric$v_to_slaves_0_awcache,
+	       mmio_fabric$v_to_slaves_0_awqos,
+	       mmio_fabric$v_to_slaves_0_awregion,
+	       mmio_fabric$v_to_slaves_1_arcache,
+	       mmio_fabric$v_to_slaves_1_arqos,
+	       mmio_fabric$v_to_slaves_1_arregion,
+	       mmio_fabric$v_to_slaves_1_awcache,
+	       mmio_fabric$v_to_slaves_1_awqos,
+	       mmio_fabric$v_to_slaves_1_awregion,
+	       mmio_fabric$v_to_slaves_2_arcache,
+	       mmio_fabric$v_to_slaves_2_arqos,
+	       mmio_fabric$v_to_slaves_2_arregion,
+	       mmio_fabric$v_to_slaves_2_awcache,
+	       mmio_fabric$v_to_slaves_2_awqos,
+	       mmio_fabric$v_to_slaves_2_awregion,
+	       mmio_fabric$v_to_slaves_3_arcache,
+	       mmio_fabric$v_to_slaves_3_arqos,
+	       mmio_fabric$v_to_slaves_3_arregion,
+	       mmio_fabric$v_to_slaves_3_awcache,
+	       mmio_fabric$v_to_slaves_3_awqos,
+	       mmio_fabric$v_to_slaves_3_awregion;
+  wire [2 : 0] mmio_fabric$v_from_masters_0_arprot,
+	       mmio_fabric$v_from_masters_0_arsize,
+	       mmio_fabric$v_from_masters_0_awprot,
+	       mmio_fabric$v_from_masters_0_awsize,
+	       mmio_fabric$v_to_slaves_0_arprot,
+	       mmio_fabric$v_to_slaves_0_arsize,
+	       mmio_fabric$v_to_slaves_0_awprot,
+	       mmio_fabric$v_to_slaves_0_awsize,
+	       mmio_fabric$v_to_slaves_1_arprot,
+	       mmio_fabric$v_to_slaves_1_arsize,
+	       mmio_fabric$v_to_slaves_1_awprot,
+	       mmio_fabric$v_to_slaves_1_awsize,
+	       mmio_fabric$v_to_slaves_2_arprot,
+	       mmio_fabric$v_to_slaves_2_arsize,
+	       mmio_fabric$v_to_slaves_2_awprot,
+	       mmio_fabric$v_to_slaves_2_awsize,
+	       mmio_fabric$v_to_slaves_3_arprot,
+	       mmio_fabric$v_to_slaves_3_arsize,
+	       mmio_fabric$v_to_slaves_3_awprot,
+	       mmio_fabric$v_to_slaves_3_awsize;
+  wire [1 : 0] mmio_fabric$v_from_masters_0_arburst,
+	       mmio_fabric$v_from_masters_0_awburst,
+	       mmio_fabric$v_from_masters_0_bresp,
+	       mmio_fabric$v_from_masters_0_rresp,
+	       mmio_fabric$v_to_slaves_0_arburst,
+	       mmio_fabric$v_to_slaves_0_awburst,
+	       mmio_fabric$v_to_slaves_0_bresp,
+	       mmio_fabric$v_to_slaves_0_rresp,
+	       mmio_fabric$v_to_slaves_1_arburst,
+	       mmio_fabric$v_to_slaves_1_awburst,
+	       mmio_fabric$v_to_slaves_1_bresp,
+	       mmio_fabric$v_to_slaves_1_rresp,
+	       mmio_fabric$v_to_slaves_2_arburst,
+	       mmio_fabric$v_to_slaves_2_awburst,
+	       mmio_fabric$v_to_slaves_2_bresp,
+	       mmio_fabric$v_to_slaves_2_rresp,
+	       mmio_fabric$v_to_slaves_3_arburst,
+	       mmio_fabric$v_to_slaves_3_awburst,
+	       mmio_fabric$v_to_slaves_3_bresp,
+	       mmio_fabric$v_to_slaves_3_rresp;
+  wire mmio_fabric$EN_reset,
+       mmio_fabric$EN_set_verbosity,
+       mmio_fabric$RDY_reset,
+       mmio_fabric$v_from_masters_0_arlock,
+       mmio_fabric$v_from_masters_0_arready,
+       mmio_fabric$v_from_masters_0_arvalid,
+       mmio_fabric$v_from_masters_0_awlock,
+       mmio_fabric$v_from_masters_0_awready,
+       mmio_fabric$v_from_masters_0_awvalid,
+       mmio_fabric$v_from_masters_0_bready,
+       mmio_fabric$v_from_masters_0_bvalid,
+       mmio_fabric$v_from_masters_0_rlast,
+       mmio_fabric$v_from_masters_0_rready,
+       mmio_fabric$v_from_masters_0_rvalid,
+       mmio_fabric$v_from_masters_0_wlast,
+       mmio_fabric$v_from_masters_0_wready,
+       mmio_fabric$v_from_masters_0_wvalid,
+       mmio_fabric$v_to_slaves_0_arlock,
+       mmio_fabric$v_to_slaves_0_arready,
+       mmio_fabric$v_to_slaves_0_arvalid,
+       mmio_fabric$v_to_slaves_0_awlock,
+       mmio_fabric$v_to_slaves_0_awready,
+       mmio_fabric$v_to_slaves_0_awvalid,
+       mmio_fabric$v_to_slaves_0_bready,
+       mmio_fabric$v_to_slaves_0_bvalid,
+       mmio_fabric$v_to_slaves_0_rlast,
+       mmio_fabric$v_to_slaves_0_rready,
+       mmio_fabric$v_to_slaves_0_rvalid,
+       mmio_fabric$v_to_slaves_0_wlast,
+       mmio_fabric$v_to_slaves_0_wready,
+       mmio_fabric$v_to_slaves_0_wvalid,
+       mmio_fabric$v_to_slaves_1_arlock,
+       mmio_fabric$v_to_slaves_1_arready,
+       mmio_fabric$v_to_slaves_1_arvalid,
+       mmio_fabric$v_to_slaves_1_awlock,
+       mmio_fabric$v_to_slaves_1_awready,
+       mmio_fabric$v_to_slaves_1_awvalid,
+       mmio_fabric$v_to_slaves_1_bready,
+       mmio_fabric$v_to_slaves_1_bvalid,
+       mmio_fabric$v_to_slaves_1_rlast,
+       mmio_fabric$v_to_slaves_1_rready,
+       mmio_fabric$v_to_slaves_1_rvalid,
+       mmio_fabric$v_to_slaves_1_wlast,
+       mmio_fabric$v_to_slaves_1_wready,
+       mmio_fabric$v_to_slaves_1_wvalid,
+       mmio_fabric$v_to_slaves_2_arlock,
+       mmio_fabric$v_to_slaves_2_arready,
+       mmio_fabric$v_to_slaves_2_arvalid,
+       mmio_fabric$v_to_slaves_2_awlock,
+       mmio_fabric$v_to_slaves_2_awready,
+       mmio_fabric$v_to_slaves_2_awvalid,
+       mmio_fabric$v_to_slaves_2_bready,
+       mmio_fabric$v_to_slaves_2_bvalid,
+       mmio_fabric$v_to_slaves_2_rlast,
+       mmio_fabric$v_to_slaves_2_rready,
+       mmio_fabric$v_to_slaves_2_rvalid,
+       mmio_fabric$v_to_slaves_2_wlast,
+       mmio_fabric$v_to_slaves_2_wready,
+       mmio_fabric$v_to_slaves_2_wvalid,
+       mmio_fabric$v_to_slaves_3_arlock,
+       mmio_fabric$v_to_slaves_3_arready,
+       mmio_fabric$v_to_slaves_3_arvalid,
+       mmio_fabric$v_to_slaves_3_awlock,
+       mmio_fabric$v_to_slaves_3_awready,
+       mmio_fabric$v_to_slaves_3_awvalid,
+       mmio_fabric$v_to_slaves_3_bready,
+       mmio_fabric$v_to_slaves_3_bvalid,
+       mmio_fabric$v_to_slaves_3_rlast,
+       mmio_fabric$v_to_slaves_3_rready,
+       mmio_fabric$v_to_slaves_3_rvalid,
+       mmio_fabric$v_to_slaves_3_wlast,
+       mmio_fabric$v_to_slaves_3_wready,
+       mmio_fabric$v_to_slaves_3_wvalid;
 
   // ports of submodule near_mem_io
   wire [63 : 0] near_mem_io$axi4_slave_araddr,
@@ -1925,10 +2008,12 @@ module mkAWSteria_Core_Single_Clock(CLK,
        CAN_FIRE_RL_rl_rd_addr_channel_1,
        CAN_FIRE_RL_rl_rd_addr_channel_2,
        CAN_FIRE_RL_rl_rd_addr_channel_3,
+       CAN_FIRE_RL_rl_rd_addr_channel_4,
        CAN_FIRE_RL_rl_rd_data_channel,
        CAN_FIRE_RL_rl_rd_data_channel_1,
        CAN_FIRE_RL_rl_rd_data_channel_2,
        CAN_FIRE_RL_rl_rd_data_channel_3,
+       CAN_FIRE_RL_rl_rd_data_channel_4,
        CAN_FIRE_RL_rl_register_nmi,
        CAN_FIRE_RL_rl_reinitialization_finish,
        CAN_FIRE_RL_rl_reinitialization_start,
@@ -1942,14 +2027,17 @@ module mkAWSteria_Core_Single_Clock(CLK,
        CAN_FIRE_RL_rl_wr_addr_channel_1,
        CAN_FIRE_RL_rl_wr_addr_channel_2,
        CAN_FIRE_RL_rl_wr_addr_channel_3,
+       CAN_FIRE_RL_rl_wr_addr_channel_4,
        CAN_FIRE_RL_rl_wr_data_channel,
        CAN_FIRE_RL_rl_wr_data_channel_1,
        CAN_FIRE_RL_rl_wr_data_channel_2,
        CAN_FIRE_RL_rl_wr_data_channel_3,
+       CAN_FIRE_RL_rl_wr_data_channel_4,
        CAN_FIRE_RL_rl_wr_response_channel,
        CAN_FIRE_RL_rl_wr_response_channel_1,
        CAN_FIRE_RL_rl_wr_response_channel_2,
        CAN_FIRE_RL_rl_wr_response_channel_3,
+       CAN_FIRE_RL_rl_wr_response_channel_4,
        CAN_FIRE_cl_ndm_reset_request_deq,
        CAN_FIRE_cl_ndm_reset_response_enq,
        CAN_FIRE_dma_S_m_arvalid,
@@ -2019,10 +2107,12 @@ module mkAWSteria_Core_Single_Clock(CLK,
        WILL_FIRE_RL_rl_rd_addr_channel_1,
        WILL_FIRE_RL_rl_rd_addr_channel_2,
        WILL_FIRE_RL_rl_rd_addr_channel_3,
+       WILL_FIRE_RL_rl_rd_addr_channel_4,
        WILL_FIRE_RL_rl_rd_data_channel,
        WILL_FIRE_RL_rl_rd_data_channel_1,
        WILL_FIRE_RL_rl_rd_data_channel_2,
        WILL_FIRE_RL_rl_rd_data_channel_3,
+       WILL_FIRE_RL_rl_rd_data_channel_4,
        WILL_FIRE_RL_rl_register_nmi,
        WILL_FIRE_RL_rl_reinitialization_finish,
        WILL_FIRE_RL_rl_reinitialization_start,
@@ -2036,14 +2126,17 @@ module mkAWSteria_Core_Single_Clock(CLK,
        WILL_FIRE_RL_rl_wr_addr_channel_1,
        WILL_FIRE_RL_rl_wr_addr_channel_2,
        WILL_FIRE_RL_rl_wr_addr_channel_3,
+       WILL_FIRE_RL_rl_wr_addr_channel_4,
        WILL_FIRE_RL_rl_wr_data_channel,
        WILL_FIRE_RL_rl_wr_data_channel_1,
        WILL_FIRE_RL_rl_wr_data_channel_2,
        WILL_FIRE_RL_rl_wr_data_channel_3,
+       WILL_FIRE_RL_rl_wr_data_channel_4,
        WILL_FIRE_RL_rl_wr_response_channel,
        WILL_FIRE_RL_rl_wr_response_channel_1,
        WILL_FIRE_RL_rl_wr_response_channel_2,
        WILL_FIRE_RL_rl_wr_response_channel_3,
+       WILL_FIRE_RL_rl_wr_response_channel_4,
        WILL_FIRE_cl_ndm_reset_request_deq,
        WILL_FIRE_cl_ndm_reset_response_enq,
        WILL_FIRE_dma_S_m_arvalid,
@@ -2075,18 +2168,18 @@ module mkAWSteria_Core_Single_Clock(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h11323;
-  reg [31 : 0] v__h11870;
-  reg [31 : 0] v__h11027;
-  reg [31 : 0] v__h11590;
-  reg [31 : 0] v__h11021;
-  reg [31 : 0] v__h11317;
-  reg [31 : 0] v__h11584;
-  reg [31 : 0] v__h11864;
+  reg [31 : 0] v__h12088;
+  reg [31 : 0] v__h12658;
+  reg [31 : 0] v__h11766;
+  reg [31 : 0] v__h12355;
+  reg [31 : 0] v__h11760;
+  reg [31 : 0] v__h12082;
+  reg [31 : 0] v__h12349;
+  reg [31 : 0] v__h12652;
   // synopsys translate_on
 
   // remaining internal signals
-  wire [63 : 0] x__h15772;
+  wire [63 : 0] x__h17094;
 
   // value method mem_M_m_awvalid
   assign mem_M_awvalid = cpu$mem_master_awvalid ;
@@ -2193,53 +2286,53 @@ module mkAWSteria_Core_Single_Clock(CLK,
   assign mem_M_rready = cpu$mem_master_rready ;
 
   // value method mmio_M_m_awvalid
-  assign mmio_M_awvalid = fabric_1x3$v_to_slaves_0_awvalid ;
+  assign mmio_M_awvalid = mmio_fabric$v_to_slaves_0_awvalid ;
 
   // value method mmio_M_m_awid
-  assign mmio_M_awid = fabric_1x3$v_to_slaves_0_awid ;
+  assign mmio_M_awid = mmio_fabric$v_to_slaves_0_awid ;
 
   // value method mmio_M_m_awaddr
-  assign mmio_M_awaddr = fabric_1x3$v_to_slaves_0_awaddr ;
+  assign mmio_M_awaddr = mmio_fabric$v_to_slaves_0_awaddr ;
 
   // value method mmio_M_m_awlen
-  assign mmio_M_awlen = fabric_1x3$v_to_slaves_0_awlen ;
+  assign mmio_M_awlen = mmio_fabric$v_to_slaves_0_awlen ;
 
   // value method mmio_M_m_awsize
-  assign mmio_M_awsize = fabric_1x3$v_to_slaves_0_awsize ;
+  assign mmio_M_awsize = mmio_fabric$v_to_slaves_0_awsize ;
 
   // value method mmio_M_m_awburst
-  assign mmio_M_awburst = fabric_1x3$v_to_slaves_0_awburst ;
+  assign mmio_M_awburst = mmio_fabric$v_to_slaves_0_awburst ;
 
   // value method mmio_M_m_awlock
-  assign mmio_M_awlock = fabric_1x3$v_to_slaves_0_awlock ;
+  assign mmio_M_awlock = mmio_fabric$v_to_slaves_0_awlock ;
 
   // value method mmio_M_m_awcache
-  assign mmio_M_awcache = fabric_1x3$v_to_slaves_0_awcache ;
+  assign mmio_M_awcache = mmio_fabric$v_to_slaves_0_awcache ;
 
   // value method mmio_M_m_awprot
-  assign mmio_M_awprot = fabric_1x3$v_to_slaves_0_awprot ;
+  assign mmio_M_awprot = mmio_fabric$v_to_slaves_0_awprot ;
 
   // value method mmio_M_m_awqos
-  assign mmio_M_awqos = fabric_1x3$v_to_slaves_0_awqos ;
+  assign mmio_M_awqos = mmio_fabric$v_to_slaves_0_awqos ;
 
   // value method mmio_M_m_awregion
-  assign mmio_M_awregion = fabric_1x3$v_to_slaves_0_awregion ;
+  assign mmio_M_awregion = mmio_fabric$v_to_slaves_0_awregion ;
 
   // action method mmio_M_m_awready
   assign CAN_FIRE_mmio_M_m_awready = 1'd1 ;
   assign WILL_FIRE_mmio_M_m_awready = 1'd1 ;
 
   // value method mmio_M_m_wvalid
-  assign mmio_M_wvalid = fabric_1x3$v_to_slaves_0_wvalid ;
+  assign mmio_M_wvalid = mmio_fabric$v_to_slaves_0_wvalid ;
 
   // value method mmio_M_m_wdata
-  assign mmio_M_wdata = fabric_1x3$v_to_slaves_0_wdata ;
+  assign mmio_M_wdata = mmio_fabric$v_to_slaves_0_wdata ;
 
   // value method mmio_M_m_wstrb
-  assign mmio_M_wstrb = fabric_1x3$v_to_slaves_0_wstrb ;
+  assign mmio_M_wstrb = mmio_fabric$v_to_slaves_0_wstrb ;
 
   // value method mmio_M_m_wlast
-  assign mmio_M_wlast = fabric_1x3$v_to_slaves_0_wlast ;
+  assign mmio_M_wlast = mmio_fabric$v_to_slaves_0_wlast ;
 
   // action method mmio_M_m_wready
   assign CAN_FIRE_mmio_M_m_wready = 1'd1 ;
@@ -2250,40 +2343,40 @@ module mkAWSteria_Core_Single_Clock(CLK,
   assign WILL_FIRE_mmio_M_m_bvalid = 1'd1 ;
 
   // value method mmio_M_m_bready
-  assign mmio_M_bready = fabric_1x3$v_to_slaves_0_bready ;
+  assign mmio_M_bready = mmio_fabric$v_to_slaves_0_bready ;
 
   // value method mmio_M_m_arvalid
-  assign mmio_M_arvalid = fabric_1x3$v_to_slaves_0_arvalid ;
+  assign mmio_M_arvalid = mmio_fabric$v_to_slaves_0_arvalid ;
 
   // value method mmio_M_m_arid
-  assign mmio_M_arid = fabric_1x3$v_to_slaves_0_arid ;
+  assign mmio_M_arid = mmio_fabric$v_to_slaves_0_arid ;
 
   // value method mmio_M_m_araddr
-  assign mmio_M_araddr = fabric_1x3$v_to_slaves_0_araddr ;
+  assign mmio_M_araddr = mmio_fabric$v_to_slaves_0_araddr ;
 
   // value method mmio_M_m_arlen
-  assign mmio_M_arlen = fabric_1x3$v_to_slaves_0_arlen ;
+  assign mmio_M_arlen = mmio_fabric$v_to_slaves_0_arlen ;
 
   // value method mmio_M_m_arsize
-  assign mmio_M_arsize = fabric_1x3$v_to_slaves_0_arsize ;
+  assign mmio_M_arsize = mmio_fabric$v_to_slaves_0_arsize ;
 
   // value method mmio_M_m_arburst
-  assign mmio_M_arburst = fabric_1x3$v_to_slaves_0_arburst ;
+  assign mmio_M_arburst = mmio_fabric$v_to_slaves_0_arburst ;
 
   // value method mmio_M_m_arlock
-  assign mmio_M_arlock = fabric_1x3$v_to_slaves_0_arlock ;
+  assign mmio_M_arlock = mmio_fabric$v_to_slaves_0_arlock ;
 
   // value method mmio_M_m_arcache
-  assign mmio_M_arcache = fabric_1x3$v_to_slaves_0_arcache ;
+  assign mmio_M_arcache = mmio_fabric$v_to_slaves_0_arcache ;
 
   // value method mmio_M_m_arprot
-  assign mmio_M_arprot = fabric_1x3$v_to_slaves_0_arprot ;
+  assign mmio_M_arprot = mmio_fabric$v_to_slaves_0_arprot ;
 
   // value method mmio_M_m_arqos
-  assign mmio_M_arqos = fabric_1x3$v_to_slaves_0_arqos ;
+  assign mmio_M_arqos = mmio_fabric$v_to_slaves_0_arqos ;
 
   // value method mmio_M_m_arregion
-  assign mmio_M_arregion = fabric_1x3$v_to_slaves_0_arregion ;
+  assign mmio_M_arregion = mmio_fabric$v_to_slaves_0_arregion ;
 
   // action method mmio_M_m_arready
   assign CAN_FIRE_mmio_M_m_arready = 1'd1 ;
@@ -2294,7 +2387,7 @@ module mkAWSteria_Core_Single_Clock(CLK,
   assign WILL_FIRE_mmio_M_m_rvalid = 1'd1 ;
 
   // value method mmio_M_m_rready
-  assign mmio_M_rready = fabric_1x3$v_to_slaves_0_rready ;
+  assign mmio_M_rready = mmio_fabric$v_to_slaves_0_rready ;
 
   // action method dma_S_m_awvalid
   assign CAN_FIRE_dma_S_m_awvalid = 1'd1 ;
@@ -2464,6 +2557,53 @@ module mkAWSteria_Core_Single_Clock(CLK,
   assign se_control_status_response_notEmpty =
 	     host_cs$se_control_status_response_notEmpty ;
   assign RDY_se_control_status_response_notEmpty = 1'd1 ;
+
+  // submodule boot_rom
+  mkBoot_ROM boot_rom(.CLK(CLK),
+		      .RST_N(RST_N),
+		      .set_addr_map_addr_base(boot_rom$set_addr_map_addr_base),
+		      .set_addr_map_addr_lim(boot_rom$set_addr_map_addr_lim),
+		      .slave_araddr(boot_rom$slave_araddr),
+		      .slave_arburst(boot_rom$slave_arburst),
+		      .slave_arcache(boot_rom$slave_arcache),
+		      .slave_arid(boot_rom$slave_arid),
+		      .slave_arlen(boot_rom$slave_arlen),
+		      .slave_arlock(boot_rom$slave_arlock),
+		      .slave_arprot(boot_rom$slave_arprot),
+		      .slave_arqos(boot_rom$slave_arqos),
+		      .slave_arregion(boot_rom$slave_arregion),
+		      .slave_arsize(boot_rom$slave_arsize),
+		      .slave_arvalid(boot_rom$slave_arvalid),
+		      .slave_awaddr(boot_rom$slave_awaddr),
+		      .slave_awburst(boot_rom$slave_awburst),
+		      .slave_awcache(boot_rom$slave_awcache),
+		      .slave_awid(boot_rom$slave_awid),
+		      .slave_awlen(boot_rom$slave_awlen),
+		      .slave_awlock(boot_rom$slave_awlock),
+		      .slave_awprot(boot_rom$slave_awprot),
+		      .slave_awqos(boot_rom$slave_awqos),
+		      .slave_awregion(boot_rom$slave_awregion),
+		      .slave_awsize(boot_rom$slave_awsize),
+		      .slave_awvalid(boot_rom$slave_awvalid),
+		      .slave_bready(boot_rom$slave_bready),
+		      .slave_rready(boot_rom$slave_rready),
+		      .slave_wdata(boot_rom$slave_wdata),
+		      .slave_wlast(boot_rom$slave_wlast),
+		      .slave_wstrb(boot_rom$slave_wstrb),
+		      .slave_wvalid(boot_rom$slave_wvalid),
+		      .EN_set_addr_map(boot_rom$EN_set_addr_map),
+		      .RDY_set_addr_map(),
+		      .slave_awready(boot_rom$slave_awready),
+		      .slave_wready(boot_rom$slave_wready),
+		      .slave_bvalid(boot_rom$slave_bvalid),
+		      .slave_bid(boot_rom$slave_bid),
+		      .slave_bresp(boot_rom$slave_bresp),
+		      .slave_arready(boot_rom$slave_arready),
+		      .slave_rvalid(boot_rom$slave_rvalid),
+		      .slave_rid(boot_rom$slave_rid),
+		      .slave_rdata(boot_rom$slave_rdata),
+		      .slave_rresp(boot_rom$slave_rresp),
+		      .slave_rlast(boot_rom$slave_rlast));
 
   // submodule cpu
   mkCPU cpu(.CLK(CLK),
@@ -3058,171 +3198,6 @@ module mkAWSteria_Core_Single_Clock(CLK,
 						      .FULL_N(f_pc_trace$FULL_N),
 						      .EMPTY_N(f_pc_trace$EMPTY_N));
 
-  // submodule fabric_1x3
-  mkFabric_1x3 fabric_1x3(.CLK(CLK),
-			  .RST_N(RST_N),
-			  .set_verbosity_verbosity(fabric_1x3$set_verbosity_verbosity),
-			  .v_from_masters_0_araddr(fabric_1x3$v_from_masters_0_araddr),
-			  .v_from_masters_0_arburst(fabric_1x3$v_from_masters_0_arburst),
-			  .v_from_masters_0_arcache(fabric_1x3$v_from_masters_0_arcache),
-			  .v_from_masters_0_arid(fabric_1x3$v_from_masters_0_arid),
-			  .v_from_masters_0_arlen(fabric_1x3$v_from_masters_0_arlen),
-			  .v_from_masters_0_arlock(fabric_1x3$v_from_masters_0_arlock),
-			  .v_from_masters_0_arprot(fabric_1x3$v_from_masters_0_arprot),
-			  .v_from_masters_0_arqos(fabric_1x3$v_from_masters_0_arqos),
-			  .v_from_masters_0_arregion(fabric_1x3$v_from_masters_0_arregion),
-			  .v_from_masters_0_arsize(fabric_1x3$v_from_masters_0_arsize),
-			  .v_from_masters_0_arvalid(fabric_1x3$v_from_masters_0_arvalid),
-			  .v_from_masters_0_awaddr(fabric_1x3$v_from_masters_0_awaddr),
-			  .v_from_masters_0_awburst(fabric_1x3$v_from_masters_0_awburst),
-			  .v_from_masters_0_awcache(fabric_1x3$v_from_masters_0_awcache),
-			  .v_from_masters_0_awid(fabric_1x3$v_from_masters_0_awid),
-			  .v_from_masters_0_awlen(fabric_1x3$v_from_masters_0_awlen),
-			  .v_from_masters_0_awlock(fabric_1x3$v_from_masters_0_awlock),
-			  .v_from_masters_0_awprot(fabric_1x3$v_from_masters_0_awprot),
-			  .v_from_masters_0_awqos(fabric_1x3$v_from_masters_0_awqos),
-			  .v_from_masters_0_awregion(fabric_1x3$v_from_masters_0_awregion),
-			  .v_from_masters_0_awsize(fabric_1x3$v_from_masters_0_awsize),
-			  .v_from_masters_0_awvalid(fabric_1x3$v_from_masters_0_awvalid),
-			  .v_from_masters_0_bready(fabric_1x3$v_from_masters_0_bready),
-			  .v_from_masters_0_rready(fabric_1x3$v_from_masters_0_rready),
-			  .v_from_masters_0_wdata(fabric_1x3$v_from_masters_0_wdata),
-			  .v_from_masters_0_wlast(fabric_1x3$v_from_masters_0_wlast),
-			  .v_from_masters_0_wstrb(fabric_1x3$v_from_masters_0_wstrb),
-			  .v_from_masters_0_wvalid(fabric_1x3$v_from_masters_0_wvalid),
-			  .v_to_slaves_0_arready(fabric_1x3$v_to_slaves_0_arready),
-			  .v_to_slaves_0_awready(fabric_1x3$v_to_slaves_0_awready),
-			  .v_to_slaves_0_bid(fabric_1x3$v_to_slaves_0_bid),
-			  .v_to_slaves_0_bresp(fabric_1x3$v_to_slaves_0_bresp),
-			  .v_to_slaves_0_bvalid(fabric_1x3$v_to_slaves_0_bvalid),
-			  .v_to_slaves_0_rdata(fabric_1x3$v_to_slaves_0_rdata),
-			  .v_to_slaves_0_rid(fabric_1x3$v_to_slaves_0_rid),
-			  .v_to_slaves_0_rlast(fabric_1x3$v_to_slaves_0_rlast),
-			  .v_to_slaves_0_rresp(fabric_1x3$v_to_slaves_0_rresp),
-			  .v_to_slaves_0_rvalid(fabric_1x3$v_to_slaves_0_rvalid),
-			  .v_to_slaves_0_wready(fabric_1x3$v_to_slaves_0_wready),
-			  .v_to_slaves_1_arready(fabric_1x3$v_to_slaves_1_arready),
-			  .v_to_slaves_1_awready(fabric_1x3$v_to_slaves_1_awready),
-			  .v_to_slaves_1_bid(fabric_1x3$v_to_slaves_1_bid),
-			  .v_to_slaves_1_bresp(fabric_1x3$v_to_slaves_1_bresp),
-			  .v_to_slaves_1_bvalid(fabric_1x3$v_to_slaves_1_bvalid),
-			  .v_to_slaves_1_rdata(fabric_1x3$v_to_slaves_1_rdata),
-			  .v_to_slaves_1_rid(fabric_1x3$v_to_slaves_1_rid),
-			  .v_to_slaves_1_rlast(fabric_1x3$v_to_slaves_1_rlast),
-			  .v_to_slaves_1_rresp(fabric_1x3$v_to_slaves_1_rresp),
-			  .v_to_slaves_1_rvalid(fabric_1x3$v_to_slaves_1_rvalid),
-			  .v_to_slaves_1_wready(fabric_1x3$v_to_slaves_1_wready),
-			  .v_to_slaves_2_arready(fabric_1x3$v_to_slaves_2_arready),
-			  .v_to_slaves_2_awready(fabric_1x3$v_to_slaves_2_awready),
-			  .v_to_slaves_2_bid(fabric_1x3$v_to_slaves_2_bid),
-			  .v_to_slaves_2_bresp(fabric_1x3$v_to_slaves_2_bresp),
-			  .v_to_slaves_2_bvalid(fabric_1x3$v_to_slaves_2_bvalid),
-			  .v_to_slaves_2_rdata(fabric_1x3$v_to_slaves_2_rdata),
-			  .v_to_slaves_2_rid(fabric_1x3$v_to_slaves_2_rid),
-			  .v_to_slaves_2_rlast(fabric_1x3$v_to_slaves_2_rlast),
-			  .v_to_slaves_2_rresp(fabric_1x3$v_to_slaves_2_rresp),
-			  .v_to_slaves_2_rvalid(fabric_1x3$v_to_slaves_2_rvalid),
-			  .v_to_slaves_2_wready(fabric_1x3$v_to_slaves_2_wready),
-			  .EN_reset(fabric_1x3$EN_reset),
-			  .EN_set_verbosity(fabric_1x3$EN_set_verbosity),
-			  .RDY_reset(fabric_1x3$RDY_reset),
-			  .RDY_set_verbosity(),
-			  .v_from_masters_0_awready(fabric_1x3$v_from_masters_0_awready),
-			  .v_from_masters_0_wready(fabric_1x3$v_from_masters_0_wready),
-			  .v_from_masters_0_bvalid(fabric_1x3$v_from_masters_0_bvalid),
-			  .v_from_masters_0_bid(fabric_1x3$v_from_masters_0_bid),
-			  .v_from_masters_0_bresp(fabric_1x3$v_from_masters_0_bresp),
-			  .v_from_masters_0_arready(fabric_1x3$v_from_masters_0_arready),
-			  .v_from_masters_0_rvalid(fabric_1x3$v_from_masters_0_rvalid),
-			  .v_from_masters_0_rid(fabric_1x3$v_from_masters_0_rid),
-			  .v_from_masters_0_rdata(fabric_1x3$v_from_masters_0_rdata),
-			  .v_from_masters_0_rresp(fabric_1x3$v_from_masters_0_rresp),
-			  .v_from_masters_0_rlast(fabric_1x3$v_from_masters_0_rlast),
-			  .v_to_slaves_0_awvalid(fabric_1x3$v_to_slaves_0_awvalid),
-			  .v_to_slaves_0_awid(fabric_1x3$v_to_slaves_0_awid),
-			  .v_to_slaves_0_awaddr(fabric_1x3$v_to_slaves_0_awaddr),
-			  .v_to_slaves_0_awlen(fabric_1x3$v_to_slaves_0_awlen),
-			  .v_to_slaves_0_awsize(fabric_1x3$v_to_slaves_0_awsize),
-			  .v_to_slaves_0_awburst(fabric_1x3$v_to_slaves_0_awburst),
-			  .v_to_slaves_0_awlock(fabric_1x3$v_to_slaves_0_awlock),
-			  .v_to_slaves_0_awcache(fabric_1x3$v_to_slaves_0_awcache),
-			  .v_to_slaves_0_awprot(fabric_1x3$v_to_slaves_0_awprot),
-			  .v_to_slaves_0_awqos(fabric_1x3$v_to_slaves_0_awqos),
-			  .v_to_slaves_0_awregion(fabric_1x3$v_to_slaves_0_awregion),
-			  .v_to_slaves_0_wvalid(fabric_1x3$v_to_slaves_0_wvalid),
-			  .v_to_slaves_0_wdata(fabric_1x3$v_to_slaves_0_wdata),
-			  .v_to_slaves_0_wstrb(fabric_1x3$v_to_slaves_0_wstrb),
-			  .v_to_slaves_0_wlast(fabric_1x3$v_to_slaves_0_wlast),
-			  .v_to_slaves_0_bready(fabric_1x3$v_to_slaves_0_bready),
-			  .v_to_slaves_0_arvalid(fabric_1x3$v_to_slaves_0_arvalid),
-			  .v_to_slaves_0_arid(fabric_1x3$v_to_slaves_0_arid),
-			  .v_to_slaves_0_araddr(fabric_1x3$v_to_slaves_0_araddr),
-			  .v_to_slaves_0_arlen(fabric_1x3$v_to_slaves_0_arlen),
-			  .v_to_slaves_0_arsize(fabric_1x3$v_to_slaves_0_arsize),
-			  .v_to_slaves_0_arburst(fabric_1x3$v_to_slaves_0_arburst),
-			  .v_to_slaves_0_arlock(fabric_1x3$v_to_slaves_0_arlock),
-			  .v_to_slaves_0_arcache(fabric_1x3$v_to_slaves_0_arcache),
-			  .v_to_slaves_0_arprot(fabric_1x3$v_to_slaves_0_arprot),
-			  .v_to_slaves_0_arqos(fabric_1x3$v_to_slaves_0_arqos),
-			  .v_to_slaves_0_arregion(fabric_1x3$v_to_slaves_0_arregion),
-			  .v_to_slaves_0_rready(fabric_1x3$v_to_slaves_0_rready),
-			  .v_to_slaves_1_awvalid(fabric_1x3$v_to_slaves_1_awvalid),
-			  .v_to_slaves_1_awid(fabric_1x3$v_to_slaves_1_awid),
-			  .v_to_slaves_1_awaddr(fabric_1x3$v_to_slaves_1_awaddr),
-			  .v_to_slaves_1_awlen(fabric_1x3$v_to_slaves_1_awlen),
-			  .v_to_slaves_1_awsize(fabric_1x3$v_to_slaves_1_awsize),
-			  .v_to_slaves_1_awburst(fabric_1x3$v_to_slaves_1_awburst),
-			  .v_to_slaves_1_awlock(fabric_1x3$v_to_slaves_1_awlock),
-			  .v_to_slaves_1_awcache(fabric_1x3$v_to_slaves_1_awcache),
-			  .v_to_slaves_1_awprot(fabric_1x3$v_to_slaves_1_awprot),
-			  .v_to_slaves_1_awqos(fabric_1x3$v_to_slaves_1_awqos),
-			  .v_to_slaves_1_awregion(fabric_1x3$v_to_slaves_1_awregion),
-			  .v_to_slaves_1_wvalid(fabric_1x3$v_to_slaves_1_wvalid),
-			  .v_to_slaves_1_wdata(fabric_1x3$v_to_slaves_1_wdata),
-			  .v_to_slaves_1_wstrb(fabric_1x3$v_to_slaves_1_wstrb),
-			  .v_to_slaves_1_wlast(fabric_1x3$v_to_slaves_1_wlast),
-			  .v_to_slaves_1_bready(fabric_1x3$v_to_slaves_1_bready),
-			  .v_to_slaves_1_arvalid(fabric_1x3$v_to_slaves_1_arvalid),
-			  .v_to_slaves_1_arid(fabric_1x3$v_to_slaves_1_arid),
-			  .v_to_slaves_1_araddr(fabric_1x3$v_to_slaves_1_araddr),
-			  .v_to_slaves_1_arlen(fabric_1x3$v_to_slaves_1_arlen),
-			  .v_to_slaves_1_arsize(fabric_1x3$v_to_slaves_1_arsize),
-			  .v_to_slaves_1_arburst(fabric_1x3$v_to_slaves_1_arburst),
-			  .v_to_slaves_1_arlock(fabric_1x3$v_to_slaves_1_arlock),
-			  .v_to_slaves_1_arcache(fabric_1x3$v_to_slaves_1_arcache),
-			  .v_to_slaves_1_arprot(fabric_1x3$v_to_slaves_1_arprot),
-			  .v_to_slaves_1_arqos(fabric_1x3$v_to_slaves_1_arqos),
-			  .v_to_slaves_1_arregion(fabric_1x3$v_to_slaves_1_arregion),
-			  .v_to_slaves_1_rready(fabric_1x3$v_to_slaves_1_rready),
-			  .v_to_slaves_2_awvalid(fabric_1x3$v_to_slaves_2_awvalid),
-			  .v_to_slaves_2_awid(fabric_1x3$v_to_slaves_2_awid),
-			  .v_to_slaves_2_awaddr(fabric_1x3$v_to_slaves_2_awaddr),
-			  .v_to_slaves_2_awlen(fabric_1x3$v_to_slaves_2_awlen),
-			  .v_to_slaves_2_awsize(fabric_1x3$v_to_slaves_2_awsize),
-			  .v_to_slaves_2_awburst(fabric_1x3$v_to_slaves_2_awburst),
-			  .v_to_slaves_2_awlock(fabric_1x3$v_to_slaves_2_awlock),
-			  .v_to_slaves_2_awcache(fabric_1x3$v_to_slaves_2_awcache),
-			  .v_to_slaves_2_awprot(fabric_1x3$v_to_slaves_2_awprot),
-			  .v_to_slaves_2_awqos(fabric_1x3$v_to_slaves_2_awqos),
-			  .v_to_slaves_2_awregion(fabric_1x3$v_to_slaves_2_awregion),
-			  .v_to_slaves_2_wvalid(fabric_1x3$v_to_slaves_2_wvalid),
-			  .v_to_slaves_2_wdata(fabric_1x3$v_to_slaves_2_wdata),
-			  .v_to_slaves_2_wstrb(fabric_1x3$v_to_slaves_2_wstrb),
-			  .v_to_slaves_2_wlast(fabric_1x3$v_to_slaves_2_wlast),
-			  .v_to_slaves_2_bready(fabric_1x3$v_to_slaves_2_bready),
-			  .v_to_slaves_2_arvalid(fabric_1x3$v_to_slaves_2_arvalid),
-			  .v_to_slaves_2_arid(fabric_1x3$v_to_slaves_2_arid),
-			  .v_to_slaves_2_araddr(fabric_1x3$v_to_slaves_2_araddr),
-			  .v_to_slaves_2_arlen(fabric_1x3$v_to_slaves_2_arlen),
-			  .v_to_slaves_2_arsize(fabric_1x3$v_to_slaves_2_arsize),
-			  .v_to_slaves_2_arburst(fabric_1x3$v_to_slaves_2_arburst),
-			  .v_to_slaves_2_arlock(fabric_1x3$v_to_slaves_2_arlock),
-			  .v_to_slaves_2_arcache(fabric_1x3$v_to_slaves_2_arcache),
-			  .v_to_slaves_2_arprot(fabric_1x3$v_to_slaves_2_arprot),
-			  .v_to_slaves_2_arqos(fabric_1x3$v_to_slaves_2_arqos),
-			  .v_to_slaves_2_arregion(fabric_1x3$v_to_slaves_2_arregion),
-			  .v_to_slaves_2_rready(fabric_1x3$v_to_slaves_2_rready));
-
   // submodule host_cs
   mkHost_Control_Status host_cs(.CLK(CLK),
 				.RST_N(RST_N),
@@ -3268,6 +3243,210 @@ module mkAWSteria_Core_Single_Clock(CLK,
 				.mv_pc_trace_snd(host_cs$mv_pc_trace_snd),
 				.RDY_mv_pc_trace_snd(),
 				.RDY_ma_tohost_value());
+
+  // submodule mmio_fabric
+  mkCore_MMIO_Fabric mmio_fabric(.CLK(CLK),
+				 .RST_N(RST_N),
+				 .set_verbosity_verbosity(mmio_fabric$set_verbosity_verbosity),
+				 .v_from_masters_0_araddr(mmio_fabric$v_from_masters_0_araddr),
+				 .v_from_masters_0_arburst(mmio_fabric$v_from_masters_0_arburst),
+				 .v_from_masters_0_arcache(mmio_fabric$v_from_masters_0_arcache),
+				 .v_from_masters_0_arid(mmio_fabric$v_from_masters_0_arid),
+				 .v_from_masters_0_arlen(mmio_fabric$v_from_masters_0_arlen),
+				 .v_from_masters_0_arlock(mmio_fabric$v_from_masters_0_arlock),
+				 .v_from_masters_0_arprot(mmio_fabric$v_from_masters_0_arprot),
+				 .v_from_masters_0_arqos(mmio_fabric$v_from_masters_0_arqos),
+				 .v_from_masters_0_arregion(mmio_fabric$v_from_masters_0_arregion),
+				 .v_from_masters_0_arsize(mmio_fabric$v_from_masters_0_arsize),
+				 .v_from_masters_0_arvalid(mmio_fabric$v_from_masters_0_arvalid),
+				 .v_from_masters_0_awaddr(mmio_fabric$v_from_masters_0_awaddr),
+				 .v_from_masters_0_awburst(mmio_fabric$v_from_masters_0_awburst),
+				 .v_from_masters_0_awcache(mmio_fabric$v_from_masters_0_awcache),
+				 .v_from_masters_0_awid(mmio_fabric$v_from_masters_0_awid),
+				 .v_from_masters_0_awlen(mmio_fabric$v_from_masters_0_awlen),
+				 .v_from_masters_0_awlock(mmio_fabric$v_from_masters_0_awlock),
+				 .v_from_masters_0_awprot(mmio_fabric$v_from_masters_0_awprot),
+				 .v_from_masters_0_awqos(mmio_fabric$v_from_masters_0_awqos),
+				 .v_from_masters_0_awregion(mmio_fabric$v_from_masters_0_awregion),
+				 .v_from_masters_0_awsize(mmio_fabric$v_from_masters_0_awsize),
+				 .v_from_masters_0_awvalid(mmio_fabric$v_from_masters_0_awvalid),
+				 .v_from_masters_0_bready(mmio_fabric$v_from_masters_0_bready),
+				 .v_from_masters_0_rready(mmio_fabric$v_from_masters_0_rready),
+				 .v_from_masters_0_wdata(mmio_fabric$v_from_masters_0_wdata),
+				 .v_from_masters_0_wlast(mmio_fabric$v_from_masters_0_wlast),
+				 .v_from_masters_0_wstrb(mmio_fabric$v_from_masters_0_wstrb),
+				 .v_from_masters_0_wvalid(mmio_fabric$v_from_masters_0_wvalid),
+				 .v_to_slaves_0_arready(mmio_fabric$v_to_slaves_0_arready),
+				 .v_to_slaves_0_awready(mmio_fabric$v_to_slaves_0_awready),
+				 .v_to_slaves_0_bid(mmio_fabric$v_to_slaves_0_bid),
+				 .v_to_slaves_0_bresp(mmio_fabric$v_to_slaves_0_bresp),
+				 .v_to_slaves_0_bvalid(mmio_fabric$v_to_slaves_0_bvalid),
+				 .v_to_slaves_0_rdata(mmio_fabric$v_to_slaves_0_rdata),
+				 .v_to_slaves_0_rid(mmio_fabric$v_to_slaves_0_rid),
+				 .v_to_slaves_0_rlast(mmio_fabric$v_to_slaves_0_rlast),
+				 .v_to_slaves_0_rresp(mmio_fabric$v_to_slaves_0_rresp),
+				 .v_to_slaves_0_rvalid(mmio_fabric$v_to_slaves_0_rvalid),
+				 .v_to_slaves_0_wready(mmio_fabric$v_to_slaves_0_wready),
+				 .v_to_slaves_1_arready(mmio_fabric$v_to_slaves_1_arready),
+				 .v_to_slaves_1_awready(mmio_fabric$v_to_slaves_1_awready),
+				 .v_to_slaves_1_bid(mmio_fabric$v_to_slaves_1_bid),
+				 .v_to_slaves_1_bresp(mmio_fabric$v_to_slaves_1_bresp),
+				 .v_to_slaves_1_bvalid(mmio_fabric$v_to_slaves_1_bvalid),
+				 .v_to_slaves_1_rdata(mmio_fabric$v_to_slaves_1_rdata),
+				 .v_to_slaves_1_rid(mmio_fabric$v_to_slaves_1_rid),
+				 .v_to_slaves_1_rlast(mmio_fabric$v_to_slaves_1_rlast),
+				 .v_to_slaves_1_rresp(mmio_fabric$v_to_slaves_1_rresp),
+				 .v_to_slaves_1_rvalid(mmio_fabric$v_to_slaves_1_rvalid),
+				 .v_to_slaves_1_wready(mmio_fabric$v_to_slaves_1_wready),
+				 .v_to_slaves_2_arready(mmio_fabric$v_to_slaves_2_arready),
+				 .v_to_slaves_2_awready(mmio_fabric$v_to_slaves_2_awready),
+				 .v_to_slaves_2_bid(mmio_fabric$v_to_slaves_2_bid),
+				 .v_to_slaves_2_bresp(mmio_fabric$v_to_slaves_2_bresp),
+				 .v_to_slaves_2_bvalid(mmio_fabric$v_to_slaves_2_bvalid),
+				 .v_to_slaves_2_rdata(mmio_fabric$v_to_slaves_2_rdata),
+				 .v_to_slaves_2_rid(mmio_fabric$v_to_slaves_2_rid),
+				 .v_to_slaves_2_rlast(mmio_fabric$v_to_slaves_2_rlast),
+				 .v_to_slaves_2_rresp(mmio_fabric$v_to_slaves_2_rresp),
+				 .v_to_slaves_2_rvalid(mmio_fabric$v_to_slaves_2_rvalid),
+				 .v_to_slaves_2_wready(mmio_fabric$v_to_slaves_2_wready),
+				 .v_to_slaves_3_arready(mmio_fabric$v_to_slaves_3_arready),
+				 .v_to_slaves_3_awready(mmio_fabric$v_to_slaves_3_awready),
+				 .v_to_slaves_3_bid(mmio_fabric$v_to_slaves_3_bid),
+				 .v_to_slaves_3_bresp(mmio_fabric$v_to_slaves_3_bresp),
+				 .v_to_slaves_3_bvalid(mmio_fabric$v_to_slaves_3_bvalid),
+				 .v_to_slaves_3_rdata(mmio_fabric$v_to_slaves_3_rdata),
+				 .v_to_slaves_3_rid(mmio_fabric$v_to_slaves_3_rid),
+				 .v_to_slaves_3_rlast(mmio_fabric$v_to_slaves_3_rlast),
+				 .v_to_slaves_3_rresp(mmio_fabric$v_to_slaves_3_rresp),
+				 .v_to_slaves_3_rvalid(mmio_fabric$v_to_slaves_3_rvalid),
+				 .v_to_slaves_3_wready(mmio_fabric$v_to_slaves_3_wready),
+				 .EN_reset(mmio_fabric$EN_reset),
+				 .EN_set_verbosity(mmio_fabric$EN_set_verbosity),
+				 .RDY_reset(mmio_fabric$RDY_reset),
+				 .RDY_set_verbosity(),
+				 .v_from_masters_0_awready(mmio_fabric$v_from_masters_0_awready),
+				 .v_from_masters_0_wready(mmio_fabric$v_from_masters_0_wready),
+				 .v_from_masters_0_bvalid(mmio_fabric$v_from_masters_0_bvalid),
+				 .v_from_masters_0_bid(mmio_fabric$v_from_masters_0_bid),
+				 .v_from_masters_0_bresp(mmio_fabric$v_from_masters_0_bresp),
+				 .v_from_masters_0_arready(mmio_fabric$v_from_masters_0_arready),
+				 .v_from_masters_0_rvalid(mmio_fabric$v_from_masters_0_rvalid),
+				 .v_from_masters_0_rid(mmio_fabric$v_from_masters_0_rid),
+				 .v_from_masters_0_rdata(mmio_fabric$v_from_masters_0_rdata),
+				 .v_from_masters_0_rresp(mmio_fabric$v_from_masters_0_rresp),
+				 .v_from_masters_0_rlast(mmio_fabric$v_from_masters_0_rlast),
+				 .v_to_slaves_0_awvalid(mmio_fabric$v_to_slaves_0_awvalid),
+				 .v_to_slaves_0_awid(mmio_fabric$v_to_slaves_0_awid),
+				 .v_to_slaves_0_awaddr(mmio_fabric$v_to_slaves_0_awaddr),
+				 .v_to_slaves_0_awlen(mmio_fabric$v_to_slaves_0_awlen),
+				 .v_to_slaves_0_awsize(mmio_fabric$v_to_slaves_0_awsize),
+				 .v_to_slaves_0_awburst(mmio_fabric$v_to_slaves_0_awburst),
+				 .v_to_slaves_0_awlock(mmio_fabric$v_to_slaves_0_awlock),
+				 .v_to_slaves_0_awcache(mmio_fabric$v_to_slaves_0_awcache),
+				 .v_to_slaves_0_awprot(mmio_fabric$v_to_slaves_0_awprot),
+				 .v_to_slaves_0_awqos(mmio_fabric$v_to_slaves_0_awqos),
+				 .v_to_slaves_0_awregion(mmio_fabric$v_to_slaves_0_awregion),
+				 .v_to_slaves_0_wvalid(mmio_fabric$v_to_slaves_0_wvalid),
+				 .v_to_slaves_0_wdata(mmio_fabric$v_to_slaves_0_wdata),
+				 .v_to_slaves_0_wstrb(mmio_fabric$v_to_slaves_0_wstrb),
+				 .v_to_slaves_0_wlast(mmio_fabric$v_to_slaves_0_wlast),
+				 .v_to_slaves_0_bready(mmio_fabric$v_to_slaves_0_bready),
+				 .v_to_slaves_0_arvalid(mmio_fabric$v_to_slaves_0_arvalid),
+				 .v_to_slaves_0_arid(mmio_fabric$v_to_slaves_0_arid),
+				 .v_to_slaves_0_araddr(mmio_fabric$v_to_slaves_0_araddr),
+				 .v_to_slaves_0_arlen(mmio_fabric$v_to_slaves_0_arlen),
+				 .v_to_slaves_0_arsize(mmio_fabric$v_to_slaves_0_arsize),
+				 .v_to_slaves_0_arburst(mmio_fabric$v_to_slaves_0_arburst),
+				 .v_to_slaves_0_arlock(mmio_fabric$v_to_slaves_0_arlock),
+				 .v_to_slaves_0_arcache(mmio_fabric$v_to_slaves_0_arcache),
+				 .v_to_slaves_0_arprot(mmio_fabric$v_to_slaves_0_arprot),
+				 .v_to_slaves_0_arqos(mmio_fabric$v_to_slaves_0_arqos),
+				 .v_to_slaves_0_arregion(mmio_fabric$v_to_slaves_0_arregion),
+				 .v_to_slaves_0_rready(mmio_fabric$v_to_slaves_0_rready),
+				 .v_to_slaves_1_awvalid(mmio_fabric$v_to_slaves_1_awvalid),
+				 .v_to_slaves_1_awid(mmio_fabric$v_to_slaves_1_awid),
+				 .v_to_slaves_1_awaddr(mmio_fabric$v_to_slaves_1_awaddr),
+				 .v_to_slaves_1_awlen(mmio_fabric$v_to_slaves_1_awlen),
+				 .v_to_slaves_1_awsize(mmio_fabric$v_to_slaves_1_awsize),
+				 .v_to_slaves_1_awburst(mmio_fabric$v_to_slaves_1_awburst),
+				 .v_to_slaves_1_awlock(mmio_fabric$v_to_slaves_1_awlock),
+				 .v_to_slaves_1_awcache(mmio_fabric$v_to_slaves_1_awcache),
+				 .v_to_slaves_1_awprot(mmio_fabric$v_to_slaves_1_awprot),
+				 .v_to_slaves_1_awqos(mmio_fabric$v_to_slaves_1_awqos),
+				 .v_to_slaves_1_awregion(mmio_fabric$v_to_slaves_1_awregion),
+				 .v_to_slaves_1_wvalid(mmio_fabric$v_to_slaves_1_wvalid),
+				 .v_to_slaves_1_wdata(mmio_fabric$v_to_slaves_1_wdata),
+				 .v_to_slaves_1_wstrb(mmio_fabric$v_to_slaves_1_wstrb),
+				 .v_to_slaves_1_wlast(mmio_fabric$v_to_slaves_1_wlast),
+				 .v_to_slaves_1_bready(mmio_fabric$v_to_slaves_1_bready),
+				 .v_to_slaves_1_arvalid(mmio_fabric$v_to_slaves_1_arvalid),
+				 .v_to_slaves_1_arid(mmio_fabric$v_to_slaves_1_arid),
+				 .v_to_slaves_1_araddr(mmio_fabric$v_to_slaves_1_araddr),
+				 .v_to_slaves_1_arlen(mmio_fabric$v_to_slaves_1_arlen),
+				 .v_to_slaves_1_arsize(mmio_fabric$v_to_slaves_1_arsize),
+				 .v_to_slaves_1_arburst(mmio_fabric$v_to_slaves_1_arburst),
+				 .v_to_slaves_1_arlock(mmio_fabric$v_to_slaves_1_arlock),
+				 .v_to_slaves_1_arcache(mmio_fabric$v_to_slaves_1_arcache),
+				 .v_to_slaves_1_arprot(mmio_fabric$v_to_slaves_1_arprot),
+				 .v_to_slaves_1_arqos(mmio_fabric$v_to_slaves_1_arqos),
+				 .v_to_slaves_1_arregion(mmio_fabric$v_to_slaves_1_arregion),
+				 .v_to_slaves_1_rready(mmio_fabric$v_to_slaves_1_rready),
+				 .v_to_slaves_2_awvalid(mmio_fabric$v_to_slaves_2_awvalid),
+				 .v_to_slaves_2_awid(mmio_fabric$v_to_slaves_2_awid),
+				 .v_to_slaves_2_awaddr(mmio_fabric$v_to_slaves_2_awaddr),
+				 .v_to_slaves_2_awlen(mmio_fabric$v_to_slaves_2_awlen),
+				 .v_to_slaves_2_awsize(mmio_fabric$v_to_slaves_2_awsize),
+				 .v_to_slaves_2_awburst(mmio_fabric$v_to_slaves_2_awburst),
+				 .v_to_slaves_2_awlock(mmio_fabric$v_to_slaves_2_awlock),
+				 .v_to_slaves_2_awcache(mmio_fabric$v_to_slaves_2_awcache),
+				 .v_to_slaves_2_awprot(mmio_fabric$v_to_slaves_2_awprot),
+				 .v_to_slaves_2_awqos(mmio_fabric$v_to_slaves_2_awqos),
+				 .v_to_slaves_2_awregion(mmio_fabric$v_to_slaves_2_awregion),
+				 .v_to_slaves_2_wvalid(mmio_fabric$v_to_slaves_2_wvalid),
+				 .v_to_slaves_2_wdata(mmio_fabric$v_to_slaves_2_wdata),
+				 .v_to_slaves_2_wstrb(mmio_fabric$v_to_slaves_2_wstrb),
+				 .v_to_slaves_2_wlast(mmio_fabric$v_to_slaves_2_wlast),
+				 .v_to_slaves_2_bready(mmio_fabric$v_to_slaves_2_bready),
+				 .v_to_slaves_2_arvalid(mmio_fabric$v_to_slaves_2_arvalid),
+				 .v_to_slaves_2_arid(mmio_fabric$v_to_slaves_2_arid),
+				 .v_to_slaves_2_araddr(mmio_fabric$v_to_slaves_2_araddr),
+				 .v_to_slaves_2_arlen(mmio_fabric$v_to_slaves_2_arlen),
+				 .v_to_slaves_2_arsize(mmio_fabric$v_to_slaves_2_arsize),
+				 .v_to_slaves_2_arburst(mmio_fabric$v_to_slaves_2_arburst),
+				 .v_to_slaves_2_arlock(mmio_fabric$v_to_slaves_2_arlock),
+				 .v_to_slaves_2_arcache(mmio_fabric$v_to_slaves_2_arcache),
+				 .v_to_slaves_2_arprot(mmio_fabric$v_to_slaves_2_arprot),
+				 .v_to_slaves_2_arqos(mmio_fabric$v_to_slaves_2_arqos),
+				 .v_to_slaves_2_arregion(mmio_fabric$v_to_slaves_2_arregion),
+				 .v_to_slaves_2_rready(mmio_fabric$v_to_slaves_2_rready),
+				 .v_to_slaves_3_awvalid(mmio_fabric$v_to_slaves_3_awvalid),
+				 .v_to_slaves_3_awid(mmio_fabric$v_to_slaves_3_awid),
+				 .v_to_slaves_3_awaddr(mmio_fabric$v_to_slaves_3_awaddr),
+				 .v_to_slaves_3_awlen(mmio_fabric$v_to_slaves_3_awlen),
+				 .v_to_slaves_3_awsize(mmio_fabric$v_to_slaves_3_awsize),
+				 .v_to_slaves_3_awburst(mmio_fabric$v_to_slaves_3_awburst),
+				 .v_to_slaves_3_awlock(mmio_fabric$v_to_slaves_3_awlock),
+				 .v_to_slaves_3_awcache(mmio_fabric$v_to_slaves_3_awcache),
+				 .v_to_slaves_3_awprot(mmio_fabric$v_to_slaves_3_awprot),
+				 .v_to_slaves_3_awqos(mmio_fabric$v_to_slaves_3_awqos),
+				 .v_to_slaves_3_awregion(mmio_fabric$v_to_slaves_3_awregion),
+				 .v_to_slaves_3_wvalid(mmio_fabric$v_to_slaves_3_wvalid),
+				 .v_to_slaves_3_wdata(mmio_fabric$v_to_slaves_3_wdata),
+				 .v_to_slaves_3_wstrb(mmio_fabric$v_to_slaves_3_wstrb),
+				 .v_to_slaves_3_wlast(mmio_fabric$v_to_slaves_3_wlast),
+				 .v_to_slaves_3_bready(mmio_fabric$v_to_slaves_3_bready),
+				 .v_to_slaves_3_arvalid(mmio_fabric$v_to_slaves_3_arvalid),
+				 .v_to_slaves_3_arid(mmio_fabric$v_to_slaves_3_arid),
+				 .v_to_slaves_3_araddr(mmio_fabric$v_to_slaves_3_araddr),
+				 .v_to_slaves_3_arlen(mmio_fabric$v_to_slaves_3_arlen),
+				 .v_to_slaves_3_arsize(mmio_fabric$v_to_slaves_3_arsize),
+				 .v_to_slaves_3_arburst(mmio_fabric$v_to_slaves_3_arburst),
+				 .v_to_slaves_3_arlock(mmio_fabric$v_to_slaves_3_arlock),
+				 .v_to_slaves_3_arcache(mmio_fabric$v_to_slaves_3_arcache),
+				 .v_to_slaves_3_arprot(mmio_fabric$v_to_slaves_3_arprot),
+				 .v_to_slaves_3_arqos(mmio_fabric$v_to_slaves_3_arqos),
+				 .v_to_slaves_3_arregion(mmio_fabric$v_to_slaves_3_arregion),
+				 .v_to_slaves_3_rready(mmio_fabric$v_to_slaves_3_rready));
 
   // submodule near_mem_io
   mkNear_Mem_IO_AXI4 near_mem_io(.CLK(CLK),
@@ -3481,6 +3660,26 @@ module mkAWSteria_Core_Single_Clock(CLK,
   assign CAN_FIRE_RL_rl_rd_data_channel_3 = 1'd1 ;
   assign WILL_FIRE_RL_rl_rd_data_channel_3 = 1'd1 ;
 
+  // rule RL_rl_wr_addr_channel_4
+  assign CAN_FIRE_RL_rl_wr_addr_channel_4 = 1'd1 ;
+  assign WILL_FIRE_RL_rl_wr_addr_channel_4 = 1'd1 ;
+
+  // rule RL_rl_wr_data_channel_4
+  assign CAN_FIRE_RL_rl_wr_data_channel_4 = 1'd1 ;
+  assign WILL_FIRE_RL_rl_wr_data_channel_4 = 1'd1 ;
+
+  // rule RL_rl_wr_response_channel_4
+  assign CAN_FIRE_RL_rl_wr_response_channel_4 = 1'd1 ;
+  assign WILL_FIRE_RL_rl_wr_response_channel_4 = 1'd1 ;
+
+  // rule RL_rl_rd_addr_channel_4
+  assign CAN_FIRE_RL_rl_rd_addr_channel_4 = 1'd1 ;
+  assign WILL_FIRE_RL_rl_rd_addr_channel_4 = 1'd1 ;
+
+  // rule RL_rl_rd_data_channel_4
+  assign CAN_FIRE_RL_rl_rd_data_channel_4 = 1'd1 ;
+  assign WILL_FIRE_RL_rl_rd_data_channel_4 = 1'd1 ;
+
   // rule RL_rl_drive_time
   assign CAN_FIRE_RL_rl_drive_time = 1'd1 ;
   assign WILL_FIRE_RL_rl_drive_time = 1'd1 ;
@@ -3526,20 +3725,20 @@ module mkAWSteria_Core_Single_Clock(CLK,
 
   // rule RL_rl_first_init_finish
   assign CAN_FIRE_RL_rl_first_init_finish =
+	     near_mem_io$RDY_set_addr_map &&
 	     plic$RDY_server_reset_response_get &&
 	     near_mem_io$RDY_server_reset_response_get &&
 	     cpu$RDY_hart0_server_reset_response_get &&
-	     near_mem_io$RDY_set_addr_map &&
 	     rg_module_state == 2'd1 ;
   assign WILL_FIRE_RL_rl_first_init_finish =
 	     CAN_FIRE_RL_rl_first_init_finish ;
 
   // rule RL_rl_reinitialization_finish
   assign CAN_FIRE_RL_rl_reinitialization_finish =
+	     near_mem_io$RDY_set_addr_map &&
 	     plic$RDY_server_reset_response_get &&
 	     near_mem_io$RDY_server_reset_response_get &&
 	     cpu$RDY_hart0_server_reset_response_get &&
-	     near_mem_io$RDY_set_addr_map &&
 	     dm_tv_ifc_f_reset_rsps$FULL_N &&
 	     rg_module_state == 2'd2 ;
   assign WILL_FIRE_RL_rl_reinitialization_finish =
@@ -3547,9 +3746,8 @@ module mkAWSteria_Core_Single_Clock(CLK,
 
   // rule RL_rl_first_init_start
   assign CAN_FIRE_RL_rl_first_init_start =
-	     plic$RDY_server_reset_request_put &&
+	     mmio_fabric$RDY_reset && plic$RDY_server_reset_request_put &&
 	     near_mem_io$RDY_server_reset_request_put &&
-	     fabric_1x3$RDY_reset &&
 	     cpu$RDY_hart0_server_reset_request_put &&
 	     rg_module_state == 2'd0 ;
   assign WILL_FIRE_RL_rl_first_init_start = CAN_FIRE_RL_rl_first_init_start ;
@@ -3588,9 +3786,8 @@ module mkAWSteria_Core_Single_Clock(CLK,
 
   // rule RL_rl_reinitialization_start
   assign CAN_FIRE_RL_rl_reinitialization_start =
-	     plic$RDY_server_reset_request_put &&
+	     mmio_fabric$RDY_reset && plic$RDY_server_reset_request_put &&
 	     near_mem_io$RDY_server_reset_request_put &&
-	     fabric_1x3$RDY_reset &&
 	     cpu$RDY_hart0_server_reset_request_put &&
 	     dm_tv_ifc_f_reset_reqs$EMPTY_N &&
 	     rg_module_state == 2'd3 ;
@@ -3665,8 +3862,8 @@ module mkAWSteria_Core_Single_Clock(CLK,
 
   // rule RL_dm_tv_ifc_empty1_rl_cj_to_s
   assign CAN_FIRE_RL_dm_tv_ifc_empty1_rl_cj_to_s =
-	     cpu$RDY_hart0_server_run_halt_request_put &&
 	     host_cs$RDY_cl_run_halt_request_get &&
+	     cpu$RDY_hart0_server_run_halt_request_put &&
 	     dm_tv_ifc_empty1_f_client_id$FULL_N ;
   assign WILL_FIRE_RL_dm_tv_ifc_empty1_rl_cj_to_s =
 	     CAN_FIRE_RL_dm_tv_ifc_empty1_rl_cj_to_s ;
@@ -3682,8 +3879,8 @@ module mkAWSteria_Core_Single_Clock(CLK,
 
   // rule RL_dm_tv_ifc_empty1_rl_cj_from_s
   assign CAN_FIRE_RL_dm_tv_ifc_empty1_rl_cj_from_s =
-	     cpu$RDY_hart0_server_run_halt_response_get &&
 	     host_cs$RDY_cl_run_halt_response_put &&
+	     cpu$RDY_hart0_server_run_halt_response_get &&
 	     dm_tv_ifc_empty1_f_client_id$EMPTY_N &&
 	     !dm_tv_ifc_empty1_f_client_id$D_OUT ;
   assign WILL_FIRE_RL_dm_tv_ifc_empty1_rl_cj_from_s =
@@ -3700,8 +3897,8 @@ module mkAWSteria_Core_Single_Clock(CLK,
 
   // rule RL_dm_tv_ifc_empty2_rl_cj_to_s
   assign CAN_FIRE_RL_dm_tv_ifc_empty2_rl_cj_to_s =
-	     cpu$RDY_hart0_csr_mem_server_request_put &&
 	     host_cs$RDY_cl_csr_rw_request_get &&
+	     cpu$RDY_hart0_csr_mem_server_request_put &&
 	     dm_tv_ifc_empty2_f_client_id$FULL_N ;
   assign WILL_FIRE_RL_dm_tv_ifc_empty2_rl_cj_to_s =
 	     CAN_FIRE_RL_dm_tv_ifc_empty2_rl_cj_to_s ;
@@ -3717,8 +3914,8 @@ module mkAWSteria_Core_Single_Clock(CLK,
 
   // rule RL_dm_tv_ifc_empty2_rl_cj_from_s
   assign CAN_FIRE_RL_dm_tv_ifc_empty2_rl_cj_from_s =
-	     cpu$RDY_hart0_csr_mem_server_response_get &&
 	     host_cs$RDY_cl_csr_rw_response_put &&
+	     cpu$RDY_hart0_csr_mem_server_response_get &&
 	     dm_tv_ifc_empty2_f_client_id$EMPTY_N &&
 	     !dm_tv_ifc_empty2_f_client_id$D_OUT ;
   assign WILL_FIRE_RL_dm_tv_ifc_empty2_rl_cj_from_s =
@@ -3835,13 +4032,13 @@ module mkAWSteria_Core_Single_Clock(CLK,
 
   // register rg_nmi
   assign rg_nmi$D_IN = f_nmi$D_OUT ;
-  assign rg_nmi$EN = CAN_FIRE_RL_rl_register_nmi ;
+  assign rg_nmi$EN = f_nmi$EMPTY_N && rg_module_state == 2'd3 ;
 
   // register rg_pc_trace_interval_ctr
   assign rg_pc_trace_interval_ctr$D_IN =
 	     (host_cs$mv_pc_trace_fst && rg_pc_trace_interval_ctr == 64'd0) ?
 	       host_cs$mv_pc_trace_snd :
-	       x__h15772 ;
+	       x__h17094 ;
   assign rg_pc_trace_interval_ctr$EN = CAN_FIRE_RL_rl_pc_trace ;
 
   // register rg_s_external_interrupt
@@ -3856,6 +4053,39 @@ module mkAWSteria_Core_Single_Clock(CLK,
   // register rg_timer_interrupt
   assign rg_timer_interrupt$D_IN = near_mem_io$get_timer_interrupt_req_get ;
   assign rg_timer_interrupt$EN = CAN_FIRE_RL_rl_relay_timer_interrupt ;
+
+  // submodule boot_rom
+  assign boot_rom$set_addr_map_addr_base = 64'd65536 ;
+  assign boot_rom$set_addr_map_addr_lim = 64'd131072 ;
+  assign boot_rom$slave_araddr = mmio_fabric$v_to_slaves_3_araddr ;
+  assign boot_rom$slave_arburst = mmio_fabric$v_to_slaves_3_arburst ;
+  assign boot_rom$slave_arcache = mmio_fabric$v_to_slaves_3_arcache ;
+  assign boot_rom$slave_arid = mmio_fabric$v_to_slaves_3_arid ;
+  assign boot_rom$slave_arlen = mmio_fabric$v_to_slaves_3_arlen ;
+  assign boot_rom$slave_arlock = mmio_fabric$v_to_slaves_3_arlock ;
+  assign boot_rom$slave_arprot = mmio_fabric$v_to_slaves_3_arprot ;
+  assign boot_rom$slave_arqos = mmio_fabric$v_to_slaves_3_arqos ;
+  assign boot_rom$slave_arregion = mmio_fabric$v_to_slaves_3_arregion ;
+  assign boot_rom$slave_arsize = mmio_fabric$v_to_slaves_3_arsize ;
+  assign boot_rom$slave_arvalid = mmio_fabric$v_to_slaves_3_arvalid ;
+  assign boot_rom$slave_awaddr = mmio_fabric$v_to_slaves_3_awaddr ;
+  assign boot_rom$slave_awburst = mmio_fabric$v_to_slaves_3_awburst ;
+  assign boot_rom$slave_awcache = mmio_fabric$v_to_slaves_3_awcache ;
+  assign boot_rom$slave_awid = mmio_fabric$v_to_slaves_3_awid ;
+  assign boot_rom$slave_awlen = mmio_fabric$v_to_slaves_3_awlen ;
+  assign boot_rom$slave_awlock = mmio_fabric$v_to_slaves_3_awlock ;
+  assign boot_rom$slave_awprot = mmio_fabric$v_to_slaves_3_awprot ;
+  assign boot_rom$slave_awqos = mmio_fabric$v_to_slaves_3_awqos ;
+  assign boot_rom$slave_awregion = mmio_fabric$v_to_slaves_3_awregion ;
+  assign boot_rom$slave_awsize = mmio_fabric$v_to_slaves_3_awsize ;
+  assign boot_rom$slave_awvalid = mmio_fabric$v_to_slaves_3_awvalid ;
+  assign boot_rom$slave_bready = mmio_fabric$v_to_slaves_3_bready ;
+  assign boot_rom$slave_rready = mmio_fabric$v_to_slaves_3_rready ;
+  assign boot_rom$slave_wdata = mmio_fabric$v_to_slaves_3_wdata ;
+  assign boot_rom$slave_wlast = mmio_fabric$v_to_slaves_3_wlast ;
+  assign boot_rom$slave_wstrb = mmio_fabric$v_to_slaves_3_wstrb ;
+  assign boot_rom$slave_wvalid = mmio_fabric$v_to_slaves_3_wvalid ;
+  assign boot_rom$EN_set_addr_map = MUX_rg_module_state$write_1__SEL_3 ;
 
   // submodule cpu
   assign cpu$dma_server_araddr = dma_server_axi4_deburster$to_slave_araddr ;
@@ -3905,17 +4135,17 @@ module mkAWSteria_Core_Single_Clock(CLK,
 	     WILL_FIRE_RL_dm_tv_ifc_empty1_rl_cj_to_s ?
 	       host_cs$cl_run_halt_request_get :
 	       dm_tv_ifc_debug_module$hart0_client_run_halt_request_get ;
-  assign cpu$imem_master_arready = fabric_1x3$v_from_masters_0_arready ;
-  assign cpu$imem_master_awready = fabric_1x3$v_from_masters_0_awready ;
-  assign cpu$imem_master_bid = fabric_1x3$v_from_masters_0_bid ;
-  assign cpu$imem_master_bresp = fabric_1x3$v_from_masters_0_bresp ;
-  assign cpu$imem_master_bvalid = fabric_1x3$v_from_masters_0_bvalid ;
-  assign cpu$imem_master_rdata = fabric_1x3$v_from_masters_0_rdata ;
-  assign cpu$imem_master_rid = fabric_1x3$v_from_masters_0_rid ;
-  assign cpu$imem_master_rlast = fabric_1x3$v_from_masters_0_rlast ;
-  assign cpu$imem_master_rresp = fabric_1x3$v_from_masters_0_rresp ;
-  assign cpu$imem_master_rvalid = fabric_1x3$v_from_masters_0_rvalid ;
-  assign cpu$imem_master_wready = fabric_1x3$v_from_masters_0_wready ;
+  assign cpu$imem_master_arready = mmio_fabric$v_from_masters_0_arready ;
+  assign cpu$imem_master_awready = mmio_fabric$v_from_masters_0_awready ;
+  assign cpu$imem_master_bid = mmio_fabric$v_from_masters_0_bid ;
+  assign cpu$imem_master_bresp = mmio_fabric$v_from_masters_0_bresp ;
+  assign cpu$imem_master_bvalid = mmio_fabric$v_from_masters_0_bvalid ;
+  assign cpu$imem_master_rdata = mmio_fabric$v_from_masters_0_rdata ;
+  assign cpu$imem_master_rid = mmio_fabric$v_from_masters_0_rid ;
+  assign cpu$imem_master_rlast = mmio_fabric$v_from_masters_0_rlast ;
+  assign cpu$imem_master_rresp = mmio_fabric$v_from_masters_0_rresp ;
+  assign cpu$imem_master_rvalid = mmio_fabric$v_from_masters_0_rvalid ;
+  assign cpu$imem_master_wready = mmio_fabric$v_from_masters_0_wready ;
   assign cpu$m_external_interrupt_req_set_not_clear =
 	     rg_m_external_interrupt ;
   assign cpu$ma_set_csr_time_t = near_mem_io$mv_read_mtime ;
@@ -4314,74 +4544,6 @@ module mkAWSteria_Core_Single_Clock(CLK,
   assign f_pc_trace$DEQ = EN_fo_pc_trace_deq ;
   assign f_pc_trace$CLR = 1'b0 ;
 
-  // submodule fabric_1x3
-  assign fabric_1x3$set_verbosity_verbosity = 4'h0 ;
-  assign fabric_1x3$v_from_masters_0_araddr = cpu$imem_master_araddr ;
-  assign fabric_1x3$v_from_masters_0_arburst = cpu$imem_master_arburst ;
-  assign fabric_1x3$v_from_masters_0_arcache = cpu$imem_master_arcache ;
-  assign fabric_1x3$v_from_masters_0_arid = cpu$imem_master_arid ;
-  assign fabric_1x3$v_from_masters_0_arlen = cpu$imem_master_arlen ;
-  assign fabric_1x3$v_from_masters_0_arlock = cpu$imem_master_arlock ;
-  assign fabric_1x3$v_from_masters_0_arprot = cpu$imem_master_arprot ;
-  assign fabric_1x3$v_from_masters_0_arqos = cpu$imem_master_arqos ;
-  assign fabric_1x3$v_from_masters_0_arregion = cpu$imem_master_arregion ;
-  assign fabric_1x3$v_from_masters_0_arsize = cpu$imem_master_arsize ;
-  assign fabric_1x3$v_from_masters_0_arvalid = cpu$imem_master_arvalid ;
-  assign fabric_1x3$v_from_masters_0_awaddr = cpu$imem_master_awaddr ;
-  assign fabric_1x3$v_from_masters_0_awburst = cpu$imem_master_awburst ;
-  assign fabric_1x3$v_from_masters_0_awcache = cpu$imem_master_awcache ;
-  assign fabric_1x3$v_from_masters_0_awid = cpu$imem_master_awid ;
-  assign fabric_1x3$v_from_masters_0_awlen = cpu$imem_master_awlen ;
-  assign fabric_1x3$v_from_masters_0_awlock = cpu$imem_master_awlock ;
-  assign fabric_1x3$v_from_masters_0_awprot = cpu$imem_master_awprot ;
-  assign fabric_1x3$v_from_masters_0_awqos = cpu$imem_master_awqos ;
-  assign fabric_1x3$v_from_masters_0_awregion = cpu$imem_master_awregion ;
-  assign fabric_1x3$v_from_masters_0_awsize = cpu$imem_master_awsize ;
-  assign fabric_1x3$v_from_masters_0_awvalid = cpu$imem_master_awvalid ;
-  assign fabric_1x3$v_from_masters_0_bready = cpu$imem_master_bready ;
-  assign fabric_1x3$v_from_masters_0_rready = cpu$imem_master_rready ;
-  assign fabric_1x3$v_from_masters_0_wdata = cpu$imem_master_wdata ;
-  assign fabric_1x3$v_from_masters_0_wlast = cpu$imem_master_wlast ;
-  assign fabric_1x3$v_from_masters_0_wstrb = cpu$imem_master_wstrb ;
-  assign fabric_1x3$v_from_masters_0_wvalid = cpu$imem_master_wvalid ;
-  assign fabric_1x3$v_to_slaves_0_arready = mmio_M_arready ;
-  assign fabric_1x3$v_to_slaves_0_awready = mmio_M_awready ;
-  assign fabric_1x3$v_to_slaves_0_bid = mmio_M_bid ;
-  assign fabric_1x3$v_to_slaves_0_bresp = mmio_M_bresp ;
-  assign fabric_1x3$v_to_slaves_0_bvalid = mmio_M_bvalid ;
-  assign fabric_1x3$v_to_slaves_0_rdata = mmio_M_rdata ;
-  assign fabric_1x3$v_to_slaves_0_rid = mmio_M_rid ;
-  assign fabric_1x3$v_to_slaves_0_rlast = mmio_M_rlast ;
-  assign fabric_1x3$v_to_slaves_0_rresp = mmio_M_rresp ;
-  assign fabric_1x3$v_to_slaves_0_rvalid = mmio_M_rvalid ;
-  assign fabric_1x3$v_to_slaves_0_wready = mmio_M_wready ;
-  assign fabric_1x3$v_to_slaves_1_arready = near_mem_io$axi4_slave_arready ;
-  assign fabric_1x3$v_to_slaves_1_awready = near_mem_io$axi4_slave_awready ;
-  assign fabric_1x3$v_to_slaves_1_bid = near_mem_io$axi4_slave_bid ;
-  assign fabric_1x3$v_to_slaves_1_bresp = near_mem_io$axi4_slave_bresp ;
-  assign fabric_1x3$v_to_slaves_1_bvalid = near_mem_io$axi4_slave_bvalid ;
-  assign fabric_1x3$v_to_slaves_1_rdata = near_mem_io$axi4_slave_rdata ;
-  assign fabric_1x3$v_to_slaves_1_rid = near_mem_io$axi4_slave_rid ;
-  assign fabric_1x3$v_to_slaves_1_rlast = near_mem_io$axi4_slave_rlast ;
-  assign fabric_1x3$v_to_slaves_1_rresp = near_mem_io$axi4_slave_rresp ;
-  assign fabric_1x3$v_to_slaves_1_rvalid = near_mem_io$axi4_slave_rvalid ;
-  assign fabric_1x3$v_to_slaves_1_wready = near_mem_io$axi4_slave_wready ;
-  assign fabric_1x3$v_to_slaves_2_arready = plic$axi4_slave_arready ;
-  assign fabric_1x3$v_to_slaves_2_awready = plic$axi4_slave_awready ;
-  assign fabric_1x3$v_to_slaves_2_bid = plic$axi4_slave_bid ;
-  assign fabric_1x3$v_to_slaves_2_bresp = plic$axi4_slave_bresp ;
-  assign fabric_1x3$v_to_slaves_2_bvalid = plic$axi4_slave_bvalid ;
-  assign fabric_1x3$v_to_slaves_2_rdata = plic$axi4_slave_rdata ;
-  assign fabric_1x3$v_to_slaves_2_rid = plic$axi4_slave_rid ;
-  assign fabric_1x3$v_to_slaves_2_rlast = plic$axi4_slave_rlast ;
-  assign fabric_1x3$v_to_slaves_2_rresp = plic$axi4_slave_rresp ;
-  assign fabric_1x3$v_to_slaves_2_rvalid = plic$axi4_slave_rvalid ;
-  assign fabric_1x3$v_to_slaves_2_wready = plic$axi4_slave_wready ;
-  assign fabric_1x3$EN_reset =
-	     WILL_FIRE_RL_rl_reinitialization_start ||
-	     WILL_FIRE_RL_rl_first_init_start ;
-  assign fabric_1x3$EN_set_verbosity = 1'b0 ;
-
   // submodule host_cs
   assign host_cs$cl_cpu_reset_response_put = dm_tv_ifc_f_reset_rsps$D_OUT ;
   assign host_cs$cl_csr_rw_response_put =
@@ -4411,35 +4573,116 @@ module mkAWSteria_Core_Single_Clock(CLK,
   assign host_cs$EN_g_verbosity_get = CAN_FIRE_RL_rl_set_verbosity ;
   assign host_cs$EN_ma_tohost_value = 1'd1 ;
 
+  // submodule mmio_fabric
+  assign mmio_fabric$set_verbosity_verbosity = 4'h0 ;
+  assign mmio_fabric$v_from_masters_0_araddr = cpu$imem_master_araddr ;
+  assign mmio_fabric$v_from_masters_0_arburst = cpu$imem_master_arburst ;
+  assign mmio_fabric$v_from_masters_0_arcache = cpu$imem_master_arcache ;
+  assign mmio_fabric$v_from_masters_0_arid = cpu$imem_master_arid ;
+  assign mmio_fabric$v_from_masters_0_arlen = cpu$imem_master_arlen ;
+  assign mmio_fabric$v_from_masters_0_arlock = cpu$imem_master_arlock ;
+  assign mmio_fabric$v_from_masters_0_arprot = cpu$imem_master_arprot ;
+  assign mmio_fabric$v_from_masters_0_arqos = cpu$imem_master_arqos ;
+  assign mmio_fabric$v_from_masters_0_arregion = cpu$imem_master_arregion ;
+  assign mmio_fabric$v_from_masters_0_arsize = cpu$imem_master_arsize ;
+  assign mmio_fabric$v_from_masters_0_arvalid = cpu$imem_master_arvalid ;
+  assign mmio_fabric$v_from_masters_0_awaddr = cpu$imem_master_awaddr ;
+  assign mmio_fabric$v_from_masters_0_awburst = cpu$imem_master_awburst ;
+  assign mmio_fabric$v_from_masters_0_awcache = cpu$imem_master_awcache ;
+  assign mmio_fabric$v_from_masters_0_awid = cpu$imem_master_awid ;
+  assign mmio_fabric$v_from_masters_0_awlen = cpu$imem_master_awlen ;
+  assign mmio_fabric$v_from_masters_0_awlock = cpu$imem_master_awlock ;
+  assign mmio_fabric$v_from_masters_0_awprot = cpu$imem_master_awprot ;
+  assign mmio_fabric$v_from_masters_0_awqos = cpu$imem_master_awqos ;
+  assign mmio_fabric$v_from_masters_0_awregion = cpu$imem_master_awregion ;
+  assign mmio_fabric$v_from_masters_0_awsize = cpu$imem_master_awsize ;
+  assign mmio_fabric$v_from_masters_0_awvalid = cpu$imem_master_awvalid ;
+  assign mmio_fabric$v_from_masters_0_bready = cpu$imem_master_bready ;
+  assign mmio_fabric$v_from_masters_0_rready = cpu$imem_master_rready ;
+  assign mmio_fabric$v_from_masters_0_wdata = cpu$imem_master_wdata ;
+  assign mmio_fabric$v_from_masters_0_wlast = cpu$imem_master_wlast ;
+  assign mmio_fabric$v_from_masters_0_wstrb = cpu$imem_master_wstrb ;
+  assign mmio_fabric$v_from_masters_0_wvalid = cpu$imem_master_wvalid ;
+  assign mmio_fabric$v_to_slaves_0_arready = mmio_M_arready ;
+  assign mmio_fabric$v_to_slaves_0_awready = mmio_M_awready ;
+  assign mmio_fabric$v_to_slaves_0_bid = mmio_M_bid ;
+  assign mmio_fabric$v_to_slaves_0_bresp = mmio_M_bresp ;
+  assign mmio_fabric$v_to_slaves_0_bvalid = mmio_M_bvalid ;
+  assign mmio_fabric$v_to_slaves_0_rdata = mmio_M_rdata ;
+  assign mmio_fabric$v_to_slaves_0_rid = mmio_M_rid ;
+  assign mmio_fabric$v_to_slaves_0_rlast = mmio_M_rlast ;
+  assign mmio_fabric$v_to_slaves_0_rresp = mmio_M_rresp ;
+  assign mmio_fabric$v_to_slaves_0_rvalid = mmio_M_rvalid ;
+  assign mmio_fabric$v_to_slaves_0_wready = mmio_M_wready ;
+  assign mmio_fabric$v_to_slaves_1_arready = near_mem_io$axi4_slave_arready ;
+  assign mmio_fabric$v_to_slaves_1_awready = near_mem_io$axi4_slave_awready ;
+  assign mmio_fabric$v_to_slaves_1_bid = near_mem_io$axi4_slave_bid ;
+  assign mmio_fabric$v_to_slaves_1_bresp = near_mem_io$axi4_slave_bresp ;
+  assign mmio_fabric$v_to_slaves_1_bvalid = near_mem_io$axi4_slave_bvalid ;
+  assign mmio_fabric$v_to_slaves_1_rdata = near_mem_io$axi4_slave_rdata ;
+  assign mmio_fabric$v_to_slaves_1_rid = near_mem_io$axi4_slave_rid ;
+  assign mmio_fabric$v_to_slaves_1_rlast = near_mem_io$axi4_slave_rlast ;
+  assign mmio_fabric$v_to_slaves_1_rresp = near_mem_io$axi4_slave_rresp ;
+  assign mmio_fabric$v_to_slaves_1_rvalid = near_mem_io$axi4_slave_rvalid ;
+  assign mmio_fabric$v_to_slaves_1_wready = near_mem_io$axi4_slave_wready ;
+  assign mmio_fabric$v_to_slaves_2_arready = plic$axi4_slave_arready ;
+  assign mmio_fabric$v_to_slaves_2_awready = plic$axi4_slave_awready ;
+  assign mmio_fabric$v_to_slaves_2_bid = plic$axi4_slave_bid ;
+  assign mmio_fabric$v_to_slaves_2_bresp = plic$axi4_slave_bresp ;
+  assign mmio_fabric$v_to_slaves_2_bvalid = plic$axi4_slave_bvalid ;
+  assign mmio_fabric$v_to_slaves_2_rdata = plic$axi4_slave_rdata ;
+  assign mmio_fabric$v_to_slaves_2_rid = plic$axi4_slave_rid ;
+  assign mmio_fabric$v_to_slaves_2_rlast = plic$axi4_slave_rlast ;
+  assign mmio_fabric$v_to_slaves_2_rresp = plic$axi4_slave_rresp ;
+  assign mmio_fabric$v_to_slaves_2_rvalid = plic$axi4_slave_rvalid ;
+  assign mmio_fabric$v_to_slaves_2_wready = plic$axi4_slave_wready ;
+  assign mmio_fabric$v_to_slaves_3_arready = boot_rom$slave_arready ;
+  assign mmio_fabric$v_to_slaves_3_awready = boot_rom$slave_awready ;
+  assign mmio_fabric$v_to_slaves_3_bid = boot_rom$slave_bid ;
+  assign mmio_fabric$v_to_slaves_3_bresp = boot_rom$slave_bresp ;
+  assign mmio_fabric$v_to_slaves_3_bvalid = boot_rom$slave_bvalid ;
+  assign mmio_fabric$v_to_slaves_3_rdata = boot_rom$slave_rdata ;
+  assign mmio_fabric$v_to_slaves_3_rid = boot_rom$slave_rid ;
+  assign mmio_fabric$v_to_slaves_3_rlast = boot_rom$slave_rlast ;
+  assign mmio_fabric$v_to_slaves_3_rresp = boot_rom$slave_rresp ;
+  assign mmio_fabric$v_to_slaves_3_rvalid = boot_rom$slave_rvalid ;
+  assign mmio_fabric$v_to_slaves_3_wready = boot_rom$slave_wready ;
+  assign mmio_fabric$EN_reset =
+	     WILL_FIRE_RL_rl_reinitialization_start ||
+	     WILL_FIRE_RL_rl_first_init_start ;
+  assign mmio_fabric$EN_set_verbosity = 1'b0 ;
+
   // submodule near_mem_io
-  assign near_mem_io$axi4_slave_araddr = fabric_1x3$v_to_slaves_1_araddr ;
-  assign near_mem_io$axi4_slave_arburst = fabric_1x3$v_to_slaves_1_arburst ;
-  assign near_mem_io$axi4_slave_arcache = fabric_1x3$v_to_slaves_1_arcache ;
-  assign near_mem_io$axi4_slave_arid = fabric_1x3$v_to_slaves_1_arid ;
-  assign near_mem_io$axi4_slave_arlen = fabric_1x3$v_to_slaves_1_arlen ;
-  assign near_mem_io$axi4_slave_arlock = fabric_1x3$v_to_slaves_1_arlock ;
-  assign near_mem_io$axi4_slave_arprot = fabric_1x3$v_to_slaves_1_arprot ;
-  assign near_mem_io$axi4_slave_arqos = fabric_1x3$v_to_slaves_1_arqos ;
-  assign near_mem_io$axi4_slave_arregion = fabric_1x3$v_to_slaves_1_arregion ;
-  assign near_mem_io$axi4_slave_arsize = fabric_1x3$v_to_slaves_1_arsize ;
-  assign near_mem_io$axi4_slave_arvalid = fabric_1x3$v_to_slaves_1_arvalid ;
-  assign near_mem_io$axi4_slave_awaddr = fabric_1x3$v_to_slaves_1_awaddr ;
-  assign near_mem_io$axi4_slave_awburst = fabric_1x3$v_to_slaves_1_awburst ;
-  assign near_mem_io$axi4_slave_awcache = fabric_1x3$v_to_slaves_1_awcache ;
-  assign near_mem_io$axi4_slave_awid = fabric_1x3$v_to_slaves_1_awid ;
-  assign near_mem_io$axi4_slave_awlen = fabric_1x3$v_to_slaves_1_awlen ;
-  assign near_mem_io$axi4_slave_awlock = fabric_1x3$v_to_slaves_1_awlock ;
-  assign near_mem_io$axi4_slave_awprot = fabric_1x3$v_to_slaves_1_awprot ;
-  assign near_mem_io$axi4_slave_awqos = fabric_1x3$v_to_slaves_1_awqos ;
-  assign near_mem_io$axi4_slave_awregion = fabric_1x3$v_to_slaves_1_awregion ;
-  assign near_mem_io$axi4_slave_awsize = fabric_1x3$v_to_slaves_1_awsize ;
-  assign near_mem_io$axi4_slave_awvalid = fabric_1x3$v_to_slaves_1_awvalid ;
-  assign near_mem_io$axi4_slave_bready = fabric_1x3$v_to_slaves_1_bready ;
-  assign near_mem_io$axi4_slave_rready = fabric_1x3$v_to_slaves_1_rready ;
-  assign near_mem_io$axi4_slave_wdata = fabric_1x3$v_to_slaves_1_wdata ;
-  assign near_mem_io$axi4_slave_wlast = fabric_1x3$v_to_slaves_1_wlast ;
-  assign near_mem_io$axi4_slave_wstrb = fabric_1x3$v_to_slaves_1_wstrb ;
-  assign near_mem_io$axi4_slave_wvalid = fabric_1x3$v_to_slaves_1_wvalid ;
+  assign near_mem_io$axi4_slave_araddr = mmio_fabric$v_to_slaves_1_araddr ;
+  assign near_mem_io$axi4_slave_arburst = mmio_fabric$v_to_slaves_1_arburst ;
+  assign near_mem_io$axi4_slave_arcache = mmio_fabric$v_to_slaves_1_arcache ;
+  assign near_mem_io$axi4_slave_arid = mmio_fabric$v_to_slaves_1_arid ;
+  assign near_mem_io$axi4_slave_arlen = mmio_fabric$v_to_slaves_1_arlen ;
+  assign near_mem_io$axi4_slave_arlock = mmio_fabric$v_to_slaves_1_arlock ;
+  assign near_mem_io$axi4_slave_arprot = mmio_fabric$v_to_slaves_1_arprot ;
+  assign near_mem_io$axi4_slave_arqos = mmio_fabric$v_to_slaves_1_arqos ;
+  assign near_mem_io$axi4_slave_arregion =
+	     mmio_fabric$v_to_slaves_1_arregion ;
+  assign near_mem_io$axi4_slave_arsize = mmio_fabric$v_to_slaves_1_arsize ;
+  assign near_mem_io$axi4_slave_arvalid = mmio_fabric$v_to_slaves_1_arvalid ;
+  assign near_mem_io$axi4_slave_awaddr = mmio_fabric$v_to_slaves_1_awaddr ;
+  assign near_mem_io$axi4_slave_awburst = mmio_fabric$v_to_slaves_1_awburst ;
+  assign near_mem_io$axi4_slave_awcache = mmio_fabric$v_to_slaves_1_awcache ;
+  assign near_mem_io$axi4_slave_awid = mmio_fabric$v_to_slaves_1_awid ;
+  assign near_mem_io$axi4_slave_awlen = mmio_fabric$v_to_slaves_1_awlen ;
+  assign near_mem_io$axi4_slave_awlock = mmio_fabric$v_to_slaves_1_awlock ;
+  assign near_mem_io$axi4_slave_awprot = mmio_fabric$v_to_slaves_1_awprot ;
+  assign near_mem_io$axi4_slave_awqos = mmio_fabric$v_to_slaves_1_awqos ;
+  assign near_mem_io$axi4_slave_awregion =
+	     mmio_fabric$v_to_slaves_1_awregion ;
+  assign near_mem_io$axi4_slave_awsize = mmio_fabric$v_to_slaves_1_awsize ;
+  assign near_mem_io$axi4_slave_awvalid = mmio_fabric$v_to_slaves_1_awvalid ;
+  assign near_mem_io$axi4_slave_bready = mmio_fabric$v_to_slaves_1_bready ;
+  assign near_mem_io$axi4_slave_rready = mmio_fabric$v_to_slaves_1_rready ;
+  assign near_mem_io$axi4_slave_wdata = mmio_fabric$v_to_slaves_1_wdata ;
+  assign near_mem_io$axi4_slave_wlast = mmio_fabric$v_to_slaves_1_wlast ;
+  assign near_mem_io$axi4_slave_wstrb = mmio_fabric$v_to_slaves_1_wstrb ;
+  assign near_mem_io$axi4_slave_wvalid = mmio_fabric$v_to_slaves_1_wvalid ;
   assign near_mem_io$set_addr_map_addr_base = 64'd33554432 ;
   assign near_mem_io$set_addr_map_addr_lim = 64'd33619968 ;
   assign near_mem_io$EN_server_reset_request_put =
@@ -4454,34 +4697,34 @@ module mkAWSteria_Core_Single_Clock(CLK,
 	     CAN_FIRE_RL_rl_relay_sw_interrupt ;
 
   // submodule plic
-  assign plic$axi4_slave_araddr = fabric_1x3$v_to_slaves_2_araddr ;
-  assign plic$axi4_slave_arburst = fabric_1x3$v_to_slaves_2_arburst ;
-  assign plic$axi4_slave_arcache = fabric_1x3$v_to_slaves_2_arcache ;
-  assign plic$axi4_slave_arid = fabric_1x3$v_to_slaves_2_arid ;
-  assign plic$axi4_slave_arlen = fabric_1x3$v_to_slaves_2_arlen ;
-  assign plic$axi4_slave_arlock = fabric_1x3$v_to_slaves_2_arlock ;
-  assign plic$axi4_slave_arprot = fabric_1x3$v_to_slaves_2_arprot ;
-  assign plic$axi4_slave_arqos = fabric_1x3$v_to_slaves_2_arqos ;
-  assign plic$axi4_slave_arregion = fabric_1x3$v_to_slaves_2_arregion ;
-  assign plic$axi4_slave_arsize = fabric_1x3$v_to_slaves_2_arsize ;
-  assign plic$axi4_slave_arvalid = fabric_1x3$v_to_slaves_2_arvalid ;
-  assign plic$axi4_slave_awaddr = fabric_1x3$v_to_slaves_2_awaddr ;
-  assign plic$axi4_slave_awburst = fabric_1x3$v_to_slaves_2_awburst ;
-  assign plic$axi4_slave_awcache = fabric_1x3$v_to_slaves_2_awcache ;
-  assign plic$axi4_slave_awid = fabric_1x3$v_to_slaves_2_awid ;
-  assign plic$axi4_slave_awlen = fabric_1x3$v_to_slaves_2_awlen ;
-  assign plic$axi4_slave_awlock = fabric_1x3$v_to_slaves_2_awlock ;
-  assign plic$axi4_slave_awprot = fabric_1x3$v_to_slaves_2_awprot ;
-  assign plic$axi4_slave_awqos = fabric_1x3$v_to_slaves_2_awqos ;
-  assign plic$axi4_slave_awregion = fabric_1x3$v_to_slaves_2_awregion ;
-  assign plic$axi4_slave_awsize = fabric_1x3$v_to_slaves_2_awsize ;
-  assign plic$axi4_slave_awvalid = fabric_1x3$v_to_slaves_2_awvalid ;
-  assign plic$axi4_slave_bready = fabric_1x3$v_to_slaves_2_bready ;
-  assign plic$axi4_slave_rready = fabric_1x3$v_to_slaves_2_rready ;
-  assign plic$axi4_slave_wdata = fabric_1x3$v_to_slaves_2_wdata ;
-  assign plic$axi4_slave_wlast = fabric_1x3$v_to_slaves_2_wlast ;
-  assign plic$axi4_slave_wstrb = fabric_1x3$v_to_slaves_2_wstrb ;
-  assign plic$axi4_slave_wvalid = fabric_1x3$v_to_slaves_2_wvalid ;
+  assign plic$axi4_slave_araddr = mmio_fabric$v_to_slaves_2_araddr ;
+  assign plic$axi4_slave_arburst = mmio_fabric$v_to_slaves_2_arburst ;
+  assign plic$axi4_slave_arcache = mmio_fabric$v_to_slaves_2_arcache ;
+  assign plic$axi4_slave_arid = mmio_fabric$v_to_slaves_2_arid ;
+  assign plic$axi4_slave_arlen = mmio_fabric$v_to_slaves_2_arlen ;
+  assign plic$axi4_slave_arlock = mmio_fabric$v_to_slaves_2_arlock ;
+  assign plic$axi4_slave_arprot = mmio_fabric$v_to_slaves_2_arprot ;
+  assign plic$axi4_slave_arqos = mmio_fabric$v_to_slaves_2_arqos ;
+  assign plic$axi4_slave_arregion = mmio_fabric$v_to_slaves_2_arregion ;
+  assign plic$axi4_slave_arsize = mmio_fabric$v_to_slaves_2_arsize ;
+  assign plic$axi4_slave_arvalid = mmio_fabric$v_to_slaves_2_arvalid ;
+  assign plic$axi4_slave_awaddr = mmio_fabric$v_to_slaves_2_awaddr ;
+  assign plic$axi4_slave_awburst = mmio_fabric$v_to_slaves_2_awburst ;
+  assign plic$axi4_slave_awcache = mmio_fabric$v_to_slaves_2_awcache ;
+  assign plic$axi4_slave_awid = mmio_fabric$v_to_slaves_2_awid ;
+  assign plic$axi4_slave_awlen = mmio_fabric$v_to_slaves_2_awlen ;
+  assign plic$axi4_slave_awlock = mmio_fabric$v_to_slaves_2_awlock ;
+  assign plic$axi4_slave_awprot = mmio_fabric$v_to_slaves_2_awprot ;
+  assign plic$axi4_slave_awqos = mmio_fabric$v_to_slaves_2_awqos ;
+  assign plic$axi4_slave_awregion = mmio_fabric$v_to_slaves_2_awregion ;
+  assign plic$axi4_slave_awsize = mmio_fabric$v_to_slaves_2_awsize ;
+  assign plic$axi4_slave_awvalid = mmio_fabric$v_to_slaves_2_awvalid ;
+  assign plic$axi4_slave_bready = mmio_fabric$v_to_slaves_2_bready ;
+  assign plic$axi4_slave_rready = mmio_fabric$v_to_slaves_2_rready ;
+  assign plic$axi4_slave_wdata = mmio_fabric$v_to_slaves_2_wdata ;
+  assign plic$axi4_slave_wlast = mmio_fabric$v_to_slaves_2_wlast ;
+  assign plic$axi4_slave_wstrb = mmio_fabric$v_to_slaves_2_wstrb ;
+  assign plic$axi4_slave_wvalid = mmio_fabric$v_to_slaves_2_wvalid ;
   assign plic$set_addr_map_addr_base = 64'd201326592 ;
   assign plic$set_addr_map_addr_lim = 64'd268435456 ;
   assign plic$set_verbosity_verbosity = 4'h0 ;
@@ -4511,7 +4754,7 @@ module mkAWSteria_Core_Single_Clock(CLK,
   assign plic$EN_set_addr_map = MUX_rg_module_state$write_1__SEL_3 ;
 
   // remaining internal signals
-  assign x__h15772 = rg_pc_trace_interval_ctr - 64'd1 ;
+  assign x__h17094 = rg_pc_trace_interval_ctr - 64'd1 ;
 
   // handling of inlined registers
 
@@ -4582,13 +4825,13 @@ module mkAWSteria_Core_Single_Clock(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_first_init_finish)
 	begin
-	  v__h11323 = $stime;
+	  v__h12088 = $stime;
 	  #0;
 	end
-    v__h11317 = v__h11323 / 32'd10;
+    v__h12082 = v__h12088 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_first_init_finish)
-	$display("    %0d: rule rl_first_init_start", v__h11317);
+	$display("    %0d: rule rl_first_init_start", v__h12082);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reinitialization_finish)
 	$display("AWSteria_Core: Re-initialization finished ...");
@@ -4597,13 +4840,13 @@ module mkAWSteria_Core_Single_Clock(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reinitialization_finish)
 	begin
-	  v__h11870 = $stime;
+	  v__h12658 = $stime;
 	  #0;
 	end
-    v__h11864 = v__h11870 / 32'd10;
+    v__h12652 = v__h12658 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reinitialization_finish)
-	$display("    %0d: rule rl_reinitialization_start", v__h11864);
+	$display("    %0d: rule rl_reinitialization_start", v__h12652);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_first_init_start)
 	$display("AWSteria_Core: Initialization start ...");
@@ -4612,13 +4855,13 @@ module mkAWSteria_Core_Single_Clock(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_first_init_start)
 	begin
-	  v__h11027 = $stime;
+	  v__h11766 = $stime;
 	  #0;
 	end
-    v__h11021 = v__h11027 / 32'd10;
+    v__h11760 = v__h11766 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_first_init_start)
-	$display("    %0d: rule rl_first_init_start", v__h11021);
+	$display("    %0d: rule rl_first_init_start", v__h11760);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_watch_thost)
 	$display("AWSteria_Core: setting tohost watch %0d addr %0h",
@@ -4637,13 +4880,13 @@ module mkAWSteria_Core_Single_Clock(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reinitialization_start)
 	begin
-	  v__h11590 = $stime;
+	  v__h12355 = $stime;
 	  #0;
 	end
-    v__h11584 = v__h11590 / 32'd10;
+    v__h12349 = v__h12355 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reinitialization_start)
-	$display("    %0d: rule rl_reinitialization_start", v__h11584);
+	$display("    %0d: rule rl_reinitialization_start", v__h12349);
   end
   // synopsys translate_on
 endmodule  // mkAWSteria_Core_Single_Clock

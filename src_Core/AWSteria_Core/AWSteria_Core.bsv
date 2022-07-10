@@ -6,7 +6,7 @@ package AWSteria_Core;
 // ================================================================
 // This package defines a 'mkAWSteria_Core' module containing 
 //     - mkCPU (the RISC-V CPU)
-//     - mkFabric_1x3
+//     - mkCore_MMIO_Fabric
 //     - mkNear_Mem_IO_AXI4   (memory-mapped MTIME, MTIMECMP, MSIP etc.)
 //     - mkPLIC_16_2_7        (RISC-V platform level interrupt controller or other)
 //     - mkDebug_Module       (RISC-V Debug Module, optional: INCLUDE_GDB_CONTROL)
@@ -64,10 +64,12 @@ import AWSteria_Core_Reclocked :: *;
 import CPU_IFC     :: *;
 import CPU         :: *;
 
-import Fabric_1x3  :: *;    // CPU MMIO to Fabric, Near_Mem_IO and PLIC
+import Core_MMIO_Fabric :: *;    // CPU MMIO to Fabric, Near_Mem_IO, PLIC, Boot ROM
 
 import PLIC        :: *;
 import PLIC_16_2_7 :: *;
+
+import Boot_ROM :: *;
 
 import DM_TV       :: *;    // Encapsulation of Debug Module and Tandem Verifier Encoder
 
@@ -202,14 +204,17 @@ module mkAWSteria_Core_Single_Clock (AWSteria_Core_IFC_Specialized);
    // The CPU
    CPU_IFC  cpu <- mkCPU;
 
-   // A 1x3 fabric for connecting CPU to {Fabric, Near_Mem_IO, PLIC}
-   Fabric_1x3_IFC  fabric_1x3 <- mkFabric_1x3;
+   // A fabric for connecting CPU to {System, Near_Mem_IO, PLIC, Boot ROM}
+   Core_MMIO_Fabric_IFC  mmio_fabric <- mkCore_MMIO_Fabric;
 
    // Near_Mem_IO
    Near_Mem_IO_AXI4_IFC  near_mem_io <- mkNear_Mem_IO_AXI4;
 
    // PLIC (Platform-Level Interrupt Controller)
    PLIC_IFC_16_2_7  plic <- mkPLIC_16_2_7;
+
+   // The Boot ROM
+   Boot_ROM_IFC  boot_rom <- mkBoot_ROM;
 
    // AXI4 Deburster in front of core's coherent DMA port
    AXI4_Deburster_IFC #(AXI4_Wd_Id,
@@ -257,7 +262,7 @@ module mkAWSteria_Core_Single_Clock (AWSteria_Core_IFC_Specialized);
 	 cpu.hart0_server_reset.request.put (running);
 	 near_mem_io.server_reset.request.put (?);
 	 plic.server_reset.request.put (?);
-	 fabric_1x3.reset;
+	 mmio_fabric.reset;
       endaction
    endfunction
 
@@ -273,6 +278,9 @@ module mkAWSteria_Core_Single_Clock (AWSteria_Core_IFC_Specialized);
 
 	 plic.set_addr_map (zeroExtend (soc_map.m_plic_addr_base),
 			    zeroExtend (soc_map.m_plic_addr_lim));
+
+	 boot_rom.set_addr_map (zeroExtend (soc_map.m_boot_rom_addr_base),
+				zeroExtend (soc_map.m_boot_rom_addr_lim));
 
 	 return running;
       endactionvalue
@@ -324,15 +332,16 @@ module mkAWSteria_Core_Single_Clock (AWSteria_Core_IFC_Specialized);
    endrule
 
    // ================================================================
-   // Connect CPU to local 1x3 fabric, and fabric to Near_Mem_IO and PLIC
+   // Connect CPU to mmio fabric, and fabric to Near_Mem_IO, PLIC and Boot ROM
 
-   // Initiators on the local 1x3 fabric
-   mkConnection (cpu.imem_master, fabric_1x3.v_from_masters [cpu_mmio_master_num]);
+   // Initiators on mmio fabric
+   mkConnection (cpu.imem_master, mmio_fabric.v_from_masters [cpu_mmio_master_num]);
 
-   // Targets on the local 1x3 fabric
-   // default target is taken out directly to Core interface
-   mkConnection (fabric_1x3.v_to_slaves [near_mem_io_target_num], near_mem_io.axi4_slave);
-   mkConnection (fabric_1x3.v_to_slaves [plic_target_num],        plic.axi4_slave);
+   // Targets on mmio fabric
+   // default target is taken out directly viao Core interface to System
+   mkConnection (mmio_fabric.v_to_slaves [near_mem_io_target_num], near_mem_io.axi4_slave);
+   mkConnection (mmio_fabric.v_to_slaves [plic_target_num],        plic.axi4_slave);
+   mkConnection (mmio_fabric.v_to_slaves [boot_rom_target_num],    boot_rom.slave);
 
    // ================================================================
    // Connect MTIME from near_mem_io to csr_regfile in CPU
@@ -475,7 +484,7 @@ module mkAWSteria_Core_Single_Clock (AWSteria_Core_IFC_Specialized);
    // Note: DMA may or may not be coherent, depending on internal Core architecture.
 
    interface AXI4_Master_IFC mem_M  = cpu.mem_master;
-   interface AXI4_Master_IFC mmio_M = fabric_1x3.v_to_slaves [default_target_num];
+   interface AXI4_Master_IFC mmio_M = mmio_fabric.v_to_slaves [default_target_num];
    interface AXI4_Slave_IFC  dma_S  = dm_tv.dma_S;
 
    // ----------------------------------------------------------------

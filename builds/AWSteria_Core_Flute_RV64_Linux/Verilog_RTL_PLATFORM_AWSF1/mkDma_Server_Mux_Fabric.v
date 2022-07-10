@@ -1028,10 +1028,10 @@ module mkDma_Server_Mux_Fabric(CLK,
   reg [31 : 0] v__h12288;
   reg [31 : 0] v__h12670;
   reg [31 : 0] v__h3969;
-  reg [31 : 0] v__h7275;
   reg [31 : 0] v__h3963;
   reg [31 : 0] v__h5920;
   reg [31 : 0] v__h6293;
+  reg [31 : 0] v__h7275;
   reg [31 : 0] v__h7522;
   reg [31 : 0] v__h7968;
   reg [31 : 0] v__h8215;

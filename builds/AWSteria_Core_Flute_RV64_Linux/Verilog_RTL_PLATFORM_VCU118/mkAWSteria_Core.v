@@ -3297,8 +3297,8 @@ module mkAWSteria_Core(CLK_clk1,
   // rule RL_core_reclocked_11_rl_connect
   assign CAN_FIRE_RL_core_reclocked_11_rl_connect =
 	     core_reclocked_f_control_status_rsp$sFULL_N &&
-	     core_single_clock$RDY_se_control_status_response_first &&
-	     core_single_clock$RDY_se_control_status_response_deq ;
+	     core_single_clock$RDY_se_control_status_response_deq &&
+	     core_single_clock$RDY_se_control_status_response_first ;
   assign WILL_FIRE_RL_core_reclocked_11_rl_connect =
 	     CAN_FIRE_RL_core_reclocked_11_rl_connect ;
 

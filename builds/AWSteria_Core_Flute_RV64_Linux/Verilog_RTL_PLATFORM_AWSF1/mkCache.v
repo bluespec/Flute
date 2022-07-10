@@ -535,6 +535,7 @@ module mkCache(CLK,
   reg [31 : 0] v__h35844;
   reg [31 : 0] v__h37444;
   reg [31 : 0] v__h37562;
+  reg [31 : 0] v__h14295;
   reg [31 : 0] v__h2833;
   reg [31 : 0] v__h4330;
   reg [31 : 0] v__h4901;
@@ -543,7 +544,6 @@ module mkCache(CLK,
   reg [31 : 0] v__h10928;
   reg [31 : 0] v__h12369;
   reg [31 : 0] v__h13615;
-  reg [31 : 0] v__h14295;
   reg [31 : 0] v__h17251;
   reg [31 : 0] v__h18979;
   reg [31 : 0] v__h19058;
@@ -2527,18 +2527,18 @@ module mkCache(CLK,
   assign y__h46105 =
 	     {64{ram_cset_meta$DOA[107:106] != 2'd0 &&
 		 ram_cset_meta_a_read__8_BITS_105_TO_54_0_EQ_ma_ETC___d788}} ;
-  always@(rg_way_in_cset or ram_cset_meta$DOA)
-  begin
-    case (rg_way_in_cset)
-      1'd0: ctag__h3125 = ram_cset_meta$DOA[51:0];
-      1'd1: ctag__h3125 = ram_cset_meta$DOA[105:54];
-    endcase
-  end
   always@(rg_way_in_cset or ctag__h14447 or ctag__h14452)
   begin
     case (rg_way_in_cset)
       1'd0: new_meta_ctag__h14727 = ctag__h14447;
       1'd1: new_meta_ctag__h14727 = ctag__h14452;
+    endcase
+  end
+  always@(rg_way_in_cset or ram_cset_meta$DOA)
+  begin
+    case (rg_way_in_cset)
+      1'd0: ctag__h3125 = ram_cset_meta$DOA[51:0];
+      1'd1: ctag__h3125 = ram_cset_meta$DOA[105:54];
     endcase
   end
   always@(mav_request_pa_req)

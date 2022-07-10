@@ -872,7 +872,8 @@ module mkNear_Mem_IO_AXI4(CLK,
   assign slave_xactor_f_rd_addr$ENQ =
 	     axi4_slave_arvalid && slave_xactor_f_rd_addr$FULL_N ;
   assign slave_xactor_f_rd_addr$DEQ = CAN_FIRE_RL_rl_process_rd_req ;
-  assign slave_xactor_f_rd_addr$CLR = CAN_FIRE_RL_rl_reset ;
+  assign slave_xactor_f_rd_addr$CLR =
+	     f_reset_reqs$EMPTY_N && f_reset_rsps$FULL_N && !rg_state ;
 
   // submodule slave_xactor_f_rd_data
   assign slave_xactor_f_rd_data$D_IN =
@@ -883,7 +884,8 @@ module mkNear_Mem_IO_AXI4(CLK,
   assign slave_xactor_f_rd_data$ENQ = CAN_FIRE_RL_rl_process_rd_req ;
   assign slave_xactor_f_rd_data$DEQ =
 	     axi4_slave_rready && slave_xactor_f_rd_data$EMPTY_N ;
-  assign slave_xactor_f_rd_data$CLR = CAN_FIRE_RL_rl_reset ;
+  assign slave_xactor_f_rd_data$CLR =
+	     f_reset_reqs$EMPTY_N && f_reset_rsps$FULL_N && !rg_state ;
 
   // submodule slave_xactor_f_wr_addr
   assign slave_xactor_f_wr_addr$D_IN =
@@ -900,7 +902,8 @@ module mkNear_Mem_IO_AXI4(CLK,
   assign slave_xactor_f_wr_addr$ENQ =
 	     axi4_slave_awvalid && slave_xactor_f_wr_addr$FULL_N ;
   assign slave_xactor_f_wr_addr$DEQ = CAN_FIRE_RL_rl_process_wr_req ;
-  assign slave_xactor_f_wr_addr$CLR = CAN_FIRE_RL_rl_reset ;
+  assign slave_xactor_f_wr_addr$CLR =
+	     f_reset_reqs$EMPTY_N && f_reset_rsps$FULL_N && !rg_state ;
 
   // submodule slave_xactor_f_wr_data
   assign slave_xactor_f_wr_data$D_IN =
@@ -908,7 +911,8 @@ module mkNear_Mem_IO_AXI4(CLK,
   assign slave_xactor_f_wr_data$ENQ =
 	     axi4_slave_wvalid && slave_xactor_f_wr_data$FULL_N ;
   assign slave_xactor_f_wr_data$DEQ = CAN_FIRE_RL_rl_process_wr_req ;
-  assign slave_xactor_f_wr_data$CLR = CAN_FIRE_RL_rl_reset ;
+  assign slave_xactor_f_wr_data$CLR =
+	     f_reset_reqs$EMPTY_N && f_reset_rsps$FULL_N && !rg_state ;
 
   // submodule slave_xactor_f_wr_resp
   assign slave_xactor_f_wr_resp$D_IN =
@@ -916,7 +920,8 @@ module mkNear_Mem_IO_AXI4(CLK,
   assign slave_xactor_f_wr_resp$ENQ = CAN_FIRE_RL_rl_process_wr_req ;
   assign slave_xactor_f_wr_resp$DEQ =
 	     axi4_slave_bready && slave_xactor_f_wr_resp$EMPTY_N ;
-  assign slave_xactor_f_wr_resp$CLR = CAN_FIRE_RL_rl_reset ;
+  assign slave_xactor_f_wr_resp$CLR =
+	     f_reset_reqs$EMPTY_N && f_reset_rsps$FULL_N && !rg_state ;
 
   // remaining internal signals
   assign NOT_cfg_verbosity_read_ULE_1_0___d31 = cfg_verbosity > 4'd1 ;

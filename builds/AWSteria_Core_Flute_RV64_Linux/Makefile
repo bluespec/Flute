@@ -13,6 +13,9 @@ help:
 	@echo ""
 	@echo "  make clean          Remove intermediate files"
 	@echo "  make full_clean     Restore to pristine state"
+	@echo ""
+	@echo "  Current PLATFORM_TARGET = $(PLATFORM_TARGET)"
+	@echo "      (affects choice of clock in AWSteria_Core)"
 
 .PHONY: help_v
 help_v: help  show_Makefile_Params
@@ -30,8 +33,8 @@ $(info INFO: Including Makefile_Params.mk which should define paths to external 
 include Makefile_Params.mk
 
 # Target platform (chooses clock speed etc.)
-PLATFORM_TARGET = PLATFORM_VCU118
-# PLATFORM_TARGET = PLATFORM_AWSF1
+# PLATFORM_TARGET = PLATFORM_VCU118
+PLATFORM_TARGET = PLATFORM_AWSF1
 
 # ================================================================
 # Core/CPU architectural configs
@@ -142,15 +145,16 @@ BSC_COMPILATION_FLAGS += +RTS -K128M -RTS  -show-range-conflict
 # ================================================================
 # Generate Verilog RTL from BSV sources (needs Bluespec 'bsc' compiler)
 
-RTL_GEN_DIRS = -vdir Verilog_RTL  -bdir build_dir  -info-dir build_dir
+VERILOG_RTL = Verilog_RTL_$(PLATFORM_TARGET)
+RTL_GEN_DIRS = -vdir $(VERILOG_RTL)  -bdir build_dir  -info-dir build_dir
 
 .PHONY: generate_verilog
 generate_verilog:
 	mkdir -p  build_dir
-	mkdir -p  Verilog_RTL
+	mkdir -p  $(VERILOG_RTL)
 	@echo  "INFO: RTL generation ..."
 	bsc -u -elab -verilog  $(RTL_GEN_DIRS)  $(BSC_COMPILATION_FLAGS)  -p $(BSC_PATH)  $(TOPFILE)
-	@echo  "INFO: RTL generation finished: Verilog_RTL/ is ready for FPGA build."
+	@echo  "INFO: RTL generation finished: $(VERILOG_RTL)/ is ready for FPGA build."
 
 # ================================================================
 
@@ -160,6 +164,6 @@ clean:
 
 .PHONY: full_clean
 full_clean: clean
-	rm -r -f  Verilog_RTL
+	rm -r -f  Verilog_RTL_*
 
 # ================================================================

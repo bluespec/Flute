@@ -1031,15 +1031,15 @@ module mkMMIO_AXI4_Adapter_2(CLK,
 	     { 2'd2, ifc_v_f_reqs_2$D_OUT[129:66], x__h2698, 8'd0 } ;
   assign MUX_ifc_master_xactor_f_rd_addr$enq_1__VAL_1 =
 	     { 16'd0,
-	       ifc_v_f_reqs_0$D_OUT[129:66],
-	       8'd0,
-	       x__h1965,
-	       18'd65536 } ;
-  assign MUX_ifc_master_xactor_f_rd_addr$enq_1__VAL_2 =
-	     { 16'd0,
 	       ifc_v_f_reqs_1$D_OUT[129:66],
 	       8'd0,
 	       x__h2349,
+	       18'd65536 } ;
+  assign MUX_ifc_master_xactor_f_rd_addr$enq_1__VAL_2 =
+	     { 16'd0,
+	       ifc_v_f_reqs_0$D_OUT[129:66],
+	       8'd0,
+	       x__h1965,
 	       18'd65536 } ;
   assign MUX_ifc_master_xactor_f_rd_addr$enq_1__VAL_3 =
 	     { 16'd0,
@@ -1236,18 +1236,18 @@ module mkMMIO_AXI4_Adapter_2(CLK,
   assign ifc_f_rd_rsp_control$CLR = 1'b0 ;
 
   // submodule ifc_master_xactor_f_rd_addr
-  always@(WILL_FIRE_RL_ifc_rl_rd_req or
+  always@(WILL_FIRE_RL_ifc_rl_rd_req_1 or
 	  MUX_ifc_master_xactor_f_rd_addr$enq_1__VAL_1 or
-	  WILL_FIRE_RL_ifc_rl_rd_req_1 or
+	  WILL_FIRE_RL_ifc_rl_rd_req or
 	  MUX_ifc_master_xactor_f_rd_addr$enq_1__VAL_2 or
 	  WILL_FIRE_RL_ifc_rl_rd_req_2 or
 	  MUX_ifc_master_xactor_f_rd_addr$enq_1__VAL_3)
   begin
     case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_ifc_rl_rd_req:
+      WILL_FIRE_RL_ifc_rl_rd_req_1:
 	  ifc_master_xactor_f_rd_addr$D_IN =
 	      MUX_ifc_master_xactor_f_rd_addr$enq_1__VAL_1;
-      WILL_FIRE_RL_ifc_rl_rd_req_1:
+      WILL_FIRE_RL_ifc_rl_rd_req:
 	  ifc_master_xactor_f_rd_addr$D_IN =
 	      MUX_ifc_master_xactor_f_rd_addr$enq_1__VAL_2;
       WILL_FIRE_RL_ifc_rl_rd_req_2:
@@ -1258,7 +1258,7 @@ module mkMMIO_AXI4_Adapter_2(CLK,
     endcase
   end
   assign ifc_master_xactor_f_rd_addr$ENQ =
-	     WILL_FIRE_RL_ifc_rl_rd_req || WILL_FIRE_RL_ifc_rl_rd_req_1 ||
+	     WILL_FIRE_RL_ifc_rl_rd_req_1 || WILL_FIRE_RL_ifc_rl_rd_req ||
 	     WILL_FIRE_RL_ifc_rl_rd_req_2 ;
   assign ifc_master_xactor_f_rd_addr$DEQ =
 	     ifc_master_xactor_f_rd_addr$EMPTY_N && mem_master_arready ;
@@ -1276,18 +1276,18 @@ module mkMMIO_AXI4_Adapter_2(CLK,
   assign ifc_master_xactor_f_rd_data$CLR = 1'b0 ;
 
   // submodule ifc_master_xactor_f_wr_addr
-  always@(WILL_FIRE_RL_ifc_rl_wr_req or
+  always@(WILL_FIRE_RL_ifc_rl_wr_req_1 or
 	  MUX_ifc_master_xactor_f_rd_addr$enq_1__VAL_1 or
-	  WILL_FIRE_RL_ifc_rl_wr_req_1 or
+	  WILL_FIRE_RL_ifc_rl_wr_req or
 	  MUX_ifc_master_xactor_f_rd_addr$enq_1__VAL_2 or
 	  WILL_FIRE_RL_ifc_rl_wr_req_2 or
 	  MUX_ifc_master_xactor_f_rd_addr$enq_1__VAL_3)
   begin
     case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_ifc_rl_wr_req:
+      WILL_FIRE_RL_ifc_rl_wr_req_1:
 	  ifc_master_xactor_f_wr_addr$D_IN =
 	      MUX_ifc_master_xactor_f_rd_addr$enq_1__VAL_1;
-      WILL_FIRE_RL_ifc_rl_wr_req_1:
+      WILL_FIRE_RL_ifc_rl_wr_req:
 	  ifc_master_xactor_f_wr_addr$D_IN =
 	      MUX_ifc_master_xactor_f_rd_addr$enq_1__VAL_2;
       WILL_FIRE_RL_ifc_rl_wr_req_2:
@@ -1298,7 +1298,7 @@ module mkMMIO_AXI4_Adapter_2(CLK,
     endcase
   end
   assign ifc_master_xactor_f_wr_addr$ENQ =
-	     WILL_FIRE_RL_ifc_rl_wr_req || WILL_FIRE_RL_ifc_rl_wr_req_1 ||
+	     WILL_FIRE_RL_ifc_rl_wr_req_1 || WILL_FIRE_RL_ifc_rl_wr_req ||
 	     WILL_FIRE_RL_ifc_rl_wr_req_2 ;
   assign ifc_master_xactor_f_wr_addr$DEQ =
 	     ifc_master_xactor_f_wr_addr$EMPTY_N && mem_master_awready ;
