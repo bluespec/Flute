@@ -434,25 +434,65 @@ module mkAWSteria_Core_Single_Clock (AWSteria_Core_IFC_Specialized);
    endrule
 
    // =================================================================
-   // PC trace output
+   // Misc. to host and from host
+
+   FIFOF #(Bit #(32)) f_misc_from_host = dummy_FIFOF;
 
 `ifdef INCLUDE_PC_TRACE
-   FIFOF #(PC_Trace) f_pc_trace               <- mkFIFOF;
-   Reg #(Bit #(64))  rg_pc_trace_interval_ctr <- mkReg (0);
+   FIFOF #(Bit #(32)) f_misc_to_host <- mkFIFOF;
 
-   rule rl_pc_trace;
-      PC_Trace x <- cpu.g_pc_trace.get;
+   // Use f_misc_to_host for sampled PC trace
+   Reg #(PC_Trace)   rg_pc_trace              <- mkRegU;
+   Reg #(Bit #(64))  rg_pc_trace_interval_ctr <- mkReg (0);
+   Reg #(Bit #(3))   rg_pc_trace_serialize_state <- mkReg (0);
+
+   rule rl_pc_trace_0 (rg_pc_trace_serialize_state == 0);
+      // Drain pc trace packet from CPU
+      PC_Trace pc_trace <- cpu.g_pc_trace.get;
+      rg_pc_trace <= pc_trace;
+
       match { .pc_trace_on, .pc_trace_interval } = host_cs.mv_pc_trace;
 
       if (pc_trace_on && (rg_pc_trace_interval_ctr == 0)) begin
-	 f_pc_trace.enq (x);
-	 rg_pc_trace_interval_ctr <= pc_trace_interval;
+	 // Serialize sample to f_misc_to_host in next several rules, 32b at a time
+	 f_misc_to_host.enq (pc_trace.cycle [31:0]);
+	 rg_pc_trace_interval_ctr    <= pc_trace_interval;
+	 rg_pc_trace_serialize_state <= 1;
+	 $display ("%0d: %m.rl_pc trace_0: cycle %0d  instret %0d  pc %0h (sending)",
+		   cur_cycle, pc_trace.cycle, pc_trace.instret, pc_trace.pc);
       end
       else begin
-	 // Discard the sample
+	 // Discard the sample and countdown the interval
 	 rg_pc_trace_interval_ctr <= rg_pc_trace_interval_ctr - 1;
       end
    endrule
+
+   rule rl_pc_trace_1 (rg_pc_trace_serialize_state == 1);
+      f_misc_to_host.enq (rg_pc_trace.cycle [63:32]);
+      rg_pc_trace_serialize_state <= 2;
+   endrule
+
+   rule rl_pc_trace_2 (rg_pc_trace_serialize_state == 2);
+      f_misc_to_host.enq (rg_pc_trace.instret [31:0]);
+      rg_pc_trace_serialize_state <= 3;
+   endrule
+
+   rule rl_pc_trace_3 (rg_pc_trace_serialize_state == 3);
+      f_misc_to_host.enq (rg_pc_trace.instret [63:32]);
+      rg_pc_trace_serialize_state <= 4;
+   endrule
+
+   rule rl_pc_trace_4 (rg_pc_trace_serialize_state == 4);
+      f_misc_to_host.enq (rg_pc_trace.pc [31:0]);
+      rg_pc_trace_serialize_state <= 5;
+   endrule
+
+   rule rl_pc_trace_5 (rg_pc_trace_serialize_state == 5);
+      f_misc_to_host.enq (rg_pc_trace.pc [63:32]);
+      rg_pc_trace_serialize_state <= 0;
+   endrule
+`else
+   FIFOF #(Bit #(32)) f_misc_to_host = dummy_FIFOF;
 `endif
 
    // =================================================================
@@ -500,15 +540,12 @@ module mkAWSteria_Core_Single_Clock (AWSteria_Core_IFC_Specialized);
    interface fi_nmi = to_FIFOF_I (f_nmi);
 
    // ----------------------------------------------------------------
-   // Trace and Tandem Verification output
+   // Misc stream I/O, and Tandem Verification output
 
-`ifdef INCLUDE_PC_TRACE
-   interface fo_pc_trace = to_FIFOF_O (f_pc_trace);
-`else
-   interface fo_pc_trace = dummy_FIFOF_O;
-`endif
+   interface fo_misc = to_FIFOF_O (f_misc_to_host);
+   interface fi_misc = to_FIFOF_I (f_misc_from_host);
 
-   interface fo_tv_info  = dm_tv.fo_tv_info;
+   interface fo_tv_info = dm_tv.fo_tv_info;
 
    // ----------------------------------------------------------------
    // Debug Module interfaces

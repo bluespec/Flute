@@ -75,11 +75,14 @@
 // RDY_fi_nmi_enq                 O     1 reg
 // fi_nmi_notFull                 O     1 reg
 // RDY_fi_nmi_notFull             O     1 const
-// fo_pc_trace_first              O   192 reg
-// RDY_fo_pc_trace_first          O     1 reg
-// RDY_fo_pc_trace_deq            O     1 reg
-// fo_pc_trace_notEmpty           O     1 reg
-// RDY_fo_pc_trace_notEmpty       O     1 const
+// fo_misc_first                  O    32 reg
+// RDY_fo_misc_first              O     1 reg
+// RDY_fo_misc_deq                O     1 reg
+// fo_misc_notEmpty               O     1 reg
+// RDY_fo_misc_notEmpty           O     1 const
+// RDY_fi_misc_enq                O     1 const
+// fi_misc_notFull                O     1 const
+// RDY_fi_misc_notFull            O     1 const
 // fo_tv_info_first               O   608 const
 // RDY_fo_tv_info_first           O     1 const
 // RDY_fo_tv_info_deq             O     1 const
@@ -162,11 +165,13 @@
 // dma_S_rready                   I     1
 // ext_interrupts_x               I     5 reg
 // fi_nmi_enq_x                   I     1 reg
+// fi_misc_enq_x                  I    32 unused
 // se_dmi_request_enq_x           I    40 reg
 // se_control_status_request_enq_x  I    32 reg
 // EN_ext_interrupts              I     1
 // EN_fi_nmi_enq                  I     1
-// EN_fo_pc_trace_deq             I     1
+// EN_fo_misc_deq                 I     1
+// EN_fi_misc_enq                 I     1 unused
 // EN_fo_tv_info_deq              I     1 unused
 // EN_se_dmi_request_enq          I     1
 // EN_se_dmi_response_deq         I     1
@@ -406,14 +411,21 @@ module mkAWSteria_Core_Single_Clock(CLK,
 				    fi_nmi_notFull,
 				    RDY_fi_nmi_notFull,
 
-				    fo_pc_trace_first,
-				    RDY_fo_pc_trace_first,
+				    fo_misc_first,
+				    RDY_fo_misc_first,
 
-				    EN_fo_pc_trace_deq,
-				    RDY_fo_pc_trace_deq,
+				    EN_fo_misc_deq,
+				    RDY_fo_misc_deq,
 
-				    fo_pc_trace_notEmpty,
-				    RDY_fo_pc_trace_notEmpty,
+				    fo_misc_notEmpty,
+				    RDY_fo_misc_notEmpty,
+
+				    fi_misc_enq_x,
+				    EN_fi_misc_enq,
+				    RDY_fi_misc_enq,
+
+				    fi_misc_notFull,
+				    RDY_fi_misc_notFull,
 
 				    fo_tv_info_first,
 				    RDY_fo_tv_info_first,
@@ -783,17 +795,26 @@ module mkAWSteria_Core_Single_Clock(CLK,
   output fi_nmi_notFull;
   output RDY_fi_nmi_notFull;
 
-  // value method fo_pc_trace_first
-  output [191 : 0] fo_pc_trace_first;
-  output RDY_fo_pc_trace_first;
+  // value method fo_misc_first
+  output [31 : 0] fo_misc_first;
+  output RDY_fo_misc_first;
 
-  // action method fo_pc_trace_deq
-  input  EN_fo_pc_trace_deq;
-  output RDY_fo_pc_trace_deq;
+  // action method fo_misc_deq
+  input  EN_fo_misc_deq;
+  output RDY_fo_misc_deq;
 
-  // value method fo_pc_trace_notEmpty
-  output fo_pc_trace_notEmpty;
-  output RDY_fo_pc_trace_notEmpty;
+  // value method fo_misc_notEmpty
+  output fo_misc_notEmpty;
+  output RDY_fo_misc_notEmpty;
+
+  // action method fi_misc_enq
+  input  [31 : 0] fi_misc_enq_x;
+  input  EN_fi_misc_enq;
+  output RDY_fi_misc_enq;
+
+  // value method fi_misc_notFull
+  output fi_misc_notFull;
+  output RDY_fi_misc_notFull;
 
   // value method fo_tv_info_first
   output [607 : 0] fo_tv_info_first;
@@ -871,14 +892,15 @@ module mkAWSteria_Core_Single_Clock(CLK,
   // signals for module outputs
   wire [607 : 0] fo_tv_info_first;
   wire [511 : 0] dma_S_rdata, mem_M_wdata;
-  wire [191 : 0] fo_pc_trace_first;
   wire [63 : 0] mem_M_araddr,
 		mem_M_awaddr,
 		mem_M_wstrb,
 		mmio_M_araddr,
 		mmio_M_awaddr,
 		mmio_M_wdata;
-  wire [31 : 0] se_control_status_response_first, se_dmi_response_first;
+  wire [31 : 0] fo_misc_first,
+		se_control_status_response_first,
+		se_dmi_response_first;
   wire [15 : 0] dma_S_bid,
 		dma_S_rid,
 		mem_M_arid,
@@ -922,11 +944,13 @@ module mkAWSteria_Core_Single_Clock(CLK,
        RDY_cl_ndm_reset_response_enq,
        RDY_cl_ndm_reset_response_notFull,
        RDY_ext_interrupts,
+       RDY_fi_misc_enq,
+       RDY_fi_misc_notFull,
        RDY_fi_nmi_enq,
        RDY_fi_nmi_notFull,
-       RDY_fo_pc_trace_deq,
-       RDY_fo_pc_trace_first,
-       RDY_fo_pc_trace_notEmpty,
+       RDY_fo_misc_deq,
+       RDY_fo_misc_first,
+       RDY_fo_misc_notEmpty,
        RDY_fo_tv_info_deq,
        RDY_fo_tv_info_first,
        RDY_fo_tv_info_notEmpty,
@@ -948,8 +972,9 @@ module mkAWSteria_Core_Single_Clock(CLK,
        dma_S_rlast,
        dma_S_rvalid,
        dma_S_wready,
+       fi_misc_notFull,
        fi_nmi_notFull,
-       fo_pc_trace_notEmpty,
+       fo_misc_notEmpty,
        fo_tv_info_notEmpty,
        mem_M_arlock,
        mem_M_arvalid,
@@ -990,10 +1015,20 @@ module mkAWSteria_Core_Single_Clock(CLK,
   reg rg_nmi;
   wire rg_nmi$D_IN, rg_nmi$EN;
 
+  // register rg_pc_trace
+  reg [191 : 0] rg_pc_trace;
+  wire [191 : 0] rg_pc_trace$D_IN;
+  wire rg_pc_trace$EN;
+
   // register rg_pc_trace_interval_ctr
   reg [63 : 0] rg_pc_trace_interval_ctr;
   wire [63 : 0] rg_pc_trace_interval_ctr$D_IN;
   wire rg_pc_trace_interval_ctr$EN;
+
+  // register rg_pc_trace_serialize_state
+  reg [2 : 0] rg_pc_trace_serialize_state;
+  reg [2 : 0] rg_pc_trace_serialize_state$D_IN;
+  wire rg_pc_trace_serialize_state$EN;
 
   // register rg_s_external_interrupt
   reg rg_s_external_interrupt;
@@ -1583,6 +1618,15 @@ module mkAWSteria_Core_Single_Clock(CLK,
        dma_server_axi4_deburster$to_slave_wready,
        dma_server_axi4_deburster$to_slave_wvalid;
 
+  // ports of submodule f_misc_to_host
+  reg [31 : 0] f_misc_to_host$D_IN;
+  wire [31 : 0] f_misc_to_host$D_OUT;
+  wire f_misc_to_host$CLR,
+       f_misc_to_host$DEQ,
+       f_misc_to_host$EMPTY_N,
+       f_misc_to_host$ENQ,
+       f_misc_to_host$FULL_N;
+
   // ports of submodule f_nmi
   wire f_nmi$CLR,
        f_nmi$DEQ,
@@ -1591,14 +1635,6 @@ module mkAWSteria_Core_Single_Clock(CLK,
        f_nmi$EMPTY_N,
        f_nmi$ENQ,
        f_nmi$FULL_N;
-
-  // ports of submodule f_pc_trace
-  wire [191 : 0] f_pc_trace$D_IN, f_pc_trace$D_OUT;
-  wire f_pc_trace$CLR,
-       f_pc_trace$DEQ,
-       f_pc_trace$EMPTY_N,
-       f_pc_trace$ENQ,
-       f_pc_trace$FULL_N;
 
   // ports of submodule host_cs
   wire [76 : 0] host_cs$cl_csr_rw_request_get;
@@ -2003,7 +2039,12 @@ module mkAWSteria_Core_Single_Clock(CLK,
        CAN_FIRE_RL_rl_drive_timer_interrupt,
        CAN_FIRE_RL_rl_first_init_finish,
        CAN_FIRE_RL_rl_first_init_start,
-       CAN_FIRE_RL_rl_pc_trace,
+       CAN_FIRE_RL_rl_pc_trace_0,
+       CAN_FIRE_RL_rl_pc_trace_1,
+       CAN_FIRE_RL_rl_pc_trace_2,
+       CAN_FIRE_RL_rl_pc_trace_3,
+       CAN_FIRE_RL_rl_pc_trace_4,
+       CAN_FIRE_RL_rl_pc_trace_5,
        CAN_FIRE_RL_rl_rd_addr_channel,
        CAN_FIRE_RL_rl_rd_addr_channel_1,
        CAN_FIRE_RL_rl_rd_addr_channel_2,
@@ -2046,8 +2087,9 @@ module mkAWSteria_Core_Single_Clock(CLK,
        CAN_FIRE_dma_S_m_rready,
        CAN_FIRE_dma_S_m_wvalid,
        CAN_FIRE_ext_interrupts,
+       CAN_FIRE_fi_misc_enq,
        CAN_FIRE_fi_nmi_enq,
-       CAN_FIRE_fo_pc_trace_deq,
+       CAN_FIRE_fo_misc_deq,
        CAN_FIRE_fo_tv_info_deq,
        CAN_FIRE_mem_M_m_arready,
        CAN_FIRE_mem_M_m_awready,
@@ -2102,7 +2144,12 @@ module mkAWSteria_Core_Single_Clock(CLK,
        WILL_FIRE_RL_rl_drive_timer_interrupt,
        WILL_FIRE_RL_rl_first_init_finish,
        WILL_FIRE_RL_rl_first_init_start,
-       WILL_FIRE_RL_rl_pc_trace,
+       WILL_FIRE_RL_rl_pc_trace_0,
+       WILL_FIRE_RL_rl_pc_trace_1,
+       WILL_FIRE_RL_rl_pc_trace_2,
+       WILL_FIRE_RL_rl_pc_trace_3,
+       WILL_FIRE_RL_rl_pc_trace_4,
+       WILL_FIRE_RL_rl_pc_trace_5,
        WILL_FIRE_RL_rl_rd_addr_channel,
        WILL_FIRE_RL_rl_rd_addr_channel_1,
        WILL_FIRE_RL_rl_rd_addr_channel_2,
@@ -2145,8 +2192,9 @@ module mkAWSteria_Core_Single_Clock(CLK,
        WILL_FIRE_dma_S_m_rready,
        WILL_FIRE_dma_S_m_wvalid,
        WILL_FIRE_ext_interrupts,
+       WILL_FIRE_fi_misc_enq,
        WILL_FIRE_fi_nmi_enq,
-       WILL_FIRE_fo_pc_trace_deq,
+       WILL_FIRE_fo_misc_deq,
        WILL_FIRE_fo_tv_info_deq,
        WILL_FIRE_mem_M_m_arready,
        WILL_FIRE_mem_M_m_awready,
@@ -2164,22 +2212,24 @@ module mkAWSteria_Core_Single_Clock(CLK,
        WILL_FIRE_se_dmi_response_deq;
 
   // inputs to muxes for submodule ports
-  wire MUX_rg_module_state$write_1__SEL_3;
+  wire MUX_f_misc_to_host$enq_1__SEL_1, MUX_rg_module_state$write_1__SEL_3;
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h12088;
-  reg [31 : 0] v__h12658;
-  reg [31 : 0] v__h11766;
-  reg [31 : 0] v__h12355;
-  reg [31 : 0] v__h11760;
-  reg [31 : 0] v__h12082;
-  reg [31 : 0] v__h12349;
-  reg [31 : 0] v__h12652;
+  reg [31 : 0] v__h12090;
+  reg [31 : 0] v__h12660;
+  reg [31 : 0] v__h11768;
+  reg [31 : 0] v__h17333;
+  reg [31 : 0] v__h12357;
+  reg [31 : 0] v__h11762;
+  reg [31 : 0] v__h12084;
+  reg [31 : 0] v__h12351;
+  reg [31 : 0] v__h12654;
+  reg [31 : 0] v__h17327;
   // synopsys translate_on
 
   // remaining internal signals
-  wire [63 : 0] x__h17094;
+  wire [63 : 0] x__h17208;
 
   // value method mem_M_m_awvalid
   assign mem_M_awvalid = cpu$mem_master_awvalid ;
@@ -2456,18 +2506,27 @@ module mkAWSteria_Core_Single_Clock(CLK,
   assign fi_nmi_notFull = f_nmi$FULL_N ;
   assign RDY_fi_nmi_notFull = 1'd1 ;
 
-  // value method fo_pc_trace_first
-  assign fo_pc_trace_first = f_pc_trace$D_OUT ;
-  assign RDY_fo_pc_trace_first = f_pc_trace$EMPTY_N ;
+  // value method fo_misc_first
+  assign fo_misc_first = f_misc_to_host$D_OUT ;
+  assign RDY_fo_misc_first = f_misc_to_host$EMPTY_N ;
 
-  // action method fo_pc_trace_deq
-  assign RDY_fo_pc_trace_deq = f_pc_trace$EMPTY_N ;
-  assign CAN_FIRE_fo_pc_trace_deq = f_pc_trace$EMPTY_N ;
-  assign WILL_FIRE_fo_pc_trace_deq = EN_fo_pc_trace_deq ;
+  // action method fo_misc_deq
+  assign RDY_fo_misc_deq = f_misc_to_host$EMPTY_N ;
+  assign CAN_FIRE_fo_misc_deq = f_misc_to_host$EMPTY_N ;
+  assign WILL_FIRE_fo_misc_deq = EN_fo_misc_deq ;
 
-  // value method fo_pc_trace_notEmpty
-  assign fo_pc_trace_notEmpty = f_pc_trace$EMPTY_N ;
-  assign RDY_fo_pc_trace_notEmpty = 1'd1 ;
+  // value method fo_misc_notEmpty
+  assign fo_misc_notEmpty = f_misc_to_host$EMPTY_N ;
+  assign RDY_fo_misc_notEmpty = 1'd1 ;
+
+  // action method fi_misc_enq
+  assign RDY_fi_misc_enq = 1'd0 ;
+  assign CAN_FIRE_fi_misc_enq = 1'd0 ;
+  assign WILL_FIRE_fi_misc_enq = EN_fi_misc_enq ;
+
+  // value method fi_misc_notFull
+  assign fi_misc_notFull = 1'd0 ;
+  assign RDY_fi_misc_notFull = 1'd1 ;
 
   // value method fo_tv_info_first
   assign fo_tv_info_first =
@@ -3176,6 +3235,17 @@ module mkAWSteria_Core_Single_Clock(CLK,
 					       .to_slave_arregion(dma_server_axi4_deburster$to_slave_arregion),
 					       .to_slave_rready(dma_server_axi4_deburster$to_slave_rready));
 
+  // submodule f_misc_to_host
+  FIFO2 #(.width(32'd32), .guarded(1'd1)) f_misc_to_host(.RST(RST_N),
+							 .CLK(CLK),
+							 .D_IN(f_misc_to_host$D_IN),
+							 .ENQ(f_misc_to_host$ENQ),
+							 .DEQ(f_misc_to_host$DEQ),
+							 .CLR(f_misc_to_host$CLR),
+							 .D_OUT(f_misc_to_host$D_OUT),
+							 .FULL_N(f_misc_to_host$FULL_N),
+							 .EMPTY_N(f_misc_to_host$EMPTY_N));
+
   // submodule f_nmi
   FIFO2 #(.width(32'd1), .guarded(1'd1)) f_nmi(.RST(RST_N),
 					       .CLK(CLK),
@@ -3186,17 +3256,6 @@ module mkAWSteria_Core_Single_Clock(CLK,
 					       .D_OUT(f_nmi$D_OUT),
 					       .FULL_N(f_nmi$FULL_N),
 					       .EMPTY_N(f_nmi$EMPTY_N));
-
-  // submodule f_pc_trace
-  FIFO2 #(.width(32'd192), .guarded(1'd1)) f_pc_trace(.RST(RST_N),
-						      .CLK(CLK),
-						      .D_IN(f_pc_trace$D_IN),
-						      .ENQ(f_pc_trace$ENQ),
-						      .DEQ(f_pc_trace$DEQ),
-						      .CLR(f_pc_trace$CLR),
-						      .D_OUT(f_pc_trace$D_OUT),
-						      .FULL_N(f_pc_trace$FULL_N),
-						      .EMPTY_N(f_pc_trace$EMPTY_N));
 
   // submodule host_cs
   mkHost_Control_Status host_cs(.CLK(CLK),
@@ -3757,12 +3816,38 @@ module mkAWSteria_Core_Single_Clock(CLK,
 	     f_nmi$EMPTY_N && rg_module_state == 2'd3 ;
   assign WILL_FIRE_RL_rl_register_nmi = CAN_FIRE_RL_rl_register_nmi ;
 
-  // rule RL_rl_pc_trace
-  assign CAN_FIRE_RL_rl_pc_trace =
+  // rule RL_rl_pc_trace_0
+  assign CAN_FIRE_RL_rl_pc_trace_0 =
 	     cpu$RDY_g_pc_trace_get &&
 	     (!host_cs$mv_pc_trace_fst || rg_pc_trace_interval_ctr != 64'd0 ||
-	      f_pc_trace$FULL_N) ;
-  assign WILL_FIRE_RL_rl_pc_trace = CAN_FIRE_RL_rl_pc_trace ;
+	      f_misc_to_host$FULL_N) &&
+	     rg_pc_trace_serialize_state == 3'd0 ;
+  assign WILL_FIRE_RL_rl_pc_trace_0 = CAN_FIRE_RL_rl_pc_trace_0 ;
+
+  // rule RL_rl_pc_trace_1
+  assign CAN_FIRE_RL_rl_pc_trace_1 =
+	     f_misc_to_host$FULL_N && rg_pc_trace_serialize_state == 3'd1 ;
+  assign WILL_FIRE_RL_rl_pc_trace_1 = CAN_FIRE_RL_rl_pc_trace_1 ;
+
+  // rule RL_rl_pc_trace_2
+  assign CAN_FIRE_RL_rl_pc_trace_2 =
+	     f_misc_to_host$FULL_N && rg_pc_trace_serialize_state == 3'd2 ;
+  assign WILL_FIRE_RL_rl_pc_trace_2 = CAN_FIRE_RL_rl_pc_trace_2 ;
+
+  // rule RL_rl_pc_trace_3
+  assign CAN_FIRE_RL_rl_pc_trace_3 =
+	     f_misc_to_host$FULL_N && rg_pc_trace_serialize_state == 3'd3 ;
+  assign WILL_FIRE_RL_rl_pc_trace_3 = CAN_FIRE_RL_rl_pc_trace_3 ;
+
+  // rule RL_rl_pc_trace_4
+  assign CAN_FIRE_RL_rl_pc_trace_4 =
+	     f_misc_to_host$FULL_N && rg_pc_trace_serialize_state == 3'd4 ;
+  assign WILL_FIRE_RL_rl_pc_trace_4 = CAN_FIRE_RL_rl_pc_trace_4 ;
+
+  // rule RL_rl_pc_trace_5
+  assign CAN_FIRE_RL_rl_pc_trace_5 =
+	     f_misc_to_host$FULL_N && rg_pc_trace_serialize_state == 3'd5 ;
+  assign WILL_FIRE_RL_rl_pc_trace_5 = CAN_FIRE_RL_rl_pc_trace_5 ;
 
   // rule RL_rl_send_tohost_value
   assign CAN_FIRE_RL_rl_send_tohost_value = 1'd1 ;
@@ -3999,6 +4084,9 @@ module mkAWSteria_Core_Single_Clock(CLK,
   assign WILL_FIRE_RL_dm_tv_ifc_4_rl_rd_data_channel = 1'd1 ;
 
   // inputs to muxes for submodule ports
+  assign MUX_f_misc_to_host$enq_1__SEL_1 =
+	     WILL_FIRE_RL_rl_pc_trace_0 && host_cs$mv_pc_trace_fst &&
+	     rg_pc_trace_interval_ctr == 64'd0 ;
   assign MUX_rg_module_state$write_1__SEL_3 =
 	     WILL_FIRE_RL_rl_reinitialization_finish ||
 	     WILL_FIRE_RL_rl_first_init_finish ;
@@ -4034,12 +4122,44 @@ module mkAWSteria_Core_Single_Clock(CLK,
   assign rg_nmi$D_IN = f_nmi$D_OUT ;
   assign rg_nmi$EN = f_nmi$EMPTY_N && rg_module_state == 2'd3 ;
 
+  // register rg_pc_trace
+  assign rg_pc_trace$D_IN = cpu$g_pc_trace_get ;
+  assign rg_pc_trace$EN = CAN_FIRE_RL_rl_pc_trace_0 ;
+
   // register rg_pc_trace_interval_ctr
   assign rg_pc_trace_interval_ctr$D_IN =
 	     (host_cs$mv_pc_trace_fst && rg_pc_trace_interval_ctr == 64'd0) ?
 	       host_cs$mv_pc_trace_snd :
-	       x__h17094 ;
-  assign rg_pc_trace_interval_ctr$EN = CAN_FIRE_RL_rl_pc_trace ;
+	       x__h17208 ;
+  assign rg_pc_trace_interval_ctr$EN = CAN_FIRE_RL_rl_pc_trace_0 ;
+
+  // register rg_pc_trace_serialize_state
+  always@(MUX_f_misc_to_host$enq_1__SEL_1 or
+	  WILL_FIRE_RL_rl_pc_trace_5 or
+	  WILL_FIRE_RL_rl_pc_trace_1 or
+	  WILL_FIRE_RL_rl_pc_trace_2 or
+	  WILL_FIRE_RL_rl_pc_trace_3 or WILL_FIRE_RL_rl_pc_trace_4)
+  begin
+    case (1'b1) // synopsys parallel_case
+      MUX_f_misc_to_host$enq_1__SEL_1:
+	  rg_pc_trace_serialize_state$D_IN = 3'd1;
+      WILL_FIRE_RL_rl_pc_trace_5: rg_pc_trace_serialize_state$D_IN = 3'd0;
+      WILL_FIRE_RL_rl_pc_trace_1: rg_pc_trace_serialize_state$D_IN = 3'd2;
+      WILL_FIRE_RL_rl_pc_trace_2: rg_pc_trace_serialize_state$D_IN = 3'd3;
+      WILL_FIRE_RL_rl_pc_trace_3: rg_pc_trace_serialize_state$D_IN = 3'd4;
+      WILL_FIRE_RL_rl_pc_trace_4: rg_pc_trace_serialize_state$D_IN = 3'd5;
+      default: rg_pc_trace_serialize_state$D_IN =
+		   3'b010 /* unspecified value */ ;
+    endcase
+  end
+  assign rg_pc_trace_serialize_state$EN =
+	     WILL_FIRE_RL_rl_pc_trace_0 && host_cs$mv_pc_trace_fst &&
+	     rg_pc_trace_interval_ctr == 64'd0 ||
+	     WILL_FIRE_RL_rl_pc_trace_5 ||
+	     WILL_FIRE_RL_rl_pc_trace_1 ||
+	     WILL_FIRE_RL_rl_pc_trace_2 ||
+	     WILL_FIRE_RL_rl_pc_trace_3 ||
+	     WILL_FIRE_RL_rl_pc_trace_4 ;
 
   // register rg_s_external_interrupt
   assign rg_s_external_interrupt$D_IN = plic$v_targets_1_m_eip ;
@@ -4174,7 +4294,7 @@ module mkAWSteria_Core_Single_Clock(CLK,
 	     WILL_FIRE_RL_rl_first_init_start ;
   assign cpu$EN_hart0_server_reset_response_get =
 	     MUX_rg_module_state$write_1__SEL_3 ;
-  assign cpu$EN_g_pc_trace_get = CAN_FIRE_RL_rl_pc_trace ;
+  assign cpu$EN_g_pc_trace_get = CAN_FIRE_RL_rl_pc_trace_0 ;
   assign cpu$EN_hart0_server_run_halt_request_put =
 	     WILL_FIRE_RL_dm_tv_ifc_empty1_rl_cj_to_s ||
 	     WILL_FIRE_RL_dm_tv_ifc_empty1_rl_cj_to_s_1 ;
@@ -4530,19 +4650,42 @@ module mkAWSteria_Core_Single_Clock(CLK,
   assign dma_server_axi4_deburster$to_slave_wready = cpu$dma_server_wready ;
   assign dma_server_axi4_deburster$EN_reset = 1'b0 ;
 
+  // submodule f_misc_to_host
+  always@(MUX_f_misc_to_host$enq_1__SEL_1 or
+	  cpu$g_pc_trace_get or
+	  WILL_FIRE_RL_rl_pc_trace_4 or
+	  rg_pc_trace or
+	  WILL_FIRE_RL_rl_pc_trace_5 or
+	  WILL_FIRE_RL_rl_pc_trace_2 or
+	  WILL_FIRE_RL_rl_pc_trace_3 or WILL_FIRE_RL_rl_pc_trace_1)
+  begin
+    case (1'b1) // synopsys parallel_case
+      MUX_f_misc_to_host$enq_1__SEL_1:
+	  f_misc_to_host$D_IN = cpu$g_pc_trace_get[159:128];
+      WILL_FIRE_RL_rl_pc_trace_4: f_misc_to_host$D_IN = rg_pc_trace[31:0];
+      WILL_FIRE_RL_rl_pc_trace_5: f_misc_to_host$D_IN = rg_pc_trace[63:32];
+      WILL_FIRE_RL_rl_pc_trace_2: f_misc_to_host$D_IN = rg_pc_trace[95:64];
+      WILL_FIRE_RL_rl_pc_trace_3: f_misc_to_host$D_IN = rg_pc_trace[127:96];
+      WILL_FIRE_RL_rl_pc_trace_1: f_misc_to_host$D_IN = rg_pc_trace[191:160];
+      default: f_misc_to_host$D_IN = 32'hAAAAAAAA /* unspecified value */ ;
+    endcase
+  end
+  assign f_misc_to_host$ENQ =
+	     WILL_FIRE_RL_rl_pc_trace_0 && host_cs$mv_pc_trace_fst &&
+	     rg_pc_trace_interval_ctr == 64'd0 ||
+	     WILL_FIRE_RL_rl_pc_trace_4 ||
+	     WILL_FIRE_RL_rl_pc_trace_5 ||
+	     WILL_FIRE_RL_rl_pc_trace_2 ||
+	     WILL_FIRE_RL_rl_pc_trace_3 ||
+	     WILL_FIRE_RL_rl_pc_trace_1 ;
+  assign f_misc_to_host$DEQ = EN_fo_misc_deq ;
+  assign f_misc_to_host$CLR = 1'b0 ;
+
   // submodule f_nmi
   assign f_nmi$D_IN = fi_nmi_enq_x ;
   assign f_nmi$ENQ = EN_fi_nmi_enq ;
   assign f_nmi$DEQ = CAN_FIRE_RL_rl_register_nmi ;
   assign f_nmi$CLR = 1'b0 ;
-
-  // submodule f_pc_trace
-  assign f_pc_trace$D_IN = cpu$g_pc_trace_get ;
-  assign f_pc_trace$ENQ =
-	     WILL_FIRE_RL_rl_pc_trace && host_cs$mv_pc_trace_fst &&
-	     rg_pc_trace_interval_ctr == 64'd0 ;
-  assign f_pc_trace$DEQ = EN_fo_pc_trace_deq ;
-  assign f_pc_trace$CLR = 1'b0 ;
 
   // submodule host_cs
   assign host_cs$cl_cpu_reset_response_put = dm_tv_ifc_f_reset_rsps$D_OUT ;
@@ -4754,7 +4897,7 @@ module mkAWSteria_Core_Single_Clock(CLK,
   assign plic$EN_set_addr_map = MUX_rg_module_state$write_1__SEL_3 ;
 
   // remaining internal signals
-  assign x__h17094 = rg_pc_trace_interval_ctr - 64'd1 ;
+  assign x__h17208 = rg_pc_trace_interval_ctr - 64'd1 ;
 
   // handling of inlined registers
 
@@ -4767,6 +4910,7 @@ module mkAWSteria_Core_Single_Clock(CLK,
 	rg_module_state <= `BSV_ASSIGNMENT_DELAY 2'd0;
 	rg_nmi <= `BSV_ASSIGNMENT_DELAY 1'd0;
 	rg_pc_trace_interval_ctr <= `BSV_ASSIGNMENT_DELAY 64'd0;
+	rg_pc_trace_serialize_state <= `BSV_ASSIGNMENT_DELAY 3'd0;
 	rg_s_external_interrupt <= `BSV_ASSIGNMENT_DELAY 1'd0;
 	rg_sw_interrupt <= `BSV_ASSIGNMENT_DELAY 1'd0;
 	rg_timer_interrupt <= `BSV_ASSIGNMENT_DELAY 1'd0;
@@ -4784,6 +4928,9 @@ module mkAWSteria_Core_Single_Clock(CLK,
 	if (rg_pc_trace_interval_ctr$EN)
 	  rg_pc_trace_interval_ctr <= `BSV_ASSIGNMENT_DELAY
 	      rg_pc_trace_interval_ctr$D_IN;
+	if (rg_pc_trace_serialize_state$EN)
+	  rg_pc_trace_serialize_state <= `BSV_ASSIGNMENT_DELAY
+	      rg_pc_trace_serialize_state$D_IN;
 	if (rg_s_external_interrupt$EN)
 	  rg_s_external_interrupt <= `BSV_ASSIGNMENT_DELAY
 	      rg_s_external_interrupt$D_IN;
@@ -4792,6 +4939,7 @@ module mkAWSteria_Core_Single_Clock(CLK,
 	if (rg_timer_interrupt$EN)
 	  rg_timer_interrupt <= `BSV_ASSIGNMENT_DELAY rg_timer_interrupt$D_IN;
       end
+    if (rg_pc_trace$EN) rg_pc_trace <= `BSV_ASSIGNMENT_DELAY rg_pc_trace$D_IN;
   end
 
   // synopsys translate_off
@@ -4803,7 +4951,9 @@ module mkAWSteria_Core_Single_Clock(CLK,
     rg_m_external_interrupt = 1'h0;
     rg_module_state = 2'h2;
     rg_nmi = 1'h0;
+    rg_pc_trace = 192'hAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA;
     rg_pc_trace_interval_ctr = 64'hAAAAAAAAAAAAAAAA;
+    rg_pc_trace_serialize_state = 3'h2;
     rg_s_external_interrupt = 1'h0;
     rg_sw_interrupt = 1'h0;
     rg_timer_interrupt = 1'h0;
@@ -4825,13 +4975,13 @@ module mkAWSteria_Core_Single_Clock(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_first_init_finish)
 	begin
-	  v__h12088 = $stime;
+	  v__h12090 = $stime;
 	  #0;
 	end
-    v__h12082 = v__h12088 / 32'd10;
+    v__h12084 = v__h12090 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_first_init_finish)
-	$display("    %0d: rule rl_first_init_start", v__h12082);
+	$display("    %0d: rule rl_first_init_start", v__h12084);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reinitialization_finish)
 	$display("AWSteria_Core: Re-initialization finished ...");
@@ -4840,13 +4990,13 @@ module mkAWSteria_Core_Single_Clock(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reinitialization_finish)
 	begin
-	  v__h12658 = $stime;
+	  v__h12660 = $stime;
 	  #0;
 	end
-    v__h12652 = v__h12658 / 32'd10;
+    v__h12654 = v__h12660 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reinitialization_finish)
-	$display("    %0d: rule rl_reinitialization_start", v__h12652);
+	$display("    %0d: rule rl_reinitialization_start", v__h12654);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_first_init_start)
 	$display("AWSteria_Core: Initialization start ...");
@@ -4855,13 +5005,29 @@ module mkAWSteria_Core_Single_Clock(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_first_init_start)
 	begin
-	  v__h11766 = $stime;
+	  v__h11768 = $stime;
 	  #0;
 	end
-    v__h11760 = v__h11766 / 32'd10;
+    v__h11762 = v__h11768 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_first_init_start)
-	$display("    %0d: rule rl_first_init_start", v__h11760);
+	$display("    %0d: rule rl_first_init_start", v__h11762);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_pc_trace_0 && host_cs$mv_pc_trace_fst &&
+	  rg_pc_trace_interval_ctr == 64'd0)
+	begin
+	  v__h17333 = $stime;
+	  #0;
+	end
+    v__h17327 = v__h17333 / 32'd10;
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_pc_trace_0 && host_cs$mv_pc_trace_fst &&
+	  rg_pc_trace_interval_ctr == 64'd0)
+	$display("%0d: %m.rl_pc trace_0: cycle %0d  instret %0d  pc %0h (sending)",
+		 v__h17327,
+		 cpu$g_pc_trace_get[191:128],
+		 cpu$g_pc_trace_get[127:64],
+		 cpu$g_pc_trace_get[63:0]);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_watch_thost)
 	$display("AWSteria_Core: setting tohost watch %0d addr %0h",
@@ -4880,13 +5046,13 @@ module mkAWSteria_Core_Single_Clock(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reinitialization_start)
 	begin
-	  v__h12355 = $stime;
+	  v__h12357 = $stime;
 	  #0;
 	end
-    v__h12349 = v__h12355 / 32'd10;
+    v__h12351 = v__h12357 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reinitialization_start)
-	$display("    %0d: rule rl_reinitialization_start", v__h12349);
+	$display("    %0d: rule rl_reinitialization_start", v__h12351);
   end
   // synopsys translate_on
 endmodule  // mkAWSteria_Core_Single_Clock

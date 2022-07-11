@@ -36,8 +36,7 @@ import AWSteria_Core_IFC :: *;
 // Debug Module interface
 import DM_Common :: *;
 
-// Trace and Tandem Verification
-import PC_Trace :: *;
+// Tandem Verification
 import TV_Info  :: *;
 
 // ================================================================
@@ -72,7 +71,7 @@ module mkAWSteria_Core_Reclocked
 			wd_id_dma,  wd_addr_dma,  wd_data_dma,  wd_user_dma,
 			t_n_interrupt_sources));
 
-   Integer depth = 2;    // For SyncFIFOs
+   Integer depth = 4;    // For SyncFIFOs
 
    // ----------------------------------------------------------------
    // AXI4 interface: Core (M) to DDR (S)
@@ -118,12 +117,20 @@ module mkAWSteria_Core_Reclocked
    mkConnection (fn_SyncFIFOIfc_to_FIFOF_O (f_nmi), core.fi_nmi);
 
    // ----------------
-   // Trace and Tandem Verification output
+   // Misc IO streams
 
-   SyncFIFOIfc #(PC_Trace) f_pc_trace <- mkSyncFIFO (depth, clk_slow, rst_slow,
-						     clk_fast);
+   // Input stream
+   SyncFIFOIfc #(Bit #(32)) f_misc_from_host <- mkSyncFIFO (depth, clk_fast, rst_fast,
+							    clk_slow);
+   mkConnection (core.fi_misc, fn_SyncFIFOIfc_to_FIFOF_O (f_misc_from_host));
 
-   mkConnection (core.fo_pc_trace, fn_SyncFIFOIfc_to_FIFOF_I (f_pc_trace));
+   // Output stream
+   SyncFIFOIfc #(Bit #(32)) f_misc_to_host <- mkSyncFIFO (depth, clk_slow, rst_slow,
+							  clk_fast);
+   mkConnection (core.fo_misc, fn_SyncFIFOIfc_to_FIFOF_I (f_misc_to_host));
+
+   // ----------------
+   // Tandem Verification output
 
    SyncFIFOIfc #(TV_Info)  f_tv_info  <- mkSyncFIFO (depth, clk_slow, rst_slow,
 						     clk_fast);
@@ -191,9 +198,14 @@ module mkAWSteria_Core_Reclocked
    interface fi_nmi = fn_SyncFIFOIfc_to_FIFOF_I (f_nmi);
 
    // ----------------
-   // Trace and Tandem Verification output
+   // Misc I/O stream
 
-   interface fo_pc_trace = fn_SyncFIFOIfc_to_FIFOF_O (f_pc_trace);
+   interface fi_misc = fn_SyncFIFOIfc_to_FIFOF_I (f_misc_from_host);
+   interface fo_misc = fn_SyncFIFOIfc_to_FIFOF_O (f_misc_to_host);
+
+   // ----------------
+   // Tandem Verification output
+
    interface fo_tv_info  = fn_SyncFIFOIfc_to_FIFOF_O (f_tv_info);
 
    // ----------------

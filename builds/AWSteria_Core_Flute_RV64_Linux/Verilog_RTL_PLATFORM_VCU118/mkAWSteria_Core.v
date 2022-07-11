@@ -75,11 +75,14 @@
 // RDY_fi_nmi_enq                 O     1
 // fi_nmi_notFull                 O     1
 // RDY_fi_nmi_notFull             O     1 const
-// fo_pc_trace_first              O   192
-// RDY_fo_pc_trace_first          O     1
-// RDY_fo_pc_trace_deq            O     1
-// fo_pc_trace_notEmpty           O     1
-// RDY_fo_pc_trace_notEmpty       O     1 const
+// fo_misc_first                  O    32
+// RDY_fo_misc_first              O     1
+// RDY_fo_misc_deq                O     1
+// fo_misc_notEmpty               O     1
+// RDY_fo_misc_notEmpty           O     1 const
+// RDY_fi_misc_enq                O     1
+// fi_misc_notFull                O     1
+// RDY_fi_misc_notFull            O     1 const
 // fo_tv_info_first               O   608
 // RDY_fo_tv_info_first           O     1
 // RDY_fo_tv_info_deq             O     1
@@ -167,11 +170,13 @@
 // dma_S_rready                   I     1
 // ext_interrupts_x               I     5 reg
 // fi_nmi_enq_x                   I     1
+// fi_misc_enq_x                  I    32
 // se_dmi_request_enq_x           I    40
 // se_control_status_request_enq_x  I    32
 // EN_ext_interrupts              I     1
 // EN_fi_nmi_enq                  I     1
-// EN_fo_pc_trace_deq             I     1
+// EN_fo_misc_deq                 I     1
+// EN_fi_misc_enq                 I     1
 // EN_fo_tv_info_deq              I     1
 // EN_se_dmi_request_enq          I     1
 // EN_se_dmi_response_deq         I     1
@@ -415,14 +420,21 @@ module mkAWSteria_Core(CLK_clk1,
 		       fi_nmi_notFull,
 		       RDY_fi_nmi_notFull,
 
-		       fo_pc_trace_first,
-		       RDY_fo_pc_trace_first,
+		       fo_misc_first,
+		       RDY_fo_misc_first,
 
-		       EN_fo_pc_trace_deq,
-		       RDY_fo_pc_trace_deq,
+		       EN_fo_misc_deq,
+		       RDY_fo_misc_deq,
 
-		       fo_pc_trace_notEmpty,
-		       RDY_fo_pc_trace_notEmpty,
+		       fo_misc_notEmpty,
+		       RDY_fo_misc_notEmpty,
+
+		       fi_misc_enq_x,
+		       EN_fi_misc_enq,
+		       RDY_fi_misc_enq,
+
+		       fi_misc_notFull,
+		       RDY_fi_misc_notFull,
 
 		       fo_tv_info_first,
 		       RDY_fo_tv_info_first,
@@ -797,17 +809,26 @@ module mkAWSteria_Core(CLK_clk1,
   output fi_nmi_notFull;
   output RDY_fi_nmi_notFull;
 
-  // value method fo_pc_trace_first
-  output [191 : 0] fo_pc_trace_first;
-  output RDY_fo_pc_trace_first;
+  // value method fo_misc_first
+  output [31 : 0] fo_misc_first;
+  output RDY_fo_misc_first;
 
-  // action method fo_pc_trace_deq
-  input  EN_fo_pc_trace_deq;
-  output RDY_fo_pc_trace_deq;
+  // action method fo_misc_deq
+  input  EN_fo_misc_deq;
+  output RDY_fo_misc_deq;
 
-  // value method fo_pc_trace_notEmpty
-  output fo_pc_trace_notEmpty;
-  output RDY_fo_pc_trace_notEmpty;
+  // value method fo_misc_notEmpty
+  output fo_misc_notEmpty;
+  output RDY_fo_misc_notEmpty;
+
+  // action method fi_misc_enq
+  input  [31 : 0] fi_misc_enq_x;
+  input  EN_fi_misc_enq;
+  output RDY_fi_misc_enq;
+
+  // value method fi_misc_notFull
+  output fi_misc_notFull;
+  output RDY_fi_misc_notFull;
 
   // value method fo_tv_info_first
   output [607 : 0] fo_tv_info_first;
@@ -885,14 +906,15 @@ module mkAWSteria_Core(CLK_clk1,
   // signals for module outputs
   wire [607 : 0] fo_tv_info_first;
   wire [511 : 0] dma_S_rdata, mem_M_wdata;
-  wire [191 : 0] fo_pc_trace_first;
   wire [63 : 0] mem_M_araddr,
 		mem_M_awaddr,
 		mem_M_wstrb,
 		mmio_M_araddr,
 		mmio_M_awaddr,
 		mmio_M_wdata;
-  wire [31 : 0] se_control_status_response_first, se_dmi_response_first;
+  wire [31 : 0] fo_misc_first,
+		se_control_status_response_first,
+		se_dmi_response_first;
   wire [15 : 0] dma_S_bid,
 		dma_S_rid,
 		mem_M_arid,
@@ -936,11 +958,13 @@ module mkAWSteria_Core(CLK_clk1,
        RDY_cl_ndm_reset_response_enq,
        RDY_cl_ndm_reset_response_notFull,
        RDY_ext_interrupts,
+       RDY_fi_misc_enq,
+       RDY_fi_misc_notFull,
        RDY_fi_nmi_enq,
        RDY_fi_nmi_notFull,
-       RDY_fo_pc_trace_deq,
-       RDY_fo_pc_trace_first,
-       RDY_fo_pc_trace_notEmpty,
+       RDY_fo_misc_deq,
+       RDY_fo_misc_first,
+       RDY_fo_misc_notEmpty,
        RDY_fo_tv_info_deq,
        RDY_fo_tv_info_first,
        RDY_fo_tv_info_notEmpty,
@@ -962,8 +986,9 @@ module mkAWSteria_Core(CLK_clk1,
        dma_S_rlast,
        dma_S_rvalid,
        dma_S_wready,
+       fi_misc_notFull,
        fi_nmi_notFull,
-       fo_pc_trace_notEmpty,
+       fo_misc_notEmpty,
        fo_tv_info_notEmpty,
        mem_M_arlock,
        mem_M_arvalid,
@@ -992,7 +1017,6 @@ module mkAWSteria_Core(CLK_clk1,
   wire [530 : 0] core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$wget,
 		 core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$wget;
   wire [108 : 0] core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$wget,
-		 core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$wget,
 		 core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$wget,
 		 core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$wget,
 		 core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$wget,
@@ -1150,6 +1174,22 @@ module mkAWSteria_Core(CLK_clk1,
        core_reclocked_f_dmi_rsp$sENQ,
        core_reclocked_f_dmi_rsp$sFULL_N;
 
+  // ports of submodule core_reclocked_f_misc_from_host
+  wire [31 : 0] core_reclocked_f_misc_from_host$dD_OUT,
+		core_reclocked_f_misc_from_host$sD_IN;
+  wire core_reclocked_f_misc_from_host$dDEQ,
+       core_reclocked_f_misc_from_host$dEMPTY_N,
+       core_reclocked_f_misc_from_host$sENQ,
+       core_reclocked_f_misc_from_host$sFULL_N;
+
+  // ports of submodule core_reclocked_f_misc_to_host
+  wire [31 : 0] core_reclocked_f_misc_to_host$dD_OUT,
+		core_reclocked_f_misc_to_host$sD_IN;
+  wire core_reclocked_f_misc_to_host$dDEQ,
+       core_reclocked_f_misc_to_host$dEMPTY_N,
+       core_reclocked_f_misc_to_host$sENQ,
+       core_reclocked_f_misc_to_host$sFULL_N;
+
   // ports of submodule core_reclocked_f_ndm_reset_req
   wire core_reclocked_f_ndm_reset_req$dDEQ,
        core_reclocked_f_ndm_reset_req$dEMPTY_N,
@@ -1169,14 +1209,6 @@ module mkAWSteria_Core(CLK_clk1,
        core_reclocked_f_nmi$sD_IN,
        core_reclocked_f_nmi$sENQ,
        core_reclocked_f_nmi$sFULL_N;
-
-  // ports of submodule core_reclocked_f_pc_trace
-  wire [191 : 0] core_reclocked_f_pc_trace$dD_OUT,
-		 core_reclocked_f_pc_trace$sD_IN;
-  wire core_reclocked_f_pc_trace$dDEQ,
-       core_reclocked_f_pc_trace$dEMPTY_N,
-       core_reclocked_f_pc_trace$sENQ,
-       core_reclocked_f_pc_trace$sFULL_N;
 
   // ports of submodule core_reclocked_f_tv_info
   wire [607 : 0] core_reclocked_f_tv_info$dD_OUT,
@@ -1232,7 +1264,6 @@ module mkAWSteria_Core(CLK_clk1,
 		 core_single_clock$dma_S_wdata,
 		 core_single_clock$mem_M_rdata,
 		 core_single_clock$mem_M_wdata;
-  wire [191 : 0] core_single_clock$fo_pc_trace_first;
   wire [63 : 0] core_single_clock$dma_S_araddr,
 		core_single_clock$dma_S_awaddr,
 		core_single_clock$dma_S_wstrb,
@@ -1244,7 +1275,9 @@ module mkAWSteria_Core(CLK_clk1,
 		core_single_clock$mmio_M_rdata,
 		core_single_clock$mmio_M_wdata;
   wire [39 : 0] core_single_clock$se_dmi_request_enq_x;
-  wire [31 : 0] core_single_clock$se_control_status_request_enq_x,
+  wire [31 : 0] core_single_clock$fi_misc_enq_x,
+		core_single_clock$fo_misc_first,
+		core_single_clock$se_control_status_request_enq_x,
 		core_single_clock$se_control_status_response_first,
 		core_single_clock$se_dmi_response_first;
   wire [15 : 0] core_single_clock$dma_S_arid,
@@ -1312,8 +1345,9 @@ module mkAWSteria_Core(CLK_clk1,
   wire core_single_clock$EN_cl_ndm_reset_request_deq,
        core_single_clock$EN_cl_ndm_reset_response_enq,
        core_single_clock$EN_ext_interrupts,
+       core_single_clock$EN_fi_misc_enq,
        core_single_clock$EN_fi_nmi_enq,
-       core_single_clock$EN_fo_pc_trace_deq,
+       core_single_clock$EN_fo_misc_deq,
        core_single_clock$EN_fo_tv_info_deq,
        core_single_clock$EN_se_control_status_request_enq,
        core_single_clock$EN_se_control_status_response_deq,
@@ -1321,9 +1355,10 @@ module mkAWSteria_Core(CLK_clk1,
        core_single_clock$EN_se_dmi_response_deq,
        core_single_clock$RDY_cl_ndm_reset_request_deq,
        core_single_clock$RDY_cl_ndm_reset_response_enq,
+       core_single_clock$RDY_fi_misc_enq,
        core_single_clock$RDY_fi_nmi_enq,
-       core_single_clock$RDY_fo_pc_trace_deq,
-       core_single_clock$RDY_fo_pc_trace_first,
+       core_single_clock$RDY_fo_misc_deq,
+       core_single_clock$RDY_fo_misc_first,
        core_single_clock$RDY_fo_tv_info_deq,
        core_single_clock$RDY_fo_tv_info_first,
        core_single_clock$RDY_se_control_status_request_enq,
@@ -1382,6 +1417,7 @@ module mkAWSteria_Core(CLK_clk1,
   // rule scheduling signals
   wire CAN_FIRE_RL_core_reclocked_10_rl_connect,
        CAN_FIRE_RL_core_reclocked_11_rl_connect,
+       CAN_FIRE_RL_core_reclocked_12_rl_connect,
        CAN_FIRE_RL_core_reclocked_1_rl_rd_addr_channel,
        CAN_FIRE_RL_core_reclocked_1_rl_rd_data_channel,
        CAN_FIRE_RL_core_reclocked_1_rl_wr_addr_channel,
@@ -1489,8 +1525,9 @@ module mkAWSteria_Core(CLK_clk1,
        CAN_FIRE_dma_S_m_rready,
        CAN_FIRE_dma_S_m_wvalid,
        CAN_FIRE_ext_interrupts,
+       CAN_FIRE_fi_misc_enq,
        CAN_FIRE_fi_nmi_enq,
-       CAN_FIRE_fo_pc_trace_deq,
+       CAN_FIRE_fo_misc_deq,
        CAN_FIRE_fo_tv_info_deq,
        CAN_FIRE_mem_M_m_arready,
        CAN_FIRE_mem_M_m_awready,
@@ -1508,6 +1545,7 @@ module mkAWSteria_Core(CLK_clk1,
        CAN_FIRE_se_dmi_response_deq,
        WILL_FIRE_RL_core_reclocked_10_rl_connect,
        WILL_FIRE_RL_core_reclocked_11_rl_connect,
+       WILL_FIRE_RL_core_reclocked_12_rl_connect,
        WILL_FIRE_RL_core_reclocked_1_rl_rd_addr_channel,
        WILL_FIRE_RL_core_reclocked_1_rl_rd_data_channel,
        WILL_FIRE_RL_core_reclocked_1_rl_wr_addr_channel,
@@ -1615,8 +1653,9 @@ module mkAWSteria_Core(CLK_clk1,
        WILL_FIRE_dma_S_m_rready,
        WILL_FIRE_dma_S_m_wvalid,
        WILL_FIRE_ext_interrupts,
+       WILL_FIRE_fi_misc_enq,
        WILL_FIRE_fi_nmi_enq,
-       WILL_FIRE_fo_pc_trace_deq,
+       WILL_FIRE_fo_misc_deq,
        WILL_FIRE_fo_tv_info_deq,
        WILL_FIRE_mem_M_m_arready,
        WILL_FIRE_mem_M_m_awready,
@@ -2062,18 +2101,27 @@ module mkAWSteria_Core(CLK_clk1,
   assign fi_nmi_notFull = core_reclocked_f_nmi$sFULL_N ;
   assign RDY_fi_nmi_notFull = 1'd1 ;
 
-  // value method fo_pc_trace_first
-  assign fo_pc_trace_first = core_reclocked_f_pc_trace$dD_OUT ;
-  assign RDY_fo_pc_trace_first = core_reclocked_f_pc_trace$dEMPTY_N ;
+  // value method fo_misc_first
+  assign fo_misc_first = core_reclocked_f_misc_to_host$dD_OUT ;
+  assign RDY_fo_misc_first = core_reclocked_f_misc_to_host$dEMPTY_N ;
 
-  // action method fo_pc_trace_deq
-  assign RDY_fo_pc_trace_deq = core_reclocked_f_pc_trace$dEMPTY_N ;
-  assign CAN_FIRE_fo_pc_trace_deq = core_reclocked_f_pc_trace$dEMPTY_N ;
-  assign WILL_FIRE_fo_pc_trace_deq = EN_fo_pc_trace_deq ;
+  // action method fo_misc_deq
+  assign RDY_fo_misc_deq = core_reclocked_f_misc_to_host$dEMPTY_N ;
+  assign CAN_FIRE_fo_misc_deq = core_reclocked_f_misc_to_host$dEMPTY_N ;
+  assign WILL_FIRE_fo_misc_deq = EN_fo_misc_deq ;
 
-  // value method fo_pc_trace_notEmpty
-  assign fo_pc_trace_notEmpty = core_reclocked_f_pc_trace$dEMPTY_N ;
-  assign RDY_fo_pc_trace_notEmpty = 1'd1 ;
+  // value method fo_misc_notEmpty
+  assign fo_misc_notEmpty = core_reclocked_f_misc_to_host$dEMPTY_N ;
+  assign RDY_fo_misc_notEmpty = 1'd1 ;
+
+  // action method fi_misc_enq
+  assign RDY_fi_misc_enq = core_reclocked_f_misc_from_host$sFULL_N ;
+  assign CAN_FIRE_fi_misc_enq = core_reclocked_f_misc_from_host$sFULL_N ;
+  assign WILL_FIRE_fi_misc_enq = EN_fi_misc_enq ;
+
+  // value method fi_misc_notFull
+  assign fi_misc_notFull = core_reclocked_f_misc_from_host$sFULL_N ;
+  assign RDY_fi_misc_notFull = 1'd1 ;
 
   // value method fo_tv_info_first
   assign fo_tv_info_first = core_reclocked_f_tv_info$dD_OUT ;
@@ -2301,8 +2349,8 @@ module mkAWSteria_Core(CLK_clk1,
 
   // submodule core_reclocked_f_control_status_req
   SyncFIFO #(.dataWidth(32'd32),
-	     .depth(32'd2),
-	     .indxWidth(32'd1)) core_reclocked_f_control_status_req(.sCLK(CLK),
+	     .depth(32'd4),
+	     .indxWidth(32'd2)) core_reclocked_f_control_status_req(.sCLK(CLK),
 								    .dCLK(CLK_clk2),
 								    .sRST(RST_N),
 								    .sD_IN(core_reclocked_f_control_status_req$sD_IN),
@@ -2314,8 +2362,8 @@ module mkAWSteria_Core(CLK_clk1,
 
   // submodule core_reclocked_f_control_status_rsp
   SyncFIFO #(.dataWidth(32'd32),
-	     .depth(32'd2),
-	     .indxWidth(32'd1)) core_reclocked_f_control_status_rsp(.sCLK(CLK_clk2),
+	     .depth(32'd4),
+	     .indxWidth(32'd2)) core_reclocked_f_control_status_rsp(.sCLK(CLK_clk2),
 								    .dCLK(CLK),
 								    .sRST(reset_for_core$OUT_RST),
 								    .sD_IN(core_reclocked_f_control_status_rsp$sD_IN),
@@ -2327,8 +2375,8 @@ module mkAWSteria_Core(CLK_clk1,
 
   // submodule core_reclocked_f_dmi_req
   SyncFIFO #(.dataWidth(32'd40),
-	     .depth(32'd2),
-	     .indxWidth(32'd1)) core_reclocked_f_dmi_req(.sCLK(CLK),
+	     .depth(32'd4),
+	     .indxWidth(32'd2)) core_reclocked_f_dmi_req(.sCLK(CLK),
 							 .dCLK(CLK_clk2),
 							 .sRST(RST_N),
 							 .sD_IN(core_reclocked_f_dmi_req$sD_IN),
@@ -2340,8 +2388,8 @@ module mkAWSteria_Core(CLK_clk1,
 
   // submodule core_reclocked_f_dmi_rsp
   SyncFIFO #(.dataWidth(32'd32),
-	     .depth(32'd2),
-	     .indxWidth(32'd1)) core_reclocked_f_dmi_rsp(.sCLK(CLK_clk2),
+	     .depth(32'd4),
+	     .indxWidth(32'd2)) core_reclocked_f_dmi_rsp(.sCLK(CLK_clk2),
 							 .dCLK(CLK),
 							 .sRST(reset_for_core$OUT_RST),
 							 .sD_IN(core_reclocked_f_dmi_rsp$sD_IN),
@@ -2351,9 +2399,35 @@ module mkAWSteria_Core(CLK_clk1,
 							 .dEMPTY_N(core_reclocked_f_dmi_rsp$dEMPTY_N),
 							 .dD_OUT(core_reclocked_f_dmi_rsp$dD_OUT));
 
+  // submodule core_reclocked_f_misc_from_host
+  SyncFIFO #(.dataWidth(32'd32),
+	     .depth(32'd4),
+	     .indxWidth(32'd2)) core_reclocked_f_misc_from_host(.sCLK(CLK),
+								.dCLK(CLK_clk2),
+								.sRST(RST_N),
+								.sD_IN(core_reclocked_f_misc_from_host$sD_IN),
+								.sENQ(core_reclocked_f_misc_from_host$sENQ),
+								.dDEQ(core_reclocked_f_misc_from_host$dDEQ),
+								.sFULL_N(core_reclocked_f_misc_from_host$sFULL_N),
+								.dEMPTY_N(core_reclocked_f_misc_from_host$dEMPTY_N),
+								.dD_OUT(core_reclocked_f_misc_from_host$dD_OUT));
+
+  // submodule core_reclocked_f_misc_to_host
+  SyncFIFO #(.dataWidth(32'd32),
+	     .depth(32'd4),
+	     .indxWidth(32'd2)) core_reclocked_f_misc_to_host(.sCLK(CLK_clk2),
+							      .dCLK(CLK),
+							      .sRST(reset_for_core$OUT_RST),
+							      .sD_IN(core_reclocked_f_misc_to_host$sD_IN),
+							      .sENQ(core_reclocked_f_misc_to_host$sENQ),
+							      .dDEQ(core_reclocked_f_misc_to_host$dDEQ),
+							      .sFULL_N(core_reclocked_f_misc_to_host$sFULL_N),
+							      .dEMPTY_N(core_reclocked_f_misc_to_host$dEMPTY_N),
+							      .dD_OUT(core_reclocked_f_misc_to_host$dD_OUT));
+
   // submodule core_reclocked_f_ndm_reset_req
-  SyncFIFO0 #(.depth(32'd2),
-	      .indxWidth(32'd1)) core_reclocked_f_ndm_reset_req(.sCLK(CLK_clk2),
+  SyncFIFO0 #(.depth(32'd4),
+	      .indxWidth(32'd2)) core_reclocked_f_ndm_reset_req(.sCLK(CLK_clk2),
 								.dCLK(CLK),
 								.sRST(reset_for_core$OUT_RST),
 								.sENQ(core_reclocked_f_ndm_reset_req$sENQ),
@@ -2362,8 +2436,8 @@ module mkAWSteria_Core(CLK_clk1,
 								.dEMPTY_N(core_reclocked_f_ndm_reset_req$dEMPTY_N));
 
   // submodule core_reclocked_f_ndm_reset_rsp
-  SyncFIFO0 #(.depth(32'd2),
-	      .indxWidth(32'd1)) core_reclocked_f_ndm_reset_rsp(.sCLK(CLK),
+  SyncFIFO0 #(.depth(32'd4),
+	      .indxWidth(32'd2)) core_reclocked_f_ndm_reset_rsp(.sCLK(CLK),
 								.dCLK(CLK_clk2),
 								.sRST(RST_N),
 								.sENQ(core_reclocked_f_ndm_reset_rsp$sENQ),
@@ -2373,8 +2447,8 @@ module mkAWSteria_Core(CLK_clk1,
 
   // submodule core_reclocked_f_nmi
   SyncFIFO #(.dataWidth(32'd1),
-	     .depth(32'd2),
-	     .indxWidth(32'd1)) core_reclocked_f_nmi(.sCLK(CLK),
+	     .depth(32'd4),
+	     .indxWidth(32'd2)) core_reclocked_f_nmi(.sCLK(CLK),
 						     .dCLK(CLK_clk2),
 						     .sRST(RST_N),
 						     .sD_IN(core_reclocked_f_nmi$sD_IN),
@@ -2384,23 +2458,10 @@ module mkAWSteria_Core(CLK_clk1,
 						     .dEMPTY_N(core_reclocked_f_nmi$dEMPTY_N),
 						     .dD_OUT(core_reclocked_f_nmi$dD_OUT));
 
-  // submodule core_reclocked_f_pc_trace
-  SyncFIFO #(.dataWidth(32'd192),
-	     .depth(32'd2),
-	     .indxWidth(32'd1)) core_reclocked_f_pc_trace(.sCLK(CLK_clk2),
-							  .dCLK(CLK),
-							  .sRST(reset_for_core$OUT_RST),
-							  .sD_IN(core_reclocked_f_pc_trace$sD_IN),
-							  .sENQ(core_reclocked_f_pc_trace$sENQ),
-							  .dDEQ(core_reclocked_f_pc_trace$dDEQ),
-							  .sFULL_N(core_reclocked_f_pc_trace$sFULL_N),
-							  .dEMPTY_N(core_reclocked_f_pc_trace$dEMPTY_N),
-							  .dD_OUT(core_reclocked_f_pc_trace$dD_OUT));
-
   // submodule core_reclocked_f_tv_info
   SyncFIFO #(.dataWidth(32'd608),
-	     .depth(32'd2),
-	     .indxWidth(32'd1)) core_reclocked_f_tv_info(.sCLK(CLK_clk2),
+	     .depth(32'd4),
+	     .indxWidth(32'd2)) core_reclocked_f_tv_info(.sCLK(CLK_clk2),
 							 .dCLK(CLK),
 							 .sRST(reset_for_core$OUT_RST),
 							 .sD_IN(core_reclocked_f_tv_info$sD_IN),
@@ -2507,6 +2568,7 @@ module mkAWSteria_Core(CLK_clk1,
 						 .dma_S_wstrb(core_single_clock$dma_S_wstrb),
 						 .dma_S_wvalid(core_single_clock$dma_S_wvalid),
 						 .ext_interrupts_x(core_single_clock$ext_interrupts_x),
+						 .fi_misc_enq_x(core_single_clock$fi_misc_enq_x),
 						 .fi_nmi_enq_x(core_single_clock$fi_nmi_enq_x),
 						 .mem_M_arready(core_single_clock$mem_M_arready),
 						 .mem_M_awready(core_single_clock$mem_M_awready),
@@ -2534,7 +2596,8 @@ module mkAWSteria_Core(CLK_clk1,
 						 .se_dmi_request_enq_x(core_single_clock$se_dmi_request_enq_x),
 						 .EN_ext_interrupts(core_single_clock$EN_ext_interrupts),
 						 .EN_fi_nmi_enq(core_single_clock$EN_fi_nmi_enq),
-						 .EN_fo_pc_trace_deq(core_single_clock$EN_fo_pc_trace_deq),
+						 .EN_fo_misc_deq(core_single_clock$EN_fo_misc_deq),
+						 .EN_fi_misc_enq(core_single_clock$EN_fi_misc_enq),
 						 .EN_fo_tv_info_deq(core_single_clock$EN_fo_tv_info_deq),
 						 .EN_se_dmi_request_enq(core_single_clock$EN_se_dmi_request_enq),
 						 .EN_se_dmi_response_deq(core_single_clock$EN_se_dmi_response_deq),
@@ -2613,11 +2676,14 @@ module mkAWSteria_Core(CLK_clk1,
 						 .RDY_fi_nmi_enq(core_single_clock$RDY_fi_nmi_enq),
 						 .fi_nmi_notFull(),
 						 .RDY_fi_nmi_notFull(),
-						 .fo_pc_trace_first(core_single_clock$fo_pc_trace_first),
-						 .RDY_fo_pc_trace_first(core_single_clock$RDY_fo_pc_trace_first),
-						 .RDY_fo_pc_trace_deq(core_single_clock$RDY_fo_pc_trace_deq),
-						 .fo_pc_trace_notEmpty(),
-						 .RDY_fo_pc_trace_notEmpty(),
+						 .fo_misc_first(core_single_clock$fo_misc_first),
+						 .RDY_fo_misc_first(core_single_clock$RDY_fo_misc_first),
+						 .RDY_fo_misc_deq(core_single_clock$RDY_fo_misc_deq),
+						 .fo_misc_notEmpty(),
+						 .RDY_fo_misc_notEmpty(),
+						 .RDY_fi_misc_enq(core_single_clock$RDY_fi_misc_enq),
+						 .fi_misc_notFull(),
+						 .RDY_fi_misc_notFull(),
 						 .fo_tv_info_first(core_single_clock$fo_tv_info_first),
 						 .RDY_fo_tv_info_first(core_single_clock$RDY_fo_tv_info_first),
 						 .RDY_fo_tv_info_deq(core_single_clock$RDY_fo_tv_info_deq),
@@ -3244,76 +3310,72 @@ module mkAWSteria_Core(CLK_clk1,
 
   // rule RL_core_reclocked_4_rl_connect
   assign CAN_FIRE_RL_core_reclocked_4_rl_connect =
-	     core_reclocked_f_pc_trace$sFULL_N &&
-	     core_single_clock$RDY_fo_pc_trace_deq &&
-	     core_single_clock$RDY_fo_pc_trace_first ;
+	     core_reclocked_f_misc_from_host$dEMPTY_N &&
+	     core_single_clock$RDY_fi_misc_enq ;
   assign WILL_FIRE_RL_core_reclocked_4_rl_connect =
 	     CAN_FIRE_RL_core_reclocked_4_rl_connect ;
 
   // rule RL_core_reclocked_5_rl_connect
   assign CAN_FIRE_RL_core_reclocked_5_rl_connect =
-	     core_reclocked_f_tv_info$sFULL_N &&
-	     core_single_clock$RDY_fo_tv_info_deq &&
-	     core_single_clock$RDY_fo_tv_info_first ;
+	     core_reclocked_f_misc_to_host$sFULL_N &&
+	     core_single_clock$RDY_fo_misc_deq &&
+	     core_single_clock$RDY_fo_misc_first ;
   assign WILL_FIRE_RL_core_reclocked_5_rl_connect =
 	     CAN_FIRE_RL_core_reclocked_5_rl_connect ;
 
   // rule RL_core_reclocked_6_rl_connect
   assign CAN_FIRE_RL_core_reclocked_6_rl_connect =
-	     core_reclocked_f_dmi_req$dEMPTY_N &&
-	     core_single_clock$RDY_se_dmi_request_enq ;
+	     core_reclocked_f_tv_info$sFULL_N &&
+	     core_single_clock$RDY_fo_tv_info_deq &&
+	     core_single_clock$RDY_fo_tv_info_first ;
   assign WILL_FIRE_RL_core_reclocked_6_rl_connect =
 	     CAN_FIRE_RL_core_reclocked_6_rl_connect ;
 
   // rule RL_core_reclocked_7_rl_connect
   assign CAN_FIRE_RL_core_reclocked_7_rl_connect =
-	     core_reclocked_f_dmi_rsp$sFULL_N &&
-	     core_single_clock$RDY_se_dmi_response_deq &&
-	     core_single_clock$RDY_se_dmi_response_first ;
+	     core_reclocked_f_dmi_req$dEMPTY_N &&
+	     core_single_clock$RDY_se_dmi_request_enq ;
   assign WILL_FIRE_RL_core_reclocked_7_rl_connect =
 	     CAN_FIRE_RL_core_reclocked_7_rl_connect ;
 
   // rule RL_core_reclocked_8_rl_connect
   assign CAN_FIRE_RL_core_reclocked_8_rl_connect =
-	     core_reclocked_f_ndm_reset_req$sFULL_N &&
-	     core_single_clock$RDY_cl_ndm_reset_request_deq ;
+	     core_reclocked_f_dmi_rsp$sFULL_N &&
+	     core_single_clock$RDY_se_dmi_response_deq &&
+	     core_single_clock$RDY_se_dmi_response_first ;
   assign WILL_FIRE_RL_core_reclocked_8_rl_connect =
 	     CAN_FIRE_RL_core_reclocked_8_rl_connect ;
 
   // rule RL_core_reclocked_9_rl_connect
   assign CAN_FIRE_RL_core_reclocked_9_rl_connect =
-	     core_reclocked_f_ndm_reset_rsp$dEMPTY_N &&
-	     core_single_clock$RDY_cl_ndm_reset_response_enq ;
+	     core_reclocked_f_ndm_reset_req$sFULL_N &&
+	     core_single_clock$RDY_cl_ndm_reset_request_deq ;
   assign WILL_FIRE_RL_core_reclocked_9_rl_connect =
 	     CAN_FIRE_RL_core_reclocked_9_rl_connect ;
 
   // rule RL_core_reclocked_10_rl_connect
   assign CAN_FIRE_RL_core_reclocked_10_rl_connect =
-	     core_reclocked_f_control_status_req$dEMPTY_N &&
-	     core_single_clock$RDY_se_control_status_request_enq ;
+	     core_reclocked_f_ndm_reset_rsp$dEMPTY_N &&
+	     core_single_clock$RDY_cl_ndm_reset_response_enq ;
   assign WILL_FIRE_RL_core_reclocked_10_rl_connect =
 	     CAN_FIRE_RL_core_reclocked_10_rl_connect ;
 
   // rule RL_core_reclocked_11_rl_connect
   assign CAN_FIRE_RL_core_reclocked_11_rl_connect =
-	     core_reclocked_f_control_status_rsp$sFULL_N &&
-	     core_single_clock$RDY_se_control_status_response_deq &&
-	     core_single_clock$RDY_se_control_status_response_first ;
+	     core_reclocked_f_control_status_req$dEMPTY_N &&
+	     core_single_clock$RDY_se_control_status_request_enq ;
   assign WILL_FIRE_RL_core_reclocked_11_rl_connect =
 	     CAN_FIRE_RL_core_reclocked_11_rl_connect ;
 
+  // rule RL_core_reclocked_12_rl_connect
+  assign CAN_FIRE_RL_core_reclocked_12_rl_connect =
+	     core_reclocked_f_control_status_rsp$sFULL_N &&
+	     core_single_clock$RDY_se_control_status_response_deq &&
+	     core_single_clock$RDY_se_control_status_response_first ;
+  assign WILL_FIRE_RL_core_reclocked_12_rl_connect =
+	     CAN_FIRE_RL_core_reclocked_12_rl_connect ;
+
   // inlined wires
-  assign core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$wget =
-	     { core_single_clock$mem_M_awid,
-	       core_single_clock$mem_M_awaddr,
-	       core_single_clock$mem_M_awlen,
-	       core_single_clock$mem_M_awsize,
-	       core_single_clock$mem_M_awburst,
-	       core_single_clock$mem_M_awlock,
-	       core_single_clock$mem_M_awcache,
-	       core_single_clock$mem_M_awprot,
-	       core_single_clock$mem_M_awqos,
-	       core_single_clock$mem_M_awregion } ;
   assign core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas =
 	     core_single_clock$mem_M_awvalid &&
 	     core_reclocked_ddr_AXI4_clock_crossing_f_aw$sFULL_N ;
@@ -3499,7 +3561,16 @@ module mkAWSteria_Core(CLK_clk1,
 
   // submodule core_reclocked_ddr_AXI4_clock_crossing_f_aw
   assign core_reclocked_ddr_AXI4_clock_crossing_f_aw$sD_IN =
-	     core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$wget ;
+	     { core_single_clock$mem_M_awid,
+	       core_single_clock$mem_M_awaddr,
+	       core_single_clock$mem_M_awlen,
+	       core_single_clock$mem_M_awsize,
+	       core_single_clock$mem_M_awburst,
+	       core_single_clock$mem_M_awlock,
+	       core_single_clock$mem_M_awcache,
+	       core_single_clock$mem_M_awprot,
+	       core_single_clock$mem_M_awqos,
+	       core_single_clock$mem_M_awregion } ;
   assign core_reclocked_ddr_AXI4_clock_crossing_f_aw$sENQ =
 	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq ;
   assign core_reclocked_ddr_AXI4_clock_crossing_f_aw$dDEQ =
@@ -3575,13 +3646,13 @@ module mkAWSteria_Core(CLK_clk1,
   assign core_reclocked_f_control_status_req$sENQ =
 	     EN_se_control_status_request_enq ;
   assign core_reclocked_f_control_status_req$dDEQ =
-	     CAN_FIRE_RL_core_reclocked_10_rl_connect ;
+	     CAN_FIRE_RL_core_reclocked_11_rl_connect ;
 
   // submodule core_reclocked_f_control_status_rsp
   assign core_reclocked_f_control_status_rsp$sD_IN =
 	     core_single_clock$se_control_status_response_first ;
   assign core_reclocked_f_control_status_rsp$sENQ =
-	     CAN_FIRE_RL_core_reclocked_11_rl_connect ;
+	     CAN_FIRE_RL_core_reclocked_12_rl_connect ;
   assign core_reclocked_f_control_status_rsp$dDEQ =
 	     EN_se_control_status_response_deq ;
 
@@ -3589,41 +3660,47 @@ module mkAWSteria_Core(CLK_clk1,
   assign core_reclocked_f_dmi_req$sD_IN = se_dmi_request_enq_x ;
   assign core_reclocked_f_dmi_req$sENQ = EN_se_dmi_request_enq ;
   assign core_reclocked_f_dmi_req$dDEQ =
-	     CAN_FIRE_RL_core_reclocked_6_rl_connect ;
+	     CAN_FIRE_RL_core_reclocked_7_rl_connect ;
 
   // submodule core_reclocked_f_dmi_rsp
   assign core_reclocked_f_dmi_rsp$sD_IN =
 	     core_single_clock$se_dmi_response_first ;
   assign core_reclocked_f_dmi_rsp$sENQ =
-	     CAN_FIRE_RL_core_reclocked_7_rl_connect ;
+	     CAN_FIRE_RL_core_reclocked_8_rl_connect ;
   assign core_reclocked_f_dmi_rsp$dDEQ = EN_se_dmi_response_deq ;
+
+  // submodule core_reclocked_f_misc_from_host
+  assign core_reclocked_f_misc_from_host$sD_IN = fi_misc_enq_x ;
+  assign core_reclocked_f_misc_from_host$sENQ = EN_fi_misc_enq ;
+  assign core_reclocked_f_misc_from_host$dDEQ =
+	     CAN_FIRE_RL_core_reclocked_4_rl_connect ;
+
+  // submodule core_reclocked_f_misc_to_host
+  assign core_reclocked_f_misc_to_host$sD_IN =
+	     core_single_clock$fo_misc_first ;
+  assign core_reclocked_f_misc_to_host$sENQ =
+	     CAN_FIRE_RL_core_reclocked_5_rl_connect ;
+  assign core_reclocked_f_misc_to_host$dDEQ = EN_fo_misc_deq ;
 
   // submodule core_reclocked_f_ndm_reset_req
   assign core_reclocked_f_ndm_reset_req$sENQ =
-	     CAN_FIRE_RL_core_reclocked_8_rl_connect ;
+	     CAN_FIRE_RL_core_reclocked_9_rl_connect ;
   assign core_reclocked_f_ndm_reset_req$dDEQ = EN_cl_ndm_reset_request_deq ;
 
   // submodule core_reclocked_f_ndm_reset_rsp
   assign core_reclocked_f_ndm_reset_rsp$sENQ = EN_cl_ndm_reset_response_enq ;
   assign core_reclocked_f_ndm_reset_rsp$dDEQ =
-	     CAN_FIRE_RL_core_reclocked_9_rl_connect ;
+	     CAN_FIRE_RL_core_reclocked_10_rl_connect ;
 
   // submodule core_reclocked_f_nmi
   assign core_reclocked_f_nmi$sD_IN = fi_nmi_enq_x ;
   assign core_reclocked_f_nmi$sENQ = EN_fi_nmi_enq ;
   assign core_reclocked_f_nmi$dDEQ = CAN_FIRE_RL_core_reclocked_3_rl_connect ;
 
-  // submodule core_reclocked_f_pc_trace
-  assign core_reclocked_f_pc_trace$sD_IN =
-	     core_single_clock$fo_pc_trace_first ;
-  assign core_reclocked_f_pc_trace$sENQ =
-	     CAN_FIRE_RL_core_reclocked_4_rl_connect ;
-  assign core_reclocked_f_pc_trace$dDEQ = EN_fo_pc_trace_deq ;
-
   // submodule core_reclocked_f_tv_info
   assign core_reclocked_f_tv_info$sD_IN = core_single_clock$fo_tv_info_first ;
   assign core_reclocked_f_tv_info$sENQ =
-	     CAN_FIRE_RL_core_reclocked_5_rl_connect ;
+	     CAN_FIRE_RL_core_reclocked_6_rl_connect ;
   assign core_reclocked_f_tv_info$dDEQ = EN_fo_tv_info_deq ;
 
   // submodule core_reclocked_mmio_AXI4_clock_crossing_f_ar
@@ -3767,6 +3844,8 @@ module mkAWSteria_Core(CLK_clk1,
   assign core_single_clock$dma_S_wvalid =
 	     core_reclocked_dma_AXI4_clock_crossing_f_w$dEMPTY_N ;
   assign core_single_clock$ext_interrupts_x = core_reclocked_rg_irqs ;
+  assign core_single_clock$fi_misc_enq_x =
+	     core_reclocked_f_misc_from_host$dD_OUT ;
   assign core_single_clock$fi_nmi_enq_x = core_reclocked_f_nmi$dD_OUT ;
   assign core_single_clock$mem_M_arready =
 	     core_reclocked_ddr_AXI4_clock_crossing_f_ar$sFULL_N ;
@@ -3841,22 +3920,24 @@ module mkAWSteria_Core(CLK_clk1,
   assign core_single_clock$EN_ext_interrupts = 1'd1 ;
   assign core_single_clock$EN_fi_nmi_enq =
 	     CAN_FIRE_RL_core_reclocked_3_rl_connect ;
-  assign core_single_clock$EN_fo_pc_trace_deq =
+  assign core_single_clock$EN_fo_misc_deq =
+	     CAN_FIRE_RL_core_reclocked_5_rl_connect ;
+  assign core_single_clock$EN_fi_misc_enq =
 	     CAN_FIRE_RL_core_reclocked_4_rl_connect ;
   assign core_single_clock$EN_fo_tv_info_deq =
-	     CAN_FIRE_RL_core_reclocked_5_rl_connect ;
-  assign core_single_clock$EN_se_dmi_request_enq =
 	     CAN_FIRE_RL_core_reclocked_6_rl_connect ;
-  assign core_single_clock$EN_se_dmi_response_deq =
+  assign core_single_clock$EN_se_dmi_request_enq =
 	     CAN_FIRE_RL_core_reclocked_7_rl_connect ;
-  assign core_single_clock$EN_cl_ndm_reset_request_deq =
+  assign core_single_clock$EN_se_dmi_response_deq =
 	     CAN_FIRE_RL_core_reclocked_8_rl_connect ;
-  assign core_single_clock$EN_cl_ndm_reset_response_enq =
+  assign core_single_clock$EN_cl_ndm_reset_request_deq =
 	     CAN_FIRE_RL_core_reclocked_9_rl_connect ;
-  assign core_single_clock$EN_se_control_status_request_enq =
+  assign core_single_clock$EN_cl_ndm_reset_response_enq =
 	     CAN_FIRE_RL_core_reclocked_10_rl_connect ;
-  assign core_single_clock$EN_se_control_status_response_deq =
+  assign core_single_clock$EN_se_control_status_request_enq =
 	     CAN_FIRE_RL_core_reclocked_11_rl_connect ;
+  assign core_single_clock$EN_se_control_status_response_deq =
+	     CAN_FIRE_RL_core_reclocked_12_rl_connect ;
 
   // submodule reset_for_core
   assign reset_for_core$ASSERT_IN = 1'b0 ;

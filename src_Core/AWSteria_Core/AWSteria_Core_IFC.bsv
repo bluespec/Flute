@@ -30,8 +30,7 @@ import AXI4_Types :: *;
 // Local: Debug Module interface
 import DM_Common :: *;    // for Server_DMI
 
-// Local: Trace and Tandem Verification
-import PC_Trace :: *;
+// Local: Tandem Verification
 import TV_Info  :: *;
 
 // ================================================================
@@ -110,9 +109,14 @@ interface AWSteria_Core_IFC #(numeric type wd_id_mem,
    interface FIFOF_I #(Bool) fi_nmi;
 
    // ----------------------------------------------------------------
-   // Trace and Tandem Verification output
+   // Misc I/O streams
 
-   interface FIFOF_O #(PC_Trace) fo_pc_trace;
+   interface FIFOF_O #(Bit #(32)) fo_misc;
+   interface FIFOF_I #(Bit #(32)) fi_misc;
+
+   // ----------------------------------------------------------------
+   // Tandem Verification output
+
    interface FIFOF_O #(TV_Info)  fo_tv_info;
 
    // ----------------------------------------------------------------
