@@ -28,13 +28,14 @@ help_v: help  show_Makefile_Params
 # Defs of resources etc.
 
 $(info INFO: use 'make help' to show current settings.)
+$(info INFO: use 'make help_' to also show Makefile params.)
 $(info INFO: Including Makefile_Params.mk which should define paths to external resources.)
 
 include Makefile_Params.mk
 
 # Target platform (chooses clock speed etc.)
-# PLATFORM_TARGET = PLATFORM_VCU118
-PLATFORM_TARGET = PLATFORM_AWSF1
+# PLATFORM_TARGET = PLATFORM_AWSF1
+PLATFORM_TARGET = PLATFORM_VCU118
 
 # ================================================================
 # Core/CPU architectural configs
@@ -78,7 +79,7 @@ BSC_COMPILATION_FLAGS += -D INCLUDE_AWSTERIA_CORE_IFC_CLOCK_CROSSING
 BSC_COMPILATION_FLAGS += -D $(PLATFORM_TARGET)
 
 # Debugging and tracing
-BSC_COMPILATION_FLAGS += -D INCLUDE_PC_TRACE
+# BSC_COMPILATION_FLAGS += -D INCLUDE_PC_TRACE
 BSC_COMPILATION_FLAGS += -D INCLUDE_GDB_CONTROL
 # BSC_COMPILATION_FLAGS += -D INCLUDE_TANDEM_VERIF
 

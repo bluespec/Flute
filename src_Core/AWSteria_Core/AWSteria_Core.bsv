@@ -143,8 +143,8 @@ module mkAWSteria_Core #(Clock clk1,        // extra clock
    // Choose clock, depending on target platform.
    // One of these must be defined.
 `ifdef PLATFORM_AWSF1
-   let clk_core = clk1;    // 125 MHz
-   messageM ("    Core clock is clk1");
+   let clk_core = clk4;    //  75 MHz
+   messageM ("    Core clock is clk4");
 `endif
 `ifdef PLATFORM_VCU118
    let clk_core = clk2;    // 100 MHz

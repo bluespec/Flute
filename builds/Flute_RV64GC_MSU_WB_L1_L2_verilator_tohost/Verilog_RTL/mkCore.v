@@ -1475,8 +1475,8 @@ module mkCore(RST_N_dm_power_on_reset,
   // synopsys translate_on
 
   // remaining internal signals
-  wire plic_RDY_server_reset_request_put_AND_fabric_1_ETC___d8,
-       plic_RDY_server_reset_response_get__4_AND_cpu__ETC___d20;
+  wire near_mem_io_RDY_server_reset_response_get__4_A_ETC___d20,
+       plic_RDY_server_reset_request_put_AND_fabric_1_ETC___d8;
 
   // action method cpu_reset_server_request_put
   assign RDY_cpu_reset_server_request_put = f_reset_reqs$FULL_N ;
@@ -2389,8 +2389,8 @@ module mkCore(RST_N_dm_power_on_reset,
 
   // rule RL_rl_cpu_hart0_reset_complete
   assign CAN_FIRE_RL_rl_cpu_hart0_reset_complete =
-	     near_mem_io$RDY_server_reset_response_get &&
-	     plic_RDY_server_reset_response_get__4_AND_cpu__ETC___d20 ;
+	     near_mem_io$RDY_set_addr_map &&
+	     near_mem_io_RDY_server_reset_response_get__4_A_ETC___d20 ;
   assign WILL_FIRE_RL_rl_cpu_hart0_reset_complete =
 	     CAN_FIRE_RL_rl_cpu_hart0_reset_complete ;
 
@@ -2484,8 +2484,8 @@ module mkCore(RST_N_dm_power_on_reset,
   // submodule f_reset_rsps
   assign f_reset_rsps$D_IN = cpu$hart0_server_reset_response_get ;
   assign f_reset_rsps$ENQ =
-	     near_mem_io$RDY_server_reset_response_get &&
-	     plic_RDY_server_reset_response_get__4_AND_cpu__ETC___d20 ;
+	     near_mem_io$RDY_set_addr_map &&
+	     near_mem_io_RDY_server_reset_response_get__4_A_ETC___d20 ;
   assign f_reset_rsps$DEQ = EN_cpu_reset_server_response_get ;
   assign f_reset_rsps$CLR = 1'b0 ;
 
@@ -2670,15 +2670,15 @@ module mkCore(RST_N_dm_power_on_reset,
   assign plic$EN_set_addr_map = CAN_FIRE_RL_rl_cpu_hart0_reset_complete ;
 
   // remaining internal signals
+  assign near_mem_io_RDY_server_reset_response_get__4_A_ETC___d20 =
+	     near_mem_io$RDY_server_reset_response_get &&
+	     plic$RDY_server_reset_response_get &&
+	     cpu$RDY_hart0_server_reset_response_get &&
+	     f_reset_rsps$FULL_N ;
   assign plic_RDY_server_reset_request_put_AND_fabric_1_ETC___d8 =
 	     plic$RDY_server_reset_request_put && fabric_1x3$RDY_reset &&
 	     cpu$RDY_hart0_server_reset_request_put &&
 	     f_reset_reqs$EMPTY_N ;
-  assign plic_RDY_server_reset_response_get__4_AND_cpu__ETC___d20 =
-	     plic$RDY_server_reset_response_get &&
-	     cpu$RDY_hart0_server_reset_response_get &&
-	     near_mem_io$RDY_set_addr_map &&
-	     f_reset_rsps$FULL_N ;
 
   // handling of system tasks
 

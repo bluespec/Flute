@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2021 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2022 Bluespec, Inc. All Rights Reserved
 
 package CPU_Stage2;
 
@@ -19,6 +19,14 @@ package CPU_Stage2;
 //         DM
 //             WB
 // i.e., 8 spaces for this stage.
+
+// Below,
+//   Option 1 is the normal bypass of an Stage2 output back to Stage 1:
+//       BYPASS_RD_RDVAL = bypass carries both RD and RDVAL
+//       This is a longer critical path.
+//   Option 2 delays the bypass to Stage 3
+//       BYPASS_RD_RDVAL = bypass carries RD but not RDVAL
+//       This is a shorter critical path.
 
 // ================================================================
 // Exports
@@ -206,13 +214,19 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 					};
       end
 
-      // This stage is just relaying ALU results from previous stage to next stage
+      // ----------------
+      // Path: No-op (just relaying ALU results from previous stage to next stage)
       else if (rg_stage2.op_stage2 == OP_Stage2_ALU) begin
 	 let data_to_stage3 = data_to_stage3_base;
 	 data_to_stage3.rd_valid = True;
 
 	 let bypass = bypass_base;
+
+	 // Option 1: longer critical path: data bypassed back to previous stage
 	 bypass.bypass_state = BYPASS_RD_RDVAL;
+
+	 // Option 2: shorter critical path: data not bypassed to previous stage
+	 // bypass.bypass_state = BYPASS_RD;
 
 	 output_stage2 = Output_Stage2 {ostatus         : OSTATUS_PIPE,
 					trap_info       : ?,
@@ -224,7 +238,8 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 					};
       end
 
-      // This stage is doing a LOAD or AMO
+      // ----------------
+      // Path: DMem (LOADs and AMOs)
       else if (   (rg_stage2.op_stage2 == OP_Stage2_LD)
 `ifdef ISA_A
 	       || (rg_stage2.op_stage2 == OP_Stage2_AMO)
@@ -277,31 +292,25 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 `ifdef ISA_F
                // Bypassing FPR value.
                if (rg_stage2.rd_in_fpr) begin
-		  // Choose one of the following two options
+		  // Option 1: longer critical path: data bypassed back to previous stage
+		  fbypass.bypass_state = ((ostatus == OSTATUS_PIPE)
+					  ? BYPASS_RD_RDVAL : BYPASS_RD);
+		  fbypass.rd_val       = data_to_stage3.frd_val;
 
-		  // Option 1: longer critical path, since the data is bypassed back into previous stage.
-		  // We use data_to_stage3.rd_val since nanboxing has been done.
-		  // fbypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
-		  // fbypass.rd_val       = data_to_stage3.frd_val;
-
-		  // Option 2: shorter critical path, since the data is not bypassed into previous stage,
-		  // (bypassing is delayed until the next stage).
-		  fbypass.bypass_state = BYPASS_RD;
+		  // Option 2: shorter critical path: data not bypassed to previous stage
+		  // fbypass.bypass_state = BYPASS_RD;
                end
 `endif
 
                // Bypassing GPR values
                if (rg_stage2.rd != 0) begin    // TODO: is this test necessary?
-		  // Choose one of the following two options
+		  // Option 1: longer critical path: data bypassed back to previous stage
+		  bypass.bypass_state = ((ostatus == OSTATUS_PIPE)
+					 ? BYPASS_RD_RDVAL : BYPASS_RD);
+		  bypass.rd_val       = result;
 
-		  // Option 1: longer critical path, since the data is bypassed back into previous stage.
-		  // We use data_to_stage3.rd_val since nanboxing has been done.
-		  // bypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
-		  // bypass.rd_val       = result;
-
-		  // Option 2: shorter critical path, since the data is not bypassed into previous stage,
-		  // (the bypassing is effectively delayed until the next stage).
-		  bypass.bypass_state = BYPASS_RD;
+		  // Option 2: shorter critical path: data not bypassed to previous stage
+		  // bypass.bypass_state = BYPASS_RD;
 	       end
 	    end
 
@@ -331,7 +340,8 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 					   };
 	 end
 
-      // This stage is doing a STORE
+      // ----------------
+      // Path: DMem (STOREs)
       else if (rg_stage2.op_stage2 == OP_Stage2_ST) begin
 	 let ostatus = (  (! dcache.valid)
 			     ? OSTATUS_BUSY
@@ -354,7 +364,8 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
       end
 
 `ifdef SHIFT_SERIAL
-      // This stage is doing a serial shift
+      // ----------------
+      // Path: Serial shifter
       else if (rg_stage2.op_stage2 == OP_Stage2_SH) begin
 	 let ostatus = ((! shifter_box.valid) ? OSTATUS_BUSY : OSTATUS_PIPE);
 
@@ -365,13 +376,13 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 	 data_to_stage3.rd_val   = result;
 
 	 let bypass = bypass_base;
-	 // Option 1: longer critical path, since the data is bypassed back into previous stage.
-	 // bypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
-	 // bypass.rd_val       = result;
+	 // Option 1: longer critical path: data bypassed back to previous stage
+	 bypass.bypass_state = ((ostatus == OSTATUS_PIPE)
+				? BYPASS_RD_RDVAL : BYPASS_RD);
+	 bypass.rd_val       = result;
 
-	 // Option 2: shorter critical path, since the data is not bypassed into previous stage,
-	 // (bypassing is delayed until the next stage).
-	 bypass.bypass_state = BYPASS_RD;
+	 // Option 2: shorter critical path: data not bypassed to previous stage
+	 // bypass.bypass_state = BYPASS_RD;
 
 `ifdef INCLUDE_TANDEM_VERIF
 	 let trace_data            = rg_stage2.trace_data;
@@ -391,7 +402,8 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 `endif
 
 `ifdef ISA_M
-      // This stage is doing an integer multiply/divide
+      // ----------------
+      // Path: integer multiply/divide
       else if (rg_stage2.op_stage2 == OP_Stage2_M) begin
 	 let ostatus = ((! mbox.valid) ? OSTATUS_BUSY : OSTATUS_PIPE);
 
@@ -402,13 +414,13 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 	 data_to_stage3.rd_val   = result;
 
 	 let bypass = bypass_base;
-	 // Option 1: longer critical path, since the data is bypassed back into previous stage.
-	 // bypass.bypass_state = ((ostatus == OSTATUS_PIPE) ? BYPASS_RD_RDVAL : BYPASS_RD);
-	 // bypass.rd_val       = result;
+	 // Option 1: longer critical path: data bypassed back to previous stage
+	 bypass.bypass_state = ((ostatus == OSTATUS_PIPE) ?
+				BYPASS_RD_RDVAL : BYPASS_RD);
+	 bypass.rd_val       = result;
 
-	 // Option 2: shorter critical path, since the data is not bypassed into previous stage,
-	 // (bypassing is delayed until the next stage).
-	 bypass.bypass_state = BYPASS_RD;
+	 // Option 2: shorter critical path: data not bypassed to previous stage
+	 // bypass.bypass_state = BYPASS_RD;
 
 `ifdef INCLUDE_TANDEM_VERIF
 	 let trace_data            = rg_stage2.trace_data;
@@ -428,7 +440,8 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 `endif
 
 `ifdef ISA_F
-      // This stage is doing a floating point op
+      // ----------------
+      // Path: floating point op
       else if (rg_stage2.op_stage2 == OP_Stage2_FD) begin
 	 let ostatus = ((! fbox.valid) ? OSTATUS_BUSY : OSTATUS_PIPE);
 
@@ -456,31 +469,30 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 	 let bypass  = bypass_base;
          let fbypass = fbypass_base;
          if (rg_stage2.rd_in_fpr) begin
-	    // Option 1: longer critical path, since the data is bypassed back into previous stage.
-            // fbypass.bypass_state = ((ostatus==OSTATUS_PIPE) ? BYPASS_RD_RDVAL
-            //                                                 : BYPASS_RD);
+	    // Option 1: longer critical path: data bypassed back to previous stage
+            fbypass.bypass_state = ((ostatus==OSTATUS_PIPE)
+				    ? BYPASS_RD_RDVAL : BYPASS_RD);
 `ifdef ISA_D
-            // fbypass.rd_val       = value;
+            fbypass.rd_val       = value;
 `else
-            // fbypass.rd_val       = truncate (value);
+            fbypass.rd_val       = truncate (value);
 `endif
-	    // Option 2: shorter critical path, since the data is not bypassed into previous stage,
-	    // (bypassing is delayed until the next stage).
-	    fbypass.bypass_state = BYPASS_RD;
+	    // Option 2: shorter critical path: data not bypassed to previous stage
+	    // fbypass.bypass_state = BYPASS_RD;
          end
 
          // result is meant for a GPR
          else begin
-	    // Option 1: longer critical path, since the data is bypassed back into previous stage.
-            // bypass.bypass_state = ((ostatus==OSTATUS_PIPE) ? BYPASS_RD_RDVAL
-            //                                                : BYPASS_RD);
+	    // Option 1: longer critical path: data bypassed back to previous stage
+            bypass.bypass_state = ((ostatus==OSTATUS_PIPE)
+				   ? BYPASS_RD_RDVAL : BYPASS_RD);
 `ifdef RV64
-            // bypass.rd_val       = (value);
+            bypass.rd_val       = (value);
 `else
-            // bypass.rd_val       = truncate (value);
+            bypass.rd_val       = truncate (value);
 `endif
-	    // Option 2: shorter critical path, since the data is not bypassed into previous stage,
-	    bypass.bypass_state = BYPASS_RD;
+	    // Option 2: shorter critical path: data not bypassed to previous stage
+	    // bypass.bypass_state = BYPASS_RD;
          end
 
          // ----------------
@@ -527,7 +539,9 @@ module mkCPU_Stage2 #(Bit #(4)         verbosity,
 	 Bool op_stage2_amo = False;
 	 Bit #(7) amo_funct7 = 0;
 `endif
-	 if ((x.op_stage2 == OP_Stage2_LD) || (x.op_stage2 == OP_Stage2_ST) || op_stage2_amo) begin
+	 if ((x.op_stage2 == OP_Stage2_LD)
+	     || (x.op_stage2 == OP_Stage2_ST)
+	     || op_stage2_amo) begin
 	    WordXL   mstatus     = csr_regfile.read_mstatus;
 `ifdef ISA_PRIV_S
 	    Bit #(1) sstatus_SUM = (csr_regfile.read_sstatus) [18];
