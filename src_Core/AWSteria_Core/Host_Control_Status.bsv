@@ -133,13 +133,13 @@ module mkHost_Control_Status (Host_Control_Status_IFC);
    rule rl_req1 (rg_state == STATE_REQ1);
       Bit #(32) req1 <- pop (f_host_to_hw);
       rg_req1 <= req1;
-      rg_state <= ((req1 [2:0] == 1) ? STATE_EXEC : STATE_REQ2);
+      rg_state <= ((rg_req0 [2:0] == 1) ? STATE_EXEC : STATE_REQ2);
    endrule
 
    rule rl_req2 (rg_state == STATE_REQ2);
       Bit #(32) req2 <- pop (f_host_to_hw);
       rg_req2 <= req2;
-      rg_state <= ((req2 [2:0] == 2) ? STATE_EXEC : STATE_REQ3);
+      rg_state <= ((rg_req0 [2:0] == 2) ? STATE_EXEC : STATE_REQ3);
    endrule
 
    rule rl_req3 (rg_state == STATE_REQ3);

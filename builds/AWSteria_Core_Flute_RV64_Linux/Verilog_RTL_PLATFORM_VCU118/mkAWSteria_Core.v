@@ -3483,16 +3483,16 @@ module mkAWSteria_Core(CLK_clk1,
   // rule RL_core_inner_5_rl_connect
   assign CAN_FIRE_RL_core_inner_5_rl_connect =
 	     core_inner_f_misc_to_host$sFULL_N &&
-	     core_inner_reclocked$RDY_fo_misc_deq &&
-	     core_inner_reclocked$RDY_fo_misc_first ;
+	     core_inner_reclocked$RDY_fo_misc_first &&
+	     core_inner_reclocked$RDY_fo_misc_deq ;
   assign WILL_FIRE_RL_core_inner_5_rl_connect =
 	     CAN_FIRE_RL_core_inner_5_rl_connect ;
 
   // rule RL_core_inner_6_rl_connect
   assign CAN_FIRE_RL_core_inner_6_rl_connect =
 	     core_inner_f_tv_info$sFULL_N &&
-	     core_inner_reclocked$RDY_fo_tv_info_deq &&
-	     core_inner_reclocked$RDY_fo_tv_info_first ;
+	     core_inner_reclocked$RDY_fo_tv_info_first &&
+	     core_inner_reclocked$RDY_fo_tv_info_deq ;
   assign WILL_FIRE_RL_core_inner_6_rl_connect =
 	     CAN_FIRE_RL_core_inner_6_rl_connect ;
 
@@ -3506,8 +3506,8 @@ module mkAWSteria_Core(CLK_clk1,
   // rule RL_core_inner_8_rl_connect
   assign CAN_FIRE_RL_core_inner_8_rl_connect =
 	     core_inner_f_dmi_rsp$sFULL_N &&
-	     core_inner_reclocked$RDY_se_dmi_response_deq &&
-	     core_inner_reclocked$RDY_se_dmi_response_first ;
+	     core_inner_reclocked$RDY_se_dmi_response_first &&
+	     core_inner_reclocked$RDY_se_dmi_response_deq ;
   assign WILL_FIRE_RL_core_inner_8_rl_connect =
 	     CAN_FIRE_RL_core_inner_8_rl_connect ;
 

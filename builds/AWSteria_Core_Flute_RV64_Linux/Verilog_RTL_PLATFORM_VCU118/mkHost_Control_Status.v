@@ -356,10 +356,10 @@ module mkHost_Control_Status(CLK,
 	       MUX_rg_state$write_1__VAL_3;
 
   // remaining internal signals
-  wire [63 : 0] tohost_addr__h1641;
-  wire [31 : 0] v__h1727;
+  wire [63 : 0] tohost_addr__h1643;
+  wire [31 : 0] v__h1729;
   wire [15 : 0] x__read__h409;
-  wire rg_req0_0_BITS_7_TO_3_1_EQ_0_2_OR_rg_req0_0_BI_ETC___d37;
+  wire rg_req0_1_BITS_7_TO_3_2_EQ_0_3_OR_rg_req0_1_BI_ETC___d38;
 
   // action method se_control_status_request_enq
   assign RDY_se_control_status_request_enq = f_host_to_hw$FULL_N ;
@@ -524,17 +524,15 @@ module mkHost_Control_Status(CLK,
   // rule RL_rl_exec
   assign CAN_FIRE_RL_rl_exec =
 	     f_hw_to_host$FULL_N &&
-	     rg_req0_0_BITS_7_TO_3_1_EQ_0_2_OR_rg_req0_0_BI_ETC___d37 &&
+	     rg_req0_1_BITS_7_TO_3_2_EQ_0_3_OR_rg_req0_1_BI_ETC___d38 &&
 	     rg_state == 3'd4 ;
   assign WILL_FIRE_RL_rl_exec = CAN_FIRE_RL_rl_exec ;
 
   // inputs to muxes for submodule ports
   assign MUX_rg_state$write_1__VAL_1 =
 	     (f_host_to_hw$D_OUT[2:0] == 3'd0) ? 3'd4 : 3'd1 ;
-  assign MUX_rg_state$write_1__VAL_2 =
-	     (f_host_to_hw$D_OUT[2:0] == 3'd1) ? 3'd4 : 3'd2 ;
-  assign MUX_rg_state$write_1__VAL_3 =
-	     (f_host_to_hw$D_OUT[2:0] == 3'd2) ? 3'd4 : 3'd3 ;
+  assign MUX_rg_state$write_1__VAL_2 = (rg_req0[2:0] == 3'd1) ? 3'd4 : 3'd2 ;
+  assign MUX_rg_state$write_1__VAL_3 = (rg_req0[2:0] == 3'd2) ? 3'd4 : 3'd3 ;
 
   // register rg_assert_core_reset
   assign rg_assert_core_reset$D_IN = rg_req0[31:8] != 24'd0 ;
@@ -597,11 +595,11 @@ module mkHost_Control_Status(CLK,
   assign f_host_to_hw$CLR = 1'b0 ;
 
   // submodule f_hw_to_host
-  always@(rg_req0 or v__h1727)
+  always@(rg_req0 or v__h1729)
   begin
     case (rg_req0[7:3])
       5'd0, 5'd1, 5'd5, 5'd7, 5'd8: f_hw_to_host$D_IN = 32'd0;
-      5'd6: f_hw_to_host$D_IN = v__h1727;
+      5'd6: f_hw_to_host$D_IN = v__h1729;
       default: f_hw_to_host$D_IN = 32'd2;
     endcase
   end
@@ -620,27 +618,27 @@ module mkHost_Control_Status(CLK,
   assign f_pc_trace_control$CLR = 1'b0 ;
 
   // submodule f_verbosity
-  assign f_verbosity$D_IN = { rg_req0[11:8], tohost_addr__h1641 } ;
+  assign f_verbosity$D_IN = { rg_req0[11:8], tohost_addr__h1643 } ;
   assign f_verbosity$ENQ = WILL_FIRE_RL_rl_exec && rg_req0[7:3] == 5'd8 ;
   assign f_verbosity$DEQ = EN_fo_verbosity_control_deq ;
   assign f_verbosity$CLR = 1'b0 ;
 
   // submodule f_watch_tohost
-  assign f_watch_tohost$D_IN = { rg_req0[2:0] != 3'd0, tohost_addr__h1641 } ;
+  assign f_watch_tohost$D_IN = { rg_req0[2:0] != 3'd0, tohost_addr__h1643 } ;
   assign f_watch_tohost$ENQ = WILL_FIRE_RL_rl_exec && rg_req0[7:3] == 5'd5 ;
   assign f_watch_tohost$DEQ = EN_fo_watch_tohost_control_deq ;
   assign f_watch_tohost$CLR = 1'b0 ;
 
   // remaining internal signals
-  assign rg_req0_0_BITS_7_TO_3_1_EQ_0_2_OR_rg_req0_0_BI_ETC___d37 =
+  assign rg_req0_1_BITS_7_TO_3_2_EQ_0_3_OR_rg_req0_1_BI_ETC___d38 =
 	     rg_req0[7:3] == 5'd0 || rg_req0[7:3] == 5'd1 ||
 	     ((rg_req0[7:3] == 5'd5) ?
 		f_watch_tohost$FULL_N :
 		((rg_req0[7:3] == 5'd7) ?
 		   f_pc_trace_control$FULL_N :
 		   rg_req0[7:3] != 5'd8 || f_verbosity$FULL_N)) ;
-  assign tohost_addr__h1641 = { rg_req2, rg_req1 } ;
-  assign v__h1727 = { x__read__h409, 16'h0 } ;
+  assign tohost_addr__h1643 = { rg_req2, rg_req1 } ;
+  assign v__h1729 = { x__read__h409, 16'h0 } ;
   assign x__read__h409 =
 	     EN_fi_tohost_value_enq ? fi_tohost_value_enq_x[15:0] : 16'd0 ;
 
@@ -711,7 +709,7 @@ module mkHost_Control_Status(CLK,
       if (WILL_FIRE_RL_rl_exec && rg_req0[7:3] == 5'd5 &&
 	  rg_req0[2:0] != 3'd0)
 	$display("  mkHost_Control_Status: host_to_hw_req: watch_tohost_on, addr %0h",
-		 tohost_addr__h1641);
+		 tohost_addr__h1643);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_exec && rg_req0[7:3] == 5'd6 &&
 	  rg_prev_tohost_value != x__read__h409)
@@ -730,7 +728,7 @@ module mkHost_Control_Status(CLK,
       if (WILL_FIRE_RL_rl_exec && rg_req0[7:3] == 5'd8)
 	$display("  mkHost_Control_Status: host_to_hw_req: set_sim_verbosity %0d logdelay %0h",
 		 rg_req0[11:8],
-		 tohost_addr__h1641);
+		 tohost_addr__h1643);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_exec && rg_req0[7:3] != 5'd0 &&
 	  rg_req0[7:3] != 5'd1 &&
