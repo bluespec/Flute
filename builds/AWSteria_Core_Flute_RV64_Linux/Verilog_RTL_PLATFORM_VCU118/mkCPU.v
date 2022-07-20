@@ -1829,9 +1829,11 @@ module mkCPU(CLK,
        MUX_rg_next_pc$write_1__SEL_1,
        MUX_rg_next_pc$write_1__SEL_2,
        MUX_rg_pc_reported$write_1__SEL_4,
+       MUX_rg_state$write_1__PSEL_1,
        MUX_rg_state$write_1__SEL_1,
        MUX_rg_state$write_1__SEL_10,
        MUX_rg_state$write_1__SEL_11,
+       MUX_rg_state$write_1__SEL_2,
        MUX_rg_state$write_1__SEL_5,
        MUX_rg_step_count$write_1__SEL_4,
        MUX_rg_trap_info$write_1__SEL_1,
@@ -2229,6 +2231,7 @@ module mkCPU(CLK,
        csr_regfile_read_misa__2_BIT_2_704_AND_stageD__ETC___d1779,
        csr_regfile_read_misa__2_BIT_2_704_AND_stageD__ETC___d1785,
        csr_regfile_read_mstatus__5_BITS_14_TO_13_7_EQ_ETC___d594,
+       gpr_regfile_RDY_server_reset_request_put__248__ETC___d2266,
        imem_rg_pc_BITS_1_TO_0_EQ_0b0_OR_NOT_imem_rg_p_ETC___d2141,
        imem_rg_pc_BITS_1_TO_0_EQ_0b0_OR_NOT_near_mem__ETC___d2283,
        imem_rg_pc_BITS_1_TO_0_EQ_0b0_OR_NOT_near_mem__ETC___d3058,
@@ -3450,7 +3453,7 @@ module mkCPU(CLK,
 
   // rule RL_rl_stage1_CSRR_W_2
   assign CAN_FIRE_RL_rl_stage1_CSRR_W_2 = rg_state == 4'd7 ;
-  assign WILL_FIRE_RL_rl_stage1_CSRR_W_2 = CAN_FIRE_RL_rl_stage1_CSRR_W_2 ;
+  assign WILL_FIRE_RL_rl_stage1_CSRR_W_2 = rg_state == 4'd7 ;
 
   // rule RL_rl_stage1_CSRR_W
   assign CAN_FIRE_RL_rl_stage1_CSRR_W =
@@ -3471,8 +3474,7 @@ module mkCPU(CLK,
 
   // rule RL_rl_stage1_CSRR_S_or_C_2
   assign CAN_FIRE_RL_rl_stage1_CSRR_S_or_C_2 = rg_state == 4'd8 ;
-  assign WILL_FIRE_RL_rl_stage1_CSRR_S_or_C_2 =
-	     CAN_FIRE_RL_rl_stage1_CSRR_S_or_C_2 ;
+  assign WILL_FIRE_RL_rl_stage1_CSRR_S_or_C_2 = rg_state == 4'd8 ;
 
   // rule RL_rl_stage1_restart_after_csrrx
   assign CAN_FIRE_RL_rl_stage1_restart_after_csrrx =
@@ -3652,10 +3654,7 @@ module mkCPU(CLK,
 	     csr_regfile$RDY_server_reset_response_get &&
 	     stageF_f_reset_rsps_i_notEmpty__273_AND_stageD_ETC___d2293 &&
 	     rg_state == 4'd1 ;
-  assign WILL_FIRE_RL_rl_reset_complete =
-	     CAN_FIRE_RL_rl_reset_complete &&
-	     !WILL_FIRE_RL_imem_rl_fetch_next_32b &&
-	     !WILL_FIRE_RL_rl_reset_from_Debug_Module ;
+  assign WILL_FIRE_RL_rl_reset_complete = MUX_rg_state$write_1__SEL_2 ;
 
   // rule RL_rl_pipe
   assign CAN_FIRE_RL_rl_pipe =
@@ -3665,17 +3664,11 @@ module mkCPU(CLK,
 	      IF_NOT_stage1_rg_full_51_007_OR_NOT_stage1_rg__ETC___d2377 ||
 	      stage2_rg_full ||
 	      stage3_rg_full) ;
-  assign WILL_FIRE_RL_rl_pipe =
-	     CAN_FIRE_RL_rl_pipe && !WILL_FIRE_RL_imem_rl_fetch_next_32b &&
-	     !WILL_FIRE_RL_rl_debug_halt &&
-	     !WILL_FIRE_RL_rl_reset_from_Debug_Module ;
+  assign WILL_FIRE_RL_rl_pipe = MUX_rg_state$write_1__PSEL_1 ;
 
   // rule RL_rl_reset_start
   assign CAN_FIRE_RL_rl_reset_start =
-	     gpr_regfile$RDY_server_reset_request_put &&
-	     fpr_regfile$RDY_server_reset_request_put &&
-	     near_mem$RDY_server_reset_request_put &&
-	     csr_regfile_RDY_server_reset_request_put__251__ETC___d2263 &&
+	     gpr_regfile_RDY_server_reset_request_put__248__ETC___d2266 &&
 	     rg_state == 4'd0 ;
   assign WILL_FIRE_RL_rl_reset_start = CAN_FIRE_RL_rl_reset_start ;
 
@@ -3788,10 +3781,18 @@ module mkCPU(CLK,
 	     WILL_FIRE_RL_rl_finish_FENCE ||
 	     WILL_FIRE_RL_rl_finish_FENCE_I ||
 	     WILL_FIRE_RL_rl_stage1_xRET ;
+  assign MUX_rg_state$write_1__PSEL_1 =
+	     CAN_FIRE_RL_rl_pipe && !WILL_FIRE_RL_imem_rl_fetch_next_32b &&
+	     !WILL_FIRE_RL_rl_debug_halt &&
+	     !WILL_FIRE_RL_rl_reset_from_Debug_Module ;
   assign MUX_rg_state$write_1__SEL_1 =
 	     WILL_FIRE_RL_rl_pipe &&
 	     IF_stage2_rg_full_20_AND_NOT_stage2_rg_stage2__ETC___d2718 &&
 	     stage2_rg_full_20_AND_NOT_stage2_rg_stage2_21__ETC___d2347 ;
+  assign MUX_rg_state$write_1__SEL_2 =
+	     CAN_FIRE_RL_rl_reset_complete &&
+	     !WILL_FIRE_RL_imem_rl_fetch_next_32b &&
+	     !WILL_FIRE_RL_rl_reset_from_Debug_Module ;
   assign MUX_rg_state$write_1__SEL_5 =
 	     WILL_FIRE_RL_rl_reset_from_Debug_Module ||
 	     WILL_FIRE_RL_rl_reset_from_WFI ;
@@ -3933,7 +3934,7 @@ module mkCPU(CLK,
 	     EN_set_verbosity ?
 	       set_verbosity_verbosity :
 	       hart0_put_other_req_put ;
-  assign cfg_verbosity$EN = EN_hart0_put_other_req_put || EN_set_verbosity ;
+  assign cfg_verbosity$EN = EN_set_verbosity || EN_hart0_put_other_req_put ;
 
   // register imem_rg_cache_addr
   always@(MUX_imem_rg_cache_addr$write_1__SEL_1 or
@@ -4847,7 +4848,7 @@ module mkCPU(CLK,
   assign csr_regfile$EN_server_reset_request_put =
 	     CAN_FIRE_RL_rl_reset_start ;
   assign csr_regfile$EN_server_reset_response_get =
-	     WILL_FIRE_RL_rl_reset_complete ;
+	     MUX_rg_state$write_1__SEL_2 ;
   assign csr_regfile$EN_mav_read_csr = 1'b0 ;
   assign csr_regfile$EN_mav_csr_write =
 	     WILL_FIRE_RL_rl_stage1_CSRR_W_2 &&
@@ -4899,15 +4900,15 @@ module mkCPU(CLK,
   assign f_csr_reqs$CLR = 1'b0 ;
 
   // submodule f_csr_rsps
-  always@(WILL_FIRE_RL_rl_debug_csr_access_busy or
-	  WILL_FIRE_RL_rl_debug_write_csr or
+  always@(WILL_FIRE_RL_rl_debug_write_csr or
+	  WILL_FIRE_RL_rl_debug_csr_access_busy or
 	  WILL_FIRE_RL_rl_debug_read_csr or MUX_f_csr_rsps$enq_1__VAL_3)
   begin
     case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_rl_debug_csr_access_busy:
-	  f_csr_rsps$D_IN = 65'h0AAAAAAAAAAAAAAAA;
       WILL_FIRE_RL_rl_debug_write_csr:
 	  f_csr_rsps$D_IN = 65'h1AAAAAAAAAAAAAAAA;
+      WILL_FIRE_RL_rl_debug_csr_access_busy:
+	  f_csr_rsps$D_IN = 65'h0AAAAAAAAAAAAAAAA;
       WILL_FIRE_RL_rl_debug_read_csr:
 	  f_csr_rsps$D_IN = MUX_f_csr_rsps$enq_1__VAL_3;
       default: f_csr_rsps$D_IN =
@@ -4915,8 +4916,8 @@ module mkCPU(CLK,
     endcase
   end
   assign f_csr_rsps$ENQ =
-	     WILL_FIRE_RL_rl_debug_csr_access_busy ||
 	     WILL_FIRE_RL_rl_debug_write_csr ||
+	     WILL_FIRE_RL_rl_debug_csr_access_busy ||
 	     WILL_FIRE_RL_rl_debug_read_csr ;
   assign f_csr_rsps$DEQ = EN_hart0_csr_mem_server_response_get ;
   assign f_csr_rsps$CLR = 1'b0 ;
@@ -4931,15 +4932,15 @@ module mkCPU(CLK,
   assign f_fpr_reqs$CLR = 1'b0 ;
 
   // submodule f_fpr_rsps
-  always@(WILL_FIRE_RL_rl_debug_fpr_access_busy or
-	  WILL_FIRE_RL_rl_debug_write_fpr or
+  always@(WILL_FIRE_RL_rl_debug_write_fpr or
+	  WILL_FIRE_RL_rl_debug_fpr_access_busy or
 	  WILL_FIRE_RL_rl_debug_read_fpr or MUX_f_fpr_rsps$enq_1__VAL_3)
   begin
     case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_rl_debug_fpr_access_busy:
-	  f_fpr_rsps$D_IN = 65'h0AAAAAAAAAAAAAAAA;
       WILL_FIRE_RL_rl_debug_write_fpr:
 	  f_fpr_rsps$D_IN = 65'h1AAAAAAAAAAAAAAAA;
+      WILL_FIRE_RL_rl_debug_fpr_access_busy:
+	  f_fpr_rsps$D_IN = 65'h0AAAAAAAAAAAAAAAA;
       WILL_FIRE_RL_rl_debug_read_fpr:
 	  f_fpr_rsps$D_IN = MUX_f_fpr_rsps$enq_1__VAL_3;
       default: f_fpr_rsps$D_IN =
@@ -4947,8 +4948,8 @@ module mkCPU(CLK,
     endcase
   end
   assign f_fpr_rsps$ENQ =
-	     WILL_FIRE_RL_rl_debug_fpr_access_busy ||
 	     WILL_FIRE_RL_rl_debug_write_fpr ||
+	     WILL_FIRE_RL_rl_debug_fpr_access_busy ||
 	     WILL_FIRE_RL_rl_debug_read_fpr ;
   assign f_fpr_rsps$DEQ = EN_hart0_fpr_mem_server_response_get ;
   assign f_fpr_rsps$CLR = 1'b0 ;
@@ -4963,15 +4964,15 @@ module mkCPU(CLK,
   assign f_gpr_reqs$CLR = 1'b0 ;
 
   // submodule f_gpr_rsps
-  always@(WILL_FIRE_RL_rl_debug_gpr_access_busy or
-	  WILL_FIRE_RL_rl_debug_write_gpr or
+  always@(WILL_FIRE_RL_rl_debug_write_gpr or
+	  WILL_FIRE_RL_rl_debug_gpr_access_busy or
 	  WILL_FIRE_RL_rl_debug_read_gpr or MUX_f_gpr_rsps$enq_1__VAL_3)
   begin
     case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_rl_debug_gpr_access_busy:
-	  f_gpr_rsps$D_IN = 65'h0AAAAAAAAAAAAAAAA;
       WILL_FIRE_RL_rl_debug_write_gpr:
 	  f_gpr_rsps$D_IN = 65'h1AAAAAAAAAAAAAAAA;
+      WILL_FIRE_RL_rl_debug_gpr_access_busy:
+	  f_gpr_rsps$D_IN = 65'h0AAAAAAAAAAAAAAAA;
       WILL_FIRE_RL_rl_debug_read_gpr:
 	  f_gpr_rsps$D_IN = MUX_f_gpr_rsps$enq_1__VAL_3;
       default: f_gpr_rsps$D_IN =
@@ -4979,8 +4980,8 @@ module mkCPU(CLK,
     endcase
   end
   assign f_gpr_rsps$ENQ =
-	     WILL_FIRE_RL_rl_debug_gpr_access_busy ||
 	     WILL_FIRE_RL_rl_debug_write_gpr ||
+	     WILL_FIRE_RL_rl_debug_gpr_access_busy ||
 	     WILL_FIRE_RL_rl_debug_read_gpr ;
   assign f_gpr_rsps$DEQ = EN_hart0_gpr_mem_server_response_get ;
   assign f_gpr_rsps$CLR = 1'b0 ;
@@ -4988,12 +4989,14 @@ module mkCPU(CLK,
   // submodule f_reset_reqs
   assign f_reset_reqs$D_IN = hart0_server_reset_request_put ;
   assign f_reset_reqs$ENQ = EN_hart0_server_reset_request_put ;
-  assign f_reset_reqs$DEQ = CAN_FIRE_RL_rl_reset_start ;
+  assign f_reset_reqs$DEQ =
+	     gpr_regfile_RDY_server_reset_request_put__248__ETC___d2266 &&
+	     rg_state == 4'd0 ;
   assign f_reset_reqs$CLR = 1'b0 ;
 
   // submodule f_reset_rsps
   assign f_reset_rsps$D_IN = rg_run_on_reset ;
-  assign f_reset_rsps$ENQ = WILL_FIRE_RL_rl_reset_complete ;
+  assign f_reset_rsps$ENQ = MUX_rg_state$write_1__SEL_2 ;
   assign f_reset_rsps$DEQ = EN_hart0_server_reset_response_get ;
   assign f_reset_rsps$CLR = 1'b0 ;
 
@@ -5033,7 +5036,7 @@ module mkCPU(CLK,
   assign fpr_regfile$EN_server_reset_request_put =
 	     CAN_FIRE_RL_rl_reset_start ;
   assign fpr_regfile$EN_server_reset_response_get =
-	     WILL_FIRE_RL_rl_reset_complete ;
+	     MUX_rg_state$write_1__SEL_2 ;
   assign fpr_regfile$EN_write_rd =
 	     WILL_FIRE_RL_rl_pipe && stage3_rg_full &&
 	     stage3_rg_stage3[140] &&
@@ -5084,7 +5087,7 @@ module mkCPU(CLK,
   assign gpr_regfile$EN_server_reset_request_put =
 	     CAN_FIRE_RL_rl_reset_start ;
   assign gpr_regfile$EN_server_reset_response_get =
-	     WILL_FIRE_RL_rl_reset_complete ;
+	     MUX_rg_state$write_1__SEL_2 ;
   assign gpr_regfile$EN_write_rd =
 	     WILL_FIRE_RL_rl_stage1_CSRR_W_2 &&
 	     csr_regfile$access_permitted_1 ||
@@ -5237,8 +5240,7 @@ module mkCPU(CLK,
   assign near_mem$set_watch_tohost_watch_tohost =
 	     set_watch_tohost_watch_tohost ;
   assign near_mem$EN_server_reset_request_put = CAN_FIRE_RL_rl_reset_start ;
-  assign near_mem$EN_server_reset_response_get =
-	     WILL_FIRE_RL_rl_reset_complete ;
+  assign near_mem$EN_server_reset_response_get = MUX_rg_state$write_1__SEL_2 ;
   assign near_mem$EN_imem_req =
 	     WILL_FIRE_RL_rl_reset_complete && rg_run_on_reset ||
 	     WILL_FIRE_RL_rl_pipe &&
@@ -5278,7 +5280,7 @@ module mkCPU(CLK,
 
   // submodule stage1_f_reset_rsps
   assign stage1_f_reset_rsps$ENQ = CAN_FIRE_RL_stage1_rl_reset ;
-  assign stage1_f_reset_rsps$DEQ = WILL_FIRE_RL_rl_reset_complete ;
+  assign stage1_f_reset_rsps$DEQ = MUX_rg_state$write_1__SEL_2 ;
   assign stage1_f_reset_rsps$CLR = 1'b0 ;
 
   // submodule stage2_f_reset_reqs
@@ -5288,7 +5290,7 @@ module mkCPU(CLK,
 
   // submodule stage2_f_reset_rsps
   assign stage2_f_reset_rsps$ENQ = CAN_FIRE_RL_stage2_rl_reset_end ;
-  assign stage2_f_reset_rsps$DEQ = WILL_FIRE_RL_rl_reset_complete ;
+  assign stage2_f_reset_rsps$DEQ = MUX_rg_state$write_1__SEL_2 ;
   assign stage2_f_reset_rsps$CLR = 1'b0 ;
 
   // submodule stage2_fbox
@@ -5331,7 +5333,7 @@ module mkCPU(CLK,
 
   // submodule stage3_f_reset_rsps
   assign stage3_f_reset_rsps$ENQ = CAN_FIRE_RL_stage3_rl_reset ;
-  assign stage3_f_reset_rsps$DEQ = WILL_FIRE_RL_rl_reset_complete ;
+  assign stage3_f_reset_rsps$DEQ = MUX_rg_state$write_1__SEL_2 ;
   assign stage3_f_reset_rsps$CLR = 1'b0 ;
 
   // submodule stageD_f_reset_reqs
@@ -5341,7 +5343,7 @@ module mkCPU(CLK,
 
   // submodule stageD_f_reset_rsps
   assign stageD_f_reset_rsps$ENQ = CAN_FIRE_RL_stageD_rl_reset ;
-  assign stageD_f_reset_rsps$DEQ = WILL_FIRE_RL_rl_reset_complete ;
+  assign stageD_f_reset_rsps$DEQ = MUX_rg_state$write_1__SEL_2 ;
   assign stageD_f_reset_rsps$CLR = 1'b0 ;
 
   // submodule stageF_branch_predictor
@@ -5413,7 +5415,7 @@ module mkCPU(CLK,
 
   // submodule stageF_f_reset_rsps
   assign stageF_f_reset_rsps$ENQ = CAN_FIRE_RL_stageF_rl_reset ;
-  assign stageF_f_reset_rsps$DEQ = WILL_FIRE_RL_rl_reset_complete ;
+  assign stageF_f_reset_rsps$DEQ = MUX_rg_state$write_1__SEL_2 ;
   assign stageF_f_reset_rsps$CLR = 1'b0 ;
 
   // remaining internal signals
@@ -6679,6 +6681,11 @@ module mkCPU(CLK,
   assign fall_through_pc__h10619 =
 	     stage1_rg_stage_input[401:338] +
 	     (stage1_rg_stage_input[333] ? 64'd4 : 64'd2) ;
+  assign gpr_regfile_RDY_server_reset_request_put__248__ETC___d2266 =
+	     gpr_regfile$RDY_server_reset_request_put &&
+	     fpr_regfile$RDY_server_reset_request_put &&
+	     near_mem$RDY_server_reset_request_put &&
+	     csr_regfile_RDY_server_reset_request_put__251__ETC___d2263 ;
   assign imem_rg_pc_BITS_1_TO_0_EQ_0b0_OR_NOT_imem_rg_p_ETC___d2141 =
 	     imem_rg_pc[1:0] == 2'b0 ||
 	     (!imem_rg_pc_BITS_63_TO_2_4_EQ_near_mem_imem_pc__ETC___d17 ||
@@ -8396,18 +8403,6 @@ module mkCPU(CLK,
   begin
     case (stage2_rg_stage2[397:395])
       3'd1, 3'd4:
-	  IF_stage2_rg_stage2_21_BITS_397_TO_395_22_EQ_1_ETC___d277 =
-	      near_mem$dmem_valid && near_mem$dmem_exc ||
-	      stage2_rg_stage2[394:390] == 5'd0;
-      default: IF_stage2_rg_stage2_21_BITS_397_TO_395_22_EQ_1_ETC___d277 =
-		   stage2_rg_stage2[397:395] == 3'd2 ||
-		   stage2_rg_stage2[397:395] != 3'd3 && stage2_rg_stage2[5];
-    endcase
-  end
-  always@(stage2_rg_stage2 or near_mem$dmem_valid or near_mem$dmem_exc)
-  begin
-    case (stage2_rg_stage2[397:395])
-      3'd1, 3'd4:
 	  IF_stage2_rg_stage2_21_BITS_397_TO_395_22_EQ_1_ETC___d283 =
 	      (!near_mem$dmem_valid || !near_mem$dmem_exc) &&
 	      stage2_rg_stage2[394:390] != 5'd0;
@@ -8415,6 +8410,18 @@ module mkCPU(CLK,
 		   stage2_rg_stage2[397:395] != 3'd2 &&
 		   (stage2_rg_stage2[397:395] == 3'd3 ||
 		    !stage2_rg_stage2[5]);
+    endcase
+  end
+  always@(stage2_rg_stage2 or near_mem$dmem_valid or near_mem$dmem_exc)
+  begin
+    case (stage2_rg_stage2[397:395])
+      3'd1, 3'd4:
+	  IF_stage2_rg_stage2_21_BITS_397_TO_395_22_EQ_1_ETC___d277 =
+	      near_mem$dmem_valid && near_mem$dmem_exc ||
+	      stage2_rg_stage2[394:390] == 5'd0;
+      default: IF_stage2_rg_stage2_21_BITS_397_TO_395_22_EQ_1_ETC___d277 =
+		   stage2_rg_stage2[397:395] == 3'd2 ||
+		   stage2_rg_stage2[397:395] != 3'd3 && stage2_rg_stage2[5];
     endcase
   end
   always@(stage2_rg_stage2 or
@@ -8458,6 +8465,22 @@ module mkCPU(CLK,
 		   !stage2_rg_stage2[5];
     endcase
   end
+  always@(stage2_rg_stage2 or
+	  stage2_fbox$valid or near_mem$dmem_valid or near_mem$dmem_exc)
+  begin
+    case (stage2_rg_stage2[397:395])
+      3'd1, 3'd4:
+	  IF_stage2_rg_stage2_21_BITS_397_TO_395_22_EQ_1_ETC___d342 =
+	      near_mem$dmem_valid && near_mem$dmem_exc ||
+	      !stage2_rg_stage2[5] ||
+	      near_mem$dmem_valid && !near_mem$dmem_exc;
+      default: IF_stage2_rg_stage2_21_BITS_397_TO_395_22_EQ_1_ETC___d342 =
+		   stage2_rg_stage2[397:395] == 3'd2 ||
+		   stage2_rg_stage2[397:395] == 3'd3 ||
+		   !stage2_rg_stage2[5] ||
+		   stage2_fbox$valid;
+    endcase
+  end
   always@(stage2_rg_stage2 or near_mem$dmem_valid or near_mem$dmem_exc)
   begin
     case (stage2_rg_stage2[397:395])
@@ -8485,22 +8508,6 @@ module mkCPU(CLK,
 		   stage2_rg_stage2[397:395] != 3'd3 &&
 		   stage2_rg_stage2[5] &&
 		   !stage2_fbox$valid;
-    endcase
-  end
-  always@(stage2_rg_stage2 or
-	  stage2_fbox$valid or near_mem$dmem_valid or near_mem$dmem_exc)
-  begin
-    case (stage2_rg_stage2[397:395])
-      3'd1, 3'd4:
-	  IF_stage2_rg_stage2_21_BITS_397_TO_395_22_EQ_1_ETC___d342 =
-	      near_mem$dmem_valid && near_mem$dmem_exc ||
-	      !stage2_rg_stage2[5] ||
-	      near_mem$dmem_valid && !near_mem$dmem_exc;
-      default: IF_stage2_rg_stage2_21_BITS_397_TO_395_22_EQ_1_ETC___d342 =
-		   stage2_rg_stage2[397:395] == 3'd2 ||
-		   stage2_rg_stage2[397:395] == 3'd3 ||
-		   !stage2_rg_stage2[5] ||
-		   stage2_fbox$valid;
     endcase
   end
   always@(stage2_rg_stage2 or

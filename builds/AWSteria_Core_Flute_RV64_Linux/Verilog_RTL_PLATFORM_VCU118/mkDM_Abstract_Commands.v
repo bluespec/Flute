@@ -718,12 +718,12 @@ module mkDM_Abstract_Commands(CLK,
   assign rg_abstractcs_cmderr$EN =
 	     EN_write &&
 	     write_dm_addr_EQ_0x16_08_AND_rg_abstractcs_bus_ETC___d131 ||
-	     WILL_FIRE_RL_rl_fpr_read_finish ||
-	     WILL_FIRE_RL_rl_fpr_write_finish ||
 	     WILL_FIRE_RL_rl_csr_read_finish ||
 	     WILL_FIRE_RL_rl_csr_write_finish ||
 	     WILL_FIRE_RL_rl_gpr_read_finish ||
 	     WILL_FIRE_RL_rl_gpr_write_finish ||
+	     WILL_FIRE_RL_rl_fpr_read_finish ||
+	     WILL_FIRE_RL_rl_fpr_write_finish ||
 	     EN_reset ||
 	     WILL_FIRE_RL_rl_unknown_read_start ||
 	     WILL_FIRE_RL_rl_unknown_write_start ;
