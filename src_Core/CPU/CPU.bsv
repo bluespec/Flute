@@ -304,11 +304,24 @@ module mkCPU (CPU_IFC);
    // ================================================================
    // Debugging: print instruction trace info
 
+   Reg #(Bit #(64)) rg_instret_reported <- mkReg ('1);
+   Reg #(Bit #(64)) rg_pc_reported      <- mkReg ('1);
+
    function Action fa_emit_instr_trace (Bit #(64) instret, WordXL pc, Instr instr, Priv_Mode priv);
       action
-	 if ((cur_verbosity >= 1) || ((instret & 'h_F_FFFF) == 0))
+	 // Display info if verbosity
+	 // or: every 0x10_0000 instrs
+	 //     (but not if in fetch-trap loop, where instret/pc do not change)
+
+	 if ((cur_verbosity >= 1)
+	     || (   ((instret & 'h_F_FFFF) == 0)
+		 && (   (instret != rg_instret_reported)
+		     || (pc      != rg_pc_reported))))
 	    $display ("instret:%0d  PC:0x%0h  instr:0x%0h  priv:%0d",
 		      instret, pc, instr, priv);
+
+	 rg_instret_reported <= instret;
+	 rg_pc_reported      <= pc;
 
 `ifdef INCLUDE_PC_TRACE
 	 let pc_trace = PC_Trace {cycle:   mcycle,
@@ -1851,6 +1864,10 @@ module mkCPU (CPU_IFC);
    method Action  set_verbosity (Bit #(4)  verbosity, Bit #(64)  logdelay);
       cfg_verbosity <= verbosity;
       cfg_logdelay  <= logdelay;
+      if (verbosity != cfg_verbosity) begin
+	 $display ("%0d: CPU verbosity change to %0d; logdelay %0d", mcycle, verbosity, logdelay);
+	 $display ("    %m");
+      end
    endmethod
 
    // ----------------

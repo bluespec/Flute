@@ -1028,6 +1028,7 @@ module mkDma_Server_Mux_Fabric(CLK,
   reg [31 : 0] v__h12288;
   reg [31 : 0] v__h12670;
   reg [31 : 0] v__h3969;
+  reg [31 : 0] v__h12664;
   reg [31 : 0] v__h3963;
   reg [31 : 0] v__h5920;
   reg [31 : 0] v__h6293;
@@ -1046,7 +1047,6 @@ module mkDma_Server_Mux_Fabric(CLK,
   reg [31 : 0] v__h11521;
   reg [31 : 0] v__h11802;
   reg [31 : 0] v__h12282;
-  reg [31 : 0] v__h12664;
   // synopsys translate_on
 
   // remaining internal signals

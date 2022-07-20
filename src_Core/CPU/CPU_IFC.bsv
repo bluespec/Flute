@@ -63,7 +63,6 @@ interface CPU_IFC;
    interface AXI4_Slave_IFC #(Wd_Id_Dma, Wd_Addr_Dma, Wd_Data_Dma, Wd_User_Dma)  dma_server;
 
    // ----------------------------------------------------------------
-
    // External interrupts
 
    (* always_ready, always_enabled *)

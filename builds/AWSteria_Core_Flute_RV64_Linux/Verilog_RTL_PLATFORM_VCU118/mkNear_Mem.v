@@ -2887,7 +2887,7 @@ module mkNear_Mem(CLK,
 
   // rule RL_rl_reset
   assign CAN_FIRE_RL_rl_reset = rg_state == 2'd0 ;
-  assign WILL_FIRE_RL_rl_reset = CAN_FIRE_RL_rl_reset ;
+  assign WILL_FIRE_RL_rl_reset = rg_state == 2'd0 ;
 
   // rule RL_rl_reset_complete
   assign CAN_FIRE_RL_rl_reset_complete = MUX_rg_state$write_1__SEL_3 ;
@@ -3397,7 +3397,7 @@ module mkNear_Mem(CLK,
   assign enqDst_1_0_dummy2_1$EN = CAN_FIRE_RL_doEnq_1 ;
 
   // submodule f_reset_rsps
-  assign f_reset_rsps$ENQ = f_reset_rsps$FULL_N && rg_state == 2'd1 ;
+  assign f_reset_rsps$ENQ = MUX_rg_state$write_1__SEL_3 ;
   assign f_reset_rsps$DEQ = EN_server_reset_response_get ;
   assign f_reset_rsps$CLR = 1'b0 ;
 

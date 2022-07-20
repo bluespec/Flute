@@ -649,21 +649,21 @@ module mkD_MMU_Cache(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h8539;
-  reg [31 : 0] v__h6512;
-  reg [31 : 0] v__h7537;
-  reg [31 : 0] v__h2137;
-  reg [31 : 0] v__h2131;
-  reg [31 : 0] v__h6506;
-  reg [31 : 0] v__h7531;
-  reg [31 : 0] v__h8533;
+  reg [31 : 0] v__h8540;
+  reg [31 : 0] v__h6513;
+  reg [31 : 0] v__h7538;
+  reg [31 : 0] v__h2138;
+  reg [31 : 0] v__h2132;
+  reg [31 : 0] v__h6507;
+  reg [31 : 0] v__h7532;
+  reg [31 : 0] v__h8534;
   // synopsys translate_on
 
   // remaining internal signals
   wire [3 : 0] IF_NOT_tlb_mv_vm_xlate_crg_mmu_cache_req_port0_ETC___d204,
-	       x1__h3448,
-	       x1__h4786,
-	       x1__h5606;
+	       x1__h3449,
+	       x1__h4787,
+	       x1__h5607;
   wire NOT_crg_mmu_cache_req_port0__read__05_BITS_204_ETC___d128,
        NOT_crg_mmu_cache_req_port0__read__05_BITS_204_ETC___d159,
        NOT_tlb_mv_vm_xlate_crg_mmu_cache_req_port0__r_ETC___d156,
@@ -1171,12 +1171,12 @@ module mkD_MMU_Cache(CLK,
 	     tlb$mv_vm_xlate[200:199] == 2'd2 ;
   assign MUX_crg_exc_code$port0__write_1__VAL_1 =
 	     NOT_crg_mmu_cache_req_port0__read__05_BITS_204_ETC___d128 ?
-	       x1__h3448 :
+	       x1__h3449 :
 	       tlb$mv_vm_xlate[134:131] ;
   assign MUX_crg_exc_code$port0__write_1__VAL_3 =
 	     (ptw$dmem_server_response_get[131:130] == 2'd1) ?
-	       x1__h4786 :
-	       x1__h5606 ;
+	       x1__h4787 :
+	       x1__h5607 ;
   assign MUX_crg_mmu_cache_req_state$port0__write_1__VAL_3 =
 	     (ptw$dmem_server_response_get[131:130] == 2'd0) ? 2'd1 : 2'd0 ;
   assign MUX_crg_state$port0__write_1__VAL_1 =
@@ -1356,7 +1356,7 @@ module mkD_MMU_Cache(CLK,
   always@(MUX_crg_exc_code$port0__write_1__SEL_1 or
 	  MUX_crg_exc_code$port0__write_1__VAL_1 or
 	  MUX_crg_exc$port0__write_1__SEL_2 or
-	  x1__h4786 or
+	  x1__h4787 or
 	  MUX_crg_exc$port0__write_1__SEL_3 or
 	  MUX_crg_exc_code$port0__write_1__VAL_3 or
 	  WILL_FIRE_RL_rl_CPU_req_mmio_WAIT)
@@ -1366,12 +1366,12 @@ module mkD_MMU_Cache(CLK,
 	  crg_exc_code$port0__write_1 =
 	      MUX_crg_exc_code$port0__write_1__VAL_1;
       MUX_crg_exc$port0__write_1__SEL_2:
-	  crg_exc_code$port0__write_1 = x1__h4786;
+	  crg_exc_code$port0__write_1 = x1__h4787;
       MUX_crg_exc$port0__write_1__SEL_3:
 	  crg_exc_code$port0__write_1 =
 	      MUX_crg_exc_code$port0__write_1__VAL_3;
       WILL_FIRE_RL_rl_CPU_req_mmio_WAIT:
-	  crg_exc_code$port0__write_1 = x1__h4786;
+	  crg_exc_code$port0__write_1 = x1__h4787;
       default: crg_exc_code$port0__write_1 = 4'b1010 /* unspecified value */ ;
     endcase
   end
@@ -1723,19 +1723,19 @@ module mkD_MMU_Cache(CLK,
 	     !tlb_mv_vm_xlate_crg_mmu_cache_req_port0__read__ETC___d150 &&
 	     tlb_mv_vm_xlate_crg_mmu_cache_req_port0__read__ETC___d151 &&
 	     cache$mav_request_pa[129:128] == 2'd1 ;
-  assign x1__h3448 =
+  assign x1__h3449 =
 	     (crg_mmu_cache_req[207:206] == 2'd0 ||
 	      crg_mmu_cache_req[207:206] == 2'd2 &&
 	      crg_mmu_cache_req[74:70] == 5'b00010) ?
 	       4'd4 :
 	       4'd6 ;
-  assign x1__h4786 =
+  assign x1__h4787 =
 	     (crg_mmu_cache_req[207:206] == 2'd0 ||
 	      crg_mmu_cache_req[207:206] == 2'd2 &&
 	      crg_mmu_cache_req[74:70] == 5'b00010) ?
 	       4'd5 :
 	       4'd7 ;
-  assign x1__h5606 =
+  assign x1__h5607 =
 	     (crg_mmu_cache_req[207:206] == 2'd0 ||
 	      crg_mmu_cache_req[207:206] == 2'd2 &&
 	      crg_mmu_cache_req[74:70] == 5'b00010) ?
@@ -1830,26 +1830,26 @@ module mkD_MMU_Cache(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_set_watch_tohost)
 	begin
-	  v__h8539 = $stime;
+	  v__h8540 = $stime;
 	  #0;
 	end
-    v__h8533 = v__h8539 / 32'd10;
+    v__h8534 = v__h8540 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_set_watch_tohost)
 	$display("%0d: %m.set_watch_tohost: watch %0d, addr %0h",
-		 v__h8533,
+		 v__h8534,
 		 set_watch_tohost_watch_tohost,
 		 set_watch_tohost_tohost_addr);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_ptw_rd_B && cache$mav_request_pa[129:128] == 2'd2)
 	begin
-	  v__h6512 = $stime;
+	  v__h6513 = $stime;
 	  #0;
 	end
-    v__h6506 = v__h6512 / 32'd10;
+    v__h6507 = v__h6513 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_ptw_rd_B && cache$mav_request_pa[129:128] == 2'd2)
-	$display("%0d: %m.rl_ptw_rd_B", v__h6506);
+	$display("%0d: %m.rl_ptw_rd_B", v__h6507);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_ptw_rd_B && cache$mav_request_pa[129:128] == 2'd2)
 	$display("    INTERNAL ERROR: cannot have CACHE_WRITE_HIT for PTW read-request to cache");
@@ -1884,14 +1884,14 @@ module mkD_MMU_Cache(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_pte_wb_cache_WAIT && !cache$mv_refill_ok)
 	begin
-	  v__h7537 = $stime;
+	  v__h7538 = $stime;
 	  #0;
 	end
-    v__h7531 = v__h7537 / 32'd10;
+    v__h7532 = v__h7538 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_pte_wb_cache_WAIT && !cache$mv_refill_ok)
 	$display("%0d: %m.rl_pte_wb_req_cache_WAIT: ERROR: unexpected cache error response",
-		 v__h7531);
+		 v__h7532);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_pte_wb_cache_WAIT && !cache$mv_refill_ok)
 	$display("    pte_pa %0d  pa %0h",
@@ -1903,13 +1903,13 @@ module mkD_MMU_Cache(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_ma_req && crg_mmu_cache_req_state$port1__read != 2'd0)
 	begin
-	  v__h2137 = $stime;
+	  v__h2138 = $stime;
 	  #0;
 	end
-    v__h2131 = v__h2137 / 32'd10;
+    v__h2132 = v__h2138 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_ma_req && crg_mmu_cache_req_state$port1__read != 2'd0)
-	$display("%0d: %m.rl_CPU_req", v__h2131);
+	$display("%0d: %m.rl_CPU_req", v__h2132);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_ma_req && crg_mmu_cache_req_state$port1__read != 2'd0)
 	$write("    INTERNAL ERROR: crg_mmu_cache_req_state: ");

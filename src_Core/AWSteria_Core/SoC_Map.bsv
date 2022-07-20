@@ -237,7 +237,7 @@ module mkSoC_Map (SoC_Map_IFC);
    // ----------------------------------------------------------------
    // PC, MTVEC and NMIVEC reset values
 
-   Bit #(64) pc_reset_value     = boot_rom_addr_base;
+   Bit #(64) pc_reset_value     = 'h_8000_0000;    // boot_rom_addr_base;
    Bit #(64) mtvec_reset_value  = 'h_1000;   // TODO: remove?
    Bit #(64) nmivec_reset_value = ?;         // TODO: remove?
 

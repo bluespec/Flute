@@ -103,13 +103,13 @@
 // RDY_cl_ndm_reset_response_enq  O     1
 // cl_ndm_reset_response_notFull  O     1
 // RDY_cl_ndm_reset_response_notFull  O     1 const
-// RDY_se_control_status_request_enq  O     1
-// se_control_status_request_notFull  O     1
+// RDY_se_control_status_request_enq  O     1 reg
+// se_control_status_request_notFull  O     1 reg
 // RDY_se_control_status_request_notFull  O     1 const
-// se_control_status_response_first  O    32
-// RDY_se_control_status_response_first  O     1
-// RDY_se_control_status_response_deq  O     1
-// se_control_status_response_notEmpty  O     1
+// se_control_status_response_first  O    32 reg
+// RDY_se_control_status_response_first  O     1 reg
+// RDY_se_control_status_response_deq  O     1 reg
+// se_control_status_response_notEmpty  O     1 reg
 // RDY_se_control_status_response_notEmpty  O     1 const
 // CLK_clk1                       I     1 unused
 // CLK_clk2                       I     1 clock
@@ -172,7 +172,7 @@
 // fi_nmi_enq_x                   I     1
 // fi_misc_enq_x                  I    32
 // se_dmi_request_enq_x           I    40
-// se_control_status_request_enq_x  I    32
+// se_control_status_request_enq_x  I    32 reg
 // EN_ext_interrupts              I     1
 // EN_fi_nmi_enq                  I     1
 // EN_fo_misc_deq                 I     1
@@ -1012,511 +1012,566 @@ module mkAWSteria_Core(CLK_clk1,
        se_dmi_response_notEmpty;
 
   // inlined wires
-  wire [576 : 0] core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$wget,
-		 core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$wget;
-  wire [530 : 0] core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$wget,
-		 core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$wget;
-  wire [108 : 0] core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$wget,
-		 core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$wget,
-		 core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$wget,
-		 core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$wget,
-		 core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$wget;
-  wire [82 : 0] core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$wget;
-  wire [72 : 0] core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$wget;
-  wire [17 : 0] core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$wget,
-		core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$wget,
-		core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$wget;
-  wire core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas,
-       core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas,
-       core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas,
-       core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_deqWire$whas,
-       core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$whas,
-       core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$whas,
-       core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas,
-       core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas,
-       core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas,
-       core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas,
-       core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas,
-       core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas,
-       core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas,
-       core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_data_deqWire$whas,
-       core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$whas,
-       core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$whas,
-       core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas,
-       core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas,
-       core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas,
-       core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas,
-       core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas,
-       core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas,
-       core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas,
-       core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_deqWire$whas,
-       core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$whas,
-       core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$whas,
-       core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas,
-       core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas,
-       core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas,
-       core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas;
+  wire [576 : 0] core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$wget,
+		 core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$wget;
+  wire [530 : 0] core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$wget,
+		 core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$wget;
+  wire [108 : 0] core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$wget,
+		 core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$wget,
+		 core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$wget,
+		 core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$wget,
+		 core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$wget,
+		 core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$wget;
+  wire [82 : 0] core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$wget;
+  wire [72 : 0] core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$wget;
+  wire [17 : 0] core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$wget,
+		core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$wget,
+		core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$wget;
+  wire core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas,
+       core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas,
+       core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas,
+       core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_deqWire$whas,
+       core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$whas,
+       core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$whas,
+       core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas,
+       core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas,
+       core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas,
+       core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas,
+       core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas,
+       core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas,
+       core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas,
+       core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_data_deqWire$whas,
+       core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$whas,
+       core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$whas,
+       core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas,
+       core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas,
+       core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas,
+       core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas,
+       core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas,
+       core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas,
+       core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas,
+       core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_deqWire$whas,
+       core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$whas,
+       core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$whas,
+       core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas,
+       core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas,
+       core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas,
+       core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas;
 
-  // register core_reclocked_rg_irqs
-  reg [4 : 0] core_reclocked_rg_irqs;
-  wire [4 : 0] core_reclocked_rg_irqs$D_IN;
-  wire core_reclocked_rg_irqs$EN;
+  // register core_inner_rg_irqs
+  reg [4 : 0] core_inner_rg_irqs;
+  wire [4 : 0] core_inner_rg_irqs$D_IN;
+  wire core_inner_rg_irqs$EN;
 
-  // ports of submodule core_reclocked_ddr_AXI4_clock_crossing_f_ar
-  wire [108 : 0] core_reclocked_ddr_AXI4_clock_crossing_f_ar$dD_OUT,
-		 core_reclocked_ddr_AXI4_clock_crossing_f_ar$sD_IN;
-  wire core_reclocked_ddr_AXI4_clock_crossing_f_ar$dDEQ,
-       core_reclocked_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N,
-       core_reclocked_ddr_AXI4_clock_crossing_f_ar$sENQ,
-       core_reclocked_ddr_AXI4_clock_crossing_f_ar$sFULL_N;
+  // ports of submodule core_inner_ddr_AXI4_clock_crossing_f_ar
+  wire [108 : 0] core_inner_ddr_AXI4_clock_crossing_f_ar$dD_OUT,
+		 core_inner_ddr_AXI4_clock_crossing_f_ar$sD_IN;
+  wire core_inner_ddr_AXI4_clock_crossing_f_ar$dDEQ,
+       core_inner_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N,
+       core_inner_ddr_AXI4_clock_crossing_f_ar$sENQ,
+       core_inner_ddr_AXI4_clock_crossing_f_ar$sFULL_N;
 
-  // ports of submodule core_reclocked_ddr_AXI4_clock_crossing_f_aw
-  wire [108 : 0] core_reclocked_ddr_AXI4_clock_crossing_f_aw$dD_OUT,
-		 core_reclocked_ddr_AXI4_clock_crossing_f_aw$sD_IN;
-  wire core_reclocked_ddr_AXI4_clock_crossing_f_aw$dDEQ,
-       core_reclocked_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N,
-       core_reclocked_ddr_AXI4_clock_crossing_f_aw$sENQ,
-       core_reclocked_ddr_AXI4_clock_crossing_f_aw$sFULL_N;
+  // ports of submodule core_inner_ddr_AXI4_clock_crossing_f_aw
+  wire [108 : 0] core_inner_ddr_AXI4_clock_crossing_f_aw$dD_OUT,
+		 core_inner_ddr_AXI4_clock_crossing_f_aw$sD_IN;
+  wire core_inner_ddr_AXI4_clock_crossing_f_aw$dDEQ,
+       core_inner_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N,
+       core_inner_ddr_AXI4_clock_crossing_f_aw$sENQ,
+       core_inner_ddr_AXI4_clock_crossing_f_aw$sFULL_N;
 
-  // ports of submodule core_reclocked_ddr_AXI4_clock_crossing_f_b
-  wire [17 : 0] core_reclocked_ddr_AXI4_clock_crossing_f_b$dD_OUT,
-		core_reclocked_ddr_AXI4_clock_crossing_f_b$sD_IN;
-  wire core_reclocked_ddr_AXI4_clock_crossing_f_b$dDEQ,
-       core_reclocked_ddr_AXI4_clock_crossing_f_b$dEMPTY_N,
-       core_reclocked_ddr_AXI4_clock_crossing_f_b$sENQ,
-       core_reclocked_ddr_AXI4_clock_crossing_f_b$sFULL_N;
+  // ports of submodule core_inner_ddr_AXI4_clock_crossing_f_b
+  wire [17 : 0] core_inner_ddr_AXI4_clock_crossing_f_b$dD_OUT,
+		core_inner_ddr_AXI4_clock_crossing_f_b$sD_IN;
+  wire core_inner_ddr_AXI4_clock_crossing_f_b$dDEQ,
+       core_inner_ddr_AXI4_clock_crossing_f_b$dEMPTY_N,
+       core_inner_ddr_AXI4_clock_crossing_f_b$sENQ,
+       core_inner_ddr_AXI4_clock_crossing_f_b$sFULL_N;
 
-  // ports of submodule core_reclocked_ddr_AXI4_clock_crossing_f_r
-  wire [530 : 0] core_reclocked_ddr_AXI4_clock_crossing_f_r$dD_OUT,
-		 core_reclocked_ddr_AXI4_clock_crossing_f_r$sD_IN;
-  wire core_reclocked_ddr_AXI4_clock_crossing_f_r$dDEQ,
-       core_reclocked_ddr_AXI4_clock_crossing_f_r$dEMPTY_N,
-       core_reclocked_ddr_AXI4_clock_crossing_f_r$sENQ,
-       core_reclocked_ddr_AXI4_clock_crossing_f_r$sFULL_N;
+  // ports of submodule core_inner_ddr_AXI4_clock_crossing_f_r
+  wire [530 : 0] core_inner_ddr_AXI4_clock_crossing_f_r$dD_OUT,
+		 core_inner_ddr_AXI4_clock_crossing_f_r$sD_IN;
+  wire core_inner_ddr_AXI4_clock_crossing_f_r$dDEQ,
+       core_inner_ddr_AXI4_clock_crossing_f_r$dEMPTY_N,
+       core_inner_ddr_AXI4_clock_crossing_f_r$sENQ,
+       core_inner_ddr_AXI4_clock_crossing_f_r$sFULL_N;
 
-  // ports of submodule core_reclocked_ddr_AXI4_clock_crossing_f_w
-  wire [576 : 0] core_reclocked_ddr_AXI4_clock_crossing_f_w$dD_OUT,
-		 core_reclocked_ddr_AXI4_clock_crossing_f_w$sD_IN;
-  wire core_reclocked_ddr_AXI4_clock_crossing_f_w$dDEQ,
-       core_reclocked_ddr_AXI4_clock_crossing_f_w$dEMPTY_N,
-       core_reclocked_ddr_AXI4_clock_crossing_f_w$sENQ,
-       core_reclocked_ddr_AXI4_clock_crossing_f_w$sFULL_N;
+  // ports of submodule core_inner_ddr_AXI4_clock_crossing_f_w
+  wire [576 : 0] core_inner_ddr_AXI4_clock_crossing_f_w$dD_OUT,
+		 core_inner_ddr_AXI4_clock_crossing_f_w$sD_IN;
+  wire core_inner_ddr_AXI4_clock_crossing_f_w$dDEQ,
+       core_inner_ddr_AXI4_clock_crossing_f_w$dEMPTY_N,
+       core_inner_ddr_AXI4_clock_crossing_f_w$sENQ,
+       core_inner_ddr_AXI4_clock_crossing_f_w$sFULL_N;
 
-  // ports of submodule core_reclocked_dma_AXI4_clock_crossing_f_ar
-  wire [108 : 0] core_reclocked_dma_AXI4_clock_crossing_f_ar$dD_OUT,
-		 core_reclocked_dma_AXI4_clock_crossing_f_ar$sD_IN;
-  wire core_reclocked_dma_AXI4_clock_crossing_f_ar$dDEQ,
-       core_reclocked_dma_AXI4_clock_crossing_f_ar$dEMPTY_N,
-       core_reclocked_dma_AXI4_clock_crossing_f_ar$sENQ,
-       core_reclocked_dma_AXI4_clock_crossing_f_ar$sFULL_N;
+  // ports of submodule core_inner_dma_AXI4_clock_crossing_f_ar
+  wire [108 : 0] core_inner_dma_AXI4_clock_crossing_f_ar$dD_OUT,
+		 core_inner_dma_AXI4_clock_crossing_f_ar$sD_IN;
+  wire core_inner_dma_AXI4_clock_crossing_f_ar$dDEQ,
+       core_inner_dma_AXI4_clock_crossing_f_ar$dEMPTY_N,
+       core_inner_dma_AXI4_clock_crossing_f_ar$sENQ,
+       core_inner_dma_AXI4_clock_crossing_f_ar$sFULL_N;
 
-  // ports of submodule core_reclocked_dma_AXI4_clock_crossing_f_aw
-  wire [108 : 0] core_reclocked_dma_AXI4_clock_crossing_f_aw$dD_OUT,
-		 core_reclocked_dma_AXI4_clock_crossing_f_aw$sD_IN;
-  wire core_reclocked_dma_AXI4_clock_crossing_f_aw$dDEQ,
-       core_reclocked_dma_AXI4_clock_crossing_f_aw$dEMPTY_N,
-       core_reclocked_dma_AXI4_clock_crossing_f_aw$sENQ,
-       core_reclocked_dma_AXI4_clock_crossing_f_aw$sFULL_N;
+  // ports of submodule core_inner_dma_AXI4_clock_crossing_f_aw
+  wire [108 : 0] core_inner_dma_AXI4_clock_crossing_f_aw$dD_OUT,
+		 core_inner_dma_AXI4_clock_crossing_f_aw$sD_IN;
+  wire core_inner_dma_AXI4_clock_crossing_f_aw$dDEQ,
+       core_inner_dma_AXI4_clock_crossing_f_aw$dEMPTY_N,
+       core_inner_dma_AXI4_clock_crossing_f_aw$sENQ,
+       core_inner_dma_AXI4_clock_crossing_f_aw$sFULL_N;
 
-  // ports of submodule core_reclocked_dma_AXI4_clock_crossing_f_b
-  wire [17 : 0] core_reclocked_dma_AXI4_clock_crossing_f_b$dD_OUT,
-		core_reclocked_dma_AXI4_clock_crossing_f_b$sD_IN;
-  wire core_reclocked_dma_AXI4_clock_crossing_f_b$dDEQ,
-       core_reclocked_dma_AXI4_clock_crossing_f_b$dEMPTY_N,
-       core_reclocked_dma_AXI4_clock_crossing_f_b$sENQ,
-       core_reclocked_dma_AXI4_clock_crossing_f_b$sFULL_N;
+  // ports of submodule core_inner_dma_AXI4_clock_crossing_f_b
+  wire [17 : 0] core_inner_dma_AXI4_clock_crossing_f_b$dD_OUT,
+		core_inner_dma_AXI4_clock_crossing_f_b$sD_IN;
+  wire core_inner_dma_AXI4_clock_crossing_f_b$dDEQ,
+       core_inner_dma_AXI4_clock_crossing_f_b$dEMPTY_N,
+       core_inner_dma_AXI4_clock_crossing_f_b$sENQ,
+       core_inner_dma_AXI4_clock_crossing_f_b$sFULL_N;
 
-  // ports of submodule core_reclocked_dma_AXI4_clock_crossing_f_r
-  wire [530 : 0] core_reclocked_dma_AXI4_clock_crossing_f_r$dD_OUT,
-		 core_reclocked_dma_AXI4_clock_crossing_f_r$sD_IN;
-  wire core_reclocked_dma_AXI4_clock_crossing_f_r$dDEQ,
-       core_reclocked_dma_AXI4_clock_crossing_f_r$dEMPTY_N,
-       core_reclocked_dma_AXI4_clock_crossing_f_r$sENQ,
-       core_reclocked_dma_AXI4_clock_crossing_f_r$sFULL_N;
+  // ports of submodule core_inner_dma_AXI4_clock_crossing_f_r
+  wire [530 : 0] core_inner_dma_AXI4_clock_crossing_f_r$dD_OUT,
+		 core_inner_dma_AXI4_clock_crossing_f_r$sD_IN;
+  wire core_inner_dma_AXI4_clock_crossing_f_r$dDEQ,
+       core_inner_dma_AXI4_clock_crossing_f_r$dEMPTY_N,
+       core_inner_dma_AXI4_clock_crossing_f_r$sENQ,
+       core_inner_dma_AXI4_clock_crossing_f_r$sFULL_N;
 
-  // ports of submodule core_reclocked_dma_AXI4_clock_crossing_f_w
-  wire [576 : 0] core_reclocked_dma_AXI4_clock_crossing_f_w$dD_OUT,
-		 core_reclocked_dma_AXI4_clock_crossing_f_w$sD_IN;
-  wire core_reclocked_dma_AXI4_clock_crossing_f_w$dDEQ,
-       core_reclocked_dma_AXI4_clock_crossing_f_w$dEMPTY_N,
-       core_reclocked_dma_AXI4_clock_crossing_f_w$sENQ,
-       core_reclocked_dma_AXI4_clock_crossing_f_w$sFULL_N;
+  // ports of submodule core_inner_dma_AXI4_clock_crossing_f_w
+  wire [576 : 0] core_inner_dma_AXI4_clock_crossing_f_w$dD_OUT,
+		 core_inner_dma_AXI4_clock_crossing_f_w$sD_IN;
+  wire core_inner_dma_AXI4_clock_crossing_f_w$dDEQ,
+       core_inner_dma_AXI4_clock_crossing_f_w$dEMPTY_N,
+       core_inner_dma_AXI4_clock_crossing_f_w$sENQ,
+       core_inner_dma_AXI4_clock_crossing_f_w$sFULL_N;
 
-  // ports of submodule core_reclocked_f_control_status_req
-  wire [31 : 0] core_reclocked_f_control_status_req$dD_OUT,
-		core_reclocked_f_control_status_req$sD_IN;
-  wire core_reclocked_f_control_status_req$dDEQ,
-       core_reclocked_f_control_status_req$dEMPTY_N,
-       core_reclocked_f_control_status_req$sENQ,
-       core_reclocked_f_control_status_req$sFULL_N;
+  // ports of submodule core_inner_f_dmi_req
+  wire [39 : 0] core_inner_f_dmi_req$dD_OUT, core_inner_f_dmi_req$sD_IN;
+  wire core_inner_f_dmi_req$dDEQ,
+       core_inner_f_dmi_req$dEMPTY_N,
+       core_inner_f_dmi_req$sENQ,
+       core_inner_f_dmi_req$sFULL_N;
 
-  // ports of submodule core_reclocked_f_control_status_rsp
-  wire [31 : 0] core_reclocked_f_control_status_rsp$dD_OUT,
-		core_reclocked_f_control_status_rsp$sD_IN;
-  wire core_reclocked_f_control_status_rsp$dDEQ,
-       core_reclocked_f_control_status_rsp$dEMPTY_N,
-       core_reclocked_f_control_status_rsp$sENQ,
-       core_reclocked_f_control_status_rsp$sFULL_N;
+  // ports of submodule core_inner_f_dmi_rsp
+  wire [31 : 0] core_inner_f_dmi_rsp$dD_OUT, core_inner_f_dmi_rsp$sD_IN;
+  wire core_inner_f_dmi_rsp$dDEQ,
+       core_inner_f_dmi_rsp$dEMPTY_N,
+       core_inner_f_dmi_rsp$sENQ,
+       core_inner_f_dmi_rsp$sFULL_N;
 
-  // ports of submodule core_reclocked_f_dmi_req
-  wire [39 : 0] core_reclocked_f_dmi_req$dD_OUT,
-		core_reclocked_f_dmi_req$sD_IN;
-  wire core_reclocked_f_dmi_req$dDEQ,
-       core_reclocked_f_dmi_req$dEMPTY_N,
-       core_reclocked_f_dmi_req$sENQ,
-       core_reclocked_f_dmi_req$sFULL_N;
+  // ports of submodule core_inner_f_misc_from_host
+  wire [31 : 0] core_inner_f_misc_from_host$dD_OUT,
+		core_inner_f_misc_from_host$sD_IN;
+  wire core_inner_f_misc_from_host$dDEQ,
+       core_inner_f_misc_from_host$dEMPTY_N,
+       core_inner_f_misc_from_host$sENQ,
+       core_inner_f_misc_from_host$sFULL_N;
 
-  // ports of submodule core_reclocked_f_dmi_rsp
-  wire [31 : 0] core_reclocked_f_dmi_rsp$dD_OUT,
-		core_reclocked_f_dmi_rsp$sD_IN;
-  wire core_reclocked_f_dmi_rsp$dDEQ,
-       core_reclocked_f_dmi_rsp$dEMPTY_N,
-       core_reclocked_f_dmi_rsp$sENQ,
-       core_reclocked_f_dmi_rsp$sFULL_N;
+  // ports of submodule core_inner_f_misc_to_host
+  wire [31 : 0] core_inner_f_misc_to_host$dD_OUT,
+		core_inner_f_misc_to_host$sD_IN;
+  wire core_inner_f_misc_to_host$dDEQ,
+       core_inner_f_misc_to_host$dEMPTY_N,
+       core_inner_f_misc_to_host$sENQ,
+       core_inner_f_misc_to_host$sFULL_N;
 
-  // ports of submodule core_reclocked_f_misc_from_host
-  wire [31 : 0] core_reclocked_f_misc_from_host$dD_OUT,
-		core_reclocked_f_misc_from_host$sD_IN;
-  wire core_reclocked_f_misc_from_host$dDEQ,
-       core_reclocked_f_misc_from_host$dEMPTY_N,
-       core_reclocked_f_misc_from_host$sENQ,
-       core_reclocked_f_misc_from_host$sFULL_N;
+  // ports of submodule core_inner_f_ndm_reset_req
+  wire core_inner_f_ndm_reset_req$dDEQ,
+       core_inner_f_ndm_reset_req$dEMPTY_N,
+       core_inner_f_ndm_reset_req$sENQ,
+       core_inner_f_ndm_reset_req$sFULL_N;
 
-  // ports of submodule core_reclocked_f_misc_to_host
-  wire [31 : 0] core_reclocked_f_misc_to_host$dD_OUT,
-		core_reclocked_f_misc_to_host$sD_IN;
-  wire core_reclocked_f_misc_to_host$dDEQ,
-       core_reclocked_f_misc_to_host$dEMPTY_N,
-       core_reclocked_f_misc_to_host$sENQ,
-       core_reclocked_f_misc_to_host$sFULL_N;
+  // ports of submodule core_inner_f_ndm_reset_rsp
+  wire core_inner_f_ndm_reset_rsp$dDEQ,
+       core_inner_f_ndm_reset_rsp$dEMPTY_N,
+       core_inner_f_ndm_reset_rsp$sENQ,
+       core_inner_f_ndm_reset_rsp$sFULL_N;
 
-  // ports of submodule core_reclocked_f_ndm_reset_req
-  wire core_reclocked_f_ndm_reset_req$dDEQ,
-       core_reclocked_f_ndm_reset_req$dEMPTY_N,
-       core_reclocked_f_ndm_reset_req$sENQ,
-       core_reclocked_f_ndm_reset_req$sFULL_N;
+  // ports of submodule core_inner_f_nmi
+  wire core_inner_f_nmi$dDEQ,
+       core_inner_f_nmi$dD_OUT,
+       core_inner_f_nmi$dEMPTY_N,
+       core_inner_f_nmi$sD_IN,
+       core_inner_f_nmi$sENQ,
+       core_inner_f_nmi$sFULL_N;
 
-  // ports of submodule core_reclocked_f_ndm_reset_rsp
-  wire core_reclocked_f_ndm_reset_rsp$dDEQ,
-       core_reclocked_f_ndm_reset_rsp$dEMPTY_N,
-       core_reclocked_f_ndm_reset_rsp$sENQ,
-       core_reclocked_f_ndm_reset_rsp$sFULL_N;
+  // ports of submodule core_inner_f_pc_trace_control
+  wire [64 : 0] core_inner_f_pc_trace_control$dD_OUT,
+		core_inner_f_pc_trace_control$sD_IN;
+  wire core_inner_f_pc_trace_control$dDEQ,
+       core_inner_f_pc_trace_control$dEMPTY_N,
+       core_inner_f_pc_trace_control$sENQ,
+       core_inner_f_pc_trace_control$sFULL_N;
 
-  // ports of submodule core_reclocked_f_nmi
-  wire core_reclocked_f_nmi$dDEQ,
-       core_reclocked_f_nmi$dD_OUT,
-       core_reclocked_f_nmi$dEMPTY_N,
-       core_reclocked_f_nmi$sD_IN,
-       core_reclocked_f_nmi$sENQ,
-       core_reclocked_f_nmi$sFULL_N;
+  // ports of submodule core_inner_f_tohost_value
+  wire [63 : 0] core_inner_f_tohost_value$dD_OUT,
+		core_inner_f_tohost_value$sD_IN;
+  wire core_inner_f_tohost_value$dDEQ,
+       core_inner_f_tohost_value$dEMPTY_N,
+       core_inner_f_tohost_value$sENQ,
+       core_inner_f_tohost_value$sFULL_N;
 
-  // ports of submodule core_reclocked_f_tv_info
-  wire [607 : 0] core_reclocked_f_tv_info$dD_OUT,
-		 core_reclocked_f_tv_info$sD_IN;
-  wire core_reclocked_f_tv_info$dDEQ,
-       core_reclocked_f_tv_info$dEMPTY_N,
-       core_reclocked_f_tv_info$sENQ,
-       core_reclocked_f_tv_info$sFULL_N;
+  // ports of submodule core_inner_f_tv_info
+  wire [607 : 0] core_inner_f_tv_info$dD_OUT, core_inner_f_tv_info$sD_IN;
+  wire core_inner_f_tv_info$dDEQ,
+       core_inner_f_tv_info$dEMPTY_N,
+       core_inner_f_tv_info$sENQ,
+       core_inner_f_tv_info$sFULL_N;
 
-  // ports of submodule core_reclocked_mmio_AXI4_clock_crossing_f_ar
-  wire [108 : 0] core_reclocked_mmio_AXI4_clock_crossing_f_ar$dD_OUT,
-		 core_reclocked_mmio_AXI4_clock_crossing_f_ar$sD_IN;
-  wire core_reclocked_mmio_AXI4_clock_crossing_f_ar$dDEQ,
-       core_reclocked_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N,
-       core_reclocked_mmio_AXI4_clock_crossing_f_ar$sENQ,
-       core_reclocked_mmio_AXI4_clock_crossing_f_ar$sFULL_N;
+  // ports of submodule core_inner_f_verbosity_control
+  wire [67 : 0] core_inner_f_verbosity_control$dD_OUT,
+		core_inner_f_verbosity_control$sD_IN;
+  wire core_inner_f_verbosity_control$dDEQ,
+       core_inner_f_verbosity_control$dEMPTY_N,
+       core_inner_f_verbosity_control$sENQ,
+       core_inner_f_verbosity_control$sFULL_N;
 
-  // ports of submodule core_reclocked_mmio_AXI4_clock_crossing_f_aw
-  wire [108 : 0] core_reclocked_mmio_AXI4_clock_crossing_f_aw$dD_OUT,
-		 core_reclocked_mmio_AXI4_clock_crossing_f_aw$sD_IN;
-  wire core_reclocked_mmio_AXI4_clock_crossing_f_aw$dDEQ,
-       core_reclocked_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N,
-       core_reclocked_mmio_AXI4_clock_crossing_f_aw$sENQ,
-       core_reclocked_mmio_AXI4_clock_crossing_f_aw$sFULL_N;
+  // ports of submodule core_inner_f_watch_tohost_control
+  wire [64 : 0] core_inner_f_watch_tohost_control$dD_OUT,
+		core_inner_f_watch_tohost_control$sD_IN;
+  wire core_inner_f_watch_tohost_control$dDEQ,
+       core_inner_f_watch_tohost_control$dEMPTY_N,
+       core_inner_f_watch_tohost_control$sENQ,
+       core_inner_f_watch_tohost_control$sFULL_N;
 
-  // ports of submodule core_reclocked_mmio_AXI4_clock_crossing_f_b
-  wire [17 : 0] core_reclocked_mmio_AXI4_clock_crossing_f_b$dD_OUT,
-		core_reclocked_mmio_AXI4_clock_crossing_f_b$sD_IN;
-  wire core_reclocked_mmio_AXI4_clock_crossing_f_b$dDEQ,
-       core_reclocked_mmio_AXI4_clock_crossing_f_b$dEMPTY_N,
-       core_reclocked_mmio_AXI4_clock_crossing_f_b$sENQ,
-       core_reclocked_mmio_AXI4_clock_crossing_f_b$sFULL_N;
+  // ports of submodule core_inner_mmio_AXI4_clock_crossing_f_ar
+  wire [108 : 0] core_inner_mmio_AXI4_clock_crossing_f_ar$dD_OUT,
+		 core_inner_mmio_AXI4_clock_crossing_f_ar$sD_IN;
+  wire core_inner_mmio_AXI4_clock_crossing_f_ar$dDEQ,
+       core_inner_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N,
+       core_inner_mmio_AXI4_clock_crossing_f_ar$sENQ,
+       core_inner_mmio_AXI4_clock_crossing_f_ar$sFULL_N;
 
-  // ports of submodule core_reclocked_mmio_AXI4_clock_crossing_f_r
-  wire [82 : 0] core_reclocked_mmio_AXI4_clock_crossing_f_r$dD_OUT,
-		core_reclocked_mmio_AXI4_clock_crossing_f_r$sD_IN;
-  wire core_reclocked_mmio_AXI4_clock_crossing_f_r$dDEQ,
-       core_reclocked_mmio_AXI4_clock_crossing_f_r$dEMPTY_N,
-       core_reclocked_mmio_AXI4_clock_crossing_f_r$sENQ,
-       core_reclocked_mmio_AXI4_clock_crossing_f_r$sFULL_N;
+  // ports of submodule core_inner_mmio_AXI4_clock_crossing_f_aw
+  wire [108 : 0] core_inner_mmio_AXI4_clock_crossing_f_aw$dD_OUT,
+		 core_inner_mmio_AXI4_clock_crossing_f_aw$sD_IN;
+  wire core_inner_mmio_AXI4_clock_crossing_f_aw$dDEQ,
+       core_inner_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N,
+       core_inner_mmio_AXI4_clock_crossing_f_aw$sENQ,
+       core_inner_mmio_AXI4_clock_crossing_f_aw$sFULL_N;
 
-  // ports of submodule core_reclocked_mmio_AXI4_clock_crossing_f_w
-  wire [72 : 0] core_reclocked_mmio_AXI4_clock_crossing_f_w$dD_OUT,
-		core_reclocked_mmio_AXI4_clock_crossing_f_w$sD_IN;
-  wire core_reclocked_mmio_AXI4_clock_crossing_f_w$dDEQ,
-       core_reclocked_mmio_AXI4_clock_crossing_f_w$dEMPTY_N,
-       core_reclocked_mmio_AXI4_clock_crossing_f_w$sENQ,
-       core_reclocked_mmio_AXI4_clock_crossing_f_w$sFULL_N;
+  // ports of submodule core_inner_mmio_AXI4_clock_crossing_f_b
+  wire [17 : 0] core_inner_mmio_AXI4_clock_crossing_f_b$dD_OUT,
+		core_inner_mmio_AXI4_clock_crossing_f_b$sD_IN;
+  wire core_inner_mmio_AXI4_clock_crossing_f_b$dDEQ,
+       core_inner_mmio_AXI4_clock_crossing_f_b$dEMPTY_N,
+       core_inner_mmio_AXI4_clock_crossing_f_b$sENQ,
+       core_inner_mmio_AXI4_clock_crossing_f_b$sFULL_N;
 
-  // ports of submodule core_single_clock
-  wire [607 : 0] core_single_clock$fo_tv_info_first;
-  wire [511 : 0] core_single_clock$dma_S_rdata,
-		 core_single_clock$dma_S_wdata,
-		 core_single_clock$mem_M_rdata,
-		 core_single_clock$mem_M_wdata;
-  wire [63 : 0] core_single_clock$dma_S_araddr,
-		core_single_clock$dma_S_awaddr,
-		core_single_clock$dma_S_wstrb,
-		core_single_clock$mem_M_araddr,
-		core_single_clock$mem_M_awaddr,
-		core_single_clock$mem_M_wstrb,
-		core_single_clock$mmio_M_araddr,
-		core_single_clock$mmio_M_awaddr,
-		core_single_clock$mmio_M_rdata,
-		core_single_clock$mmio_M_wdata;
-  wire [39 : 0] core_single_clock$se_dmi_request_enq_x;
-  wire [31 : 0] core_single_clock$fi_misc_enq_x,
-		core_single_clock$fo_misc_first,
-		core_single_clock$se_control_status_request_enq_x,
-		core_single_clock$se_control_status_response_first,
-		core_single_clock$se_dmi_response_first;
-  wire [15 : 0] core_single_clock$dma_S_arid,
-		core_single_clock$dma_S_awid,
-		core_single_clock$dma_S_bid,
-		core_single_clock$dma_S_rid,
-		core_single_clock$mem_M_arid,
-		core_single_clock$mem_M_awid,
-		core_single_clock$mem_M_bid,
-		core_single_clock$mem_M_rid,
-		core_single_clock$mmio_M_arid,
-		core_single_clock$mmio_M_awid,
-		core_single_clock$mmio_M_bid,
-		core_single_clock$mmio_M_rid;
-  wire [7 : 0] core_single_clock$dma_S_arlen,
-	       core_single_clock$dma_S_awlen,
-	       core_single_clock$mem_M_arlen,
-	       core_single_clock$mem_M_awlen,
-	       core_single_clock$mmio_M_arlen,
-	       core_single_clock$mmio_M_awlen,
-	       core_single_clock$mmio_M_wstrb;
-  wire [4 : 0] core_single_clock$ext_interrupts_x;
-  wire [3 : 0] core_single_clock$dma_S_arcache,
-	       core_single_clock$dma_S_arqos,
-	       core_single_clock$dma_S_arregion,
-	       core_single_clock$dma_S_awcache,
-	       core_single_clock$dma_S_awqos,
-	       core_single_clock$dma_S_awregion,
-	       core_single_clock$mem_M_arcache,
-	       core_single_clock$mem_M_arqos,
-	       core_single_clock$mem_M_arregion,
-	       core_single_clock$mem_M_awcache,
-	       core_single_clock$mem_M_awqos,
-	       core_single_clock$mem_M_awregion,
-	       core_single_clock$mmio_M_arcache,
-	       core_single_clock$mmio_M_arqos,
-	       core_single_clock$mmio_M_arregion,
-	       core_single_clock$mmio_M_awcache,
-	       core_single_clock$mmio_M_awqos,
-	       core_single_clock$mmio_M_awregion;
-  wire [2 : 0] core_single_clock$dma_S_arprot,
-	       core_single_clock$dma_S_arsize,
-	       core_single_clock$dma_S_awprot,
-	       core_single_clock$dma_S_awsize,
-	       core_single_clock$mem_M_arprot,
-	       core_single_clock$mem_M_arsize,
-	       core_single_clock$mem_M_awprot,
-	       core_single_clock$mem_M_awsize,
-	       core_single_clock$mmio_M_arprot,
-	       core_single_clock$mmio_M_arsize,
-	       core_single_clock$mmio_M_awprot,
-	       core_single_clock$mmio_M_awsize;
-  wire [1 : 0] core_single_clock$dma_S_arburst,
-	       core_single_clock$dma_S_awburst,
-	       core_single_clock$dma_S_bresp,
-	       core_single_clock$dma_S_rresp,
-	       core_single_clock$mem_M_arburst,
-	       core_single_clock$mem_M_awburst,
-	       core_single_clock$mem_M_bresp,
-	       core_single_clock$mem_M_rresp,
-	       core_single_clock$mmio_M_arburst,
-	       core_single_clock$mmio_M_awburst,
-	       core_single_clock$mmio_M_bresp,
-	       core_single_clock$mmio_M_rresp;
-  wire core_single_clock$EN_cl_ndm_reset_request_deq,
-       core_single_clock$EN_cl_ndm_reset_response_enq,
-       core_single_clock$EN_ext_interrupts,
-       core_single_clock$EN_fi_misc_enq,
-       core_single_clock$EN_fi_nmi_enq,
-       core_single_clock$EN_fo_misc_deq,
-       core_single_clock$EN_fo_tv_info_deq,
-       core_single_clock$EN_se_control_status_request_enq,
-       core_single_clock$EN_se_control_status_response_deq,
-       core_single_clock$EN_se_dmi_request_enq,
-       core_single_clock$EN_se_dmi_response_deq,
-       core_single_clock$RDY_cl_ndm_reset_request_deq,
-       core_single_clock$RDY_cl_ndm_reset_response_enq,
-       core_single_clock$RDY_fi_misc_enq,
-       core_single_clock$RDY_fi_nmi_enq,
-       core_single_clock$RDY_fo_misc_deq,
-       core_single_clock$RDY_fo_misc_first,
-       core_single_clock$RDY_fo_tv_info_deq,
-       core_single_clock$RDY_fo_tv_info_first,
-       core_single_clock$RDY_se_control_status_request_enq,
-       core_single_clock$RDY_se_control_status_response_deq,
-       core_single_clock$RDY_se_control_status_response_first,
-       core_single_clock$RDY_se_dmi_request_enq,
-       core_single_clock$RDY_se_dmi_response_deq,
-       core_single_clock$RDY_se_dmi_response_first,
-       core_single_clock$dma_S_arlock,
-       core_single_clock$dma_S_arready,
-       core_single_clock$dma_S_arvalid,
-       core_single_clock$dma_S_awlock,
-       core_single_clock$dma_S_awready,
-       core_single_clock$dma_S_awvalid,
-       core_single_clock$dma_S_bready,
-       core_single_clock$dma_S_bvalid,
-       core_single_clock$dma_S_rlast,
-       core_single_clock$dma_S_rready,
-       core_single_clock$dma_S_rvalid,
-       core_single_clock$dma_S_wlast,
-       core_single_clock$dma_S_wready,
-       core_single_clock$dma_S_wvalid,
-       core_single_clock$fi_nmi_enq_x,
-       core_single_clock$mem_M_arlock,
-       core_single_clock$mem_M_arready,
-       core_single_clock$mem_M_arvalid,
-       core_single_clock$mem_M_awlock,
-       core_single_clock$mem_M_awready,
-       core_single_clock$mem_M_awvalid,
-       core_single_clock$mem_M_bready,
-       core_single_clock$mem_M_bvalid,
-       core_single_clock$mem_M_rlast,
-       core_single_clock$mem_M_rready,
-       core_single_clock$mem_M_rvalid,
-       core_single_clock$mem_M_wlast,
-       core_single_clock$mem_M_wready,
-       core_single_clock$mem_M_wvalid,
-       core_single_clock$mmio_M_arlock,
-       core_single_clock$mmio_M_arready,
-       core_single_clock$mmio_M_arvalid,
-       core_single_clock$mmio_M_awlock,
-       core_single_clock$mmio_M_awready,
-       core_single_clock$mmio_M_awvalid,
-       core_single_clock$mmio_M_bready,
-       core_single_clock$mmio_M_bvalid,
-       core_single_clock$mmio_M_rlast,
-       core_single_clock$mmio_M_rready,
-       core_single_clock$mmio_M_rvalid,
-       core_single_clock$mmio_M_wlast,
-       core_single_clock$mmio_M_wready,
-       core_single_clock$mmio_M_wvalid;
+  // ports of submodule core_inner_mmio_AXI4_clock_crossing_f_r
+  wire [82 : 0] core_inner_mmio_AXI4_clock_crossing_f_r$dD_OUT,
+		core_inner_mmio_AXI4_clock_crossing_f_r$sD_IN;
+  wire core_inner_mmio_AXI4_clock_crossing_f_r$dDEQ,
+       core_inner_mmio_AXI4_clock_crossing_f_r$dEMPTY_N,
+       core_inner_mmio_AXI4_clock_crossing_f_r$sENQ,
+       core_inner_mmio_AXI4_clock_crossing_f_r$sFULL_N;
 
-  // ports of submodule reset_for_core
-  wire reset_for_core$ASSERT_IN, reset_for_core$OUT_RST;
+  // ports of submodule core_inner_mmio_AXI4_clock_crossing_f_w
+  wire [72 : 0] core_inner_mmio_AXI4_clock_crossing_f_w$dD_OUT,
+		core_inner_mmio_AXI4_clock_crossing_f_w$sD_IN;
+  wire core_inner_mmio_AXI4_clock_crossing_f_w$dDEQ,
+       core_inner_mmio_AXI4_clock_crossing_f_w$dEMPTY_N,
+       core_inner_mmio_AXI4_clock_crossing_f_w$sENQ,
+       core_inner_mmio_AXI4_clock_crossing_f_w$sFULL_N;
+
+  // ports of submodule core_inner_reclocked
+  wire [607 : 0] core_inner_reclocked$fo_tv_info_first;
+  wire [511 : 0] core_inner_reclocked$dma_S_rdata,
+		 core_inner_reclocked$dma_S_wdata,
+		 core_inner_reclocked$mem_M_rdata,
+		 core_inner_reclocked$mem_M_wdata;
+  wire [67 : 0] core_inner_reclocked$fi_verbosity_control_enq_x;
+  wire [64 : 0] core_inner_reclocked$fi_pc_trace_control_enq_x,
+		core_inner_reclocked$fi_watch_tohost_control_enq_x;
+  wire [63 : 0] core_inner_reclocked$dma_S_araddr,
+		core_inner_reclocked$dma_S_awaddr,
+		core_inner_reclocked$dma_S_wstrb,
+		core_inner_reclocked$fo_tohost_value_first,
+		core_inner_reclocked$mem_M_araddr,
+		core_inner_reclocked$mem_M_awaddr,
+		core_inner_reclocked$mem_M_wstrb,
+		core_inner_reclocked$mmio_M_araddr,
+		core_inner_reclocked$mmio_M_awaddr,
+		core_inner_reclocked$mmio_M_rdata,
+		core_inner_reclocked$mmio_M_wdata;
+  wire [39 : 0] core_inner_reclocked$se_dmi_request_enq_x;
+  wire [31 : 0] core_inner_reclocked$fi_misc_enq_x,
+		core_inner_reclocked$fo_misc_first,
+		core_inner_reclocked$se_dmi_response_first;
+  wire [15 : 0] core_inner_reclocked$dma_S_arid,
+		core_inner_reclocked$dma_S_awid,
+		core_inner_reclocked$dma_S_bid,
+		core_inner_reclocked$dma_S_rid,
+		core_inner_reclocked$mem_M_arid,
+		core_inner_reclocked$mem_M_awid,
+		core_inner_reclocked$mem_M_bid,
+		core_inner_reclocked$mem_M_rid,
+		core_inner_reclocked$mmio_M_arid,
+		core_inner_reclocked$mmio_M_awid,
+		core_inner_reclocked$mmio_M_bid,
+		core_inner_reclocked$mmio_M_rid;
+  wire [7 : 0] core_inner_reclocked$dma_S_arlen,
+	       core_inner_reclocked$dma_S_awlen,
+	       core_inner_reclocked$mem_M_arlen,
+	       core_inner_reclocked$mem_M_awlen,
+	       core_inner_reclocked$mmio_M_arlen,
+	       core_inner_reclocked$mmio_M_awlen,
+	       core_inner_reclocked$mmio_M_wstrb;
+  wire [4 : 0] core_inner_reclocked$ext_interrupts_x;
+  wire [3 : 0] core_inner_reclocked$dma_S_arcache,
+	       core_inner_reclocked$dma_S_arqos,
+	       core_inner_reclocked$dma_S_arregion,
+	       core_inner_reclocked$dma_S_awcache,
+	       core_inner_reclocked$dma_S_awqos,
+	       core_inner_reclocked$dma_S_awregion,
+	       core_inner_reclocked$mem_M_arcache,
+	       core_inner_reclocked$mem_M_arqos,
+	       core_inner_reclocked$mem_M_arregion,
+	       core_inner_reclocked$mem_M_awcache,
+	       core_inner_reclocked$mem_M_awqos,
+	       core_inner_reclocked$mem_M_awregion,
+	       core_inner_reclocked$mmio_M_arcache,
+	       core_inner_reclocked$mmio_M_arqos,
+	       core_inner_reclocked$mmio_M_arregion,
+	       core_inner_reclocked$mmio_M_awcache,
+	       core_inner_reclocked$mmio_M_awqos,
+	       core_inner_reclocked$mmio_M_awregion;
+  wire [2 : 0] core_inner_reclocked$dma_S_arprot,
+	       core_inner_reclocked$dma_S_arsize,
+	       core_inner_reclocked$dma_S_awprot,
+	       core_inner_reclocked$dma_S_awsize,
+	       core_inner_reclocked$mem_M_arprot,
+	       core_inner_reclocked$mem_M_arsize,
+	       core_inner_reclocked$mem_M_awprot,
+	       core_inner_reclocked$mem_M_awsize,
+	       core_inner_reclocked$mmio_M_arprot,
+	       core_inner_reclocked$mmio_M_arsize,
+	       core_inner_reclocked$mmio_M_awprot,
+	       core_inner_reclocked$mmio_M_awsize;
+  wire [1 : 0] core_inner_reclocked$dma_S_arburst,
+	       core_inner_reclocked$dma_S_awburst,
+	       core_inner_reclocked$dma_S_bresp,
+	       core_inner_reclocked$dma_S_rresp,
+	       core_inner_reclocked$mem_M_arburst,
+	       core_inner_reclocked$mem_M_awburst,
+	       core_inner_reclocked$mem_M_bresp,
+	       core_inner_reclocked$mem_M_rresp,
+	       core_inner_reclocked$mmio_M_arburst,
+	       core_inner_reclocked$mmio_M_awburst,
+	       core_inner_reclocked$mmio_M_bresp,
+	       core_inner_reclocked$mmio_M_rresp;
+  wire core_inner_reclocked$EN_cl_ndm_reset_request_deq,
+       core_inner_reclocked$EN_cl_ndm_reset_response_enq,
+       core_inner_reclocked$EN_ext_interrupts,
+       core_inner_reclocked$EN_fi_misc_enq,
+       core_inner_reclocked$EN_fi_nmi_enq,
+       core_inner_reclocked$EN_fi_pc_trace_control_enq,
+       core_inner_reclocked$EN_fi_verbosity_control_enq,
+       core_inner_reclocked$EN_fi_watch_tohost_control_enq,
+       core_inner_reclocked$EN_fo_misc_deq,
+       core_inner_reclocked$EN_fo_tohost_value_deq,
+       core_inner_reclocked$EN_fo_tv_info_deq,
+       core_inner_reclocked$EN_se_dmi_request_enq,
+       core_inner_reclocked$EN_se_dmi_response_deq,
+       core_inner_reclocked$RDY_cl_ndm_reset_request_deq,
+       core_inner_reclocked$RDY_cl_ndm_reset_response_enq,
+       core_inner_reclocked$RDY_fi_misc_enq,
+       core_inner_reclocked$RDY_fi_nmi_enq,
+       core_inner_reclocked$RDY_fi_pc_trace_control_enq,
+       core_inner_reclocked$RDY_fo_misc_deq,
+       core_inner_reclocked$RDY_fo_misc_first,
+       core_inner_reclocked$RDY_fo_tv_info_deq,
+       core_inner_reclocked$RDY_fo_tv_info_first,
+       core_inner_reclocked$RDY_se_dmi_request_enq,
+       core_inner_reclocked$RDY_se_dmi_response_deq,
+       core_inner_reclocked$RDY_se_dmi_response_first,
+       core_inner_reclocked$dma_S_arlock,
+       core_inner_reclocked$dma_S_arready,
+       core_inner_reclocked$dma_S_arvalid,
+       core_inner_reclocked$dma_S_awlock,
+       core_inner_reclocked$dma_S_awready,
+       core_inner_reclocked$dma_S_awvalid,
+       core_inner_reclocked$dma_S_bready,
+       core_inner_reclocked$dma_S_bvalid,
+       core_inner_reclocked$dma_S_rlast,
+       core_inner_reclocked$dma_S_rready,
+       core_inner_reclocked$dma_S_rvalid,
+       core_inner_reclocked$dma_S_wlast,
+       core_inner_reclocked$dma_S_wready,
+       core_inner_reclocked$dma_S_wvalid,
+       core_inner_reclocked$fi_nmi_enq_x,
+       core_inner_reclocked$mem_M_arlock,
+       core_inner_reclocked$mem_M_arready,
+       core_inner_reclocked$mem_M_arvalid,
+       core_inner_reclocked$mem_M_awlock,
+       core_inner_reclocked$mem_M_awready,
+       core_inner_reclocked$mem_M_awvalid,
+       core_inner_reclocked$mem_M_bready,
+       core_inner_reclocked$mem_M_bvalid,
+       core_inner_reclocked$mem_M_rlast,
+       core_inner_reclocked$mem_M_rready,
+       core_inner_reclocked$mem_M_rvalid,
+       core_inner_reclocked$mem_M_wlast,
+       core_inner_reclocked$mem_M_wready,
+       core_inner_reclocked$mem_M_wvalid,
+       core_inner_reclocked$mmio_M_arlock,
+       core_inner_reclocked$mmio_M_arready,
+       core_inner_reclocked$mmio_M_arvalid,
+       core_inner_reclocked$mmio_M_awlock,
+       core_inner_reclocked$mmio_M_awready,
+       core_inner_reclocked$mmio_M_awvalid,
+       core_inner_reclocked$mmio_M_bready,
+       core_inner_reclocked$mmio_M_bvalid,
+       core_inner_reclocked$mmio_M_rlast,
+       core_inner_reclocked$mmio_M_rready,
+       core_inner_reclocked$mmio_M_rvalid,
+       core_inner_reclocked$mmio_M_wlast,
+       core_inner_reclocked$mmio_M_wready,
+       core_inner_reclocked$mmio_M_wvalid;
+
+  // ports of submodule host_cs
+  wire [63 : 0] host_cs$fi_tohost_value_enq_x,
+		host_cs$fo_pc_trace_control_first_snd,
+		host_cs$fo_verbosity_control_first_snd,
+		host_cs$fo_watch_tohost_control_first_snd;
+  wire [31 : 0] host_cs$se_control_status_request_enq_x,
+		host_cs$se_control_status_response_first;
+  wire [3 : 0] host_cs$fo_verbosity_control_first_fst;
+  wire host_cs$EN_fi_tohost_value_enq,
+       host_cs$EN_fo_pc_trace_control_deq,
+       host_cs$EN_fo_verbosity_control_deq,
+       host_cs$EN_fo_watch_tohost_control_deq,
+       host_cs$EN_se_control_status_request_enq,
+       host_cs$EN_se_control_status_response_deq,
+       host_cs$RDY_fo_pc_trace_control_deq,
+       host_cs$RDY_fo_pc_trace_control_first_fst,
+       host_cs$RDY_fo_pc_trace_control_first_snd,
+       host_cs$RDY_fo_verbosity_control_deq,
+       host_cs$RDY_fo_verbosity_control_first_fst,
+       host_cs$RDY_fo_verbosity_control_first_snd,
+       host_cs$RDY_fo_watch_tohost_control_deq,
+       host_cs$RDY_fo_watch_tohost_control_first_fst,
+       host_cs$RDY_fo_watch_tohost_control_first_snd,
+       host_cs$RDY_se_control_status_request_enq,
+       host_cs$RDY_se_control_status_response_deq,
+       host_cs$RDY_se_control_status_response_first,
+       host_cs$fo_pc_trace_control_first_fst,
+       host_cs$fo_watch_tohost_control_first_fst,
+       host_cs$mv_assert_core_reset,
+       host_cs$se_control_status_request_notFull,
+       host_cs$se_control_status_response_notEmpty;
+
+  // ports of submodule innerRstIfc
+  wire innerRstIfc$ASSERT_IN, innerRstIfc$OUT_RST;
 
   // rule scheduling signals
-  wire CAN_FIRE_RL_core_reclocked_10_rl_connect,
-       CAN_FIRE_RL_core_reclocked_11_rl_connect,
-       CAN_FIRE_RL_core_reclocked_12_rl_connect,
-       CAN_FIRE_RL_core_reclocked_1_rl_rd_addr_channel,
-       CAN_FIRE_RL_core_reclocked_1_rl_rd_data_channel,
-       CAN_FIRE_RL_core_reclocked_1_rl_wr_addr_channel,
-       CAN_FIRE_RL_core_reclocked_1_rl_wr_data_channel,
-       CAN_FIRE_RL_core_reclocked_1_rl_wr_response_channel,
-       CAN_FIRE_RL_core_reclocked_2_rl_rd_addr_channel,
-       CAN_FIRE_RL_core_reclocked_2_rl_rd_data_channel,
-       CAN_FIRE_RL_core_reclocked_2_rl_wr_addr_channel,
-       CAN_FIRE_RL_core_reclocked_2_rl_wr_data_channel,
-       CAN_FIRE_RL_core_reclocked_2_rl_wr_response_channel,
-       CAN_FIRE_RL_core_reclocked_3_rl_connect,
-       CAN_FIRE_RL_core_reclocked_4_rl_connect,
-       CAN_FIRE_RL_core_reclocked_5_rl_connect,
-       CAN_FIRE_RL_core_reclocked_6_rl_connect,
-       CAN_FIRE_RL_core_reclocked_7_rl_connect,
-       CAN_FIRE_RL_core_reclocked_8_rl_connect,
-       CAN_FIRE_RL_core_reclocked_9_rl_connect,
-       CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq,
-       CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst,
-       CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq,
-       CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq,
-       CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq,
-       CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq,
-       CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst,
-       CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq,
-       CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq,
-       CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst,
-       CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq,
-       CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq,
-       CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq,
-       CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq,
-       CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq,
-       CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq,
-       CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst,
-       CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq,
-       CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq,
-       CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq,
-       CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq,
-       CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq,
-       CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq,
-       CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst,
-       CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq,
-       CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq,
-       CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst,
-       CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq,
-       CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq,
-       CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq,
-       CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq,
-       CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst,
-       CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq,
-       CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq,
-       CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst,
-       CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq,
-       CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq,
-       CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq,
-       CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq,
-       CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq,
-       CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq,
-       CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst,
-       CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq,
-       CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq,
-       CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq,
-       CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq,
-       CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq,
-       CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq,
-       CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst,
-       CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq,
-       CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq,
-       CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst,
-       CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq,
-       CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq,
-       CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq,
-       CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq,
-       CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst,
-       CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq,
-       CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq,
-       CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst,
-       CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq,
-       CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq,
-       CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq,
-       CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq,
-       CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq,
-       CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq,
-       CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst,
-       CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq,
-       CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq,
-       CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq,
-       CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq,
-       CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq,
-       CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq,
-       CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst,
-       CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq,
-       CAN_FIRE_RL_core_reclocked_rl_rd_addr_channel,
-       CAN_FIRE_RL_core_reclocked_rl_rd_data_channel,
-       CAN_FIRE_RL_core_reclocked_rl_relay_interrupts,
-       CAN_FIRE_RL_core_reclocked_rl_wr_addr_channel,
-       CAN_FIRE_RL_core_reclocked_rl_wr_data_channel,
-       CAN_FIRE_RL_core_reclocked_rl_wr_response_channel,
-       CAN_FIRE_RL_core_reclocked_ro_sync_irqs_clock_domain_crossing,
+  wire CAN_FIRE_RL_assertInnerReset,
+       CAN_FIRE_RL_core_inner_10_rl_connect,
+       CAN_FIRE_RL_core_inner_11_rl_connect,
+       CAN_FIRE_RL_core_inner_12_rl_connect,
+       CAN_FIRE_RL_core_inner_13_rl_connect,
+       CAN_FIRE_RL_core_inner_14_rl_connect,
+       CAN_FIRE_RL_core_inner_1_rl_rd_addr_channel,
+       CAN_FIRE_RL_core_inner_1_rl_rd_data_channel,
+       CAN_FIRE_RL_core_inner_1_rl_wr_addr_channel,
+       CAN_FIRE_RL_core_inner_1_rl_wr_data_channel,
+       CAN_FIRE_RL_core_inner_1_rl_wr_response_channel,
+       CAN_FIRE_RL_core_inner_2_rl_rd_addr_channel,
+       CAN_FIRE_RL_core_inner_2_rl_rd_data_channel,
+       CAN_FIRE_RL_core_inner_2_rl_wr_addr_channel,
+       CAN_FIRE_RL_core_inner_2_rl_wr_data_channel,
+       CAN_FIRE_RL_core_inner_2_rl_wr_response_channel,
+       CAN_FIRE_RL_core_inner_3_rl_connect,
+       CAN_FIRE_RL_core_inner_4_rl_connect,
+       CAN_FIRE_RL_core_inner_5_rl_connect,
+       CAN_FIRE_RL_core_inner_6_rl_connect,
+       CAN_FIRE_RL_core_inner_7_rl_connect,
+       CAN_FIRE_RL_core_inner_8_rl_connect,
+       CAN_FIRE_RL_core_inner_9_rl_connect,
+       CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq,
+       CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst,
+       CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq,
+       CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq,
+       CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq,
+       CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq,
+       CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst,
+       CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq,
+       CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq,
+       CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst,
+       CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq,
+       CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq,
+       CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq,
+       CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq,
+       CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq,
+       CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq,
+       CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst,
+       CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq,
+       CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq,
+       CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq,
+       CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq,
+       CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq,
+       CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq,
+       CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst,
+       CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq,
+       CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq,
+       CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst,
+       CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq,
+       CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq,
+       CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq,
+       CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq,
+       CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst,
+       CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq,
+       CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq,
+       CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst,
+       CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq,
+       CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq,
+       CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq,
+       CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq,
+       CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq,
+       CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq,
+       CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst,
+       CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq,
+       CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq,
+       CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq,
+       CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq,
+       CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq,
+       CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq,
+       CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst,
+       CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq,
+       CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq,
+       CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst,
+       CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq,
+       CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq,
+       CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq,
+       CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq,
+       CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst,
+       CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq,
+       CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq,
+       CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst,
+       CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq,
+       CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq,
+       CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq,
+       CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq,
+       CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq,
+       CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq,
+       CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst,
+       CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq,
+       CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq,
+       CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq,
+       CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq,
+       CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq,
+       CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq,
+       CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst,
+       CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq,
+       CAN_FIRE_RL_core_inner_rl_rd_addr_channel,
+       CAN_FIRE_RL_core_inner_rl_rd_data_channel,
+       CAN_FIRE_RL_core_inner_rl_relay_interrupts,
+       CAN_FIRE_RL_core_inner_rl_wr_addr_channel,
+       CAN_FIRE_RL_core_inner_rl_wr_data_channel,
+       CAN_FIRE_RL_core_inner_rl_wr_response_channel,
+       CAN_FIRE_RL_core_inner_ro_sync_irqs_clock_domain_crossing,
+       CAN_FIRE_RL_rl_connect,
+       CAN_FIRE_RL_rl_connect_1,
+       CAN_FIRE_RL_rl_connect_2,
+       CAN_FIRE_RL_rl_connect_3,
        CAN_FIRE_cl_ndm_reset_request_deq,
        CAN_FIRE_cl_ndm_reset_response_enq,
        CAN_FIRE_dma_S_m_arvalid,
@@ -1543,108 +1598,115 @@ module mkAWSteria_Core(CLK_clk1,
        CAN_FIRE_se_control_status_response_deq,
        CAN_FIRE_se_dmi_request_enq,
        CAN_FIRE_se_dmi_response_deq,
-       WILL_FIRE_RL_core_reclocked_10_rl_connect,
-       WILL_FIRE_RL_core_reclocked_11_rl_connect,
-       WILL_FIRE_RL_core_reclocked_12_rl_connect,
-       WILL_FIRE_RL_core_reclocked_1_rl_rd_addr_channel,
-       WILL_FIRE_RL_core_reclocked_1_rl_rd_data_channel,
-       WILL_FIRE_RL_core_reclocked_1_rl_wr_addr_channel,
-       WILL_FIRE_RL_core_reclocked_1_rl_wr_data_channel,
-       WILL_FIRE_RL_core_reclocked_1_rl_wr_response_channel,
-       WILL_FIRE_RL_core_reclocked_2_rl_rd_addr_channel,
-       WILL_FIRE_RL_core_reclocked_2_rl_rd_data_channel,
-       WILL_FIRE_RL_core_reclocked_2_rl_wr_addr_channel,
-       WILL_FIRE_RL_core_reclocked_2_rl_wr_data_channel,
-       WILL_FIRE_RL_core_reclocked_2_rl_wr_response_channel,
-       WILL_FIRE_RL_core_reclocked_3_rl_connect,
-       WILL_FIRE_RL_core_reclocked_4_rl_connect,
-       WILL_FIRE_RL_core_reclocked_5_rl_connect,
-       WILL_FIRE_RL_core_reclocked_6_rl_connect,
-       WILL_FIRE_RL_core_reclocked_7_rl_connect,
-       WILL_FIRE_RL_core_reclocked_8_rl_connect,
-       WILL_FIRE_RL_core_reclocked_9_rl_connect,
-       WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq,
-       WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst,
-       WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq,
-       WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq,
-       WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq,
-       WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq,
-       WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst,
-       WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq,
-       WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq,
-       WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst,
-       WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq,
-       WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq,
-       WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq,
-       WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq,
-       WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq,
-       WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq,
-       WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst,
-       WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq,
-       WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq,
-       WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq,
-       WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq,
-       WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq,
-       WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq,
-       WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst,
-       WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq,
-       WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq,
-       WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst,
-       WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq,
-       WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq,
-       WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq,
-       WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq,
-       WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst,
-       WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq,
-       WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq,
-       WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst,
-       WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq,
-       WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq,
-       WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq,
-       WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq,
-       WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq,
-       WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq,
-       WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst,
-       WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq,
-       WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq,
-       WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq,
-       WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq,
-       WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq,
-       WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq,
-       WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst,
-       WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq,
-       WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq,
-       WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst,
-       WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq,
-       WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq,
-       WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq,
-       WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq,
-       WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst,
-       WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq,
-       WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq,
-       WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst,
-       WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq,
-       WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq,
-       WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq,
-       WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq,
-       WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq,
-       WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq,
-       WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst,
-       WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq,
-       WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq,
-       WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq,
-       WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq,
-       WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq,
-       WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq,
-       WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst,
-       WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq,
-       WILL_FIRE_RL_core_reclocked_rl_rd_addr_channel,
-       WILL_FIRE_RL_core_reclocked_rl_rd_data_channel,
-       WILL_FIRE_RL_core_reclocked_rl_relay_interrupts,
-       WILL_FIRE_RL_core_reclocked_rl_wr_addr_channel,
-       WILL_FIRE_RL_core_reclocked_rl_wr_data_channel,
-       WILL_FIRE_RL_core_reclocked_rl_wr_response_channel,
-       WILL_FIRE_RL_core_reclocked_ro_sync_irqs_clock_domain_crossing,
+       WILL_FIRE_RL_assertInnerReset,
+       WILL_FIRE_RL_core_inner_10_rl_connect,
+       WILL_FIRE_RL_core_inner_11_rl_connect,
+       WILL_FIRE_RL_core_inner_12_rl_connect,
+       WILL_FIRE_RL_core_inner_13_rl_connect,
+       WILL_FIRE_RL_core_inner_14_rl_connect,
+       WILL_FIRE_RL_core_inner_1_rl_rd_addr_channel,
+       WILL_FIRE_RL_core_inner_1_rl_rd_data_channel,
+       WILL_FIRE_RL_core_inner_1_rl_wr_addr_channel,
+       WILL_FIRE_RL_core_inner_1_rl_wr_data_channel,
+       WILL_FIRE_RL_core_inner_1_rl_wr_response_channel,
+       WILL_FIRE_RL_core_inner_2_rl_rd_addr_channel,
+       WILL_FIRE_RL_core_inner_2_rl_rd_data_channel,
+       WILL_FIRE_RL_core_inner_2_rl_wr_addr_channel,
+       WILL_FIRE_RL_core_inner_2_rl_wr_data_channel,
+       WILL_FIRE_RL_core_inner_2_rl_wr_response_channel,
+       WILL_FIRE_RL_core_inner_3_rl_connect,
+       WILL_FIRE_RL_core_inner_4_rl_connect,
+       WILL_FIRE_RL_core_inner_5_rl_connect,
+       WILL_FIRE_RL_core_inner_6_rl_connect,
+       WILL_FIRE_RL_core_inner_7_rl_connect,
+       WILL_FIRE_RL_core_inner_8_rl_connect,
+       WILL_FIRE_RL_core_inner_9_rl_connect,
+       WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq,
+       WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst,
+       WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq,
+       WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq,
+       WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq,
+       WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq,
+       WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst,
+       WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq,
+       WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq,
+       WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst,
+       WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq,
+       WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq,
+       WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq,
+       WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq,
+       WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq,
+       WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq,
+       WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst,
+       WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq,
+       WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq,
+       WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq,
+       WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq,
+       WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq,
+       WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq,
+       WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst,
+       WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq,
+       WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq,
+       WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst,
+       WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq,
+       WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq,
+       WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq,
+       WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq,
+       WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst,
+       WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq,
+       WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq,
+       WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst,
+       WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq,
+       WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq,
+       WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq,
+       WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq,
+       WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq,
+       WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq,
+       WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst,
+       WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq,
+       WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq,
+       WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq,
+       WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq,
+       WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq,
+       WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq,
+       WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst,
+       WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq,
+       WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq,
+       WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst,
+       WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq,
+       WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq,
+       WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq,
+       WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq,
+       WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst,
+       WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq,
+       WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq,
+       WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst,
+       WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq,
+       WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq,
+       WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq,
+       WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq,
+       WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq,
+       WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq,
+       WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst,
+       WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq,
+       WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq,
+       WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq,
+       WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq,
+       WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq,
+       WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq,
+       WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst,
+       WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq,
+       WILL_FIRE_RL_core_inner_rl_rd_addr_channel,
+       WILL_FIRE_RL_core_inner_rl_rd_data_channel,
+       WILL_FIRE_RL_core_inner_rl_relay_interrupts,
+       WILL_FIRE_RL_core_inner_rl_wr_addr_channel,
+       WILL_FIRE_RL_core_inner_rl_wr_data_channel,
+       WILL_FIRE_RL_core_inner_rl_wr_response_channel,
+       WILL_FIRE_RL_core_inner_ro_sync_irqs_clock_domain_crossing,
+       WILL_FIRE_RL_rl_connect,
+       WILL_FIRE_RL_rl_connect_1,
+       WILL_FIRE_RL_rl_connect_2,
+       WILL_FIRE_RL_rl_connect_3,
        WILL_FIRE_cl_ndm_reset_request_deq,
        WILL_FIRE_cl_ndm_reset_response_enq,
        WILL_FIRE_dma_S_m_arvalid,
@@ -1673,66 +1735,65 @@ module mkAWSteria_Core(CLK_clk1,
        WILL_FIRE_se_dmi_response_deq;
 
   // value method mem_M_m_awvalid
-  assign mem_M_awvalid =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N ;
+  assign mem_M_awvalid = core_inner_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N ;
 
   // value method mem_M_m_awid
   assign mem_M_awid =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N ?
-	       core_reclocked_ddr_AXI4_clock_crossing_f_aw$dD_OUT[108:93] :
+	     core_inner_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_ddr_AXI4_clock_crossing_f_aw$dD_OUT[108:93] :
 	       16'd0 ;
 
   // value method mem_M_m_awaddr
   assign mem_M_awaddr =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N ?
-	       core_reclocked_ddr_AXI4_clock_crossing_f_aw$dD_OUT[92:29] :
+	     core_inner_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_ddr_AXI4_clock_crossing_f_aw$dD_OUT[92:29] :
 	       64'd0 ;
 
   // value method mem_M_m_awlen
   assign mem_M_awlen =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N ?
-	       core_reclocked_ddr_AXI4_clock_crossing_f_aw$dD_OUT[28:21] :
+	     core_inner_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_ddr_AXI4_clock_crossing_f_aw$dD_OUT[28:21] :
 	       8'd0 ;
 
   // value method mem_M_m_awsize
   assign mem_M_awsize =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N ?
-	       core_reclocked_ddr_AXI4_clock_crossing_f_aw$dD_OUT[20:18] :
+	     core_inner_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_ddr_AXI4_clock_crossing_f_aw$dD_OUT[20:18] :
 	       3'd0 ;
 
   // value method mem_M_m_awburst
   assign mem_M_awburst =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N ?
-	       core_reclocked_ddr_AXI4_clock_crossing_f_aw$dD_OUT[17:16] :
+	     core_inner_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_ddr_AXI4_clock_crossing_f_aw$dD_OUT[17:16] :
 	       2'd0 ;
 
   // value method mem_M_m_awlock
   assign mem_M_awlock =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N &&
-	     core_reclocked_ddr_AXI4_clock_crossing_f_aw$dD_OUT[15] ;
+	     core_inner_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N &&
+	     core_inner_ddr_AXI4_clock_crossing_f_aw$dD_OUT[15] ;
 
   // value method mem_M_m_awcache
   assign mem_M_awcache =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N ?
-	       core_reclocked_ddr_AXI4_clock_crossing_f_aw$dD_OUT[14:11] :
+	     core_inner_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_ddr_AXI4_clock_crossing_f_aw$dD_OUT[14:11] :
 	       4'd0 ;
 
   // value method mem_M_m_awprot
   assign mem_M_awprot =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N ?
-	       core_reclocked_ddr_AXI4_clock_crossing_f_aw$dD_OUT[10:8] :
+	     core_inner_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_ddr_AXI4_clock_crossing_f_aw$dD_OUT[10:8] :
 	       3'd0 ;
 
   // value method mem_M_m_awqos
   assign mem_M_awqos =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N ?
-	       core_reclocked_ddr_AXI4_clock_crossing_f_aw$dD_OUT[7:4] :
+	     core_inner_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_ddr_AXI4_clock_crossing_f_aw$dD_OUT[7:4] :
 	       4'd0 ;
 
   // value method mem_M_m_awregion
   assign mem_M_awregion =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N ?
-	       core_reclocked_ddr_AXI4_clock_crossing_f_aw$dD_OUT[3:0] :
+	     core_inner_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_ddr_AXI4_clock_crossing_f_aw$dD_OUT[3:0] :
 	       4'd0 ;
 
   // action method mem_M_m_awready
@@ -1740,24 +1801,24 @@ module mkAWSteria_Core(CLK_clk1,
   assign WILL_FIRE_mem_M_m_awready = 1'd1 ;
 
   // value method mem_M_m_wvalid
-  assign mem_M_wvalid = core_reclocked_ddr_AXI4_clock_crossing_f_w$dEMPTY_N ;
+  assign mem_M_wvalid = core_inner_ddr_AXI4_clock_crossing_f_w$dEMPTY_N ;
 
   // value method mem_M_m_wdata
   assign mem_M_wdata =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_w$dEMPTY_N ?
-	       core_reclocked_ddr_AXI4_clock_crossing_f_w$dD_OUT[576:65] :
+	     core_inner_ddr_AXI4_clock_crossing_f_w$dEMPTY_N ?
+	       core_inner_ddr_AXI4_clock_crossing_f_w$dD_OUT[576:65] :
 	       512'd0 ;
 
   // value method mem_M_m_wstrb
   assign mem_M_wstrb =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_w$dEMPTY_N ?
-	       core_reclocked_ddr_AXI4_clock_crossing_f_w$dD_OUT[64:1] :
+	     core_inner_ddr_AXI4_clock_crossing_f_w$dEMPTY_N ?
+	       core_inner_ddr_AXI4_clock_crossing_f_w$dD_OUT[64:1] :
 	       64'd0 ;
 
   // value method mem_M_m_wlast
   assign mem_M_wlast =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_w$dEMPTY_N &&
-	     core_reclocked_ddr_AXI4_clock_crossing_f_w$dD_OUT[0] ;
+	     core_inner_ddr_AXI4_clock_crossing_f_w$dEMPTY_N &&
+	     core_inner_ddr_AXI4_clock_crossing_f_w$dD_OUT[0] ;
 
   // action method mem_M_m_wready
   assign CAN_FIRE_mem_M_m_wready = 1'd1 ;
@@ -1768,69 +1829,68 @@ module mkAWSteria_Core(CLK_clk1,
   assign WILL_FIRE_mem_M_m_bvalid = 1'd1 ;
 
   // value method mem_M_m_bready
-  assign mem_M_bready = core_reclocked_ddr_AXI4_clock_crossing_f_b$sFULL_N ;
+  assign mem_M_bready = core_inner_ddr_AXI4_clock_crossing_f_b$sFULL_N ;
 
   // value method mem_M_m_arvalid
-  assign mem_M_arvalid =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N ;
+  assign mem_M_arvalid = core_inner_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N ;
 
   // value method mem_M_m_arid
   assign mem_M_arid =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N ?
-	       core_reclocked_ddr_AXI4_clock_crossing_f_ar$dD_OUT[108:93] :
+	     core_inner_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_ddr_AXI4_clock_crossing_f_ar$dD_OUT[108:93] :
 	       16'd0 ;
 
   // value method mem_M_m_araddr
   assign mem_M_araddr =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N ?
-	       core_reclocked_ddr_AXI4_clock_crossing_f_ar$dD_OUT[92:29] :
+	     core_inner_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_ddr_AXI4_clock_crossing_f_ar$dD_OUT[92:29] :
 	       64'd0 ;
 
   // value method mem_M_m_arlen
   assign mem_M_arlen =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N ?
-	       core_reclocked_ddr_AXI4_clock_crossing_f_ar$dD_OUT[28:21] :
+	     core_inner_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_ddr_AXI4_clock_crossing_f_ar$dD_OUT[28:21] :
 	       8'd0 ;
 
   // value method mem_M_m_arsize
   assign mem_M_arsize =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N ?
-	       core_reclocked_ddr_AXI4_clock_crossing_f_ar$dD_OUT[20:18] :
+	     core_inner_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_ddr_AXI4_clock_crossing_f_ar$dD_OUT[20:18] :
 	       3'd0 ;
 
   // value method mem_M_m_arburst
   assign mem_M_arburst =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N ?
-	       core_reclocked_ddr_AXI4_clock_crossing_f_ar$dD_OUT[17:16] :
+	     core_inner_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_ddr_AXI4_clock_crossing_f_ar$dD_OUT[17:16] :
 	       2'd0 ;
 
   // value method mem_M_m_arlock
   assign mem_M_arlock =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N &&
-	     core_reclocked_ddr_AXI4_clock_crossing_f_ar$dD_OUT[15] ;
+	     core_inner_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N &&
+	     core_inner_ddr_AXI4_clock_crossing_f_ar$dD_OUT[15] ;
 
   // value method mem_M_m_arcache
   assign mem_M_arcache =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N ?
-	       core_reclocked_ddr_AXI4_clock_crossing_f_ar$dD_OUT[14:11] :
+	     core_inner_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_ddr_AXI4_clock_crossing_f_ar$dD_OUT[14:11] :
 	       4'd0 ;
 
   // value method mem_M_m_arprot
   assign mem_M_arprot =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N ?
-	       core_reclocked_ddr_AXI4_clock_crossing_f_ar$dD_OUT[10:8] :
+	     core_inner_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_ddr_AXI4_clock_crossing_f_ar$dD_OUT[10:8] :
 	       3'd0 ;
 
   // value method mem_M_m_arqos
   assign mem_M_arqos =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N ?
-	       core_reclocked_ddr_AXI4_clock_crossing_f_ar$dD_OUT[7:4] :
+	     core_inner_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_ddr_AXI4_clock_crossing_f_ar$dD_OUT[7:4] :
 	       4'd0 ;
 
   // value method mem_M_m_arregion
   assign mem_M_arregion =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N ?
-	       core_reclocked_ddr_AXI4_clock_crossing_f_ar$dD_OUT[3:0] :
+	     core_inner_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_ddr_AXI4_clock_crossing_f_ar$dD_OUT[3:0] :
 	       4'd0 ;
 
   // action method mem_M_m_arready
@@ -1842,69 +1902,68 @@ module mkAWSteria_Core(CLK_clk1,
   assign WILL_FIRE_mem_M_m_rvalid = 1'd1 ;
 
   // value method mem_M_m_rready
-  assign mem_M_rready = core_reclocked_ddr_AXI4_clock_crossing_f_r$sFULL_N ;
+  assign mem_M_rready = core_inner_ddr_AXI4_clock_crossing_f_r$sFULL_N ;
 
   // value method mmio_M_m_awvalid
-  assign mmio_M_awvalid =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N ;
+  assign mmio_M_awvalid = core_inner_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N ;
 
   // value method mmio_M_m_awid
   assign mmio_M_awid =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N ?
-	       core_reclocked_mmio_AXI4_clock_crossing_f_aw$dD_OUT[108:93] :
+	     core_inner_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_mmio_AXI4_clock_crossing_f_aw$dD_OUT[108:93] :
 	       16'd0 ;
 
   // value method mmio_M_m_awaddr
   assign mmio_M_awaddr =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N ?
-	       core_reclocked_mmio_AXI4_clock_crossing_f_aw$dD_OUT[92:29] :
+	     core_inner_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_mmio_AXI4_clock_crossing_f_aw$dD_OUT[92:29] :
 	       64'd0 ;
 
   // value method mmio_M_m_awlen
   assign mmio_M_awlen =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N ?
-	       core_reclocked_mmio_AXI4_clock_crossing_f_aw$dD_OUT[28:21] :
+	     core_inner_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_mmio_AXI4_clock_crossing_f_aw$dD_OUT[28:21] :
 	       8'd0 ;
 
   // value method mmio_M_m_awsize
   assign mmio_M_awsize =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N ?
-	       core_reclocked_mmio_AXI4_clock_crossing_f_aw$dD_OUT[20:18] :
+	     core_inner_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_mmio_AXI4_clock_crossing_f_aw$dD_OUT[20:18] :
 	       3'd0 ;
 
   // value method mmio_M_m_awburst
   assign mmio_M_awburst =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N ?
-	       core_reclocked_mmio_AXI4_clock_crossing_f_aw$dD_OUT[17:16] :
+	     core_inner_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_mmio_AXI4_clock_crossing_f_aw$dD_OUT[17:16] :
 	       2'd0 ;
 
   // value method mmio_M_m_awlock
   assign mmio_M_awlock =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N &&
-	     core_reclocked_mmio_AXI4_clock_crossing_f_aw$dD_OUT[15] ;
+	     core_inner_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N &&
+	     core_inner_mmio_AXI4_clock_crossing_f_aw$dD_OUT[15] ;
 
   // value method mmio_M_m_awcache
   assign mmio_M_awcache =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N ?
-	       core_reclocked_mmio_AXI4_clock_crossing_f_aw$dD_OUT[14:11] :
+	     core_inner_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_mmio_AXI4_clock_crossing_f_aw$dD_OUT[14:11] :
 	       4'd0 ;
 
   // value method mmio_M_m_awprot
   assign mmio_M_awprot =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N ?
-	       core_reclocked_mmio_AXI4_clock_crossing_f_aw$dD_OUT[10:8] :
+	     core_inner_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_mmio_AXI4_clock_crossing_f_aw$dD_OUT[10:8] :
 	       3'd0 ;
 
   // value method mmio_M_m_awqos
   assign mmio_M_awqos =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N ?
-	       core_reclocked_mmio_AXI4_clock_crossing_f_aw$dD_OUT[7:4] :
+	     core_inner_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_mmio_AXI4_clock_crossing_f_aw$dD_OUT[7:4] :
 	       4'd0 ;
 
   // value method mmio_M_m_awregion
   assign mmio_M_awregion =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N ?
-	       core_reclocked_mmio_AXI4_clock_crossing_f_aw$dD_OUT[3:0] :
+	     core_inner_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_mmio_AXI4_clock_crossing_f_aw$dD_OUT[3:0] :
 	       4'd0 ;
 
   // action method mmio_M_m_awready
@@ -1912,25 +1971,24 @@ module mkAWSteria_Core(CLK_clk1,
   assign WILL_FIRE_mmio_M_m_awready = 1'd1 ;
 
   // value method mmio_M_m_wvalid
-  assign mmio_M_wvalid =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_w$dEMPTY_N ;
+  assign mmio_M_wvalid = core_inner_mmio_AXI4_clock_crossing_f_w$dEMPTY_N ;
 
   // value method mmio_M_m_wdata
   assign mmio_M_wdata =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_w$dEMPTY_N ?
-	       core_reclocked_mmio_AXI4_clock_crossing_f_w$dD_OUT[72:9] :
+	     core_inner_mmio_AXI4_clock_crossing_f_w$dEMPTY_N ?
+	       core_inner_mmio_AXI4_clock_crossing_f_w$dD_OUT[72:9] :
 	       64'd0 ;
 
   // value method mmio_M_m_wstrb
   assign mmio_M_wstrb =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_w$dEMPTY_N ?
-	       core_reclocked_mmio_AXI4_clock_crossing_f_w$dD_OUT[8:1] :
+	     core_inner_mmio_AXI4_clock_crossing_f_w$dEMPTY_N ?
+	       core_inner_mmio_AXI4_clock_crossing_f_w$dD_OUT[8:1] :
 	       8'd0 ;
 
   // value method mmio_M_m_wlast
   assign mmio_M_wlast =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_w$dEMPTY_N &&
-	     core_reclocked_mmio_AXI4_clock_crossing_f_w$dD_OUT[0] ;
+	     core_inner_mmio_AXI4_clock_crossing_f_w$dEMPTY_N &&
+	     core_inner_mmio_AXI4_clock_crossing_f_w$dD_OUT[0] ;
 
   // action method mmio_M_m_wready
   assign CAN_FIRE_mmio_M_m_wready = 1'd1 ;
@@ -1941,69 +1999,68 @@ module mkAWSteria_Core(CLK_clk1,
   assign WILL_FIRE_mmio_M_m_bvalid = 1'd1 ;
 
   // value method mmio_M_m_bready
-  assign mmio_M_bready = core_reclocked_mmio_AXI4_clock_crossing_f_b$sFULL_N ;
+  assign mmio_M_bready = core_inner_mmio_AXI4_clock_crossing_f_b$sFULL_N ;
 
   // value method mmio_M_m_arvalid
-  assign mmio_M_arvalid =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N ;
+  assign mmio_M_arvalid = core_inner_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N ;
 
   // value method mmio_M_m_arid
   assign mmio_M_arid =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N ?
-	       core_reclocked_mmio_AXI4_clock_crossing_f_ar$dD_OUT[108:93] :
+	     core_inner_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_mmio_AXI4_clock_crossing_f_ar$dD_OUT[108:93] :
 	       16'd0 ;
 
   // value method mmio_M_m_araddr
   assign mmio_M_araddr =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N ?
-	       core_reclocked_mmio_AXI4_clock_crossing_f_ar$dD_OUT[92:29] :
+	     core_inner_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_mmio_AXI4_clock_crossing_f_ar$dD_OUT[92:29] :
 	       64'd0 ;
 
   // value method mmio_M_m_arlen
   assign mmio_M_arlen =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N ?
-	       core_reclocked_mmio_AXI4_clock_crossing_f_ar$dD_OUT[28:21] :
+	     core_inner_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_mmio_AXI4_clock_crossing_f_ar$dD_OUT[28:21] :
 	       8'd0 ;
 
   // value method mmio_M_m_arsize
   assign mmio_M_arsize =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N ?
-	       core_reclocked_mmio_AXI4_clock_crossing_f_ar$dD_OUT[20:18] :
+	     core_inner_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_mmio_AXI4_clock_crossing_f_ar$dD_OUT[20:18] :
 	       3'd0 ;
 
   // value method mmio_M_m_arburst
   assign mmio_M_arburst =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N ?
-	       core_reclocked_mmio_AXI4_clock_crossing_f_ar$dD_OUT[17:16] :
+	     core_inner_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_mmio_AXI4_clock_crossing_f_ar$dD_OUT[17:16] :
 	       2'd0 ;
 
   // value method mmio_M_m_arlock
   assign mmio_M_arlock =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N &&
-	     core_reclocked_mmio_AXI4_clock_crossing_f_ar$dD_OUT[15] ;
+	     core_inner_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N &&
+	     core_inner_mmio_AXI4_clock_crossing_f_ar$dD_OUT[15] ;
 
   // value method mmio_M_m_arcache
   assign mmio_M_arcache =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N ?
-	       core_reclocked_mmio_AXI4_clock_crossing_f_ar$dD_OUT[14:11] :
+	     core_inner_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_mmio_AXI4_clock_crossing_f_ar$dD_OUT[14:11] :
 	       4'd0 ;
 
   // value method mmio_M_m_arprot
   assign mmio_M_arprot =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N ?
-	       core_reclocked_mmio_AXI4_clock_crossing_f_ar$dD_OUT[10:8] :
+	     core_inner_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_mmio_AXI4_clock_crossing_f_ar$dD_OUT[10:8] :
 	       3'd0 ;
 
   // value method mmio_M_m_arqos
   assign mmio_M_arqos =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N ?
-	       core_reclocked_mmio_AXI4_clock_crossing_f_ar$dD_OUT[7:4] :
+	     core_inner_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_mmio_AXI4_clock_crossing_f_ar$dD_OUT[7:4] :
 	       4'd0 ;
 
   // value method mmio_M_m_arregion
   assign mmio_M_arregion =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N ?
-	       core_reclocked_mmio_AXI4_clock_crossing_f_ar$dD_OUT[3:0] :
+	     core_inner_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_mmio_AXI4_clock_crossing_f_ar$dD_OUT[3:0] :
 	       4'd0 ;
 
   // action method mmio_M_m_arready
@@ -2015,35 +2072,35 @@ module mkAWSteria_Core(CLK_clk1,
   assign WILL_FIRE_mmio_M_m_rvalid = 1'd1 ;
 
   // value method mmio_M_m_rready
-  assign mmio_M_rready = core_reclocked_mmio_AXI4_clock_crossing_f_r$sFULL_N ;
+  assign mmio_M_rready = core_inner_mmio_AXI4_clock_crossing_f_r$sFULL_N ;
 
   // action method dma_S_m_awvalid
   assign CAN_FIRE_dma_S_m_awvalid = 1'd1 ;
   assign WILL_FIRE_dma_S_m_awvalid = 1'd1 ;
 
   // value method dma_S_m_awready
-  assign dma_S_awready = core_reclocked_dma_AXI4_clock_crossing_f_aw$sFULL_N ;
+  assign dma_S_awready = core_inner_dma_AXI4_clock_crossing_f_aw$sFULL_N ;
 
   // action method dma_S_m_wvalid
   assign CAN_FIRE_dma_S_m_wvalid = 1'd1 ;
   assign WILL_FIRE_dma_S_m_wvalid = 1'd1 ;
 
   // value method dma_S_m_wready
-  assign dma_S_wready = core_reclocked_dma_AXI4_clock_crossing_f_w$sFULL_N ;
+  assign dma_S_wready = core_inner_dma_AXI4_clock_crossing_f_w$sFULL_N ;
 
   // value method dma_S_m_bvalid
-  assign dma_S_bvalid = core_reclocked_dma_AXI4_clock_crossing_f_b$dEMPTY_N ;
+  assign dma_S_bvalid = core_inner_dma_AXI4_clock_crossing_f_b$dEMPTY_N ;
 
   // value method dma_S_m_bid
   assign dma_S_bid =
-	     core_reclocked_dma_AXI4_clock_crossing_f_b$dEMPTY_N ?
-	       core_reclocked_dma_AXI4_clock_crossing_f_b$dD_OUT[17:2] :
+	     core_inner_dma_AXI4_clock_crossing_f_b$dEMPTY_N ?
+	       core_inner_dma_AXI4_clock_crossing_f_b$dD_OUT[17:2] :
 	       16'd0 ;
 
   // value method dma_S_m_bresp
   assign dma_S_bresp =
-	     core_reclocked_dma_AXI4_clock_crossing_f_b$dEMPTY_N ?
-	       core_reclocked_dma_AXI4_clock_crossing_f_b$dD_OUT[1:0] :
+	     core_inner_dma_AXI4_clock_crossing_f_b$dEMPTY_N ?
+	       core_inner_dma_AXI4_clock_crossing_f_b$dD_OUT[1:0] :
 	       2'd0 ;
 
   // action method dma_S_m_bready
@@ -2055,33 +2112,33 @@ module mkAWSteria_Core(CLK_clk1,
   assign WILL_FIRE_dma_S_m_arvalid = 1'd1 ;
 
   // value method dma_S_m_arready
-  assign dma_S_arready = core_reclocked_dma_AXI4_clock_crossing_f_ar$sFULL_N ;
+  assign dma_S_arready = core_inner_dma_AXI4_clock_crossing_f_ar$sFULL_N ;
 
   // value method dma_S_m_rvalid
-  assign dma_S_rvalid = core_reclocked_dma_AXI4_clock_crossing_f_r$dEMPTY_N ;
+  assign dma_S_rvalid = core_inner_dma_AXI4_clock_crossing_f_r$dEMPTY_N ;
 
   // value method dma_S_m_rid
   assign dma_S_rid =
-	     core_reclocked_dma_AXI4_clock_crossing_f_r$dEMPTY_N ?
-	       core_reclocked_dma_AXI4_clock_crossing_f_r$dD_OUT[530:515] :
+	     core_inner_dma_AXI4_clock_crossing_f_r$dEMPTY_N ?
+	       core_inner_dma_AXI4_clock_crossing_f_r$dD_OUT[530:515] :
 	       16'd0 ;
 
   // value method dma_S_m_rdata
   assign dma_S_rdata =
-	     core_reclocked_dma_AXI4_clock_crossing_f_r$dEMPTY_N ?
-	       core_reclocked_dma_AXI4_clock_crossing_f_r$dD_OUT[514:3] :
+	     core_inner_dma_AXI4_clock_crossing_f_r$dEMPTY_N ?
+	       core_inner_dma_AXI4_clock_crossing_f_r$dD_OUT[514:3] :
 	       512'd0 ;
 
   // value method dma_S_m_rresp
   assign dma_S_rresp =
-	     core_reclocked_dma_AXI4_clock_crossing_f_r$dEMPTY_N ?
-	       core_reclocked_dma_AXI4_clock_crossing_f_r$dD_OUT[2:1] :
+	     core_inner_dma_AXI4_clock_crossing_f_r$dEMPTY_N ?
+	       core_inner_dma_AXI4_clock_crossing_f_r$dD_OUT[2:1] :
 	       2'd0 ;
 
   // value method dma_S_m_rlast
   assign dma_S_rlast =
-	     core_reclocked_dma_AXI4_clock_crossing_f_r$dEMPTY_N &&
-	     core_reclocked_dma_AXI4_clock_crossing_f_r$dD_OUT[0] ;
+	     core_inner_dma_AXI4_clock_crossing_f_r$dEMPTY_N &&
+	     core_inner_dma_AXI4_clock_crossing_f_r$dD_OUT[0] ;
 
   // action method dma_S_m_rready
   assign CAN_FIRE_dma_S_m_rready = 1'd1 ;
@@ -2093,1369 +2150,1496 @@ module mkAWSteria_Core(CLK_clk1,
   assign WILL_FIRE_ext_interrupts = EN_ext_interrupts ;
 
   // action method fi_nmi_enq
-  assign RDY_fi_nmi_enq = core_reclocked_f_nmi$sFULL_N ;
-  assign CAN_FIRE_fi_nmi_enq = core_reclocked_f_nmi$sFULL_N ;
+  assign RDY_fi_nmi_enq = core_inner_f_nmi$sFULL_N ;
+  assign CAN_FIRE_fi_nmi_enq = core_inner_f_nmi$sFULL_N ;
   assign WILL_FIRE_fi_nmi_enq = EN_fi_nmi_enq ;
 
   // value method fi_nmi_notFull
-  assign fi_nmi_notFull = core_reclocked_f_nmi$sFULL_N ;
+  assign fi_nmi_notFull = core_inner_f_nmi$sFULL_N ;
   assign RDY_fi_nmi_notFull = 1'd1 ;
 
   // value method fo_misc_first
-  assign fo_misc_first = core_reclocked_f_misc_to_host$dD_OUT ;
-  assign RDY_fo_misc_first = core_reclocked_f_misc_to_host$dEMPTY_N ;
+  assign fo_misc_first = core_inner_f_misc_to_host$dD_OUT ;
+  assign RDY_fo_misc_first = core_inner_f_misc_to_host$dEMPTY_N ;
 
   // action method fo_misc_deq
-  assign RDY_fo_misc_deq = core_reclocked_f_misc_to_host$dEMPTY_N ;
-  assign CAN_FIRE_fo_misc_deq = core_reclocked_f_misc_to_host$dEMPTY_N ;
+  assign RDY_fo_misc_deq = core_inner_f_misc_to_host$dEMPTY_N ;
+  assign CAN_FIRE_fo_misc_deq = core_inner_f_misc_to_host$dEMPTY_N ;
   assign WILL_FIRE_fo_misc_deq = EN_fo_misc_deq ;
 
   // value method fo_misc_notEmpty
-  assign fo_misc_notEmpty = core_reclocked_f_misc_to_host$dEMPTY_N ;
+  assign fo_misc_notEmpty = core_inner_f_misc_to_host$dEMPTY_N ;
   assign RDY_fo_misc_notEmpty = 1'd1 ;
 
   // action method fi_misc_enq
-  assign RDY_fi_misc_enq = core_reclocked_f_misc_from_host$sFULL_N ;
-  assign CAN_FIRE_fi_misc_enq = core_reclocked_f_misc_from_host$sFULL_N ;
+  assign RDY_fi_misc_enq = core_inner_f_misc_from_host$sFULL_N ;
+  assign CAN_FIRE_fi_misc_enq = core_inner_f_misc_from_host$sFULL_N ;
   assign WILL_FIRE_fi_misc_enq = EN_fi_misc_enq ;
 
   // value method fi_misc_notFull
-  assign fi_misc_notFull = core_reclocked_f_misc_from_host$sFULL_N ;
+  assign fi_misc_notFull = core_inner_f_misc_from_host$sFULL_N ;
   assign RDY_fi_misc_notFull = 1'd1 ;
 
   // value method fo_tv_info_first
-  assign fo_tv_info_first = core_reclocked_f_tv_info$dD_OUT ;
-  assign RDY_fo_tv_info_first = core_reclocked_f_tv_info$dEMPTY_N ;
+  assign fo_tv_info_first = core_inner_f_tv_info$dD_OUT ;
+  assign RDY_fo_tv_info_first = core_inner_f_tv_info$dEMPTY_N ;
 
   // action method fo_tv_info_deq
-  assign RDY_fo_tv_info_deq = core_reclocked_f_tv_info$dEMPTY_N ;
-  assign CAN_FIRE_fo_tv_info_deq = core_reclocked_f_tv_info$dEMPTY_N ;
+  assign RDY_fo_tv_info_deq = core_inner_f_tv_info$dEMPTY_N ;
+  assign CAN_FIRE_fo_tv_info_deq = core_inner_f_tv_info$dEMPTY_N ;
   assign WILL_FIRE_fo_tv_info_deq = EN_fo_tv_info_deq ;
 
   // value method fo_tv_info_notEmpty
-  assign fo_tv_info_notEmpty = core_reclocked_f_tv_info$dEMPTY_N ;
+  assign fo_tv_info_notEmpty = core_inner_f_tv_info$dEMPTY_N ;
   assign RDY_fo_tv_info_notEmpty = 1'd1 ;
 
   // action method se_dmi_request_enq
-  assign RDY_se_dmi_request_enq = core_reclocked_f_dmi_req$sFULL_N ;
-  assign CAN_FIRE_se_dmi_request_enq = core_reclocked_f_dmi_req$sFULL_N ;
+  assign RDY_se_dmi_request_enq = core_inner_f_dmi_req$sFULL_N ;
+  assign CAN_FIRE_se_dmi_request_enq = core_inner_f_dmi_req$sFULL_N ;
   assign WILL_FIRE_se_dmi_request_enq = EN_se_dmi_request_enq ;
 
   // value method se_dmi_request_notFull
-  assign se_dmi_request_notFull = core_reclocked_f_dmi_req$sFULL_N ;
+  assign se_dmi_request_notFull = core_inner_f_dmi_req$sFULL_N ;
   assign RDY_se_dmi_request_notFull = 1'd1 ;
 
   // value method se_dmi_response_first
-  assign se_dmi_response_first = core_reclocked_f_dmi_rsp$dD_OUT ;
-  assign RDY_se_dmi_response_first = core_reclocked_f_dmi_rsp$dEMPTY_N ;
+  assign se_dmi_response_first = core_inner_f_dmi_rsp$dD_OUT ;
+  assign RDY_se_dmi_response_first = core_inner_f_dmi_rsp$dEMPTY_N ;
 
   // action method se_dmi_response_deq
-  assign RDY_se_dmi_response_deq = core_reclocked_f_dmi_rsp$dEMPTY_N ;
-  assign CAN_FIRE_se_dmi_response_deq = core_reclocked_f_dmi_rsp$dEMPTY_N ;
+  assign RDY_se_dmi_response_deq = core_inner_f_dmi_rsp$dEMPTY_N ;
+  assign CAN_FIRE_se_dmi_response_deq = core_inner_f_dmi_rsp$dEMPTY_N ;
   assign WILL_FIRE_se_dmi_response_deq = EN_se_dmi_response_deq ;
 
   // value method se_dmi_response_notEmpty
-  assign se_dmi_response_notEmpty = core_reclocked_f_dmi_rsp$dEMPTY_N ;
+  assign se_dmi_response_notEmpty = core_inner_f_dmi_rsp$dEMPTY_N ;
   assign RDY_se_dmi_response_notEmpty = 1'd1 ;
 
   // value method cl_ndm_reset_request_first
   assign RDY_cl_ndm_reset_request_first = 1'd1 ;
 
   // action method cl_ndm_reset_request_deq
-  assign RDY_cl_ndm_reset_request_deq =
-	     core_reclocked_f_ndm_reset_req$dEMPTY_N ;
+  assign RDY_cl_ndm_reset_request_deq = core_inner_f_ndm_reset_req$dEMPTY_N ;
   assign CAN_FIRE_cl_ndm_reset_request_deq =
-	     core_reclocked_f_ndm_reset_req$dEMPTY_N ;
+	     core_inner_f_ndm_reset_req$dEMPTY_N ;
   assign WILL_FIRE_cl_ndm_reset_request_deq = EN_cl_ndm_reset_request_deq ;
 
   // value method cl_ndm_reset_request_notEmpty
-  assign cl_ndm_reset_request_notEmpty =
-	     core_reclocked_f_ndm_reset_req$dEMPTY_N ;
+  assign cl_ndm_reset_request_notEmpty = core_inner_f_ndm_reset_req$dEMPTY_N ;
   assign RDY_cl_ndm_reset_request_notEmpty = 1'd1 ;
 
   // action method cl_ndm_reset_response_enq
-  assign RDY_cl_ndm_reset_response_enq =
-	     core_reclocked_f_ndm_reset_rsp$sFULL_N ;
+  assign RDY_cl_ndm_reset_response_enq = core_inner_f_ndm_reset_rsp$sFULL_N ;
   assign CAN_FIRE_cl_ndm_reset_response_enq =
-	     core_reclocked_f_ndm_reset_rsp$sFULL_N ;
+	     core_inner_f_ndm_reset_rsp$sFULL_N ;
   assign WILL_FIRE_cl_ndm_reset_response_enq = EN_cl_ndm_reset_response_enq ;
 
   // value method cl_ndm_reset_response_notFull
-  assign cl_ndm_reset_response_notFull =
-	     core_reclocked_f_ndm_reset_rsp$sFULL_N ;
+  assign cl_ndm_reset_response_notFull = core_inner_f_ndm_reset_rsp$sFULL_N ;
   assign RDY_cl_ndm_reset_response_notFull = 1'd1 ;
 
   // action method se_control_status_request_enq
   assign RDY_se_control_status_request_enq =
-	     core_reclocked_f_control_status_req$sFULL_N ;
+	     host_cs$RDY_se_control_status_request_enq ;
   assign CAN_FIRE_se_control_status_request_enq =
-	     core_reclocked_f_control_status_req$sFULL_N ;
+	     host_cs$RDY_se_control_status_request_enq ;
   assign WILL_FIRE_se_control_status_request_enq =
 	     EN_se_control_status_request_enq ;
 
   // value method se_control_status_request_notFull
   assign se_control_status_request_notFull =
-	     core_reclocked_f_control_status_req$sFULL_N ;
+	     host_cs$se_control_status_request_notFull ;
   assign RDY_se_control_status_request_notFull = 1'd1 ;
 
   // value method se_control_status_response_first
   assign se_control_status_response_first =
-	     core_reclocked_f_control_status_rsp$dD_OUT ;
+	     host_cs$se_control_status_response_first ;
   assign RDY_se_control_status_response_first =
-	     core_reclocked_f_control_status_rsp$dEMPTY_N ;
+	     host_cs$RDY_se_control_status_response_first ;
 
   // action method se_control_status_response_deq
   assign RDY_se_control_status_response_deq =
-	     core_reclocked_f_control_status_rsp$dEMPTY_N ;
+	     host_cs$RDY_se_control_status_response_deq ;
   assign CAN_FIRE_se_control_status_response_deq =
-	     core_reclocked_f_control_status_rsp$dEMPTY_N ;
+	     host_cs$RDY_se_control_status_response_deq ;
   assign WILL_FIRE_se_control_status_response_deq =
 	     EN_se_control_status_response_deq ;
 
   // value method se_control_status_response_notEmpty
   assign se_control_status_response_notEmpty =
-	     core_reclocked_f_control_status_rsp$dEMPTY_N ;
+	     host_cs$se_control_status_response_notEmpty ;
   assign RDY_se_control_status_response_notEmpty = 1'd1 ;
 
-  // submodule core_reclocked_ddr_AXI4_clock_crossing_f_ar
+  // submodule core_inner_ddr_AXI4_clock_crossing_f_ar
   SyncFIFO #(.dataWidth(32'd109),
 	     .depth(32'd4),
-	     .indxWidth(32'd2)) core_reclocked_ddr_AXI4_clock_crossing_f_ar(.sCLK(CLK_clk2),
-									    .dCLK(CLK),
-									    .sRST(reset_for_core$OUT_RST),
-									    .sD_IN(core_reclocked_ddr_AXI4_clock_crossing_f_ar$sD_IN),
-									    .sENQ(core_reclocked_ddr_AXI4_clock_crossing_f_ar$sENQ),
-									    .dDEQ(core_reclocked_ddr_AXI4_clock_crossing_f_ar$dDEQ),
-									    .sFULL_N(core_reclocked_ddr_AXI4_clock_crossing_f_ar$sFULL_N),
-									    .dEMPTY_N(core_reclocked_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N),
-									    .dD_OUT(core_reclocked_ddr_AXI4_clock_crossing_f_ar$dD_OUT));
+	     .indxWidth(32'd2)) core_inner_ddr_AXI4_clock_crossing_f_ar(.sCLK(CLK_clk2),
+									.dCLK(CLK),
+									.sRST(innerRstIfc$OUT_RST),
+									.sD_IN(core_inner_ddr_AXI4_clock_crossing_f_ar$sD_IN),
+									.sENQ(core_inner_ddr_AXI4_clock_crossing_f_ar$sENQ),
+									.dDEQ(core_inner_ddr_AXI4_clock_crossing_f_ar$dDEQ),
+									.sFULL_N(core_inner_ddr_AXI4_clock_crossing_f_ar$sFULL_N),
+									.dEMPTY_N(core_inner_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N),
+									.dD_OUT(core_inner_ddr_AXI4_clock_crossing_f_ar$dD_OUT));
 
-  // submodule core_reclocked_ddr_AXI4_clock_crossing_f_aw
+  // submodule core_inner_ddr_AXI4_clock_crossing_f_aw
   SyncFIFO #(.dataWidth(32'd109),
 	     .depth(32'd4),
-	     .indxWidth(32'd2)) core_reclocked_ddr_AXI4_clock_crossing_f_aw(.sCLK(CLK_clk2),
-									    .dCLK(CLK),
-									    .sRST(reset_for_core$OUT_RST),
-									    .sD_IN(core_reclocked_ddr_AXI4_clock_crossing_f_aw$sD_IN),
-									    .sENQ(core_reclocked_ddr_AXI4_clock_crossing_f_aw$sENQ),
-									    .dDEQ(core_reclocked_ddr_AXI4_clock_crossing_f_aw$dDEQ),
-									    .sFULL_N(core_reclocked_ddr_AXI4_clock_crossing_f_aw$sFULL_N),
-									    .dEMPTY_N(core_reclocked_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N),
-									    .dD_OUT(core_reclocked_ddr_AXI4_clock_crossing_f_aw$dD_OUT));
+	     .indxWidth(32'd2)) core_inner_ddr_AXI4_clock_crossing_f_aw(.sCLK(CLK_clk2),
+									.dCLK(CLK),
+									.sRST(innerRstIfc$OUT_RST),
+									.sD_IN(core_inner_ddr_AXI4_clock_crossing_f_aw$sD_IN),
+									.sENQ(core_inner_ddr_AXI4_clock_crossing_f_aw$sENQ),
+									.dDEQ(core_inner_ddr_AXI4_clock_crossing_f_aw$dDEQ),
+									.sFULL_N(core_inner_ddr_AXI4_clock_crossing_f_aw$sFULL_N),
+									.dEMPTY_N(core_inner_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N),
+									.dD_OUT(core_inner_ddr_AXI4_clock_crossing_f_aw$dD_OUT));
 
-  // submodule core_reclocked_ddr_AXI4_clock_crossing_f_b
+  // submodule core_inner_ddr_AXI4_clock_crossing_f_b
   SyncFIFO #(.dataWidth(32'd18),
 	     .depth(32'd4),
-	     .indxWidth(32'd2)) core_reclocked_ddr_AXI4_clock_crossing_f_b(.sCLK(CLK),
-									   .dCLK(CLK_clk2),
-									   .sRST(RST_N),
-									   .sD_IN(core_reclocked_ddr_AXI4_clock_crossing_f_b$sD_IN),
-									   .sENQ(core_reclocked_ddr_AXI4_clock_crossing_f_b$sENQ),
-									   .dDEQ(core_reclocked_ddr_AXI4_clock_crossing_f_b$dDEQ),
-									   .sFULL_N(core_reclocked_ddr_AXI4_clock_crossing_f_b$sFULL_N),
-									   .dEMPTY_N(core_reclocked_ddr_AXI4_clock_crossing_f_b$dEMPTY_N),
-									   .dD_OUT(core_reclocked_ddr_AXI4_clock_crossing_f_b$dD_OUT));
+	     .indxWidth(32'd2)) core_inner_ddr_AXI4_clock_crossing_f_b(.sCLK(CLK),
+								       .dCLK(CLK_clk2),
+								       .sRST(RST_N),
+								       .sD_IN(core_inner_ddr_AXI4_clock_crossing_f_b$sD_IN),
+								       .sENQ(core_inner_ddr_AXI4_clock_crossing_f_b$sENQ),
+								       .dDEQ(core_inner_ddr_AXI4_clock_crossing_f_b$dDEQ),
+								       .sFULL_N(core_inner_ddr_AXI4_clock_crossing_f_b$sFULL_N),
+								       .dEMPTY_N(core_inner_ddr_AXI4_clock_crossing_f_b$dEMPTY_N),
+								       .dD_OUT(core_inner_ddr_AXI4_clock_crossing_f_b$dD_OUT));
 
-  // submodule core_reclocked_ddr_AXI4_clock_crossing_f_r
+  // submodule core_inner_ddr_AXI4_clock_crossing_f_r
   SyncFIFO #(.dataWidth(32'd531),
 	     .depth(32'd4),
-	     .indxWidth(32'd2)) core_reclocked_ddr_AXI4_clock_crossing_f_r(.sCLK(CLK),
-									   .dCLK(CLK_clk2),
-									   .sRST(RST_N),
-									   .sD_IN(core_reclocked_ddr_AXI4_clock_crossing_f_r$sD_IN),
-									   .sENQ(core_reclocked_ddr_AXI4_clock_crossing_f_r$sENQ),
-									   .dDEQ(core_reclocked_ddr_AXI4_clock_crossing_f_r$dDEQ),
-									   .sFULL_N(core_reclocked_ddr_AXI4_clock_crossing_f_r$sFULL_N),
-									   .dEMPTY_N(core_reclocked_ddr_AXI4_clock_crossing_f_r$dEMPTY_N),
-									   .dD_OUT(core_reclocked_ddr_AXI4_clock_crossing_f_r$dD_OUT));
+	     .indxWidth(32'd2)) core_inner_ddr_AXI4_clock_crossing_f_r(.sCLK(CLK),
+								       .dCLK(CLK_clk2),
+								       .sRST(RST_N),
+								       .sD_IN(core_inner_ddr_AXI4_clock_crossing_f_r$sD_IN),
+								       .sENQ(core_inner_ddr_AXI4_clock_crossing_f_r$sENQ),
+								       .dDEQ(core_inner_ddr_AXI4_clock_crossing_f_r$dDEQ),
+								       .sFULL_N(core_inner_ddr_AXI4_clock_crossing_f_r$sFULL_N),
+								       .dEMPTY_N(core_inner_ddr_AXI4_clock_crossing_f_r$dEMPTY_N),
+								       .dD_OUT(core_inner_ddr_AXI4_clock_crossing_f_r$dD_OUT));
 
-  // submodule core_reclocked_ddr_AXI4_clock_crossing_f_w
+  // submodule core_inner_ddr_AXI4_clock_crossing_f_w
   SyncFIFO #(.dataWidth(32'd577),
 	     .depth(32'd4),
-	     .indxWidth(32'd2)) core_reclocked_ddr_AXI4_clock_crossing_f_w(.sCLK(CLK_clk2),
-									   .dCLK(CLK),
-									   .sRST(reset_for_core$OUT_RST),
-									   .sD_IN(core_reclocked_ddr_AXI4_clock_crossing_f_w$sD_IN),
-									   .sENQ(core_reclocked_ddr_AXI4_clock_crossing_f_w$sENQ),
-									   .dDEQ(core_reclocked_ddr_AXI4_clock_crossing_f_w$dDEQ),
-									   .sFULL_N(core_reclocked_ddr_AXI4_clock_crossing_f_w$sFULL_N),
-									   .dEMPTY_N(core_reclocked_ddr_AXI4_clock_crossing_f_w$dEMPTY_N),
-									   .dD_OUT(core_reclocked_ddr_AXI4_clock_crossing_f_w$dD_OUT));
+	     .indxWidth(32'd2)) core_inner_ddr_AXI4_clock_crossing_f_w(.sCLK(CLK_clk2),
+								       .dCLK(CLK),
+								       .sRST(innerRstIfc$OUT_RST),
+								       .sD_IN(core_inner_ddr_AXI4_clock_crossing_f_w$sD_IN),
+								       .sENQ(core_inner_ddr_AXI4_clock_crossing_f_w$sENQ),
+								       .dDEQ(core_inner_ddr_AXI4_clock_crossing_f_w$dDEQ),
+								       .sFULL_N(core_inner_ddr_AXI4_clock_crossing_f_w$sFULL_N),
+								       .dEMPTY_N(core_inner_ddr_AXI4_clock_crossing_f_w$dEMPTY_N),
+								       .dD_OUT(core_inner_ddr_AXI4_clock_crossing_f_w$dD_OUT));
 
-  // submodule core_reclocked_dma_AXI4_clock_crossing_f_ar
+  // submodule core_inner_dma_AXI4_clock_crossing_f_ar
   SyncFIFO #(.dataWidth(32'd109),
 	     .depth(32'd4),
-	     .indxWidth(32'd2)) core_reclocked_dma_AXI4_clock_crossing_f_ar(.sCLK(CLK),
-									    .dCLK(CLK_clk2),
-									    .sRST(RST_N),
-									    .sD_IN(core_reclocked_dma_AXI4_clock_crossing_f_ar$sD_IN),
-									    .sENQ(core_reclocked_dma_AXI4_clock_crossing_f_ar$sENQ),
-									    .dDEQ(core_reclocked_dma_AXI4_clock_crossing_f_ar$dDEQ),
-									    .sFULL_N(core_reclocked_dma_AXI4_clock_crossing_f_ar$sFULL_N),
-									    .dEMPTY_N(core_reclocked_dma_AXI4_clock_crossing_f_ar$dEMPTY_N),
-									    .dD_OUT(core_reclocked_dma_AXI4_clock_crossing_f_ar$dD_OUT));
+	     .indxWidth(32'd2)) core_inner_dma_AXI4_clock_crossing_f_ar(.sCLK(CLK),
+									.dCLK(CLK_clk2),
+									.sRST(RST_N),
+									.sD_IN(core_inner_dma_AXI4_clock_crossing_f_ar$sD_IN),
+									.sENQ(core_inner_dma_AXI4_clock_crossing_f_ar$sENQ),
+									.dDEQ(core_inner_dma_AXI4_clock_crossing_f_ar$dDEQ),
+									.sFULL_N(core_inner_dma_AXI4_clock_crossing_f_ar$sFULL_N),
+									.dEMPTY_N(core_inner_dma_AXI4_clock_crossing_f_ar$dEMPTY_N),
+									.dD_OUT(core_inner_dma_AXI4_clock_crossing_f_ar$dD_OUT));
 
-  // submodule core_reclocked_dma_AXI4_clock_crossing_f_aw
+  // submodule core_inner_dma_AXI4_clock_crossing_f_aw
   SyncFIFO #(.dataWidth(32'd109),
 	     .depth(32'd4),
-	     .indxWidth(32'd2)) core_reclocked_dma_AXI4_clock_crossing_f_aw(.sCLK(CLK),
-									    .dCLK(CLK_clk2),
-									    .sRST(RST_N),
-									    .sD_IN(core_reclocked_dma_AXI4_clock_crossing_f_aw$sD_IN),
-									    .sENQ(core_reclocked_dma_AXI4_clock_crossing_f_aw$sENQ),
-									    .dDEQ(core_reclocked_dma_AXI4_clock_crossing_f_aw$dDEQ),
-									    .sFULL_N(core_reclocked_dma_AXI4_clock_crossing_f_aw$sFULL_N),
-									    .dEMPTY_N(core_reclocked_dma_AXI4_clock_crossing_f_aw$dEMPTY_N),
-									    .dD_OUT(core_reclocked_dma_AXI4_clock_crossing_f_aw$dD_OUT));
+	     .indxWidth(32'd2)) core_inner_dma_AXI4_clock_crossing_f_aw(.sCLK(CLK),
+									.dCLK(CLK_clk2),
+									.sRST(RST_N),
+									.sD_IN(core_inner_dma_AXI4_clock_crossing_f_aw$sD_IN),
+									.sENQ(core_inner_dma_AXI4_clock_crossing_f_aw$sENQ),
+									.dDEQ(core_inner_dma_AXI4_clock_crossing_f_aw$dDEQ),
+									.sFULL_N(core_inner_dma_AXI4_clock_crossing_f_aw$sFULL_N),
+									.dEMPTY_N(core_inner_dma_AXI4_clock_crossing_f_aw$dEMPTY_N),
+									.dD_OUT(core_inner_dma_AXI4_clock_crossing_f_aw$dD_OUT));
 
-  // submodule core_reclocked_dma_AXI4_clock_crossing_f_b
+  // submodule core_inner_dma_AXI4_clock_crossing_f_b
   SyncFIFO #(.dataWidth(32'd18),
 	     .depth(32'd4),
-	     .indxWidth(32'd2)) core_reclocked_dma_AXI4_clock_crossing_f_b(.sCLK(CLK_clk2),
-									   .dCLK(CLK),
-									   .sRST(reset_for_core$OUT_RST),
-									   .sD_IN(core_reclocked_dma_AXI4_clock_crossing_f_b$sD_IN),
-									   .sENQ(core_reclocked_dma_AXI4_clock_crossing_f_b$sENQ),
-									   .dDEQ(core_reclocked_dma_AXI4_clock_crossing_f_b$dDEQ),
-									   .sFULL_N(core_reclocked_dma_AXI4_clock_crossing_f_b$sFULL_N),
-									   .dEMPTY_N(core_reclocked_dma_AXI4_clock_crossing_f_b$dEMPTY_N),
-									   .dD_OUT(core_reclocked_dma_AXI4_clock_crossing_f_b$dD_OUT));
+	     .indxWidth(32'd2)) core_inner_dma_AXI4_clock_crossing_f_b(.sCLK(CLK_clk2),
+								       .dCLK(CLK),
+								       .sRST(innerRstIfc$OUT_RST),
+								       .sD_IN(core_inner_dma_AXI4_clock_crossing_f_b$sD_IN),
+								       .sENQ(core_inner_dma_AXI4_clock_crossing_f_b$sENQ),
+								       .dDEQ(core_inner_dma_AXI4_clock_crossing_f_b$dDEQ),
+								       .sFULL_N(core_inner_dma_AXI4_clock_crossing_f_b$sFULL_N),
+								       .dEMPTY_N(core_inner_dma_AXI4_clock_crossing_f_b$dEMPTY_N),
+								       .dD_OUT(core_inner_dma_AXI4_clock_crossing_f_b$dD_OUT));
 
-  // submodule core_reclocked_dma_AXI4_clock_crossing_f_r
+  // submodule core_inner_dma_AXI4_clock_crossing_f_r
   SyncFIFO #(.dataWidth(32'd531),
 	     .depth(32'd4),
-	     .indxWidth(32'd2)) core_reclocked_dma_AXI4_clock_crossing_f_r(.sCLK(CLK_clk2),
-									   .dCLK(CLK),
-									   .sRST(reset_for_core$OUT_RST),
-									   .sD_IN(core_reclocked_dma_AXI4_clock_crossing_f_r$sD_IN),
-									   .sENQ(core_reclocked_dma_AXI4_clock_crossing_f_r$sENQ),
-									   .dDEQ(core_reclocked_dma_AXI4_clock_crossing_f_r$dDEQ),
-									   .sFULL_N(core_reclocked_dma_AXI4_clock_crossing_f_r$sFULL_N),
-									   .dEMPTY_N(core_reclocked_dma_AXI4_clock_crossing_f_r$dEMPTY_N),
-									   .dD_OUT(core_reclocked_dma_AXI4_clock_crossing_f_r$dD_OUT));
+	     .indxWidth(32'd2)) core_inner_dma_AXI4_clock_crossing_f_r(.sCLK(CLK_clk2),
+								       .dCLK(CLK),
+								       .sRST(innerRstIfc$OUT_RST),
+								       .sD_IN(core_inner_dma_AXI4_clock_crossing_f_r$sD_IN),
+								       .sENQ(core_inner_dma_AXI4_clock_crossing_f_r$sENQ),
+								       .dDEQ(core_inner_dma_AXI4_clock_crossing_f_r$dDEQ),
+								       .sFULL_N(core_inner_dma_AXI4_clock_crossing_f_r$sFULL_N),
+								       .dEMPTY_N(core_inner_dma_AXI4_clock_crossing_f_r$dEMPTY_N),
+								       .dD_OUT(core_inner_dma_AXI4_clock_crossing_f_r$dD_OUT));
 
-  // submodule core_reclocked_dma_AXI4_clock_crossing_f_w
+  // submodule core_inner_dma_AXI4_clock_crossing_f_w
   SyncFIFO #(.dataWidth(32'd577),
 	     .depth(32'd4),
-	     .indxWidth(32'd2)) core_reclocked_dma_AXI4_clock_crossing_f_w(.sCLK(CLK),
-									   .dCLK(CLK_clk2),
-									   .sRST(RST_N),
-									   .sD_IN(core_reclocked_dma_AXI4_clock_crossing_f_w$sD_IN),
-									   .sENQ(core_reclocked_dma_AXI4_clock_crossing_f_w$sENQ),
-									   .dDEQ(core_reclocked_dma_AXI4_clock_crossing_f_w$dDEQ),
-									   .sFULL_N(core_reclocked_dma_AXI4_clock_crossing_f_w$sFULL_N),
-									   .dEMPTY_N(core_reclocked_dma_AXI4_clock_crossing_f_w$dEMPTY_N),
-									   .dD_OUT(core_reclocked_dma_AXI4_clock_crossing_f_w$dD_OUT));
+	     .indxWidth(32'd2)) core_inner_dma_AXI4_clock_crossing_f_w(.sCLK(CLK),
+								       .dCLK(CLK_clk2),
+								       .sRST(RST_N),
+								       .sD_IN(core_inner_dma_AXI4_clock_crossing_f_w$sD_IN),
+								       .sENQ(core_inner_dma_AXI4_clock_crossing_f_w$sENQ),
+								       .dDEQ(core_inner_dma_AXI4_clock_crossing_f_w$dDEQ),
+								       .sFULL_N(core_inner_dma_AXI4_clock_crossing_f_w$sFULL_N),
+								       .dEMPTY_N(core_inner_dma_AXI4_clock_crossing_f_w$dEMPTY_N),
+								       .dD_OUT(core_inner_dma_AXI4_clock_crossing_f_w$dD_OUT));
 
-  // submodule core_reclocked_f_control_status_req
-  SyncFIFO #(.dataWidth(32'd32),
-	     .depth(32'd4),
-	     .indxWidth(32'd2)) core_reclocked_f_control_status_req(.sCLK(CLK),
-								    .dCLK(CLK_clk2),
-								    .sRST(RST_N),
-								    .sD_IN(core_reclocked_f_control_status_req$sD_IN),
-								    .sENQ(core_reclocked_f_control_status_req$sENQ),
-								    .dDEQ(core_reclocked_f_control_status_req$dDEQ),
-								    .sFULL_N(core_reclocked_f_control_status_req$sFULL_N),
-								    .dEMPTY_N(core_reclocked_f_control_status_req$dEMPTY_N),
-								    .dD_OUT(core_reclocked_f_control_status_req$dD_OUT));
-
-  // submodule core_reclocked_f_control_status_rsp
-  SyncFIFO #(.dataWidth(32'd32),
-	     .depth(32'd4),
-	     .indxWidth(32'd2)) core_reclocked_f_control_status_rsp(.sCLK(CLK_clk2),
-								    .dCLK(CLK),
-								    .sRST(reset_for_core$OUT_RST),
-								    .sD_IN(core_reclocked_f_control_status_rsp$sD_IN),
-								    .sENQ(core_reclocked_f_control_status_rsp$sENQ),
-								    .dDEQ(core_reclocked_f_control_status_rsp$dDEQ),
-								    .sFULL_N(core_reclocked_f_control_status_rsp$sFULL_N),
-								    .dEMPTY_N(core_reclocked_f_control_status_rsp$dEMPTY_N),
-								    .dD_OUT(core_reclocked_f_control_status_rsp$dD_OUT));
-
-  // submodule core_reclocked_f_dmi_req
+  // submodule core_inner_f_dmi_req
   SyncFIFO #(.dataWidth(32'd40),
 	     .depth(32'd4),
-	     .indxWidth(32'd2)) core_reclocked_f_dmi_req(.sCLK(CLK),
-							 .dCLK(CLK_clk2),
-							 .sRST(RST_N),
-							 .sD_IN(core_reclocked_f_dmi_req$sD_IN),
-							 .sENQ(core_reclocked_f_dmi_req$sENQ),
-							 .dDEQ(core_reclocked_f_dmi_req$dDEQ),
-							 .sFULL_N(core_reclocked_f_dmi_req$sFULL_N),
-							 .dEMPTY_N(core_reclocked_f_dmi_req$dEMPTY_N),
-							 .dD_OUT(core_reclocked_f_dmi_req$dD_OUT));
-
-  // submodule core_reclocked_f_dmi_rsp
-  SyncFIFO #(.dataWidth(32'd32),
-	     .depth(32'd4),
-	     .indxWidth(32'd2)) core_reclocked_f_dmi_rsp(.sCLK(CLK_clk2),
-							 .dCLK(CLK),
-							 .sRST(reset_for_core$OUT_RST),
-							 .sD_IN(core_reclocked_f_dmi_rsp$sD_IN),
-							 .sENQ(core_reclocked_f_dmi_rsp$sENQ),
-							 .dDEQ(core_reclocked_f_dmi_rsp$dDEQ),
-							 .sFULL_N(core_reclocked_f_dmi_rsp$sFULL_N),
-							 .dEMPTY_N(core_reclocked_f_dmi_rsp$dEMPTY_N),
-							 .dD_OUT(core_reclocked_f_dmi_rsp$dD_OUT));
-
-  // submodule core_reclocked_f_misc_from_host
-  SyncFIFO #(.dataWidth(32'd32),
-	     .depth(32'd4),
-	     .indxWidth(32'd2)) core_reclocked_f_misc_from_host(.sCLK(CLK),
-								.dCLK(CLK_clk2),
-								.sRST(RST_N),
-								.sD_IN(core_reclocked_f_misc_from_host$sD_IN),
-								.sENQ(core_reclocked_f_misc_from_host$sENQ),
-								.dDEQ(core_reclocked_f_misc_from_host$dDEQ),
-								.sFULL_N(core_reclocked_f_misc_from_host$sFULL_N),
-								.dEMPTY_N(core_reclocked_f_misc_from_host$dEMPTY_N),
-								.dD_OUT(core_reclocked_f_misc_from_host$dD_OUT));
-
-  // submodule core_reclocked_f_misc_to_host
-  SyncFIFO #(.dataWidth(32'd32),
-	     .depth(32'd4),
-	     .indxWidth(32'd2)) core_reclocked_f_misc_to_host(.sCLK(CLK_clk2),
-							      .dCLK(CLK),
-							      .sRST(reset_for_core$OUT_RST),
-							      .sD_IN(core_reclocked_f_misc_to_host$sD_IN),
-							      .sENQ(core_reclocked_f_misc_to_host$sENQ),
-							      .dDEQ(core_reclocked_f_misc_to_host$dDEQ),
-							      .sFULL_N(core_reclocked_f_misc_to_host$sFULL_N),
-							      .dEMPTY_N(core_reclocked_f_misc_to_host$dEMPTY_N),
-							      .dD_OUT(core_reclocked_f_misc_to_host$dD_OUT));
-
-  // submodule core_reclocked_f_ndm_reset_req
-  SyncFIFO0 #(.depth(32'd4),
-	      .indxWidth(32'd2)) core_reclocked_f_ndm_reset_req(.sCLK(CLK_clk2),
-								.dCLK(CLK),
-								.sRST(reset_for_core$OUT_RST),
-								.sENQ(core_reclocked_f_ndm_reset_req$sENQ),
-								.dDEQ(core_reclocked_f_ndm_reset_req$dDEQ),
-								.sFULL_N(core_reclocked_f_ndm_reset_req$sFULL_N),
-								.dEMPTY_N(core_reclocked_f_ndm_reset_req$dEMPTY_N));
-
-  // submodule core_reclocked_f_ndm_reset_rsp
-  SyncFIFO0 #(.depth(32'd4),
-	      .indxWidth(32'd2)) core_reclocked_f_ndm_reset_rsp(.sCLK(CLK),
-								.dCLK(CLK_clk2),
-								.sRST(RST_N),
-								.sENQ(core_reclocked_f_ndm_reset_rsp$sENQ),
-								.dDEQ(core_reclocked_f_ndm_reset_rsp$dDEQ),
-								.sFULL_N(core_reclocked_f_ndm_reset_rsp$sFULL_N),
-								.dEMPTY_N(core_reclocked_f_ndm_reset_rsp$dEMPTY_N));
-
-  // submodule core_reclocked_f_nmi
-  SyncFIFO #(.dataWidth(32'd1),
-	     .depth(32'd4),
-	     .indxWidth(32'd2)) core_reclocked_f_nmi(.sCLK(CLK),
+	     .indxWidth(32'd2)) core_inner_f_dmi_req(.sCLK(CLK),
 						     .dCLK(CLK_clk2),
 						     .sRST(RST_N),
-						     .sD_IN(core_reclocked_f_nmi$sD_IN),
-						     .sENQ(core_reclocked_f_nmi$sENQ),
-						     .dDEQ(core_reclocked_f_nmi$dDEQ),
-						     .sFULL_N(core_reclocked_f_nmi$sFULL_N),
-						     .dEMPTY_N(core_reclocked_f_nmi$dEMPTY_N),
-						     .dD_OUT(core_reclocked_f_nmi$dD_OUT));
+						     .sD_IN(core_inner_f_dmi_req$sD_IN),
+						     .sENQ(core_inner_f_dmi_req$sENQ),
+						     .dDEQ(core_inner_f_dmi_req$dDEQ),
+						     .sFULL_N(core_inner_f_dmi_req$sFULL_N),
+						     .dEMPTY_N(core_inner_f_dmi_req$dEMPTY_N),
+						     .dD_OUT(core_inner_f_dmi_req$dD_OUT));
 
-  // submodule core_reclocked_f_tv_info
+  // submodule core_inner_f_dmi_rsp
+  SyncFIFO #(.dataWidth(32'd32),
+	     .depth(32'd4),
+	     .indxWidth(32'd2)) core_inner_f_dmi_rsp(.sCLK(CLK_clk2),
+						     .dCLK(CLK),
+						     .sRST(innerRstIfc$OUT_RST),
+						     .sD_IN(core_inner_f_dmi_rsp$sD_IN),
+						     .sENQ(core_inner_f_dmi_rsp$sENQ),
+						     .dDEQ(core_inner_f_dmi_rsp$dDEQ),
+						     .sFULL_N(core_inner_f_dmi_rsp$sFULL_N),
+						     .dEMPTY_N(core_inner_f_dmi_rsp$dEMPTY_N),
+						     .dD_OUT(core_inner_f_dmi_rsp$dD_OUT));
+
+  // submodule core_inner_f_misc_from_host
+  SyncFIFO #(.dataWidth(32'd32),
+	     .depth(32'd4),
+	     .indxWidth(32'd2)) core_inner_f_misc_from_host(.sCLK(CLK),
+							    .dCLK(CLK_clk2),
+							    .sRST(RST_N),
+							    .sD_IN(core_inner_f_misc_from_host$sD_IN),
+							    .sENQ(core_inner_f_misc_from_host$sENQ),
+							    .dDEQ(core_inner_f_misc_from_host$dDEQ),
+							    .sFULL_N(core_inner_f_misc_from_host$sFULL_N),
+							    .dEMPTY_N(core_inner_f_misc_from_host$dEMPTY_N),
+							    .dD_OUT(core_inner_f_misc_from_host$dD_OUT));
+
+  // submodule core_inner_f_misc_to_host
+  SyncFIFO #(.dataWidth(32'd32),
+	     .depth(32'd4),
+	     .indxWidth(32'd2)) core_inner_f_misc_to_host(.sCLK(CLK_clk2),
+							  .dCLK(CLK),
+							  .sRST(innerRstIfc$OUT_RST),
+							  .sD_IN(core_inner_f_misc_to_host$sD_IN),
+							  .sENQ(core_inner_f_misc_to_host$sENQ),
+							  .dDEQ(core_inner_f_misc_to_host$dDEQ),
+							  .sFULL_N(core_inner_f_misc_to_host$sFULL_N),
+							  .dEMPTY_N(core_inner_f_misc_to_host$dEMPTY_N),
+							  .dD_OUT(core_inner_f_misc_to_host$dD_OUT));
+
+  // submodule core_inner_f_ndm_reset_req
+  SyncFIFO0 #(.depth(32'd4),
+	      .indxWidth(32'd2)) core_inner_f_ndm_reset_req(.sCLK(CLK_clk2),
+							    .dCLK(CLK),
+							    .sRST(innerRstIfc$OUT_RST),
+							    .sENQ(core_inner_f_ndm_reset_req$sENQ),
+							    .dDEQ(core_inner_f_ndm_reset_req$dDEQ),
+							    .sFULL_N(core_inner_f_ndm_reset_req$sFULL_N),
+							    .dEMPTY_N(core_inner_f_ndm_reset_req$dEMPTY_N));
+
+  // submodule core_inner_f_ndm_reset_rsp
+  SyncFIFO0 #(.depth(32'd4),
+	      .indxWidth(32'd2)) core_inner_f_ndm_reset_rsp(.sCLK(CLK),
+							    .dCLK(CLK_clk2),
+							    .sRST(RST_N),
+							    .sENQ(core_inner_f_ndm_reset_rsp$sENQ),
+							    .dDEQ(core_inner_f_ndm_reset_rsp$dDEQ),
+							    .sFULL_N(core_inner_f_ndm_reset_rsp$sFULL_N),
+							    .dEMPTY_N(core_inner_f_ndm_reset_rsp$dEMPTY_N));
+
+  // submodule core_inner_f_nmi
+  SyncFIFO #(.dataWidth(32'd1),
+	     .depth(32'd4),
+	     .indxWidth(32'd2)) core_inner_f_nmi(.sCLK(CLK),
+						 .dCLK(CLK_clk2),
+						 .sRST(RST_N),
+						 .sD_IN(core_inner_f_nmi$sD_IN),
+						 .sENQ(core_inner_f_nmi$sENQ),
+						 .dDEQ(core_inner_f_nmi$dDEQ),
+						 .sFULL_N(core_inner_f_nmi$sFULL_N),
+						 .dEMPTY_N(core_inner_f_nmi$dEMPTY_N),
+						 .dD_OUT(core_inner_f_nmi$dD_OUT));
+
+  // submodule core_inner_f_pc_trace_control
+  SyncFIFO #(.dataWidth(32'd65),
+	     .depth(32'd4),
+	     .indxWidth(32'd2)) core_inner_f_pc_trace_control(.sCLK(CLK),
+							      .dCLK(CLK_clk2),
+							      .sRST(RST_N),
+							      .sD_IN(core_inner_f_pc_trace_control$sD_IN),
+							      .sENQ(core_inner_f_pc_trace_control$sENQ),
+							      .dDEQ(core_inner_f_pc_trace_control$dDEQ),
+							      .sFULL_N(core_inner_f_pc_trace_control$sFULL_N),
+							      .dEMPTY_N(core_inner_f_pc_trace_control$dEMPTY_N),
+							      .dD_OUT(core_inner_f_pc_trace_control$dD_OUT));
+
+  // submodule core_inner_f_tohost_value
+  SyncFIFO #(.dataWidth(32'd64),
+	     .depth(32'd4),
+	     .indxWidth(32'd2)) core_inner_f_tohost_value(.sCLK(CLK_clk2),
+							  .dCLK(CLK),
+							  .sRST(innerRstIfc$OUT_RST),
+							  .sD_IN(core_inner_f_tohost_value$sD_IN),
+							  .sENQ(core_inner_f_tohost_value$sENQ),
+							  .dDEQ(core_inner_f_tohost_value$dDEQ),
+							  .sFULL_N(core_inner_f_tohost_value$sFULL_N),
+							  .dEMPTY_N(core_inner_f_tohost_value$dEMPTY_N),
+							  .dD_OUT(core_inner_f_tohost_value$dD_OUT));
+
+  // submodule core_inner_f_tv_info
   SyncFIFO #(.dataWidth(32'd608),
 	     .depth(32'd4),
-	     .indxWidth(32'd2)) core_reclocked_f_tv_info(.sCLK(CLK_clk2),
-							 .dCLK(CLK),
-							 .sRST(reset_for_core$OUT_RST),
-							 .sD_IN(core_reclocked_f_tv_info$sD_IN),
-							 .sENQ(core_reclocked_f_tv_info$sENQ),
-							 .dDEQ(core_reclocked_f_tv_info$dDEQ),
-							 .sFULL_N(core_reclocked_f_tv_info$sFULL_N),
-							 .dEMPTY_N(core_reclocked_f_tv_info$dEMPTY_N),
-							 .dD_OUT(core_reclocked_f_tv_info$dD_OUT));
+	     .indxWidth(32'd2)) core_inner_f_tv_info(.sCLK(CLK_clk2),
+						     .dCLK(CLK),
+						     .sRST(innerRstIfc$OUT_RST),
+						     .sD_IN(core_inner_f_tv_info$sD_IN),
+						     .sENQ(core_inner_f_tv_info$sENQ),
+						     .dDEQ(core_inner_f_tv_info$dDEQ),
+						     .sFULL_N(core_inner_f_tv_info$sFULL_N),
+						     .dEMPTY_N(core_inner_f_tv_info$dEMPTY_N),
+						     .dD_OUT(core_inner_f_tv_info$dD_OUT));
 
-  // submodule core_reclocked_mmio_AXI4_clock_crossing_f_ar
+  // submodule core_inner_f_verbosity_control
+  SyncFIFO #(.dataWidth(32'd68),
+	     .depth(32'd4),
+	     .indxWidth(32'd2)) core_inner_f_verbosity_control(.sCLK(CLK),
+							       .dCLK(CLK_clk2),
+							       .sRST(RST_N),
+							       .sD_IN(core_inner_f_verbosity_control$sD_IN),
+							       .sENQ(core_inner_f_verbosity_control$sENQ),
+							       .dDEQ(core_inner_f_verbosity_control$dDEQ),
+							       .sFULL_N(core_inner_f_verbosity_control$sFULL_N),
+							       .dEMPTY_N(core_inner_f_verbosity_control$dEMPTY_N),
+							       .dD_OUT(core_inner_f_verbosity_control$dD_OUT));
+
+  // submodule core_inner_f_watch_tohost_control
+  SyncFIFO #(.dataWidth(32'd65),
+	     .depth(32'd4),
+	     .indxWidth(32'd2)) core_inner_f_watch_tohost_control(.sCLK(CLK),
+								  .dCLK(CLK_clk2),
+								  .sRST(RST_N),
+								  .sD_IN(core_inner_f_watch_tohost_control$sD_IN),
+								  .sENQ(core_inner_f_watch_tohost_control$sENQ),
+								  .dDEQ(core_inner_f_watch_tohost_control$dDEQ),
+								  .sFULL_N(core_inner_f_watch_tohost_control$sFULL_N),
+								  .dEMPTY_N(core_inner_f_watch_tohost_control$dEMPTY_N),
+								  .dD_OUT(core_inner_f_watch_tohost_control$dD_OUT));
+
+  // submodule core_inner_mmio_AXI4_clock_crossing_f_ar
   SyncFIFO #(.dataWidth(32'd109),
 	     .depth(32'd4),
-	     .indxWidth(32'd2)) core_reclocked_mmio_AXI4_clock_crossing_f_ar(.sCLK(CLK_clk2),
-									     .dCLK(CLK),
-									     .sRST(reset_for_core$OUT_RST),
-									     .sD_IN(core_reclocked_mmio_AXI4_clock_crossing_f_ar$sD_IN),
-									     .sENQ(core_reclocked_mmio_AXI4_clock_crossing_f_ar$sENQ),
-									     .dDEQ(core_reclocked_mmio_AXI4_clock_crossing_f_ar$dDEQ),
-									     .sFULL_N(core_reclocked_mmio_AXI4_clock_crossing_f_ar$sFULL_N),
-									     .dEMPTY_N(core_reclocked_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N),
-									     .dD_OUT(core_reclocked_mmio_AXI4_clock_crossing_f_ar$dD_OUT));
+	     .indxWidth(32'd2)) core_inner_mmio_AXI4_clock_crossing_f_ar(.sCLK(CLK_clk2),
+									 .dCLK(CLK),
+									 .sRST(innerRstIfc$OUT_RST),
+									 .sD_IN(core_inner_mmio_AXI4_clock_crossing_f_ar$sD_IN),
+									 .sENQ(core_inner_mmio_AXI4_clock_crossing_f_ar$sENQ),
+									 .dDEQ(core_inner_mmio_AXI4_clock_crossing_f_ar$dDEQ),
+									 .sFULL_N(core_inner_mmio_AXI4_clock_crossing_f_ar$sFULL_N),
+									 .dEMPTY_N(core_inner_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N),
+									 .dD_OUT(core_inner_mmio_AXI4_clock_crossing_f_ar$dD_OUT));
 
-  // submodule core_reclocked_mmio_AXI4_clock_crossing_f_aw
+  // submodule core_inner_mmio_AXI4_clock_crossing_f_aw
   SyncFIFO #(.dataWidth(32'd109),
 	     .depth(32'd4),
-	     .indxWidth(32'd2)) core_reclocked_mmio_AXI4_clock_crossing_f_aw(.sCLK(CLK_clk2),
-									     .dCLK(CLK),
-									     .sRST(reset_for_core$OUT_RST),
-									     .sD_IN(core_reclocked_mmio_AXI4_clock_crossing_f_aw$sD_IN),
-									     .sENQ(core_reclocked_mmio_AXI4_clock_crossing_f_aw$sENQ),
-									     .dDEQ(core_reclocked_mmio_AXI4_clock_crossing_f_aw$dDEQ),
-									     .sFULL_N(core_reclocked_mmio_AXI4_clock_crossing_f_aw$sFULL_N),
-									     .dEMPTY_N(core_reclocked_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N),
-									     .dD_OUT(core_reclocked_mmio_AXI4_clock_crossing_f_aw$dD_OUT));
+	     .indxWidth(32'd2)) core_inner_mmio_AXI4_clock_crossing_f_aw(.sCLK(CLK_clk2),
+									 .dCLK(CLK),
+									 .sRST(innerRstIfc$OUT_RST),
+									 .sD_IN(core_inner_mmio_AXI4_clock_crossing_f_aw$sD_IN),
+									 .sENQ(core_inner_mmio_AXI4_clock_crossing_f_aw$sENQ),
+									 .dDEQ(core_inner_mmio_AXI4_clock_crossing_f_aw$dDEQ),
+									 .sFULL_N(core_inner_mmio_AXI4_clock_crossing_f_aw$sFULL_N),
+									 .dEMPTY_N(core_inner_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N),
+									 .dD_OUT(core_inner_mmio_AXI4_clock_crossing_f_aw$dD_OUT));
 
-  // submodule core_reclocked_mmio_AXI4_clock_crossing_f_b
+  // submodule core_inner_mmio_AXI4_clock_crossing_f_b
   SyncFIFO #(.dataWidth(32'd18),
 	     .depth(32'd4),
-	     .indxWidth(32'd2)) core_reclocked_mmio_AXI4_clock_crossing_f_b(.sCLK(CLK),
-									    .dCLK(CLK_clk2),
-									    .sRST(RST_N),
-									    .sD_IN(core_reclocked_mmio_AXI4_clock_crossing_f_b$sD_IN),
-									    .sENQ(core_reclocked_mmio_AXI4_clock_crossing_f_b$sENQ),
-									    .dDEQ(core_reclocked_mmio_AXI4_clock_crossing_f_b$dDEQ),
-									    .sFULL_N(core_reclocked_mmio_AXI4_clock_crossing_f_b$sFULL_N),
-									    .dEMPTY_N(core_reclocked_mmio_AXI4_clock_crossing_f_b$dEMPTY_N),
-									    .dD_OUT(core_reclocked_mmio_AXI4_clock_crossing_f_b$dD_OUT));
+	     .indxWidth(32'd2)) core_inner_mmio_AXI4_clock_crossing_f_b(.sCLK(CLK),
+									.dCLK(CLK_clk2),
+									.sRST(RST_N),
+									.sD_IN(core_inner_mmio_AXI4_clock_crossing_f_b$sD_IN),
+									.sENQ(core_inner_mmio_AXI4_clock_crossing_f_b$sENQ),
+									.dDEQ(core_inner_mmio_AXI4_clock_crossing_f_b$dDEQ),
+									.sFULL_N(core_inner_mmio_AXI4_clock_crossing_f_b$sFULL_N),
+									.dEMPTY_N(core_inner_mmio_AXI4_clock_crossing_f_b$dEMPTY_N),
+									.dD_OUT(core_inner_mmio_AXI4_clock_crossing_f_b$dD_OUT));
 
-  // submodule core_reclocked_mmio_AXI4_clock_crossing_f_r
+  // submodule core_inner_mmio_AXI4_clock_crossing_f_r
   SyncFIFO #(.dataWidth(32'd83),
 	     .depth(32'd4),
-	     .indxWidth(32'd2)) core_reclocked_mmio_AXI4_clock_crossing_f_r(.sCLK(CLK),
-									    .dCLK(CLK_clk2),
-									    .sRST(RST_N),
-									    .sD_IN(core_reclocked_mmio_AXI4_clock_crossing_f_r$sD_IN),
-									    .sENQ(core_reclocked_mmio_AXI4_clock_crossing_f_r$sENQ),
-									    .dDEQ(core_reclocked_mmio_AXI4_clock_crossing_f_r$dDEQ),
-									    .sFULL_N(core_reclocked_mmio_AXI4_clock_crossing_f_r$sFULL_N),
-									    .dEMPTY_N(core_reclocked_mmio_AXI4_clock_crossing_f_r$dEMPTY_N),
-									    .dD_OUT(core_reclocked_mmio_AXI4_clock_crossing_f_r$dD_OUT));
+	     .indxWidth(32'd2)) core_inner_mmio_AXI4_clock_crossing_f_r(.sCLK(CLK),
+									.dCLK(CLK_clk2),
+									.sRST(RST_N),
+									.sD_IN(core_inner_mmio_AXI4_clock_crossing_f_r$sD_IN),
+									.sENQ(core_inner_mmio_AXI4_clock_crossing_f_r$sENQ),
+									.dDEQ(core_inner_mmio_AXI4_clock_crossing_f_r$dDEQ),
+									.sFULL_N(core_inner_mmio_AXI4_clock_crossing_f_r$sFULL_N),
+									.dEMPTY_N(core_inner_mmio_AXI4_clock_crossing_f_r$dEMPTY_N),
+									.dD_OUT(core_inner_mmio_AXI4_clock_crossing_f_r$dD_OUT));
 
-  // submodule core_reclocked_mmio_AXI4_clock_crossing_f_w
+  // submodule core_inner_mmio_AXI4_clock_crossing_f_w
   SyncFIFO #(.dataWidth(32'd73),
 	     .depth(32'd4),
-	     .indxWidth(32'd2)) core_reclocked_mmio_AXI4_clock_crossing_f_w(.sCLK(CLK_clk2),
-									    .dCLK(CLK),
-									    .sRST(reset_for_core$OUT_RST),
-									    .sD_IN(core_reclocked_mmio_AXI4_clock_crossing_f_w$sD_IN),
-									    .sENQ(core_reclocked_mmio_AXI4_clock_crossing_f_w$sENQ),
-									    .dDEQ(core_reclocked_mmio_AXI4_clock_crossing_f_w$dDEQ),
-									    .sFULL_N(core_reclocked_mmio_AXI4_clock_crossing_f_w$sFULL_N),
-									    .dEMPTY_N(core_reclocked_mmio_AXI4_clock_crossing_f_w$dEMPTY_N),
-									    .dD_OUT(core_reclocked_mmio_AXI4_clock_crossing_f_w$dD_OUT));
-
-  // submodule core_single_clock
-  mkAWSteria_Core_Single_Clock core_single_clock(.CLK(CLK_clk2),
-						 .RST_N(reset_for_core$OUT_RST),
-						 .dma_S_araddr(core_single_clock$dma_S_araddr),
-						 .dma_S_arburst(core_single_clock$dma_S_arburst),
-						 .dma_S_arcache(core_single_clock$dma_S_arcache),
-						 .dma_S_arid(core_single_clock$dma_S_arid),
-						 .dma_S_arlen(core_single_clock$dma_S_arlen),
-						 .dma_S_arlock(core_single_clock$dma_S_arlock),
-						 .dma_S_arprot(core_single_clock$dma_S_arprot),
-						 .dma_S_arqos(core_single_clock$dma_S_arqos),
-						 .dma_S_arregion(core_single_clock$dma_S_arregion),
-						 .dma_S_arsize(core_single_clock$dma_S_arsize),
-						 .dma_S_arvalid(core_single_clock$dma_S_arvalid),
-						 .dma_S_awaddr(core_single_clock$dma_S_awaddr),
-						 .dma_S_awburst(core_single_clock$dma_S_awburst),
-						 .dma_S_awcache(core_single_clock$dma_S_awcache),
-						 .dma_S_awid(core_single_clock$dma_S_awid),
-						 .dma_S_awlen(core_single_clock$dma_S_awlen),
-						 .dma_S_awlock(core_single_clock$dma_S_awlock),
-						 .dma_S_awprot(core_single_clock$dma_S_awprot),
-						 .dma_S_awqos(core_single_clock$dma_S_awqos),
-						 .dma_S_awregion(core_single_clock$dma_S_awregion),
-						 .dma_S_awsize(core_single_clock$dma_S_awsize),
-						 .dma_S_awvalid(core_single_clock$dma_S_awvalid),
-						 .dma_S_bready(core_single_clock$dma_S_bready),
-						 .dma_S_rready(core_single_clock$dma_S_rready),
-						 .dma_S_wdata(core_single_clock$dma_S_wdata),
-						 .dma_S_wlast(core_single_clock$dma_S_wlast),
-						 .dma_S_wstrb(core_single_clock$dma_S_wstrb),
-						 .dma_S_wvalid(core_single_clock$dma_S_wvalid),
-						 .ext_interrupts_x(core_single_clock$ext_interrupts_x),
-						 .fi_misc_enq_x(core_single_clock$fi_misc_enq_x),
-						 .fi_nmi_enq_x(core_single_clock$fi_nmi_enq_x),
-						 .mem_M_arready(core_single_clock$mem_M_arready),
-						 .mem_M_awready(core_single_clock$mem_M_awready),
-						 .mem_M_bid(core_single_clock$mem_M_bid),
-						 .mem_M_bresp(core_single_clock$mem_M_bresp),
-						 .mem_M_bvalid(core_single_clock$mem_M_bvalid),
-						 .mem_M_rdata(core_single_clock$mem_M_rdata),
-						 .mem_M_rid(core_single_clock$mem_M_rid),
-						 .mem_M_rlast(core_single_clock$mem_M_rlast),
-						 .mem_M_rresp(core_single_clock$mem_M_rresp),
-						 .mem_M_rvalid(core_single_clock$mem_M_rvalid),
-						 .mem_M_wready(core_single_clock$mem_M_wready),
-						 .mmio_M_arready(core_single_clock$mmio_M_arready),
-						 .mmio_M_awready(core_single_clock$mmio_M_awready),
-						 .mmio_M_bid(core_single_clock$mmio_M_bid),
-						 .mmio_M_bresp(core_single_clock$mmio_M_bresp),
-						 .mmio_M_bvalid(core_single_clock$mmio_M_bvalid),
-						 .mmio_M_rdata(core_single_clock$mmio_M_rdata),
-						 .mmio_M_rid(core_single_clock$mmio_M_rid),
-						 .mmio_M_rlast(core_single_clock$mmio_M_rlast),
-						 .mmio_M_rresp(core_single_clock$mmio_M_rresp),
-						 .mmio_M_rvalid(core_single_clock$mmio_M_rvalid),
-						 .mmio_M_wready(core_single_clock$mmio_M_wready),
-						 .se_control_status_request_enq_x(core_single_clock$se_control_status_request_enq_x),
-						 .se_dmi_request_enq_x(core_single_clock$se_dmi_request_enq_x),
-						 .EN_ext_interrupts(core_single_clock$EN_ext_interrupts),
-						 .EN_fi_nmi_enq(core_single_clock$EN_fi_nmi_enq),
-						 .EN_fo_misc_deq(core_single_clock$EN_fo_misc_deq),
-						 .EN_fi_misc_enq(core_single_clock$EN_fi_misc_enq),
-						 .EN_fo_tv_info_deq(core_single_clock$EN_fo_tv_info_deq),
-						 .EN_se_dmi_request_enq(core_single_clock$EN_se_dmi_request_enq),
-						 .EN_se_dmi_response_deq(core_single_clock$EN_se_dmi_response_deq),
-						 .EN_cl_ndm_reset_request_deq(core_single_clock$EN_cl_ndm_reset_request_deq),
-						 .EN_cl_ndm_reset_response_enq(core_single_clock$EN_cl_ndm_reset_response_enq),
-						 .EN_se_control_status_request_enq(core_single_clock$EN_se_control_status_request_enq),
-						 .EN_se_control_status_response_deq(core_single_clock$EN_se_control_status_response_deq),
-						 .mem_M_awvalid(core_single_clock$mem_M_awvalid),
-						 .mem_M_awid(core_single_clock$mem_M_awid),
-						 .mem_M_awaddr(core_single_clock$mem_M_awaddr),
-						 .mem_M_awlen(core_single_clock$mem_M_awlen),
-						 .mem_M_awsize(core_single_clock$mem_M_awsize),
-						 .mem_M_awburst(core_single_clock$mem_M_awburst),
-						 .mem_M_awlock(core_single_clock$mem_M_awlock),
-						 .mem_M_awcache(core_single_clock$mem_M_awcache),
-						 .mem_M_awprot(core_single_clock$mem_M_awprot),
-						 .mem_M_awqos(core_single_clock$mem_M_awqos),
-						 .mem_M_awregion(core_single_clock$mem_M_awregion),
-						 .mem_M_wvalid(core_single_clock$mem_M_wvalid),
-						 .mem_M_wdata(core_single_clock$mem_M_wdata),
-						 .mem_M_wstrb(core_single_clock$mem_M_wstrb),
-						 .mem_M_wlast(core_single_clock$mem_M_wlast),
-						 .mem_M_bready(core_single_clock$mem_M_bready),
-						 .mem_M_arvalid(core_single_clock$mem_M_arvalid),
-						 .mem_M_arid(core_single_clock$mem_M_arid),
-						 .mem_M_araddr(core_single_clock$mem_M_araddr),
-						 .mem_M_arlen(core_single_clock$mem_M_arlen),
-						 .mem_M_arsize(core_single_clock$mem_M_arsize),
-						 .mem_M_arburst(core_single_clock$mem_M_arburst),
-						 .mem_M_arlock(core_single_clock$mem_M_arlock),
-						 .mem_M_arcache(core_single_clock$mem_M_arcache),
-						 .mem_M_arprot(core_single_clock$mem_M_arprot),
-						 .mem_M_arqos(core_single_clock$mem_M_arqos),
-						 .mem_M_arregion(core_single_clock$mem_M_arregion),
-						 .mem_M_rready(core_single_clock$mem_M_rready),
-						 .mmio_M_awvalid(core_single_clock$mmio_M_awvalid),
-						 .mmio_M_awid(core_single_clock$mmio_M_awid),
-						 .mmio_M_awaddr(core_single_clock$mmio_M_awaddr),
-						 .mmio_M_awlen(core_single_clock$mmio_M_awlen),
-						 .mmio_M_awsize(core_single_clock$mmio_M_awsize),
-						 .mmio_M_awburst(core_single_clock$mmio_M_awburst),
-						 .mmio_M_awlock(core_single_clock$mmio_M_awlock),
-						 .mmio_M_awcache(core_single_clock$mmio_M_awcache),
-						 .mmio_M_awprot(core_single_clock$mmio_M_awprot),
-						 .mmio_M_awqos(core_single_clock$mmio_M_awqos),
-						 .mmio_M_awregion(core_single_clock$mmio_M_awregion),
-						 .mmio_M_wvalid(core_single_clock$mmio_M_wvalid),
-						 .mmio_M_wdata(core_single_clock$mmio_M_wdata),
-						 .mmio_M_wstrb(core_single_clock$mmio_M_wstrb),
-						 .mmio_M_wlast(core_single_clock$mmio_M_wlast),
-						 .mmio_M_bready(core_single_clock$mmio_M_bready),
-						 .mmio_M_arvalid(core_single_clock$mmio_M_arvalid),
-						 .mmio_M_arid(core_single_clock$mmio_M_arid),
-						 .mmio_M_araddr(core_single_clock$mmio_M_araddr),
-						 .mmio_M_arlen(core_single_clock$mmio_M_arlen),
-						 .mmio_M_arsize(core_single_clock$mmio_M_arsize),
-						 .mmio_M_arburst(core_single_clock$mmio_M_arburst),
-						 .mmio_M_arlock(core_single_clock$mmio_M_arlock),
-						 .mmio_M_arcache(core_single_clock$mmio_M_arcache),
-						 .mmio_M_arprot(core_single_clock$mmio_M_arprot),
-						 .mmio_M_arqos(core_single_clock$mmio_M_arqos),
-						 .mmio_M_arregion(core_single_clock$mmio_M_arregion),
-						 .mmio_M_rready(core_single_clock$mmio_M_rready),
-						 .dma_S_awready(core_single_clock$dma_S_awready),
-						 .dma_S_wready(core_single_clock$dma_S_wready),
-						 .dma_S_bvalid(core_single_clock$dma_S_bvalid),
-						 .dma_S_bid(core_single_clock$dma_S_bid),
-						 .dma_S_bresp(core_single_clock$dma_S_bresp),
-						 .dma_S_arready(core_single_clock$dma_S_arready),
-						 .dma_S_rvalid(core_single_clock$dma_S_rvalid),
-						 .dma_S_rid(core_single_clock$dma_S_rid),
-						 .dma_S_rdata(core_single_clock$dma_S_rdata),
-						 .dma_S_rresp(core_single_clock$dma_S_rresp),
-						 .dma_S_rlast(core_single_clock$dma_S_rlast),
-						 .RDY_ext_interrupts(),
-						 .RDY_fi_nmi_enq(core_single_clock$RDY_fi_nmi_enq),
-						 .fi_nmi_notFull(),
-						 .RDY_fi_nmi_notFull(),
-						 .fo_misc_first(core_single_clock$fo_misc_first),
-						 .RDY_fo_misc_first(core_single_clock$RDY_fo_misc_first),
-						 .RDY_fo_misc_deq(core_single_clock$RDY_fo_misc_deq),
-						 .fo_misc_notEmpty(),
-						 .RDY_fo_misc_notEmpty(),
-						 .RDY_fi_misc_enq(core_single_clock$RDY_fi_misc_enq),
-						 .fi_misc_notFull(),
-						 .RDY_fi_misc_notFull(),
-						 .fo_tv_info_first(core_single_clock$fo_tv_info_first),
-						 .RDY_fo_tv_info_first(core_single_clock$RDY_fo_tv_info_first),
-						 .RDY_fo_tv_info_deq(core_single_clock$RDY_fo_tv_info_deq),
-						 .fo_tv_info_notEmpty(),
-						 .RDY_fo_tv_info_notEmpty(),
-						 .RDY_se_dmi_request_enq(core_single_clock$RDY_se_dmi_request_enq),
-						 .se_dmi_request_notFull(),
-						 .RDY_se_dmi_request_notFull(),
-						 .se_dmi_response_first(core_single_clock$se_dmi_response_first),
-						 .RDY_se_dmi_response_first(core_single_clock$RDY_se_dmi_response_first),
-						 .RDY_se_dmi_response_deq(core_single_clock$RDY_se_dmi_response_deq),
-						 .se_dmi_response_notEmpty(),
-						 .RDY_se_dmi_response_notEmpty(),
-						 .RDY_cl_ndm_reset_request_first(),
-						 .RDY_cl_ndm_reset_request_deq(core_single_clock$RDY_cl_ndm_reset_request_deq),
-						 .cl_ndm_reset_request_notEmpty(),
-						 .RDY_cl_ndm_reset_request_notEmpty(),
-						 .RDY_cl_ndm_reset_response_enq(core_single_clock$RDY_cl_ndm_reset_response_enq),
-						 .cl_ndm_reset_response_notFull(),
-						 .RDY_cl_ndm_reset_response_notFull(),
-						 .RDY_se_control_status_request_enq(core_single_clock$RDY_se_control_status_request_enq),
-						 .se_control_status_request_notFull(),
-						 .RDY_se_control_status_request_notFull(),
-						 .se_control_status_response_first(core_single_clock$se_control_status_response_first),
-						 .RDY_se_control_status_response_first(core_single_clock$RDY_se_control_status_response_first),
-						 .RDY_se_control_status_response_deq(core_single_clock$RDY_se_control_status_response_deq),
-						 .se_control_status_response_notEmpty(),
-						 .RDY_se_control_status_response_notEmpty());
-
-  // submodule reset_for_core
-  MakeResetA #(.RSTDELAY(32'd5), .init(1'd0)) reset_for_core(.CLK(CLK),
-							     .RST(RST_N),
-							     .DST_CLK(CLK_clk2),
-							     .ASSERT_IN(reset_for_core$ASSERT_IN),
-							     .ASSERT_OUT(),
-							     .OUT_RST(reset_for_core$OUT_RST));
-
-  // rule RL_core_reclocked_rl_wr_addr_channel
-  assign CAN_FIRE_RL_core_reclocked_rl_wr_addr_channel = 1'd1 ;
-  assign WILL_FIRE_RL_core_reclocked_rl_wr_addr_channel = 1'd1 ;
-
-  // rule RL_core_reclocked_rl_wr_data_channel
-  assign CAN_FIRE_RL_core_reclocked_rl_wr_data_channel = 1'd1 ;
-  assign WILL_FIRE_RL_core_reclocked_rl_wr_data_channel = 1'd1 ;
-
-  // rule RL_core_reclocked_rl_rd_addr_channel
-  assign CAN_FIRE_RL_core_reclocked_rl_rd_addr_channel = 1'd1 ;
-  assign WILL_FIRE_RL_core_reclocked_rl_rd_addr_channel = 1'd1 ;
-
-  // rule RL_core_reclocked_rl_relay_interrupts
-  assign CAN_FIRE_RL_core_reclocked_rl_relay_interrupts = 1'd1 ;
-  assign WILL_FIRE_RL_core_reclocked_rl_relay_interrupts = 1'd1 ;
-
-  // rule RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq
-  assign CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq =
-	     core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas &&
-	     !core_reclocked_ddr_AXI4_clock_crossing_f_aw$sFULL_N ;
-  assign WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq ;
-
-  // rule RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq
-  assign CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_aw$sFULL_N &&
-	     core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq ;
-
-  // rule RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq
-  assign CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq =
-	     core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas &&
-	     !core_reclocked_ddr_AXI4_clock_crossing_f_w$sFULL_N ;
-  assign WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq ;
-
-  // rule RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq
-  assign CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_w$sFULL_N &&
-	     core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq ;
-
-  // rule RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst
-  assign CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_b$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_b$dEMPTY_N ;
-
-  // rule RL_core_reclocked_rl_wr_response_channel
-  assign CAN_FIRE_RL_core_reclocked_rl_wr_response_channel = 1'd1 ;
-  assign WILL_FIRE_RL_core_reclocked_rl_wr_response_channel = 1'd1 ;
-
-  // rule RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq
-  assign CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq =
-	     core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas &&
-	     !core_reclocked_ddr_AXI4_clock_crossing_f_b$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq ;
-
-  // rule RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq
-  assign CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_b$dEMPTY_N &&
-	     core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq ;
-
-  // rule RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq
-  assign CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq =
-	     core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$whas &&
-	     !core_reclocked_ddr_AXI4_clock_crossing_f_ar$sFULL_N ;
-  assign WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq ;
-
-  // rule RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq
-  assign CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_ar$sFULL_N &&
-	     core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq ;
-
-  // rule RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst
-  assign CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_r$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_r$dEMPTY_N ;
-
-  // rule RL_core_reclocked_rl_rd_data_channel
-  assign CAN_FIRE_RL_core_reclocked_rl_rd_data_channel = 1'd1 ;
-  assign WILL_FIRE_RL_core_reclocked_rl_rd_data_channel = 1'd1 ;
-
-  // rule RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq
-  assign CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq =
-	     core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas &&
-	     !core_reclocked_ddr_AXI4_clock_crossing_f_r$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq ;
-
-  // rule RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq
-  assign CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_r$dEMPTY_N &&
-	     core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq ;
-
-  // rule RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst
-  assign CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N ;
-
-  // rule RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq
-  assign CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq =
-	     core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas &&
-	     !core_reclocked_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq ;
-
-  // rule RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq
-  assign CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N &&
-	     core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq ;
-
-  // rule RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst
-  assign CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_w$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_w$dEMPTY_N ;
-
-  // rule RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq
-  assign CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq =
-	     core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_deqWire$whas &&
-	     !core_reclocked_ddr_AXI4_clock_crossing_f_w$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq ;
-
-  // rule RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq
-  assign CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_w$dEMPTY_N &&
-	     core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_deqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq ;
-
-  // rule RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq
-  assign CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq =
-	     core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$whas &&
-	     !core_reclocked_ddr_AXI4_clock_crossing_f_b$sFULL_N ;
-  assign WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq ;
-
-  // rule RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq
-  assign CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_b$sFULL_N &&
-	     core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq ;
-
-  // rule RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst
-  assign CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N ;
-
-  // rule RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq
-  assign CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq =
-	     core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas &&
-	     !core_reclocked_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq ;
-
-  // rule RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq
-  assign CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N &&
-	     core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq ;
-
-  // rule RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq
-  assign CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq =
-	     core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas &&
-	     !core_reclocked_ddr_AXI4_clock_crossing_f_r$sFULL_N ;
-  assign WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq ;
-
-  // rule RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq
-  assign CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_r$sFULL_N &&
-	     core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq ;
-
-  // rule RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst
-  assign CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_b$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_b$dEMPTY_N ;
-
-  // rule RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst
-  assign CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_r$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_r$dEMPTY_N ;
-
-  // rule RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst
-  assign CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N ;
-
-  // rule RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq
-  assign CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq =
-	     core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas &&
-	     !core_reclocked_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq ;
-
-  // rule RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq
-  assign CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N &&
-	     core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq ;
-
-  // rule RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst
-  assign CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_w$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_w$dEMPTY_N ;
-
-  // rule RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq
-  assign CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq =
-	     core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_deqWire$whas &&
-	     !core_reclocked_mmio_AXI4_clock_crossing_f_w$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq ;
-
-  // rule RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq
-  assign CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_w$dEMPTY_N &&
-	     core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_deqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq ;
-
-  // rule RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq
-  assign CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq =
-	     core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$whas &&
-	     !core_reclocked_mmio_AXI4_clock_crossing_f_b$sFULL_N ;
-  assign WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq ;
-
-  // rule RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq
-  assign CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_b$sFULL_N &&
-	     core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq ;
-
-  // rule RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst
-  assign CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N ;
-
-  // rule RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq
-  assign CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq =
-	     core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas &&
-	     !core_reclocked_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq ;
-
-  // rule RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq
-  assign CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N &&
-	     core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq ;
-
-  // rule RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq
-  assign CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq =
-	     core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas &&
-	     !core_reclocked_mmio_AXI4_clock_crossing_f_r$sFULL_N ;
-  assign WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq ;
-
-  // rule RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq
-  assign CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_r$sFULL_N &&
-	     core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq ;
-
-  // rule RL_core_reclocked_1_rl_wr_addr_channel
-  assign CAN_FIRE_RL_core_reclocked_1_rl_wr_addr_channel = 1'd1 ;
-  assign WILL_FIRE_RL_core_reclocked_1_rl_wr_addr_channel = 1'd1 ;
-
-  // rule RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq
-  assign CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq =
-	     core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas &&
-	     !core_reclocked_mmio_AXI4_clock_crossing_f_aw$sFULL_N ;
-  assign WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq ;
-
-  // rule RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq
-  assign CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_aw$sFULL_N &&
-	     core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq ;
-
-  // rule RL_core_reclocked_1_rl_wr_data_channel
-  assign CAN_FIRE_RL_core_reclocked_1_rl_wr_data_channel = 1'd1 ;
-  assign WILL_FIRE_RL_core_reclocked_1_rl_wr_data_channel = 1'd1 ;
-
-  // rule RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq
-  assign CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq =
-	     core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas &&
-	     !core_reclocked_mmio_AXI4_clock_crossing_f_w$sFULL_N ;
-  assign WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq ;
-
-  // rule RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq
-  assign CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_w$sFULL_N &&
-	     core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq ;
-
-  // rule RL_core_reclocked_1_rl_wr_response_channel
-  assign CAN_FIRE_RL_core_reclocked_1_rl_wr_response_channel = 1'd1 ;
-  assign WILL_FIRE_RL_core_reclocked_1_rl_wr_response_channel = 1'd1 ;
-
-  // rule RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq
-  assign CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq =
-	     core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas &&
-	     !core_reclocked_mmio_AXI4_clock_crossing_f_b$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq ;
-
-  // rule RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq
-  assign CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_b$dEMPTY_N &&
-	     core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq ;
-
-  // rule RL_core_reclocked_1_rl_rd_addr_channel
-  assign CAN_FIRE_RL_core_reclocked_1_rl_rd_addr_channel = 1'd1 ;
-  assign WILL_FIRE_RL_core_reclocked_1_rl_rd_addr_channel = 1'd1 ;
-
-  // rule RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq
-  assign CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq =
-	     core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$whas &&
-	     !core_reclocked_mmio_AXI4_clock_crossing_f_ar$sFULL_N ;
-  assign WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq ;
-
-  // rule RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq
-  assign CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_ar$sFULL_N &&
-	     core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq ;
-
-  // rule RL_core_reclocked_1_rl_rd_data_channel
-  assign CAN_FIRE_RL_core_reclocked_1_rl_rd_data_channel = 1'd1 ;
-  assign WILL_FIRE_RL_core_reclocked_1_rl_rd_data_channel = 1'd1 ;
-
-  // rule RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq
-  assign CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq =
-	     core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas &&
-	     !core_reclocked_mmio_AXI4_clock_crossing_f_r$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq ;
-
-  // rule RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq
-  assign CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_r$dEMPTY_N &&
-	     core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq ;
-
-  // rule RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq
-  assign CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq =
-	     core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas &&
-	     !core_reclocked_dma_AXI4_clock_crossing_f_aw$sFULL_N ;
-  assign WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq ;
-
-  // rule RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq
-  assign CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq =
-	     core_reclocked_dma_AXI4_clock_crossing_f_aw$sFULL_N &&
-	     core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq ;
-
-  // rule RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq
-  assign CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq =
-	     core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas &&
-	     !core_reclocked_dma_AXI4_clock_crossing_f_w$sFULL_N ;
-  assign WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq ;
-
-  // rule RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq
-  assign CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq =
-	     core_reclocked_dma_AXI4_clock_crossing_f_w$sFULL_N &&
-	     core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq ;
-
-  // rule RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst
-  assign CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst =
-	     core_reclocked_dma_AXI4_clock_crossing_f_b$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst =
-	     core_reclocked_dma_AXI4_clock_crossing_f_b$dEMPTY_N ;
-
-  // rule RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq
-  assign CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq =
-	     core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas &&
-	     !core_reclocked_dma_AXI4_clock_crossing_f_b$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq ;
-
-  // rule RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq
-  assign CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq =
-	     core_reclocked_dma_AXI4_clock_crossing_f_b$dEMPTY_N &&
-	     core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq ;
-
-  // rule RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq
-  assign CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq =
-	     core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$whas &&
-	     !core_reclocked_dma_AXI4_clock_crossing_f_ar$sFULL_N ;
-  assign WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq ;
-
-  // rule RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq
-  assign CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq =
-	     core_reclocked_dma_AXI4_clock_crossing_f_ar$sFULL_N &&
-	     core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq ;
-
-  // rule RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst
-  assign CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst =
-	     core_reclocked_dma_AXI4_clock_crossing_f_r$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst =
-	     core_reclocked_dma_AXI4_clock_crossing_f_r$dEMPTY_N ;
-
-  // rule RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq
-  assign CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq =
-	     core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas &&
-	     !core_reclocked_dma_AXI4_clock_crossing_f_r$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq ;
-
-  // rule RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq
-  assign CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq =
-	     core_reclocked_dma_AXI4_clock_crossing_f_r$dEMPTY_N &&
-	     core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq ;
-
-  // rule RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst
-  assign CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst =
-	     core_reclocked_dma_AXI4_clock_crossing_f_aw$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst =
-	     core_reclocked_dma_AXI4_clock_crossing_f_aw$dEMPTY_N ;
-
-  // rule RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst
-  assign CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst =
-	     core_reclocked_dma_AXI4_clock_crossing_f_w$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst =
-	     core_reclocked_dma_AXI4_clock_crossing_f_w$dEMPTY_N ;
-
-  // rule RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst
-  assign CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst =
-	     core_reclocked_dma_AXI4_clock_crossing_f_ar$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst =
-	     core_reclocked_dma_AXI4_clock_crossing_f_ar$dEMPTY_N ;
-
-  // rule RL_core_reclocked_2_rl_wr_addr_channel
-  assign CAN_FIRE_RL_core_reclocked_2_rl_wr_addr_channel = 1'd1 ;
-  assign WILL_FIRE_RL_core_reclocked_2_rl_wr_addr_channel = 1'd1 ;
-
-  // rule RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq
-  assign CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq =
-	     core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas &&
-	     !core_reclocked_dma_AXI4_clock_crossing_f_aw$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq ;
-
-  // rule RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq
-  assign CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq =
-	     core_reclocked_dma_AXI4_clock_crossing_f_aw$dEMPTY_N &&
-	     core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq ;
-
-  // rule RL_core_reclocked_2_rl_wr_data_channel
-  assign CAN_FIRE_RL_core_reclocked_2_rl_wr_data_channel = 1'd1 ;
-  assign WILL_FIRE_RL_core_reclocked_2_rl_wr_data_channel = 1'd1 ;
-
-  // rule RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq
-  assign CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq =
-	     core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_data_deqWire$whas &&
-	     !core_reclocked_dma_AXI4_clock_crossing_f_w$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq ;
-
-  // rule RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq
-  assign CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq =
-	     core_reclocked_dma_AXI4_clock_crossing_f_w$dEMPTY_N &&
-	     core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_data_deqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq ;
-
-  // rule RL_core_reclocked_2_rl_wr_response_channel
-  assign CAN_FIRE_RL_core_reclocked_2_rl_wr_response_channel = 1'd1 ;
-  assign WILL_FIRE_RL_core_reclocked_2_rl_wr_response_channel = 1'd1 ;
-
-  // rule RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq
-  assign CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq =
-	     core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$whas &&
-	     !core_reclocked_dma_AXI4_clock_crossing_f_b$sFULL_N ;
-  assign WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq ;
-
-  // rule RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq
-  assign CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq =
-	     core_reclocked_dma_AXI4_clock_crossing_f_b$sFULL_N &&
-	     core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq ;
-
-  // rule RL_core_reclocked_2_rl_rd_addr_channel
-  assign CAN_FIRE_RL_core_reclocked_2_rl_rd_addr_channel = 1'd1 ;
-  assign WILL_FIRE_RL_core_reclocked_2_rl_rd_addr_channel = 1'd1 ;
-
-  // rule RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq
-  assign CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq =
-	     core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas &&
-	     !core_reclocked_dma_AXI4_clock_crossing_f_ar$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq ;
-
-  // rule RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq
-  assign CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq =
-	     core_reclocked_dma_AXI4_clock_crossing_f_ar$dEMPTY_N &&
-	     core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq ;
-
-  // rule RL_core_reclocked_2_rl_rd_data_channel
-  assign CAN_FIRE_RL_core_reclocked_2_rl_rd_data_channel = 1'd1 ;
-  assign WILL_FIRE_RL_core_reclocked_2_rl_rd_data_channel = 1'd1 ;
-
-  // rule RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq
-  assign CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq =
-	     core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas &&
-	     !core_reclocked_dma_AXI4_clock_crossing_f_r$sFULL_N ;
-  assign WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq ;
-
-  // rule RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq
-  assign CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq =
-	     core_reclocked_dma_AXI4_clock_crossing_f_r$sFULL_N &&
-	     core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas ;
-  assign WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq ;
-
-  // rule RL_core_reclocked_ro_sync_irqs_clock_domain_crossing
-  assign CAN_FIRE_RL_core_reclocked_ro_sync_irqs_clock_domain_crossing =
-	     1'd1 ;
-  assign WILL_FIRE_RL_core_reclocked_ro_sync_irqs_clock_domain_crossing =
-	     1'd1 ;
-
-  // rule RL_core_reclocked_3_rl_connect
-  assign CAN_FIRE_RL_core_reclocked_3_rl_connect =
-	     core_reclocked_f_nmi$dEMPTY_N &&
-	     core_single_clock$RDY_fi_nmi_enq ;
-  assign WILL_FIRE_RL_core_reclocked_3_rl_connect =
-	     CAN_FIRE_RL_core_reclocked_3_rl_connect ;
-
-  // rule RL_core_reclocked_4_rl_connect
-  assign CAN_FIRE_RL_core_reclocked_4_rl_connect =
-	     core_reclocked_f_misc_from_host$dEMPTY_N &&
-	     core_single_clock$RDY_fi_misc_enq ;
-  assign WILL_FIRE_RL_core_reclocked_4_rl_connect =
-	     CAN_FIRE_RL_core_reclocked_4_rl_connect ;
-
-  // rule RL_core_reclocked_5_rl_connect
-  assign CAN_FIRE_RL_core_reclocked_5_rl_connect =
-	     core_reclocked_f_misc_to_host$sFULL_N &&
-	     core_single_clock$RDY_fo_misc_deq &&
-	     core_single_clock$RDY_fo_misc_first ;
-  assign WILL_FIRE_RL_core_reclocked_5_rl_connect =
-	     CAN_FIRE_RL_core_reclocked_5_rl_connect ;
-
-  // rule RL_core_reclocked_6_rl_connect
-  assign CAN_FIRE_RL_core_reclocked_6_rl_connect =
-	     core_reclocked_f_tv_info$sFULL_N &&
-	     core_single_clock$RDY_fo_tv_info_deq &&
-	     core_single_clock$RDY_fo_tv_info_first ;
-  assign WILL_FIRE_RL_core_reclocked_6_rl_connect =
-	     CAN_FIRE_RL_core_reclocked_6_rl_connect ;
-
-  // rule RL_core_reclocked_7_rl_connect
-  assign CAN_FIRE_RL_core_reclocked_7_rl_connect =
-	     core_reclocked_f_dmi_req$dEMPTY_N &&
-	     core_single_clock$RDY_se_dmi_request_enq ;
-  assign WILL_FIRE_RL_core_reclocked_7_rl_connect =
-	     CAN_FIRE_RL_core_reclocked_7_rl_connect ;
-
-  // rule RL_core_reclocked_8_rl_connect
-  assign CAN_FIRE_RL_core_reclocked_8_rl_connect =
-	     core_reclocked_f_dmi_rsp$sFULL_N &&
-	     core_single_clock$RDY_se_dmi_response_deq &&
-	     core_single_clock$RDY_se_dmi_response_first ;
-  assign WILL_FIRE_RL_core_reclocked_8_rl_connect =
-	     CAN_FIRE_RL_core_reclocked_8_rl_connect ;
-
-  // rule RL_core_reclocked_9_rl_connect
-  assign CAN_FIRE_RL_core_reclocked_9_rl_connect =
-	     core_reclocked_f_ndm_reset_req$sFULL_N &&
-	     core_single_clock$RDY_cl_ndm_reset_request_deq ;
-  assign WILL_FIRE_RL_core_reclocked_9_rl_connect =
-	     CAN_FIRE_RL_core_reclocked_9_rl_connect ;
-
-  // rule RL_core_reclocked_10_rl_connect
-  assign CAN_FIRE_RL_core_reclocked_10_rl_connect =
-	     core_reclocked_f_ndm_reset_rsp$dEMPTY_N &&
-	     core_single_clock$RDY_cl_ndm_reset_response_enq ;
-  assign WILL_FIRE_RL_core_reclocked_10_rl_connect =
-	     CAN_FIRE_RL_core_reclocked_10_rl_connect ;
-
-  // rule RL_core_reclocked_11_rl_connect
-  assign CAN_FIRE_RL_core_reclocked_11_rl_connect =
-	     core_reclocked_f_control_status_req$dEMPTY_N &&
-	     core_single_clock$RDY_se_control_status_request_enq ;
-  assign WILL_FIRE_RL_core_reclocked_11_rl_connect =
-	     CAN_FIRE_RL_core_reclocked_11_rl_connect ;
-
-  // rule RL_core_reclocked_12_rl_connect
-  assign CAN_FIRE_RL_core_reclocked_12_rl_connect =
-	     core_reclocked_f_control_status_rsp$sFULL_N &&
-	     core_single_clock$RDY_se_control_status_response_deq &&
-	     core_single_clock$RDY_se_control_status_response_first ;
-  assign WILL_FIRE_RL_core_reclocked_12_rl_connect =
-	     CAN_FIRE_RL_core_reclocked_12_rl_connect ;
+	     .indxWidth(32'd2)) core_inner_mmio_AXI4_clock_crossing_f_w(.sCLK(CLK_clk2),
+									.dCLK(CLK),
+									.sRST(innerRstIfc$OUT_RST),
+									.sD_IN(core_inner_mmio_AXI4_clock_crossing_f_w$sD_IN),
+									.sENQ(core_inner_mmio_AXI4_clock_crossing_f_w$sENQ),
+									.dDEQ(core_inner_mmio_AXI4_clock_crossing_f_w$dDEQ),
+									.sFULL_N(core_inner_mmio_AXI4_clock_crossing_f_w$sFULL_N),
+									.dEMPTY_N(core_inner_mmio_AXI4_clock_crossing_f_w$dEMPTY_N),
+									.dD_OUT(core_inner_mmio_AXI4_clock_crossing_f_w$dD_OUT));
+
+  // submodule core_inner_reclocked
+  mkAWSteria_Core_Inner core_inner_reclocked(.CLK(CLK_clk2),
+					     .RST_N(innerRstIfc$OUT_RST),
+					     .dma_S_araddr(core_inner_reclocked$dma_S_araddr),
+					     .dma_S_arburst(core_inner_reclocked$dma_S_arburst),
+					     .dma_S_arcache(core_inner_reclocked$dma_S_arcache),
+					     .dma_S_arid(core_inner_reclocked$dma_S_arid),
+					     .dma_S_arlen(core_inner_reclocked$dma_S_arlen),
+					     .dma_S_arlock(core_inner_reclocked$dma_S_arlock),
+					     .dma_S_arprot(core_inner_reclocked$dma_S_arprot),
+					     .dma_S_arqos(core_inner_reclocked$dma_S_arqos),
+					     .dma_S_arregion(core_inner_reclocked$dma_S_arregion),
+					     .dma_S_arsize(core_inner_reclocked$dma_S_arsize),
+					     .dma_S_arvalid(core_inner_reclocked$dma_S_arvalid),
+					     .dma_S_awaddr(core_inner_reclocked$dma_S_awaddr),
+					     .dma_S_awburst(core_inner_reclocked$dma_S_awburst),
+					     .dma_S_awcache(core_inner_reclocked$dma_S_awcache),
+					     .dma_S_awid(core_inner_reclocked$dma_S_awid),
+					     .dma_S_awlen(core_inner_reclocked$dma_S_awlen),
+					     .dma_S_awlock(core_inner_reclocked$dma_S_awlock),
+					     .dma_S_awprot(core_inner_reclocked$dma_S_awprot),
+					     .dma_S_awqos(core_inner_reclocked$dma_S_awqos),
+					     .dma_S_awregion(core_inner_reclocked$dma_S_awregion),
+					     .dma_S_awsize(core_inner_reclocked$dma_S_awsize),
+					     .dma_S_awvalid(core_inner_reclocked$dma_S_awvalid),
+					     .dma_S_bready(core_inner_reclocked$dma_S_bready),
+					     .dma_S_rready(core_inner_reclocked$dma_S_rready),
+					     .dma_S_wdata(core_inner_reclocked$dma_S_wdata),
+					     .dma_S_wlast(core_inner_reclocked$dma_S_wlast),
+					     .dma_S_wstrb(core_inner_reclocked$dma_S_wstrb),
+					     .dma_S_wvalid(core_inner_reclocked$dma_S_wvalid),
+					     .ext_interrupts_x(core_inner_reclocked$ext_interrupts_x),
+					     .fi_misc_enq_x(core_inner_reclocked$fi_misc_enq_x),
+					     .fi_nmi_enq_x(core_inner_reclocked$fi_nmi_enq_x),
+					     .fi_pc_trace_control_enq_x(core_inner_reclocked$fi_pc_trace_control_enq_x),
+					     .fi_verbosity_control_enq_x(core_inner_reclocked$fi_verbosity_control_enq_x),
+					     .fi_watch_tohost_control_enq_x(core_inner_reclocked$fi_watch_tohost_control_enq_x),
+					     .mem_M_arready(core_inner_reclocked$mem_M_arready),
+					     .mem_M_awready(core_inner_reclocked$mem_M_awready),
+					     .mem_M_bid(core_inner_reclocked$mem_M_bid),
+					     .mem_M_bresp(core_inner_reclocked$mem_M_bresp),
+					     .mem_M_bvalid(core_inner_reclocked$mem_M_bvalid),
+					     .mem_M_rdata(core_inner_reclocked$mem_M_rdata),
+					     .mem_M_rid(core_inner_reclocked$mem_M_rid),
+					     .mem_M_rlast(core_inner_reclocked$mem_M_rlast),
+					     .mem_M_rresp(core_inner_reclocked$mem_M_rresp),
+					     .mem_M_rvalid(core_inner_reclocked$mem_M_rvalid),
+					     .mem_M_wready(core_inner_reclocked$mem_M_wready),
+					     .mmio_M_arready(core_inner_reclocked$mmio_M_arready),
+					     .mmio_M_awready(core_inner_reclocked$mmio_M_awready),
+					     .mmio_M_bid(core_inner_reclocked$mmio_M_bid),
+					     .mmio_M_bresp(core_inner_reclocked$mmio_M_bresp),
+					     .mmio_M_bvalid(core_inner_reclocked$mmio_M_bvalid),
+					     .mmio_M_rdata(core_inner_reclocked$mmio_M_rdata),
+					     .mmio_M_rid(core_inner_reclocked$mmio_M_rid),
+					     .mmio_M_rlast(core_inner_reclocked$mmio_M_rlast),
+					     .mmio_M_rresp(core_inner_reclocked$mmio_M_rresp),
+					     .mmio_M_rvalid(core_inner_reclocked$mmio_M_rvalid),
+					     .mmio_M_wready(core_inner_reclocked$mmio_M_wready),
+					     .se_dmi_request_enq_x(core_inner_reclocked$se_dmi_request_enq_x),
+					     .EN_ext_interrupts(core_inner_reclocked$EN_ext_interrupts),
+					     .EN_fi_nmi_enq(core_inner_reclocked$EN_fi_nmi_enq),
+					     .EN_fo_misc_deq(core_inner_reclocked$EN_fo_misc_deq),
+					     .EN_fi_misc_enq(core_inner_reclocked$EN_fi_misc_enq),
+					     .EN_fo_tv_info_deq(core_inner_reclocked$EN_fo_tv_info_deq),
+					     .EN_se_dmi_request_enq(core_inner_reclocked$EN_se_dmi_request_enq),
+					     .EN_se_dmi_response_deq(core_inner_reclocked$EN_se_dmi_response_deq),
+					     .EN_cl_ndm_reset_request_deq(core_inner_reclocked$EN_cl_ndm_reset_request_deq),
+					     .EN_cl_ndm_reset_response_enq(core_inner_reclocked$EN_cl_ndm_reset_response_enq),
+					     .EN_fi_pc_trace_control_enq(core_inner_reclocked$EN_fi_pc_trace_control_enq),
+					     .EN_fi_verbosity_control_enq(core_inner_reclocked$EN_fi_verbosity_control_enq),
+					     .EN_fi_watch_tohost_control_enq(core_inner_reclocked$EN_fi_watch_tohost_control_enq),
+					     .EN_fo_tohost_value_deq(core_inner_reclocked$EN_fo_tohost_value_deq),
+					     .mem_M_awvalid(core_inner_reclocked$mem_M_awvalid),
+					     .mem_M_awid(core_inner_reclocked$mem_M_awid),
+					     .mem_M_awaddr(core_inner_reclocked$mem_M_awaddr),
+					     .mem_M_awlen(core_inner_reclocked$mem_M_awlen),
+					     .mem_M_awsize(core_inner_reclocked$mem_M_awsize),
+					     .mem_M_awburst(core_inner_reclocked$mem_M_awburst),
+					     .mem_M_awlock(core_inner_reclocked$mem_M_awlock),
+					     .mem_M_awcache(core_inner_reclocked$mem_M_awcache),
+					     .mem_M_awprot(core_inner_reclocked$mem_M_awprot),
+					     .mem_M_awqos(core_inner_reclocked$mem_M_awqos),
+					     .mem_M_awregion(core_inner_reclocked$mem_M_awregion),
+					     .mem_M_wvalid(core_inner_reclocked$mem_M_wvalid),
+					     .mem_M_wdata(core_inner_reclocked$mem_M_wdata),
+					     .mem_M_wstrb(core_inner_reclocked$mem_M_wstrb),
+					     .mem_M_wlast(core_inner_reclocked$mem_M_wlast),
+					     .mem_M_bready(core_inner_reclocked$mem_M_bready),
+					     .mem_M_arvalid(core_inner_reclocked$mem_M_arvalid),
+					     .mem_M_arid(core_inner_reclocked$mem_M_arid),
+					     .mem_M_araddr(core_inner_reclocked$mem_M_araddr),
+					     .mem_M_arlen(core_inner_reclocked$mem_M_arlen),
+					     .mem_M_arsize(core_inner_reclocked$mem_M_arsize),
+					     .mem_M_arburst(core_inner_reclocked$mem_M_arburst),
+					     .mem_M_arlock(core_inner_reclocked$mem_M_arlock),
+					     .mem_M_arcache(core_inner_reclocked$mem_M_arcache),
+					     .mem_M_arprot(core_inner_reclocked$mem_M_arprot),
+					     .mem_M_arqos(core_inner_reclocked$mem_M_arqos),
+					     .mem_M_arregion(core_inner_reclocked$mem_M_arregion),
+					     .mem_M_rready(core_inner_reclocked$mem_M_rready),
+					     .mmio_M_awvalid(core_inner_reclocked$mmio_M_awvalid),
+					     .mmio_M_awid(core_inner_reclocked$mmio_M_awid),
+					     .mmio_M_awaddr(core_inner_reclocked$mmio_M_awaddr),
+					     .mmio_M_awlen(core_inner_reclocked$mmio_M_awlen),
+					     .mmio_M_awsize(core_inner_reclocked$mmio_M_awsize),
+					     .mmio_M_awburst(core_inner_reclocked$mmio_M_awburst),
+					     .mmio_M_awlock(core_inner_reclocked$mmio_M_awlock),
+					     .mmio_M_awcache(core_inner_reclocked$mmio_M_awcache),
+					     .mmio_M_awprot(core_inner_reclocked$mmio_M_awprot),
+					     .mmio_M_awqos(core_inner_reclocked$mmio_M_awqos),
+					     .mmio_M_awregion(core_inner_reclocked$mmio_M_awregion),
+					     .mmio_M_wvalid(core_inner_reclocked$mmio_M_wvalid),
+					     .mmio_M_wdata(core_inner_reclocked$mmio_M_wdata),
+					     .mmio_M_wstrb(core_inner_reclocked$mmio_M_wstrb),
+					     .mmio_M_wlast(core_inner_reclocked$mmio_M_wlast),
+					     .mmio_M_bready(core_inner_reclocked$mmio_M_bready),
+					     .mmio_M_arvalid(core_inner_reclocked$mmio_M_arvalid),
+					     .mmio_M_arid(core_inner_reclocked$mmio_M_arid),
+					     .mmio_M_araddr(core_inner_reclocked$mmio_M_araddr),
+					     .mmio_M_arlen(core_inner_reclocked$mmio_M_arlen),
+					     .mmio_M_arsize(core_inner_reclocked$mmio_M_arsize),
+					     .mmio_M_arburst(core_inner_reclocked$mmio_M_arburst),
+					     .mmio_M_arlock(core_inner_reclocked$mmio_M_arlock),
+					     .mmio_M_arcache(core_inner_reclocked$mmio_M_arcache),
+					     .mmio_M_arprot(core_inner_reclocked$mmio_M_arprot),
+					     .mmio_M_arqos(core_inner_reclocked$mmio_M_arqos),
+					     .mmio_M_arregion(core_inner_reclocked$mmio_M_arregion),
+					     .mmio_M_rready(core_inner_reclocked$mmio_M_rready),
+					     .dma_S_awready(core_inner_reclocked$dma_S_awready),
+					     .dma_S_wready(core_inner_reclocked$dma_S_wready),
+					     .dma_S_bvalid(core_inner_reclocked$dma_S_bvalid),
+					     .dma_S_bid(core_inner_reclocked$dma_S_bid),
+					     .dma_S_bresp(core_inner_reclocked$dma_S_bresp),
+					     .dma_S_arready(core_inner_reclocked$dma_S_arready),
+					     .dma_S_rvalid(core_inner_reclocked$dma_S_rvalid),
+					     .dma_S_rid(core_inner_reclocked$dma_S_rid),
+					     .dma_S_rdata(core_inner_reclocked$dma_S_rdata),
+					     .dma_S_rresp(core_inner_reclocked$dma_S_rresp),
+					     .dma_S_rlast(core_inner_reclocked$dma_S_rlast),
+					     .RDY_ext_interrupts(),
+					     .RDY_fi_nmi_enq(core_inner_reclocked$RDY_fi_nmi_enq),
+					     .fi_nmi_notFull(),
+					     .RDY_fi_nmi_notFull(),
+					     .fo_misc_first(core_inner_reclocked$fo_misc_first),
+					     .RDY_fo_misc_first(core_inner_reclocked$RDY_fo_misc_first),
+					     .RDY_fo_misc_deq(core_inner_reclocked$RDY_fo_misc_deq),
+					     .fo_misc_notEmpty(),
+					     .RDY_fo_misc_notEmpty(),
+					     .RDY_fi_misc_enq(core_inner_reclocked$RDY_fi_misc_enq),
+					     .fi_misc_notFull(),
+					     .RDY_fi_misc_notFull(),
+					     .fo_tv_info_first(core_inner_reclocked$fo_tv_info_first),
+					     .RDY_fo_tv_info_first(core_inner_reclocked$RDY_fo_tv_info_first),
+					     .RDY_fo_tv_info_deq(core_inner_reclocked$RDY_fo_tv_info_deq),
+					     .fo_tv_info_notEmpty(),
+					     .RDY_fo_tv_info_notEmpty(),
+					     .RDY_se_dmi_request_enq(core_inner_reclocked$RDY_se_dmi_request_enq),
+					     .se_dmi_request_notFull(),
+					     .RDY_se_dmi_request_notFull(),
+					     .se_dmi_response_first(core_inner_reclocked$se_dmi_response_first),
+					     .RDY_se_dmi_response_first(core_inner_reclocked$RDY_se_dmi_response_first),
+					     .RDY_se_dmi_response_deq(core_inner_reclocked$RDY_se_dmi_response_deq),
+					     .se_dmi_response_notEmpty(),
+					     .RDY_se_dmi_response_notEmpty(),
+					     .RDY_cl_ndm_reset_request_first(),
+					     .RDY_cl_ndm_reset_request_deq(core_inner_reclocked$RDY_cl_ndm_reset_request_deq),
+					     .cl_ndm_reset_request_notEmpty(),
+					     .RDY_cl_ndm_reset_request_notEmpty(),
+					     .RDY_cl_ndm_reset_response_enq(core_inner_reclocked$RDY_cl_ndm_reset_response_enq),
+					     .cl_ndm_reset_response_notFull(),
+					     .RDY_cl_ndm_reset_response_notFull(),
+					     .RDY_fi_pc_trace_control_enq(core_inner_reclocked$RDY_fi_pc_trace_control_enq),
+					     .fi_pc_trace_control_notFull(),
+					     .RDY_fi_pc_trace_control_notFull(),
+					     .RDY_fi_verbosity_control_enq(),
+					     .fi_verbosity_control_notFull(),
+					     .RDY_fi_verbosity_control_notFull(),
+					     .RDY_fi_watch_tohost_control_enq(),
+					     .fi_watch_tohost_control_notFull(),
+					     .RDY_fi_watch_tohost_control_notFull(),
+					     .fo_tohost_value_first(core_inner_reclocked$fo_tohost_value_first),
+					     .RDY_fo_tohost_value_first(),
+					     .RDY_fo_tohost_value_deq(),
+					     .fo_tohost_value_notEmpty(),
+					     .RDY_fo_tohost_value_notEmpty());
+
+  // submodule host_cs
+  mkHost_Control_Status host_cs(.CLK(CLK),
+				.RST_N(RST_N),
+				.fi_tohost_value_enq_x(host_cs$fi_tohost_value_enq_x),
+				.se_control_status_request_enq_x(host_cs$se_control_status_request_enq_x),
+				.EN_se_control_status_request_enq(host_cs$EN_se_control_status_request_enq),
+				.EN_se_control_status_response_deq(host_cs$EN_se_control_status_response_deq),
+				.EN_fo_watch_tohost_control_deq(host_cs$EN_fo_watch_tohost_control_deq),
+				.EN_fo_verbosity_control_deq(host_cs$EN_fo_verbosity_control_deq),
+				.EN_fo_pc_trace_control_deq(host_cs$EN_fo_pc_trace_control_deq),
+				.EN_fi_tohost_value_enq(host_cs$EN_fi_tohost_value_enq),
+				.RDY_se_control_status_request_enq(host_cs$RDY_se_control_status_request_enq),
+				.se_control_status_request_notFull(host_cs$se_control_status_request_notFull),
+				.RDY_se_control_status_request_notFull(),
+				.se_control_status_response_first(host_cs$se_control_status_response_first),
+				.RDY_se_control_status_response_first(host_cs$RDY_se_control_status_response_first),
+				.RDY_se_control_status_response_deq(host_cs$RDY_se_control_status_response_deq),
+				.se_control_status_response_notEmpty(host_cs$se_control_status_response_notEmpty),
+				.RDY_se_control_status_response_notEmpty(),
+				.mv_assert_core_reset(host_cs$mv_assert_core_reset),
+				.RDY_mv_assert_core_reset(),
+				.fo_watch_tohost_control_first_fst(host_cs$fo_watch_tohost_control_first_fst),
+				.RDY_fo_watch_tohost_control_first_fst(host_cs$RDY_fo_watch_tohost_control_first_fst),
+				.fo_watch_tohost_control_first_snd(host_cs$fo_watch_tohost_control_first_snd),
+				.RDY_fo_watch_tohost_control_first_snd(host_cs$RDY_fo_watch_tohost_control_first_snd),
+				.RDY_fo_watch_tohost_control_deq(host_cs$RDY_fo_watch_tohost_control_deq),
+				.fo_watch_tohost_control_notEmpty(),
+				.RDY_fo_watch_tohost_control_notEmpty(),
+				.fo_verbosity_control_first_fst(host_cs$fo_verbosity_control_first_fst),
+				.RDY_fo_verbosity_control_first_fst(host_cs$RDY_fo_verbosity_control_first_fst),
+				.fo_verbosity_control_first_snd(host_cs$fo_verbosity_control_first_snd),
+				.RDY_fo_verbosity_control_first_snd(host_cs$RDY_fo_verbosity_control_first_snd),
+				.RDY_fo_verbosity_control_deq(host_cs$RDY_fo_verbosity_control_deq),
+				.fo_verbosity_control_notEmpty(),
+				.RDY_fo_verbosity_control_notEmpty(),
+				.fo_pc_trace_control_first_fst(host_cs$fo_pc_trace_control_first_fst),
+				.RDY_fo_pc_trace_control_first_fst(host_cs$RDY_fo_pc_trace_control_first_fst),
+				.fo_pc_trace_control_first_snd(host_cs$fo_pc_trace_control_first_snd),
+				.RDY_fo_pc_trace_control_first_snd(host_cs$RDY_fo_pc_trace_control_first_snd),
+				.RDY_fo_pc_trace_control_deq(host_cs$RDY_fo_pc_trace_control_deq),
+				.fo_pc_trace_control_notEmpty(),
+				.RDY_fo_pc_trace_control_notEmpty(),
+				.RDY_fi_tohost_value_enq(),
+				.fi_tohost_value_notFull(),
+				.RDY_fi_tohost_value_notFull());
+
+  // submodule innerRstIfc
+  MakeResetA #(.RSTDELAY(32'd2), .init(1'd0)) innerRstIfc(.CLK(CLK),
+							  .RST(RST_N),
+							  .DST_CLK(CLK_clk2),
+							  .ASSERT_IN(innerRstIfc$ASSERT_IN),
+							  .ASSERT_OUT(),
+							  .OUT_RST(innerRstIfc$OUT_RST));
+
+  // rule RL_assertInnerReset
+  assign CAN_FIRE_RL_assertInnerReset = host_cs$mv_assert_core_reset ;
+  assign WILL_FIRE_RL_assertInnerReset = host_cs$mv_assert_core_reset ;
+
+  // rule RL_rl_connect
+  assign CAN_FIRE_RL_rl_connect =
+	     core_inner_f_pc_trace_control$sFULL_N &&
+	     host_cs$RDY_fo_pc_trace_control_first_fst &&
+	     host_cs$RDY_fo_pc_trace_control_first_snd &&
+	     host_cs$RDY_fo_pc_trace_control_deq ;
+  assign WILL_FIRE_RL_rl_connect = CAN_FIRE_RL_rl_connect ;
+
+  // rule RL_rl_connect_1
+  assign CAN_FIRE_RL_rl_connect_1 =
+	     core_inner_f_verbosity_control$sFULL_N &&
+	     host_cs$RDY_fo_verbosity_control_first_fst &&
+	     host_cs$RDY_fo_verbosity_control_first_snd &&
+	     host_cs$RDY_fo_verbosity_control_deq ;
+  assign WILL_FIRE_RL_rl_connect_1 = CAN_FIRE_RL_rl_connect_1 ;
+
+  // rule RL_rl_connect_2
+  assign CAN_FIRE_RL_rl_connect_2 =
+	     core_inner_f_watch_tohost_control$sFULL_N &&
+	     host_cs$RDY_fo_watch_tohost_control_first_fst &&
+	     host_cs$RDY_fo_watch_tohost_control_first_snd &&
+	     host_cs$RDY_fo_watch_tohost_control_deq ;
+  assign WILL_FIRE_RL_rl_connect_2 = CAN_FIRE_RL_rl_connect_2 ;
+
+  // rule RL_rl_connect_3
+  assign CAN_FIRE_RL_rl_connect_3 = core_inner_f_tohost_value$dEMPTY_N ;
+  assign WILL_FIRE_RL_rl_connect_3 = core_inner_f_tohost_value$dEMPTY_N ;
+
+  // rule RL_core_inner_rl_wr_addr_channel
+  assign CAN_FIRE_RL_core_inner_rl_wr_addr_channel = 1'd1 ;
+  assign WILL_FIRE_RL_core_inner_rl_wr_addr_channel = 1'd1 ;
+
+  // rule RL_core_inner_rl_wr_data_channel
+  assign CAN_FIRE_RL_core_inner_rl_wr_data_channel = 1'd1 ;
+  assign WILL_FIRE_RL_core_inner_rl_wr_data_channel = 1'd1 ;
+
+  // rule RL_core_inner_rl_rd_addr_channel
+  assign CAN_FIRE_RL_core_inner_rl_rd_addr_channel = 1'd1 ;
+  assign WILL_FIRE_RL_core_inner_rl_rd_addr_channel = 1'd1 ;
+
+  // rule RL_core_inner_rl_relay_interrupts
+  assign CAN_FIRE_RL_core_inner_rl_relay_interrupts = 1'd1 ;
+  assign WILL_FIRE_RL_core_inner_rl_relay_interrupts = 1'd1 ;
+
+  // rule RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq
+  assign CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq =
+	     core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas &&
+	     !core_inner_ddr_AXI4_clock_crossing_f_aw$sFULL_N ;
+  assign WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq ;
+
+  // rule RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq
+  assign CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq =
+	     core_inner_ddr_AXI4_clock_crossing_f_aw$sFULL_N &&
+	     core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq ;
+
+  // rule RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq
+  assign CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq =
+	     core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas &&
+	     !core_inner_ddr_AXI4_clock_crossing_f_w$sFULL_N ;
+  assign WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq ;
+
+  // rule RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq
+  assign CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq =
+	     core_inner_ddr_AXI4_clock_crossing_f_w$sFULL_N &&
+	     core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq ;
+
+  // rule RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst
+  assign CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst =
+	     core_inner_ddr_AXI4_clock_crossing_f_b$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst =
+	     core_inner_ddr_AXI4_clock_crossing_f_b$dEMPTY_N ;
+
+  // rule RL_core_inner_rl_wr_response_channel
+  assign CAN_FIRE_RL_core_inner_rl_wr_response_channel = 1'd1 ;
+  assign WILL_FIRE_RL_core_inner_rl_wr_response_channel = 1'd1 ;
+
+  // rule RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq
+  assign CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq =
+	     core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas &&
+	     !core_inner_ddr_AXI4_clock_crossing_f_b$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq ;
+
+  // rule RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq
+  assign CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq =
+	     core_inner_ddr_AXI4_clock_crossing_f_b$dEMPTY_N &&
+	     core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq ;
+
+  // rule RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq
+  assign CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq =
+	     core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$whas &&
+	     !core_inner_ddr_AXI4_clock_crossing_f_ar$sFULL_N ;
+  assign WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq ;
+
+  // rule RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq
+  assign CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq =
+	     core_inner_ddr_AXI4_clock_crossing_f_ar$sFULL_N &&
+	     core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq ;
+
+  // rule RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst
+  assign CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst =
+	     core_inner_ddr_AXI4_clock_crossing_f_r$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst =
+	     core_inner_ddr_AXI4_clock_crossing_f_r$dEMPTY_N ;
+
+  // rule RL_core_inner_rl_rd_data_channel
+  assign CAN_FIRE_RL_core_inner_rl_rd_data_channel = 1'd1 ;
+  assign WILL_FIRE_RL_core_inner_rl_rd_data_channel = 1'd1 ;
+
+  // rule RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq
+  assign CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq =
+	     core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas &&
+	     !core_inner_ddr_AXI4_clock_crossing_f_r$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq ;
+
+  // rule RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq
+  assign CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq =
+	     core_inner_ddr_AXI4_clock_crossing_f_r$dEMPTY_N &&
+	     core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq ;
+
+  // rule RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst
+  assign CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst =
+	     core_inner_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst =
+	     core_inner_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N ;
+
+  // rule RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq
+  assign CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq =
+	     core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas &&
+	     !core_inner_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq ;
+
+  // rule RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq
+  assign CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq =
+	     core_inner_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N &&
+	     core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq ;
+
+  // rule RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst
+  assign CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst =
+	     core_inner_ddr_AXI4_clock_crossing_f_w$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst =
+	     core_inner_ddr_AXI4_clock_crossing_f_w$dEMPTY_N ;
+
+  // rule RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq
+  assign CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq =
+	     core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_deqWire$whas &&
+	     !core_inner_ddr_AXI4_clock_crossing_f_w$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq ;
+
+  // rule RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq
+  assign CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq =
+	     core_inner_ddr_AXI4_clock_crossing_f_w$dEMPTY_N &&
+	     core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_deqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq ;
+
+  // rule RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq
+  assign CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq =
+	     core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$whas &&
+	     !core_inner_ddr_AXI4_clock_crossing_f_b$sFULL_N ;
+  assign WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq ;
+
+  // rule RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq
+  assign CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq =
+	     core_inner_ddr_AXI4_clock_crossing_f_b$sFULL_N &&
+	     core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq ;
+
+  // rule RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst
+  assign CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst =
+	     core_inner_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst =
+	     core_inner_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N ;
+
+  // rule RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq
+  assign CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq =
+	     core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas &&
+	     !core_inner_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq ;
+
+  // rule RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq
+  assign CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq =
+	     core_inner_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N &&
+	     core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq ;
+
+  // rule RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq
+  assign CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq =
+	     core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas &&
+	     !core_inner_ddr_AXI4_clock_crossing_f_r$sFULL_N ;
+  assign WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq ;
+
+  // rule RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq
+  assign CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq =
+	     core_inner_ddr_AXI4_clock_crossing_f_r$sFULL_N &&
+	     core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq ;
+
+  // rule RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst
+  assign CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst =
+	     core_inner_mmio_AXI4_clock_crossing_f_b$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst =
+	     core_inner_mmio_AXI4_clock_crossing_f_b$dEMPTY_N ;
+
+  // rule RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst
+  assign CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst =
+	     core_inner_mmio_AXI4_clock_crossing_f_r$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst =
+	     core_inner_mmio_AXI4_clock_crossing_f_r$dEMPTY_N ;
+
+  // rule RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst
+  assign CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst =
+	     core_inner_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst =
+	     core_inner_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N ;
+
+  // rule RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq
+  assign CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq =
+	     core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas &&
+	     !core_inner_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq ;
+
+  // rule RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq
+  assign CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq =
+	     core_inner_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N &&
+	     core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq ;
+
+  // rule RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst
+  assign CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst =
+	     core_inner_mmio_AXI4_clock_crossing_f_w$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst =
+	     core_inner_mmio_AXI4_clock_crossing_f_w$dEMPTY_N ;
+
+  // rule RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq
+  assign CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq =
+	     core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_deqWire$whas &&
+	     !core_inner_mmio_AXI4_clock_crossing_f_w$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq ;
+
+  // rule RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq
+  assign CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq =
+	     core_inner_mmio_AXI4_clock_crossing_f_w$dEMPTY_N &&
+	     core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_deqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq ;
+
+  // rule RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq
+  assign CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq =
+	     core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$whas &&
+	     !core_inner_mmio_AXI4_clock_crossing_f_b$sFULL_N ;
+  assign WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq ;
+
+  // rule RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq
+  assign CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq =
+	     core_inner_mmio_AXI4_clock_crossing_f_b$sFULL_N &&
+	     core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq ;
+
+  // rule RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst
+  assign CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst =
+	     core_inner_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst =
+	     core_inner_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N ;
+
+  // rule RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq
+  assign CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq =
+	     core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas &&
+	     !core_inner_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq ;
+
+  // rule RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq
+  assign CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq =
+	     core_inner_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N &&
+	     core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq ;
+
+  // rule RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq
+  assign CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq =
+	     core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas &&
+	     !core_inner_mmio_AXI4_clock_crossing_f_r$sFULL_N ;
+  assign WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq ;
+
+  // rule RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq
+  assign CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq =
+	     core_inner_mmio_AXI4_clock_crossing_f_r$sFULL_N &&
+	     core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq ;
+
+  // rule RL_core_inner_1_rl_wr_addr_channel
+  assign CAN_FIRE_RL_core_inner_1_rl_wr_addr_channel = 1'd1 ;
+  assign WILL_FIRE_RL_core_inner_1_rl_wr_addr_channel = 1'd1 ;
+
+  // rule RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq
+  assign CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq =
+	     core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas &&
+	     !core_inner_mmio_AXI4_clock_crossing_f_aw$sFULL_N ;
+  assign WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq ;
+
+  // rule RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq
+  assign CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq =
+	     core_inner_mmio_AXI4_clock_crossing_f_aw$sFULL_N &&
+	     core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq ;
+
+  // rule RL_core_inner_1_rl_wr_data_channel
+  assign CAN_FIRE_RL_core_inner_1_rl_wr_data_channel = 1'd1 ;
+  assign WILL_FIRE_RL_core_inner_1_rl_wr_data_channel = 1'd1 ;
+
+  // rule RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq
+  assign CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq =
+	     core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas &&
+	     !core_inner_mmio_AXI4_clock_crossing_f_w$sFULL_N ;
+  assign WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq ;
+
+  // rule RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq
+  assign CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq =
+	     core_inner_mmio_AXI4_clock_crossing_f_w$sFULL_N &&
+	     core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq ;
+
+  // rule RL_core_inner_1_rl_wr_response_channel
+  assign CAN_FIRE_RL_core_inner_1_rl_wr_response_channel = 1'd1 ;
+  assign WILL_FIRE_RL_core_inner_1_rl_wr_response_channel = 1'd1 ;
+
+  // rule RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq
+  assign CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq =
+	     core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas &&
+	     !core_inner_mmio_AXI4_clock_crossing_f_b$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq ;
+
+  // rule RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq
+  assign CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq =
+	     core_inner_mmio_AXI4_clock_crossing_f_b$dEMPTY_N &&
+	     core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq ;
+
+  // rule RL_core_inner_1_rl_rd_addr_channel
+  assign CAN_FIRE_RL_core_inner_1_rl_rd_addr_channel = 1'd1 ;
+  assign WILL_FIRE_RL_core_inner_1_rl_rd_addr_channel = 1'd1 ;
+
+  // rule RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq
+  assign CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq =
+	     core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$whas &&
+	     !core_inner_mmio_AXI4_clock_crossing_f_ar$sFULL_N ;
+  assign WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq ;
+
+  // rule RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq
+  assign CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq =
+	     core_inner_mmio_AXI4_clock_crossing_f_ar$sFULL_N &&
+	     core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq ;
+
+  // rule RL_core_inner_1_rl_rd_data_channel
+  assign CAN_FIRE_RL_core_inner_1_rl_rd_data_channel = 1'd1 ;
+  assign WILL_FIRE_RL_core_inner_1_rl_rd_data_channel = 1'd1 ;
+
+  // rule RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq
+  assign CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq =
+	     core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas &&
+	     !core_inner_mmio_AXI4_clock_crossing_f_r$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq ;
+
+  // rule RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq
+  assign CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq =
+	     core_inner_mmio_AXI4_clock_crossing_f_r$dEMPTY_N &&
+	     core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq ;
+
+  // rule RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq
+  assign CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq =
+	     core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas &&
+	     !core_inner_dma_AXI4_clock_crossing_f_aw$sFULL_N ;
+  assign WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq ;
+
+  // rule RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq
+  assign CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq =
+	     core_inner_dma_AXI4_clock_crossing_f_aw$sFULL_N &&
+	     core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq ;
+
+  // rule RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq
+  assign CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq =
+	     core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas &&
+	     !core_inner_dma_AXI4_clock_crossing_f_w$sFULL_N ;
+  assign WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq ;
+
+  // rule RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq
+  assign CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq =
+	     core_inner_dma_AXI4_clock_crossing_f_w$sFULL_N &&
+	     core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq ;
+
+  // rule RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst
+  assign CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst =
+	     core_inner_dma_AXI4_clock_crossing_f_b$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst =
+	     core_inner_dma_AXI4_clock_crossing_f_b$dEMPTY_N ;
+
+  // rule RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq
+  assign CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq =
+	     core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas &&
+	     !core_inner_dma_AXI4_clock_crossing_f_b$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq ;
+
+  // rule RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq
+  assign CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq =
+	     core_inner_dma_AXI4_clock_crossing_f_b$dEMPTY_N &&
+	     core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq ;
+
+  // rule RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq
+  assign CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq =
+	     core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$whas &&
+	     !core_inner_dma_AXI4_clock_crossing_f_ar$sFULL_N ;
+  assign WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq ;
+
+  // rule RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq
+  assign CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq =
+	     core_inner_dma_AXI4_clock_crossing_f_ar$sFULL_N &&
+	     core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq ;
+
+  // rule RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst
+  assign CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst =
+	     core_inner_dma_AXI4_clock_crossing_f_r$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst =
+	     core_inner_dma_AXI4_clock_crossing_f_r$dEMPTY_N ;
+
+  // rule RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq
+  assign CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq =
+	     core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas &&
+	     !core_inner_dma_AXI4_clock_crossing_f_r$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq ;
+
+  // rule RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq
+  assign CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq =
+	     core_inner_dma_AXI4_clock_crossing_f_r$dEMPTY_N &&
+	     core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq ;
+
+  // rule RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst
+  assign CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst =
+	     core_inner_dma_AXI4_clock_crossing_f_aw$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst =
+	     core_inner_dma_AXI4_clock_crossing_f_aw$dEMPTY_N ;
+
+  // rule RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst
+  assign CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst =
+	     core_inner_dma_AXI4_clock_crossing_f_w$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst =
+	     core_inner_dma_AXI4_clock_crossing_f_w$dEMPTY_N ;
+
+  // rule RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst
+  assign CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst =
+	     core_inner_dma_AXI4_clock_crossing_f_ar$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst =
+	     core_inner_dma_AXI4_clock_crossing_f_ar$dEMPTY_N ;
+
+  // rule RL_core_inner_2_rl_wr_addr_channel
+  assign CAN_FIRE_RL_core_inner_2_rl_wr_addr_channel = 1'd1 ;
+  assign WILL_FIRE_RL_core_inner_2_rl_wr_addr_channel = 1'd1 ;
+
+  // rule RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq
+  assign CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq =
+	     core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas &&
+	     !core_inner_dma_AXI4_clock_crossing_f_aw$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq ;
+
+  // rule RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq
+  assign CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq =
+	     core_inner_dma_AXI4_clock_crossing_f_aw$dEMPTY_N &&
+	     core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq ;
+
+  // rule RL_core_inner_2_rl_wr_data_channel
+  assign CAN_FIRE_RL_core_inner_2_rl_wr_data_channel = 1'd1 ;
+  assign WILL_FIRE_RL_core_inner_2_rl_wr_data_channel = 1'd1 ;
+
+  // rule RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq
+  assign CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq =
+	     core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_data_deqWire$whas &&
+	     !core_inner_dma_AXI4_clock_crossing_f_w$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq ;
+
+  // rule RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq
+  assign CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq =
+	     core_inner_dma_AXI4_clock_crossing_f_w$dEMPTY_N &&
+	     core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_data_deqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq ;
+
+  // rule RL_core_inner_2_rl_wr_response_channel
+  assign CAN_FIRE_RL_core_inner_2_rl_wr_response_channel = 1'd1 ;
+  assign WILL_FIRE_RL_core_inner_2_rl_wr_response_channel = 1'd1 ;
+
+  // rule RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq
+  assign CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq =
+	     core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$whas &&
+	     !core_inner_dma_AXI4_clock_crossing_f_b$sFULL_N ;
+  assign WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq ;
+
+  // rule RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq
+  assign CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq =
+	     core_inner_dma_AXI4_clock_crossing_f_b$sFULL_N &&
+	     core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq ;
+
+  // rule RL_core_inner_2_rl_rd_addr_channel
+  assign CAN_FIRE_RL_core_inner_2_rl_rd_addr_channel = 1'd1 ;
+  assign WILL_FIRE_RL_core_inner_2_rl_rd_addr_channel = 1'd1 ;
+
+  // rule RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq
+  assign CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq =
+	     core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas &&
+	     !core_inner_dma_AXI4_clock_crossing_f_ar$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq ;
+
+  // rule RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq
+  assign CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq =
+	     core_inner_dma_AXI4_clock_crossing_f_ar$dEMPTY_N &&
+	     core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq ;
+
+  // rule RL_core_inner_2_rl_rd_data_channel
+  assign CAN_FIRE_RL_core_inner_2_rl_rd_data_channel = 1'd1 ;
+  assign WILL_FIRE_RL_core_inner_2_rl_rd_data_channel = 1'd1 ;
+
+  // rule RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq
+  assign CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq =
+	     core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas &&
+	     !core_inner_dma_AXI4_clock_crossing_f_r$sFULL_N ;
+  assign WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq ;
+
+  // rule RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq
+  assign CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq =
+	     core_inner_dma_AXI4_clock_crossing_f_r$sFULL_N &&
+	     core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq ;
+
+  // rule RL_core_inner_ro_sync_irqs_clock_domain_crossing
+  assign CAN_FIRE_RL_core_inner_ro_sync_irqs_clock_domain_crossing = 1'd1 ;
+  assign WILL_FIRE_RL_core_inner_ro_sync_irqs_clock_domain_crossing = 1'd1 ;
+
+  // rule RL_core_inner_3_rl_connect
+  assign CAN_FIRE_RL_core_inner_3_rl_connect =
+	     core_inner_f_nmi$dEMPTY_N &&
+	     core_inner_reclocked$RDY_fi_nmi_enq ;
+  assign WILL_FIRE_RL_core_inner_3_rl_connect =
+	     CAN_FIRE_RL_core_inner_3_rl_connect ;
+
+  // rule RL_core_inner_4_rl_connect
+  assign CAN_FIRE_RL_core_inner_4_rl_connect =
+	     core_inner_f_misc_from_host$dEMPTY_N &&
+	     core_inner_reclocked$RDY_fi_misc_enq ;
+  assign WILL_FIRE_RL_core_inner_4_rl_connect =
+	     CAN_FIRE_RL_core_inner_4_rl_connect ;
+
+  // rule RL_core_inner_5_rl_connect
+  assign CAN_FIRE_RL_core_inner_5_rl_connect =
+	     core_inner_f_misc_to_host$sFULL_N &&
+	     core_inner_reclocked$RDY_fo_misc_deq &&
+	     core_inner_reclocked$RDY_fo_misc_first ;
+  assign WILL_FIRE_RL_core_inner_5_rl_connect =
+	     CAN_FIRE_RL_core_inner_5_rl_connect ;
+
+  // rule RL_core_inner_6_rl_connect
+  assign CAN_FIRE_RL_core_inner_6_rl_connect =
+	     core_inner_f_tv_info$sFULL_N &&
+	     core_inner_reclocked$RDY_fo_tv_info_deq &&
+	     core_inner_reclocked$RDY_fo_tv_info_first ;
+  assign WILL_FIRE_RL_core_inner_6_rl_connect =
+	     CAN_FIRE_RL_core_inner_6_rl_connect ;
+
+  // rule RL_core_inner_7_rl_connect
+  assign CAN_FIRE_RL_core_inner_7_rl_connect =
+	     core_inner_f_dmi_req$dEMPTY_N &&
+	     core_inner_reclocked$RDY_se_dmi_request_enq ;
+  assign WILL_FIRE_RL_core_inner_7_rl_connect =
+	     CAN_FIRE_RL_core_inner_7_rl_connect ;
+
+  // rule RL_core_inner_8_rl_connect
+  assign CAN_FIRE_RL_core_inner_8_rl_connect =
+	     core_inner_f_dmi_rsp$sFULL_N &&
+	     core_inner_reclocked$RDY_se_dmi_response_deq &&
+	     core_inner_reclocked$RDY_se_dmi_response_first ;
+  assign WILL_FIRE_RL_core_inner_8_rl_connect =
+	     CAN_FIRE_RL_core_inner_8_rl_connect ;
+
+  // rule RL_core_inner_9_rl_connect
+  assign CAN_FIRE_RL_core_inner_9_rl_connect =
+	     core_inner_f_ndm_reset_req$sFULL_N &&
+	     core_inner_reclocked$RDY_cl_ndm_reset_request_deq ;
+  assign WILL_FIRE_RL_core_inner_9_rl_connect =
+	     CAN_FIRE_RL_core_inner_9_rl_connect ;
+
+  // rule RL_core_inner_10_rl_connect
+  assign CAN_FIRE_RL_core_inner_10_rl_connect =
+	     core_inner_f_ndm_reset_rsp$dEMPTY_N &&
+	     core_inner_reclocked$RDY_cl_ndm_reset_response_enq ;
+  assign WILL_FIRE_RL_core_inner_10_rl_connect =
+	     CAN_FIRE_RL_core_inner_10_rl_connect ;
+
+  // rule RL_core_inner_11_rl_connect
+  assign CAN_FIRE_RL_core_inner_11_rl_connect =
+	     core_inner_f_pc_trace_control$dEMPTY_N &&
+	     core_inner_reclocked$RDY_fi_pc_trace_control_enq ;
+  assign WILL_FIRE_RL_core_inner_11_rl_connect =
+	     CAN_FIRE_RL_core_inner_11_rl_connect ;
+
+  // rule RL_core_inner_12_rl_connect
+  assign CAN_FIRE_RL_core_inner_12_rl_connect =
+	     core_inner_f_verbosity_control$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_12_rl_connect =
+	     core_inner_f_verbosity_control$dEMPTY_N ;
+
+  // rule RL_core_inner_14_rl_connect
+  assign CAN_FIRE_RL_core_inner_14_rl_connect =
+	     core_inner_f_tohost_value$sFULL_N ;
+  assign WILL_FIRE_RL_core_inner_14_rl_connect =
+	     core_inner_f_tohost_value$sFULL_N ;
+
+  // rule RL_core_inner_13_rl_connect
+  assign CAN_FIRE_RL_core_inner_13_rl_connect =
+	     core_inner_f_watch_tohost_control$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_13_rl_connect =
+	     core_inner_f_watch_tohost_control$dEMPTY_N ;
 
   // inlined wires
-  assign core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas =
-	     core_single_clock$mem_M_awvalid &&
-	     core_reclocked_ddr_AXI4_clock_crossing_f_aw$sFULL_N ;
-  assign core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$wget =
-	     { core_single_clock$mem_M_wdata,
-	       core_single_clock$mem_M_wstrb,
-	       core_single_clock$mem_M_wlast } ;
-  assign core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas =
-	     core_single_clock$mem_M_wvalid &&
-	     core_reclocked_ddr_AXI4_clock_crossing_f_w$sFULL_N ;
-  assign core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$wget =
-	     { core_single_clock$mem_M_arid,
-	       core_single_clock$mem_M_araddr,
-	       core_single_clock$mem_M_arlen,
-	       core_single_clock$mem_M_arsize,
-	       core_single_clock$mem_M_arburst,
-	       core_single_clock$mem_M_arlock,
-	       core_single_clock$mem_M_arcache,
-	       core_single_clock$mem_M_arprot,
-	       core_single_clock$mem_M_arqos,
-	       core_single_clock$mem_M_arregion } ;
-  assign core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$whas =
-	     core_single_clock$mem_M_arvalid &&
-	     core_reclocked_ddr_AXI4_clock_crossing_f_ar$sFULL_N ;
-  assign core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$wget =
+  assign core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$wget =
+	     { core_inner_reclocked$mem_M_awid,
+	       core_inner_reclocked$mem_M_awaddr,
+	       core_inner_reclocked$mem_M_awlen,
+	       core_inner_reclocked$mem_M_awsize,
+	       core_inner_reclocked$mem_M_awburst,
+	       core_inner_reclocked$mem_M_awlock,
+	       core_inner_reclocked$mem_M_awcache,
+	       core_inner_reclocked$mem_M_awprot,
+	       core_inner_reclocked$mem_M_awqos,
+	       core_inner_reclocked$mem_M_awregion } ;
+  assign core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas =
+	     core_inner_reclocked$mem_M_awvalid &&
+	     core_inner_ddr_AXI4_clock_crossing_f_aw$sFULL_N ;
+  assign core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$wget =
+	     { core_inner_reclocked$mem_M_wdata,
+	       core_inner_reclocked$mem_M_wstrb,
+	       core_inner_reclocked$mem_M_wlast } ;
+  assign core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas =
+	     core_inner_reclocked$mem_M_wvalid &&
+	     core_inner_ddr_AXI4_clock_crossing_f_w$sFULL_N ;
+  assign core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$wget =
+	     { core_inner_reclocked$mem_M_arid,
+	       core_inner_reclocked$mem_M_araddr,
+	       core_inner_reclocked$mem_M_arlen,
+	       core_inner_reclocked$mem_M_arsize,
+	       core_inner_reclocked$mem_M_arburst,
+	       core_inner_reclocked$mem_M_arlock,
+	       core_inner_reclocked$mem_M_arcache,
+	       core_inner_reclocked$mem_M_arprot,
+	       core_inner_reclocked$mem_M_arqos,
+	       core_inner_reclocked$mem_M_arregion } ;
+  assign core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$whas =
+	     core_inner_reclocked$mem_M_arvalid &&
+	     core_inner_ddr_AXI4_clock_crossing_f_ar$sFULL_N ;
+  assign core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$wget =
 	     { mem_M_bid, mem_M_bresp } ;
-  assign core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$whas =
-	     mem_M_bvalid &&
-	     core_reclocked_ddr_AXI4_clock_crossing_f_b$sFULL_N ;
-  assign core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$wget =
+  assign core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$whas =
+	     mem_M_bvalid && core_inner_ddr_AXI4_clock_crossing_f_b$sFULL_N ;
+  assign core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$wget =
 	     { mem_M_rid, mem_M_rdata, mem_M_rresp, mem_M_rlast } ;
-  assign core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas =
-	     mem_M_rvalid &&
-	     core_reclocked_ddr_AXI4_clock_crossing_f_r$sFULL_N ;
-  assign core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$wget =
-	     { core_single_clock$mmio_M_awid,
-	       core_single_clock$mmio_M_awaddr,
-	       core_single_clock$mmio_M_awlen,
-	       core_single_clock$mmio_M_awsize,
-	       core_single_clock$mmio_M_awburst,
-	       core_single_clock$mmio_M_awlock,
-	       core_single_clock$mmio_M_awcache,
-	       core_single_clock$mmio_M_awprot,
-	       core_single_clock$mmio_M_awqos,
-	       core_single_clock$mmio_M_awregion } ;
-  assign core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas =
-	     core_single_clock$mmio_M_awvalid &&
-	     core_reclocked_mmio_AXI4_clock_crossing_f_aw$sFULL_N ;
-  assign core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$wget =
-	     { core_single_clock$mmio_M_wdata,
-	       core_single_clock$mmio_M_wstrb,
-	       core_single_clock$mmio_M_wlast } ;
-  assign core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas =
-	     core_single_clock$mmio_M_wvalid &&
-	     core_reclocked_mmio_AXI4_clock_crossing_f_w$sFULL_N ;
-  assign core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$wget =
-	     { core_single_clock$mmio_M_arid,
-	       core_single_clock$mmio_M_araddr,
-	       core_single_clock$mmio_M_arlen,
-	       core_single_clock$mmio_M_arsize,
-	       core_single_clock$mmio_M_arburst,
-	       core_single_clock$mmio_M_arlock,
-	       core_single_clock$mmio_M_arcache,
-	       core_single_clock$mmio_M_arprot,
-	       core_single_clock$mmio_M_arqos,
-	       core_single_clock$mmio_M_arregion } ;
-  assign core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$whas =
-	     core_single_clock$mmio_M_arvalid &&
-	     core_reclocked_mmio_AXI4_clock_crossing_f_ar$sFULL_N ;
-  assign core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$wget =
+  assign core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas =
+	     mem_M_rvalid && core_inner_ddr_AXI4_clock_crossing_f_r$sFULL_N ;
+  assign core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$wget =
+	     { core_inner_reclocked$mmio_M_awid,
+	       core_inner_reclocked$mmio_M_awaddr,
+	       core_inner_reclocked$mmio_M_awlen,
+	       core_inner_reclocked$mmio_M_awsize,
+	       core_inner_reclocked$mmio_M_awburst,
+	       core_inner_reclocked$mmio_M_awlock,
+	       core_inner_reclocked$mmio_M_awcache,
+	       core_inner_reclocked$mmio_M_awprot,
+	       core_inner_reclocked$mmio_M_awqos,
+	       core_inner_reclocked$mmio_M_awregion } ;
+  assign core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas =
+	     core_inner_reclocked$mmio_M_awvalid &&
+	     core_inner_mmio_AXI4_clock_crossing_f_aw$sFULL_N ;
+  assign core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$wget =
+	     { core_inner_reclocked$mmio_M_wdata,
+	       core_inner_reclocked$mmio_M_wstrb,
+	       core_inner_reclocked$mmio_M_wlast } ;
+  assign core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas =
+	     core_inner_reclocked$mmio_M_wvalid &&
+	     core_inner_mmio_AXI4_clock_crossing_f_w$sFULL_N ;
+  assign core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$wget =
+	     { core_inner_reclocked$mmio_M_arid,
+	       core_inner_reclocked$mmio_M_araddr,
+	       core_inner_reclocked$mmio_M_arlen,
+	       core_inner_reclocked$mmio_M_arsize,
+	       core_inner_reclocked$mmio_M_arburst,
+	       core_inner_reclocked$mmio_M_arlock,
+	       core_inner_reclocked$mmio_M_arcache,
+	       core_inner_reclocked$mmio_M_arprot,
+	       core_inner_reclocked$mmio_M_arqos,
+	       core_inner_reclocked$mmio_M_arregion } ;
+  assign core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$whas =
+	     core_inner_reclocked$mmio_M_arvalid &&
+	     core_inner_mmio_AXI4_clock_crossing_f_ar$sFULL_N ;
+  assign core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$wget =
 	     { mmio_M_bid, mmio_M_bresp } ;
-  assign core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$whas =
+  assign core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$whas =
 	     mmio_M_bvalid &&
-	     core_reclocked_mmio_AXI4_clock_crossing_f_b$sFULL_N ;
-  assign core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$wget =
+	     core_inner_mmio_AXI4_clock_crossing_f_b$sFULL_N ;
+  assign core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$wget =
 	     { mmio_M_rid, mmio_M_rdata, mmio_M_rresp, mmio_M_rlast } ;
-  assign core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas =
+  assign core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas =
 	     mmio_M_rvalid &&
-	     core_reclocked_mmio_AXI4_clock_crossing_f_r$sFULL_N ;
-  assign core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$wget =
+	     core_inner_mmio_AXI4_clock_crossing_f_r$sFULL_N ;
+  assign core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$wget =
 	     { dma_S_awid,
 	       dma_S_awaddr,
 	       dma_S_awlen,
@@ -3466,15 +3650,14 @@ module mkAWSteria_Core(CLK_clk1,
 	       dma_S_awprot,
 	       dma_S_awqos,
 	       dma_S_awregion } ;
-  assign core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas =
+  assign core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas =
 	     dma_S_awvalid &&
-	     core_reclocked_dma_AXI4_clock_crossing_f_aw$sFULL_N ;
-  assign core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$wget =
+	     core_inner_dma_AXI4_clock_crossing_f_aw$sFULL_N ;
+  assign core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$wget =
 	     { dma_S_wdata, dma_S_wstrb, dma_S_wlast } ;
-  assign core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas =
-	     dma_S_wvalid &&
-	     core_reclocked_dma_AXI4_clock_crossing_f_w$sFULL_N ;
-  assign core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$wget =
+  assign core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas =
+	     dma_S_wvalid && core_inner_dma_AXI4_clock_crossing_f_w$sFULL_N ;
+  assign core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$wget =
 	     { dma_S_arid,
 	       dma_S_araddr,
 	       dma_S_arlen,
@@ -3485,462 +3668,483 @@ module mkAWSteria_Core(CLK_clk1,
 	       dma_S_arprot,
 	       dma_S_arqos,
 	       dma_S_arregion } ;
-  assign core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$whas =
+  assign core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$whas =
 	     dma_S_arvalid &&
-	     core_reclocked_dma_AXI4_clock_crossing_f_ar$sFULL_N ;
-  assign core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$wget =
-	     { core_single_clock$dma_S_bid, core_single_clock$dma_S_bresp } ;
-  assign core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$whas =
-	     core_single_clock$dma_S_bvalid &&
-	     core_reclocked_dma_AXI4_clock_crossing_f_b$sFULL_N ;
-  assign core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$wget =
-	     { core_single_clock$dma_S_rid,
-	       core_single_clock$dma_S_rdata,
-	       core_single_clock$dma_S_rresp,
-	       core_single_clock$dma_S_rlast } ;
-  assign core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas =
-	     core_single_clock$dma_S_rvalid &&
-	     core_reclocked_dma_AXI4_clock_crossing_f_r$sFULL_N ;
-  assign core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas =
-	     core_single_clock$mem_M_bready &&
-	     core_reclocked_ddr_AXI4_clock_crossing_f_b$dEMPTY_N ;
-  assign core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas =
-	     core_single_clock$mem_M_rready &&
-	     core_reclocked_ddr_AXI4_clock_crossing_f_r$dEMPTY_N ;
-  assign core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N &&
+	     core_inner_dma_AXI4_clock_crossing_f_ar$sFULL_N ;
+  assign core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$wget =
+	     { core_inner_reclocked$dma_S_bid,
+	       core_inner_reclocked$dma_S_bresp } ;
+  assign core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$whas =
+	     core_inner_reclocked$dma_S_bvalid &&
+	     core_inner_dma_AXI4_clock_crossing_f_b$sFULL_N ;
+  assign core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$wget =
+	     { core_inner_reclocked$dma_S_rid,
+	       core_inner_reclocked$dma_S_rdata,
+	       core_inner_reclocked$dma_S_rresp,
+	       core_inner_reclocked$dma_S_rlast } ;
+  assign core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas =
+	     core_inner_reclocked$dma_S_rvalid &&
+	     core_inner_dma_AXI4_clock_crossing_f_r$sFULL_N ;
+  assign core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas =
+	     core_inner_reclocked$mem_M_bready &&
+	     core_inner_ddr_AXI4_clock_crossing_f_b$dEMPTY_N ;
+  assign core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas =
+	     core_inner_reclocked$mem_M_rready &&
+	     core_inner_ddr_AXI4_clock_crossing_f_r$dEMPTY_N ;
+  assign core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas =
+	     core_inner_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N &&
 	     mem_M_awready ;
-  assign core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_deqWire$whas =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_w$dEMPTY_N &&
-	     mem_M_wready ;
-  assign core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N &&
+  assign core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_deqWire$whas =
+	     core_inner_ddr_AXI4_clock_crossing_f_w$dEMPTY_N && mem_M_wready ;
+  assign core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas =
+	     core_inner_ddr_AXI4_clock_crossing_f_ar$dEMPTY_N &&
 	     mem_M_arready ;
-  assign core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas =
-	     core_single_clock$mmio_M_bready &&
-	     core_reclocked_mmio_AXI4_clock_crossing_f_b$dEMPTY_N ;
-  assign core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas =
-	     core_single_clock$mmio_M_rready &&
-	     core_reclocked_mmio_AXI4_clock_crossing_f_r$dEMPTY_N ;
-  assign core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N &&
+  assign core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas =
+	     core_inner_reclocked$mmio_M_bready &&
+	     core_inner_mmio_AXI4_clock_crossing_f_b$dEMPTY_N ;
+  assign core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas =
+	     core_inner_reclocked$mmio_M_rready &&
+	     core_inner_mmio_AXI4_clock_crossing_f_r$dEMPTY_N ;
+  assign core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas =
+	     core_inner_mmio_AXI4_clock_crossing_f_aw$dEMPTY_N &&
 	     mmio_M_awready ;
-  assign core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_deqWire$whas =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_w$dEMPTY_N &&
+  assign core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_deqWire$whas =
+	     core_inner_mmio_AXI4_clock_crossing_f_w$dEMPTY_N &&
 	     mmio_M_wready ;
-  assign core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N &&
+  assign core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas =
+	     core_inner_mmio_AXI4_clock_crossing_f_ar$dEMPTY_N &&
 	     mmio_M_arready ;
-  assign core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas =
-	     dma_S_bready &&
-	     core_reclocked_dma_AXI4_clock_crossing_f_b$dEMPTY_N ;
-  assign core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas =
-	     dma_S_rready &&
-	     core_reclocked_dma_AXI4_clock_crossing_f_r$dEMPTY_N ;
-  assign core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas =
-	     core_reclocked_dma_AXI4_clock_crossing_f_aw$dEMPTY_N &&
-	     core_single_clock$dma_S_awready ;
-  assign core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_data_deqWire$whas =
-	     core_reclocked_dma_AXI4_clock_crossing_f_w$dEMPTY_N &&
-	     core_single_clock$dma_S_wready ;
-  assign core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas =
-	     core_reclocked_dma_AXI4_clock_crossing_f_ar$dEMPTY_N &&
-	     core_single_clock$dma_S_arready ;
+  assign core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas =
+	     dma_S_bready && core_inner_dma_AXI4_clock_crossing_f_b$dEMPTY_N ;
+  assign core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas =
+	     dma_S_rready && core_inner_dma_AXI4_clock_crossing_f_r$dEMPTY_N ;
+  assign core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas =
+	     core_inner_dma_AXI4_clock_crossing_f_aw$dEMPTY_N &&
+	     core_inner_reclocked$dma_S_awready ;
+  assign core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_data_deqWire$whas =
+	     core_inner_dma_AXI4_clock_crossing_f_w$dEMPTY_N &&
+	     core_inner_reclocked$dma_S_wready ;
+  assign core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas =
+	     core_inner_dma_AXI4_clock_crossing_f_ar$dEMPTY_N &&
+	     core_inner_reclocked$dma_S_arready ;
 
-  // register core_reclocked_rg_irqs
-  assign core_reclocked_rg_irqs$D_IN = ext_interrupts_x ;
-  assign core_reclocked_rg_irqs$EN = EN_ext_interrupts ;
+  // register core_inner_rg_irqs
+  assign core_inner_rg_irqs$D_IN = ext_interrupts_x ;
+  assign core_inner_rg_irqs$EN = EN_ext_interrupts ;
 
-  // submodule core_reclocked_ddr_AXI4_clock_crossing_f_ar
-  assign core_reclocked_ddr_AXI4_clock_crossing_f_ar$sD_IN =
-	     core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$wget ;
-  assign core_reclocked_ddr_AXI4_clock_crossing_f_ar$sENQ =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq ;
-  assign core_reclocked_ddr_AXI4_clock_crossing_f_ar$dDEQ =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq ;
+  // submodule core_inner_ddr_AXI4_clock_crossing_f_ar
+  assign core_inner_ddr_AXI4_clock_crossing_f_ar$sD_IN =
+	     core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$wget ;
+  assign core_inner_ddr_AXI4_clock_crossing_f_ar$sENQ =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq ;
+  assign core_inner_ddr_AXI4_clock_crossing_f_ar$dDEQ =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq ;
 
-  // submodule core_reclocked_ddr_AXI4_clock_crossing_f_aw
-  assign core_reclocked_ddr_AXI4_clock_crossing_f_aw$sD_IN =
-	     { core_single_clock$mem_M_awid,
-	       core_single_clock$mem_M_awaddr,
-	       core_single_clock$mem_M_awlen,
-	       core_single_clock$mem_M_awsize,
-	       core_single_clock$mem_M_awburst,
-	       core_single_clock$mem_M_awlock,
-	       core_single_clock$mem_M_awcache,
-	       core_single_clock$mem_M_awprot,
-	       core_single_clock$mem_M_awqos,
-	       core_single_clock$mem_M_awregion } ;
-  assign core_reclocked_ddr_AXI4_clock_crossing_f_aw$sENQ =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq ;
-  assign core_reclocked_ddr_AXI4_clock_crossing_f_aw$dDEQ =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq ;
+  // submodule core_inner_ddr_AXI4_clock_crossing_f_aw
+  assign core_inner_ddr_AXI4_clock_crossing_f_aw$sD_IN =
+	     core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$wget ;
+  assign core_inner_ddr_AXI4_clock_crossing_f_aw$sENQ =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq ;
+  assign core_inner_ddr_AXI4_clock_crossing_f_aw$dDEQ =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq ;
 
-  // submodule core_reclocked_ddr_AXI4_clock_crossing_f_b
-  assign core_reclocked_ddr_AXI4_clock_crossing_f_b$sD_IN =
-	     core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$wget ;
-  assign core_reclocked_ddr_AXI4_clock_crossing_f_b$sENQ =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq ;
-  assign core_reclocked_ddr_AXI4_clock_crossing_f_b$dDEQ =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq ;
+  // submodule core_inner_ddr_AXI4_clock_crossing_f_b
+  assign core_inner_ddr_AXI4_clock_crossing_f_b$sD_IN =
+	     core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$wget ;
+  assign core_inner_ddr_AXI4_clock_crossing_f_b$sENQ =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq ;
+  assign core_inner_ddr_AXI4_clock_crossing_f_b$dDEQ =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq ;
 
-  // submodule core_reclocked_ddr_AXI4_clock_crossing_f_r
-  assign core_reclocked_ddr_AXI4_clock_crossing_f_r$sD_IN =
-	     core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$wget ;
-  assign core_reclocked_ddr_AXI4_clock_crossing_f_r$sENQ =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq ;
-  assign core_reclocked_ddr_AXI4_clock_crossing_f_r$dDEQ =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq ;
+  // submodule core_inner_ddr_AXI4_clock_crossing_f_r
+  assign core_inner_ddr_AXI4_clock_crossing_f_r$sD_IN =
+	     core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$wget ;
+  assign core_inner_ddr_AXI4_clock_crossing_f_r$sENQ =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq ;
+  assign core_inner_ddr_AXI4_clock_crossing_f_r$dDEQ =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq ;
 
-  // submodule core_reclocked_ddr_AXI4_clock_crossing_f_w
-  assign core_reclocked_ddr_AXI4_clock_crossing_f_w$sD_IN =
-	     core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$wget ;
-  assign core_reclocked_ddr_AXI4_clock_crossing_f_w$sENQ =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq ;
-  assign core_reclocked_ddr_AXI4_clock_crossing_f_w$dDEQ =
-	     CAN_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq ;
+  // submodule core_inner_ddr_AXI4_clock_crossing_f_w
+  assign core_inner_ddr_AXI4_clock_crossing_f_w$sD_IN =
+	     core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$wget ;
+  assign core_inner_ddr_AXI4_clock_crossing_f_w$sENQ =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq ;
+  assign core_inner_ddr_AXI4_clock_crossing_f_w$dDEQ =
+	     CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq ;
 
-  // submodule core_reclocked_dma_AXI4_clock_crossing_f_ar
-  assign core_reclocked_dma_AXI4_clock_crossing_f_ar$sD_IN =
-	     core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$wget ;
-  assign core_reclocked_dma_AXI4_clock_crossing_f_ar$sENQ =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq ;
-  assign core_reclocked_dma_AXI4_clock_crossing_f_ar$dDEQ =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq ;
+  // submodule core_inner_dma_AXI4_clock_crossing_f_ar
+  assign core_inner_dma_AXI4_clock_crossing_f_ar$sD_IN =
+	     core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$wget ;
+  assign core_inner_dma_AXI4_clock_crossing_f_ar$sENQ =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq ;
+  assign core_inner_dma_AXI4_clock_crossing_f_ar$dDEQ =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq ;
 
-  // submodule core_reclocked_dma_AXI4_clock_crossing_f_aw
-  assign core_reclocked_dma_AXI4_clock_crossing_f_aw$sD_IN =
-	     core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$wget ;
-  assign core_reclocked_dma_AXI4_clock_crossing_f_aw$sENQ =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq ;
-  assign core_reclocked_dma_AXI4_clock_crossing_f_aw$dDEQ =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq ;
+  // submodule core_inner_dma_AXI4_clock_crossing_f_aw
+  assign core_inner_dma_AXI4_clock_crossing_f_aw$sD_IN =
+	     core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$wget ;
+  assign core_inner_dma_AXI4_clock_crossing_f_aw$sENQ =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq ;
+  assign core_inner_dma_AXI4_clock_crossing_f_aw$dDEQ =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq ;
 
-  // submodule core_reclocked_dma_AXI4_clock_crossing_f_b
-  assign core_reclocked_dma_AXI4_clock_crossing_f_b$sD_IN =
-	     core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$wget ;
-  assign core_reclocked_dma_AXI4_clock_crossing_f_b$sENQ =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq ;
-  assign core_reclocked_dma_AXI4_clock_crossing_f_b$dDEQ =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq ;
+  // submodule core_inner_dma_AXI4_clock_crossing_f_b
+  assign core_inner_dma_AXI4_clock_crossing_f_b$sD_IN =
+	     core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$wget ;
+  assign core_inner_dma_AXI4_clock_crossing_f_b$sENQ =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq ;
+  assign core_inner_dma_AXI4_clock_crossing_f_b$dDEQ =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq ;
 
-  // submodule core_reclocked_dma_AXI4_clock_crossing_f_r
-  assign core_reclocked_dma_AXI4_clock_crossing_f_r$sD_IN =
-	     core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$wget ;
-  assign core_reclocked_dma_AXI4_clock_crossing_f_r$sENQ =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq ;
-  assign core_reclocked_dma_AXI4_clock_crossing_f_r$dDEQ =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq ;
+  // submodule core_inner_dma_AXI4_clock_crossing_f_r
+  assign core_inner_dma_AXI4_clock_crossing_f_r$sD_IN =
+	     core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$wget ;
+  assign core_inner_dma_AXI4_clock_crossing_f_r$sENQ =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq ;
+  assign core_inner_dma_AXI4_clock_crossing_f_r$dDEQ =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq ;
 
-  // submodule core_reclocked_dma_AXI4_clock_crossing_f_w
-  assign core_reclocked_dma_AXI4_clock_crossing_f_w$sD_IN =
-	     core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$wget ;
-  assign core_reclocked_dma_AXI4_clock_crossing_f_w$sENQ =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq ;
-  assign core_reclocked_dma_AXI4_clock_crossing_f_w$dDEQ =
-	     CAN_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq ;
+  // submodule core_inner_dma_AXI4_clock_crossing_f_w
+  assign core_inner_dma_AXI4_clock_crossing_f_w$sD_IN =
+	     core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$wget ;
+  assign core_inner_dma_AXI4_clock_crossing_f_w$sENQ =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq ;
+  assign core_inner_dma_AXI4_clock_crossing_f_w$dDEQ =
+	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq ;
 
-  // submodule core_reclocked_f_control_status_req
-  assign core_reclocked_f_control_status_req$sD_IN =
+  // submodule core_inner_f_dmi_req
+  assign core_inner_f_dmi_req$sD_IN = se_dmi_request_enq_x ;
+  assign core_inner_f_dmi_req$sENQ = EN_se_dmi_request_enq ;
+  assign core_inner_f_dmi_req$dDEQ = CAN_FIRE_RL_core_inner_7_rl_connect ;
+
+  // submodule core_inner_f_dmi_rsp
+  assign core_inner_f_dmi_rsp$sD_IN =
+	     core_inner_reclocked$se_dmi_response_first ;
+  assign core_inner_f_dmi_rsp$sENQ = CAN_FIRE_RL_core_inner_8_rl_connect ;
+  assign core_inner_f_dmi_rsp$dDEQ = EN_se_dmi_response_deq ;
+
+  // submodule core_inner_f_misc_from_host
+  assign core_inner_f_misc_from_host$sD_IN = fi_misc_enq_x ;
+  assign core_inner_f_misc_from_host$sENQ = EN_fi_misc_enq ;
+  assign core_inner_f_misc_from_host$dDEQ =
+	     CAN_FIRE_RL_core_inner_4_rl_connect ;
+
+  // submodule core_inner_f_misc_to_host
+  assign core_inner_f_misc_to_host$sD_IN =
+	     core_inner_reclocked$fo_misc_first ;
+  assign core_inner_f_misc_to_host$sENQ =
+	     CAN_FIRE_RL_core_inner_5_rl_connect ;
+  assign core_inner_f_misc_to_host$dDEQ = EN_fo_misc_deq ;
+
+  // submodule core_inner_f_ndm_reset_req
+  assign core_inner_f_ndm_reset_req$sENQ =
+	     CAN_FIRE_RL_core_inner_9_rl_connect ;
+  assign core_inner_f_ndm_reset_req$dDEQ = EN_cl_ndm_reset_request_deq ;
+
+  // submodule core_inner_f_ndm_reset_rsp
+  assign core_inner_f_ndm_reset_rsp$sENQ = EN_cl_ndm_reset_response_enq ;
+  assign core_inner_f_ndm_reset_rsp$dDEQ =
+	     CAN_FIRE_RL_core_inner_10_rl_connect ;
+
+  // submodule core_inner_f_nmi
+  assign core_inner_f_nmi$sD_IN = fi_nmi_enq_x ;
+  assign core_inner_f_nmi$sENQ = EN_fi_nmi_enq ;
+  assign core_inner_f_nmi$dDEQ = CAN_FIRE_RL_core_inner_3_rl_connect ;
+
+  // submodule core_inner_f_pc_trace_control
+  assign core_inner_f_pc_trace_control$sD_IN =
+	     { host_cs$fo_pc_trace_control_first_fst,
+	       host_cs$fo_pc_trace_control_first_snd } ;
+  assign core_inner_f_pc_trace_control$sENQ = CAN_FIRE_RL_rl_connect ;
+  assign core_inner_f_pc_trace_control$dDEQ =
+	     CAN_FIRE_RL_core_inner_11_rl_connect ;
+
+  // submodule core_inner_f_tohost_value
+  assign core_inner_f_tohost_value$sD_IN =
+	     core_inner_reclocked$fo_tohost_value_first ;
+  assign core_inner_f_tohost_value$sENQ = core_inner_f_tohost_value$sFULL_N ;
+  assign core_inner_f_tohost_value$dDEQ = core_inner_f_tohost_value$dEMPTY_N ;
+
+  // submodule core_inner_f_tv_info
+  assign core_inner_f_tv_info$sD_IN = core_inner_reclocked$fo_tv_info_first ;
+  assign core_inner_f_tv_info$sENQ = CAN_FIRE_RL_core_inner_6_rl_connect ;
+  assign core_inner_f_tv_info$dDEQ = EN_fo_tv_info_deq ;
+
+  // submodule core_inner_f_verbosity_control
+  assign core_inner_f_verbosity_control$sD_IN =
+	     { host_cs$fo_verbosity_control_first_fst,
+	       host_cs$fo_verbosity_control_first_snd } ;
+  assign core_inner_f_verbosity_control$sENQ = CAN_FIRE_RL_rl_connect_1 ;
+  assign core_inner_f_verbosity_control$dDEQ =
+	     core_inner_f_verbosity_control$dEMPTY_N ;
+
+  // submodule core_inner_f_watch_tohost_control
+  assign core_inner_f_watch_tohost_control$sD_IN =
+	     { host_cs$fo_watch_tohost_control_first_fst,
+	       host_cs$fo_watch_tohost_control_first_snd } ;
+  assign core_inner_f_watch_tohost_control$sENQ = CAN_FIRE_RL_rl_connect_2 ;
+  assign core_inner_f_watch_tohost_control$dDEQ =
+	     core_inner_f_watch_tohost_control$dEMPTY_N ;
+
+  // submodule core_inner_mmio_AXI4_clock_crossing_f_ar
+  assign core_inner_mmio_AXI4_clock_crossing_f_ar$sD_IN =
+	     core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$wget ;
+  assign core_inner_mmio_AXI4_clock_crossing_f_ar$sENQ =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq ;
+  assign core_inner_mmio_AXI4_clock_crossing_f_ar$dDEQ =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq ;
+
+  // submodule core_inner_mmio_AXI4_clock_crossing_f_aw
+  assign core_inner_mmio_AXI4_clock_crossing_f_aw$sD_IN =
+	     core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$wget ;
+  assign core_inner_mmio_AXI4_clock_crossing_f_aw$sENQ =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq ;
+  assign core_inner_mmio_AXI4_clock_crossing_f_aw$dDEQ =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq ;
+
+  // submodule core_inner_mmio_AXI4_clock_crossing_f_b
+  assign core_inner_mmio_AXI4_clock_crossing_f_b$sD_IN =
+	     core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$wget ;
+  assign core_inner_mmio_AXI4_clock_crossing_f_b$sENQ =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq ;
+  assign core_inner_mmio_AXI4_clock_crossing_f_b$dDEQ =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq ;
+
+  // submodule core_inner_mmio_AXI4_clock_crossing_f_r
+  assign core_inner_mmio_AXI4_clock_crossing_f_r$sD_IN =
+	     core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$wget ;
+  assign core_inner_mmio_AXI4_clock_crossing_f_r$sENQ =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq ;
+  assign core_inner_mmio_AXI4_clock_crossing_f_r$dDEQ =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq ;
+
+  // submodule core_inner_mmio_AXI4_clock_crossing_f_w
+  assign core_inner_mmio_AXI4_clock_crossing_f_w$sD_IN =
+	     core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$wget ;
+  assign core_inner_mmio_AXI4_clock_crossing_f_w$sENQ =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq ;
+  assign core_inner_mmio_AXI4_clock_crossing_f_w$dDEQ =
+	     CAN_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq ;
+
+  // submodule core_inner_reclocked
+  assign core_inner_reclocked$dma_S_araddr =
+	     core_inner_dma_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_dma_AXI4_clock_crossing_f_ar$dD_OUT[92:29] :
+	       64'd0 ;
+  assign core_inner_reclocked$dma_S_arburst =
+	     core_inner_dma_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_dma_AXI4_clock_crossing_f_ar$dD_OUT[17:16] :
+	       2'd0 ;
+  assign core_inner_reclocked$dma_S_arcache =
+	     core_inner_dma_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_dma_AXI4_clock_crossing_f_ar$dD_OUT[14:11] :
+	       4'd0 ;
+  assign core_inner_reclocked$dma_S_arid =
+	     core_inner_dma_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_dma_AXI4_clock_crossing_f_ar$dD_OUT[108:93] :
+	       16'd0 ;
+  assign core_inner_reclocked$dma_S_arlen =
+	     core_inner_dma_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_dma_AXI4_clock_crossing_f_ar$dD_OUT[28:21] :
+	       8'd0 ;
+  assign core_inner_reclocked$dma_S_arlock =
+	     core_inner_dma_AXI4_clock_crossing_f_ar$dEMPTY_N &&
+	     core_inner_dma_AXI4_clock_crossing_f_ar$dD_OUT[15] ;
+  assign core_inner_reclocked$dma_S_arprot =
+	     core_inner_dma_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_dma_AXI4_clock_crossing_f_ar$dD_OUT[10:8] :
+	       3'd0 ;
+  assign core_inner_reclocked$dma_S_arqos =
+	     core_inner_dma_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_dma_AXI4_clock_crossing_f_ar$dD_OUT[7:4] :
+	       4'd0 ;
+  assign core_inner_reclocked$dma_S_arregion =
+	     core_inner_dma_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_dma_AXI4_clock_crossing_f_ar$dD_OUT[3:0] :
+	       4'd0 ;
+  assign core_inner_reclocked$dma_S_arsize =
+	     core_inner_dma_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_dma_AXI4_clock_crossing_f_ar$dD_OUT[20:18] :
+	       3'd0 ;
+  assign core_inner_reclocked$dma_S_arvalid =
+	     core_inner_dma_AXI4_clock_crossing_f_ar$dEMPTY_N ;
+  assign core_inner_reclocked$dma_S_awaddr =
+	     core_inner_dma_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_dma_AXI4_clock_crossing_f_aw$dD_OUT[92:29] :
+	       64'd0 ;
+  assign core_inner_reclocked$dma_S_awburst =
+	     core_inner_dma_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_dma_AXI4_clock_crossing_f_aw$dD_OUT[17:16] :
+	       2'd0 ;
+  assign core_inner_reclocked$dma_S_awcache =
+	     core_inner_dma_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_dma_AXI4_clock_crossing_f_aw$dD_OUT[14:11] :
+	       4'd0 ;
+  assign core_inner_reclocked$dma_S_awid =
+	     core_inner_dma_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_dma_AXI4_clock_crossing_f_aw$dD_OUT[108:93] :
+	       16'd0 ;
+  assign core_inner_reclocked$dma_S_awlen =
+	     core_inner_dma_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_dma_AXI4_clock_crossing_f_aw$dD_OUT[28:21] :
+	       8'd0 ;
+  assign core_inner_reclocked$dma_S_awlock =
+	     core_inner_dma_AXI4_clock_crossing_f_aw$dEMPTY_N &&
+	     core_inner_dma_AXI4_clock_crossing_f_aw$dD_OUT[15] ;
+  assign core_inner_reclocked$dma_S_awprot =
+	     core_inner_dma_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_dma_AXI4_clock_crossing_f_aw$dD_OUT[10:8] :
+	       3'd0 ;
+  assign core_inner_reclocked$dma_S_awqos =
+	     core_inner_dma_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_dma_AXI4_clock_crossing_f_aw$dD_OUT[7:4] :
+	       4'd0 ;
+  assign core_inner_reclocked$dma_S_awregion =
+	     core_inner_dma_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_dma_AXI4_clock_crossing_f_aw$dD_OUT[3:0] :
+	       4'd0 ;
+  assign core_inner_reclocked$dma_S_awsize =
+	     core_inner_dma_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_dma_AXI4_clock_crossing_f_aw$dD_OUT[20:18] :
+	       3'd0 ;
+  assign core_inner_reclocked$dma_S_awvalid =
+	     core_inner_dma_AXI4_clock_crossing_f_aw$dEMPTY_N ;
+  assign core_inner_reclocked$dma_S_bready =
+	     core_inner_dma_AXI4_clock_crossing_f_b$sFULL_N ;
+  assign core_inner_reclocked$dma_S_rready =
+	     core_inner_dma_AXI4_clock_crossing_f_r$sFULL_N ;
+  assign core_inner_reclocked$dma_S_wdata =
+	     core_inner_dma_AXI4_clock_crossing_f_w$dEMPTY_N ?
+	       core_inner_dma_AXI4_clock_crossing_f_w$dD_OUT[576:65] :
+	       512'd0 ;
+  assign core_inner_reclocked$dma_S_wlast =
+	     core_inner_dma_AXI4_clock_crossing_f_w$dEMPTY_N &&
+	     core_inner_dma_AXI4_clock_crossing_f_w$dD_OUT[0] ;
+  assign core_inner_reclocked$dma_S_wstrb =
+	     core_inner_dma_AXI4_clock_crossing_f_w$dEMPTY_N ?
+	       core_inner_dma_AXI4_clock_crossing_f_w$dD_OUT[64:1] :
+	       64'd0 ;
+  assign core_inner_reclocked$dma_S_wvalid =
+	     core_inner_dma_AXI4_clock_crossing_f_w$dEMPTY_N ;
+  assign core_inner_reclocked$ext_interrupts_x = core_inner_rg_irqs ;
+  assign core_inner_reclocked$fi_misc_enq_x =
+	     core_inner_f_misc_from_host$dD_OUT ;
+  assign core_inner_reclocked$fi_nmi_enq_x = core_inner_f_nmi$dD_OUT ;
+  assign core_inner_reclocked$fi_pc_trace_control_enq_x =
+	     core_inner_f_pc_trace_control$dD_OUT ;
+  assign core_inner_reclocked$fi_verbosity_control_enq_x =
+	     core_inner_f_verbosity_control$dD_OUT ;
+  assign core_inner_reclocked$fi_watch_tohost_control_enq_x =
+	     core_inner_f_watch_tohost_control$dD_OUT ;
+  assign core_inner_reclocked$mem_M_arready =
+	     core_inner_ddr_AXI4_clock_crossing_f_ar$sFULL_N ;
+  assign core_inner_reclocked$mem_M_awready =
+	     core_inner_ddr_AXI4_clock_crossing_f_aw$sFULL_N ;
+  assign core_inner_reclocked$mem_M_bid =
+	     core_inner_ddr_AXI4_clock_crossing_f_b$dEMPTY_N ?
+	       core_inner_ddr_AXI4_clock_crossing_f_b$dD_OUT[17:2] :
+	       16'd0 ;
+  assign core_inner_reclocked$mem_M_bresp =
+	     core_inner_ddr_AXI4_clock_crossing_f_b$dEMPTY_N ?
+	       core_inner_ddr_AXI4_clock_crossing_f_b$dD_OUT[1:0] :
+	       2'd0 ;
+  assign core_inner_reclocked$mem_M_bvalid =
+	     core_inner_ddr_AXI4_clock_crossing_f_b$dEMPTY_N ;
+  assign core_inner_reclocked$mem_M_rdata =
+	     core_inner_ddr_AXI4_clock_crossing_f_r$dEMPTY_N ?
+	       core_inner_ddr_AXI4_clock_crossing_f_r$dD_OUT[514:3] :
+	       512'd0 ;
+  assign core_inner_reclocked$mem_M_rid =
+	     core_inner_ddr_AXI4_clock_crossing_f_r$dEMPTY_N ?
+	       core_inner_ddr_AXI4_clock_crossing_f_r$dD_OUT[530:515] :
+	       16'd0 ;
+  assign core_inner_reclocked$mem_M_rlast =
+	     core_inner_ddr_AXI4_clock_crossing_f_r$dEMPTY_N &&
+	     core_inner_ddr_AXI4_clock_crossing_f_r$dD_OUT[0] ;
+  assign core_inner_reclocked$mem_M_rresp =
+	     core_inner_ddr_AXI4_clock_crossing_f_r$dEMPTY_N ?
+	       core_inner_ddr_AXI4_clock_crossing_f_r$dD_OUT[2:1] :
+	       2'd0 ;
+  assign core_inner_reclocked$mem_M_rvalid =
+	     core_inner_ddr_AXI4_clock_crossing_f_r$dEMPTY_N ;
+  assign core_inner_reclocked$mem_M_wready =
+	     core_inner_ddr_AXI4_clock_crossing_f_w$sFULL_N ;
+  assign core_inner_reclocked$mmio_M_arready =
+	     core_inner_mmio_AXI4_clock_crossing_f_ar$sFULL_N ;
+  assign core_inner_reclocked$mmio_M_awready =
+	     core_inner_mmio_AXI4_clock_crossing_f_aw$sFULL_N ;
+  assign core_inner_reclocked$mmio_M_bid =
+	     core_inner_mmio_AXI4_clock_crossing_f_b$dEMPTY_N ?
+	       core_inner_mmio_AXI4_clock_crossing_f_b$dD_OUT[17:2] :
+	       16'd0 ;
+  assign core_inner_reclocked$mmio_M_bresp =
+	     core_inner_mmio_AXI4_clock_crossing_f_b$dEMPTY_N ?
+	       core_inner_mmio_AXI4_clock_crossing_f_b$dD_OUT[1:0] :
+	       2'd0 ;
+  assign core_inner_reclocked$mmio_M_bvalid =
+	     core_inner_mmio_AXI4_clock_crossing_f_b$dEMPTY_N ;
+  assign core_inner_reclocked$mmio_M_rdata =
+	     core_inner_mmio_AXI4_clock_crossing_f_r$dEMPTY_N ?
+	       core_inner_mmio_AXI4_clock_crossing_f_r$dD_OUT[66:3] :
+	       64'd0 ;
+  assign core_inner_reclocked$mmio_M_rid =
+	     core_inner_mmio_AXI4_clock_crossing_f_r$dEMPTY_N ?
+	       core_inner_mmio_AXI4_clock_crossing_f_r$dD_OUT[82:67] :
+	       16'd0 ;
+  assign core_inner_reclocked$mmio_M_rlast =
+	     core_inner_mmio_AXI4_clock_crossing_f_r$dEMPTY_N &&
+	     core_inner_mmio_AXI4_clock_crossing_f_r$dD_OUT[0] ;
+  assign core_inner_reclocked$mmio_M_rresp =
+	     core_inner_mmio_AXI4_clock_crossing_f_r$dEMPTY_N ?
+	       core_inner_mmio_AXI4_clock_crossing_f_r$dD_OUT[2:1] :
+	       2'd0 ;
+  assign core_inner_reclocked$mmio_M_rvalid =
+	     core_inner_mmio_AXI4_clock_crossing_f_r$dEMPTY_N ;
+  assign core_inner_reclocked$mmio_M_wready =
+	     core_inner_mmio_AXI4_clock_crossing_f_w$sFULL_N ;
+  assign core_inner_reclocked$se_dmi_request_enq_x =
+	     core_inner_f_dmi_req$dD_OUT ;
+  assign core_inner_reclocked$EN_ext_interrupts = 1'd1 ;
+  assign core_inner_reclocked$EN_fi_nmi_enq =
+	     CAN_FIRE_RL_core_inner_3_rl_connect ;
+  assign core_inner_reclocked$EN_fo_misc_deq =
+	     CAN_FIRE_RL_core_inner_5_rl_connect ;
+  assign core_inner_reclocked$EN_fi_misc_enq =
+	     CAN_FIRE_RL_core_inner_4_rl_connect ;
+  assign core_inner_reclocked$EN_fo_tv_info_deq =
+	     CAN_FIRE_RL_core_inner_6_rl_connect ;
+  assign core_inner_reclocked$EN_se_dmi_request_enq =
+	     CAN_FIRE_RL_core_inner_7_rl_connect ;
+  assign core_inner_reclocked$EN_se_dmi_response_deq =
+	     CAN_FIRE_RL_core_inner_8_rl_connect ;
+  assign core_inner_reclocked$EN_cl_ndm_reset_request_deq =
+	     CAN_FIRE_RL_core_inner_9_rl_connect ;
+  assign core_inner_reclocked$EN_cl_ndm_reset_response_enq =
+	     CAN_FIRE_RL_core_inner_10_rl_connect ;
+  assign core_inner_reclocked$EN_fi_pc_trace_control_enq =
+	     CAN_FIRE_RL_core_inner_11_rl_connect ;
+  assign core_inner_reclocked$EN_fi_verbosity_control_enq =
+	     core_inner_f_verbosity_control$dEMPTY_N ;
+  assign core_inner_reclocked$EN_fi_watch_tohost_control_enq =
+	     core_inner_f_watch_tohost_control$dEMPTY_N ;
+  assign core_inner_reclocked$EN_fo_tohost_value_deq =
+	     core_inner_f_tohost_value$sFULL_N ;
+
+  // submodule host_cs
+  assign host_cs$fi_tohost_value_enq_x = core_inner_f_tohost_value$dD_OUT ;
+  assign host_cs$se_control_status_request_enq_x =
 	     se_control_status_request_enq_x ;
-  assign core_reclocked_f_control_status_req$sENQ =
+  assign host_cs$EN_se_control_status_request_enq =
 	     EN_se_control_status_request_enq ;
-  assign core_reclocked_f_control_status_req$dDEQ =
-	     CAN_FIRE_RL_core_reclocked_11_rl_connect ;
-
-  // submodule core_reclocked_f_control_status_rsp
-  assign core_reclocked_f_control_status_rsp$sD_IN =
-	     core_single_clock$se_control_status_response_first ;
-  assign core_reclocked_f_control_status_rsp$sENQ =
-	     CAN_FIRE_RL_core_reclocked_12_rl_connect ;
-  assign core_reclocked_f_control_status_rsp$dDEQ =
+  assign host_cs$EN_se_control_status_response_deq =
 	     EN_se_control_status_response_deq ;
+  assign host_cs$EN_fo_watch_tohost_control_deq = CAN_FIRE_RL_rl_connect_2 ;
+  assign host_cs$EN_fo_verbosity_control_deq = CAN_FIRE_RL_rl_connect_1 ;
+  assign host_cs$EN_fo_pc_trace_control_deq = CAN_FIRE_RL_rl_connect ;
+  assign host_cs$EN_fi_tohost_value_enq = core_inner_f_tohost_value$dEMPTY_N ;
 
-  // submodule core_reclocked_f_dmi_req
-  assign core_reclocked_f_dmi_req$sD_IN = se_dmi_request_enq_x ;
-  assign core_reclocked_f_dmi_req$sENQ = EN_se_dmi_request_enq ;
-  assign core_reclocked_f_dmi_req$dDEQ =
-	     CAN_FIRE_RL_core_reclocked_7_rl_connect ;
-
-  // submodule core_reclocked_f_dmi_rsp
-  assign core_reclocked_f_dmi_rsp$sD_IN =
-	     core_single_clock$se_dmi_response_first ;
-  assign core_reclocked_f_dmi_rsp$sENQ =
-	     CAN_FIRE_RL_core_reclocked_8_rl_connect ;
-  assign core_reclocked_f_dmi_rsp$dDEQ = EN_se_dmi_response_deq ;
-
-  // submodule core_reclocked_f_misc_from_host
-  assign core_reclocked_f_misc_from_host$sD_IN = fi_misc_enq_x ;
-  assign core_reclocked_f_misc_from_host$sENQ = EN_fi_misc_enq ;
-  assign core_reclocked_f_misc_from_host$dDEQ =
-	     CAN_FIRE_RL_core_reclocked_4_rl_connect ;
-
-  // submodule core_reclocked_f_misc_to_host
-  assign core_reclocked_f_misc_to_host$sD_IN =
-	     core_single_clock$fo_misc_first ;
-  assign core_reclocked_f_misc_to_host$sENQ =
-	     CAN_FIRE_RL_core_reclocked_5_rl_connect ;
-  assign core_reclocked_f_misc_to_host$dDEQ = EN_fo_misc_deq ;
-
-  // submodule core_reclocked_f_ndm_reset_req
-  assign core_reclocked_f_ndm_reset_req$sENQ =
-	     CAN_FIRE_RL_core_reclocked_9_rl_connect ;
-  assign core_reclocked_f_ndm_reset_req$dDEQ = EN_cl_ndm_reset_request_deq ;
-
-  // submodule core_reclocked_f_ndm_reset_rsp
-  assign core_reclocked_f_ndm_reset_rsp$sENQ = EN_cl_ndm_reset_response_enq ;
-  assign core_reclocked_f_ndm_reset_rsp$dDEQ =
-	     CAN_FIRE_RL_core_reclocked_10_rl_connect ;
-
-  // submodule core_reclocked_f_nmi
-  assign core_reclocked_f_nmi$sD_IN = fi_nmi_enq_x ;
-  assign core_reclocked_f_nmi$sENQ = EN_fi_nmi_enq ;
-  assign core_reclocked_f_nmi$dDEQ = CAN_FIRE_RL_core_reclocked_3_rl_connect ;
-
-  // submodule core_reclocked_f_tv_info
-  assign core_reclocked_f_tv_info$sD_IN = core_single_clock$fo_tv_info_first ;
-  assign core_reclocked_f_tv_info$sENQ =
-	     CAN_FIRE_RL_core_reclocked_6_rl_connect ;
-  assign core_reclocked_f_tv_info$dDEQ = EN_fo_tv_info_deq ;
-
-  // submodule core_reclocked_mmio_AXI4_clock_crossing_f_ar
-  assign core_reclocked_mmio_AXI4_clock_crossing_f_ar$sD_IN =
-	     core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$wget ;
-  assign core_reclocked_mmio_AXI4_clock_crossing_f_ar$sENQ =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq ;
-  assign core_reclocked_mmio_AXI4_clock_crossing_f_ar$dDEQ =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq ;
-
-  // submodule core_reclocked_mmio_AXI4_clock_crossing_f_aw
-  assign core_reclocked_mmio_AXI4_clock_crossing_f_aw$sD_IN =
-	     core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$wget ;
-  assign core_reclocked_mmio_AXI4_clock_crossing_f_aw$sENQ =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq ;
-  assign core_reclocked_mmio_AXI4_clock_crossing_f_aw$dDEQ =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq ;
-
-  // submodule core_reclocked_mmio_AXI4_clock_crossing_f_b
-  assign core_reclocked_mmio_AXI4_clock_crossing_f_b$sD_IN =
-	     core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$wget ;
-  assign core_reclocked_mmio_AXI4_clock_crossing_f_b$sENQ =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq ;
-  assign core_reclocked_mmio_AXI4_clock_crossing_f_b$dDEQ =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq ;
-
-  // submodule core_reclocked_mmio_AXI4_clock_crossing_f_r
-  assign core_reclocked_mmio_AXI4_clock_crossing_f_r$sD_IN =
-	     core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$wget ;
-  assign core_reclocked_mmio_AXI4_clock_crossing_f_r$sENQ =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq ;
-  assign core_reclocked_mmio_AXI4_clock_crossing_f_r$dDEQ =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq ;
-
-  // submodule core_reclocked_mmio_AXI4_clock_crossing_f_w
-  assign core_reclocked_mmio_AXI4_clock_crossing_f_w$sD_IN =
-	     core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$wget ;
-  assign core_reclocked_mmio_AXI4_clock_crossing_f_w$sENQ =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq ;
-  assign core_reclocked_mmio_AXI4_clock_crossing_f_w$dDEQ =
-	     CAN_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq ;
-
-  // submodule core_single_clock
-  assign core_single_clock$dma_S_araddr =
-	     core_reclocked_dma_AXI4_clock_crossing_f_ar$dEMPTY_N ?
-	       core_reclocked_dma_AXI4_clock_crossing_f_ar$dD_OUT[92:29] :
-	       64'd0 ;
-  assign core_single_clock$dma_S_arburst =
-	     core_reclocked_dma_AXI4_clock_crossing_f_ar$dEMPTY_N ?
-	       core_reclocked_dma_AXI4_clock_crossing_f_ar$dD_OUT[17:16] :
-	       2'd0 ;
-  assign core_single_clock$dma_S_arcache =
-	     core_reclocked_dma_AXI4_clock_crossing_f_ar$dEMPTY_N ?
-	       core_reclocked_dma_AXI4_clock_crossing_f_ar$dD_OUT[14:11] :
-	       4'd0 ;
-  assign core_single_clock$dma_S_arid =
-	     core_reclocked_dma_AXI4_clock_crossing_f_ar$dEMPTY_N ?
-	       core_reclocked_dma_AXI4_clock_crossing_f_ar$dD_OUT[108:93] :
-	       16'd0 ;
-  assign core_single_clock$dma_S_arlen =
-	     core_reclocked_dma_AXI4_clock_crossing_f_ar$dEMPTY_N ?
-	       core_reclocked_dma_AXI4_clock_crossing_f_ar$dD_OUT[28:21] :
-	       8'd0 ;
-  assign core_single_clock$dma_S_arlock =
-	     core_reclocked_dma_AXI4_clock_crossing_f_ar$dEMPTY_N &&
-	     core_reclocked_dma_AXI4_clock_crossing_f_ar$dD_OUT[15] ;
-  assign core_single_clock$dma_S_arprot =
-	     core_reclocked_dma_AXI4_clock_crossing_f_ar$dEMPTY_N ?
-	       core_reclocked_dma_AXI4_clock_crossing_f_ar$dD_OUT[10:8] :
-	       3'd0 ;
-  assign core_single_clock$dma_S_arqos =
-	     core_reclocked_dma_AXI4_clock_crossing_f_ar$dEMPTY_N ?
-	       core_reclocked_dma_AXI4_clock_crossing_f_ar$dD_OUT[7:4] :
-	       4'd0 ;
-  assign core_single_clock$dma_S_arregion =
-	     core_reclocked_dma_AXI4_clock_crossing_f_ar$dEMPTY_N ?
-	       core_reclocked_dma_AXI4_clock_crossing_f_ar$dD_OUT[3:0] :
-	       4'd0 ;
-  assign core_single_clock$dma_S_arsize =
-	     core_reclocked_dma_AXI4_clock_crossing_f_ar$dEMPTY_N ?
-	       core_reclocked_dma_AXI4_clock_crossing_f_ar$dD_OUT[20:18] :
-	       3'd0 ;
-  assign core_single_clock$dma_S_arvalid =
-	     core_reclocked_dma_AXI4_clock_crossing_f_ar$dEMPTY_N ;
-  assign core_single_clock$dma_S_awaddr =
-	     core_reclocked_dma_AXI4_clock_crossing_f_aw$dEMPTY_N ?
-	       core_reclocked_dma_AXI4_clock_crossing_f_aw$dD_OUT[92:29] :
-	       64'd0 ;
-  assign core_single_clock$dma_S_awburst =
-	     core_reclocked_dma_AXI4_clock_crossing_f_aw$dEMPTY_N ?
-	       core_reclocked_dma_AXI4_clock_crossing_f_aw$dD_OUT[17:16] :
-	       2'd0 ;
-  assign core_single_clock$dma_S_awcache =
-	     core_reclocked_dma_AXI4_clock_crossing_f_aw$dEMPTY_N ?
-	       core_reclocked_dma_AXI4_clock_crossing_f_aw$dD_OUT[14:11] :
-	       4'd0 ;
-  assign core_single_clock$dma_S_awid =
-	     core_reclocked_dma_AXI4_clock_crossing_f_aw$dEMPTY_N ?
-	       core_reclocked_dma_AXI4_clock_crossing_f_aw$dD_OUT[108:93] :
-	       16'd0 ;
-  assign core_single_clock$dma_S_awlen =
-	     core_reclocked_dma_AXI4_clock_crossing_f_aw$dEMPTY_N ?
-	       core_reclocked_dma_AXI4_clock_crossing_f_aw$dD_OUT[28:21] :
-	       8'd0 ;
-  assign core_single_clock$dma_S_awlock =
-	     core_reclocked_dma_AXI4_clock_crossing_f_aw$dEMPTY_N &&
-	     core_reclocked_dma_AXI4_clock_crossing_f_aw$dD_OUT[15] ;
-  assign core_single_clock$dma_S_awprot =
-	     core_reclocked_dma_AXI4_clock_crossing_f_aw$dEMPTY_N ?
-	       core_reclocked_dma_AXI4_clock_crossing_f_aw$dD_OUT[10:8] :
-	       3'd0 ;
-  assign core_single_clock$dma_S_awqos =
-	     core_reclocked_dma_AXI4_clock_crossing_f_aw$dEMPTY_N ?
-	       core_reclocked_dma_AXI4_clock_crossing_f_aw$dD_OUT[7:4] :
-	       4'd0 ;
-  assign core_single_clock$dma_S_awregion =
-	     core_reclocked_dma_AXI4_clock_crossing_f_aw$dEMPTY_N ?
-	       core_reclocked_dma_AXI4_clock_crossing_f_aw$dD_OUT[3:0] :
-	       4'd0 ;
-  assign core_single_clock$dma_S_awsize =
-	     core_reclocked_dma_AXI4_clock_crossing_f_aw$dEMPTY_N ?
-	       core_reclocked_dma_AXI4_clock_crossing_f_aw$dD_OUT[20:18] :
-	       3'd0 ;
-  assign core_single_clock$dma_S_awvalid =
-	     core_reclocked_dma_AXI4_clock_crossing_f_aw$dEMPTY_N ;
-  assign core_single_clock$dma_S_bready =
-	     core_reclocked_dma_AXI4_clock_crossing_f_b$sFULL_N ;
-  assign core_single_clock$dma_S_rready =
-	     core_reclocked_dma_AXI4_clock_crossing_f_r$sFULL_N ;
-  assign core_single_clock$dma_S_wdata =
-	     core_reclocked_dma_AXI4_clock_crossing_f_w$dEMPTY_N ?
-	       core_reclocked_dma_AXI4_clock_crossing_f_w$dD_OUT[576:65] :
-	       512'd0 ;
-  assign core_single_clock$dma_S_wlast =
-	     core_reclocked_dma_AXI4_clock_crossing_f_w$dEMPTY_N &&
-	     core_reclocked_dma_AXI4_clock_crossing_f_w$dD_OUT[0] ;
-  assign core_single_clock$dma_S_wstrb =
-	     core_reclocked_dma_AXI4_clock_crossing_f_w$dEMPTY_N ?
-	       core_reclocked_dma_AXI4_clock_crossing_f_w$dD_OUT[64:1] :
-	       64'd0 ;
-  assign core_single_clock$dma_S_wvalid =
-	     core_reclocked_dma_AXI4_clock_crossing_f_w$dEMPTY_N ;
-  assign core_single_clock$ext_interrupts_x = core_reclocked_rg_irqs ;
-  assign core_single_clock$fi_misc_enq_x =
-	     core_reclocked_f_misc_from_host$dD_OUT ;
-  assign core_single_clock$fi_nmi_enq_x = core_reclocked_f_nmi$dD_OUT ;
-  assign core_single_clock$mem_M_arready =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_ar$sFULL_N ;
-  assign core_single_clock$mem_M_awready =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_aw$sFULL_N ;
-  assign core_single_clock$mem_M_bid =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_b$dEMPTY_N ?
-	       core_reclocked_ddr_AXI4_clock_crossing_f_b$dD_OUT[17:2] :
-	       16'd0 ;
-  assign core_single_clock$mem_M_bresp =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_b$dEMPTY_N ?
-	       core_reclocked_ddr_AXI4_clock_crossing_f_b$dD_OUT[1:0] :
-	       2'd0 ;
-  assign core_single_clock$mem_M_bvalid =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_b$dEMPTY_N ;
-  assign core_single_clock$mem_M_rdata =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_r$dEMPTY_N ?
-	       core_reclocked_ddr_AXI4_clock_crossing_f_r$dD_OUT[514:3] :
-	       512'd0 ;
-  assign core_single_clock$mem_M_rid =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_r$dEMPTY_N ?
-	       core_reclocked_ddr_AXI4_clock_crossing_f_r$dD_OUT[530:515] :
-	       16'd0 ;
-  assign core_single_clock$mem_M_rlast =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_r$dEMPTY_N &&
-	     core_reclocked_ddr_AXI4_clock_crossing_f_r$dD_OUT[0] ;
-  assign core_single_clock$mem_M_rresp =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_r$dEMPTY_N ?
-	       core_reclocked_ddr_AXI4_clock_crossing_f_r$dD_OUT[2:1] :
-	       2'd0 ;
-  assign core_single_clock$mem_M_rvalid =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_r$dEMPTY_N ;
-  assign core_single_clock$mem_M_wready =
-	     core_reclocked_ddr_AXI4_clock_crossing_f_w$sFULL_N ;
-  assign core_single_clock$mmio_M_arready =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_ar$sFULL_N ;
-  assign core_single_clock$mmio_M_awready =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_aw$sFULL_N ;
-  assign core_single_clock$mmio_M_bid =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_b$dEMPTY_N ?
-	       core_reclocked_mmio_AXI4_clock_crossing_f_b$dD_OUT[17:2] :
-	       16'd0 ;
-  assign core_single_clock$mmio_M_bresp =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_b$dEMPTY_N ?
-	       core_reclocked_mmio_AXI4_clock_crossing_f_b$dD_OUT[1:0] :
-	       2'd0 ;
-  assign core_single_clock$mmio_M_bvalid =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_b$dEMPTY_N ;
-  assign core_single_clock$mmio_M_rdata =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_r$dEMPTY_N ?
-	       core_reclocked_mmio_AXI4_clock_crossing_f_r$dD_OUT[66:3] :
-	       64'd0 ;
-  assign core_single_clock$mmio_M_rid =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_r$dEMPTY_N ?
-	       core_reclocked_mmio_AXI4_clock_crossing_f_r$dD_OUT[82:67] :
-	       16'd0 ;
-  assign core_single_clock$mmio_M_rlast =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_r$dEMPTY_N &&
-	     core_reclocked_mmio_AXI4_clock_crossing_f_r$dD_OUT[0] ;
-  assign core_single_clock$mmio_M_rresp =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_r$dEMPTY_N ?
-	       core_reclocked_mmio_AXI4_clock_crossing_f_r$dD_OUT[2:1] :
-	       2'd0 ;
-  assign core_single_clock$mmio_M_rvalid =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_r$dEMPTY_N ;
-  assign core_single_clock$mmio_M_wready =
-	     core_reclocked_mmio_AXI4_clock_crossing_f_w$sFULL_N ;
-  assign core_single_clock$se_control_status_request_enq_x =
-	     core_reclocked_f_control_status_req$dD_OUT ;
-  assign core_single_clock$se_dmi_request_enq_x =
-	     core_reclocked_f_dmi_req$dD_OUT ;
-  assign core_single_clock$EN_ext_interrupts = 1'd1 ;
-  assign core_single_clock$EN_fi_nmi_enq =
-	     CAN_FIRE_RL_core_reclocked_3_rl_connect ;
-  assign core_single_clock$EN_fo_misc_deq =
-	     CAN_FIRE_RL_core_reclocked_5_rl_connect ;
-  assign core_single_clock$EN_fi_misc_enq =
-	     CAN_FIRE_RL_core_reclocked_4_rl_connect ;
-  assign core_single_clock$EN_fo_tv_info_deq =
-	     CAN_FIRE_RL_core_reclocked_6_rl_connect ;
-  assign core_single_clock$EN_se_dmi_request_enq =
-	     CAN_FIRE_RL_core_reclocked_7_rl_connect ;
-  assign core_single_clock$EN_se_dmi_response_deq =
-	     CAN_FIRE_RL_core_reclocked_8_rl_connect ;
-  assign core_single_clock$EN_cl_ndm_reset_request_deq =
-	     CAN_FIRE_RL_core_reclocked_9_rl_connect ;
-  assign core_single_clock$EN_cl_ndm_reset_response_enq =
-	     CAN_FIRE_RL_core_reclocked_10_rl_connect ;
-  assign core_single_clock$EN_se_control_status_request_enq =
-	     CAN_FIRE_RL_core_reclocked_11_rl_connect ;
-  assign core_single_clock$EN_se_control_status_response_deq =
-	     CAN_FIRE_RL_core_reclocked_12_rl_connect ;
-
-  // submodule reset_for_core
-  assign reset_for_core$ASSERT_IN = 1'b0 ;
+  // submodule innerRstIfc
+  assign innerRstIfc$ASSERT_IN = host_cs$mv_assert_core_reset ;
 
   // handling of inlined registers
 
@@ -3948,13 +4152,12 @@ module mkAWSteria_Core(CLK_clk1,
   begin
     if (RST_N == `BSV_RESET_VALUE)
       begin
-        core_reclocked_rg_irqs <= `BSV_ASSIGNMENT_DELAY 5'd0;
+        core_inner_rg_irqs <= `BSV_ASSIGNMENT_DELAY 5'd0;
       end
     else
       begin
-        if (core_reclocked_rg_irqs$EN)
-	  core_reclocked_rg_irqs <= `BSV_ASSIGNMENT_DELAY
-	      core_reclocked_rg_irqs$D_IN;
+        if (core_inner_rg_irqs$EN)
+	  core_inner_rg_irqs <= `BSV_ASSIGNMENT_DELAY core_inner_rg_irqs$D_IN;
       end
   end
 
@@ -3963,7 +4166,7 @@ module mkAWSteria_Core(CLK_clk1,
   `else // not BSV_NO_INITIAL_BLOCKS
   initial
   begin
-    core_reclocked_rg_irqs = 5'h0A;
+    core_inner_rg_irqs = 5'h0A;
   end
   `endif // BSV_NO_INITIAL_BLOCKS
   // synopsys translate_on
@@ -3975,94 +4178,94 @@ module mkAWSteria_Core(CLK_clk1,
   begin
     #0;
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq)
+      if (WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq)
 	$display("WARNING: deqing from empty FIFOF_O");
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq)
+      if (WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq)
 	$finish(32'd0);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq)
+      if (WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq)
 	$display("WARNING: deqing from empty FIFOF_O");
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq)
+      if (WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq)
 	$finish(32'd0);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq)
+      if (WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq)
 	$display("WARNING: enqing into an already full FIFOF_I");
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq)
+      if (WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq)
 	$finish(32'd0);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq)
+      if (WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq)
 	$display("WARNING: deqing from empty FIFOF_O");
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq)
+      if (WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq)
 	$finish(32'd0);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq)
+      if (WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq)
 	$display("WARNING: enqing into an already full FIFOF_I");
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq)
+      if (WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq)
 	$finish(32'd0);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq)
+      if (WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq)
 	$display("WARNING: deqing from empty FIFOF_O");
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq)
+      if (WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq)
 	$finish(32'd0);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq)
+      if (WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq)
 	$display("WARNING: deqing from empty FIFOF_O");
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq)
+      if (WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq)
 	$finish(32'd0);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq)
+      if (WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq)
 	$display("WARNING: enqing into an already full FIFOF_I");
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq)
+      if (WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq)
 	$finish(32'd0);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq)
+      if (WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq)
 	$display("WARNING: deqing from empty FIFOF_O");
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq)
+      if (WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq)
 	$finish(32'd0);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq)
+      if (WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq)
 	$display("WARNING: enqing into an already full FIFOF_I");
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq)
+      if (WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq)
 	$finish(32'd0);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq)
+      if (WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq)
 	$display("WARNING: enqing into an already full FIFOF_I");
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq)
+      if (WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq)
 	$finish(32'd0);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq)
+      if (WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq)
 	$display("WARNING: enqing into an already full FIFOF_I");
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq)
+      if (WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq)
 	$finish(32'd0);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq)
+      if (WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq)
 	$display("WARNING: deqing from empty FIFOF_O");
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq)
+      if (WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq)
 	$finish(32'd0);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq)
+      if (WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq)
 	$display("WARNING: enqing into an already full FIFOF_I");
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq)
+      if (WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq)
 	$finish(32'd0);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq)
+      if (WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq)
 	$display("WARNING: deqing from empty FIFOF_O");
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq)
+      if (WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq)
 	$finish(32'd0);
   end
   // synopsys translate_on
@@ -4071,95 +4274,95 @@ module mkAWSteria_Core(CLK_clk1,
   always@(negedge CLK_clk2)
   begin
     #0;
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq)
 	$display("WARNING: enqing into an already full FIFOF_I");
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq)
 	$finish(32'd0);
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq)
 	$display("WARNING: enqing into an already full FIFOF_I");
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq)
 	$finish(32'd0);
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq)
 	$display("WARNING: deqing from empty FIFOF_O");
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq)
 	$finish(32'd0);
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq)
 	$display("WARNING: enqing into an already full FIFOF_I");
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq)
 	$finish(32'd0);
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq)
 	$display("WARNING: deqing from empty FIFOF_O");
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq)
 	$finish(32'd0);
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq)
 	$display("WARNING: enqing into an already full FIFOF_I");
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq)
 	$finish(32'd0);
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq)
 	$display("WARNING: enqing into an already full FIFOF_I");
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq)
 	$finish(32'd0);
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq)
 	$display("WARNING: deqing from empty FIFOF_O");
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq)
 	$finish(32'd0);
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq)
 	$display("WARNING: enqing into an already full FIFOF_I");
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq)
 	$finish(32'd0);
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq)
 	$display("WARNING: deqing from empty FIFOF_O");
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq)
 	$finish(32'd0);
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq)
 	$display("WARNING: deqing from empty FIFOF_O");
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq)
 	$finish(32'd0);
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq)
 	$display("WARNING: deqing from empty FIFOF_O");
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq)
 	$finish(32'd0);
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq)
 	$display("WARNING: enqing into an already full FIFOF_I");
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq)
 	$finish(32'd0);
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq)
 	$display("WARNING: deqing from empty FIFOF_O");
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq)
 	$finish(32'd0);
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq)
 	$display("WARNING: enqing into an already full FIFOF_I");
-    if (reset_for_core$OUT_RST != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_core_reclocked_dma_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq)
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq)
 	$finish(32'd0);
   end
   // synopsys translate_on

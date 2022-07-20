@@ -37,66 +37,59 @@ interface Host_Control_Status_IFC;
    interface Server_Semi_FIFOF #(Bit #(32), Bit #(32)) se_control_status;
 
    // ----------------
-   // Decoded control/status commands
+   // Decoded control/status actions
 
-   interface Client #(Bool, Bool)              cl_cpu_reset;
-   interface Client #(Bool, Bool)              cl_run_halt;
-   interface Client #(DM_CPU_Req #(12, XLEN),
-		      DM_CPU_Rsp #(XLEN))      cl_csr_rw;
+   method Bool mv_assert_core_reset;
 
    // Watch tohost 'on/off' and tohost addr
-   interface Get #(Tuple2 #(Bool,
-			    Bit #(64))) g_watch_tohost;
+   interface FIFOF_O #(Tuple2 #(Bool, Bit #(64))) fo_watch_tohost_control;
 
    // Verbosity level and log-delay (during simulation)
-   interface Get #(Tuple2 #(Bit #(4),
-			    Bit #(64))) g_verbosity;
+   interface FIFOF_O #(Tuple2 #(Bit #(4), Bit #(64))) fo_verbosity_control;
 
    // PC trace on/off, and sampling interval (units: instructions)
-   method Tuple2 #(Bool, Bit #(64)) mv_pc_trace;
+   interface FIFOF_O #(Tuple2 #(Bool, Bit #(64))) fo_pc_trace_control;
 
    // Value written by RISC-V CPU to 'tohost' addr signalling end of test
-   method Action ma_tohost_value (Bit #(64) tohost_value);
+   method FIFOF_I #(Bit #(64)) fi_tohost_value;
 endinterface
 
 // ================================================================
-// 1st word from host has this command encoded in [7:0]
+// Word 0 from host contains command and count of additional data words
 
-typedef Bit #(8) Host_Cmd;
+typedef Bit #(5) Host_Cmd;
 
-Host_Cmd cmd_noop             = 0;
+Host_Cmd cmd_ping                = 0;    // Supported
+Host_Cmd cmd_core_reset          = 1;    // Supported
 
-Host_Cmd cmd_CPU_stop         = 1;
-Host_Cmd cmd_CPU_start        = 2;
-Host_Cmd cmd_CPU_reset        = 3;
-Host_Cmd cmd_CPU_fence        = 4;
-Host_Cmd cmd_CSR_write        = 5;
-Host_Cmd cmd_CSR_read         = 6;
+Host_Cmd cmd_CPU_run_control     = 2;    // Unsupported
+Host_Cmd cmd_CPU_fence           = 3;    // Unsupported
+Host_Cmd cmd_CSR_access          = 4;    // Unsupported
 
-Host_Cmd cmd_watch_tohost_off = 20;
-Host_Cmd cmd_watch_tohost_on  = 21;
-Host_Cmd cmd_read_tohost      = 22;
+Host_Cmd cmd_watch_tohost        = 5;    // Supported
+Host_Cmd cmd_read_tohost         = 6;    // Supported
 
-Host_Cmd cmd_pc_trace_off     = 25;
-Host_Cmd cmd_pc_trace_on      = 26;
+Host_Cmd cmd_pc_trace            = 7;    // Supported
 
-Host_Cmd cmd_set_verbosity    = 27;
+Host_Cmd cmd_set_sim_verbosity   = 8;    // Supported
 
 // ================================================================
-// 1st word returned to host has this status in LSBs
+// Word 0 returned to host has this status in [7:0]
 
-Bit #(32) status_ok           = 0;
-Bit #(32) status_unrecognized = 1;
-Bit #(32) status_err          = 2;
+Bit #(32) status_ok          = 0;
+Bit #(32) status_err         = 1;
+Bit #(32) status_unsupported = 2;
 
 // ================================================================
 // Module FSM's state
 
-typedef enum {STATE_START,
-	      STATE_WORD1,
-	      STATE_EXEC,
-	      STATE_CSR_WRITE_2,
-	      STATE_CSR_READ_2, STATE_CSR_READ_3, STATE_CSR_READ_4
+typedef enum {STATE_REQ0,     // Expecting command word
+	      STATE_REQ1,     // Expecting word 1
+	      STATE_REQ2,     // Expecting word 2
+	      STATE_REQ3,     // Expecting word 3
+
+	      STATE_EXEC      // Execute command and send response word 0
+	                      // Future commands: states for more response words
    } FSM_State
 deriving (Bits, Eq, FShow);
 
@@ -111,279 +104,128 @@ module mkHost_Control_Status (Host_Control_Status_IFC);
    FIFOF #(Bit #(32)) f_hw_to_host <- mkFIFOF;
 
    // Decoded commands/responses   
-   FIFOF #(Bool)                   f_run_halt_reqs <- mkFIFOF;
-   FIFOF #(Bool)                   f_run_halt_rsps <- mkFIFOF;
-
-   FIFOF #(Bool)                   f_cpu_reset_reqs <- mkFIFOF;
-   FIFOF #(Bool)                   f_cpu_reset_rsps <- mkFIFOF;
-
-   FIFOF #(DM_CPU_Req #(12, XLEN)) f_csr_mem_reqs <- mkFIFOF;
-   FIFOF #(DM_CPU_Rsp #(XLEN))     f_csr_mem_rsps <- mkFIFOF;
+   Reg #(Bool)  rg_assert_core_reset <- mkReg (False);
 
    FIFOF #(Tuple2 #(Bool, Bit #(64))) f_watch_tohost <- mkFIFOF;
 
-   Reg #(Bit #(16)) rg_prev_tohost_value <- mkReg (0);
-   Wire #(Bit #(64)) dw_tohost_value <- mkDWire (0);
+   Wire #(Bit #(16)) dw_tohost_value      <- mkDWire (0);
+   Reg  #(Bit #(16)) rg_prev_tohost_value <- mkReg (0);
 
    FIFOF #(Tuple2 #(Bit #(4), Bit #(64))) f_verbosity <- mkFIFOF;
 
-   Reg #(Bool)      rg_pc_trace_on       <- mkReg (False);
-   Reg #(Bit #(64)) rg_pc_trace_interval <- mkRegU;
+   FIFOF #(Tuple2 #(Bool,Bit #(64))) f_pc_trace_control <- mkFIFOF;
 
-   Reg #(FSM_State) rg_state <- mkReg (STATE_START);
-
-   Reg #(Bit #(32)) rg_word0 <- mkRegU;
-   Reg #(Bit #(32)) rg_word1 <- mkRegU;
-
-   let word0_cmd = truncate (rg_word0);
-
-   Reg #(Bit #(64)) rg_rsp_data <- mkRegU;
+   Reg #(FSM_State) rg_state <- mkReg (STATE_REQ0);
+   Reg #(Bit #(32)) rg_req0  <- mkRegU;
+   Reg #(Bit #(32)) rg_req1  <- mkRegU;
+   Reg #(Bit #(32)) rg_req2  <- mkRegU;
+   Reg #(Bit #(32)) rg_req3  <- mkRegU;
 
    // ================================================================
-   // FSM to receive commands and to respond
+   // FSM to receive a command and move to STATE_EXEC to execute it
 
-   rule rl_fsm_start (rg_state == STATE_START);
-      Bit #(32) word0 <- pop (f_host_to_hw);
-      rg_word0 <= word0;
-      Host_Cmd cmd = truncate (word0);
-
-      FSM_State next_state = STATE_START;
-
-      if (cmd == cmd_noop) begin
-	 f_hw_to_host.enq (status_ok);
-	 $display ("  mkHost_Control_Status: host_to_hw_req: noop");
-      end
-      else if (cmd == cmd_CPU_stop) begin
-	 f_run_halt_reqs.enq (False);
-	 next_state = STATE_EXEC;
-	 $display ("  mkHost_Control_Status: host_to_hw_req: CPU_stop");
-      end
-      else if (cmd == cmd_CPU_start) begin
-	 f_run_halt_reqs.enq (True);
-	 next_state = STATE_EXEC;
-	 $display ("  mkHost_Control_Status: host_to_hw_req: CPU_start");
-      end
-      else if (cmd == cmd_CPU_reset) begin
-	 f_cpu_reset_reqs.enq (True);
-	 next_state = STATE_EXEC;
-	 $display ("  mkHost_Control_Status: host_to_hw_req: CPU_reset");
-      end
-      else if (cmd == cmd_CPU_fence) begin
-	 f_hw_to_host.enq (status_ok);
-	 $display ("  mkHost_Control_Status: host_to_hw_req: CPU_fence:");
-	 $display ("    no-op on this system (coherent access)");
-      end
-      else if (cmd == cmd_CSR_write) begin
-	 next_state = STATE_WORD1;
-	 $display ("  mkHost_Control_Status: host_to_hw_req: CSR_write");
-      end
-      else if (cmd == cmd_CSR_read) begin
-	 next_state = STATE_EXEC;
-	 $display ("  mkHost_Control_Status: host_to_hw_req: CSR_read");
-      end
-      else if (cmd == cmd_watch_tohost_off) begin
-	 f_watch_tohost.enq (tuple2 (False, ?));
-	 f_hw_to_host.enq (status_ok);
-	 $display ("  mkHost_Control_Status: host_to_hw_req: watch_tohost_off");
-      end
-      else if (cmd == cmd_watch_tohost_on) begin
-	 next_state = STATE_WORD1;
-	 $display ("  mkHost_Control_Status: host_to_hw_req: watch_tohost_on");
-      end
-      else if (cmd == cmd_read_tohost) begin
-	 let tohost_value = dw_tohost_value [15:0];
-	 let status = ({ tohost_value, 16'h0 } | status_ok);
-	 f_hw_to_host.enq (status);
-	 rg_prev_tohost_value <= tohost_value;
-
-	 // Only report changes to non-zero
-	 if ((tohost_value != 0) && (tohost_value != rg_prev_tohost_value)) begin
-	    $display ("  mkHost_Control_Status: host_to_hw_req: read_tohost = %0h",
-		      tohost_value);
-	    let test_num = (tohost_value >> 1);
-	    if (test_num == 0) $display ("  = PASS");
-	    else               $display ("  = FAIL on test %0d", test_num);
-	 end
-      end
-      else if (cmd == cmd_pc_trace_off) begin
-	 rg_pc_trace_on <= True;
-	 f_hw_to_host.enq (status_ok);
-	 $display ("  mkHost_Control_Status: host_to_hw_req: PC trace off");
-      end
-      else if (cmd == cmd_pc_trace_on) begin
-	 next_state = STATE_EXEC;
-	 $display ("  mkHost_Control_Status: host_to_hw_req: PC trace on");
-      end
-      else if (cmd == cmd_set_verbosity) begin
-	 next_state = STATE_WORD1;
-	 $display ("  mkHost_Control_Status: host_to_hw_req: verbosity");
-      end
-      else begin
-	 f_hw_to_host.enq (status_unrecognized);
-	 $display ("ERROR: mkHost_Control_Status: host_to_hw_req: unrecognized command %0h",
-		   word0);
-      end
-      rg_state <= next_state;
+   rule rl_req0 (rg_state == STATE_REQ0);
+      Bit #(32) req0 <- pop (f_host_to_hw);
+      rg_req0 <= req0;
+      rg_state <= ((req0 [2:0] == 0) ? STATE_EXEC : STATE_REQ1);
    endrule
 
-   // ----------------
-   // Common rule for 3-word commands: collect word1, then go to state_exec
+   rule rl_req1 (rg_state == STATE_REQ1);
+      Bit #(32) req1 <- pop (f_host_to_hw);
+      rg_req1 <= req1;
+      rg_state <= ((req1 [2:0] == 1) ? STATE_EXEC : STATE_REQ2);
+   endrule
 
-   rule rl_fsm_word1 (rg_state == STATE_WORD1);
-      Bit #(32) word1 <- pop (f_host_to_hw);
-      rg_word1 <= word1;
+   rule rl_req2 (rg_state == STATE_REQ2);
+      Bit #(32) req2 <- pop (f_host_to_hw);
+      rg_req2 <= req2;
+      rg_state <= ((req2 [2:0] == 2) ? STATE_EXEC : STATE_REQ3);
+   endrule
+
+   rule rl_req3 (rg_state == STATE_REQ3);
+      Bit #(32) req3 <- pop (f_host_to_hw);
+      rg_req3 <= req3;
       rg_state <= STATE_EXEC;
    endrule
 
-   // ----------------
+   // ================================================================
+   // Execute command, send rsp0, return to idle state
 
-   rule rl_reset ((rg_state == STATE_EXEC) && (word0_cmd == cmd_CPU_reset));
-      Bool running <- pop (f_cpu_reset_rsps);
-      dynamicAssert (running == True, "Reset: CPU came up stopped");
-      f_hw_to_host.enq (status_ok);
-      rg_state <= STATE_START;
+   rule rl_exec (rg_state == STATE_EXEC);
+      Host_Cmd  cmd  = rg_req0 [7:3];
+      Bit #(32) rsp0 = status_ok;
 
-      $display ("  host_to_hw_req: CPU_reset ... done. running = ", fshow (running));
-      $display ("    %0d: %m", cur_cycle);
-      $display ("    Rule rl_reset");
-   endrule
+      if (cmd == cmd_ping) begin
+	 $display ("  mkHost_Control_Status: host_to_hw_req: ping/noop");
+      end
+      // ----------------
+      else if (cmd == cmd_core_reset) begin
+	 if (rg_req0 [31:8] != 0) begin
+	    rg_assert_core_reset <= True;
+	    $display ("  mkHost_Control_Status: host_to_hw_req: Assert Core Reset");
+	 end
+	 else begin
+	    rg_assert_core_reset <= False;
+	    $display ("  mkHost_Control_Status: host_to_hw_req: Deassert Core Reset");
+	 end
+      end
+      // ----------------
+      else if (cmd == cmd_watch_tohost) begin
+	 if (rg_req0 [2:0] == 0) begin
+	    // OFF
+	    f_watch_tohost.enq (tuple2 (False, ?));
+	    $display ("  mkHost_Control_Status: host_to_hw_req: watch_tohost_off");
+	 end
+	 else begin
+	    // ON
+	    Bit #(64) tohost_addr = { rg_req2, rg_req1 };
+	    f_watch_tohost.enq (tuple2 (True, tohost_addr));
+	    $display ("  mkHost_Control_Status: host_to_hw_req: watch_tohost_on, addr %0h",
+		      tohost_addr);
+	 end
+      end
+      // ----------------
+      else if (cmd == cmd_read_tohost) begin
+	 rsp0 = ({ dw_tohost_value, 16'h0 } | status_ok);
+	 // Only display if host value changed
+	 if (rg_prev_tohost_value != dw_tohost_value) begin
+	    $display ("  mkHost_Control_Status: host_to_hw_req: read_tohost => %0h",
+		      dw_tohost_value);
+	    rg_prev_tohost_value <= dw_tohost_value;
+	 end
+      end
+      // ----------------
+      else if (cmd == cmd_pc_trace) begin
+	 if (rg_req0 [2:0] == 0) begin
+	    // OFF
+	    f_pc_trace_control.enq (tuple2 (False, ?));
+	    $display ("  mkHost_Control_Status: host_to_hw_req: PC trace off");
+	 end
+	 else begin
+	    // ON
+	    f_pc_trace_control.enq (tuple2 (True, zeroExtend (rg_req1)));
+	    $display ("  mkHost_Control_Status: host_to_hw_req: PC trace on: interval %0h",
+		      rg_req1);
+	 end
+      end
+      // ----------------
+      else if (cmd == cmd_set_sim_verbosity) begin
+	 Bit #(4)  verbosity = rg_req0 [11:8];
+	 Bit #(64) logdelay  = { rg_req2, rg_req1 };
+	 f_verbosity.enq (tuple2 (verbosity, logdelay));
+	 $display ("  mkHost_Control_Status: host_to_hw_req: set_sim_verbosity %0d logdelay %0h",
+		   verbosity, logdelay);
+      end
+      // ----------------
+      else begin
+	 rsp0 = status_unsupported;
+	 $display ("Host-to-HW control: unsupported command %0h; request word 0 is %0h",
+		   cmd, rg_req0);
+	 $display ("    %m");
+      end
 
-   // ----------------
-
-   rule rl_stop ((rg_state == STATE_EXEC) && (word0_cmd == cmd_CPU_stop));
-      Bool running <- pop (f_run_halt_rsps);
-      dynamicAssert ((running == False), "Stop cmd but CPU still running");
-      f_hw_to_host.enq ((running == False) ? status_ok : status_err);
-      rg_state <= STATE_START;
-
-      $display ("  host_to_hw_req: CPU_stop ... running = ", fshow (running));
-      $display ("    %0d: %m", cur_cycle);
-      $display ("    Rule rl_stop");
-   endrule
-
-   // ----------------
-
-   rule rl_start ((rg_state == STATE_EXEC) && (word0_cmd == cmd_CPU_start));
-      Bool running <- pop (f_run_halt_rsps);
-      dynamicAssert ((running == True), "Start cmd but CPU still stopped");
-      f_hw_to_host.enq ((running == True) ? status_ok : status_err);
-      rg_state <= STATE_START;
-
-      $display ("  host_to_hw_req: CPU_start ... running = ", fshow (running));
-      $display ("    %0d: %m", cur_cycle);
-      $display ("    Rule rl_start");
-   endrule
-
-   // ----------------
-
-   rule rl_CSR_write ((rg_state == STATE_EXEC) && (word0_cmd == cmd_CSR_write));
-      Bit #(32) word2 <- pop (f_host_to_hw);
-      Bit #(12) csr_addr = rg_word0 [31:20];
-      WordXL    csr_data = truncate ({ word2, rg_word1 });
-      let req = DM_CPU_Req {write:   True,
-			    address: csr_addr,
-			    data:    csr_data};
-      f_csr_mem_reqs.enq (req);
-      rg_state <= STATE_CSR_WRITE_2;
-
-      $display ("  host_to_hw_req: CSR_write: addr %0h data %0h", csr_addr, csr_data);
-      $display ("    %0d: %m", cur_cycle);
-      $display ("    Rule rl_CSR_write");
-   endrule
-
-   rule rl_CSR_write_2 (rg_state == STATE_CSR_WRITE_2);
-      let dm_cpu_rsp <- pop (f_csr_mem_rsps);
-      f_hw_to_host.enq (dm_cpu_rsp.ok ? status_ok : status_err);
-      rg_state <= STATE_START;
-
-      $display ("  host_to_hw_req: CSR_write: ok = ", fshow (dm_cpu_rsp.ok ));
-      $display ("    %0d: %m", cur_cycle);
-      $display ("    Rule rl_CSR_write_2");
-   endrule
-
-   // ----------------
-
-   rule rl_CSR_read ((rg_state == STATE_EXEC) && (word0_cmd == cmd_CSR_read));
-      Bit #(12) csr_addr = rg_word0 [31:20];
-      let req = DM_CPU_Req {write:   False,
-			    address: csr_addr,
-			    data:    ?};
-      f_csr_mem_reqs.enq (req);
-      rg_state <= STATE_CSR_READ_2;
-
-      $display ("  host_to_hw_req: CSR_read: addr %0h", csr_addr);
-      $display ("    %0d: %m", cur_cycle);
-      $display ("    Rule rl_CSR_read");
-   endrule
-
-   rule rl_CSR_read_2 (rg_state == STATE_CSR_READ_2);
-      let dm_cpu_rsp <- pop (f_csr_mem_rsps);
-      rg_rsp_data <= zeroExtend (dm_cpu_rsp.data);
-      f_hw_to_host.enq (dm_cpu_rsp.ok ? status_ok : status_err);
-      rg_state <= (dm_cpu_rsp.ok ? STATE_CSR_READ_3 : STATE_START);
-
-      $write ("  host_to_hw_req: CSR_read: ok = ", fshow (dm_cpu_rsp.ok ));
-      if (dm_cpu_rsp.ok) $write (" data %0h", dm_cpu_rsp.data);
-      $display ("");
-      $display ("    %0d: %m", cur_cycle);
-      $display ("    Rule rl_CSR_read_2");
-   endrule
-
-   rule rl_CSR_read_3 (rg_state == STATE_CSR_READ_3);
-      f_hw_to_host.enq (rg_rsp_data [31:0]);
-      rg_state <= STATE_CSR_READ_4;
-   endrule
-
-   rule rl_CSR_read_4 (   (rg_state == STATE_CSR_READ_4)
-		       && (word0_cmd == cmd_CSR_read));
-      f_hw_to_host.enq (rg_rsp_data [63:32]);
-      rg_state <= STATE_START;
-   endrule
-
-   // ----------------
-
-   rule rl_watch_tohost_on (   (rg_state == STATE_EXEC)
-			    && (word0_cmd == cmd_watch_tohost_on));
-      Bit #(32) word2 <- pop (f_host_to_hw);
-      Bit #(64) tohost_addr = { word2, rg_word1 };
-      f_watch_tohost.enq (tuple2 (True, tohost_addr));
-      f_hw_to_host.enq (status_ok);
-      rg_state <= STATE_START;
-
-      $display ("  host_to_hw_req: watch_tohost_on: tohost_addr = %0h", tohost_addr);
-      $display ("    %0d: %m", cur_cycle);
-      $display ("    Rule rl_watch_tohost_on");
-   endrule
-
-   // ----------------
-
-   rule rl_pc_trace_on (   (rg_state == STATE_EXEC)
-			&& (word0_cmd == cmd_pc_trace_on));
-      Bit #(32) word1 <- pop (f_host_to_hw);
-      rg_pc_trace_on       <= True;
-      rg_pc_trace_interval <= zeroExtend (word1);
-      f_hw_to_host.enq (status_ok);
-      rg_state <= STATE_START;
-
-      $display ("  host_to_hw_req: PC trace on, interval = %0h", word1);
-      $display ("    %0d: %m", cur_cycle);
-      $display ("    Rule rl_pc_trace_on");
-   endrule
-
-   // ----------------
-
-   rule rl_verbosity (   (rg_state == STATE_EXEC)
-		      && (word0_cmd == cmd_set_verbosity));
-      Bit #(32) word2 <- pop (f_host_to_hw);
-      Bit #(4)  verbosity = truncate (rg_word0 [31:8]);
-      Bit #(64) logdelay  = { word2, rg_word1 };
-      f_verbosity.enq (tuple2 (verbosity, logdelay));
-      f_hw_to_host.enq (status_ok);
-      rg_state <= STATE_START;
-
-      $display ("  host_to_hw_req: set_verbosity %0d, delay %0h", verbosity, logdelay);
-      $display ("    %0d: %m", cur_cycle);
-      $display ("    Rule rl_verbosity");
+      f_hw_to_host.enq (rsp0);
+      rg_state <= STATE_REQ0;
    endrule
 
    // ================================================================
@@ -392,24 +234,22 @@ module mkHost_Control_Status (Host_Control_Status_IFC);
    interface se_control_status  = fifofs_to_Server_Semi_FIFOF (f_host_to_hw,
 							       f_hw_to_host);
 
-   interface cl_cpu_reset       = toGPClient (f_cpu_reset_reqs,
-					      f_cpu_reset_rsps);
+   method mv_assert_core_reset = rg_assert_core_reset;
 
-   interface cl_run_halt        = toGPClient (f_run_halt_reqs,
-					      f_run_halt_rsps);
+   interface FIFOF_O fo_watch_tohost_control = to_FIFOF_O (f_watch_tohost);
 
-   interface cl_csr_rw          = toGPClient (f_csr_mem_reqs,
-					      f_csr_mem_rsps);
+   interface FIFOF_O fo_verbosity_control = to_FIFOF_O (f_verbosity);
 
-   interface Get g_watch_tohost = toGet (f_watch_tohost);
+   interface FIFOF_O fo_pc_trace_control = to_FIFOF_O (f_pc_trace_control);
 
-   interface Get g_verbosity    = toGet (f_verbosity);
-
-   method mv_pc_trace = tuple2 (rg_pc_trace_on, rg_pc_trace_interval);
-
-   method Action ma_tohost_value (Bit #(64) tohost_value);
-      dw_tohost_value <= tohost_value;
-   endmethod
+   interface FIFOF_I fi_tohost_value;
+      method Action enq (Bit #(64) tohost_value);
+	 action
+	    dw_tohost_value <= truncate (tohost_value);
+	 endaction
+      endmethod
+      method notFull = True;
+   endinterface
 endmodule
 
 // ================================================================

@@ -4,18 +4,20 @@
 package DM_TV;
 
 // ================================================================
-// This package defines four substitutable modules:
-//     mknoDM_noTV
-//     mknoDM_TV
-//     mkDM_noTV
-//     mkDM_TV
-// that fit into AWSteria_Core, covering the four choices of optional
-// Debug Module and optional Tandem Verification.
-//
+// This package defines four alternate module implementations for the
+// mkDM_TV module with DM_TV_IFC interface:
+//     mkDM_TV_nn
+//     mkDM_TV_ny
+//     mkDM_TV_yn
+//     mkDM_TV_yy
+// covering the four choices of:
+//   optional Debug Module  x  optional Tandem Verification
 
-// In Core_v2's mkCore this code is in-line, with 'Ifdefs' governing
-// the various choices, making it difficult to read; hence this
-// 4-variant organization.
+// In Core and Core_v2's mkCore this code is in-line, with 'ifdefs'
+// governing the various choices.  That makes it difficult to read;
+// hence this 4-variant organization.  It has some code duplication,
+// but is much easier to read/maintain.
+// TODO: back-fit this cleaner version into Core and Core_V2.
 
 // ================================================================
 // BSV library imports
@@ -66,35 +68,33 @@ import TV_Taps :: *;
 // ================================================================
 // Common interface for all 4 variants of the module
 
-// All the modules take a parameter of the following type
+// Each variant module takes a parameter of the following type
 
 typedef struct {
+   // CPU's TV out
+   Get #(Trace_Data)                cpu_trace_data_out;
+
+   // CPU's debug interfaces
+   Server #(Bool, Bool)             cpu_hart0_server_reset;
+
+   Server #(Bool, Bool)             cpu_hart0_server_run_halt;
+   Put #(Bit #(4))                  cpu_hart0_put_other_req;
+
+   Server #(DM_CPU_Req #(5,  XLEN),
+	    DM_CPU_Rsp #(XLEN))     cpu_hart0_gpr_mem_server;
+`ifdef ISA_F
+   Server #(DM_CPU_Req #(5,  FLEN),
+	    DM_CPU_Rsp #(FLEN))     cpu_hart0_fpr_mem_server;
+`endif
+   Server #(DM_CPU_Req #(12, XLEN),
+	    DM_CPU_Rsp #(XLEN))     cpu_hart0_csr_mem_server;
+
    // CPU's Coherent DMA interface
    AXI4_Slave_IFC #(Wd_Id_Dma,
 		    Wd_Addr_Dma,
 		    Wd_Data_Dma,
 		    Wd_User_Dma)    cpu_dma_server;
-   // CPU's TV out
-   Get #(Trace_Data)                cpu_trace_data_out;
-
-   // CPU's debug interfaces
-   Put #(Bit #(4))                  cpu_hart0_put_other_req;
-   Server #(Bool, Bool)             cpu_hart0_server_run_halt;
-   Server #(DM_CPU_Req #(12, XLEN),
-	    DM_CPU_Rsp #(XLEN))     cpu_hart0_csr_mem_server;
-`ifdef ISA_F
-   Server #(DM_CPU_Req #(5,  FLEN),
-	    DM_CPU_Rsp #(FLEN))     cpu_hart0_fpr_mem_server;
-`endif
-   Server #(DM_CPU_Req #(5,  XLEN),
-	    DM_CPU_Rsp #(XLEN))     cpu_hart0_gpr_mem_server;
-
-   // From Control/Status
-   Client #(Bool, Bool)             cs_cl_hart0_reset;
-   Client #(Bool, Bool)             cs_cl_run_halt;
-   Client #(DM_CPU_Req #(12, XLEN),
-	    DM_CPU_Rsp #(XLEN))     cs_cl_csr_rw;
-   } DM_TV_Param;
+} DM_TV_Param;
 
 // All the modules return an interface of the following type
 
@@ -106,7 +106,6 @@ interface DM_TV_IFC;
    interface FIFOF_O #(TV_Info)              fo_tv_info;
    interface Server_Semi_FIFOF #(DMI_Req,
 				 DMI_Rsp)    se_dmi;
-   interface Client #(Bool, Bool)            cl_reset;
    interface Client_Semi_FIFOF #(Bit #(0),
 				 Bit #(0))   cl_ndm_reset;
 endinterface
@@ -120,15 +119,15 @@ module mkDM_TV #(DM_TV_Param param) (DM_TV_IFC);
    let dm_tv_module =
 `ifdef INCLUDE_GDB_CONTROL
   `ifdef INCLUDE_TANDEM_VERIF
-       mkDM_and_TV
+       mkDM_TV_yy
   `else
-       mkDM_noTV
+       mkDM_TV_yn
   `endif
 `else
   `ifdef INCLUDE_TANDEM_VERIF
-       mknoDM_TV
+       mkDM_TV_ny
   `else
-       mknoDM_noTV
+       mkDM_TV_nn
   `endif
 `endif
    ;
@@ -140,75 +139,52 @@ endmodule
 // ****************************************************************
 // Variant: Debug Module present, Tandem Verification present
 
-module mkDM_and_TV #(DM_TV_Param param) (DM_TV_IFC);
+module mkDM_TV_yy #(DM_TV_Param param) (DM_TV_IFC);
 
    // ================================================================
    // Debug Module and connections
 
    Debug_Module_IFC  debug_module <- mkDebug_Module;
 
+   // Connect hart0 reset from Debug Module to CPU 
+   mkConnection (debug_module.hart0_reset_client, param.cpu_hart0_server_reset);
+
+   // Connect run/halt from Debug Module to CPU
+   mkConnection (debug_module.hart0_client_run_halt, param.cpu_hart0_server_run_halt);
+
    // Connect "other" requests from debug module to CPU.
    // TODO: this functionality is non-spec and will be removed.
    mkConnection (debug_module.hart0_get_other_req, param.cpu_hart0_put_other_req);
 
-   // Each 'tap' siphons off a record for the Tandem Verifier,
+   // ----------------
+   // Instantiate taps. Each 'tap' siphons off a record for the Tandem Verifier,
    // for each Debug-Module write to a CPU CSR, FPR, GPR, or memory.
-   DM_CSR_Tap_IFC dm_csr_tap <- mkDM_CSR_Tap;
+   DM_GPR_Tap_IFC dm_gpr_tap <- mkDM_GPR_Tap;
 `ifdef ISA_F
    DM_FPR_Tap_IFC dm_fpr_tap <- mkDM_FPR_Tap;
 `endif
-   DM_GPR_Tap_IFC dm_gpr_tap <- mkDM_GPR_Tap;
+   DM_CSR_Tap_IFC dm_csr_tap <- mkDM_CSR_Tap;
    DM_Mem_Tap_IFC dm_mem_tap <- mkDM_Mem_Tap;
 
+   // ----
    // Connect Debug module to taps
-   mkConnection (debug_module.hart0_csr_mem_client, dm_csr_tap.server);
+   mkConnection (debug_module.hart0_gpr_mem_client, dm_gpr_tap.server);
 `ifdef ISA_F
    mkConnection (debug_module.hart0_fpr_mem_client, dm_fpr_tap.server);
 `endif
-   mkConnection (debug_module.hart0_gpr_mem_client, dm_gpr_tap.server);
+   mkConnection (debug_module.hart0_csr_mem_client, dm_csr_tap.server);
    mkConnection (debug_module.master,               dm_mem_tap.slave);
 
    // ----------------
-   // 2x1 muxes merging controls from
-   //     mkHost_Control_Status and
-   //     Debug Module
-   // to CPU
-
-   // Controls degree of pipelining of these muxes
-   Integer in_flight = 1;
-
-   // FIFOFs for merging resets
-   FIFOF #(Bool) f_reset_reqs <- mkFIFOF;
-   FIFOF #(Bool) f_reset_rsps <- mkFIFOF;
-
-   // Merge reset
-   let empty0 <- mkMux_Clients_Server (in_flight,
-				       cons (param.cs_cl_hart0_reset,
-					     cons (debug_module.hart0_reset_client,
-						   nil)),
-				       toGPServer (f_reset_reqs, f_reset_rsps));
-   // Merge run/halt
-   let empty1 <- mkMux_Clients_Server (in_flight,
-				       cons (param.cs_cl_run_halt,
-					     cons (debug_module.hart0_client_run_halt,
-						   nil)),
-				       param.cpu_hart0_server_run_halt);
-   // Merge CSR r/w
-   let empty2 <- mkMux_Clients_Server (in_flight,
-				       cons (param.cs_cl_csr_rw,
-					     cons (dm_csr_tap.client,
-						   nil)),
-				       param.cpu_hart0_csr_mem_server);
-
+   // Connect GPR/FPR/CSR req/rsp from Taps to CPU
+   mkConnection (dm_gpr_tap.client, param.cpu_hart0_gpr_mem_server);
 `ifdef ISA_F
-   // Connect FPR r/w from Debug Module Tap to CPU
    mkConnection (dm_fpr_tap.client, param.cpu_hart0_fpr_mem_server);
 `endif
+   mkConnection (dm_csr_tap.client, param.cpu_hart0_csr_mem_server);
 
-   // Connect GPR r/w from Debug Module Tap to CPU
-   mkConnection (dm_gpr_tap.client, param.cpu_hart0_gpr_mem_server);
-
-   // Connect Debug Module mem tap to CPU dma_server via DMA_Server_Mux
+   // ----------------
+   // Connect Mem req/rsp from Tap to CPU
    Dma_Server_Mux_IFC  dma_server_mux <- mkDma_Server_Mux;
    mkConnection (dm_mem_tap.master,            dma_server_mux.initiator_B_server);
    mkConnection (dma_server_mux.target_client, param.cpu_dma_server);
@@ -325,7 +301,6 @@ module mkDM_and_TV #(DM_TV_Param param) (DM_TV_IFC);
    interface FIFOF_O           fo_tv_info   = to_FIFOF_O (f_tv_info);
    interface Server_Semi_FIFOF se_dmi       = fifofs_to_Server_Semi_FIFOF (f_dmi_reqs,
 									   f_dmi_rsps);
-   interface Client            cl_reset     = toGPClient (f_reset_reqs, f_reset_rsps);
    interface Client_Semi_FIFOF cl_ndm_reset = fifofs_to_Client_Semi_FIFOF (f_ndm_reqs,
 									   f_ndm_rsps);
 endmodule
@@ -333,58 +308,33 @@ endmodule
 // ****************************************************************
 // Variant: Debug Module present, Tandem Verification absent
 
-module mkDM_noTV #(DM_TV_Param param) (DM_TV_IFC);
+module mkDM_TV_yn #(DM_TV_Param param) (DM_TV_IFC);
 
    // ================================================================
    // Debug Module and connections
 
    Debug_Module_IFC  debug_module <- mkDebug_Module;
 
+   // Connect hart0 reset from Debug Module to CPU 
+   mkConnection (debug_module.hart0_reset_client, param.cpu_hart0_server_reset);
+
+   // Connect run/halt from Debug Module to CPU
+   mkConnection (debug_module.hart0_client_run_halt, param.cpu_hart0_server_run_halt);
+
    // Connect "other" requests from debug module to CPU.
    // TODO: this functionality is non-spec and will be removed.
    mkConnection (debug_module.hart0_get_other_req, param.cpu_hart0_put_other_req);
 
    // ----------------
-   // 2x1 muxes merging controls from
-   //     mkHost_Control_Status and
-   //     Debug Module
-   // to CPU
-
-   // Controls degree of pipelining of these muxes
-   Integer in_flight = 1;
-
-   // FIFOFs for merging resets
-   FIFOF #(Bool) f_reset_reqs <- mkFIFOF;
-   FIFOF #(Bool) f_reset_rsps <- mkFIFOF;
-
-   // Merge reset
-   let empty0 <- mkMux_Clients_Server (in_flight,
-				       cons (param.cs_cl_hart0_reset,
-					     cons (debug_module.hart0_reset_client,
-						   nil)),
-				       toGPServer (f_reset_reqs, f_reset_rsps));
-   // Merge run/halt
-   let empty1 <- mkMux_Clients_Server (in_flight,
-				       cons (param.cs_cl_run_halt,
-					     cons (debug_module.hart0_client_run_halt,
-						   nil)),
-				       param.cpu_hart0_server_run_halt);
-   // Merge CSR r/w
-   let empty2 <- mkMux_Clients_Server (in_flight,
-				       cons (param.cs_cl_csr_rw,
-					     cons (debug_module.hart0_csr_mem_client,
-						   nil)),
-				       param.cpu_hart0_csr_mem_server);
-
+   // Connect GPR/FPR/CSR/Mem req/rsp from Debug Module to CPU
+   mkConnection (debug_module.hart0_gpr_mem_client, param.cpu_hart0_gpr_mem_server);
 `ifdef ISA_F
-   // Connect FPR r/w from Debug Module to CPU
    mkConnection (debug_module.hart0_fpr_mem_client, param.cpu_hart0_fpr_mem_server);
 `endif
+   mkConnection (debug_module.hart0_csr_mem_client, param.cpu_hart0_csr_mem_server);
 
-   // Connect GPR r/w from Debug Module to CPU
-   mkConnection (debug_module.hart0_gpr_mem_client, param.cpu_hart0_gpr_mem_server);
-
-   // Connect Debug Module to CPU dma_server via DMA_Server_Mux
+   // ----------------
+   // Connect Mem req/rsp from Debug Module to CPU
    Dma_Server_Mux_IFC  dma_server_mux <- mkDma_Server_Mux;
    mkConnection (debug_module.master,          dma_server_mux.initiator_B_server);
    mkConnection (dma_server_mux.target_client, param.cpu_dma_server);
@@ -438,8 +388,6 @@ module mkDM_noTV #(DM_TV_Param param) (DM_TV_IFC);
    interface FIFOF_O           fo_tv_info   = dummy_FIFOF_O;
    interface Server_Semi_FIFOF se_dmi       = fifofs_to_Server_Semi_FIFOF (f_dmi_reqs,
 									   f_dmi_rsps);
-   interface Client            cl_reset     = toGPClient (f_reset_reqs,
-							  f_reset_rsps);
    interface Client_Semi_FIFOF cl_ndm_reset = fifofs_to_Client_Semi_FIFOF (f_ndm_reqs,
 									   f_ndm_rsps);
 endmodule
@@ -447,24 +395,7 @@ endmodule
 // ****************************************************************
 // Variant: Debug Module absent, Tandem Verification present
 
-module mk_noDM_TV #(DM_TV_Param param) (DM_TV_IFC);
-
-   // ================================================================
-   // Connections withtout Debug Module
-
-   Get #(Bit #(4)) getstub1 = getstub;
-   mkConnection (getstub1, param.cpu_hart0_put_other_req);
-
-   mkConnection (param.cs_cl_run_halt,  param.cpu_hart0_server_run_halt);
-   mkConnection (param.cs_cl_csr_rw,    param.cpu_hart0_csr_mem_server);
-`ifdef ISA_F
-   Client #(DM_CPU_Req #(5,  FLEN),
-	    DM_CPU_Rsp #(FLEN))     client_stub1 = client_stub;
-   mkConnection (client_stub1,  param.cpu_hart0_fpr_mem_server);
-`endif
-   Client #(DM_CPU_Req #(5,  XLEN),
-	    DM_CPU_Rsp #(XLEN))     client_stub2 = client_stub;
-   mkConnection (client_stub2,  param.cpu_hart0_gpr_mem_server);
+module mkDM_TV_ny #(DM_TV_Param param) (DM_TV_IFC);
 
    // ================================================================
    // TV Encoder and connections
@@ -492,31 +423,13 @@ module mk_noDM_TV #(DM_TV_Param param) (DM_TV_IFC);
    interface AXI4_Slave_IFC    dma_S         = param.cpu_dma_server;
    interface FIFOF_O           fo_tv_info    = to_FIFOF_O (f_tv_info);
    interface Server_Semi_FIFOF se_dmi        = dummy_Server_Semi_FIFOF;
-   interface Client            cl_reset      = param.cs_cl_hart0_reset;
    interface Client_Semi_FIFOF cl_ndm_reset  = dummy_Client_Semi_FIFOF;
 endmodule
 
 // ****************************************************************
 // Variant: Debug Module absent, Tandem Verification absent
 
-module mk_noDM_noTV #(DM_TV_Param param) (DM_TV_IFC);
-
-   // ================================================================
-   // Connections withtout Debug Module
-
-   Get #(Bit #(4)) getstub1 = getstub;
-   mkConnection (getstub1, param.cpu_hart0_put_other_req);
-
-   mkConnection (param.cs_cl_run_halt,  param.cpu_hart0_server_run_halt);
-   mkConnection (param.cs_cl_csr_rw,    param.cpu_hart0_csr_mem_server);
-`ifdef ISA_F
-   Client #(DM_CPU_Req #(5,  FLEN),
-	    DM_CPU_Rsp #(FLEN))     client_stub1 = client_stub;
-   mkConnection (client_stub1,  param.cpu_hart0_fpr_mem_server);
-`endif
-   Client #(DM_CPU_Req #(5,  XLEN),
-	    DM_CPU_Rsp #(XLEN))     client_stub2 = client_stub;
-   mkConnection (client_stub2,  param.cpu_hart0_gpr_mem_server);
+module mkDM_TV_nn #(DM_TV_Param param) (DM_TV_IFC);
 
    // ================================================================
    // INTERFACE
@@ -524,7 +437,6 @@ module mk_noDM_noTV #(DM_TV_Param param) (DM_TV_IFC);
    interface AXI4_Slave_IFC    dma_S         = param.cpu_dma_server;
    interface FIFOF_O           fo_tv_info    = dummy_FIFOF_O;
    interface Server_Semi_FIFOF se_dmi        = dummy_Server_Semi_FIFOF;
-   interface Client            cl_reset      = param.cs_cl_hart0_reset;
    interface Client_Semi_FIFOF cl_ndm_reset  = dummy_Client_Semi_FIFOF;
 endmodule
 

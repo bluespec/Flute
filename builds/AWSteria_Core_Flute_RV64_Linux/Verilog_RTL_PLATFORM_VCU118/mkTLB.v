@@ -267,11 +267,11 @@ module mkTLB(CLK,
   wire [129 : 0] IF_SEL_ARR_tlb0_valids_0_0_tlb0_valids_1_1_tlb_ETC___d95,
 		 IF_SEL_ARR_tlb1_valids_0_0_tlb1_valids_1_1_tlb_ETC___d89,
 		 IF_SEL_ARR_tlb2_valids_0_2_tlb2_valids_1_3_tlb_ETC___d94;
-  wire [63 : 0] _theResult___snd_fst__h6370,
+  wire [63 : 0] _theResult___fst__h6368,
+		_theResult___fst__h7006,
+		_theResult___snd_fst__h6370,
 		_theResult___snd_fst__h7008,
 		_theResult___snd_fst__h7512,
-		_theResult___snd_snd_fst__h6372,
-		_theResult___snd_snd_fst__h7010,
 		pa___1__h7292,
 		pa___1__h7341,
 		pa___1__h7409,
@@ -701,32 +701,32 @@ module mkTLB(CLK,
 	     SEL_ARR_tlb2_valids_0_2_tlb2_valids_1_3_tlb2_v_ETC___d68 &&
 	     (tlb2_entries$D_OUT_1[150:135] == mv_vm_xlate_satp[59:44] ||
 	      tlb2_entries$D_OUT_1[69]) ;
-  assign _theResult___snd_fst__h6370 =
+  assign _theResult___fst__h6368 =
 	     SEL_ARR_tlb0_valids_0_0_tlb0_valids_1_1_tlb0_v_ETC___d79 ?
-	       _theResult___snd_fst__h7008 :
+	       _theResult___fst__h7006 :
 	       mv_vm_xlate_va ;
-  assign _theResult___snd_fst__h7008 =
+  assign _theResult___fst__h7006 =
 	     (mv_vm_xlate_priv_EQ_0b0_0_AND_NOT_IF_SEL_ARR_t_ETC___d122 ||
 	      !IF_SEL_ARR_tlb0_valids_0_0_tlb0_valids_1_1_tlb_ETC___d95[72] ||
 	      !mv_vm_xlate_read_not_write &&
 	      !IF_SEL_ARR_tlb0_valids_0_0_tlb0_valids_1_1_tlb_ETC___d95[73]) ?
 	       mv_vm_xlate_va :
 	       _theResult___fst__h7287 ;
-  assign _theResult___snd_fst__h7512 =
-	     (!pte___2__h7285[7] && !mv_vm_xlate_read_not_write) ?
-	       pte___1__h7590 :
-	       pte___2__h7285 ;
-  assign _theResult___snd_snd_fst__h6372 =
+  assign _theResult___snd_fst__h6370 =
 	     SEL_ARR_tlb0_valids_0_0_tlb0_valids_1_1_tlb0_v_ETC___d79 ?
-	       _theResult___snd_snd_fst__h7010 :
+	       _theResult___snd_fst__h7008 :
 	       IF_SEL_ARR_tlb0_valids_0_0_tlb0_valids_1_1_tlb_ETC___d95[129:66] ;
-  assign _theResult___snd_snd_fst__h7010 =
+  assign _theResult___snd_fst__h7008 =
 	     (mv_vm_xlate_priv_EQ_0b0_0_AND_NOT_IF_SEL_ARR_t_ETC___d122 ||
 	      !IF_SEL_ARR_tlb0_valids_0_0_tlb0_valids_1_1_tlb_ETC___d95[72] ||
 	      !mv_vm_xlate_read_not_write &&
 	      !IF_SEL_ARR_tlb0_valids_0_0_tlb0_valids_1_1_tlb_ETC___d95[73]) ?
 	       IF_SEL_ARR_tlb0_valids_0_0_tlb0_valids_1_1_tlb_ETC___d95[129:66] :
 	       _theResult___snd_fst__h7512 ;
+  assign _theResult___snd_fst__h7512 =
+	     (!pte___2__h7285[7] && !mv_vm_xlate_read_not_write) ?
+	       pte___1__h7590 :
+	       pte___2__h7285 ;
   assign dmem_not_imem_OR_NOT_mv_vm_xlate_read_not_writ_ETC___d121 =
 	     (dmem_not_imem || !mv_vm_xlate_read_not_write ||
 	      !IF_SEL_ARR_tlb0_valids_0_0_tlb0_valids_1_1_tlb_ETC___d95[69]) &&
@@ -770,7 +770,7 @@ module mkTLB(CLK,
 	       64'd0 ;
   assign x__h7281 =
 	     (mv_vm_xlate_priv <= 2'b01 && mv_vm_xlate_satp[63:60] == 4'd8) ?
-	       _theResult___snd_fst__h6370 :
+	       _theResult___fst__h6368 :
 	       mv_vm_xlate_va ;
   assign x__h7295 =
 	     { IF_SEL_ARR_tlb0_valids_0_0_tlb0_valids_1_1_tlb_ETC___d95[119:76],
@@ -783,7 +783,7 @@ module mkTLB(CLK,
 	       mv_vm_xlate_va[29:0] } ;
   assign x__h7596 =
 	     (mv_vm_xlate_priv <= 2'b01 && mv_vm_xlate_satp[63:60] == 4'd8) ?
-	       _theResult___snd_snd_fst__h6372 :
+	       _theResult___snd_fst__h6370 :
 	       IF_SEL_ARR_tlb0_valids_0_0_tlb0_valids_1_1_tlb_ETC___d95[129:66] ;
   assign y__h7125 =
 	     mv_vm_xlate_mstatus_MXR &

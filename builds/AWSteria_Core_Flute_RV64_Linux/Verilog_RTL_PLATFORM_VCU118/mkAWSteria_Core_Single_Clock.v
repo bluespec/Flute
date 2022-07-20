@@ -997,1054 +997,196 @@ module mkAWSteria_Core_Single_Clock(CLK,
        se_dmi_request_notFull,
        se_dmi_response_notEmpty;
 
-  // register rg_ext_intrs
-  reg [15 : 0] rg_ext_intrs;
-  wire [15 : 0] rg_ext_intrs$D_IN;
-  wire rg_ext_intrs$EN;
-
-  // register rg_m_external_interrupt
-  reg rg_m_external_interrupt;
-  wire rg_m_external_interrupt$D_IN, rg_m_external_interrupt$EN;
-
-  // register rg_module_state
-  reg [1 : 0] rg_module_state;
-  reg [1 : 0] rg_module_state$D_IN;
-  wire rg_module_state$EN;
-
-  // register rg_nmi
-  reg rg_nmi;
-  wire rg_nmi$D_IN, rg_nmi$EN;
-
-  // register rg_s_external_interrupt
-  reg rg_s_external_interrupt;
-  wire rg_s_external_interrupt$D_IN, rg_s_external_interrupt$EN;
-
-  // register rg_sw_interrupt
-  reg rg_sw_interrupt;
-  wire rg_sw_interrupt$D_IN, rg_sw_interrupt$EN;
-
-  // register rg_timer_interrupt
-  reg rg_timer_interrupt;
-  wire rg_timer_interrupt$D_IN, rg_timer_interrupt$EN;
-
-  // ports of submodule boot_rom
-  wire [63 : 0] boot_rom$set_addr_map_addr_base,
-		boot_rom$set_addr_map_addr_lim,
-		boot_rom$slave_araddr,
-		boot_rom$slave_awaddr,
-		boot_rom$slave_rdata,
-		boot_rom$slave_wdata;
-  wire [15 : 0] boot_rom$slave_arid,
-		boot_rom$slave_awid,
-		boot_rom$slave_bid,
-		boot_rom$slave_rid;
-  wire [7 : 0] boot_rom$slave_arlen,
-	       boot_rom$slave_awlen,
-	       boot_rom$slave_wstrb;
-  wire [3 : 0] boot_rom$slave_arcache,
-	       boot_rom$slave_arqos,
-	       boot_rom$slave_arregion,
-	       boot_rom$slave_awcache,
-	       boot_rom$slave_awqos,
-	       boot_rom$slave_awregion;
-  wire [2 : 0] boot_rom$slave_arprot,
-	       boot_rom$slave_arsize,
-	       boot_rom$slave_awprot,
-	       boot_rom$slave_awsize;
-  wire [1 : 0] boot_rom$slave_arburst,
-	       boot_rom$slave_awburst,
-	       boot_rom$slave_bresp,
-	       boot_rom$slave_rresp;
-  wire boot_rom$EN_set_addr_map,
-       boot_rom$slave_arlock,
-       boot_rom$slave_arready,
-       boot_rom$slave_arvalid,
-       boot_rom$slave_awlock,
-       boot_rom$slave_awready,
-       boot_rom$slave_awvalid,
-       boot_rom$slave_bready,
-       boot_rom$slave_bvalid,
-       boot_rom$slave_rlast,
-       boot_rom$slave_rready,
-       boot_rom$slave_rvalid,
-       boot_rom$slave_wlast,
-       boot_rom$slave_wready,
-       boot_rom$slave_wvalid;
-
-  // ports of submodule cpu
-  wire [511 : 0] cpu$dma_server_rdata,
-		 cpu$dma_server_wdata,
-		 cpu$mem_master_rdata,
-		 cpu$mem_master_wdata;
-  wire [76 : 0] cpu$hart0_csr_mem_server_request_put;
-  wire [69 : 0] cpu$hart0_fpr_mem_server_request_put,
-		cpu$hart0_gpr_mem_server_request_put;
-  wire [64 : 0] cpu$hart0_csr_mem_server_response_get,
-		cpu$hart0_fpr_mem_server_response_get,
-		cpu$hart0_gpr_mem_server_response_get;
-  wire [63 : 0] cpu$dma_server_araddr,
-		cpu$dma_server_awaddr,
-		cpu$dma_server_wstrb,
-		cpu$imem_master_araddr,
-		cpu$imem_master_awaddr,
-		cpu$imem_master_rdata,
-		cpu$imem_master_wdata,
-		cpu$ma_set_csr_time_t,
-		cpu$mem_master_araddr,
-		cpu$mem_master_awaddr,
-		cpu$mem_master_wstrb,
-		cpu$mv_tohost_value,
-		cpu$set_verbosity_logdelay,
-		cpu$set_watch_tohost_tohost_addr;
-  wire [15 : 0] cpu$dma_server_arid,
-		cpu$dma_server_awid,
-		cpu$dma_server_bid,
-		cpu$dma_server_rid,
-		cpu$imem_master_arid,
-		cpu$imem_master_awid,
-		cpu$imem_master_bid,
-		cpu$imem_master_rid,
-		cpu$mem_master_arid,
-		cpu$mem_master_awid,
-		cpu$mem_master_bid,
-		cpu$mem_master_rid;
-  wire [7 : 0] cpu$dma_server_arlen,
-	       cpu$dma_server_awlen,
-	       cpu$imem_master_arlen,
-	       cpu$imem_master_awlen,
-	       cpu$imem_master_wstrb,
-	       cpu$mem_master_arlen,
-	       cpu$mem_master_awlen;
-  wire [3 : 0] cpu$dma_server_arcache,
-	       cpu$dma_server_arqos,
-	       cpu$dma_server_arregion,
-	       cpu$dma_server_awcache,
-	       cpu$dma_server_awqos,
-	       cpu$dma_server_awregion,
-	       cpu$hart0_put_other_req_put,
-	       cpu$imem_master_arcache,
-	       cpu$imem_master_arqos,
-	       cpu$imem_master_arregion,
-	       cpu$imem_master_awcache,
-	       cpu$imem_master_awqos,
-	       cpu$imem_master_awregion,
-	       cpu$mem_master_arcache,
-	       cpu$mem_master_arqos,
-	       cpu$mem_master_arregion,
-	       cpu$mem_master_awcache,
-	       cpu$mem_master_awqos,
-	       cpu$mem_master_awregion,
-	       cpu$set_verbosity_verbosity;
-  wire [2 : 0] cpu$dma_server_arprot,
-	       cpu$dma_server_arsize,
-	       cpu$dma_server_awprot,
-	       cpu$dma_server_awsize,
-	       cpu$imem_master_arprot,
-	       cpu$imem_master_arsize,
-	       cpu$imem_master_awprot,
-	       cpu$imem_master_awsize,
-	       cpu$mem_master_arprot,
-	       cpu$mem_master_arsize,
-	       cpu$mem_master_awprot,
-	       cpu$mem_master_awsize;
-  wire [1 : 0] cpu$dma_server_arburst,
-	       cpu$dma_server_awburst,
-	       cpu$dma_server_bresp,
-	       cpu$dma_server_rresp,
-	       cpu$imem_master_arburst,
-	       cpu$imem_master_awburst,
-	       cpu$imem_master_bresp,
-	       cpu$imem_master_rresp,
-	       cpu$mem_master_arburst,
-	       cpu$mem_master_awburst,
-	       cpu$mem_master_bresp,
-	       cpu$mem_master_rresp;
-  wire cpu$EN_hart0_csr_mem_server_request_put,
-       cpu$EN_hart0_csr_mem_server_response_get,
-       cpu$EN_hart0_fpr_mem_server_request_put,
-       cpu$EN_hart0_fpr_mem_server_response_get,
-       cpu$EN_hart0_gpr_mem_server_request_put,
-       cpu$EN_hart0_gpr_mem_server_response_get,
-       cpu$EN_hart0_put_other_req_put,
-       cpu$EN_hart0_server_reset_request_put,
-       cpu$EN_hart0_server_reset_response_get,
-       cpu$EN_hart0_server_run_halt_request_put,
-       cpu$EN_hart0_server_run_halt_response_get,
-       cpu$EN_ma_ddr4_ready,
-       cpu$EN_set_verbosity,
-       cpu$EN_set_watch_tohost,
-       cpu$RDY_hart0_csr_mem_server_request_put,
-       cpu$RDY_hart0_csr_mem_server_response_get,
-       cpu$RDY_hart0_fpr_mem_server_request_put,
-       cpu$RDY_hart0_fpr_mem_server_response_get,
-       cpu$RDY_hart0_gpr_mem_server_request_put,
-       cpu$RDY_hart0_gpr_mem_server_response_get,
-       cpu$RDY_hart0_server_reset_request_put,
-       cpu$RDY_hart0_server_reset_response_get,
-       cpu$RDY_hart0_server_run_halt_request_put,
-       cpu$RDY_hart0_server_run_halt_response_get,
-       cpu$dma_server_arlock,
-       cpu$dma_server_arready,
-       cpu$dma_server_arvalid,
-       cpu$dma_server_awlock,
-       cpu$dma_server_awready,
-       cpu$dma_server_awvalid,
-       cpu$dma_server_bready,
-       cpu$dma_server_bvalid,
-       cpu$dma_server_rlast,
-       cpu$dma_server_rready,
-       cpu$dma_server_rvalid,
-       cpu$dma_server_wlast,
-       cpu$dma_server_wready,
-       cpu$dma_server_wvalid,
-       cpu$hart0_server_reset_request_put,
-       cpu$hart0_server_reset_response_get,
-       cpu$hart0_server_run_halt_request_put,
-       cpu$hart0_server_run_halt_response_get,
-       cpu$imem_master_arlock,
-       cpu$imem_master_arready,
-       cpu$imem_master_arvalid,
-       cpu$imem_master_awlock,
-       cpu$imem_master_awready,
-       cpu$imem_master_awvalid,
-       cpu$imem_master_bready,
-       cpu$imem_master_bvalid,
-       cpu$imem_master_rlast,
-       cpu$imem_master_rready,
-       cpu$imem_master_rvalid,
-       cpu$imem_master_wlast,
-       cpu$imem_master_wready,
-       cpu$imem_master_wvalid,
-       cpu$m_external_interrupt_req_set_not_clear,
-       cpu$mem_master_arlock,
-       cpu$mem_master_arready,
-       cpu$mem_master_arvalid,
-       cpu$mem_master_awlock,
-       cpu$mem_master_awready,
-       cpu$mem_master_awvalid,
-       cpu$mem_master_bready,
-       cpu$mem_master_bvalid,
-       cpu$mem_master_rlast,
-       cpu$mem_master_rready,
-       cpu$mem_master_rvalid,
-       cpu$mem_master_wlast,
-       cpu$mem_master_wready,
-       cpu$mem_master_wvalid,
-       cpu$nmi_req_set_not_clear,
-       cpu$s_external_interrupt_req_set_not_clear,
-       cpu$set_watch_tohost_watch_tohost,
-       cpu$software_interrupt_req_set_not_clear,
-       cpu$timer_interrupt_req_set_not_clear;
-
-  // ports of submodule dm_tv_ifc_debug_module
-  wire [76 : 0] dm_tv_ifc_debug_module$hart0_csr_mem_client_request_get;
-  wire [69 : 0] dm_tv_ifc_debug_module$hart0_fpr_mem_client_request_get,
-		dm_tv_ifc_debug_module$hart0_gpr_mem_client_request_get;
-  wire [64 : 0] dm_tv_ifc_debug_module$hart0_csr_mem_client_response_put,
-		dm_tv_ifc_debug_module$hart0_fpr_mem_client_response_put,
-		dm_tv_ifc_debug_module$hart0_gpr_mem_client_response_put;
-  wire [63 : 0] dm_tv_ifc_debug_module$master_araddr,
-		dm_tv_ifc_debug_module$master_awaddr,
-		dm_tv_ifc_debug_module$master_rdata,
-		dm_tv_ifc_debug_module$master_wdata;
-  wire [31 : 0] dm_tv_ifc_debug_module$dmi_read_data,
-		dm_tv_ifc_debug_module$dmi_write_dm_word;
-  wire [15 : 0] dm_tv_ifc_debug_module$master_arid,
-		dm_tv_ifc_debug_module$master_awid,
-		dm_tv_ifc_debug_module$master_bid,
-		dm_tv_ifc_debug_module$master_rid;
-  wire [7 : 0] dm_tv_ifc_debug_module$master_arlen,
-	       dm_tv_ifc_debug_module$master_awlen,
-	       dm_tv_ifc_debug_module$master_wstrb;
-  wire [6 : 0] dm_tv_ifc_debug_module$dmi_read_addr_dm_addr,
-	       dm_tv_ifc_debug_module$dmi_write_dm_addr;
-  wire [3 : 0] dm_tv_ifc_debug_module$hart0_get_other_req_get,
-	       dm_tv_ifc_debug_module$master_arcache,
-	       dm_tv_ifc_debug_module$master_arqos,
-	       dm_tv_ifc_debug_module$master_arregion,
-	       dm_tv_ifc_debug_module$master_awcache,
-	       dm_tv_ifc_debug_module$master_awqos,
-	       dm_tv_ifc_debug_module$master_awregion;
-  wire [2 : 0] dm_tv_ifc_debug_module$master_arprot,
-	       dm_tv_ifc_debug_module$master_arsize,
-	       dm_tv_ifc_debug_module$master_awprot,
-	       dm_tv_ifc_debug_module$master_awsize;
-  wire [1 : 0] dm_tv_ifc_debug_module$master_arburst,
-	       dm_tv_ifc_debug_module$master_awburst,
-	       dm_tv_ifc_debug_module$master_bresp,
-	       dm_tv_ifc_debug_module$master_rresp;
-  wire dm_tv_ifc_debug_module$EN_dmi_read_addr,
-       dm_tv_ifc_debug_module$EN_dmi_read_data,
-       dm_tv_ifc_debug_module$EN_dmi_write,
-       dm_tv_ifc_debug_module$EN_hart0_client_run_halt_request_get,
-       dm_tv_ifc_debug_module$EN_hart0_client_run_halt_response_put,
-       dm_tv_ifc_debug_module$EN_hart0_csr_mem_client_request_get,
-       dm_tv_ifc_debug_module$EN_hart0_csr_mem_client_response_put,
-       dm_tv_ifc_debug_module$EN_hart0_fpr_mem_client_request_get,
-       dm_tv_ifc_debug_module$EN_hart0_fpr_mem_client_response_put,
-       dm_tv_ifc_debug_module$EN_hart0_get_other_req_get,
-       dm_tv_ifc_debug_module$EN_hart0_gpr_mem_client_request_get,
-       dm_tv_ifc_debug_module$EN_hart0_gpr_mem_client_response_put,
-       dm_tv_ifc_debug_module$EN_hart0_reset_client_request_get,
-       dm_tv_ifc_debug_module$EN_hart0_reset_client_response_put,
-       dm_tv_ifc_debug_module$EN_ndm_reset_client_request_get,
-       dm_tv_ifc_debug_module$EN_ndm_reset_client_response_put,
-       dm_tv_ifc_debug_module$RDY_dmi_read_addr,
-       dm_tv_ifc_debug_module$RDY_dmi_read_data,
-       dm_tv_ifc_debug_module$RDY_dmi_write,
-       dm_tv_ifc_debug_module$RDY_hart0_client_run_halt_request_get,
-       dm_tv_ifc_debug_module$RDY_hart0_client_run_halt_response_put,
-       dm_tv_ifc_debug_module$RDY_hart0_csr_mem_client_request_get,
-       dm_tv_ifc_debug_module$RDY_hart0_csr_mem_client_response_put,
-       dm_tv_ifc_debug_module$RDY_hart0_fpr_mem_client_request_get,
-       dm_tv_ifc_debug_module$RDY_hart0_fpr_mem_client_response_put,
-       dm_tv_ifc_debug_module$RDY_hart0_get_other_req_get,
-       dm_tv_ifc_debug_module$RDY_hart0_gpr_mem_client_request_get,
-       dm_tv_ifc_debug_module$RDY_hart0_gpr_mem_client_response_put,
-       dm_tv_ifc_debug_module$RDY_hart0_reset_client_request_get,
-       dm_tv_ifc_debug_module$RDY_hart0_reset_client_response_put,
-       dm_tv_ifc_debug_module$RDY_ndm_reset_client_request_get,
-       dm_tv_ifc_debug_module$RDY_ndm_reset_client_response_put,
-       dm_tv_ifc_debug_module$hart0_client_run_halt_request_get,
-       dm_tv_ifc_debug_module$hart0_client_run_halt_response_put,
-       dm_tv_ifc_debug_module$hart0_reset_client_request_get,
-       dm_tv_ifc_debug_module$hart0_reset_client_response_put,
-       dm_tv_ifc_debug_module$master_arlock,
-       dm_tv_ifc_debug_module$master_arready,
-       dm_tv_ifc_debug_module$master_arvalid,
-       dm_tv_ifc_debug_module$master_awlock,
-       dm_tv_ifc_debug_module$master_awready,
-       dm_tv_ifc_debug_module$master_awvalid,
-       dm_tv_ifc_debug_module$master_bready,
-       dm_tv_ifc_debug_module$master_bvalid,
-       dm_tv_ifc_debug_module$master_rlast,
-       dm_tv_ifc_debug_module$master_rready,
-       dm_tv_ifc_debug_module$master_rvalid,
-       dm_tv_ifc_debug_module$master_wlast,
-       dm_tv_ifc_debug_module$master_wready,
-       dm_tv_ifc_debug_module$master_wvalid,
-       dm_tv_ifc_debug_module$ndm_reset_client_response_put;
-
-  // ports of submodule dm_tv_ifc_dma_server_mux
-  wire [511 : 0] dm_tv_ifc_dma_server_mux$initiator_A_server_rdata,
-		 dm_tv_ifc_dma_server_mux$initiator_A_server_wdata,
-		 dm_tv_ifc_dma_server_mux$target_client_rdata,
-		 dm_tv_ifc_dma_server_mux$target_client_wdata;
-  wire [63 : 0] dm_tv_ifc_dma_server_mux$initiator_A_server_araddr,
-		dm_tv_ifc_dma_server_mux$initiator_A_server_awaddr,
-		dm_tv_ifc_dma_server_mux$initiator_A_server_wstrb,
-		dm_tv_ifc_dma_server_mux$initiator_B_server_araddr,
-		dm_tv_ifc_dma_server_mux$initiator_B_server_awaddr,
-		dm_tv_ifc_dma_server_mux$initiator_B_server_rdata,
-		dm_tv_ifc_dma_server_mux$initiator_B_server_wdata,
-		dm_tv_ifc_dma_server_mux$target_client_araddr,
-		dm_tv_ifc_dma_server_mux$target_client_awaddr,
-		dm_tv_ifc_dma_server_mux$target_client_wstrb;
-  wire [15 : 0] dm_tv_ifc_dma_server_mux$initiator_A_server_arid,
-		dm_tv_ifc_dma_server_mux$initiator_A_server_awid,
-		dm_tv_ifc_dma_server_mux$initiator_A_server_bid,
-		dm_tv_ifc_dma_server_mux$initiator_A_server_rid,
-		dm_tv_ifc_dma_server_mux$initiator_B_server_arid,
-		dm_tv_ifc_dma_server_mux$initiator_B_server_awid,
-		dm_tv_ifc_dma_server_mux$initiator_B_server_bid,
-		dm_tv_ifc_dma_server_mux$initiator_B_server_rid,
-		dm_tv_ifc_dma_server_mux$target_client_arid,
-		dm_tv_ifc_dma_server_mux$target_client_awid,
-		dm_tv_ifc_dma_server_mux$target_client_bid,
-		dm_tv_ifc_dma_server_mux$target_client_rid;
-  wire [7 : 0] dm_tv_ifc_dma_server_mux$initiator_A_server_arlen,
-	       dm_tv_ifc_dma_server_mux$initiator_A_server_awlen,
-	       dm_tv_ifc_dma_server_mux$initiator_B_server_arlen,
-	       dm_tv_ifc_dma_server_mux$initiator_B_server_awlen,
-	       dm_tv_ifc_dma_server_mux$initiator_B_server_wstrb,
-	       dm_tv_ifc_dma_server_mux$target_client_arlen,
-	       dm_tv_ifc_dma_server_mux$target_client_awlen;
-  wire [3 : 0] dm_tv_ifc_dma_server_mux$initiator_A_server_arcache,
-	       dm_tv_ifc_dma_server_mux$initiator_A_server_arqos,
-	       dm_tv_ifc_dma_server_mux$initiator_A_server_arregion,
-	       dm_tv_ifc_dma_server_mux$initiator_A_server_awcache,
-	       dm_tv_ifc_dma_server_mux$initiator_A_server_awqos,
-	       dm_tv_ifc_dma_server_mux$initiator_A_server_awregion,
-	       dm_tv_ifc_dma_server_mux$initiator_B_server_arcache,
-	       dm_tv_ifc_dma_server_mux$initiator_B_server_arqos,
-	       dm_tv_ifc_dma_server_mux$initiator_B_server_arregion,
-	       dm_tv_ifc_dma_server_mux$initiator_B_server_awcache,
-	       dm_tv_ifc_dma_server_mux$initiator_B_server_awqos,
-	       dm_tv_ifc_dma_server_mux$initiator_B_server_awregion,
-	       dm_tv_ifc_dma_server_mux$target_client_arcache,
-	       dm_tv_ifc_dma_server_mux$target_client_arqos,
-	       dm_tv_ifc_dma_server_mux$target_client_arregion,
-	       dm_tv_ifc_dma_server_mux$target_client_awcache,
-	       dm_tv_ifc_dma_server_mux$target_client_awqos,
-	       dm_tv_ifc_dma_server_mux$target_client_awregion;
-  wire [2 : 0] dm_tv_ifc_dma_server_mux$initiator_A_server_arprot,
-	       dm_tv_ifc_dma_server_mux$initiator_A_server_arsize,
-	       dm_tv_ifc_dma_server_mux$initiator_A_server_awprot,
-	       dm_tv_ifc_dma_server_mux$initiator_A_server_awsize,
-	       dm_tv_ifc_dma_server_mux$initiator_B_server_arprot,
-	       dm_tv_ifc_dma_server_mux$initiator_B_server_arsize,
-	       dm_tv_ifc_dma_server_mux$initiator_B_server_awprot,
-	       dm_tv_ifc_dma_server_mux$initiator_B_server_awsize,
-	       dm_tv_ifc_dma_server_mux$target_client_arprot,
-	       dm_tv_ifc_dma_server_mux$target_client_arsize,
-	       dm_tv_ifc_dma_server_mux$target_client_awprot,
-	       dm_tv_ifc_dma_server_mux$target_client_awsize;
-  wire [1 : 0] dm_tv_ifc_dma_server_mux$initiator_A_server_arburst,
-	       dm_tv_ifc_dma_server_mux$initiator_A_server_awburst,
-	       dm_tv_ifc_dma_server_mux$initiator_A_server_bresp,
-	       dm_tv_ifc_dma_server_mux$initiator_A_server_rresp,
-	       dm_tv_ifc_dma_server_mux$initiator_B_server_arburst,
-	       dm_tv_ifc_dma_server_mux$initiator_B_server_awburst,
-	       dm_tv_ifc_dma_server_mux$initiator_B_server_bresp,
-	       dm_tv_ifc_dma_server_mux$initiator_B_server_rresp,
-	       dm_tv_ifc_dma_server_mux$target_client_arburst,
-	       dm_tv_ifc_dma_server_mux$target_client_awburst,
-	       dm_tv_ifc_dma_server_mux$target_client_bresp,
-	       dm_tv_ifc_dma_server_mux$target_client_rresp;
-  wire dm_tv_ifc_dma_server_mux$initiator_A_server_arlock,
-       dm_tv_ifc_dma_server_mux$initiator_A_server_arready,
-       dm_tv_ifc_dma_server_mux$initiator_A_server_arvalid,
-       dm_tv_ifc_dma_server_mux$initiator_A_server_awlock,
-       dm_tv_ifc_dma_server_mux$initiator_A_server_awready,
-       dm_tv_ifc_dma_server_mux$initiator_A_server_awvalid,
-       dm_tv_ifc_dma_server_mux$initiator_A_server_bready,
-       dm_tv_ifc_dma_server_mux$initiator_A_server_bvalid,
-       dm_tv_ifc_dma_server_mux$initiator_A_server_rlast,
-       dm_tv_ifc_dma_server_mux$initiator_A_server_rready,
-       dm_tv_ifc_dma_server_mux$initiator_A_server_rvalid,
-       dm_tv_ifc_dma_server_mux$initiator_A_server_wlast,
-       dm_tv_ifc_dma_server_mux$initiator_A_server_wready,
-       dm_tv_ifc_dma_server_mux$initiator_A_server_wvalid,
-       dm_tv_ifc_dma_server_mux$initiator_B_server_arlock,
-       dm_tv_ifc_dma_server_mux$initiator_B_server_arready,
-       dm_tv_ifc_dma_server_mux$initiator_B_server_arvalid,
-       dm_tv_ifc_dma_server_mux$initiator_B_server_awlock,
-       dm_tv_ifc_dma_server_mux$initiator_B_server_awready,
-       dm_tv_ifc_dma_server_mux$initiator_B_server_awvalid,
-       dm_tv_ifc_dma_server_mux$initiator_B_server_bready,
-       dm_tv_ifc_dma_server_mux$initiator_B_server_bvalid,
-       dm_tv_ifc_dma_server_mux$initiator_B_server_rlast,
-       dm_tv_ifc_dma_server_mux$initiator_B_server_rready,
-       dm_tv_ifc_dma_server_mux$initiator_B_server_rvalid,
-       dm_tv_ifc_dma_server_mux$initiator_B_server_wlast,
-       dm_tv_ifc_dma_server_mux$initiator_B_server_wready,
-       dm_tv_ifc_dma_server_mux$initiator_B_server_wvalid,
-       dm_tv_ifc_dma_server_mux$target_client_arlock,
-       dm_tv_ifc_dma_server_mux$target_client_arready,
-       dm_tv_ifc_dma_server_mux$target_client_arvalid,
-       dm_tv_ifc_dma_server_mux$target_client_awlock,
-       dm_tv_ifc_dma_server_mux$target_client_awready,
-       dm_tv_ifc_dma_server_mux$target_client_awvalid,
-       dm_tv_ifc_dma_server_mux$target_client_bready,
-       dm_tv_ifc_dma_server_mux$target_client_bvalid,
-       dm_tv_ifc_dma_server_mux$target_client_rlast,
-       dm_tv_ifc_dma_server_mux$target_client_rready,
-       dm_tv_ifc_dma_server_mux$target_client_rvalid,
-       dm_tv_ifc_dma_server_mux$target_client_wlast,
-       dm_tv_ifc_dma_server_mux$target_client_wready,
-       dm_tv_ifc_dma_server_mux$target_client_wvalid;
-
-  // ports of submodule dm_tv_ifc_empty0_f_client_id
-  wire dm_tv_ifc_empty0_f_client_id$CLR,
-       dm_tv_ifc_empty0_f_client_id$DEQ,
-       dm_tv_ifc_empty0_f_client_id$D_IN,
-       dm_tv_ifc_empty0_f_client_id$D_OUT,
-       dm_tv_ifc_empty0_f_client_id$EMPTY_N,
-       dm_tv_ifc_empty0_f_client_id$ENQ,
-       dm_tv_ifc_empty0_f_client_id$FULL_N;
-
-  // ports of submodule dm_tv_ifc_empty1_f_client_id
-  wire dm_tv_ifc_empty1_f_client_id$CLR,
-       dm_tv_ifc_empty1_f_client_id$DEQ,
-       dm_tv_ifc_empty1_f_client_id$D_IN,
-       dm_tv_ifc_empty1_f_client_id$D_OUT,
-       dm_tv_ifc_empty1_f_client_id$EMPTY_N,
-       dm_tv_ifc_empty1_f_client_id$ENQ,
-       dm_tv_ifc_empty1_f_client_id$FULL_N;
-
-  // ports of submodule dm_tv_ifc_empty2_f_client_id
-  wire dm_tv_ifc_empty2_f_client_id$CLR,
-       dm_tv_ifc_empty2_f_client_id$DEQ,
-       dm_tv_ifc_empty2_f_client_id$D_IN,
-       dm_tv_ifc_empty2_f_client_id$D_OUT,
-       dm_tv_ifc_empty2_f_client_id$EMPTY_N,
-       dm_tv_ifc_empty2_f_client_id$ENQ,
-       dm_tv_ifc_empty2_f_client_id$FULL_N;
-
-  // ports of submodule dm_tv_ifc_f_dmi_reqs
-  wire [39 : 0] dm_tv_ifc_f_dmi_reqs$D_IN, dm_tv_ifc_f_dmi_reqs$D_OUT;
-  wire dm_tv_ifc_f_dmi_reqs$CLR,
-       dm_tv_ifc_f_dmi_reqs$DEQ,
-       dm_tv_ifc_f_dmi_reqs$EMPTY_N,
-       dm_tv_ifc_f_dmi_reqs$ENQ,
-       dm_tv_ifc_f_dmi_reqs$FULL_N;
-
-  // ports of submodule dm_tv_ifc_f_dmi_rsps
-  wire [31 : 0] dm_tv_ifc_f_dmi_rsps$D_IN, dm_tv_ifc_f_dmi_rsps$D_OUT;
-  wire dm_tv_ifc_f_dmi_rsps$CLR,
-       dm_tv_ifc_f_dmi_rsps$DEQ,
-       dm_tv_ifc_f_dmi_rsps$EMPTY_N,
-       dm_tv_ifc_f_dmi_rsps$ENQ,
-       dm_tv_ifc_f_dmi_rsps$FULL_N;
-
-  // ports of submodule dm_tv_ifc_f_ndm_reqs
-  wire dm_tv_ifc_f_ndm_reqs$CLR,
-       dm_tv_ifc_f_ndm_reqs$DEQ,
-       dm_tv_ifc_f_ndm_reqs$EMPTY_N,
-       dm_tv_ifc_f_ndm_reqs$ENQ,
-       dm_tv_ifc_f_ndm_reqs$FULL_N;
-
-  // ports of submodule dm_tv_ifc_f_ndm_rsps
-  wire dm_tv_ifc_f_ndm_rsps$CLR,
-       dm_tv_ifc_f_ndm_rsps$DEQ,
-       dm_tv_ifc_f_ndm_rsps$EMPTY_N,
-       dm_tv_ifc_f_ndm_rsps$ENQ,
-       dm_tv_ifc_f_ndm_rsps$FULL_N;
-
-  // ports of submodule dm_tv_ifc_f_reset_reqs
-  wire dm_tv_ifc_f_reset_reqs$CLR,
-       dm_tv_ifc_f_reset_reqs$DEQ,
-       dm_tv_ifc_f_reset_reqs$D_IN,
-       dm_tv_ifc_f_reset_reqs$D_OUT,
-       dm_tv_ifc_f_reset_reqs$EMPTY_N,
-       dm_tv_ifc_f_reset_reqs$ENQ,
-       dm_tv_ifc_f_reset_reqs$FULL_N;
-
-  // ports of submodule dm_tv_ifc_f_reset_rsps
-  wire dm_tv_ifc_f_reset_rsps$CLR,
-       dm_tv_ifc_f_reset_rsps$DEQ,
-       dm_tv_ifc_f_reset_rsps$D_IN,
-       dm_tv_ifc_f_reset_rsps$D_OUT,
-       dm_tv_ifc_f_reset_rsps$EMPTY_N,
-       dm_tv_ifc_f_reset_rsps$ENQ,
-       dm_tv_ifc_f_reset_rsps$FULL_N;
-
-  // ports of submodule dma_server_axi4_deburster
-  wire [511 : 0] dma_server_axi4_deburster$from_master_rdata,
-		 dma_server_axi4_deburster$from_master_wdata,
-		 dma_server_axi4_deburster$to_slave_rdata,
-		 dma_server_axi4_deburster$to_slave_wdata;
-  wire [63 : 0] dma_server_axi4_deburster$from_master_araddr,
-		dma_server_axi4_deburster$from_master_awaddr,
-		dma_server_axi4_deburster$from_master_wstrb,
-		dma_server_axi4_deburster$to_slave_araddr,
-		dma_server_axi4_deburster$to_slave_awaddr,
-		dma_server_axi4_deburster$to_slave_wstrb;
-  wire [15 : 0] dma_server_axi4_deburster$from_master_arid,
-		dma_server_axi4_deburster$from_master_awid,
-		dma_server_axi4_deburster$from_master_bid,
-		dma_server_axi4_deburster$from_master_rid,
-		dma_server_axi4_deburster$to_slave_arid,
-		dma_server_axi4_deburster$to_slave_awid,
-		dma_server_axi4_deburster$to_slave_bid,
-		dma_server_axi4_deburster$to_slave_rid;
-  wire [7 : 0] dma_server_axi4_deburster$from_master_arlen,
-	       dma_server_axi4_deburster$from_master_awlen,
-	       dma_server_axi4_deburster$to_slave_arlen,
-	       dma_server_axi4_deburster$to_slave_awlen;
-  wire [3 : 0] dma_server_axi4_deburster$from_master_arcache,
-	       dma_server_axi4_deburster$from_master_arqos,
-	       dma_server_axi4_deburster$from_master_arregion,
-	       dma_server_axi4_deburster$from_master_awcache,
-	       dma_server_axi4_deburster$from_master_awqos,
-	       dma_server_axi4_deburster$from_master_awregion,
-	       dma_server_axi4_deburster$to_slave_arcache,
-	       dma_server_axi4_deburster$to_slave_arqos,
-	       dma_server_axi4_deburster$to_slave_arregion,
-	       dma_server_axi4_deburster$to_slave_awcache,
-	       dma_server_axi4_deburster$to_slave_awqos,
-	       dma_server_axi4_deburster$to_slave_awregion;
-  wire [2 : 0] dma_server_axi4_deburster$from_master_arprot,
-	       dma_server_axi4_deburster$from_master_arsize,
-	       dma_server_axi4_deburster$from_master_awprot,
-	       dma_server_axi4_deburster$from_master_awsize,
-	       dma_server_axi4_deburster$to_slave_arprot,
-	       dma_server_axi4_deburster$to_slave_arsize,
-	       dma_server_axi4_deburster$to_slave_awprot,
-	       dma_server_axi4_deburster$to_slave_awsize;
-  wire [1 : 0] dma_server_axi4_deburster$from_master_arburst,
-	       dma_server_axi4_deburster$from_master_awburst,
-	       dma_server_axi4_deburster$from_master_bresp,
-	       dma_server_axi4_deburster$from_master_rresp,
-	       dma_server_axi4_deburster$to_slave_arburst,
-	       dma_server_axi4_deburster$to_slave_awburst,
-	       dma_server_axi4_deburster$to_slave_bresp,
-	       dma_server_axi4_deburster$to_slave_rresp;
-  wire dma_server_axi4_deburster$EN_reset,
-       dma_server_axi4_deburster$from_master_arlock,
-       dma_server_axi4_deburster$from_master_arready,
-       dma_server_axi4_deburster$from_master_arvalid,
-       dma_server_axi4_deburster$from_master_awlock,
-       dma_server_axi4_deburster$from_master_awready,
-       dma_server_axi4_deburster$from_master_awvalid,
-       dma_server_axi4_deburster$from_master_bready,
-       dma_server_axi4_deburster$from_master_bvalid,
-       dma_server_axi4_deburster$from_master_rlast,
-       dma_server_axi4_deburster$from_master_rready,
-       dma_server_axi4_deburster$from_master_rvalid,
-       dma_server_axi4_deburster$from_master_wlast,
-       dma_server_axi4_deburster$from_master_wready,
-       dma_server_axi4_deburster$from_master_wvalid,
-       dma_server_axi4_deburster$to_slave_arlock,
-       dma_server_axi4_deburster$to_slave_arready,
-       dma_server_axi4_deburster$to_slave_arvalid,
-       dma_server_axi4_deburster$to_slave_awlock,
-       dma_server_axi4_deburster$to_slave_awready,
-       dma_server_axi4_deburster$to_slave_awvalid,
-       dma_server_axi4_deburster$to_slave_bready,
-       dma_server_axi4_deburster$to_slave_bvalid,
-       dma_server_axi4_deburster$to_slave_rlast,
-       dma_server_axi4_deburster$to_slave_rready,
-       dma_server_axi4_deburster$to_slave_rvalid,
-       dma_server_axi4_deburster$to_slave_wlast,
-       dma_server_axi4_deburster$to_slave_wready,
-       dma_server_axi4_deburster$to_slave_wvalid;
-
-  // ports of submodule f_nmi
-  wire f_nmi$CLR,
-       f_nmi$DEQ,
-       f_nmi$D_IN,
-       f_nmi$D_OUT,
-       f_nmi$EMPTY_N,
-       f_nmi$ENQ,
-       f_nmi$FULL_N;
+  // ports of submodule core_resettable
+  wire [607 : 0] core_resettable$fo_tv_info_first;
+  wire [511 : 0] core_resettable$dma_S_rdata,
+		 core_resettable$dma_S_wdata,
+		 core_resettable$mem_M_rdata,
+		 core_resettable$mem_M_wdata;
+  wire [64 : 0] core_resettable$p_pc_trace_control_put;
+  wire [63 : 0] core_resettable$dma_S_araddr,
+		core_resettable$dma_S_awaddr,
+		core_resettable$dma_S_wstrb,
+		core_resettable$mem_M_araddr,
+		core_resettable$mem_M_awaddr,
+		core_resettable$mem_M_wstrb,
+		core_resettable$mmio_M_araddr,
+		core_resettable$mmio_M_awaddr,
+		core_resettable$mmio_M_rdata,
+		core_resettable$mmio_M_wdata,
+		core_resettable$mv_tohost_value,
+		core_resettable$set_verbosity_logdelay,
+		core_resettable$set_watch_tohost_tohost_addr;
+  wire [39 : 0] core_resettable$se_dmi_request_enq_x;
+  wire [31 : 0] core_resettable$fi_misc_enq_x,
+		core_resettable$fo_misc_first,
+		core_resettable$se_dmi_response_first;
+  wire [15 : 0] core_resettable$dma_S_arid,
+		core_resettable$dma_S_awid,
+		core_resettable$dma_S_bid,
+		core_resettable$dma_S_rid,
+		core_resettable$mem_M_arid,
+		core_resettable$mem_M_awid,
+		core_resettable$mem_M_bid,
+		core_resettable$mem_M_rid,
+		core_resettable$mmio_M_arid,
+		core_resettable$mmio_M_awid,
+		core_resettable$mmio_M_bid,
+		core_resettable$mmio_M_rid;
+  wire [7 : 0] core_resettable$dma_S_arlen,
+	       core_resettable$dma_S_awlen,
+	       core_resettable$mem_M_arlen,
+	       core_resettable$mem_M_awlen,
+	       core_resettable$mmio_M_arlen,
+	       core_resettable$mmio_M_awlen,
+	       core_resettable$mmio_M_wstrb;
+  wire [4 : 0] core_resettable$ext_interrupts_x;
+  wire [3 : 0] core_resettable$dma_S_arcache,
+	       core_resettable$dma_S_arqos,
+	       core_resettable$dma_S_arregion,
+	       core_resettable$dma_S_awcache,
+	       core_resettable$dma_S_awqos,
+	       core_resettable$dma_S_awregion,
+	       core_resettable$mem_M_arcache,
+	       core_resettable$mem_M_arqos,
+	       core_resettable$mem_M_arregion,
+	       core_resettable$mem_M_awcache,
+	       core_resettable$mem_M_awqos,
+	       core_resettable$mem_M_awregion,
+	       core_resettable$mmio_M_arcache,
+	       core_resettable$mmio_M_arqos,
+	       core_resettable$mmio_M_arregion,
+	       core_resettable$mmio_M_awcache,
+	       core_resettable$mmio_M_awqos,
+	       core_resettable$mmio_M_awregion,
+	       core_resettable$set_verbosity_verbosity;
+  wire [2 : 0] core_resettable$dma_S_arprot,
+	       core_resettable$dma_S_arsize,
+	       core_resettable$dma_S_awprot,
+	       core_resettable$dma_S_awsize,
+	       core_resettable$mem_M_arprot,
+	       core_resettable$mem_M_arsize,
+	       core_resettable$mem_M_awprot,
+	       core_resettable$mem_M_awsize,
+	       core_resettable$mmio_M_arprot,
+	       core_resettable$mmio_M_arsize,
+	       core_resettable$mmio_M_awprot,
+	       core_resettable$mmio_M_awsize;
+  wire [1 : 0] core_resettable$dma_S_arburst,
+	       core_resettable$dma_S_awburst,
+	       core_resettable$dma_S_bresp,
+	       core_resettable$dma_S_rresp,
+	       core_resettable$mem_M_arburst,
+	       core_resettable$mem_M_awburst,
+	       core_resettable$mem_M_bresp,
+	       core_resettable$mem_M_rresp,
+	       core_resettable$mmio_M_arburst,
+	       core_resettable$mmio_M_awburst,
+	       core_resettable$mmio_M_bresp,
+	       core_resettable$mmio_M_rresp;
+  wire core_resettable$EN_cl_ndm_reset_request_deq,
+       core_resettable$EN_cl_ndm_reset_response_enq,
+       core_resettable$EN_ext_interrupts,
+       core_resettable$EN_fi_misc_enq,
+       core_resettable$EN_fi_nmi_enq,
+       core_resettable$EN_fo_misc_deq,
+       core_resettable$EN_fo_tv_info_deq,
+       core_resettable$EN_p_pc_trace_control_put,
+       core_resettable$EN_se_dmi_request_enq,
+       core_resettable$EN_se_dmi_response_deq,
+       core_resettable$EN_set_verbosity,
+       core_resettable$EN_set_watch_tohost,
+       core_resettable$RDY_cl_ndm_reset_request_deq,
+       core_resettable$RDY_cl_ndm_reset_request_first,
+       core_resettable$RDY_cl_ndm_reset_response_enq,
+       core_resettable$RDY_fi_misc_enq,
+       core_resettable$RDY_fi_nmi_enq,
+       core_resettable$RDY_fo_misc_deq,
+       core_resettable$RDY_fo_misc_first,
+       core_resettable$RDY_fo_tv_info_deq,
+       core_resettable$RDY_fo_tv_info_first,
+       core_resettable$RDY_se_dmi_request_enq,
+       core_resettable$RDY_se_dmi_response_deq,
+       core_resettable$RDY_se_dmi_response_first,
+       core_resettable$cl_ndm_reset_request_notEmpty,
+       core_resettable$cl_ndm_reset_response_notFull,
+       core_resettable$dma_S_arlock,
+       core_resettable$dma_S_arready,
+       core_resettable$dma_S_arvalid,
+       core_resettable$dma_S_awlock,
+       core_resettable$dma_S_awready,
+       core_resettable$dma_S_awvalid,
+       core_resettable$dma_S_bready,
+       core_resettable$dma_S_bvalid,
+       core_resettable$dma_S_rlast,
+       core_resettable$dma_S_rready,
+       core_resettable$dma_S_rvalid,
+       core_resettable$dma_S_wlast,
+       core_resettable$dma_S_wready,
+       core_resettable$dma_S_wvalid,
+       core_resettable$fi_misc_notFull,
+       core_resettable$fi_nmi_enq_x,
+       core_resettable$fi_nmi_notFull,
+       core_resettable$fo_misc_notEmpty,
+       core_resettable$fo_tv_info_notEmpty,
+       core_resettable$mem_M_arlock,
+       core_resettable$mem_M_arready,
+       core_resettable$mem_M_arvalid,
+       core_resettable$mem_M_awlock,
+       core_resettable$mem_M_awready,
+       core_resettable$mem_M_awvalid,
+       core_resettable$mem_M_bready,
+       core_resettable$mem_M_bvalid,
+       core_resettable$mem_M_rlast,
+       core_resettable$mem_M_rready,
+       core_resettable$mem_M_rvalid,
+       core_resettable$mem_M_wlast,
+       core_resettable$mem_M_wready,
+       core_resettable$mem_M_wvalid,
+       core_resettable$mmio_M_arlock,
+       core_resettable$mmio_M_arready,
+       core_resettable$mmio_M_arvalid,
+       core_resettable$mmio_M_awlock,
+       core_resettable$mmio_M_awready,
+       core_resettable$mmio_M_awvalid,
+       core_resettable$mmio_M_bready,
+       core_resettable$mmio_M_bvalid,
+       core_resettable$mmio_M_rlast,
+       core_resettable$mmio_M_rready,
+       core_resettable$mmio_M_rvalid,
+       core_resettable$mmio_M_wlast,
+       core_resettable$mmio_M_wready,
+       core_resettable$mmio_M_wvalid,
+       core_resettable$se_dmi_request_notFull,
+       core_resettable$se_dmi_response_notEmpty,
+       core_resettable$set_watch_tohost_watch_tohost;
 
   // ports of submodule host_cs
-  wire [76 : 0] host_cs$cl_csr_rw_request_get;
   wire [67 : 0] host_cs$g_verbosity_get;
-  wire [64 : 0] host_cs$cl_csr_rw_response_put, host_cs$g_watch_tohost_get;
+  wire [64 : 0] host_cs$g_pc_trace_control_get, host_cs$g_watch_tohost_get;
   wire [63 : 0] host_cs$ma_tohost_value_tohost_value;
   wire [31 : 0] host_cs$se_control_status_request_enq_x,
 		host_cs$se_control_status_response_first;
-  wire host_cs$EN_cl_cpu_reset_request_get,
-       host_cs$EN_cl_cpu_reset_response_put,
-       host_cs$EN_cl_csr_rw_request_get,
-       host_cs$EN_cl_csr_rw_response_put,
-       host_cs$EN_cl_run_halt_request_get,
-       host_cs$EN_cl_run_halt_response_put,
+  wire host_cs$EN_g_pc_trace_control_get,
        host_cs$EN_g_verbosity_get,
        host_cs$EN_g_watch_tohost_get,
        host_cs$EN_ma_tohost_value,
        host_cs$EN_se_control_status_request_enq,
        host_cs$EN_se_control_status_response_deq,
-       host_cs$RDY_cl_cpu_reset_request_get,
-       host_cs$RDY_cl_cpu_reset_response_put,
-       host_cs$RDY_cl_csr_rw_request_get,
-       host_cs$RDY_cl_csr_rw_response_put,
-       host_cs$RDY_cl_run_halt_request_get,
-       host_cs$RDY_cl_run_halt_response_put,
+       host_cs$RDY_g_pc_trace_control_get,
        host_cs$RDY_g_verbosity_get,
        host_cs$RDY_g_watch_tohost_get,
        host_cs$RDY_se_control_status_request_enq,
        host_cs$RDY_se_control_status_response_deq,
        host_cs$RDY_se_control_status_response_first,
-       host_cs$cl_cpu_reset_request_get,
-       host_cs$cl_cpu_reset_response_put,
-       host_cs$cl_run_halt_request_get,
-       host_cs$cl_run_halt_response_put,
        host_cs$se_control_status_request_notFull,
        host_cs$se_control_status_response_notEmpty;
 
-  // ports of submodule mmio_fabric
-  wire [63 : 0] mmio_fabric$v_from_masters_0_araddr,
-		mmio_fabric$v_from_masters_0_awaddr,
-		mmio_fabric$v_from_masters_0_rdata,
-		mmio_fabric$v_from_masters_0_wdata,
-		mmio_fabric$v_to_slaves_0_araddr,
-		mmio_fabric$v_to_slaves_0_awaddr,
-		mmio_fabric$v_to_slaves_0_rdata,
-		mmio_fabric$v_to_slaves_0_wdata,
-		mmio_fabric$v_to_slaves_1_araddr,
-		mmio_fabric$v_to_slaves_1_awaddr,
-		mmio_fabric$v_to_slaves_1_rdata,
-		mmio_fabric$v_to_slaves_1_wdata,
-		mmio_fabric$v_to_slaves_2_araddr,
-		mmio_fabric$v_to_slaves_2_awaddr,
-		mmio_fabric$v_to_slaves_2_rdata,
-		mmio_fabric$v_to_slaves_2_wdata,
-		mmio_fabric$v_to_slaves_3_araddr,
-		mmio_fabric$v_to_slaves_3_awaddr,
-		mmio_fabric$v_to_slaves_3_rdata,
-		mmio_fabric$v_to_slaves_3_wdata;
-  wire [15 : 0] mmio_fabric$v_from_masters_0_arid,
-		mmio_fabric$v_from_masters_0_awid,
-		mmio_fabric$v_from_masters_0_bid,
-		mmio_fabric$v_from_masters_0_rid,
-		mmio_fabric$v_to_slaves_0_arid,
-		mmio_fabric$v_to_slaves_0_awid,
-		mmio_fabric$v_to_slaves_0_bid,
-		mmio_fabric$v_to_slaves_0_rid,
-		mmio_fabric$v_to_slaves_1_arid,
-		mmio_fabric$v_to_slaves_1_awid,
-		mmio_fabric$v_to_slaves_1_bid,
-		mmio_fabric$v_to_slaves_1_rid,
-		mmio_fabric$v_to_slaves_2_arid,
-		mmio_fabric$v_to_slaves_2_awid,
-		mmio_fabric$v_to_slaves_2_bid,
-		mmio_fabric$v_to_slaves_2_rid,
-		mmio_fabric$v_to_slaves_3_arid,
-		mmio_fabric$v_to_slaves_3_awid,
-		mmio_fabric$v_to_slaves_3_bid,
-		mmio_fabric$v_to_slaves_3_rid;
-  wire [7 : 0] mmio_fabric$v_from_masters_0_arlen,
-	       mmio_fabric$v_from_masters_0_awlen,
-	       mmio_fabric$v_from_masters_0_wstrb,
-	       mmio_fabric$v_to_slaves_0_arlen,
-	       mmio_fabric$v_to_slaves_0_awlen,
-	       mmio_fabric$v_to_slaves_0_wstrb,
-	       mmio_fabric$v_to_slaves_1_arlen,
-	       mmio_fabric$v_to_slaves_1_awlen,
-	       mmio_fabric$v_to_slaves_1_wstrb,
-	       mmio_fabric$v_to_slaves_2_arlen,
-	       mmio_fabric$v_to_slaves_2_awlen,
-	       mmio_fabric$v_to_slaves_2_wstrb,
-	       mmio_fabric$v_to_slaves_3_arlen,
-	       mmio_fabric$v_to_slaves_3_awlen,
-	       mmio_fabric$v_to_slaves_3_wstrb;
-  wire [3 : 0] mmio_fabric$set_verbosity_verbosity,
-	       mmio_fabric$v_from_masters_0_arcache,
-	       mmio_fabric$v_from_masters_0_arqos,
-	       mmio_fabric$v_from_masters_0_arregion,
-	       mmio_fabric$v_from_masters_0_awcache,
-	       mmio_fabric$v_from_masters_0_awqos,
-	       mmio_fabric$v_from_masters_0_awregion,
-	       mmio_fabric$v_to_slaves_0_arcache,
-	       mmio_fabric$v_to_slaves_0_arqos,
-	       mmio_fabric$v_to_slaves_0_arregion,
-	       mmio_fabric$v_to_slaves_0_awcache,
-	       mmio_fabric$v_to_slaves_0_awqos,
-	       mmio_fabric$v_to_slaves_0_awregion,
-	       mmio_fabric$v_to_slaves_1_arcache,
-	       mmio_fabric$v_to_slaves_1_arqos,
-	       mmio_fabric$v_to_slaves_1_arregion,
-	       mmio_fabric$v_to_slaves_1_awcache,
-	       mmio_fabric$v_to_slaves_1_awqos,
-	       mmio_fabric$v_to_slaves_1_awregion,
-	       mmio_fabric$v_to_slaves_2_arcache,
-	       mmio_fabric$v_to_slaves_2_arqos,
-	       mmio_fabric$v_to_slaves_2_arregion,
-	       mmio_fabric$v_to_slaves_2_awcache,
-	       mmio_fabric$v_to_slaves_2_awqos,
-	       mmio_fabric$v_to_slaves_2_awregion,
-	       mmio_fabric$v_to_slaves_3_arcache,
-	       mmio_fabric$v_to_slaves_3_arqos,
-	       mmio_fabric$v_to_slaves_3_arregion,
-	       mmio_fabric$v_to_slaves_3_awcache,
-	       mmio_fabric$v_to_slaves_3_awqos,
-	       mmio_fabric$v_to_slaves_3_awregion;
-  wire [2 : 0] mmio_fabric$v_from_masters_0_arprot,
-	       mmio_fabric$v_from_masters_0_arsize,
-	       mmio_fabric$v_from_masters_0_awprot,
-	       mmio_fabric$v_from_masters_0_awsize,
-	       mmio_fabric$v_to_slaves_0_arprot,
-	       mmio_fabric$v_to_slaves_0_arsize,
-	       mmio_fabric$v_to_slaves_0_awprot,
-	       mmio_fabric$v_to_slaves_0_awsize,
-	       mmio_fabric$v_to_slaves_1_arprot,
-	       mmio_fabric$v_to_slaves_1_arsize,
-	       mmio_fabric$v_to_slaves_1_awprot,
-	       mmio_fabric$v_to_slaves_1_awsize,
-	       mmio_fabric$v_to_slaves_2_arprot,
-	       mmio_fabric$v_to_slaves_2_arsize,
-	       mmio_fabric$v_to_slaves_2_awprot,
-	       mmio_fabric$v_to_slaves_2_awsize,
-	       mmio_fabric$v_to_slaves_3_arprot,
-	       mmio_fabric$v_to_slaves_3_arsize,
-	       mmio_fabric$v_to_slaves_3_awprot,
-	       mmio_fabric$v_to_slaves_3_awsize;
-  wire [1 : 0] mmio_fabric$v_from_masters_0_arburst,
-	       mmio_fabric$v_from_masters_0_awburst,
-	       mmio_fabric$v_from_masters_0_bresp,
-	       mmio_fabric$v_from_masters_0_rresp,
-	       mmio_fabric$v_to_slaves_0_arburst,
-	       mmio_fabric$v_to_slaves_0_awburst,
-	       mmio_fabric$v_to_slaves_0_bresp,
-	       mmio_fabric$v_to_slaves_0_rresp,
-	       mmio_fabric$v_to_slaves_1_arburst,
-	       mmio_fabric$v_to_slaves_1_awburst,
-	       mmio_fabric$v_to_slaves_1_bresp,
-	       mmio_fabric$v_to_slaves_1_rresp,
-	       mmio_fabric$v_to_slaves_2_arburst,
-	       mmio_fabric$v_to_slaves_2_awburst,
-	       mmio_fabric$v_to_slaves_2_bresp,
-	       mmio_fabric$v_to_slaves_2_rresp,
-	       mmio_fabric$v_to_slaves_3_arburst,
-	       mmio_fabric$v_to_slaves_3_awburst,
-	       mmio_fabric$v_to_slaves_3_bresp,
-	       mmio_fabric$v_to_slaves_3_rresp;
-  wire mmio_fabric$EN_reset,
-       mmio_fabric$EN_set_verbosity,
-       mmio_fabric$RDY_reset,
-       mmio_fabric$v_from_masters_0_arlock,
-       mmio_fabric$v_from_masters_0_arready,
-       mmio_fabric$v_from_masters_0_arvalid,
-       mmio_fabric$v_from_masters_0_awlock,
-       mmio_fabric$v_from_masters_0_awready,
-       mmio_fabric$v_from_masters_0_awvalid,
-       mmio_fabric$v_from_masters_0_bready,
-       mmio_fabric$v_from_masters_0_bvalid,
-       mmio_fabric$v_from_masters_0_rlast,
-       mmio_fabric$v_from_masters_0_rready,
-       mmio_fabric$v_from_masters_0_rvalid,
-       mmio_fabric$v_from_masters_0_wlast,
-       mmio_fabric$v_from_masters_0_wready,
-       mmio_fabric$v_from_masters_0_wvalid,
-       mmio_fabric$v_to_slaves_0_arlock,
-       mmio_fabric$v_to_slaves_0_arready,
-       mmio_fabric$v_to_slaves_0_arvalid,
-       mmio_fabric$v_to_slaves_0_awlock,
-       mmio_fabric$v_to_slaves_0_awready,
-       mmio_fabric$v_to_slaves_0_awvalid,
-       mmio_fabric$v_to_slaves_0_bready,
-       mmio_fabric$v_to_slaves_0_bvalid,
-       mmio_fabric$v_to_slaves_0_rlast,
-       mmio_fabric$v_to_slaves_0_rready,
-       mmio_fabric$v_to_slaves_0_rvalid,
-       mmio_fabric$v_to_slaves_0_wlast,
-       mmio_fabric$v_to_slaves_0_wready,
-       mmio_fabric$v_to_slaves_0_wvalid,
-       mmio_fabric$v_to_slaves_1_arlock,
-       mmio_fabric$v_to_slaves_1_arready,
-       mmio_fabric$v_to_slaves_1_arvalid,
-       mmio_fabric$v_to_slaves_1_awlock,
-       mmio_fabric$v_to_slaves_1_awready,
-       mmio_fabric$v_to_slaves_1_awvalid,
-       mmio_fabric$v_to_slaves_1_bready,
-       mmio_fabric$v_to_slaves_1_bvalid,
-       mmio_fabric$v_to_slaves_1_rlast,
-       mmio_fabric$v_to_slaves_1_rready,
-       mmio_fabric$v_to_slaves_1_rvalid,
-       mmio_fabric$v_to_slaves_1_wlast,
-       mmio_fabric$v_to_slaves_1_wready,
-       mmio_fabric$v_to_slaves_1_wvalid,
-       mmio_fabric$v_to_slaves_2_arlock,
-       mmio_fabric$v_to_slaves_2_arready,
-       mmio_fabric$v_to_slaves_2_arvalid,
-       mmio_fabric$v_to_slaves_2_awlock,
-       mmio_fabric$v_to_slaves_2_awready,
-       mmio_fabric$v_to_slaves_2_awvalid,
-       mmio_fabric$v_to_slaves_2_bready,
-       mmio_fabric$v_to_slaves_2_bvalid,
-       mmio_fabric$v_to_slaves_2_rlast,
-       mmio_fabric$v_to_slaves_2_rready,
-       mmio_fabric$v_to_slaves_2_rvalid,
-       mmio_fabric$v_to_slaves_2_wlast,
-       mmio_fabric$v_to_slaves_2_wready,
-       mmio_fabric$v_to_slaves_2_wvalid,
-       mmio_fabric$v_to_slaves_3_arlock,
-       mmio_fabric$v_to_slaves_3_arready,
-       mmio_fabric$v_to_slaves_3_arvalid,
-       mmio_fabric$v_to_slaves_3_awlock,
-       mmio_fabric$v_to_slaves_3_awready,
-       mmio_fabric$v_to_slaves_3_awvalid,
-       mmio_fabric$v_to_slaves_3_bready,
-       mmio_fabric$v_to_slaves_3_bvalid,
-       mmio_fabric$v_to_slaves_3_rlast,
-       mmio_fabric$v_to_slaves_3_rready,
-       mmio_fabric$v_to_slaves_3_rvalid,
-       mmio_fabric$v_to_slaves_3_wlast,
-       mmio_fabric$v_to_slaves_3_wready,
-       mmio_fabric$v_to_slaves_3_wvalid;
-
-  // ports of submodule near_mem_io
-  wire [63 : 0] near_mem_io$axi4_slave_araddr,
-		near_mem_io$axi4_slave_awaddr,
-		near_mem_io$axi4_slave_rdata,
-		near_mem_io$axi4_slave_wdata,
-		near_mem_io$mv_read_mtime,
-		near_mem_io$set_addr_map_addr_base,
-		near_mem_io$set_addr_map_addr_lim;
-  wire [15 : 0] near_mem_io$axi4_slave_arid,
-		near_mem_io$axi4_slave_awid,
-		near_mem_io$axi4_slave_bid,
-		near_mem_io$axi4_slave_rid;
-  wire [7 : 0] near_mem_io$axi4_slave_arlen,
-	       near_mem_io$axi4_slave_awlen,
-	       near_mem_io$axi4_slave_wstrb;
-  wire [3 : 0] near_mem_io$axi4_slave_arcache,
-	       near_mem_io$axi4_slave_arqos,
-	       near_mem_io$axi4_slave_arregion,
-	       near_mem_io$axi4_slave_awcache,
-	       near_mem_io$axi4_slave_awqos,
-	       near_mem_io$axi4_slave_awregion;
-  wire [2 : 0] near_mem_io$axi4_slave_arprot,
-	       near_mem_io$axi4_slave_arsize,
-	       near_mem_io$axi4_slave_awprot,
-	       near_mem_io$axi4_slave_awsize;
-  wire [1 : 0] near_mem_io$axi4_slave_arburst,
-	       near_mem_io$axi4_slave_awburst,
-	       near_mem_io$axi4_slave_bresp,
-	       near_mem_io$axi4_slave_rresp;
-  wire near_mem_io$EN_get_sw_interrupt_req_get,
-       near_mem_io$EN_get_timer_interrupt_req_get,
-       near_mem_io$EN_server_reset_request_put,
-       near_mem_io$EN_server_reset_response_get,
-       near_mem_io$EN_set_addr_map,
-       near_mem_io$RDY_get_sw_interrupt_req_get,
-       near_mem_io$RDY_get_timer_interrupt_req_get,
-       near_mem_io$RDY_server_reset_request_put,
-       near_mem_io$RDY_server_reset_response_get,
-       near_mem_io$RDY_set_addr_map,
-       near_mem_io$axi4_slave_arlock,
-       near_mem_io$axi4_slave_arready,
-       near_mem_io$axi4_slave_arvalid,
-       near_mem_io$axi4_slave_awlock,
-       near_mem_io$axi4_slave_awready,
-       near_mem_io$axi4_slave_awvalid,
-       near_mem_io$axi4_slave_bready,
-       near_mem_io$axi4_slave_bvalid,
-       near_mem_io$axi4_slave_rlast,
-       near_mem_io$axi4_slave_rready,
-       near_mem_io$axi4_slave_rvalid,
-       near_mem_io$axi4_slave_wlast,
-       near_mem_io$axi4_slave_wready,
-       near_mem_io$axi4_slave_wvalid,
-       near_mem_io$get_sw_interrupt_req_get,
-       near_mem_io$get_timer_interrupt_req_get;
-
-  // ports of submodule plic
-  wire [63 : 0] plic$axi4_slave_araddr,
-		plic$axi4_slave_awaddr,
-		plic$axi4_slave_rdata,
-		plic$axi4_slave_wdata,
-		plic$set_addr_map_addr_base,
-		plic$set_addr_map_addr_lim;
-  wire [15 : 0] plic$axi4_slave_arid,
-		plic$axi4_slave_awid,
-		plic$axi4_slave_bid,
-		plic$axi4_slave_rid;
-  wire [7 : 0] plic$axi4_slave_arlen,
-	       plic$axi4_slave_awlen,
-	       plic$axi4_slave_wstrb;
-  wire [3 : 0] plic$axi4_slave_arcache,
-	       plic$axi4_slave_arqos,
-	       plic$axi4_slave_arregion,
-	       plic$axi4_slave_awcache,
-	       plic$axi4_slave_awqos,
-	       plic$axi4_slave_awregion,
-	       plic$set_verbosity_verbosity;
-  wire [2 : 0] plic$axi4_slave_arprot,
-	       plic$axi4_slave_arsize,
-	       plic$axi4_slave_awprot,
-	       plic$axi4_slave_awsize;
-  wire [1 : 0] plic$axi4_slave_arburst,
-	       plic$axi4_slave_awburst,
-	       plic$axi4_slave_bresp,
-	       plic$axi4_slave_rresp;
-  wire plic$EN_server_reset_request_put,
-       plic$EN_server_reset_response_get,
-       plic$EN_set_addr_map,
-       plic$EN_set_verbosity,
-       plic$EN_show_PLIC_state,
-       plic$RDY_server_reset_request_put,
-       plic$RDY_server_reset_response_get,
-       plic$axi4_slave_arlock,
-       plic$axi4_slave_arready,
-       plic$axi4_slave_arvalid,
-       plic$axi4_slave_awlock,
-       plic$axi4_slave_awready,
-       plic$axi4_slave_awvalid,
-       plic$axi4_slave_bready,
-       plic$axi4_slave_bvalid,
-       plic$axi4_slave_rlast,
-       plic$axi4_slave_rready,
-       plic$axi4_slave_rvalid,
-       plic$axi4_slave_wlast,
-       plic$axi4_slave_wready,
-       plic$axi4_slave_wvalid,
-       plic$v_sources_0_m_interrupt_req_set_not_clear,
-       plic$v_sources_10_m_interrupt_req_set_not_clear,
-       plic$v_sources_11_m_interrupt_req_set_not_clear,
-       plic$v_sources_12_m_interrupt_req_set_not_clear,
-       plic$v_sources_13_m_interrupt_req_set_not_clear,
-       plic$v_sources_14_m_interrupt_req_set_not_clear,
-       plic$v_sources_15_m_interrupt_req_set_not_clear,
-       plic$v_sources_1_m_interrupt_req_set_not_clear,
-       plic$v_sources_2_m_interrupt_req_set_not_clear,
-       plic$v_sources_3_m_interrupt_req_set_not_clear,
-       plic$v_sources_4_m_interrupt_req_set_not_clear,
-       plic$v_sources_5_m_interrupt_req_set_not_clear,
-       plic$v_sources_6_m_interrupt_req_set_not_clear,
-       plic$v_sources_7_m_interrupt_req_set_not_clear,
-       plic$v_sources_8_m_interrupt_req_set_not_clear,
-       plic$v_sources_9_m_interrupt_req_set_not_clear,
-       plic$v_targets_0_m_eip,
-       plic$v_targets_1_m_eip;
-
   // rule scheduling signals
-  wire CAN_FIRE_RL_dm_tv_ifc_1_ClientServerRequest,
-       CAN_FIRE_RL_dm_tv_ifc_1_ClientServerResponse,
-       CAN_FIRE_RL_dm_tv_ifc_2_ClientServerRequest,
-       CAN_FIRE_RL_dm_tv_ifc_2_ClientServerResponse,
-       CAN_FIRE_RL_dm_tv_ifc_3_rl_rd_addr_channel,
-       CAN_FIRE_RL_dm_tv_ifc_3_rl_rd_data_channel,
-       CAN_FIRE_RL_dm_tv_ifc_3_rl_wr_addr_channel,
-       CAN_FIRE_RL_dm_tv_ifc_3_rl_wr_data_channel,
-       CAN_FIRE_RL_dm_tv_ifc_3_rl_wr_response_channel,
-       CAN_FIRE_RL_dm_tv_ifc_4_rl_rd_addr_channel,
-       CAN_FIRE_RL_dm_tv_ifc_4_rl_rd_data_channel,
-       CAN_FIRE_RL_dm_tv_ifc_4_rl_wr_addr_channel,
-       CAN_FIRE_RL_dm_tv_ifc_4_rl_wr_data_channel,
-       CAN_FIRE_RL_dm_tv_ifc_4_rl_wr_response_channel,
-       CAN_FIRE_RL_dm_tv_ifc_empty0_rl_cj_from_s,
-       CAN_FIRE_RL_dm_tv_ifc_empty0_rl_cj_from_s_1,
-       CAN_FIRE_RL_dm_tv_ifc_empty0_rl_cj_to_s,
-       CAN_FIRE_RL_dm_tv_ifc_empty0_rl_cj_to_s_1,
-       CAN_FIRE_RL_dm_tv_ifc_empty1_rl_cj_from_s,
-       CAN_FIRE_RL_dm_tv_ifc_empty1_rl_cj_from_s_1,
-       CAN_FIRE_RL_dm_tv_ifc_empty1_rl_cj_to_s,
-       CAN_FIRE_RL_dm_tv_ifc_empty1_rl_cj_to_s_1,
-       CAN_FIRE_RL_dm_tv_ifc_empty2_rl_cj_from_s,
-       CAN_FIRE_RL_dm_tv_ifc_empty2_rl_cj_from_s_1,
-       CAN_FIRE_RL_dm_tv_ifc_empty2_rl_cj_to_s,
-       CAN_FIRE_RL_dm_tv_ifc_empty2_rl_cj_to_s_1,
-       CAN_FIRE_RL_dm_tv_ifc_mkConnectionGetPut,
-       CAN_FIRE_RL_dm_tv_ifc_rl_dmi_req,
-       CAN_FIRE_RL_dm_tv_ifc_rl_dmi_rsp,
-       CAN_FIRE_RL_dm_tv_ifc_rl_ndm_req,
-       CAN_FIRE_RL_dm_tv_ifc_rl_ndm_rsp,
-       CAN_FIRE_RL_rl_drive_external_interrupt,
-       CAN_FIRE_RL_rl_drive_interrupt,
-       CAN_FIRE_RL_rl_drive_nmi,
-       CAN_FIRE_RL_rl_drive_sw_interrupt,
-       CAN_FIRE_RL_rl_drive_time,
-       CAN_FIRE_RL_rl_drive_timer_interrupt,
-       CAN_FIRE_RL_rl_first_init_finish,
-       CAN_FIRE_RL_rl_first_init_start,
-       CAN_FIRE_RL_rl_rd_addr_channel,
-       CAN_FIRE_RL_rl_rd_addr_channel_1,
-       CAN_FIRE_RL_rl_rd_addr_channel_2,
-       CAN_FIRE_RL_rl_rd_addr_channel_3,
-       CAN_FIRE_RL_rl_rd_addr_channel_4,
-       CAN_FIRE_RL_rl_rd_data_channel,
-       CAN_FIRE_RL_rl_rd_data_channel_1,
-       CAN_FIRE_RL_rl_rd_data_channel_2,
-       CAN_FIRE_RL_rl_rd_data_channel_3,
-       CAN_FIRE_RL_rl_rd_data_channel_4,
-       CAN_FIRE_RL_rl_register_nmi,
-       CAN_FIRE_RL_rl_reinitialization_finish,
-       CAN_FIRE_RL_rl_reinitialization_start,
-       CAN_FIRE_RL_rl_relay_external_interrupt,
-       CAN_FIRE_RL_rl_relay_sw_interrupt,
-       CAN_FIRE_RL_rl_relay_timer_interrupt,
+  wire CAN_FIRE_RL_mkConnectionGetPut,
        CAN_FIRE_RL_rl_send_tohost_value,
        CAN_FIRE_RL_rl_set_verbosity,
        CAN_FIRE_RL_rl_watch_thost,
-       CAN_FIRE_RL_rl_wr_addr_channel,
-       CAN_FIRE_RL_rl_wr_addr_channel_1,
-       CAN_FIRE_RL_rl_wr_addr_channel_2,
-       CAN_FIRE_RL_rl_wr_addr_channel_3,
-       CAN_FIRE_RL_rl_wr_addr_channel_4,
-       CAN_FIRE_RL_rl_wr_data_channel,
-       CAN_FIRE_RL_rl_wr_data_channel_1,
-       CAN_FIRE_RL_rl_wr_data_channel_2,
-       CAN_FIRE_RL_rl_wr_data_channel_3,
-       CAN_FIRE_RL_rl_wr_data_channel_4,
-       CAN_FIRE_RL_rl_wr_response_channel,
-       CAN_FIRE_RL_rl_wr_response_channel_1,
-       CAN_FIRE_RL_rl_wr_response_channel_2,
-       CAN_FIRE_RL_rl_wr_response_channel_3,
-       CAN_FIRE_RL_rl_wr_response_channel_4,
        CAN_FIRE_cl_ndm_reset_request_deq,
        CAN_FIRE_cl_ndm_reset_response_enq,
        CAN_FIRE_dma_S_m_arvalid,
@@ -2071,79 +1213,10 @@ module mkAWSteria_Core_Single_Clock(CLK,
        CAN_FIRE_se_control_status_response_deq,
        CAN_FIRE_se_dmi_request_enq,
        CAN_FIRE_se_dmi_response_deq,
-       WILL_FIRE_RL_dm_tv_ifc_1_ClientServerRequest,
-       WILL_FIRE_RL_dm_tv_ifc_1_ClientServerResponse,
-       WILL_FIRE_RL_dm_tv_ifc_2_ClientServerRequest,
-       WILL_FIRE_RL_dm_tv_ifc_2_ClientServerResponse,
-       WILL_FIRE_RL_dm_tv_ifc_3_rl_rd_addr_channel,
-       WILL_FIRE_RL_dm_tv_ifc_3_rl_rd_data_channel,
-       WILL_FIRE_RL_dm_tv_ifc_3_rl_wr_addr_channel,
-       WILL_FIRE_RL_dm_tv_ifc_3_rl_wr_data_channel,
-       WILL_FIRE_RL_dm_tv_ifc_3_rl_wr_response_channel,
-       WILL_FIRE_RL_dm_tv_ifc_4_rl_rd_addr_channel,
-       WILL_FIRE_RL_dm_tv_ifc_4_rl_rd_data_channel,
-       WILL_FIRE_RL_dm_tv_ifc_4_rl_wr_addr_channel,
-       WILL_FIRE_RL_dm_tv_ifc_4_rl_wr_data_channel,
-       WILL_FIRE_RL_dm_tv_ifc_4_rl_wr_response_channel,
-       WILL_FIRE_RL_dm_tv_ifc_empty0_rl_cj_from_s,
-       WILL_FIRE_RL_dm_tv_ifc_empty0_rl_cj_from_s_1,
-       WILL_FIRE_RL_dm_tv_ifc_empty0_rl_cj_to_s,
-       WILL_FIRE_RL_dm_tv_ifc_empty0_rl_cj_to_s_1,
-       WILL_FIRE_RL_dm_tv_ifc_empty1_rl_cj_from_s,
-       WILL_FIRE_RL_dm_tv_ifc_empty1_rl_cj_from_s_1,
-       WILL_FIRE_RL_dm_tv_ifc_empty1_rl_cj_to_s,
-       WILL_FIRE_RL_dm_tv_ifc_empty1_rl_cj_to_s_1,
-       WILL_FIRE_RL_dm_tv_ifc_empty2_rl_cj_from_s,
-       WILL_FIRE_RL_dm_tv_ifc_empty2_rl_cj_from_s_1,
-       WILL_FIRE_RL_dm_tv_ifc_empty2_rl_cj_to_s,
-       WILL_FIRE_RL_dm_tv_ifc_empty2_rl_cj_to_s_1,
-       WILL_FIRE_RL_dm_tv_ifc_mkConnectionGetPut,
-       WILL_FIRE_RL_dm_tv_ifc_rl_dmi_req,
-       WILL_FIRE_RL_dm_tv_ifc_rl_dmi_rsp,
-       WILL_FIRE_RL_dm_tv_ifc_rl_ndm_req,
-       WILL_FIRE_RL_dm_tv_ifc_rl_ndm_rsp,
-       WILL_FIRE_RL_rl_drive_external_interrupt,
-       WILL_FIRE_RL_rl_drive_interrupt,
-       WILL_FIRE_RL_rl_drive_nmi,
-       WILL_FIRE_RL_rl_drive_sw_interrupt,
-       WILL_FIRE_RL_rl_drive_time,
-       WILL_FIRE_RL_rl_drive_timer_interrupt,
-       WILL_FIRE_RL_rl_first_init_finish,
-       WILL_FIRE_RL_rl_first_init_start,
-       WILL_FIRE_RL_rl_rd_addr_channel,
-       WILL_FIRE_RL_rl_rd_addr_channel_1,
-       WILL_FIRE_RL_rl_rd_addr_channel_2,
-       WILL_FIRE_RL_rl_rd_addr_channel_3,
-       WILL_FIRE_RL_rl_rd_addr_channel_4,
-       WILL_FIRE_RL_rl_rd_data_channel,
-       WILL_FIRE_RL_rl_rd_data_channel_1,
-       WILL_FIRE_RL_rl_rd_data_channel_2,
-       WILL_FIRE_RL_rl_rd_data_channel_3,
-       WILL_FIRE_RL_rl_rd_data_channel_4,
-       WILL_FIRE_RL_rl_register_nmi,
-       WILL_FIRE_RL_rl_reinitialization_finish,
-       WILL_FIRE_RL_rl_reinitialization_start,
-       WILL_FIRE_RL_rl_relay_external_interrupt,
-       WILL_FIRE_RL_rl_relay_sw_interrupt,
-       WILL_FIRE_RL_rl_relay_timer_interrupt,
+       WILL_FIRE_RL_mkConnectionGetPut,
        WILL_FIRE_RL_rl_send_tohost_value,
        WILL_FIRE_RL_rl_set_verbosity,
        WILL_FIRE_RL_rl_watch_thost,
-       WILL_FIRE_RL_rl_wr_addr_channel,
-       WILL_FIRE_RL_rl_wr_addr_channel_1,
-       WILL_FIRE_RL_rl_wr_addr_channel_2,
-       WILL_FIRE_RL_rl_wr_addr_channel_3,
-       WILL_FIRE_RL_rl_wr_addr_channel_4,
-       WILL_FIRE_RL_rl_wr_data_channel,
-       WILL_FIRE_RL_rl_wr_data_channel_1,
-       WILL_FIRE_RL_rl_wr_data_channel_2,
-       WILL_FIRE_RL_rl_wr_data_channel_3,
-       WILL_FIRE_RL_rl_wr_data_channel_4,
-       WILL_FIRE_RL_rl_wr_response_channel,
-       WILL_FIRE_RL_rl_wr_response_channel_1,
-       WILL_FIRE_RL_rl_wr_response_channel_2,
-       WILL_FIRE_RL_rl_wr_response_channel_3,
-       WILL_FIRE_RL_rl_wr_response_channel_4,
        WILL_FIRE_cl_ndm_reset_request_deq,
        WILL_FIRE_cl_ndm_reset_response_enq,
        WILL_FIRE_dma_S_m_arvalid,
@@ -2171,69 +1244,54 @@ module mkAWSteria_Core_Single_Clock(CLK,
        WILL_FIRE_se_dmi_request_enq,
        WILL_FIRE_se_dmi_response_deq;
 
-  // inputs to muxes for submodule ports
-  wire MUX_rg_module_state$write_1__SEL_3;
-
-  // declarations used by system tasks
-  // synopsys translate_off
-  reg [31 : 0] v__h12078;
-  reg [31 : 0] v__h12648;
-  reg [31 : 0] v__h11756;
-  reg [31 : 0] v__h12345;
-  reg [31 : 0] v__h11750;
-  reg [31 : 0] v__h12072;
-  reg [31 : 0] v__h12339;
-  reg [31 : 0] v__h12642;
-  // synopsys translate_on
-
   // value method mem_M_m_awvalid
-  assign mem_M_awvalid = cpu$mem_master_awvalid ;
+  assign mem_M_awvalid = core_resettable$mem_M_awvalid ;
 
   // value method mem_M_m_awid
-  assign mem_M_awid = cpu$mem_master_awid ;
+  assign mem_M_awid = core_resettable$mem_M_awid ;
 
   // value method mem_M_m_awaddr
-  assign mem_M_awaddr = cpu$mem_master_awaddr ;
+  assign mem_M_awaddr = core_resettable$mem_M_awaddr ;
 
   // value method mem_M_m_awlen
-  assign mem_M_awlen = cpu$mem_master_awlen ;
+  assign mem_M_awlen = core_resettable$mem_M_awlen ;
 
   // value method mem_M_m_awsize
-  assign mem_M_awsize = cpu$mem_master_awsize ;
+  assign mem_M_awsize = core_resettable$mem_M_awsize ;
 
   // value method mem_M_m_awburst
-  assign mem_M_awburst = cpu$mem_master_awburst ;
+  assign mem_M_awburst = core_resettable$mem_M_awburst ;
 
   // value method mem_M_m_awlock
-  assign mem_M_awlock = cpu$mem_master_awlock ;
+  assign mem_M_awlock = core_resettable$mem_M_awlock ;
 
   // value method mem_M_m_awcache
-  assign mem_M_awcache = cpu$mem_master_awcache ;
+  assign mem_M_awcache = core_resettable$mem_M_awcache ;
 
   // value method mem_M_m_awprot
-  assign mem_M_awprot = cpu$mem_master_awprot ;
+  assign mem_M_awprot = core_resettable$mem_M_awprot ;
 
   // value method mem_M_m_awqos
-  assign mem_M_awqos = cpu$mem_master_awqos ;
+  assign mem_M_awqos = core_resettable$mem_M_awqos ;
 
   // value method mem_M_m_awregion
-  assign mem_M_awregion = cpu$mem_master_awregion ;
+  assign mem_M_awregion = core_resettable$mem_M_awregion ;
 
   // action method mem_M_m_awready
   assign CAN_FIRE_mem_M_m_awready = 1'd1 ;
   assign WILL_FIRE_mem_M_m_awready = 1'd1 ;
 
   // value method mem_M_m_wvalid
-  assign mem_M_wvalid = cpu$mem_master_wvalid ;
+  assign mem_M_wvalid = core_resettable$mem_M_wvalid ;
 
   // value method mem_M_m_wdata
-  assign mem_M_wdata = cpu$mem_master_wdata ;
+  assign mem_M_wdata = core_resettable$mem_M_wdata ;
 
   // value method mem_M_m_wstrb
-  assign mem_M_wstrb = cpu$mem_master_wstrb ;
+  assign mem_M_wstrb = core_resettable$mem_M_wstrb ;
 
   // value method mem_M_m_wlast
-  assign mem_M_wlast = cpu$mem_master_wlast ;
+  assign mem_M_wlast = core_resettable$mem_M_wlast ;
 
   // action method mem_M_m_wready
   assign CAN_FIRE_mem_M_m_wready = 1'd1 ;
@@ -2244,40 +1302,40 @@ module mkAWSteria_Core_Single_Clock(CLK,
   assign WILL_FIRE_mem_M_m_bvalid = 1'd1 ;
 
   // value method mem_M_m_bready
-  assign mem_M_bready = cpu$mem_master_bready ;
+  assign mem_M_bready = core_resettable$mem_M_bready ;
 
   // value method mem_M_m_arvalid
-  assign mem_M_arvalid = cpu$mem_master_arvalid ;
+  assign mem_M_arvalid = core_resettable$mem_M_arvalid ;
 
   // value method mem_M_m_arid
-  assign mem_M_arid = cpu$mem_master_arid ;
+  assign mem_M_arid = core_resettable$mem_M_arid ;
 
   // value method mem_M_m_araddr
-  assign mem_M_araddr = cpu$mem_master_araddr ;
+  assign mem_M_araddr = core_resettable$mem_M_araddr ;
 
   // value method mem_M_m_arlen
-  assign mem_M_arlen = cpu$mem_master_arlen ;
+  assign mem_M_arlen = core_resettable$mem_M_arlen ;
 
   // value method mem_M_m_arsize
-  assign mem_M_arsize = cpu$mem_master_arsize ;
+  assign mem_M_arsize = core_resettable$mem_M_arsize ;
 
   // value method mem_M_m_arburst
-  assign mem_M_arburst = cpu$mem_master_arburst ;
+  assign mem_M_arburst = core_resettable$mem_M_arburst ;
 
   // value method mem_M_m_arlock
-  assign mem_M_arlock = cpu$mem_master_arlock ;
+  assign mem_M_arlock = core_resettable$mem_M_arlock ;
 
   // value method mem_M_m_arcache
-  assign mem_M_arcache = cpu$mem_master_arcache ;
+  assign mem_M_arcache = core_resettable$mem_M_arcache ;
 
   // value method mem_M_m_arprot
-  assign mem_M_arprot = cpu$mem_master_arprot ;
+  assign mem_M_arprot = core_resettable$mem_M_arprot ;
 
   // value method mem_M_m_arqos
-  assign mem_M_arqos = cpu$mem_master_arqos ;
+  assign mem_M_arqos = core_resettable$mem_M_arqos ;
 
   // value method mem_M_m_arregion
-  assign mem_M_arregion = cpu$mem_master_arregion ;
+  assign mem_M_arregion = core_resettable$mem_M_arregion ;
 
   // action method mem_M_m_arready
   assign CAN_FIRE_mem_M_m_arready = 1'd1 ;
@@ -2288,56 +1346,56 @@ module mkAWSteria_Core_Single_Clock(CLK,
   assign WILL_FIRE_mem_M_m_rvalid = 1'd1 ;
 
   // value method mem_M_m_rready
-  assign mem_M_rready = cpu$mem_master_rready ;
+  assign mem_M_rready = core_resettable$mem_M_rready ;
 
   // value method mmio_M_m_awvalid
-  assign mmio_M_awvalid = mmio_fabric$v_to_slaves_0_awvalid ;
+  assign mmio_M_awvalid = core_resettable$mmio_M_awvalid ;
 
   // value method mmio_M_m_awid
-  assign mmio_M_awid = mmio_fabric$v_to_slaves_0_awid ;
+  assign mmio_M_awid = core_resettable$mmio_M_awid ;
 
   // value method mmio_M_m_awaddr
-  assign mmio_M_awaddr = mmio_fabric$v_to_slaves_0_awaddr ;
+  assign mmio_M_awaddr = core_resettable$mmio_M_awaddr ;
 
   // value method mmio_M_m_awlen
-  assign mmio_M_awlen = mmio_fabric$v_to_slaves_0_awlen ;
+  assign mmio_M_awlen = core_resettable$mmio_M_awlen ;
 
   // value method mmio_M_m_awsize
-  assign mmio_M_awsize = mmio_fabric$v_to_slaves_0_awsize ;
+  assign mmio_M_awsize = core_resettable$mmio_M_awsize ;
 
   // value method mmio_M_m_awburst
-  assign mmio_M_awburst = mmio_fabric$v_to_slaves_0_awburst ;
+  assign mmio_M_awburst = core_resettable$mmio_M_awburst ;
 
   // value method mmio_M_m_awlock
-  assign mmio_M_awlock = mmio_fabric$v_to_slaves_0_awlock ;
+  assign mmio_M_awlock = core_resettable$mmio_M_awlock ;
 
   // value method mmio_M_m_awcache
-  assign mmio_M_awcache = mmio_fabric$v_to_slaves_0_awcache ;
+  assign mmio_M_awcache = core_resettable$mmio_M_awcache ;
 
   // value method mmio_M_m_awprot
-  assign mmio_M_awprot = mmio_fabric$v_to_slaves_0_awprot ;
+  assign mmio_M_awprot = core_resettable$mmio_M_awprot ;
 
   // value method mmio_M_m_awqos
-  assign mmio_M_awqos = mmio_fabric$v_to_slaves_0_awqos ;
+  assign mmio_M_awqos = core_resettable$mmio_M_awqos ;
 
   // value method mmio_M_m_awregion
-  assign mmio_M_awregion = mmio_fabric$v_to_slaves_0_awregion ;
+  assign mmio_M_awregion = core_resettable$mmio_M_awregion ;
 
   // action method mmio_M_m_awready
   assign CAN_FIRE_mmio_M_m_awready = 1'd1 ;
   assign WILL_FIRE_mmio_M_m_awready = 1'd1 ;
 
   // value method mmio_M_m_wvalid
-  assign mmio_M_wvalid = mmio_fabric$v_to_slaves_0_wvalid ;
+  assign mmio_M_wvalid = core_resettable$mmio_M_wvalid ;
 
   // value method mmio_M_m_wdata
-  assign mmio_M_wdata = mmio_fabric$v_to_slaves_0_wdata ;
+  assign mmio_M_wdata = core_resettable$mmio_M_wdata ;
 
   // value method mmio_M_m_wstrb
-  assign mmio_M_wstrb = mmio_fabric$v_to_slaves_0_wstrb ;
+  assign mmio_M_wstrb = core_resettable$mmio_M_wstrb ;
 
   // value method mmio_M_m_wlast
-  assign mmio_M_wlast = mmio_fabric$v_to_slaves_0_wlast ;
+  assign mmio_M_wlast = core_resettable$mmio_M_wlast ;
 
   // action method mmio_M_m_wready
   assign CAN_FIRE_mmio_M_m_wready = 1'd1 ;
@@ -2348,40 +1406,40 @@ module mkAWSteria_Core_Single_Clock(CLK,
   assign WILL_FIRE_mmio_M_m_bvalid = 1'd1 ;
 
   // value method mmio_M_m_bready
-  assign mmio_M_bready = mmio_fabric$v_to_slaves_0_bready ;
+  assign mmio_M_bready = core_resettable$mmio_M_bready ;
 
   // value method mmio_M_m_arvalid
-  assign mmio_M_arvalid = mmio_fabric$v_to_slaves_0_arvalid ;
+  assign mmio_M_arvalid = core_resettable$mmio_M_arvalid ;
 
   // value method mmio_M_m_arid
-  assign mmio_M_arid = mmio_fabric$v_to_slaves_0_arid ;
+  assign mmio_M_arid = core_resettable$mmio_M_arid ;
 
   // value method mmio_M_m_araddr
-  assign mmio_M_araddr = mmio_fabric$v_to_slaves_0_araddr ;
+  assign mmio_M_araddr = core_resettable$mmio_M_araddr ;
 
   // value method mmio_M_m_arlen
-  assign mmio_M_arlen = mmio_fabric$v_to_slaves_0_arlen ;
+  assign mmio_M_arlen = core_resettable$mmio_M_arlen ;
 
   // value method mmio_M_m_arsize
-  assign mmio_M_arsize = mmio_fabric$v_to_slaves_0_arsize ;
+  assign mmio_M_arsize = core_resettable$mmio_M_arsize ;
 
   // value method mmio_M_m_arburst
-  assign mmio_M_arburst = mmio_fabric$v_to_slaves_0_arburst ;
+  assign mmio_M_arburst = core_resettable$mmio_M_arburst ;
 
   // value method mmio_M_m_arlock
-  assign mmio_M_arlock = mmio_fabric$v_to_slaves_0_arlock ;
+  assign mmio_M_arlock = core_resettable$mmio_M_arlock ;
 
   // value method mmio_M_m_arcache
-  assign mmio_M_arcache = mmio_fabric$v_to_slaves_0_arcache ;
+  assign mmio_M_arcache = core_resettable$mmio_M_arcache ;
 
   // value method mmio_M_m_arprot
-  assign mmio_M_arprot = mmio_fabric$v_to_slaves_0_arprot ;
+  assign mmio_M_arprot = core_resettable$mmio_M_arprot ;
 
   // value method mmio_M_m_arqos
-  assign mmio_M_arqos = mmio_fabric$v_to_slaves_0_arqos ;
+  assign mmio_M_arqos = core_resettable$mmio_M_arqos ;
 
   // value method mmio_M_m_arregion
-  assign mmio_M_arregion = mmio_fabric$v_to_slaves_0_arregion ;
+  assign mmio_M_arregion = core_resettable$mmio_M_arregion ;
 
   // action method mmio_M_m_arready
   assign CAN_FIRE_mmio_M_m_arready = 1'd1 ;
@@ -2392,30 +1450,30 @@ module mkAWSteria_Core_Single_Clock(CLK,
   assign WILL_FIRE_mmio_M_m_rvalid = 1'd1 ;
 
   // value method mmio_M_m_rready
-  assign mmio_M_rready = mmio_fabric$v_to_slaves_0_rready ;
+  assign mmio_M_rready = core_resettable$mmio_M_rready ;
 
   // action method dma_S_m_awvalid
   assign CAN_FIRE_dma_S_m_awvalid = 1'd1 ;
   assign WILL_FIRE_dma_S_m_awvalid = 1'd1 ;
 
   // value method dma_S_m_awready
-  assign dma_S_awready = dm_tv_ifc_dma_server_mux$initiator_A_server_awready ;
+  assign dma_S_awready = core_resettable$dma_S_awready ;
 
   // action method dma_S_m_wvalid
   assign CAN_FIRE_dma_S_m_wvalid = 1'd1 ;
   assign WILL_FIRE_dma_S_m_wvalid = 1'd1 ;
 
   // value method dma_S_m_wready
-  assign dma_S_wready = dm_tv_ifc_dma_server_mux$initiator_A_server_wready ;
+  assign dma_S_wready = core_resettable$dma_S_wready ;
 
   // value method dma_S_m_bvalid
-  assign dma_S_bvalid = dm_tv_ifc_dma_server_mux$initiator_A_server_bvalid ;
+  assign dma_S_bvalid = core_resettable$dma_S_bvalid ;
 
   // value method dma_S_m_bid
-  assign dma_S_bid = dm_tv_ifc_dma_server_mux$initiator_A_server_bid ;
+  assign dma_S_bid = core_resettable$dma_S_bid ;
 
   // value method dma_S_m_bresp
-  assign dma_S_bresp = dm_tv_ifc_dma_server_mux$initiator_A_server_bresp ;
+  assign dma_S_bresp = core_resettable$dma_S_bresp ;
 
   // action method dma_S_m_bready
   assign CAN_FIRE_dma_S_m_bready = 1'd1 ;
@@ -2426,22 +1484,22 @@ module mkAWSteria_Core_Single_Clock(CLK,
   assign WILL_FIRE_dma_S_m_arvalid = 1'd1 ;
 
   // value method dma_S_m_arready
-  assign dma_S_arready = dm_tv_ifc_dma_server_mux$initiator_A_server_arready ;
+  assign dma_S_arready = core_resettable$dma_S_arready ;
 
   // value method dma_S_m_rvalid
-  assign dma_S_rvalid = dm_tv_ifc_dma_server_mux$initiator_A_server_rvalid ;
+  assign dma_S_rvalid = core_resettable$dma_S_rvalid ;
 
   // value method dma_S_m_rid
-  assign dma_S_rid = dm_tv_ifc_dma_server_mux$initiator_A_server_rid ;
+  assign dma_S_rid = core_resettable$dma_S_rid ;
 
   // value method dma_S_m_rdata
-  assign dma_S_rdata = dm_tv_ifc_dma_server_mux$initiator_A_server_rdata ;
+  assign dma_S_rdata = core_resettable$dma_S_rdata ;
 
   // value method dma_S_m_rresp
-  assign dma_S_rresp = dm_tv_ifc_dma_server_mux$initiator_A_server_rresp ;
+  assign dma_S_rresp = core_resettable$dma_S_rresp ;
 
   // value method dma_S_m_rlast
-  assign dma_S_rlast = dm_tv_ifc_dma_server_mux$initiator_A_server_rlast ;
+  assign dma_S_rlast = core_resettable$dma_S_rlast ;
 
   // action method dma_S_m_rready
   assign CAN_FIRE_dma_S_m_rready = 1'd1 ;
@@ -2453,91 +1511,100 @@ module mkAWSteria_Core_Single_Clock(CLK,
   assign WILL_FIRE_ext_interrupts = EN_ext_interrupts ;
 
   // action method fi_nmi_enq
-  assign RDY_fi_nmi_enq = f_nmi$FULL_N ;
-  assign CAN_FIRE_fi_nmi_enq = f_nmi$FULL_N ;
+  assign RDY_fi_nmi_enq = core_resettable$RDY_fi_nmi_enq ;
+  assign CAN_FIRE_fi_nmi_enq = core_resettable$RDY_fi_nmi_enq ;
   assign WILL_FIRE_fi_nmi_enq = EN_fi_nmi_enq ;
 
   // value method fi_nmi_notFull
-  assign fi_nmi_notFull = f_nmi$FULL_N ;
+  assign fi_nmi_notFull = core_resettable$fi_nmi_notFull ;
   assign RDY_fi_nmi_notFull = 1'd1 ;
 
   // value method fo_misc_first
-  assign fo_misc_first = 32'hAAAAAAAA ;
-  assign RDY_fo_misc_first = 1'd0 ;
+  assign fo_misc_first = core_resettable$fo_misc_first ;
+  assign RDY_fo_misc_first = core_resettable$RDY_fo_misc_first ;
 
   // action method fo_misc_deq
-  assign RDY_fo_misc_deq = 1'd0 ;
-  assign CAN_FIRE_fo_misc_deq = 1'd0 ;
+  assign RDY_fo_misc_deq = core_resettable$RDY_fo_misc_deq ;
+  assign CAN_FIRE_fo_misc_deq = core_resettable$RDY_fo_misc_deq ;
   assign WILL_FIRE_fo_misc_deq = EN_fo_misc_deq ;
 
   // value method fo_misc_notEmpty
-  assign fo_misc_notEmpty = 1'd0 ;
+  assign fo_misc_notEmpty = core_resettable$fo_misc_notEmpty ;
   assign RDY_fo_misc_notEmpty = 1'd1 ;
 
   // action method fi_misc_enq
-  assign RDY_fi_misc_enq = 1'd0 ;
-  assign CAN_FIRE_fi_misc_enq = 1'd0 ;
+  assign RDY_fi_misc_enq = core_resettable$RDY_fi_misc_enq ;
+  assign CAN_FIRE_fi_misc_enq = core_resettable$RDY_fi_misc_enq ;
   assign WILL_FIRE_fi_misc_enq = EN_fi_misc_enq ;
 
   // value method fi_misc_notFull
-  assign fi_misc_notFull = 1'd0 ;
+  assign fi_misc_notFull = core_resettable$fi_misc_notFull ;
   assign RDY_fi_misc_notFull = 1'd1 ;
 
   // value method fo_tv_info_first
-  assign fo_tv_info_first =
-	     608'hAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA ;
-  assign RDY_fo_tv_info_first = 1'd0 ;
+  assign fo_tv_info_first = core_resettable$fo_tv_info_first ;
+  assign RDY_fo_tv_info_first = core_resettable$RDY_fo_tv_info_first ;
 
   // action method fo_tv_info_deq
-  assign RDY_fo_tv_info_deq = 1'd0 ;
-  assign CAN_FIRE_fo_tv_info_deq = 1'd0 ;
+  assign RDY_fo_tv_info_deq = core_resettable$RDY_fo_tv_info_deq ;
+  assign CAN_FIRE_fo_tv_info_deq = core_resettable$RDY_fo_tv_info_deq ;
   assign WILL_FIRE_fo_tv_info_deq = EN_fo_tv_info_deq ;
 
   // value method fo_tv_info_notEmpty
-  assign fo_tv_info_notEmpty = 1'd0 ;
+  assign fo_tv_info_notEmpty = core_resettable$fo_tv_info_notEmpty ;
   assign RDY_fo_tv_info_notEmpty = 1'd1 ;
 
   // action method se_dmi_request_enq
-  assign RDY_se_dmi_request_enq = dm_tv_ifc_f_dmi_reqs$FULL_N ;
-  assign CAN_FIRE_se_dmi_request_enq = dm_tv_ifc_f_dmi_reqs$FULL_N ;
+  assign RDY_se_dmi_request_enq = core_resettable$RDY_se_dmi_request_enq ;
+  assign CAN_FIRE_se_dmi_request_enq =
+	     core_resettable$RDY_se_dmi_request_enq ;
   assign WILL_FIRE_se_dmi_request_enq = EN_se_dmi_request_enq ;
 
   // value method se_dmi_request_notFull
-  assign se_dmi_request_notFull = dm_tv_ifc_f_dmi_reqs$FULL_N ;
+  assign se_dmi_request_notFull = core_resettable$se_dmi_request_notFull ;
   assign RDY_se_dmi_request_notFull = 1'd1 ;
 
   // value method se_dmi_response_first
-  assign se_dmi_response_first = dm_tv_ifc_f_dmi_rsps$D_OUT ;
-  assign RDY_se_dmi_response_first = dm_tv_ifc_f_dmi_rsps$EMPTY_N ;
+  assign se_dmi_response_first = core_resettable$se_dmi_response_first ;
+  assign RDY_se_dmi_response_first =
+	     core_resettable$RDY_se_dmi_response_first ;
 
   // action method se_dmi_response_deq
-  assign RDY_se_dmi_response_deq = dm_tv_ifc_f_dmi_rsps$EMPTY_N ;
-  assign CAN_FIRE_se_dmi_response_deq = dm_tv_ifc_f_dmi_rsps$EMPTY_N ;
+  assign RDY_se_dmi_response_deq = core_resettable$RDY_se_dmi_response_deq ;
+  assign CAN_FIRE_se_dmi_response_deq =
+	     core_resettable$RDY_se_dmi_response_deq ;
   assign WILL_FIRE_se_dmi_response_deq = EN_se_dmi_response_deq ;
 
   // value method se_dmi_response_notEmpty
-  assign se_dmi_response_notEmpty = dm_tv_ifc_f_dmi_rsps$EMPTY_N ;
+  assign se_dmi_response_notEmpty = core_resettable$se_dmi_response_notEmpty ;
   assign RDY_se_dmi_response_notEmpty = 1'd1 ;
 
   // value method cl_ndm_reset_request_first
-  assign RDY_cl_ndm_reset_request_first = dm_tv_ifc_f_ndm_reqs$EMPTY_N ;
+  assign RDY_cl_ndm_reset_request_first =
+	     core_resettable$RDY_cl_ndm_reset_request_first ;
 
   // action method cl_ndm_reset_request_deq
-  assign RDY_cl_ndm_reset_request_deq = dm_tv_ifc_f_ndm_reqs$EMPTY_N ;
-  assign CAN_FIRE_cl_ndm_reset_request_deq = dm_tv_ifc_f_ndm_reqs$EMPTY_N ;
+  assign RDY_cl_ndm_reset_request_deq =
+	     core_resettable$RDY_cl_ndm_reset_request_deq ;
+  assign CAN_FIRE_cl_ndm_reset_request_deq =
+	     core_resettable$RDY_cl_ndm_reset_request_deq ;
   assign WILL_FIRE_cl_ndm_reset_request_deq = EN_cl_ndm_reset_request_deq ;
 
   // value method cl_ndm_reset_request_notEmpty
-  assign cl_ndm_reset_request_notEmpty = dm_tv_ifc_f_ndm_reqs$EMPTY_N ;
+  assign cl_ndm_reset_request_notEmpty =
+	     core_resettable$cl_ndm_reset_request_notEmpty ;
   assign RDY_cl_ndm_reset_request_notEmpty = 1'd1 ;
 
   // action method cl_ndm_reset_response_enq
-  assign RDY_cl_ndm_reset_response_enq = dm_tv_ifc_f_ndm_rsps$FULL_N ;
-  assign CAN_FIRE_cl_ndm_reset_response_enq = dm_tv_ifc_f_ndm_rsps$FULL_N ;
+  assign RDY_cl_ndm_reset_response_enq =
+	     core_resettable$RDY_cl_ndm_reset_response_enq ;
+  assign CAN_FIRE_cl_ndm_reset_response_enq =
+	     core_resettable$RDY_cl_ndm_reset_response_enq ;
   assign WILL_FIRE_cl_ndm_reset_response_enq = EN_cl_ndm_reset_response_enq ;
 
   // value method cl_ndm_reset_response_notFull
-  assign cl_ndm_reset_response_notFull = dm_tv_ifc_f_ndm_rsps$FULL_N ;
+  assign cl_ndm_reset_response_notFull =
+	     core_resettable$cl_ndm_reset_response_notFull ;
   assign RDY_cl_ndm_reset_response_notFull = 1'd1 ;
 
   // action method se_control_status_request_enq
@@ -2572,650 +1639,195 @@ module mkAWSteria_Core_Single_Clock(CLK,
 	     host_cs$se_control_status_response_notEmpty ;
   assign RDY_se_control_status_response_notEmpty = 1'd1 ;
 
-  // submodule boot_rom
-  mkBoot_ROM boot_rom(.CLK(CLK),
-		      .RST_N(RST_N),
-		      .set_addr_map_addr_base(boot_rom$set_addr_map_addr_base),
-		      .set_addr_map_addr_lim(boot_rom$set_addr_map_addr_lim),
-		      .slave_araddr(boot_rom$slave_araddr),
-		      .slave_arburst(boot_rom$slave_arburst),
-		      .slave_arcache(boot_rom$slave_arcache),
-		      .slave_arid(boot_rom$slave_arid),
-		      .slave_arlen(boot_rom$slave_arlen),
-		      .slave_arlock(boot_rom$slave_arlock),
-		      .slave_arprot(boot_rom$slave_arprot),
-		      .slave_arqos(boot_rom$slave_arqos),
-		      .slave_arregion(boot_rom$slave_arregion),
-		      .slave_arsize(boot_rom$slave_arsize),
-		      .slave_arvalid(boot_rom$slave_arvalid),
-		      .slave_awaddr(boot_rom$slave_awaddr),
-		      .slave_awburst(boot_rom$slave_awburst),
-		      .slave_awcache(boot_rom$slave_awcache),
-		      .slave_awid(boot_rom$slave_awid),
-		      .slave_awlen(boot_rom$slave_awlen),
-		      .slave_awlock(boot_rom$slave_awlock),
-		      .slave_awprot(boot_rom$slave_awprot),
-		      .slave_awqos(boot_rom$slave_awqos),
-		      .slave_awregion(boot_rom$slave_awregion),
-		      .slave_awsize(boot_rom$slave_awsize),
-		      .slave_awvalid(boot_rom$slave_awvalid),
-		      .slave_bready(boot_rom$slave_bready),
-		      .slave_rready(boot_rom$slave_rready),
-		      .slave_wdata(boot_rom$slave_wdata),
-		      .slave_wlast(boot_rom$slave_wlast),
-		      .slave_wstrb(boot_rom$slave_wstrb),
-		      .slave_wvalid(boot_rom$slave_wvalid),
-		      .EN_set_addr_map(boot_rom$EN_set_addr_map),
-		      .RDY_set_addr_map(),
-		      .slave_awready(boot_rom$slave_awready),
-		      .slave_wready(boot_rom$slave_wready),
-		      .slave_bvalid(boot_rom$slave_bvalid),
-		      .slave_bid(boot_rom$slave_bid),
-		      .slave_bresp(boot_rom$slave_bresp),
-		      .slave_arready(boot_rom$slave_arready),
-		      .slave_rvalid(boot_rom$slave_rvalid),
-		      .slave_rid(boot_rom$slave_rid),
-		      .slave_rdata(boot_rom$slave_rdata),
-		      .slave_rresp(boot_rom$slave_rresp),
-		      .slave_rlast(boot_rom$slave_rlast));
-
-  // submodule cpu
-  mkCPU cpu(.CLK(CLK),
-	    .RST_N(RST_N),
-	    .dma_server_araddr(cpu$dma_server_araddr),
-	    .dma_server_arburst(cpu$dma_server_arburst),
-	    .dma_server_arcache(cpu$dma_server_arcache),
-	    .dma_server_arid(cpu$dma_server_arid),
-	    .dma_server_arlen(cpu$dma_server_arlen),
-	    .dma_server_arlock(cpu$dma_server_arlock),
-	    .dma_server_arprot(cpu$dma_server_arprot),
-	    .dma_server_arqos(cpu$dma_server_arqos),
-	    .dma_server_arregion(cpu$dma_server_arregion),
-	    .dma_server_arsize(cpu$dma_server_arsize),
-	    .dma_server_arvalid(cpu$dma_server_arvalid),
-	    .dma_server_awaddr(cpu$dma_server_awaddr),
-	    .dma_server_awburst(cpu$dma_server_awburst),
-	    .dma_server_awcache(cpu$dma_server_awcache),
-	    .dma_server_awid(cpu$dma_server_awid),
-	    .dma_server_awlen(cpu$dma_server_awlen),
-	    .dma_server_awlock(cpu$dma_server_awlock),
-	    .dma_server_awprot(cpu$dma_server_awprot),
-	    .dma_server_awqos(cpu$dma_server_awqos),
-	    .dma_server_awregion(cpu$dma_server_awregion),
-	    .dma_server_awsize(cpu$dma_server_awsize),
-	    .dma_server_awvalid(cpu$dma_server_awvalid),
-	    .dma_server_bready(cpu$dma_server_bready),
-	    .dma_server_rready(cpu$dma_server_rready),
-	    .dma_server_wdata(cpu$dma_server_wdata),
-	    .dma_server_wlast(cpu$dma_server_wlast),
-	    .dma_server_wstrb(cpu$dma_server_wstrb),
-	    .dma_server_wvalid(cpu$dma_server_wvalid),
-	    .hart0_csr_mem_server_request_put(cpu$hart0_csr_mem_server_request_put),
-	    .hart0_fpr_mem_server_request_put(cpu$hart0_fpr_mem_server_request_put),
-	    .hart0_gpr_mem_server_request_put(cpu$hart0_gpr_mem_server_request_put),
-	    .hart0_put_other_req_put(cpu$hart0_put_other_req_put),
-	    .hart0_server_reset_request_put(cpu$hart0_server_reset_request_put),
-	    .hart0_server_run_halt_request_put(cpu$hart0_server_run_halt_request_put),
-	    .imem_master_arready(cpu$imem_master_arready),
-	    .imem_master_awready(cpu$imem_master_awready),
-	    .imem_master_bid(cpu$imem_master_bid),
-	    .imem_master_bresp(cpu$imem_master_bresp),
-	    .imem_master_bvalid(cpu$imem_master_bvalid),
-	    .imem_master_rdata(cpu$imem_master_rdata),
-	    .imem_master_rid(cpu$imem_master_rid),
-	    .imem_master_rlast(cpu$imem_master_rlast),
-	    .imem_master_rresp(cpu$imem_master_rresp),
-	    .imem_master_rvalid(cpu$imem_master_rvalid),
-	    .imem_master_wready(cpu$imem_master_wready),
-	    .m_external_interrupt_req_set_not_clear(cpu$m_external_interrupt_req_set_not_clear),
-	    .ma_set_csr_time_t(cpu$ma_set_csr_time_t),
-	    .mem_master_arready(cpu$mem_master_arready),
-	    .mem_master_awready(cpu$mem_master_awready),
-	    .mem_master_bid(cpu$mem_master_bid),
-	    .mem_master_bresp(cpu$mem_master_bresp),
-	    .mem_master_bvalid(cpu$mem_master_bvalid),
-	    .mem_master_rdata(cpu$mem_master_rdata),
-	    .mem_master_rid(cpu$mem_master_rid),
-	    .mem_master_rlast(cpu$mem_master_rlast),
-	    .mem_master_rresp(cpu$mem_master_rresp),
-	    .mem_master_rvalid(cpu$mem_master_rvalid),
-	    .mem_master_wready(cpu$mem_master_wready),
-	    .nmi_req_set_not_clear(cpu$nmi_req_set_not_clear),
-	    .s_external_interrupt_req_set_not_clear(cpu$s_external_interrupt_req_set_not_clear),
-	    .set_verbosity_logdelay(cpu$set_verbosity_logdelay),
-	    .set_verbosity_verbosity(cpu$set_verbosity_verbosity),
-	    .set_watch_tohost_tohost_addr(cpu$set_watch_tohost_tohost_addr),
-	    .set_watch_tohost_watch_tohost(cpu$set_watch_tohost_watch_tohost),
-	    .software_interrupt_req_set_not_clear(cpu$software_interrupt_req_set_not_clear),
-	    .timer_interrupt_req_set_not_clear(cpu$timer_interrupt_req_set_not_clear),
-	    .EN_hart0_server_reset_request_put(cpu$EN_hart0_server_reset_request_put),
-	    .EN_hart0_server_reset_response_get(cpu$EN_hart0_server_reset_response_get),
-	    .EN_hart0_server_run_halt_request_put(cpu$EN_hart0_server_run_halt_request_put),
-	    .EN_hart0_server_run_halt_response_get(cpu$EN_hart0_server_run_halt_response_get),
-	    .EN_hart0_put_other_req_put(cpu$EN_hart0_put_other_req_put),
-	    .EN_hart0_gpr_mem_server_request_put(cpu$EN_hart0_gpr_mem_server_request_put),
-	    .EN_hart0_gpr_mem_server_response_get(cpu$EN_hart0_gpr_mem_server_response_get),
-	    .EN_hart0_fpr_mem_server_request_put(cpu$EN_hart0_fpr_mem_server_request_put),
-	    .EN_hart0_fpr_mem_server_response_get(cpu$EN_hart0_fpr_mem_server_response_get),
-	    .EN_hart0_csr_mem_server_request_put(cpu$EN_hart0_csr_mem_server_request_put),
-	    .EN_hart0_csr_mem_server_response_get(cpu$EN_hart0_csr_mem_server_response_get),
-	    .EN_set_verbosity(cpu$EN_set_verbosity),
-	    .EN_set_watch_tohost(cpu$EN_set_watch_tohost),
-	    .EN_ma_ddr4_ready(cpu$EN_ma_ddr4_ready),
-	    .RDY_hart0_server_reset_request_put(cpu$RDY_hart0_server_reset_request_put),
-	    .hart0_server_reset_response_get(cpu$hart0_server_reset_response_get),
-	    .RDY_hart0_server_reset_response_get(cpu$RDY_hart0_server_reset_response_get),
-	    .imem_master_awvalid(cpu$imem_master_awvalid),
-	    .imem_master_awid(cpu$imem_master_awid),
-	    .imem_master_awaddr(cpu$imem_master_awaddr),
-	    .imem_master_awlen(cpu$imem_master_awlen),
-	    .imem_master_awsize(cpu$imem_master_awsize),
-	    .imem_master_awburst(cpu$imem_master_awburst),
-	    .imem_master_awlock(cpu$imem_master_awlock),
-	    .imem_master_awcache(cpu$imem_master_awcache),
-	    .imem_master_awprot(cpu$imem_master_awprot),
-	    .imem_master_awqos(cpu$imem_master_awqos),
-	    .imem_master_awregion(cpu$imem_master_awregion),
-	    .imem_master_wvalid(cpu$imem_master_wvalid),
-	    .imem_master_wdata(cpu$imem_master_wdata),
-	    .imem_master_wstrb(cpu$imem_master_wstrb),
-	    .imem_master_wlast(cpu$imem_master_wlast),
-	    .imem_master_bready(cpu$imem_master_bready),
-	    .imem_master_arvalid(cpu$imem_master_arvalid),
-	    .imem_master_arid(cpu$imem_master_arid),
-	    .imem_master_araddr(cpu$imem_master_araddr),
-	    .imem_master_arlen(cpu$imem_master_arlen),
-	    .imem_master_arsize(cpu$imem_master_arsize),
-	    .imem_master_arburst(cpu$imem_master_arburst),
-	    .imem_master_arlock(cpu$imem_master_arlock),
-	    .imem_master_arcache(cpu$imem_master_arcache),
-	    .imem_master_arprot(cpu$imem_master_arprot),
-	    .imem_master_arqos(cpu$imem_master_arqos),
-	    .imem_master_arregion(cpu$imem_master_arregion),
-	    .imem_master_rready(cpu$imem_master_rready),
-	    .mem_master_awvalid(cpu$mem_master_awvalid),
-	    .mem_master_awid(cpu$mem_master_awid),
-	    .mem_master_awaddr(cpu$mem_master_awaddr),
-	    .mem_master_awlen(cpu$mem_master_awlen),
-	    .mem_master_awsize(cpu$mem_master_awsize),
-	    .mem_master_awburst(cpu$mem_master_awburst),
-	    .mem_master_awlock(cpu$mem_master_awlock),
-	    .mem_master_awcache(cpu$mem_master_awcache),
-	    .mem_master_awprot(cpu$mem_master_awprot),
-	    .mem_master_awqos(cpu$mem_master_awqos),
-	    .mem_master_awregion(cpu$mem_master_awregion),
-	    .mem_master_wvalid(cpu$mem_master_wvalid),
-	    .mem_master_wdata(cpu$mem_master_wdata),
-	    .mem_master_wstrb(cpu$mem_master_wstrb),
-	    .mem_master_wlast(cpu$mem_master_wlast),
-	    .mem_master_bready(cpu$mem_master_bready),
-	    .mem_master_arvalid(cpu$mem_master_arvalid),
-	    .mem_master_arid(cpu$mem_master_arid),
-	    .mem_master_araddr(cpu$mem_master_araddr),
-	    .mem_master_arlen(cpu$mem_master_arlen),
-	    .mem_master_arsize(cpu$mem_master_arsize),
-	    .mem_master_arburst(cpu$mem_master_arburst),
-	    .mem_master_arlock(cpu$mem_master_arlock),
-	    .mem_master_arcache(cpu$mem_master_arcache),
-	    .mem_master_arprot(cpu$mem_master_arprot),
-	    .mem_master_arqos(cpu$mem_master_arqos),
-	    .mem_master_arregion(cpu$mem_master_arregion),
-	    .mem_master_rready(cpu$mem_master_rready),
-	    .dma_server_awready(cpu$dma_server_awready),
-	    .dma_server_wready(cpu$dma_server_wready),
-	    .dma_server_bvalid(cpu$dma_server_bvalid),
-	    .dma_server_bid(cpu$dma_server_bid),
-	    .dma_server_bresp(cpu$dma_server_bresp),
-	    .dma_server_arready(cpu$dma_server_arready),
-	    .dma_server_rvalid(cpu$dma_server_rvalid),
-	    .dma_server_rid(cpu$dma_server_rid),
-	    .dma_server_rdata(cpu$dma_server_rdata),
-	    .dma_server_rresp(cpu$dma_server_rresp),
-	    .dma_server_rlast(cpu$dma_server_rlast),
-	    .RDY_hart0_server_run_halt_request_put(cpu$RDY_hart0_server_run_halt_request_put),
-	    .hart0_server_run_halt_response_get(cpu$hart0_server_run_halt_response_get),
-	    .RDY_hart0_server_run_halt_response_get(cpu$RDY_hart0_server_run_halt_response_get),
-	    .RDY_hart0_put_other_req_put(),
-	    .RDY_hart0_gpr_mem_server_request_put(cpu$RDY_hart0_gpr_mem_server_request_put),
-	    .hart0_gpr_mem_server_response_get(cpu$hart0_gpr_mem_server_response_get),
-	    .RDY_hart0_gpr_mem_server_response_get(cpu$RDY_hart0_gpr_mem_server_response_get),
-	    .RDY_hart0_fpr_mem_server_request_put(cpu$RDY_hart0_fpr_mem_server_request_put),
-	    .hart0_fpr_mem_server_response_get(cpu$hart0_fpr_mem_server_response_get),
-	    .RDY_hart0_fpr_mem_server_response_get(cpu$RDY_hart0_fpr_mem_server_response_get),
-	    .RDY_hart0_csr_mem_server_request_put(cpu$RDY_hart0_csr_mem_server_request_put),
-	    .hart0_csr_mem_server_response_get(cpu$hart0_csr_mem_server_response_get),
-	    .RDY_hart0_csr_mem_server_response_get(cpu$RDY_hart0_csr_mem_server_response_get),
-	    .RDY_set_verbosity(),
-	    .RDY_set_watch_tohost(),
-	    .mv_tohost_value(cpu$mv_tohost_value),
-	    .RDY_mv_tohost_value(),
-	    .RDY_ma_ddr4_ready(),
-	    .mv_status());
-
-  // submodule dm_tv_ifc_debug_module
-  mkDebug_Module dm_tv_ifc_debug_module(.CLK(CLK),
-					.RST_N(RST_N),
-					.dmi_read_addr_dm_addr(dm_tv_ifc_debug_module$dmi_read_addr_dm_addr),
-					.dmi_write_dm_addr(dm_tv_ifc_debug_module$dmi_write_dm_addr),
-					.dmi_write_dm_word(dm_tv_ifc_debug_module$dmi_write_dm_word),
-					.hart0_client_run_halt_response_put(dm_tv_ifc_debug_module$hart0_client_run_halt_response_put),
-					.hart0_csr_mem_client_response_put(dm_tv_ifc_debug_module$hart0_csr_mem_client_response_put),
-					.hart0_fpr_mem_client_response_put(dm_tv_ifc_debug_module$hart0_fpr_mem_client_response_put),
-					.hart0_gpr_mem_client_response_put(dm_tv_ifc_debug_module$hart0_gpr_mem_client_response_put),
-					.hart0_reset_client_response_put(dm_tv_ifc_debug_module$hart0_reset_client_response_put),
-					.master_arready(dm_tv_ifc_debug_module$master_arready),
-					.master_awready(dm_tv_ifc_debug_module$master_awready),
-					.master_bid(dm_tv_ifc_debug_module$master_bid),
-					.master_bresp(dm_tv_ifc_debug_module$master_bresp),
-					.master_bvalid(dm_tv_ifc_debug_module$master_bvalid),
-					.master_rdata(dm_tv_ifc_debug_module$master_rdata),
-					.master_rid(dm_tv_ifc_debug_module$master_rid),
-					.master_rlast(dm_tv_ifc_debug_module$master_rlast),
-					.master_rresp(dm_tv_ifc_debug_module$master_rresp),
-					.master_rvalid(dm_tv_ifc_debug_module$master_rvalid),
-					.master_wready(dm_tv_ifc_debug_module$master_wready),
-					.ndm_reset_client_response_put(dm_tv_ifc_debug_module$ndm_reset_client_response_put),
-					.EN_dmi_read_addr(dm_tv_ifc_debug_module$EN_dmi_read_addr),
-					.EN_dmi_read_data(dm_tv_ifc_debug_module$EN_dmi_read_data),
-					.EN_dmi_write(dm_tv_ifc_debug_module$EN_dmi_write),
-					.EN_hart0_reset_client_request_get(dm_tv_ifc_debug_module$EN_hart0_reset_client_request_get),
-					.EN_hart0_reset_client_response_put(dm_tv_ifc_debug_module$EN_hart0_reset_client_response_put),
-					.EN_hart0_client_run_halt_request_get(dm_tv_ifc_debug_module$EN_hart0_client_run_halt_request_get),
-					.EN_hart0_client_run_halt_response_put(dm_tv_ifc_debug_module$EN_hart0_client_run_halt_response_put),
-					.EN_hart0_get_other_req_get(dm_tv_ifc_debug_module$EN_hart0_get_other_req_get),
-					.EN_hart0_gpr_mem_client_request_get(dm_tv_ifc_debug_module$EN_hart0_gpr_mem_client_request_get),
-					.EN_hart0_gpr_mem_client_response_put(dm_tv_ifc_debug_module$EN_hart0_gpr_mem_client_response_put),
-					.EN_hart0_fpr_mem_client_request_get(dm_tv_ifc_debug_module$EN_hart0_fpr_mem_client_request_get),
-					.EN_hart0_fpr_mem_client_response_put(dm_tv_ifc_debug_module$EN_hart0_fpr_mem_client_response_put),
-					.EN_hart0_csr_mem_client_request_get(dm_tv_ifc_debug_module$EN_hart0_csr_mem_client_request_get),
-					.EN_hart0_csr_mem_client_response_put(dm_tv_ifc_debug_module$EN_hart0_csr_mem_client_response_put),
-					.EN_ndm_reset_client_request_get(dm_tv_ifc_debug_module$EN_ndm_reset_client_request_get),
-					.EN_ndm_reset_client_response_put(dm_tv_ifc_debug_module$EN_ndm_reset_client_response_put),
-					.RDY_dmi_read_addr(dm_tv_ifc_debug_module$RDY_dmi_read_addr),
-					.dmi_read_data(dm_tv_ifc_debug_module$dmi_read_data),
-					.RDY_dmi_read_data(dm_tv_ifc_debug_module$RDY_dmi_read_data),
-					.RDY_dmi_write(dm_tv_ifc_debug_module$RDY_dmi_write),
-					.hart0_reset_client_request_get(dm_tv_ifc_debug_module$hart0_reset_client_request_get),
-					.RDY_hart0_reset_client_request_get(dm_tv_ifc_debug_module$RDY_hart0_reset_client_request_get),
-					.RDY_hart0_reset_client_response_put(dm_tv_ifc_debug_module$RDY_hart0_reset_client_response_put),
-					.hart0_client_run_halt_request_get(dm_tv_ifc_debug_module$hart0_client_run_halt_request_get),
-					.RDY_hart0_client_run_halt_request_get(dm_tv_ifc_debug_module$RDY_hart0_client_run_halt_request_get),
-					.RDY_hart0_client_run_halt_response_put(dm_tv_ifc_debug_module$RDY_hart0_client_run_halt_response_put),
-					.hart0_get_other_req_get(dm_tv_ifc_debug_module$hart0_get_other_req_get),
-					.RDY_hart0_get_other_req_get(dm_tv_ifc_debug_module$RDY_hart0_get_other_req_get),
-					.hart0_gpr_mem_client_request_get(dm_tv_ifc_debug_module$hart0_gpr_mem_client_request_get),
-					.RDY_hart0_gpr_mem_client_request_get(dm_tv_ifc_debug_module$RDY_hart0_gpr_mem_client_request_get),
-					.RDY_hart0_gpr_mem_client_response_put(dm_tv_ifc_debug_module$RDY_hart0_gpr_mem_client_response_put),
-					.hart0_fpr_mem_client_request_get(dm_tv_ifc_debug_module$hart0_fpr_mem_client_request_get),
-					.RDY_hart0_fpr_mem_client_request_get(dm_tv_ifc_debug_module$RDY_hart0_fpr_mem_client_request_get),
-					.RDY_hart0_fpr_mem_client_response_put(dm_tv_ifc_debug_module$RDY_hart0_fpr_mem_client_response_put),
-					.hart0_csr_mem_client_request_get(dm_tv_ifc_debug_module$hart0_csr_mem_client_request_get),
-					.RDY_hart0_csr_mem_client_request_get(dm_tv_ifc_debug_module$RDY_hart0_csr_mem_client_request_get),
-					.RDY_hart0_csr_mem_client_response_put(dm_tv_ifc_debug_module$RDY_hart0_csr_mem_client_response_put),
-					.ndm_reset_client_request_get(),
-					.RDY_ndm_reset_client_request_get(dm_tv_ifc_debug_module$RDY_ndm_reset_client_request_get),
-					.RDY_ndm_reset_client_response_put(dm_tv_ifc_debug_module$RDY_ndm_reset_client_response_put),
-					.master_awvalid(dm_tv_ifc_debug_module$master_awvalid),
-					.master_awid(dm_tv_ifc_debug_module$master_awid),
-					.master_awaddr(dm_tv_ifc_debug_module$master_awaddr),
-					.master_awlen(dm_tv_ifc_debug_module$master_awlen),
-					.master_awsize(dm_tv_ifc_debug_module$master_awsize),
-					.master_awburst(dm_tv_ifc_debug_module$master_awburst),
-					.master_awlock(dm_tv_ifc_debug_module$master_awlock),
-					.master_awcache(dm_tv_ifc_debug_module$master_awcache),
-					.master_awprot(dm_tv_ifc_debug_module$master_awprot),
-					.master_awqos(dm_tv_ifc_debug_module$master_awqos),
-					.master_awregion(dm_tv_ifc_debug_module$master_awregion),
-					.master_wvalid(dm_tv_ifc_debug_module$master_wvalid),
-					.master_wdata(dm_tv_ifc_debug_module$master_wdata),
-					.master_wstrb(dm_tv_ifc_debug_module$master_wstrb),
-					.master_wlast(dm_tv_ifc_debug_module$master_wlast),
-					.master_bready(dm_tv_ifc_debug_module$master_bready),
-					.master_arvalid(dm_tv_ifc_debug_module$master_arvalid),
-					.master_arid(dm_tv_ifc_debug_module$master_arid),
-					.master_araddr(dm_tv_ifc_debug_module$master_araddr),
-					.master_arlen(dm_tv_ifc_debug_module$master_arlen),
-					.master_arsize(dm_tv_ifc_debug_module$master_arsize),
-					.master_arburst(dm_tv_ifc_debug_module$master_arburst),
-					.master_arlock(dm_tv_ifc_debug_module$master_arlock),
-					.master_arcache(dm_tv_ifc_debug_module$master_arcache),
-					.master_arprot(dm_tv_ifc_debug_module$master_arprot),
-					.master_arqos(dm_tv_ifc_debug_module$master_arqos),
-					.master_arregion(dm_tv_ifc_debug_module$master_arregion),
-					.master_rready(dm_tv_ifc_debug_module$master_rready));
-
-  // submodule dm_tv_ifc_dma_server_mux
-  mkDma_Server_Mux dm_tv_ifc_dma_server_mux(.CLK(CLK),
-					    .RST_N(RST_N),
-					    .initiator_A_server_araddr(dm_tv_ifc_dma_server_mux$initiator_A_server_araddr),
-					    .initiator_A_server_arburst(dm_tv_ifc_dma_server_mux$initiator_A_server_arburst),
-					    .initiator_A_server_arcache(dm_tv_ifc_dma_server_mux$initiator_A_server_arcache),
-					    .initiator_A_server_arid(dm_tv_ifc_dma_server_mux$initiator_A_server_arid),
-					    .initiator_A_server_arlen(dm_tv_ifc_dma_server_mux$initiator_A_server_arlen),
-					    .initiator_A_server_arlock(dm_tv_ifc_dma_server_mux$initiator_A_server_arlock),
-					    .initiator_A_server_arprot(dm_tv_ifc_dma_server_mux$initiator_A_server_arprot),
-					    .initiator_A_server_arqos(dm_tv_ifc_dma_server_mux$initiator_A_server_arqos),
-					    .initiator_A_server_arregion(dm_tv_ifc_dma_server_mux$initiator_A_server_arregion),
-					    .initiator_A_server_arsize(dm_tv_ifc_dma_server_mux$initiator_A_server_arsize),
-					    .initiator_A_server_arvalid(dm_tv_ifc_dma_server_mux$initiator_A_server_arvalid),
-					    .initiator_A_server_awaddr(dm_tv_ifc_dma_server_mux$initiator_A_server_awaddr),
-					    .initiator_A_server_awburst(dm_tv_ifc_dma_server_mux$initiator_A_server_awburst),
-					    .initiator_A_server_awcache(dm_tv_ifc_dma_server_mux$initiator_A_server_awcache),
-					    .initiator_A_server_awid(dm_tv_ifc_dma_server_mux$initiator_A_server_awid),
-					    .initiator_A_server_awlen(dm_tv_ifc_dma_server_mux$initiator_A_server_awlen),
-					    .initiator_A_server_awlock(dm_tv_ifc_dma_server_mux$initiator_A_server_awlock),
-					    .initiator_A_server_awprot(dm_tv_ifc_dma_server_mux$initiator_A_server_awprot),
-					    .initiator_A_server_awqos(dm_tv_ifc_dma_server_mux$initiator_A_server_awqos),
-					    .initiator_A_server_awregion(dm_tv_ifc_dma_server_mux$initiator_A_server_awregion),
-					    .initiator_A_server_awsize(dm_tv_ifc_dma_server_mux$initiator_A_server_awsize),
-					    .initiator_A_server_awvalid(dm_tv_ifc_dma_server_mux$initiator_A_server_awvalid),
-					    .initiator_A_server_bready(dm_tv_ifc_dma_server_mux$initiator_A_server_bready),
-					    .initiator_A_server_rready(dm_tv_ifc_dma_server_mux$initiator_A_server_rready),
-					    .initiator_A_server_wdata(dm_tv_ifc_dma_server_mux$initiator_A_server_wdata),
-					    .initiator_A_server_wlast(dm_tv_ifc_dma_server_mux$initiator_A_server_wlast),
-					    .initiator_A_server_wstrb(dm_tv_ifc_dma_server_mux$initiator_A_server_wstrb),
-					    .initiator_A_server_wvalid(dm_tv_ifc_dma_server_mux$initiator_A_server_wvalid),
-					    .initiator_B_server_araddr(dm_tv_ifc_dma_server_mux$initiator_B_server_araddr),
-					    .initiator_B_server_arburst(dm_tv_ifc_dma_server_mux$initiator_B_server_arburst),
-					    .initiator_B_server_arcache(dm_tv_ifc_dma_server_mux$initiator_B_server_arcache),
-					    .initiator_B_server_arid(dm_tv_ifc_dma_server_mux$initiator_B_server_arid),
-					    .initiator_B_server_arlen(dm_tv_ifc_dma_server_mux$initiator_B_server_arlen),
-					    .initiator_B_server_arlock(dm_tv_ifc_dma_server_mux$initiator_B_server_arlock),
-					    .initiator_B_server_arprot(dm_tv_ifc_dma_server_mux$initiator_B_server_arprot),
-					    .initiator_B_server_arqos(dm_tv_ifc_dma_server_mux$initiator_B_server_arqos),
-					    .initiator_B_server_arregion(dm_tv_ifc_dma_server_mux$initiator_B_server_arregion),
-					    .initiator_B_server_arsize(dm_tv_ifc_dma_server_mux$initiator_B_server_arsize),
-					    .initiator_B_server_arvalid(dm_tv_ifc_dma_server_mux$initiator_B_server_arvalid),
-					    .initiator_B_server_awaddr(dm_tv_ifc_dma_server_mux$initiator_B_server_awaddr),
-					    .initiator_B_server_awburst(dm_tv_ifc_dma_server_mux$initiator_B_server_awburst),
-					    .initiator_B_server_awcache(dm_tv_ifc_dma_server_mux$initiator_B_server_awcache),
-					    .initiator_B_server_awid(dm_tv_ifc_dma_server_mux$initiator_B_server_awid),
-					    .initiator_B_server_awlen(dm_tv_ifc_dma_server_mux$initiator_B_server_awlen),
-					    .initiator_B_server_awlock(dm_tv_ifc_dma_server_mux$initiator_B_server_awlock),
-					    .initiator_B_server_awprot(dm_tv_ifc_dma_server_mux$initiator_B_server_awprot),
-					    .initiator_B_server_awqos(dm_tv_ifc_dma_server_mux$initiator_B_server_awqos),
-					    .initiator_B_server_awregion(dm_tv_ifc_dma_server_mux$initiator_B_server_awregion),
-					    .initiator_B_server_awsize(dm_tv_ifc_dma_server_mux$initiator_B_server_awsize),
-					    .initiator_B_server_awvalid(dm_tv_ifc_dma_server_mux$initiator_B_server_awvalid),
-					    .initiator_B_server_bready(dm_tv_ifc_dma_server_mux$initiator_B_server_bready),
-					    .initiator_B_server_rready(dm_tv_ifc_dma_server_mux$initiator_B_server_rready),
-					    .initiator_B_server_wdata(dm_tv_ifc_dma_server_mux$initiator_B_server_wdata),
-					    .initiator_B_server_wlast(dm_tv_ifc_dma_server_mux$initiator_B_server_wlast),
-					    .initiator_B_server_wstrb(dm_tv_ifc_dma_server_mux$initiator_B_server_wstrb),
-					    .initiator_B_server_wvalid(dm_tv_ifc_dma_server_mux$initiator_B_server_wvalid),
-					    .target_client_arready(dm_tv_ifc_dma_server_mux$target_client_arready),
-					    .target_client_awready(dm_tv_ifc_dma_server_mux$target_client_awready),
-					    .target_client_bid(dm_tv_ifc_dma_server_mux$target_client_bid),
-					    .target_client_bresp(dm_tv_ifc_dma_server_mux$target_client_bresp),
-					    .target_client_bvalid(dm_tv_ifc_dma_server_mux$target_client_bvalid),
-					    .target_client_rdata(dm_tv_ifc_dma_server_mux$target_client_rdata),
-					    .target_client_rid(dm_tv_ifc_dma_server_mux$target_client_rid),
-					    .target_client_rlast(dm_tv_ifc_dma_server_mux$target_client_rlast),
-					    .target_client_rresp(dm_tv_ifc_dma_server_mux$target_client_rresp),
-					    .target_client_rvalid(dm_tv_ifc_dma_server_mux$target_client_rvalid),
-					    .target_client_wready(dm_tv_ifc_dma_server_mux$target_client_wready),
-					    .initiator_A_server_awready(dm_tv_ifc_dma_server_mux$initiator_A_server_awready),
-					    .initiator_A_server_wready(dm_tv_ifc_dma_server_mux$initiator_A_server_wready),
-					    .initiator_A_server_bvalid(dm_tv_ifc_dma_server_mux$initiator_A_server_bvalid),
-					    .initiator_A_server_bid(dm_tv_ifc_dma_server_mux$initiator_A_server_bid),
-					    .initiator_A_server_bresp(dm_tv_ifc_dma_server_mux$initiator_A_server_bresp),
-					    .initiator_A_server_arready(dm_tv_ifc_dma_server_mux$initiator_A_server_arready),
-					    .initiator_A_server_rvalid(dm_tv_ifc_dma_server_mux$initiator_A_server_rvalid),
-					    .initiator_A_server_rid(dm_tv_ifc_dma_server_mux$initiator_A_server_rid),
-					    .initiator_A_server_rdata(dm_tv_ifc_dma_server_mux$initiator_A_server_rdata),
-					    .initiator_A_server_rresp(dm_tv_ifc_dma_server_mux$initiator_A_server_rresp),
-					    .initiator_A_server_rlast(dm_tv_ifc_dma_server_mux$initiator_A_server_rlast),
-					    .initiator_B_server_awready(dm_tv_ifc_dma_server_mux$initiator_B_server_awready),
-					    .initiator_B_server_wready(dm_tv_ifc_dma_server_mux$initiator_B_server_wready),
-					    .initiator_B_server_bvalid(dm_tv_ifc_dma_server_mux$initiator_B_server_bvalid),
-					    .initiator_B_server_bid(dm_tv_ifc_dma_server_mux$initiator_B_server_bid),
-					    .initiator_B_server_bresp(dm_tv_ifc_dma_server_mux$initiator_B_server_bresp),
-					    .initiator_B_server_arready(dm_tv_ifc_dma_server_mux$initiator_B_server_arready),
-					    .initiator_B_server_rvalid(dm_tv_ifc_dma_server_mux$initiator_B_server_rvalid),
-					    .initiator_B_server_rid(dm_tv_ifc_dma_server_mux$initiator_B_server_rid),
-					    .initiator_B_server_rdata(dm_tv_ifc_dma_server_mux$initiator_B_server_rdata),
-					    .initiator_B_server_rresp(dm_tv_ifc_dma_server_mux$initiator_B_server_rresp),
-					    .initiator_B_server_rlast(dm_tv_ifc_dma_server_mux$initiator_B_server_rlast),
-					    .target_client_awvalid(dm_tv_ifc_dma_server_mux$target_client_awvalid),
-					    .target_client_awid(dm_tv_ifc_dma_server_mux$target_client_awid),
-					    .target_client_awaddr(dm_tv_ifc_dma_server_mux$target_client_awaddr),
-					    .target_client_awlen(dm_tv_ifc_dma_server_mux$target_client_awlen),
-					    .target_client_awsize(dm_tv_ifc_dma_server_mux$target_client_awsize),
-					    .target_client_awburst(dm_tv_ifc_dma_server_mux$target_client_awburst),
-					    .target_client_awlock(dm_tv_ifc_dma_server_mux$target_client_awlock),
-					    .target_client_awcache(dm_tv_ifc_dma_server_mux$target_client_awcache),
-					    .target_client_awprot(dm_tv_ifc_dma_server_mux$target_client_awprot),
-					    .target_client_awqos(dm_tv_ifc_dma_server_mux$target_client_awqos),
-					    .target_client_awregion(dm_tv_ifc_dma_server_mux$target_client_awregion),
-					    .target_client_wvalid(dm_tv_ifc_dma_server_mux$target_client_wvalid),
-					    .target_client_wdata(dm_tv_ifc_dma_server_mux$target_client_wdata),
-					    .target_client_wstrb(dm_tv_ifc_dma_server_mux$target_client_wstrb),
-					    .target_client_wlast(dm_tv_ifc_dma_server_mux$target_client_wlast),
-					    .target_client_bready(dm_tv_ifc_dma_server_mux$target_client_bready),
-					    .target_client_arvalid(dm_tv_ifc_dma_server_mux$target_client_arvalid),
-					    .target_client_arid(dm_tv_ifc_dma_server_mux$target_client_arid),
-					    .target_client_araddr(dm_tv_ifc_dma_server_mux$target_client_araddr),
-					    .target_client_arlen(dm_tv_ifc_dma_server_mux$target_client_arlen),
-					    .target_client_arsize(dm_tv_ifc_dma_server_mux$target_client_arsize),
-					    .target_client_arburst(dm_tv_ifc_dma_server_mux$target_client_arburst),
-					    .target_client_arlock(dm_tv_ifc_dma_server_mux$target_client_arlock),
-					    .target_client_arcache(dm_tv_ifc_dma_server_mux$target_client_arcache),
-					    .target_client_arprot(dm_tv_ifc_dma_server_mux$target_client_arprot),
-					    .target_client_arqos(dm_tv_ifc_dma_server_mux$target_client_arqos),
-					    .target_client_arregion(dm_tv_ifc_dma_server_mux$target_client_arregion),
-					    .target_client_rready(dm_tv_ifc_dma_server_mux$target_client_rready));
-
-  // submodule dm_tv_ifc_empty0_f_client_id
-  FIFO2 #(.width(32'd1),
-	  .guarded(1'd1)) dm_tv_ifc_empty0_f_client_id(.RST(RST_N),
-						       .CLK(CLK),
-						       .D_IN(dm_tv_ifc_empty0_f_client_id$D_IN),
-						       .ENQ(dm_tv_ifc_empty0_f_client_id$ENQ),
-						       .DEQ(dm_tv_ifc_empty0_f_client_id$DEQ),
-						       .CLR(dm_tv_ifc_empty0_f_client_id$CLR),
-						       .D_OUT(dm_tv_ifc_empty0_f_client_id$D_OUT),
-						       .FULL_N(dm_tv_ifc_empty0_f_client_id$FULL_N),
-						       .EMPTY_N(dm_tv_ifc_empty0_f_client_id$EMPTY_N));
-
-  // submodule dm_tv_ifc_empty1_f_client_id
-  FIFO2 #(.width(32'd1),
-	  .guarded(1'd1)) dm_tv_ifc_empty1_f_client_id(.RST(RST_N),
-						       .CLK(CLK),
-						       .D_IN(dm_tv_ifc_empty1_f_client_id$D_IN),
-						       .ENQ(dm_tv_ifc_empty1_f_client_id$ENQ),
-						       .DEQ(dm_tv_ifc_empty1_f_client_id$DEQ),
-						       .CLR(dm_tv_ifc_empty1_f_client_id$CLR),
-						       .D_OUT(dm_tv_ifc_empty1_f_client_id$D_OUT),
-						       .FULL_N(dm_tv_ifc_empty1_f_client_id$FULL_N),
-						       .EMPTY_N(dm_tv_ifc_empty1_f_client_id$EMPTY_N));
-
-  // submodule dm_tv_ifc_empty2_f_client_id
-  FIFO2 #(.width(32'd1),
-	  .guarded(1'd1)) dm_tv_ifc_empty2_f_client_id(.RST(RST_N),
-						       .CLK(CLK),
-						       .D_IN(dm_tv_ifc_empty2_f_client_id$D_IN),
-						       .ENQ(dm_tv_ifc_empty2_f_client_id$ENQ),
-						       .DEQ(dm_tv_ifc_empty2_f_client_id$DEQ),
-						       .CLR(dm_tv_ifc_empty2_f_client_id$CLR),
-						       .D_OUT(dm_tv_ifc_empty2_f_client_id$D_OUT),
-						       .FULL_N(dm_tv_ifc_empty2_f_client_id$FULL_N),
-						       .EMPTY_N(dm_tv_ifc_empty2_f_client_id$EMPTY_N));
-
-  // submodule dm_tv_ifc_f_dmi_reqs
-  FIFO2 #(.width(32'd40), .guarded(1'd1)) dm_tv_ifc_f_dmi_reqs(.RST(RST_N),
-							       .CLK(CLK),
-							       .D_IN(dm_tv_ifc_f_dmi_reqs$D_IN),
-							       .ENQ(dm_tv_ifc_f_dmi_reqs$ENQ),
-							       .DEQ(dm_tv_ifc_f_dmi_reqs$DEQ),
-							       .CLR(dm_tv_ifc_f_dmi_reqs$CLR),
-							       .D_OUT(dm_tv_ifc_f_dmi_reqs$D_OUT),
-							       .FULL_N(dm_tv_ifc_f_dmi_reqs$FULL_N),
-							       .EMPTY_N(dm_tv_ifc_f_dmi_reqs$EMPTY_N));
-
-  // submodule dm_tv_ifc_f_dmi_rsps
-  FIFO2 #(.width(32'd32), .guarded(1'd1)) dm_tv_ifc_f_dmi_rsps(.RST(RST_N),
-							       .CLK(CLK),
-							       .D_IN(dm_tv_ifc_f_dmi_rsps$D_IN),
-							       .ENQ(dm_tv_ifc_f_dmi_rsps$ENQ),
-							       .DEQ(dm_tv_ifc_f_dmi_rsps$DEQ),
-							       .CLR(dm_tv_ifc_f_dmi_rsps$CLR),
-							       .D_OUT(dm_tv_ifc_f_dmi_rsps$D_OUT),
-							       .FULL_N(dm_tv_ifc_f_dmi_rsps$FULL_N),
-							       .EMPTY_N(dm_tv_ifc_f_dmi_rsps$EMPTY_N));
-
-  // submodule dm_tv_ifc_f_ndm_reqs
-  FIFO20 #(.guarded(1'd1)) dm_tv_ifc_f_ndm_reqs(.RST(RST_N),
-						.CLK(CLK),
-						.ENQ(dm_tv_ifc_f_ndm_reqs$ENQ),
-						.DEQ(dm_tv_ifc_f_ndm_reqs$DEQ),
-						.CLR(dm_tv_ifc_f_ndm_reqs$CLR),
-						.FULL_N(dm_tv_ifc_f_ndm_reqs$FULL_N),
-						.EMPTY_N(dm_tv_ifc_f_ndm_reqs$EMPTY_N));
-
-  // submodule dm_tv_ifc_f_ndm_rsps
-  FIFO20 #(.guarded(1'd1)) dm_tv_ifc_f_ndm_rsps(.RST(RST_N),
-						.CLK(CLK),
-						.ENQ(dm_tv_ifc_f_ndm_rsps$ENQ),
-						.DEQ(dm_tv_ifc_f_ndm_rsps$DEQ),
-						.CLR(dm_tv_ifc_f_ndm_rsps$CLR),
-						.FULL_N(dm_tv_ifc_f_ndm_rsps$FULL_N),
-						.EMPTY_N(dm_tv_ifc_f_ndm_rsps$EMPTY_N));
-
-  // submodule dm_tv_ifc_f_reset_reqs
-  FIFO2 #(.width(32'd1), .guarded(1'd1)) dm_tv_ifc_f_reset_reqs(.RST(RST_N),
-								.CLK(CLK),
-								.D_IN(dm_tv_ifc_f_reset_reqs$D_IN),
-								.ENQ(dm_tv_ifc_f_reset_reqs$ENQ),
-								.DEQ(dm_tv_ifc_f_reset_reqs$DEQ),
-								.CLR(dm_tv_ifc_f_reset_reqs$CLR),
-								.D_OUT(dm_tv_ifc_f_reset_reqs$D_OUT),
-								.FULL_N(dm_tv_ifc_f_reset_reqs$FULL_N),
-								.EMPTY_N(dm_tv_ifc_f_reset_reqs$EMPTY_N));
-
-  // submodule dm_tv_ifc_f_reset_rsps
-  FIFO2 #(.width(32'd1), .guarded(1'd1)) dm_tv_ifc_f_reset_rsps(.RST(RST_N),
-								.CLK(CLK),
-								.D_IN(dm_tv_ifc_f_reset_rsps$D_IN),
-								.ENQ(dm_tv_ifc_f_reset_rsps$ENQ),
-								.DEQ(dm_tv_ifc_f_reset_rsps$DEQ),
-								.CLR(dm_tv_ifc_f_reset_rsps$CLR),
-								.D_OUT(dm_tv_ifc_f_reset_rsps$D_OUT),
-								.FULL_N(dm_tv_ifc_f_reset_rsps$FULL_N),
-								.EMPTY_N(dm_tv_ifc_f_reset_rsps$EMPTY_N));
-
-  // submodule dma_server_axi4_deburster
-  mkAXI4_Deburster_A dma_server_axi4_deburster(.CLK(CLK),
-					       .RST_N(RST_N),
-					       .from_master_araddr(dma_server_axi4_deburster$from_master_araddr),
-					       .from_master_arburst(dma_server_axi4_deburster$from_master_arburst),
-					       .from_master_arcache(dma_server_axi4_deburster$from_master_arcache),
-					       .from_master_arid(dma_server_axi4_deburster$from_master_arid),
-					       .from_master_arlen(dma_server_axi4_deburster$from_master_arlen),
-					       .from_master_arlock(dma_server_axi4_deburster$from_master_arlock),
-					       .from_master_arprot(dma_server_axi4_deburster$from_master_arprot),
-					       .from_master_arqos(dma_server_axi4_deburster$from_master_arqos),
-					       .from_master_arregion(dma_server_axi4_deburster$from_master_arregion),
-					       .from_master_arsize(dma_server_axi4_deburster$from_master_arsize),
-					       .from_master_arvalid(dma_server_axi4_deburster$from_master_arvalid),
-					       .from_master_awaddr(dma_server_axi4_deburster$from_master_awaddr),
-					       .from_master_awburst(dma_server_axi4_deburster$from_master_awburst),
-					       .from_master_awcache(dma_server_axi4_deburster$from_master_awcache),
-					       .from_master_awid(dma_server_axi4_deburster$from_master_awid),
-					       .from_master_awlen(dma_server_axi4_deburster$from_master_awlen),
-					       .from_master_awlock(dma_server_axi4_deburster$from_master_awlock),
-					       .from_master_awprot(dma_server_axi4_deburster$from_master_awprot),
-					       .from_master_awqos(dma_server_axi4_deburster$from_master_awqos),
-					       .from_master_awregion(dma_server_axi4_deburster$from_master_awregion),
-					       .from_master_awsize(dma_server_axi4_deburster$from_master_awsize),
-					       .from_master_awvalid(dma_server_axi4_deburster$from_master_awvalid),
-					       .from_master_bready(dma_server_axi4_deburster$from_master_bready),
-					       .from_master_rready(dma_server_axi4_deburster$from_master_rready),
-					       .from_master_wdata(dma_server_axi4_deburster$from_master_wdata),
-					       .from_master_wlast(dma_server_axi4_deburster$from_master_wlast),
-					       .from_master_wstrb(dma_server_axi4_deburster$from_master_wstrb),
-					       .from_master_wvalid(dma_server_axi4_deburster$from_master_wvalid),
-					       .to_slave_arready(dma_server_axi4_deburster$to_slave_arready),
-					       .to_slave_awready(dma_server_axi4_deburster$to_slave_awready),
-					       .to_slave_bid(dma_server_axi4_deburster$to_slave_bid),
-					       .to_slave_bresp(dma_server_axi4_deburster$to_slave_bresp),
-					       .to_slave_bvalid(dma_server_axi4_deburster$to_slave_bvalid),
-					       .to_slave_rdata(dma_server_axi4_deburster$to_slave_rdata),
-					       .to_slave_rid(dma_server_axi4_deburster$to_slave_rid),
-					       .to_slave_rlast(dma_server_axi4_deburster$to_slave_rlast),
-					       .to_slave_rresp(dma_server_axi4_deburster$to_slave_rresp),
-					       .to_slave_rvalid(dma_server_axi4_deburster$to_slave_rvalid),
-					       .to_slave_wready(dma_server_axi4_deburster$to_slave_wready),
-					       .EN_reset(dma_server_axi4_deburster$EN_reset),
-					       .RDY_reset(),
-					       .from_master_awready(dma_server_axi4_deburster$from_master_awready),
-					       .from_master_wready(dma_server_axi4_deburster$from_master_wready),
-					       .from_master_bvalid(dma_server_axi4_deburster$from_master_bvalid),
-					       .from_master_bid(dma_server_axi4_deburster$from_master_bid),
-					       .from_master_bresp(dma_server_axi4_deburster$from_master_bresp),
-					       .from_master_arready(dma_server_axi4_deburster$from_master_arready),
-					       .from_master_rvalid(dma_server_axi4_deburster$from_master_rvalid),
-					       .from_master_rid(dma_server_axi4_deburster$from_master_rid),
-					       .from_master_rdata(dma_server_axi4_deburster$from_master_rdata),
-					       .from_master_rresp(dma_server_axi4_deburster$from_master_rresp),
-					       .from_master_rlast(dma_server_axi4_deburster$from_master_rlast),
-					       .to_slave_awvalid(dma_server_axi4_deburster$to_slave_awvalid),
-					       .to_slave_awid(dma_server_axi4_deburster$to_slave_awid),
-					       .to_slave_awaddr(dma_server_axi4_deburster$to_slave_awaddr),
-					       .to_slave_awlen(dma_server_axi4_deburster$to_slave_awlen),
-					       .to_slave_awsize(dma_server_axi4_deburster$to_slave_awsize),
-					       .to_slave_awburst(dma_server_axi4_deburster$to_slave_awburst),
-					       .to_slave_awlock(dma_server_axi4_deburster$to_slave_awlock),
-					       .to_slave_awcache(dma_server_axi4_deburster$to_slave_awcache),
-					       .to_slave_awprot(dma_server_axi4_deburster$to_slave_awprot),
-					       .to_slave_awqos(dma_server_axi4_deburster$to_slave_awqos),
-					       .to_slave_awregion(dma_server_axi4_deburster$to_slave_awregion),
-					       .to_slave_wvalid(dma_server_axi4_deburster$to_slave_wvalid),
-					       .to_slave_wdata(dma_server_axi4_deburster$to_slave_wdata),
-					       .to_slave_wstrb(dma_server_axi4_deburster$to_slave_wstrb),
-					       .to_slave_wlast(dma_server_axi4_deburster$to_slave_wlast),
-					       .to_slave_bready(dma_server_axi4_deburster$to_slave_bready),
-					       .to_slave_arvalid(dma_server_axi4_deburster$to_slave_arvalid),
-					       .to_slave_arid(dma_server_axi4_deburster$to_slave_arid),
-					       .to_slave_araddr(dma_server_axi4_deburster$to_slave_araddr),
-					       .to_slave_arlen(dma_server_axi4_deburster$to_slave_arlen),
-					       .to_slave_arsize(dma_server_axi4_deburster$to_slave_arsize),
-					       .to_slave_arburst(dma_server_axi4_deburster$to_slave_arburst),
-					       .to_slave_arlock(dma_server_axi4_deburster$to_slave_arlock),
-					       .to_slave_arcache(dma_server_axi4_deburster$to_slave_arcache),
-					       .to_slave_arprot(dma_server_axi4_deburster$to_slave_arprot),
-					       .to_slave_arqos(dma_server_axi4_deburster$to_slave_arqos),
-					       .to_slave_arregion(dma_server_axi4_deburster$to_slave_arregion),
-					       .to_slave_rready(dma_server_axi4_deburster$to_slave_rready));
-
-  // submodule f_nmi
-  FIFO2 #(.width(32'd1), .guarded(1'd1)) f_nmi(.RST(RST_N),
-					       .CLK(CLK),
-					       .D_IN(f_nmi$D_IN),
-					       .ENQ(f_nmi$ENQ),
-					       .DEQ(f_nmi$DEQ),
-					       .CLR(f_nmi$CLR),
-					       .D_OUT(f_nmi$D_OUT),
-					       .FULL_N(f_nmi$FULL_N),
-					       .EMPTY_N(f_nmi$EMPTY_N));
+  // submodule core_resettable
+  mkAWSteria_Core_Resettable core_resettable(.CLK(CLK),
+					     .RST_N(RST_N),
+					     .dma_S_araddr(core_resettable$dma_S_araddr),
+					     .dma_S_arburst(core_resettable$dma_S_arburst),
+					     .dma_S_arcache(core_resettable$dma_S_arcache),
+					     .dma_S_arid(core_resettable$dma_S_arid),
+					     .dma_S_arlen(core_resettable$dma_S_arlen),
+					     .dma_S_arlock(core_resettable$dma_S_arlock),
+					     .dma_S_arprot(core_resettable$dma_S_arprot),
+					     .dma_S_arqos(core_resettable$dma_S_arqos),
+					     .dma_S_arregion(core_resettable$dma_S_arregion),
+					     .dma_S_arsize(core_resettable$dma_S_arsize),
+					     .dma_S_arvalid(core_resettable$dma_S_arvalid),
+					     .dma_S_awaddr(core_resettable$dma_S_awaddr),
+					     .dma_S_awburst(core_resettable$dma_S_awburst),
+					     .dma_S_awcache(core_resettable$dma_S_awcache),
+					     .dma_S_awid(core_resettable$dma_S_awid),
+					     .dma_S_awlen(core_resettable$dma_S_awlen),
+					     .dma_S_awlock(core_resettable$dma_S_awlock),
+					     .dma_S_awprot(core_resettable$dma_S_awprot),
+					     .dma_S_awqos(core_resettable$dma_S_awqos),
+					     .dma_S_awregion(core_resettable$dma_S_awregion),
+					     .dma_S_awsize(core_resettable$dma_S_awsize),
+					     .dma_S_awvalid(core_resettable$dma_S_awvalid),
+					     .dma_S_bready(core_resettable$dma_S_bready),
+					     .dma_S_rready(core_resettable$dma_S_rready),
+					     .dma_S_wdata(core_resettable$dma_S_wdata),
+					     .dma_S_wlast(core_resettable$dma_S_wlast),
+					     .dma_S_wstrb(core_resettable$dma_S_wstrb),
+					     .dma_S_wvalid(core_resettable$dma_S_wvalid),
+					     .ext_interrupts_x(core_resettable$ext_interrupts_x),
+					     .fi_misc_enq_x(core_resettable$fi_misc_enq_x),
+					     .fi_nmi_enq_x(core_resettable$fi_nmi_enq_x),
+					     .mem_M_arready(core_resettable$mem_M_arready),
+					     .mem_M_awready(core_resettable$mem_M_awready),
+					     .mem_M_bid(core_resettable$mem_M_bid),
+					     .mem_M_bresp(core_resettable$mem_M_bresp),
+					     .mem_M_bvalid(core_resettable$mem_M_bvalid),
+					     .mem_M_rdata(core_resettable$mem_M_rdata),
+					     .mem_M_rid(core_resettable$mem_M_rid),
+					     .mem_M_rlast(core_resettable$mem_M_rlast),
+					     .mem_M_rresp(core_resettable$mem_M_rresp),
+					     .mem_M_rvalid(core_resettable$mem_M_rvalid),
+					     .mem_M_wready(core_resettable$mem_M_wready),
+					     .mmio_M_arready(core_resettable$mmio_M_arready),
+					     .mmio_M_awready(core_resettable$mmio_M_awready),
+					     .mmio_M_bid(core_resettable$mmio_M_bid),
+					     .mmio_M_bresp(core_resettable$mmio_M_bresp),
+					     .mmio_M_bvalid(core_resettable$mmio_M_bvalid),
+					     .mmio_M_rdata(core_resettable$mmio_M_rdata),
+					     .mmio_M_rid(core_resettable$mmio_M_rid),
+					     .mmio_M_rlast(core_resettable$mmio_M_rlast),
+					     .mmio_M_rresp(core_resettable$mmio_M_rresp),
+					     .mmio_M_rvalid(core_resettable$mmio_M_rvalid),
+					     .mmio_M_wready(core_resettable$mmio_M_wready),
+					     .p_pc_trace_control_put(core_resettable$p_pc_trace_control_put),
+					     .se_dmi_request_enq_x(core_resettable$se_dmi_request_enq_x),
+					     .set_verbosity_logdelay(core_resettable$set_verbosity_logdelay),
+					     .set_verbosity_verbosity(core_resettable$set_verbosity_verbosity),
+					     .set_watch_tohost_tohost_addr(core_resettable$set_watch_tohost_tohost_addr),
+					     .set_watch_tohost_watch_tohost(core_resettable$set_watch_tohost_watch_tohost),
+					     .EN_ext_interrupts(core_resettable$EN_ext_interrupts),
+					     .EN_fi_nmi_enq(core_resettable$EN_fi_nmi_enq),
+					     .EN_fo_misc_deq(core_resettable$EN_fo_misc_deq),
+					     .EN_fi_misc_enq(core_resettable$EN_fi_misc_enq),
+					     .EN_fo_tv_info_deq(core_resettable$EN_fo_tv_info_deq),
+					     .EN_se_dmi_request_enq(core_resettable$EN_se_dmi_request_enq),
+					     .EN_se_dmi_response_deq(core_resettable$EN_se_dmi_response_deq),
+					     .EN_cl_ndm_reset_request_deq(core_resettable$EN_cl_ndm_reset_request_deq),
+					     .EN_cl_ndm_reset_response_enq(core_resettable$EN_cl_ndm_reset_response_enq),
+					     .EN_p_pc_trace_control_put(core_resettable$EN_p_pc_trace_control_put),
+					     .EN_set_verbosity(core_resettable$EN_set_verbosity),
+					     .EN_set_watch_tohost(core_resettable$EN_set_watch_tohost),
+					     .mem_M_awvalid(core_resettable$mem_M_awvalid),
+					     .mem_M_awid(core_resettable$mem_M_awid),
+					     .mem_M_awaddr(core_resettable$mem_M_awaddr),
+					     .mem_M_awlen(core_resettable$mem_M_awlen),
+					     .mem_M_awsize(core_resettable$mem_M_awsize),
+					     .mem_M_awburst(core_resettable$mem_M_awburst),
+					     .mem_M_awlock(core_resettable$mem_M_awlock),
+					     .mem_M_awcache(core_resettable$mem_M_awcache),
+					     .mem_M_awprot(core_resettable$mem_M_awprot),
+					     .mem_M_awqos(core_resettable$mem_M_awqos),
+					     .mem_M_awregion(core_resettable$mem_M_awregion),
+					     .mem_M_wvalid(core_resettable$mem_M_wvalid),
+					     .mem_M_wdata(core_resettable$mem_M_wdata),
+					     .mem_M_wstrb(core_resettable$mem_M_wstrb),
+					     .mem_M_wlast(core_resettable$mem_M_wlast),
+					     .mem_M_bready(core_resettable$mem_M_bready),
+					     .mem_M_arvalid(core_resettable$mem_M_arvalid),
+					     .mem_M_arid(core_resettable$mem_M_arid),
+					     .mem_M_araddr(core_resettable$mem_M_araddr),
+					     .mem_M_arlen(core_resettable$mem_M_arlen),
+					     .mem_M_arsize(core_resettable$mem_M_arsize),
+					     .mem_M_arburst(core_resettable$mem_M_arburst),
+					     .mem_M_arlock(core_resettable$mem_M_arlock),
+					     .mem_M_arcache(core_resettable$mem_M_arcache),
+					     .mem_M_arprot(core_resettable$mem_M_arprot),
+					     .mem_M_arqos(core_resettable$mem_M_arqos),
+					     .mem_M_arregion(core_resettable$mem_M_arregion),
+					     .mem_M_rready(core_resettable$mem_M_rready),
+					     .mmio_M_awvalid(core_resettable$mmio_M_awvalid),
+					     .mmio_M_awid(core_resettable$mmio_M_awid),
+					     .mmio_M_awaddr(core_resettable$mmio_M_awaddr),
+					     .mmio_M_awlen(core_resettable$mmio_M_awlen),
+					     .mmio_M_awsize(core_resettable$mmio_M_awsize),
+					     .mmio_M_awburst(core_resettable$mmio_M_awburst),
+					     .mmio_M_awlock(core_resettable$mmio_M_awlock),
+					     .mmio_M_awcache(core_resettable$mmio_M_awcache),
+					     .mmio_M_awprot(core_resettable$mmio_M_awprot),
+					     .mmio_M_awqos(core_resettable$mmio_M_awqos),
+					     .mmio_M_awregion(core_resettable$mmio_M_awregion),
+					     .mmio_M_wvalid(core_resettable$mmio_M_wvalid),
+					     .mmio_M_wdata(core_resettable$mmio_M_wdata),
+					     .mmio_M_wstrb(core_resettable$mmio_M_wstrb),
+					     .mmio_M_wlast(core_resettable$mmio_M_wlast),
+					     .mmio_M_bready(core_resettable$mmio_M_bready),
+					     .mmio_M_arvalid(core_resettable$mmio_M_arvalid),
+					     .mmio_M_arid(core_resettable$mmio_M_arid),
+					     .mmio_M_araddr(core_resettable$mmio_M_araddr),
+					     .mmio_M_arlen(core_resettable$mmio_M_arlen),
+					     .mmio_M_arsize(core_resettable$mmio_M_arsize),
+					     .mmio_M_arburst(core_resettable$mmio_M_arburst),
+					     .mmio_M_arlock(core_resettable$mmio_M_arlock),
+					     .mmio_M_arcache(core_resettable$mmio_M_arcache),
+					     .mmio_M_arprot(core_resettable$mmio_M_arprot),
+					     .mmio_M_arqos(core_resettable$mmio_M_arqos),
+					     .mmio_M_arregion(core_resettable$mmio_M_arregion),
+					     .mmio_M_rready(core_resettable$mmio_M_rready),
+					     .dma_S_awready(core_resettable$dma_S_awready),
+					     .dma_S_wready(core_resettable$dma_S_wready),
+					     .dma_S_bvalid(core_resettable$dma_S_bvalid),
+					     .dma_S_bid(core_resettable$dma_S_bid),
+					     .dma_S_bresp(core_resettable$dma_S_bresp),
+					     .dma_S_arready(core_resettable$dma_S_arready),
+					     .dma_S_rvalid(core_resettable$dma_S_rvalid),
+					     .dma_S_rid(core_resettable$dma_S_rid),
+					     .dma_S_rdata(core_resettable$dma_S_rdata),
+					     .dma_S_rresp(core_resettable$dma_S_rresp),
+					     .dma_S_rlast(core_resettable$dma_S_rlast),
+					     .RDY_ext_interrupts(),
+					     .RDY_fi_nmi_enq(core_resettable$RDY_fi_nmi_enq),
+					     .fi_nmi_notFull(core_resettable$fi_nmi_notFull),
+					     .RDY_fi_nmi_notFull(),
+					     .fo_misc_first(core_resettable$fo_misc_first),
+					     .RDY_fo_misc_first(core_resettable$RDY_fo_misc_first),
+					     .RDY_fo_misc_deq(core_resettable$RDY_fo_misc_deq),
+					     .fo_misc_notEmpty(core_resettable$fo_misc_notEmpty),
+					     .RDY_fo_misc_notEmpty(),
+					     .RDY_fi_misc_enq(core_resettable$RDY_fi_misc_enq),
+					     .fi_misc_notFull(core_resettable$fi_misc_notFull),
+					     .RDY_fi_misc_notFull(),
+					     .fo_tv_info_first(core_resettable$fo_tv_info_first),
+					     .RDY_fo_tv_info_first(core_resettable$RDY_fo_tv_info_first),
+					     .RDY_fo_tv_info_deq(core_resettable$RDY_fo_tv_info_deq),
+					     .fo_tv_info_notEmpty(core_resettable$fo_tv_info_notEmpty),
+					     .RDY_fo_tv_info_notEmpty(),
+					     .RDY_se_dmi_request_enq(core_resettable$RDY_se_dmi_request_enq),
+					     .se_dmi_request_notFull(core_resettable$se_dmi_request_notFull),
+					     .RDY_se_dmi_request_notFull(),
+					     .se_dmi_response_first(core_resettable$se_dmi_response_first),
+					     .RDY_se_dmi_response_first(core_resettable$RDY_se_dmi_response_first),
+					     .RDY_se_dmi_response_deq(core_resettable$RDY_se_dmi_response_deq),
+					     .se_dmi_response_notEmpty(core_resettable$se_dmi_response_notEmpty),
+					     .RDY_se_dmi_response_notEmpty(),
+					     .RDY_cl_ndm_reset_request_first(core_resettable$RDY_cl_ndm_reset_request_first),
+					     .RDY_cl_ndm_reset_request_deq(core_resettable$RDY_cl_ndm_reset_request_deq),
+					     .cl_ndm_reset_request_notEmpty(core_resettable$cl_ndm_reset_request_notEmpty),
+					     .RDY_cl_ndm_reset_request_notEmpty(),
+					     .RDY_cl_ndm_reset_response_enq(core_resettable$RDY_cl_ndm_reset_response_enq),
+					     .cl_ndm_reset_response_notFull(core_resettable$cl_ndm_reset_response_notFull),
+					     .RDY_cl_ndm_reset_response_notFull(),
+					     .RDY_p_pc_trace_control_put(),
+					     .RDY_set_verbosity(),
+					     .RDY_set_watch_tohost(),
+					     .mv_tohost_value(core_resettable$mv_tohost_value),
+					     .RDY_mv_tohost_value());
 
   // submodule host_cs
   mkHost_Control_Status host_cs(.CLK(CLK),
 				.RST_N(RST_N),
-				.cl_cpu_reset_response_put(host_cs$cl_cpu_reset_response_put),
-				.cl_csr_rw_response_put(host_cs$cl_csr_rw_response_put),
-				.cl_run_halt_response_put(host_cs$cl_run_halt_response_put),
 				.ma_tohost_value_tohost_value(host_cs$ma_tohost_value_tohost_value),
 				.se_control_status_request_enq_x(host_cs$se_control_status_request_enq_x),
 				.EN_se_control_status_request_enq(host_cs$EN_se_control_status_request_enq),
 				.EN_se_control_status_response_deq(host_cs$EN_se_control_status_response_deq),
-				.EN_cl_cpu_reset_request_get(host_cs$EN_cl_cpu_reset_request_get),
-				.EN_cl_cpu_reset_response_put(host_cs$EN_cl_cpu_reset_response_put),
-				.EN_cl_run_halt_request_get(host_cs$EN_cl_run_halt_request_get),
-				.EN_cl_run_halt_response_put(host_cs$EN_cl_run_halt_response_put),
-				.EN_cl_csr_rw_request_get(host_cs$EN_cl_csr_rw_request_get),
-				.EN_cl_csr_rw_response_put(host_cs$EN_cl_csr_rw_response_put),
 				.EN_g_watch_tohost_get(host_cs$EN_g_watch_tohost_get),
 				.EN_g_verbosity_get(host_cs$EN_g_verbosity_get),
+				.EN_g_pc_trace_control_get(host_cs$EN_g_pc_trace_control_get),
 				.EN_ma_tohost_value(host_cs$EN_ma_tohost_value),
 				.RDY_se_control_status_request_enq(host_cs$RDY_se_control_status_request_enq),
 				.se_control_status_request_notFull(host_cs$se_control_status_request_notFull),
@@ -3225,1560 +1837,129 @@ module mkAWSteria_Core_Single_Clock(CLK,
 				.RDY_se_control_status_response_deq(host_cs$RDY_se_control_status_response_deq),
 				.se_control_status_response_notEmpty(host_cs$se_control_status_response_notEmpty),
 				.RDY_se_control_status_response_notEmpty(),
-				.cl_cpu_reset_request_get(host_cs$cl_cpu_reset_request_get),
-				.RDY_cl_cpu_reset_request_get(host_cs$RDY_cl_cpu_reset_request_get),
-				.RDY_cl_cpu_reset_response_put(host_cs$RDY_cl_cpu_reset_response_put),
-				.cl_run_halt_request_get(host_cs$cl_run_halt_request_get),
-				.RDY_cl_run_halt_request_get(host_cs$RDY_cl_run_halt_request_get),
-				.RDY_cl_run_halt_response_put(host_cs$RDY_cl_run_halt_response_put),
-				.cl_csr_rw_request_get(host_cs$cl_csr_rw_request_get),
-				.RDY_cl_csr_rw_request_get(host_cs$RDY_cl_csr_rw_request_get),
-				.RDY_cl_csr_rw_response_put(host_cs$RDY_cl_csr_rw_response_put),
+				.mv_assert_core_reset(),
+				.RDY_mv_assert_core_reset(),
 				.g_watch_tohost_get(host_cs$g_watch_tohost_get),
 				.RDY_g_watch_tohost_get(host_cs$RDY_g_watch_tohost_get),
 				.g_verbosity_get(host_cs$g_verbosity_get),
 				.RDY_g_verbosity_get(host_cs$RDY_g_verbosity_get),
-				.mv_pc_trace_fst(),
-				.RDY_mv_pc_trace_fst(),
-				.mv_pc_trace_snd(),
-				.RDY_mv_pc_trace_snd(),
+				.g_pc_trace_control_get(host_cs$g_pc_trace_control_get),
+				.RDY_g_pc_trace_control_get(host_cs$RDY_g_pc_trace_control_get),
 				.RDY_ma_tohost_value());
 
-  // submodule mmio_fabric
-  mkCore_MMIO_Fabric mmio_fabric(.CLK(CLK),
-				 .RST_N(RST_N),
-				 .set_verbosity_verbosity(mmio_fabric$set_verbosity_verbosity),
-				 .v_from_masters_0_araddr(mmio_fabric$v_from_masters_0_araddr),
-				 .v_from_masters_0_arburst(mmio_fabric$v_from_masters_0_arburst),
-				 .v_from_masters_0_arcache(mmio_fabric$v_from_masters_0_arcache),
-				 .v_from_masters_0_arid(mmio_fabric$v_from_masters_0_arid),
-				 .v_from_masters_0_arlen(mmio_fabric$v_from_masters_0_arlen),
-				 .v_from_masters_0_arlock(mmio_fabric$v_from_masters_0_arlock),
-				 .v_from_masters_0_arprot(mmio_fabric$v_from_masters_0_arprot),
-				 .v_from_masters_0_arqos(mmio_fabric$v_from_masters_0_arqos),
-				 .v_from_masters_0_arregion(mmio_fabric$v_from_masters_0_arregion),
-				 .v_from_masters_0_arsize(mmio_fabric$v_from_masters_0_arsize),
-				 .v_from_masters_0_arvalid(mmio_fabric$v_from_masters_0_arvalid),
-				 .v_from_masters_0_awaddr(mmio_fabric$v_from_masters_0_awaddr),
-				 .v_from_masters_0_awburst(mmio_fabric$v_from_masters_0_awburst),
-				 .v_from_masters_0_awcache(mmio_fabric$v_from_masters_0_awcache),
-				 .v_from_masters_0_awid(mmio_fabric$v_from_masters_0_awid),
-				 .v_from_masters_0_awlen(mmio_fabric$v_from_masters_0_awlen),
-				 .v_from_masters_0_awlock(mmio_fabric$v_from_masters_0_awlock),
-				 .v_from_masters_0_awprot(mmio_fabric$v_from_masters_0_awprot),
-				 .v_from_masters_0_awqos(mmio_fabric$v_from_masters_0_awqos),
-				 .v_from_masters_0_awregion(mmio_fabric$v_from_masters_0_awregion),
-				 .v_from_masters_0_awsize(mmio_fabric$v_from_masters_0_awsize),
-				 .v_from_masters_0_awvalid(mmio_fabric$v_from_masters_0_awvalid),
-				 .v_from_masters_0_bready(mmio_fabric$v_from_masters_0_bready),
-				 .v_from_masters_0_rready(mmio_fabric$v_from_masters_0_rready),
-				 .v_from_masters_0_wdata(mmio_fabric$v_from_masters_0_wdata),
-				 .v_from_masters_0_wlast(mmio_fabric$v_from_masters_0_wlast),
-				 .v_from_masters_0_wstrb(mmio_fabric$v_from_masters_0_wstrb),
-				 .v_from_masters_0_wvalid(mmio_fabric$v_from_masters_0_wvalid),
-				 .v_to_slaves_0_arready(mmio_fabric$v_to_slaves_0_arready),
-				 .v_to_slaves_0_awready(mmio_fabric$v_to_slaves_0_awready),
-				 .v_to_slaves_0_bid(mmio_fabric$v_to_slaves_0_bid),
-				 .v_to_slaves_0_bresp(mmio_fabric$v_to_slaves_0_bresp),
-				 .v_to_slaves_0_bvalid(mmio_fabric$v_to_slaves_0_bvalid),
-				 .v_to_slaves_0_rdata(mmio_fabric$v_to_slaves_0_rdata),
-				 .v_to_slaves_0_rid(mmio_fabric$v_to_slaves_0_rid),
-				 .v_to_slaves_0_rlast(mmio_fabric$v_to_slaves_0_rlast),
-				 .v_to_slaves_0_rresp(mmio_fabric$v_to_slaves_0_rresp),
-				 .v_to_slaves_0_rvalid(mmio_fabric$v_to_slaves_0_rvalid),
-				 .v_to_slaves_0_wready(mmio_fabric$v_to_slaves_0_wready),
-				 .v_to_slaves_1_arready(mmio_fabric$v_to_slaves_1_arready),
-				 .v_to_slaves_1_awready(mmio_fabric$v_to_slaves_1_awready),
-				 .v_to_slaves_1_bid(mmio_fabric$v_to_slaves_1_bid),
-				 .v_to_slaves_1_bresp(mmio_fabric$v_to_slaves_1_bresp),
-				 .v_to_slaves_1_bvalid(mmio_fabric$v_to_slaves_1_bvalid),
-				 .v_to_slaves_1_rdata(mmio_fabric$v_to_slaves_1_rdata),
-				 .v_to_slaves_1_rid(mmio_fabric$v_to_slaves_1_rid),
-				 .v_to_slaves_1_rlast(mmio_fabric$v_to_slaves_1_rlast),
-				 .v_to_slaves_1_rresp(mmio_fabric$v_to_slaves_1_rresp),
-				 .v_to_slaves_1_rvalid(mmio_fabric$v_to_slaves_1_rvalid),
-				 .v_to_slaves_1_wready(mmio_fabric$v_to_slaves_1_wready),
-				 .v_to_slaves_2_arready(mmio_fabric$v_to_slaves_2_arready),
-				 .v_to_slaves_2_awready(mmio_fabric$v_to_slaves_2_awready),
-				 .v_to_slaves_2_bid(mmio_fabric$v_to_slaves_2_bid),
-				 .v_to_slaves_2_bresp(mmio_fabric$v_to_slaves_2_bresp),
-				 .v_to_slaves_2_bvalid(mmio_fabric$v_to_slaves_2_bvalid),
-				 .v_to_slaves_2_rdata(mmio_fabric$v_to_slaves_2_rdata),
-				 .v_to_slaves_2_rid(mmio_fabric$v_to_slaves_2_rid),
-				 .v_to_slaves_2_rlast(mmio_fabric$v_to_slaves_2_rlast),
-				 .v_to_slaves_2_rresp(mmio_fabric$v_to_slaves_2_rresp),
-				 .v_to_slaves_2_rvalid(mmio_fabric$v_to_slaves_2_rvalid),
-				 .v_to_slaves_2_wready(mmio_fabric$v_to_slaves_2_wready),
-				 .v_to_slaves_3_arready(mmio_fabric$v_to_slaves_3_arready),
-				 .v_to_slaves_3_awready(mmio_fabric$v_to_slaves_3_awready),
-				 .v_to_slaves_3_bid(mmio_fabric$v_to_slaves_3_bid),
-				 .v_to_slaves_3_bresp(mmio_fabric$v_to_slaves_3_bresp),
-				 .v_to_slaves_3_bvalid(mmio_fabric$v_to_slaves_3_bvalid),
-				 .v_to_slaves_3_rdata(mmio_fabric$v_to_slaves_3_rdata),
-				 .v_to_slaves_3_rid(mmio_fabric$v_to_slaves_3_rid),
-				 .v_to_slaves_3_rlast(mmio_fabric$v_to_slaves_3_rlast),
-				 .v_to_slaves_3_rresp(mmio_fabric$v_to_slaves_3_rresp),
-				 .v_to_slaves_3_rvalid(mmio_fabric$v_to_slaves_3_rvalid),
-				 .v_to_slaves_3_wready(mmio_fabric$v_to_slaves_3_wready),
-				 .EN_reset(mmio_fabric$EN_reset),
-				 .EN_set_verbosity(mmio_fabric$EN_set_verbosity),
-				 .RDY_reset(mmio_fabric$RDY_reset),
-				 .RDY_set_verbosity(),
-				 .v_from_masters_0_awready(mmio_fabric$v_from_masters_0_awready),
-				 .v_from_masters_0_wready(mmio_fabric$v_from_masters_0_wready),
-				 .v_from_masters_0_bvalid(mmio_fabric$v_from_masters_0_bvalid),
-				 .v_from_masters_0_bid(mmio_fabric$v_from_masters_0_bid),
-				 .v_from_masters_0_bresp(mmio_fabric$v_from_masters_0_bresp),
-				 .v_from_masters_0_arready(mmio_fabric$v_from_masters_0_arready),
-				 .v_from_masters_0_rvalid(mmio_fabric$v_from_masters_0_rvalid),
-				 .v_from_masters_0_rid(mmio_fabric$v_from_masters_0_rid),
-				 .v_from_masters_0_rdata(mmio_fabric$v_from_masters_0_rdata),
-				 .v_from_masters_0_rresp(mmio_fabric$v_from_masters_0_rresp),
-				 .v_from_masters_0_rlast(mmio_fabric$v_from_masters_0_rlast),
-				 .v_to_slaves_0_awvalid(mmio_fabric$v_to_slaves_0_awvalid),
-				 .v_to_slaves_0_awid(mmio_fabric$v_to_slaves_0_awid),
-				 .v_to_slaves_0_awaddr(mmio_fabric$v_to_slaves_0_awaddr),
-				 .v_to_slaves_0_awlen(mmio_fabric$v_to_slaves_0_awlen),
-				 .v_to_slaves_0_awsize(mmio_fabric$v_to_slaves_0_awsize),
-				 .v_to_slaves_0_awburst(mmio_fabric$v_to_slaves_0_awburst),
-				 .v_to_slaves_0_awlock(mmio_fabric$v_to_slaves_0_awlock),
-				 .v_to_slaves_0_awcache(mmio_fabric$v_to_slaves_0_awcache),
-				 .v_to_slaves_0_awprot(mmio_fabric$v_to_slaves_0_awprot),
-				 .v_to_slaves_0_awqos(mmio_fabric$v_to_slaves_0_awqos),
-				 .v_to_slaves_0_awregion(mmio_fabric$v_to_slaves_0_awregion),
-				 .v_to_slaves_0_wvalid(mmio_fabric$v_to_slaves_0_wvalid),
-				 .v_to_slaves_0_wdata(mmio_fabric$v_to_slaves_0_wdata),
-				 .v_to_slaves_0_wstrb(mmio_fabric$v_to_slaves_0_wstrb),
-				 .v_to_slaves_0_wlast(mmio_fabric$v_to_slaves_0_wlast),
-				 .v_to_slaves_0_bready(mmio_fabric$v_to_slaves_0_bready),
-				 .v_to_slaves_0_arvalid(mmio_fabric$v_to_slaves_0_arvalid),
-				 .v_to_slaves_0_arid(mmio_fabric$v_to_slaves_0_arid),
-				 .v_to_slaves_0_araddr(mmio_fabric$v_to_slaves_0_araddr),
-				 .v_to_slaves_0_arlen(mmio_fabric$v_to_slaves_0_arlen),
-				 .v_to_slaves_0_arsize(mmio_fabric$v_to_slaves_0_arsize),
-				 .v_to_slaves_0_arburst(mmio_fabric$v_to_slaves_0_arburst),
-				 .v_to_slaves_0_arlock(mmio_fabric$v_to_slaves_0_arlock),
-				 .v_to_slaves_0_arcache(mmio_fabric$v_to_slaves_0_arcache),
-				 .v_to_slaves_0_arprot(mmio_fabric$v_to_slaves_0_arprot),
-				 .v_to_slaves_0_arqos(mmio_fabric$v_to_slaves_0_arqos),
-				 .v_to_slaves_0_arregion(mmio_fabric$v_to_slaves_0_arregion),
-				 .v_to_slaves_0_rready(mmio_fabric$v_to_slaves_0_rready),
-				 .v_to_slaves_1_awvalid(mmio_fabric$v_to_slaves_1_awvalid),
-				 .v_to_slaves_1_awid(mmio_fabric$v_to_slaves_1_awid),
-				 .v_to_slaves_1_awaddr(mmio_fabric$v_to_slaves_1_awaddr),
-				 .v_to_slaves_1_awlen(mmio_fabric$v_to_slaves_1_awlen),
-				 .v_to_slaves_1_awsize(mmio_fabric$v_to_slaves_1_awsize),
-				 .v_to_slaves_1_awburst(mmio_fabric$v_to_slaves_1_awburst),
-				 .v_to_slaves_1_awlock(mmio_fabric$v_to_slaves_1_awlock),
-				 .v_to_slaves_1_awcache(mmio_fabric$v_to_slaves_1_awcache),
-				 .v_to_slaves_1_awprot(mmio_fabric$v_to_slaves_1_awprot),
-				 .v_to_slaves_1_awqos(mmio_fabric$v_to_slaves_1_awqos),
-				 .v_to_slaves_1_awregion(mmio_fabric$v_to_slaves_1_awregion),
-				 .v_to_slaves_1_wvalid(mmio_fabric$v_to_slaves_1_wvalid),
-				 .v_to_slaves_1_wdata(mmio_fabric$v_to_slaves_1_wdata),
-				 .v_to_slaves_1_wstrb(mmio_fabric$v_to_slaves_1_wstrb),
-				 .v_to_slaves_1_wlast(mmio_fabric$v_to_slaves_1_wlast),
-				 .v_to_slaves_1_bready(mmio_fabric$v_to_slaves_1_bready),
-				 .v_to_slaves_1_arvalid(mmio_fabric$v_to_slaves_1_arvalid),
-				 .v_to_slaves_1_arid(mmio_fabric$v_to_slaves_1_arid),
-				 .v_to_slaves_1_araddr(mmio_fabric$v_to_slaves_1_araddr),
-				 .v_to_slaves_1_arlen(mmio_fabric$v_to_slaves_1_arlen),
-				 .v_to_slaves_1_arsize(mmio_fabric$v_to_slaves_1_arsize),
-				 .v_to_slaves_1_arburst(mmio_fabric$v_to_slaves_1_arburst),
-				 .v_to_slaves_1_arlock(mmio_fabric$v_to_slaves_1_arlock),
-				 .v_to_slaves_1_arcache(mmio_fabric$v_to_slaves_1_arcache),
-				 .v_to_slaves_1_arprot(mmio_fabric$v_to_slaves_1_arprot),
-				 .v_to_slaves_1_arqos(mmio_fabric$v_to_slaves_1_arqos),
-				 .v_to_slaves_1_arregion(mmio_fabric$v_to_slaves_1_arregion),
-				 .v_to_slaves_1_rready(mmio_fabric$v_to_slaves_1_rready),
-				 .v_to_slaves_2_awvalid(mmio_fabric$v_to_slaves_2_awvalid),
-				 .v_to_slaves_2_awid(mmio_fabric$v_to_slaves_2_awid),
-				 .v_to_slaves_2_awaddr(mmio_fabric$v_to_slaves_2_awaddr),
-				 .v_to_slaves_2_awlen(mmio_fabric$v_to_slaves_2_awlen),
-				 .v_to_slaves_2_awsize(mmio_fabric$v_to_slaves_2_awsize),
-				 .v_to_slaves_2_awburst(mmio_fabric$v_to_slaves_2_awburst),
-				 .v_to_slaves_2_awlock(mmio_fabric$v_to_slaves_2_awlock),
-				 .v_to_slaves_2_awcache(mmio_fabric$v_to_slaves_2_awcache),
-				 .v_to_slaves_2_awprot(mmio_fabric$v_to_slaves_2_awprot),
-				 .v_to_slaves_2_awqos(mmio_fabric$v_to_slaves_2_awqos),
-				 .v_to_slaves_2_awregion(mmio_fabric$v_to_slaves_2_awregion),
-				 .v_to_slaves_2_wvalid(mmio_fabric$v_to_slaves_2_wvalid),
-				 .v_to_slaves_2_wdata(mmio_fabric$v_to_slaves_2_wdata),
-				 .v_to_slaves_2_wstrb(mmio_fabric$v_to_slaves_2_wstrb),
-				 .v_to_slaves_2_wlast(mmio_fabric$v_to_slaves_2_wlast),
-				 .v_to_slaves_2_bready(mmio_fabric$v_to_slaves_2_bready),
-				 .v_to_slaves_2_arvalid(mmio_fabric$v_to_slaves_2_arvalid),
-				 .v_to_slaves_2_arid(mmio_fabric$v_to_slaves_2_arid),
-				 .v_to_slaves_2_araddr(mmio_fabric$v_to_slaves_2_araddr),
-				 .v_to_slaves_2_arlen(mmio_fabric$v_to_slaves_2_arlen),
-				 .v_to_slaves_2_arsize(mmio_fabric$v_to_slaves_2_arsize),
-				 .v_to_slaves_2_arburst(mmio_fabric$v_to_slaves_2_arburst),
-				 .v_to_slaves_2_arlock(mmio_fabric$v_to_slaves_2_arlock),
-				 .v_to_slaves_2_arcache(mmio_fabric$v_to_slaves_2_arcache),
-				 .v_to_slaves_2_arprot(mmio_fabric$v_to_slaves_2_arprot),
-				 .v_to_slaves_2_arqos(mmio_fabric$v_to_slaves_2_arqos),
-				 .v_to_slaves_2_arregion(mmio_fabric$v_to_slaves_2_arregion),
-				 .v_to_slaves_2_rready(mmio_fabric$v_to_slaves_2_rready),
-				 .v_to_slaves_3_awvalid(mmio_fabric$v_to_slaves_3_awvalid),
-				 .v_to_slaves_3_awid(mmio_fabric$v_to_slaves_3_awid),
-				 .v_to_slaves_3_awaddr(mmio_fabric$v_to_slaves_3_awaddr),
-				 .v_to_slaves_3_awlen(mmio_fabric$v_to_slaves_3_awlen),
-				 .v_to_slaves_3_awsize(mmio_fabric$v_to_slaves_3_awsize),
-				 .v_to_slaves_3_awburst(mmio_fabric$v_to_slaves_3_awburst),
-				 .v_to_slaves_3_awlock(mmio_fabric$v_to_slaves_3_awlock),
-				 .v_to_slaves_3_awcache(mmio_fabric$v_to_slaves_3_awcache),
-				 .v_to_slaves_3_awprot(mmio_fabric$v_to_slaves_3_awprot),
-				 .v_to_slaves_3_awqos(mmio_fabric$v_to_slaves_3_awqos),
-				 .v_to_slaves_3_awregion(mmio_fabric$v_to_slaves_3_awregion),
-				 .v_to_slaves_3_wvalid(mmio_fabric$v_to_slaves_3_wvalid),
-				 .v_to_slaves_3_wdata(mmio_fabric$v_to_slaves_3_wdata),
-				 .v_to_slaves_3_wstrb(mmio_fabric$v_to_slaves_3_wstrb),
-				 .v_to_slaves_3_wlast(mmio_fabric$v_to_slaves_3_wlast),
-				 .v_to_slaves_3_bready(mmio_fabric$v_to_slaves_3_bready),
-				 .v_to_slaves_3_arvalid(mmio_fabric$v_to_slaves_3_arvalid),
-				 .v_to_slaves_3_arid(mmio_fabric$v_to_slaves_3_arid),
-				 .v_to_slaves_3_araddr(mmio_fabric$v_to_slaves_3_araddr),
-				 .v_to_slaves_3_arlen(mmio_fabric$v_to_slaves_3_arlen),
-				 .v_to_slaves_3_arsize(mmio_fabric$v_to_slaves_3_arsize),
-				 .v_to_slaves_3_arburst(mmio_fabric$v_to_slaves_3_arburst),
-				 .v_to_slaves_3_arlock(mmio_fabric$v_to_slaves_3_arlock),
-				 .v_to_slaves_3_arcache(mmio_fabric$v_to_slaves_3_arcache),
-				 .v_to_slaves_3_arprot(mmio_fabric$v_to_slaves_3_arprot),
-				 .v_to_slaves_3_arqos(mmio_fabric$v_to_slaves_3_arqos),
-				 .v_to_slaves_3_arregion(mmio_fabric$v_to_slaves_3_arregion),
-				 .v_to_slaves_3_rready(mmio_fabric$v_to_slaves_3_rready));
+  // rule RL_mkConnectionGetPut
+  assign CAN_FIRE_RL_mkConnectionGetPut = host_cs$RDY_g_pc_trace_control_get ;
+  assign WILL_FIRE_RL_mkConnectionGetPut =
+	     host_cs$RDY_g_pc_trace_control_get ;
 
-  // submodule near_mem_io
-  mkNear_Mem_IO_AXI4 near_mem_io(.CLK(CLK),
-				 .RST_N(RST_N),
-				 .axi4_slave_araddr(near_mem_io$axi4_slave_araddr),
-				 .axi4_slave_arburst(near_mem_io$axi4_slave_arburst),
-				 .axi4_slave_arcache(near_mem_io$axi4_slave_arcache),
-				 .axi4_slave_arid(near_mem_io$axi4_slave_arid),
-				 .axi4_slave_arlen(near_mem_io$axi4_slave_arlen),
-				 .axi4_slave_arlock(near_mem_io$axi4_slave_arlock),
-				 .axi4_slave_arprot(near_mem_io$axi4_slave_arprot),
-				 .axi4_slave_arqos(near_mem_io$axi4_slave_arqos),
-				 .axi4_slave_arregion(near_mem_io$axi4_slave_arregion),
-				 .axi4_slave_arsize(near_mem_io$axi4_slave_arsize),
-				 .axi4_slave_arvalid(near_mem_io$axi4_slave_arvalid),
-				 .axi4_slave_awaddr(near_mem_io$axi4_slave_awaddr),
-				 .axi4_slave_awburst(near_mem_io$axi4_slave_awburst),
-				 .axi4_slave_awcache(near_mem_io$axi4_slave_awcache),
-				 .axi4_slave_awid(near_mem_io$axi4_slave_awid),
-				 .axi4_slave_awlen(near_mem_io$axi4_slave_awlen),
-				 .axi4_slave_awlock(near_mem_io$axi4_slave_awlock),
-				 .axi4_slave_awprot(near_mem_io$axi4_slave_awprot),
-				 .axi4_slave_awqos(near_mem_io$axi4_slave_awqos),
-				 .axi4_slave_awregion(near_mem_io$axi4_slave_awregion),
-				 .axi4_slave_awsize(near_mem_io$axi4_slave_awsize),
-				 .axi4_slave_awvalid(near_mem_io$axi4_slave_awvalid),
-				 .axi4_slave_bready(near_mem_io$axi4_slave_bready),
-				 .axi4_slave_rready(near_mem_io$axi4_slave_rready),
-				 .axi4_slave_wdata(near_mem_io$axi4_slave_wdata),
-				 .axi4_slave_wlast(near_mem_io$axi4_slave_wlast),
-				 .axi4_slave_wstrb(near_mem_io$axi4_slave_wstrb),
-				 .axi4_slave_wvalid(near_mem_io$axi4_slave_wvalid),
-				 .set_addr_map_addr_base(near_mem_io$set_addr_map_addr_base),
-				 .set_addr_map_addr_lim(near_mem_io$set_addr_map_addr_lim),
-				 .EN_server_reset_request_put(near_mem_io$EN_server_reset_request_put),
-				 .EN_server_reset_response_get(near_mem_io$EN_server_reset_response_get),
-				 .EN_set_addr_map(near_mem_io$EN_set_addr_map),
-				 .EN_get_timer_interrupt_req_get(near_mem_io$EN_get_timer_interrupt_req_get),
-				 .EN_get_sw_interrupt_req_get(near_mem_io$EN_get_sw_interrupt_req_get),
-				 .RDY_server_reset_request_put(near_mem_io$RDY_server_reset_request_put),
-				 .RDY_server_reset_response_get(near_mem_io$RDY_server_reset_response_get),
-				 .RDY_set_addr_map(near_mem_io$RDY_set_addr_map),
-				 .axi4_slave_awready(near_mem_io$axi4_slave_awready),
-				 .axi4_slave_wready(near_mem_io$axi4_slave_wready),
-				 .axi4_slave_bvalid(near_mem_io$axi4_slave_bvalid),
-				 .axi4_slave_bid(near_mem_io$axi4_slave_bid),
-				 .axi4_slave_bresp(near_mem_io$axi4_slave_bresp),
-				 .axi4_slave_arready(near_mem_io$axi4_slave_arready),
-				 .axi4_slave_rvalid(near_mem_io$axi4_slave_rvalid),
-				 .axi4_slave_rid(near_mem_io$axi4_slave_rid),
-				 .axi4_slave_rdata(near_mem_io$axi4_slave_rdata),
-				 .axi4_slave_rresp(near_mem_io$axi4_slave_rresp),
-				 .axi4_slave_rlast(near_mem_io$axi4_slave_rlast),
-				 .mv_read_mtime(near_mem_io$mv_read_mtime),
-				 .get_timer_interrupt_req_get(near_mem_io$get_timer_interrupt_req_get),
-				 .RDY_get_timer_interrupt_req_get(near_mem_io$RDY_get_timer_interrupt_req_get),
-				 .get_sw_interrupt_req_get(near_mem_io$get_sw_interrupt_req_get),
-				 .RDY_get_sw_interrupt_req_get(near_mem_io$RDY_get_sw_interrupt_req_get));
-
-  // submodule plic
-  mkPLIC_16_2_7 plic(.CLK(CLK),
-		     .RST_N(RST_N),
-		     .axi4_slave_araddr(plic$axi4_slave_araddr),
-		     .axi4_slave_arburst(plic$axi4_slave_arburst),
-		     .axi4_slave_arcache(plic$axi4_slave_arcache),
-		     .axi4_slave_arid(plic$axi4_slave_arid),
-		     .axi4_slave_arlen(plic$axi4_slave_arlen),
-		     .axi4_slave_arlock(plic$axi4_slave_arlock),
-		     .axi4_slave_arprot(plic$axi4_slave_arprot),
-		     .axi4_slave_arqos(plic$axi4_slave_arqos),
-		     .axi4_slave_arregion(plic$axi4_slave_arregion),
-		     .axi4_slave_arsize(plic$axi4_slave_arsize),
-		     .axi4_slave_arvalid(plic$axi4_slave_arvalid),
-		     .axi4_slave_awaddr(plic$axi4_slave_awaddr),
-		     .axi4_slave_awburst(plic$axi4_slave_awburst),
-		     .axi4_slave_awcache(plic$axi4_slave_awcache),
-		     .axi4_slave_awid(plic$axi4_slave_awid),
-		     .axi4_slave_awlen(plic$axi4_slave_awlen),
-		     .axi4_slave_awlock(plic$axi4_slave_awlock),
-		     .axi4_slave_awprot(plic$axi4_slave_awprot),
-		     .axi4_slave_awqos(plic$axi4_slave_awqos),
-		     .axi4_slave_awregion(plic$axi4_slave_awregion),
-		     .axi4_slave_awsize(plic$axi4_slave_awsize),
-		     .axi4_slave_awvalid(plic$axi4_slave_awvalid),
-		     .axi4_slave_bready(plic$axi4_slave_bready),
-		     .axi4_slave_rready(plic$axi4_slave_rready),
-		     .axi4_slave_wdata(plic$axi4_slave_wdata),
-		     .axi4_slave_wlast(plic$axi4_slave_wlast),
-		     .axi4_slave_wstrb(plic$axi4_slave_wstrb),
-		     .axi4_slave_wvalid(plic$axi4_slave_wvalid),
-		     .set_addr_map_addr_base(plic$set_addr_map_addr_base),
-		     .set_addr_map_addr_lim(plic$set_addr_map_addr_lim),
-		     .set_verbosity_verbosity(plic$set_verbosity_verbosity),
-		     .v_sources_0_m_interrupt_req_set_not_clear(plic$v_sources_0_m_interrupt_req_set_not_clear),
-		     .v_sources_10_m_interrupt_req_set_not_clear(plic$v_sources_10_m_interrupt_req_set_not_clear),
-		     .v_sources_11_m_interrupt_req_set_not_clear(plic$v_sources_11_m_interrupt_req_set_not_clear),
-		     .v_sources_12_m_interrupt_req_set_not_clear(plic$v_sources_12_m_interrupt_req_set_not_clear),
-		     .v_sources_13_m_interrupt_req_set_not_clear(plic$v_sources_13_m_interrupt_req_set_not_clear),
-		     .v_sources_14_m_interrupt_req_set_not_clear(plic$v_sources_14_m_interrupt_req_set_not_clear),
-		     .v_sources_15_m_interrupt_req_set_not_clear(plic$v_sources_15_m_interrupt_req_set_not_clear),
-		     .v_sources_1_m_interrupt_req_set_not_clear(plic$v_sources_1_m_interrupt_req_set_not_clear),
-		     .v_sources_2_m_interrupt_req_set_not_clear(plic$v_sources_2_m_interrupt_req_set_not_clear),
-		     .v_sources_3_m_interrupt_req_set_not_clear(plic$v_sources_3_m_interrupt_req_set_not_clear),
-		     .v_sources_4_m_interrupt_req_set_not_clear(plic$v_sources_4_m_interrupt_req_set_not_clear),
-		     .v_sources_5_m_interrupt_req_set_not_clear(plic$v_sources_5_m_interrupt_req_set_not_clear),
-		     .v_sources_6_m_interrupt_req_set_not_clear(plic$v_sources_6_m_interrupt_req_set_not_clear),
-		     .v_sources_7_m_interrupt_req_set_not_clear(plic$v_sources_7_m_interrupt_req_set_not_clear),
-		     .v_sources_8_m_interrupt_req_set_not_clear(plic$v_sources_8_m_interrupt_req_set_not_clear),
-		     .v_sources_9_m_interrupt_req_set_not_clear(plic$v_sources_9_m_interrupt_req_set_not_clear),
-		     .EN_set_verbosity(plic$EN_set_verbosity),
-		     .EN_show_PLIC_state(plic$EN_show_PLIC_state),
-		     .EN_server_reset_request_put(plic$EN_server_reset_request_put),
-		     .EN_server_reset_response_get(plic$EN_server_reset_response_get),
-		     .EN_set_addr_map(plic$EN_set_addr_map),
-		     .RDY_set_verbosity(),
-		     .RDY_show_PLIC_state(),
-		     .RDY_server_reset_request_put(plic$RDY_server_reset_request_put),
-		     .RDY_server_reset_response_get(plic$RDY_server_reset_response_get),
-		     .RDY_set_addr_map(),
-		     .axi4_slave_awready(plic$axi4_slave_awready),
-		     .axi4_slave_wready(plic$axi4_slave_wready),
-		     .axi4_slave_bvalid(plic$axi4_slave_bvalid),
-		     .axi4_slave_bid(plic$axi4_slave_bid),
-		     .axi4_slave_bresp(plic$axi4_slave_bresp),
-		     .axi4_slave_arready(plic$axi4_slave_arready),
-		     .axi4_slave_rvalid(plic$axi4_slave_rvalid),
-		     .axi4_slave_rid(plic$axi4_slave_rid),
-		     .axi4_slave_rdata(plic$axi4_slave_rdata),
-		     .axi4_slave_rresp(plic$axi4_slave_rresp),
-		     .axi4_slave_rlast(plic$axi4_slave_rlast),
-		     .v_targets_0_m_eip(plic$v_targets_0_m_eip),
-		     .v_targets_1_m_eip(plic$v_targets_1_m_eip));
-
-  // rule RL_rl_wr_addr_channel
-  assign CAN_FIRE_RL_rl_wr_addr_channel = 1'd1 ;
-  assign WILL_FIRE_RL_rl_wr_addr_channel = 1'd1 ;
-
-  // rule RL_rl_wr_data_channel
-  assign CAN_FIRE_RL_rl_wr_data_channel = 1'd1 ;
-  assign WILL_FIRE_RL_rl_wr_data_channel = 1'd1 ;
-
-  // rule RL_rl_wr_response_channel
-  assign CAN_FIRE_RL_rl_wr_response_channel = 1'd1 ;
-  assign WILL_FIRE_RL_rl_wr_response_channel = 1'd1 ;
-
-  // rule RL_rl_rd_addr_channel
-  assign CAN_FIRE_RL_rl_rd_addr_channel = 1'd1 ;
-  assign WILL_FIRE_RL_rl_rd_addr_channel = 1'd1 ;
-
-  // rule RL_rl_rd_data_channel
-  assign CAN_FIRE_RL_rl_rd_data_channel = 1'd1 ;
-  assign WILL_FIRE_RL_rl_rd_data_channel = 1'd1 ;
-
-  // rule RL_rl_wr_addr_channel_1
-  assign CAN_FIRE_RL_rl_wr_addr_channel_1 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_wr_addr_channel_1 = 1'd1 ;
-
-  // rule RL_rl_wr_data_channel_1
-  assign CAN_FIRE_RL_rl_wr_data_channel_1 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_wr_data_channel_1 = 1'd1 ;
-
-  // rule RL_rl_wr_response_channel_1
-  assign CAN_FIRE_RL_rl_wr_response_channel_1 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_wr_response_channel_1 = 1'd1 ;
-
-  // rule RL_rl_rd_addr_channel_1
-  assign CAN_FIRE_RL_rl_rd_addr_channel_1 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_rd_addr_channel_1 = 1'd1 ;
-
-  // rule RL_rl_rd_data_channel_1
-  assign CAN_FIRE_RL_rl_rd_data_channel_1 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_rd_data_channel_1 = 1'd1 ;
-
-  // rule RL_rl_wr_addr_channel_2
-  assign CAN_FIRE_RL_rl_wr_addr_channel_2 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_wr_addr_channel_2 = 1'd1 ;
-
-  // rule RL_rl_wr_data_channel_2
-  assign CAN_FIRE_RL_rl_wr_data_channel_2 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_wr_data_channel_2 = 1'd1 ;
-
-  // rule RL_rl_wr_response_channel_2
-  assign CAN_FIRE_RL_rl_wr_response_channel_2 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_wr_response_channel_2 = 1'd1 ;
-
-  // rule RL_rl_rd_addr_channel_2
-  assign CAN_FIRE_RL_rl_rd_addr_channel_2 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_rd_addr_channel_2 = 1'd1 ;
-
-  // rule RL_rl_rd_data_channel_2
-  assign CAN_FIRE_RL_rl_rd_data_channel_2 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_rd_data_channel_2 = 1'd1 ;
-
-  // rule RL_rl_wr_addr_channel_3
-  assign CAN_FIRE_RL_rl_wr_addr_channel_3 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_wr_addr_channel_3 = 1'd1 ;
-
-  // rule RL_rl_wr_data_channel_3
-  assign CAN_FIRE_RL_rl_wr_data_channel_3 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_wr_data_channel_3 = 1'd1 ;
-
-  // rule RL_rl_wr_response_channel_3
-  assign CAN_FIRE_RL_rl_wr_response_channel_3 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_wr_response_channel_3 = 1'd1 ;
-
-  // rule RL_rl_rd_addr_channel_3
-  assign CAN_FIRE_RL_rl_rd_addr_channel_3 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_rd_addr_channel_3 = 1'd1 ;
-
-  // rule RL_rl_rd_data_channel_3
-  assign CAN_FIRE_RL_rl_rd_data_channel_3 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_rd_data_channel_3 = 1'd1 ;
-
-  // rule RL_rl_wr_addr_channel_4
-  assign CAN_FIRE_RL_rl_wr_addr_channel_4 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_wr_addr_channel_4 = 1'd1 ;
-
-  // rule RL_rl_wr_data_channel_4
-  assign CAN_FIRE_RL_rl_wr_data_channel_4 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_wr_data_channel_4 = 1'd1 ;
-
-  // rule RL_rl_wr_response_channel_4
-  assign CAN_FIRE_RL_rl_wr_response_channel_4 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_wr_response_channel_4 = 1'd1 ;
-
-  // rule RL_rl_rd_addr_channel_4
-  assign CAN_FIRE_RL_rl_rd_addr_channel_4 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_rd_addr_channel_4 = 1'd1 ;
-
-  // rule RL_rl_rd_data_channel_4
-  assign CAN_FIRE_RL_rl_rd_data_channel_4 = 1'd1 ;
-  assign WILL_FIRE_RL_rl_rd_data_channel_4 = 1'd1 ;
-
-  // rule RL_rl_drive_time
-  assign CAN_FIRE_RL_rl_drive_time = 1'd1 ;
-  assign WILL_FIRE_RL_rl_drive_time = 1'd1 ;
-
-  // rule RL_rl_drive_interrupt
-  assign CAN_FIRE_RL_rl_drive_interrupt = 1'd1 ;
-  assign WILL_FIRE_RL_rl_drive_interrupt = 1'd1 ;
-
-  // rule RL_rl_drive_nmi
-  assign CAN_FIRE_RL_rl_drive_nmi = 1'd1 ;
-  assign WILL_FIRE_RL_rl_drive_nmi = 1'd1 ;
-
-  // rule RL_rl_drive_sw_interrupt
-  assign CAN_FIRE_RL_rl_drive_sw_interrupt = 1'd1 ;
-  assign WILL_FIRE_RL_rl_drive_sw_interrupt = 1'd1 ;
-
-  // rule RL_rl_relay_sw_interrupt
-  assign CAN_FIRE_RL_rl_relay_sw_interrupt =
-	     near_mem_io$RDY_get_sw_interrupt_req_get &&
-	     rg_module_state == 2'd3 ;
-  assign WILL_FIRE_RL_rl_relay_sw_interrupt =
-	     CAN_FIRE_RL_rl_relay_sw_interrupt ;
-
-  // rule RL_rl_drive_timer_interrupt
-  assign CAN_FIRE_RL_rl_drive_timer_interrupt = 1'd1 ;
-  assign WILL_FIRE_RL_rl_drive_timer_interrupt = 1'd1 ;
-
-  // rule RL_rl_relay_timer_interrupt
-  assign CAN_FIRE_RL_rl_relay_timer_interrupt =
-	     near_mem_io$RDY_get_timer_interrupt_req_get &&
-	     rg_module_state == 2'd3 ;
-  assign WILL_FIRE_RL_rl_relay_timer_interrupt =
-	     CAN_FIRE_RL_rl_relay_timer_interrupt ;
-
-  // rule RL_rl_drive_external_interrupt
-  assign CAN_FIRE_RL_rl_drive_external_interrupt = 1'd1 ;
-  assign WILL_FIRE_RL_rl_drive_external_interrupt = 1'd1 ;
-
-  // rule RL_rl_relay_external_interrupt
-  assign CAN_FIRE_RL_rl_relay_external_interrupt = rg_module_state == 2'd3 ;
-  assign WILL_FIRE_RL_rl_relay_external_interrupt =
-	     CAN_FIRE_RL_rl_relay_external_interrupt ;
-
-  // rule RL_rl_first_init_finish
-  assign CAN_FIRE_RL_rl_first_init_finish =
-	     near_mem_io$RDY_set_addr_map &&
-	     plic$RDY_server_reset_response_get &&
-	     near_mem_io$RDY_server_reset_response_get &&
-	     cpu$RDY_hart0_server_reset_response_get &&
-	     rg_module_state == 2'd1 ;
-  assign WILL_FIRE_RL_rl_first_init_finish =
-	     CAN_FIRE_RL_rl_first_init_finish ;
-
-  // rule RL_rl_reinitialization_finish
-  assign CAN_FIRE_RL_rl_reinitialization_finish =
-	     near_mem_io$RDY_set_addr_map &&
-	     plic$RDY_server_reset_response_get &&
-	     near_mem_io$RDY_server_reset_response_get &&
-	     cpu$RDY_hart0_server_reset_response_get &&
-	     dm_tv_ifc_f_reset_rsps$FULL_N &&
-	     rg_module_state == 2'd2 ;
-  assign WILL_FIRE_RL_rl_reinitialization_finish =
-	     CAN_FIRE_RL_rl_reinitialization_finish ;
-
-  // rule RL_rl_first_init_start
-  assign CAN_FIRE_RL_rl_first_init_start =
-	     mmio_fabric$RDY_reset && plic$RDY_server_reset_request_put &&
-	     near_mem_io$RDY_server_reset_request_put &&
-	     cpu$RDY_hart0_server_reset_request_put &&
-	     rg_module_state == 2'd0 ;
-  assign WILL_FIRE_RL_rl_first_init_start = CAN_FIRE_RL_rl_first_init_start ;
-
-  // rule RL_rl_register_nmi
-  assign CAN_FIRE_RL_rl_register_nmi =
-	     f_nmi$EMPTY_N && rg_module_state == 2'd3 ;
-  assign WILL_FIRE_RL_rl_register_nmi = CAN_FIRE_RL_rl_register_nmi ;
+  // rule RL_rl_set_verbosity
+  assign CAN_FIRE_RL_rl_set_verbosity = host_cs$RDY_g_verbosity_get ;
+  assign WILL_FIRE_RL_rl_set_verbosity = host_cs$RDY_g_verbosity_get ;
 
   // rule RL_rl_send_tohost_value
   assign CAN_FIRE_RL_rl_send_tohost_value = 1'd1 ;
   assign WILL_FIRE_RL_rl_send_tohost_value = 1'd1 ;
 
   // rule RL_rl_watch_thost
-  assign CAN_FIRE_RL_rl_watch_thost =
-	     host_cs$RDY_g_watch_tohost_get && rg_module_state == 2'd3 ;
-  assign WILL_FIRE_RL_rl_watch_thost = CAN_FIRE_RL_rl_watch_thost ;
+  assign CAN_FIRE_RL_rl_watch_thost = host_cs$RDY_g_watch_tohost_get ;
+  assign WILL_FIRE_RL_rl_watch_thost = host_cs$RDY_g_watch_tohost_get ;
 
-  // rule RL_dm_tv_ifc_mkConnectionGetPut
-  assign CAN_FIRE_RL_dm_tv_ifc_mkConnectionGetPut =
-	     dm_tv_ifc_debug_module$RDY_hart0_get_other_req_get ;
-  assign WILL_FIRE_RL_dm_tv_ifc_mkConnectionGetPut =
-	     dm_tv_ifc_debug_module$RDY_hart0_get_other_req_get ;
-
-  // rule RL_rl_set_verbosity
-  assign CAN_FIRE_RL_rl_set_verbosity =
-	     host_cs$RDY_g_verbosity_get && rg_module_state == 2'd3 ;
-  assign WILL_FIRE_RL_rl_set_verbosity = CAN_FIRE_RL_rl_set_verbosity ;
-
-  // rule RL_rl_reinitialization_start
-  assign CAN_FIRE_RL_rl_reinitialization_start =
-	     mmio_fabric$RDY_reset && plic$RDY_server_reset_request_put &&
-	     near_mem_io$RDY_server_reset_request_put &&
-	     cpu$RDY_hart0_server_reset_request_put &&
-	     dm_tv_ifc_f_reset_reqs$EMPTY_N &&
-	     rg_module_state == 2'd3 ;
-  assign WILL_FIRE_RL_rl_reinitialization_start =
-	     CAN_FIRE_RL_rl_reinitialization_start ;
-
-  // rule RL_dm_tv_ifc_rl_dmi_req
-  assign CAN_FIRE_RL_dm_tv_ifc_rl_dmi_req =
-	     dm_tv_ifc_f_dmi_reqs$EMPTY_N &&
-	     (dm_tv_ifc_f_dmi_reqs$D_OUT[39] ?
-		dm_tv_ifc_debug_module$RDY_dmi_read_addr :
-		dm_tv_ifc_debug_module$RDY_dmi_write) ;
-  assign WILL_FIRE_RL_dm_tv_ifc_rl_dmi_req =
-	     CAN_FIRE_RL_dm_tv_ifc_rl_dmi_req ;
-
-  // rule RL_dm_tv_ifc_rl_dmi_rsp
-  assign CAN_FIRE_RL_dm_tv_ifc_rl_dmi_rsp =
-	     dm_tv_ifc_debug_module$RDY_dmi_read_data &&
-	     dm_tv_ifc_f_dmi_rsps$FULL_N ;
-  assign WILL_FIRE_RL_dm_tv_ifc_rl_dmi_rsp =
-	     CAN_FIRE_RL_dm_tv_ifc_rl_dmi_rsp &&
-	     !WILL_FIRE_RL_dm_tv_ifc_rl_dmi_req ;
-
-  // rule RL_dm_tv_ifc_rl_ndm_req
-  assign CAN_FIRE_RL_dm_tv_ifc_rl_ndm_req =
-	     dm_tv_ifc_debug_module$RDY_ndm_reset_client_request_get &&
-	     dm_tv_ifc_f_ndm_reqs$FULL_N ;
-  assign WILL_FIRE_RL_dm_tv_ifc_rl_ndm_req =
-	     CAN_FIRE_RL_dm_tv_ifc_rl_ndm_req ;
-
-  // rule RL_dm_tv_ifc_rl_ndm_rsp
-  assign CAN_FIRE_RL_dm_tv_ifc_rl_ndm_rsp =
-	     dm_tv_ifc_debug_module$RDY_ndm_reset_client_response_put &&
-	     dm_tv_ifc_f_ndm_rsps$EMPTY_N ;
-  assign WILL_FIRE_RL_dm_tv_ifc_rl_ndm_rsp =
-	     CAN_FIRE_RL_dm_tv_ifc_rl_ndm_rsp ;
-
-  // rule RL_dm_tv_ifc_empty0_rl_cj_to_s
-  assign CAN_FIRE_RL_dm_tv_ifc_empty0_rl_cj_to_s =
-	     host_cs$RDY_cl_cpu_reset_request_get &&
-	     dm_tv_ifc_f_reset_reqs$FULL_N &&
-	     dm_tv_ifc_empty0_f_client_id$FULL_N ;
-  assign WILL_FIRE_RL_dm_tv_ifc_empty0_rl_cj_to_s =
-	     CAN_FIRE_RL_dm_tv_ifc_empty0_rl_cj_to_s ;
-
-  // rule RL_dm_tv_ifc_empty0_rl_cj_to_s_1
-  assign CAN_FIRE_RL_dm_tv_ifc_empty0_rl_cj_to_s_1 =
-	     dm_tv_ifc_debug_module$RDY_hart0_reset_client_request_get &&
-	     dm_tv_ifc_f_reset_reqs$FULL_N &&
-	     dm_tv_ifc_empty0_f_client_id$FULL_N ;
-  assign WILL_FIRE_RL_dm_tv_ifc_empty0_rl_cj_to_s_1 =
-	     CAN_FIRE_RL_dm_tv_ifc_empty0_rl_cj_to_s_1 &&
-	     !WILL_FIRE_RL_dm_tv_ifc_empty0_rl_cj_to_s ;
-
-  // rule RL_dm_tv_ifc_empty0_rl_cj_from_s
-  assign CAN_FIRE_RL_dm_tv_ifc_empty0_rl_cj_from_s =
-	     host_cs$RDY_cl_cpu_reset_response_put &&
-	     dm_tv_ifc_empty0_f_client_id$EMPTY_N &&
-	     dm_tv_ifc_f_reset_rsps$EMPTY_N &&
-	     !dm_tv_ifc_empty0_f_client_id$D_OUT ;
-  assign WILL_FIRE_RL_dm_tv_ifc_empty0_rl_cj_from_s =
-	     CAN_FIRE_RL_dm_tv_ifc_empty0_rl_cj_from_s ;
-
-  // rule RL_dm_tv_ifc_empty0_rl_cj_from_s_1
-  assign CAN_FIRE_RL_dm_tv_ifc_empty0_rl_cj_from_s_1 =
-	     dm_tv_ifc_debug_module$RDY_hart0_reset_client_response_put &&
-	     dm_tv_ifc_empty0_f_client_id$EMPTY_N &&
-	     dm_tv_ifc_f_reset_rsps$EMPTY_N &&
-	     dm_tv_ifc_empty0_f_client_id$D_OUT ;
-  assign WILL_FIRE_RL_dm_tv_ifc_empty0_rl_cj_from_s_1 =
-	     CAN_FIRE_RL_dm_tv_ifc_empty0_rl_cj_from_s_1 ;
-
-  // rule RL_dm_tv_ifc_empty1_rl_cj_to_s
-  assign CAN_FIRE_RL_dm_tv_ifc_empty1_rl_cj_to_s =
-	     host_cs$RDY_cl_run_halt_request_get &&
-	     cpu$RDY_hart0_server_run_halt_request_put &&
-	     dm_tv_ifc_empty1_f_client_id$FULL_N ;
-  assign WILL_FIRE_RL_dm_tv_ifc_empty1_rl_cj_to_s =
-	     CAN_FIRE_RL_dm_tv_ifc_empty1_rl_cj_to_s ;
-
-  // rule RL_dm_tv_ifc_empty1_rl_cj_to_s_1
-  assign CAN_FIRE_RL_dm_tv_ifc_empty1_rl_cj_to_s_1 =
-	     dm_tv_ifc_debug_module$RDY_hart0_client_run_halt_request_get &&
-	     cpu$RDY_hart0_server_run_halt_request_put &&
-	     dm_tv_ifc_empty1_f_client_id$FULL_N ;
-  assign WILL_FIRE_RL_dm_tv_ifc_empty1_rl_cj_to_s_1 =
-	     CAN_FIRE_RL_dm_tv_ifc_empty1_rl_cj_to_s_1 &&
-	     !WILL_FIRE_RL_dm_tv_ifc_empty1_rl_cj_to_s ;
-
-  // rule RL_dm_tv_ifc_empty1_rl_cj_from_s
-  assign CAN_FIRE_RL_dm_tv_ifc_empty1_rl_cj_from_s =
-	     host_cs$RDY_cl_run_halt_response_put &&
-	     cpu$RDY_hart0_server_run_halt_response_get &&
-	     dm_tv_ifc_empty1_f_client_id$EMPTY_N &&
-	     !dm_tv_ifc_empty1_f_client_id$D_OUT ;
-  assign WILL_FIRE_RL_dm_tv_ifc_empty1_rl_cj_from_s =
-	     CAN_FIRE_RL_dm_tv_ifc_empty1_rl_cj_from_s ;
-
-  // rule RL_dm_tv_ifc_empty1_rl_cj_from_s_1
-  assign CAN_FIRE_RL_dm_tv_ifc_empty1_rl_cj_from_s_1 =
-	     dm_tv_ifc_debug_module$RDY_hart0_client_run_halt_response_put &&
-	     cpu$RDY_hart0_server_run_halt_response_get &&
-	     dm_tv_ifc_empty1_f_client_id$EMPTY_N &&
-	     dm_tv_ifc_empty1_f_client_id$D_OUT ;
-  assign WILL_FIRE_RL_dm_tv_ifc_empty1_rl_cj_from_s_1 =
-	     CAN_FIRE_RL_dm_tv_ifc_empty1_rl_cj_from_s_1 ;
-
-  // rule RL_dm_tv_ifc_empty2_rl_cj_to_s
-  assign CAN_FIRE_RL_dm_tv_ifc_empty2_rl_cj_to_s =
-	     host_cs$RDY_cl_csr_rw_request_get &&
-	     cpu$RDY_hart0_csr_mem_server_request_put &&
-	     dm_tv_ifc_empty2_f_client_id$FULL_N ;
-  assign WILL_FIRE_RL_dm_tv_ifc_empty2_rl_cj_to_s =
-	     CAN_FIRE_RL_dm_tv_ifc_empty2_rl_cj_to_s ;
-
-  // rule RL_dm_tv_ifc_empty2_rl_cj_to_s_1
-  assign CAN_FIRE_RL_dm_tv_ifc_empty2_rl_cj_to_s_1 =
-	     dm_tv_ifc_debug_module$RDY_hart0_csr_mem_client_request_get &&
-	     cpu$RDY_hart0_csr_mem_server_request_put &&
-	     dm_tv_ifc_empty2_f_client_id$FULL_N ;
-  assign WILL_FIRE_RL_dm_tv_ifc_empty2_rl_cj_to_s_1 =
-	     CAN_FIRE_RL_dm_tv_ifc_empty2_rl_cj_to_s_1 &&
-	     !WILL_FIRE_RL_dm_tv_ifc_empty2_rl_cj_to_s ;
-
-  // rule RL_dm_tv_ifc_empty2_rl_cj_from_s
-  assign CAN_FIRE_RL_dm_tv_ifc_empty2_rl_cj_from_s =
-	     host_cs$RDY_cl_csr_rw_response_put &&
-	     cpu$RDY_hart0_csr_mem_server_response_get &&
-	     dm_tv_ifc_empty2_f_client_id$EMPTY_N &&
-	     !dm_tv_ifc_empty2_f_client_id$D_OUT ;
-  assign WILL_FIRE_RL_dm_tv_ifc_empty2_rl_cj_from_s =
-	     CAN_FIRE_RL_dm_tv_ifc_empty2_rl_cj_from_s ;
-
-  // rule RL_dm_tv_ifc_empty2_rl_cj_from_s_1
-  assign CAN_FIRE_RL_dm_tv_ifc_empty2_rl_cj_from_s_1 =
-	     dm_tv_ifc_debug_module$RDY_hart0_csr_mem_client_response_put &&
-	     cpu$RDY_hart0_csr_mem_server_response_get &&
-	     dm_tv_ifc_empty2_f_client_id$EMPTY_N &&
-	     dm_tv_ifc_empty2_f_client_id$D_OUT ;
-  assign WILL_FIRE_RL_dm_tv_ifc_empty2_rl_cj_from_s_1 =
-	     CAN_FIRE_RL_dm_tv_ifc_empty2_rl_cj_from_s_1 ;
-
-  // rule RL_dm_tv_ifc_1_ClientServerRequest
-  assign CAN_FIRE_RL_dm_tv_ifc_1_ClientServerRequest =
-	     dm_tv_ifc_debug_module$RDY_hart0_fpr_mem_client_request_get &&
-	     cpu$RDY_hart0_fpr_mem_server_request_put ;
-  assign WILL_FIRE_RL_dm_tv_ifc_1_ClientServerRequest =
-	     CAN_FIRE_RL_dm_tv_ifc_1_ClientServerRequest ;
-
-  // rule RL_dm_tv_ifc_1_ClientServerResponse
-  assign CAN_FIRE_RL_dm_tv_ifc_1_ClientServerResponse =
-	     dm_tv_ifc_debug_module$RDY_hart0_fpr_mem_client_response_put &&
-	     cpu$RDY_hart0_fpr_mem_server_response_get ;
-  assign WILL_FIRE_RL_dm_tv_ifc_1_ClientServerResponse =
-	     CAN_FIRE_RL_dm_tv_ifc_1_ClientServerResponse ;
-
-  // rule RL_dm_tv_ifc_2_ClientServerRequest
-  assign CAN_FIRE_RL_dm_tv_ifc_2_ClientServerRequest =
-	     dm_tv_ifc_debug_module$RDY_hart0_gpr_mem_client_request_get &&
-	     cpu$RDY_hart0_gpr_mem_server_request_put ;
-  assign WILL_FIRE_RL_dm_tv_ifc_2_ClientServerRequest =
-	     CAN_FIRE_RL_dm_tv_ifc_2_ClientServerRequest ;
-
-  // rule RL_dm_tv_ifc_2_ClientServerResponse
-  assign CAN_FIRE_RL_dm_tv_ifc_2_ClientServerResponse =
-	     dm_tv_ifc_debug_module$RDY_hart0_gpr_mem_client_response_put &&
-	     cpu$RDY_hart0_gpr_mem_server_response_get ;
-  assign WILL_FIRE_RL_dm_tv_ifc_2_ClientServerResponse =
-	     CAN_FIRE_RL_dm_tv_ifc_2_ClientServerResponse ;
-
-  // rule RL_dm_tv_ifc_3_rl_wr_addr_channel
-  assign CAN_FIRE_RL_dm_tv_ifc_3_rl_wr_addr_channel = 1'd1 ;
-  assign WILL_FIRE_RL_dm_tv_ifc_3_rl_wr_addr_channel = 1'd1 ;
-
-  // rule RL_dm_tv_ifc_3_rl_wr_data_channel
-  assign CAN_FIRE_RL_dm_tv_ifc_3_rl_wr_data_channel = 1'd1 ;
-  assign WILL_FIRE_RL_dm_tv_ifc_3_rl_wr_data_channel = 1'd1 ;
-
-  // rule RL_dm_tv_ifc_3_rl_wr_response_channel
-  assign CAN_FIRE_RL_dm_tv_ifc_3_rl_wr_response_channel = 1'd1 ;
-  assign WILL_FIRE_RL_dm_tv_ifc_3_rl_wr_response_channel = 1'd1 ;
-
-  // rule RL_dm_tv_ifc_3_rl_rd_addr_channel
-  assign CAN_FIRE_RL_dm_tv_ifc_3_rl_rd_addr_channel = 1'd1 ;
-  assign WILL_FIRE_RL_dm_tv_ifc_3_rl_rd_addr_channel = 1'd1 ;
-
-  // rule RL_dm_tv_ifc_3_rl_rd_data_channel
-  assign CAN_FIRE_RL_dm_tv_ifc_3_rl_rd_data_channel = 1'd1 ;
-  assign WILL_FIRE_RL_dm_tv_ifc_3_rl_rd_data_channel = 1'd1 ;
-
-  // rule RL_dm_tv_ifc_4_rl_wr_addr_channel
-  assign CAN_FIRE_RL_dm_tv_ifc_4_rl_wr_addr_channel = 1'd1 ;
-  assign WILL_FIRE_RL_dm_tv_ifc_4_rl_wr_addr_channel = 1'd1 ;
-
-  // rule RL_dm_tv_ifc_4_rl_wr_data_channel
-  assign CAN_FIRE_RL_dm_tv_ifc_4_rl_wr_data_channel = 1'd1 ;
-  assign WILL_FIRE_RL_dm_tv_ifc_4_rl_wr_data_channel = 1'd1 ;
-
-  // rule RL_dm_tv_ifc_4_rl_wr_response_channel
-  assign CAN_FIRE_RL_dm_tv_ifc_4_rl_wr_response_channel = 1'd1 ;
-  assign WILL_FIRE_RL_dm_tv_ifc_4_rl_wr_response_channel = 1'd1 ;
-
-  // rule RL_dm_tv_ifc_4_rl_rd_addr_channel
-  assign CAN_FIRE_RL_dm_tv_ifc_4_rl_rd_addr_channel = 1'd1 ;
-  assign WILL_FIRE_RL_dm_tv_ifc_4_rl_rd_addr_channel = 1'd1 ;
-
-  // rule RL_dm_tv_ifc_4_rl_rd_data_channel
-  assign CAN_FIRE_RL_dm_tv_ifc_4_rl_rd_data_channel = 1'd1 ;
-  assign WILL_FIRE_RL_dm_tv_ifc_4_rl_rd_data_channel = 1'd1 ;
-
-  // inputs to muxes for submodule ports
-  assign MUX_rg_module_state$write_1__SEL_3 =
-	     WILL_FIRE_RL_rl_reinitialization_finish ||
-	     WILL_FIRE_RL_rl_first_init_finish ;
-
-  // register rg_ext_intrs
-  assign rg_ext_intrs$D_IN = { 11'd0, ext_interrupts_x } ;
-  assign rg_ext_intrs$EN = EN_ext_interrupts ;
-
-  // register rg_m_external_interrupt
-  assign rg_m_external_interrupt$D_IN = plic$v_targets_0_m_eip ;
-  assign rg_m_external_interrupt$EN =
-	     CAN_FIRE_RL_rl_relay_external_interrupt ;
-
-  // register rg_module_state
-  always@(WILL_FIRE_RL_rl_first_init_start or
-	  WILL_FIRE_RL_rl_reinitialization_start or
-	  MUX_rg_module_state$write_1__SEL_3)
-  begin
-    case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_rl_first_init_start: rg_module_state$D_IN = 2'd1;
-      WILL_FIRE_RL_rl_reinitialization_start: rg_module_state$D_IN = 2'd2;
-      MUX_rg_module_state$write_1__SEL_3: rg_module_state$D_IN = 2'd3;
-      default: rg_module_state$D_IN = 2'b10 /* unspecified value */ ;
-    endcase
-  end
-  assign rg_module_state$EN =
-	     WILL_FIRE_RL_rl_first_init_start ||
-	     WILL_FIRE_RL_rl_reinitialization_start ||
-	     WILL_FIRE_RL_rl_reinitialization_finish ||
-	     WILL_FIRE_RL_rl_first_init_finish ;
-
-  // register rg_nmi
-  assign rg_nmi$D_IN = f_nmi$D_OUT ;
-  assign rg_nmi$EN = f_nmi$EMPTY_N && rg_module_state == 2'd3 ;
-
-  // register rg_s_external_interrupt
-  assign rg_s_external_interrupt$D_IN = plic$v_targets_1_m_eip ;
-  assign rg_s_external_interrupt$EN =
-	     CAN_FIRE_RL_rl_relay_external_interrupt ;
-
-  // register rg_sw_interrupt
-  assign rg_sw_interrupt$D_IN = near_mem_io$get_sw_interrupt_req_get ;
-  assign rg_sw_interrupt$EN = CAN_FIRE_RL_rl_relay_sw_interrupt ;
-
-  // register rg_timer_interrupt
-  assign rg_timer_interrupt$D_IN = near_mem_io$get_timer_interrupt_req_get ;
-  assign rg_timer_interrupt$EN = CAN_FIRE_RL_rl_relay_timer_interrupt ;
-
-  // submodule boot_rom
-  assign boot_rom$set_addr_map_addr_base = 64'd65536 ;
-  assign boot_rom$set_addr_map_addr_lim = 64'd131072 ;
-  assign boot_rom$slave_araddr = mmio_fabric$v_to_slaves_3_araddr ;
-  assign boot_rom$slave_arburst = mmio_fabric$v_to_slaves_3_arburst ;
-  assign boot_rom$slave_arcache = mmio_fabric$v_to_slaves_3_arcache ;
-  assign boot_rom$slave_arid = mmio_fabric$v_to_slaves_3_arid ;
-  assign boot_rom$slave_arlen = mmio_fabric$v_to_slaves_3_arlen ;
-  assign boot_rom$slave_arlock = mmio_fabric$v_to_slaves_3_arlock ;
-  assign boot_rom$slave_arprot = mmio_fabric$v_to_slaves_3_arprot ;
-  assign boot_rom$slave_arqos = mmio_fabric$v_to_slaves_3_arqos ;
-  assign boot_rom$slave_arregion = mmio_fabric$v_to_slaves_3_arregion ;
-  assign boot_rom$slave_arsize = mmio_fabric$v_to_slaves_3_arsize ;
-  assign boot_rom$slave_arvalid = mmio_fabric$v_to_slaves_3_arvalid ;
-  assign boot_rom$slave_awaddr = mmio_fabric$v_to_slaves_3_awaddr ;
-  assign boot_rom$slave_awburst = mmio_fabric$v_to_slaves_3_awburst ;
-  assign boot_rom$slave_awcache = mmio_fabric$v_to_slaves_3_awcache ;
-  assign boot_rom$slave_awid = mmio_fabric$v_to_slaves_3_awid ;
-  assign boot_rom$slave_awlen = mmio_fabric$v_to_slaves_3_awlen ;
-  assign boot_rom$slave_awlock = mmio_fabric$v_to_slaves_3_awlock ;
-  assign boot_rom$slave_awprot = mmio_fabric$v_to_slaves_3_awprot ;
-  assign boot_rom$slave_awqos = mmio_fabric$v_to_slaves_3_awqos ;
-  assign boot_rom$slave_awregion = mmio_fabric$v_to_slaves_3_awregion ;
-  assign boot_rom$slave_awsize = mmio_fabric$v_to_slaves_3_awsize ;
-  assign boot_rom$slave_awvalid = mmio_fabric$v_to_slaves_3_awvalid ;
-  assign boot_rom$slave_bready = mmio_fabric$v_to_slaves_3_bready ;
-  assign boot_rom$slave_rready = mmio_fabric$v_to_slaves_3_rready ;
-  assign boot_rom$slave_wdata = mmio_fabric$v_to_slaves_3_wdata ;
-  assign boot_rom$slave_wlast = mmio_fabric$v_to_slaves_3_wlast ;
-  assign boot_rom$slave_wstrb = mmio_fabric$v_to_slaves_3_wstrb ;
-  assign boot_rom$slave_wvalid = mmio_fabric$v_to_slaves_3_wvalid ;
-  assign boot_rom$EN_set_addr_map = MUX_rg_module_state$write_1__SEL_3 ;
-
-  // submodule cpu
-  assign cpu$dma_server_araddr = dma_server_axi4_deburster$to_slave_araddr ;
-  assign cpu$dma_server_arburst = dma_server_axi4_deburster$to_slave_arburst ;
-  assign cpu$dma_server_arcache = dma_server_axi4_deburster$to_slave_arcache ;
-  assign cpu$dma_server_arid = dma_server_axi4_deburster$to_slave_arid ;
-  assign cpu$dma_server_arlen = dma_server_axi4_deburster$to_slave_arlen ;
-  assign cpu$dma_server_arlock = dma_server_axi4_deburster$to_slave_arlock ;
-  assign cpu$dma_server_arprot = dma_server_axi4_deburster$to_slave_arprot ;
-  assign cpu$dma_server_arqos = dma_server_axi4_deburster$to_slave_arqos ;
-  assign cpu$dma_server_arregion =
-	     dma_server_axi4_deburster$to_slave_arregion ;
-  assign cpu$dma_server_arsize = dma_server_axi4_deburster$to_slave_arsize ;
-  assign cpu$dma_server_arvalid = dma_server_axi4_deburster$to_slave_arvalid ;
-  assign cpu$dma_server_awaddr = dma_server_axi4_deburster$to_slave_awaddr ;
-  assign cpu$dma_server_awburst = dma_server_axi4_deburster$to_slave_awburst ;
-  assign cpu$dma_server_awcache = dma_server_axi4_deburster$to_slave_awcache ;
-  assign cpu$dma_server_awid = dma_server_axi4_deburster$to_slave_awid ;
-  assign cpu$dma_server_awlen = dma_server_axi4_deburster$to_slave_awlen ;
-  assign cpu$dma_server_awlock = dma_server_axi4_deburster$to_slave_awlock ;
-  assign cpu$dma_server_awprot = dma_server_axi4_deburster$to_slave_awprot ;
-  assign cpu$dma_server_awqos = dma_server_axi4_deburster$to_slave_awqos ;
-  assign cpu$dma_server_awregion =
-	     dma_server_axi4_deburster$to_slave_awregion ;
-  assign cpu$dma_server_awsize = dma_server_axi4_deburster$to_slave_awsize ;
-  assign cpu$dma_server_awvalid = dma_server_axi4_deburster$to_slave_awvalid ;
-  assign cpu$dma_server_bready = dma_server_axi4_deburster$to_slave_bready ;
-  assign cpu$dma_server_rready = dma_server_axi4_deburster$to_slave_rready ;
-  assign cpu$dma_server_wdata = dma_server_axi4_deburster$to_slave_wdata ;
-  assign cpu$dma_server_wlast = dma_server_axi4_deburster$to_slave_wlast ;
-  assign cpu$dma_server_wstrb = dma_server_axi4_deburster$to_slave_wstrb ;
-  assign cpu$dma_server_wvalid = dma_server_axi4_deburster$to_slave_wvalid ;
-  assign cpu$hart0_csr_mem_server_request_put =
-	     WILL_FIRE_RL_dm_tv_ifc_empty2_rl_cj_to_s ?
-	       host_cs$cl_csr_rw_request_get :
-	       dm_tv_ifc_debug_module$hart0_csr_mem_client_request_get ;
-  assign cpu$hart0_fpr_mem_server_request_put =
-	     dm_tv_ifc_debug_module$hart0_fpr_mem_client_request_get ;
-  assign cpu$hart0_gpr_mem_server_request_put =
-	     dm_tv_ifc_debug_module$hart0_gpr_mem_client_request_get ;
-  assign cpu$hart0_put_other_req_put =
-	     dm_tv_ifc_debug_module$hart0_get_other_req_get ;
-  assign cpu$hart0_server_reset_request_put =
-	     !WILL_FIRE_RL_rl_reinitialization_start ||
-	     dm_tv_ifc_f_reset_reqs$D_OUT ;
-  assign cpu$hart0_server_run_halt_request_put =
-	     WILL_FIRE_RL_dm_tv_ifc_empty1_rl_cj_to_s ?
-	       host_cs$cl_run_halt_request_get :
-	       dm_tv_ifc_debug_module$hart0_client_run_halt_request_get ;
-  assign cpu$imem_master_arready = mmio_fabric$v_from_masters_0_arready ;
-  assign cpu$imem_master_awready = mmio_fabric$v_from_masters_0_awready ;
-  assign cpu$imem_master_bid = mmio_fabric$v_from_masters_0_bid ;
-  assign cpu$imem_master_bresp = mmio_fabric$v_from_masters_0_bresp ;
-  assign cpu$imem_master_bvalid = mmio_fabric$v_from_masters_0_bvalid ;
-  assign cpu$imem_master_rdata = mmio_fabric$v_from_masters_0_rdata ;
-  assign cpu$imem_master_rid = mmio_fabric$v_from_masters_0_rid ;
-  assign cpu$imem_master_rlast = mmio_fabric$v_from_masters_0_rlast ;
-  assign cpu$imem_master_rresp = mmio_fabric$v_from_masters_0_rresp ;
-  assign cpu$imem_master_rvalid = mmio_fabric$v_from_masters_0_rvalid ;
-  assign cpu$imem_master_wready = mmio_fabric$v_from_masters_0_wready ;
-  assign cpu$m_external_interrupt_req_set_not_clear =
-	     rg_m_external_interrupt ;
-  assign cpu$ma_set_csr_time_t = near_mem_io$mv_read_mtime ;
-  assign cpu$mem_master_arready = mem_M_arready ;
-  assign cpu$mem_master_awready = mem_M_awready ;
-  assign cpu$mem_master_bid = mem_M_bid ;
-  assign cpu$mem_master_bresp = mem_M_bresp ;
-  assign cpu$mem_master_bvalid = mem_M_bvalid ;
-  assign cpu$mem_master_rdata = mem_M_rdata ;
-  assign cpu$mem_master_rid = mem_M_rid ;
-  assign cpu$mem_master_rlast = mem_M_rlast ;
-  assign cpu$mem_master_rresp = mem_M_rresp ;
-  assign cpu$mem_master_rvalid = mem_M_rvalid ;
-  assign cpu$mem_master_wready = mem_M_wready ;
-  assign cpu$nmi_req_set_not_clear = rg_nmi ;
-  assign cpu$s_external_interrupt_req_set_not_clear =
-	     rg_s_external_interrupt ;
-  assign cpu$set_verbosity_logdelay = host_cs$g_verbosity_get[63:0] ;
-  assign cpu$set_verbosity_verbosity = host_cs$g_verbosity_get[67:64] ;
-  assign cpu$set_watch_tohost_tohost_addr = host_cs$g_watch_tohost_get[63:0] ;
-  assign cpu$set_watch_tohost_watch_tohost = host_cs$g_watch_tohost_get[64] ;
-  assign cpu$software_interrupt_req_set_not_clear = rg_sw_interrupt ;
-  assign cpu$timer_interrupt_req_set_not_clear = rg_timer_interrupt ;
-  assign cpu$EN_hart0_server_reset_request_put =
-	     WILL_FIRE_RL_rl_reinitialization_start ||
-	     WILL_FIRE_RL_rl_first_init_start ;
-  assign cpu$EN_hart0_server_reset_response_get =
-	     MUX_rg_module_state$write_1__SEL_3 ;
-  assign cpu$EN_hart0_server_run_halt_request_put =
-	     WILL_FIRE_RL_dm_tv_ifc_empty1_rl_cj_to_s ||
-	     WILL_FIRE_RL_dm_tv_ifc_empty1_rl_cj_to_s_1 ;
-  assign cpu$EN_hart0_server_run_halt_response_get =
-	     WILL_FIRE_RL_dm_tv_ifc_empty1_rl_cj_from_s_1 ||
-	     WILL_FIRE_RL_dm_tv_ifc_empty1_rl_cj_from_s ;
-  assign cpu$EN_hart0_put_other_req_put =
-	     dm_tv_ifc_debug_module$RDY_hart0_get_other_req_get ;
-  assign cpu$EN_hart0_gpr_mem_server_request_put =
-	     CAN_FIRE_RL_dm_tv_ifc_2_ClientServerRequest ;
-  assign cpu$EN_hart0_gpr_mem_server_response_get =
-	     CAN_FIRE_RL_dm_tv_ifc_2_ClientServerResponse ;
-  assign cpu$EN_hart0_fpr_mem_server_request_put =
-	     CAN_FIRE_RL_dm_tv_ifc_1_ClientServerRequest ;
-  assign cpu$EN_hart0_fpr_mem_server_response_get =
-	     CAN_FIRE_RL_dm_tv_ifc_1_ClientServerResponse ;
-  assign cpu$EN_hart0_csr_mem_server_request_put =
-	     WILL_FIRE_RL_dm_tv_ifc_empty2_rl_cj_to_s ||
-	     WILL_FIRE_RL_dm_tv_ifc_empty2_rl_cj_to_s_1 ;
-  assign cpu$EN_hart0_csr_mem_server_response_get =
-	     WILL_FIRE_RL_dm_tv_ifc_empty2_rl_cj_from_s_1 ||
-	     WILL_FIRE_RL_dm_tv_ifc_empty2_rl_cj_from_s ;
-  assign cpu$EN_set_verbosity = CAN_FIRE_RL_rl_set_verbosity ;
-  assign cpu$EN_set_watch_tohost = CAN_FIRE_RL_rl_watch_thost ;
-  assign cpu$EN_ma_ddr4_ready = MUX_rg_module_state$write_1__SEL_3 ;
-
-  // submodule dm_tv_ifc_debug_module
-  assign dm_tv_ifc_debug_module$dmi_read_addr_dm_addr =
-	     dm_tv_ifc_f_dmi_reqs$D_OUT[38:32] ;
-  assign dm_tv_ifc_debug_module$dmi_write_dm_addr =
-	     dm_tv_ifc_f_dmi_reqs$D_OUT[38:32] ;
-  assign dm_tv_ifc_debug_module$dmi_write_dm_word =
-	     dm_tv_ifc_f_dmi_reqs$D_OUT[31:0] ;
-  assign dm_tv_ifc_debug_module$hart0_client_run_halt_response_put =
-	     cpu$hart0_server_run_halt_response_get ;
-  assign dm_tv_ifc_debug_module$hart0_csr_mem_client_response_put =
-	     cpu$hart0_csr_mem_server_response_get ;
-  assign dm_tv_ifc_debug_module$hart0_fpr_mem_client_response_put =
-	     cpu$hart0_fpr_mem_server_response_get ;
-  assign dm_tv_ifc_debug_module$hart0_gpr_mem_client_response_put =
-	     cpu$hart0_gpr_mem_server_response_get ;
-  assign dm_tv_ifc_debug_module$hart0_reset_client_response_put =
-	     dm_tv_ifc_f_reset_rsps$D_OUT ;
-  assign dm_tv_ifc_debug_module$master_arready =
-	     dm_tv_ifc_dma_server_mux$initiator_B_server_arready ;
-  assign dm_tv_ifc_debug_module$master_awready =
-	     dm_tv_ifc_dma_server_mux$initiator_B_server_awready ;
-  assign dm_tv_ifc_debug_module$master_bid =
-	     dm_tv_ifc_dma_server_mux$initiator_B_server_bid ;
-  assign dm_tv_ifc_debug_module$master_bresp =
-	     dm_tv_ifc_dma_server_mux$initiator_B_server_bresp ;
-  assign dm_tv_ifc_debug_module$master_bvalid =
-	     dm_tv_ifc_dma_server_mux$initiator_B_server_bvalid ;
-  assign dm_tv_ifc_debug_module$master_rdata =
-	     dm_tv_ifc_dma_server_mux$initiator_B_server_rdata ;
-  assign dm_tv_ifc_debug_module$master_rid =
-	     dm_tv_ifc_dma_server_mux$initiator_B_server_rid ;
-  assign dm_tv_ifc_debug_module$master_rlast =
-	     dm_tv_ifc_dma_server_mux$initiator_B_server_rlast ;
-  assign dm_tv_ifc_debug_module$master_rresp =
-	     dm_tv_ifc_dma_server_mux$initiator_B_server_rresp ;
-  assign dm_tv_ifc_debug_module$master_rvalid =
-	     dm_tv_ifc_dma_server_mux$initiator_B_server_rvalid ;
-  assign dm_tv_ifc_debug_module$master_wready =
-	     dm_tv_ifc_dma_server_mux$initiator_B_server_wready ;
-  assign dm_tv_ifc_debug_module$ndm_reset_client_response_put = 1'd1 ;
-  assign dm_tv_ifc_debug_module$EN_dmi_read_addr =
-	     WILL_FIRE_RL_dm_tv_ifc_rl_dmi_req &&
-	     dm_tv_ifc_f_dmi_reqs$D_OUT[39] ;
-  assign dm_tv_ifc_debug_module$EN_dmi_read_data =
-	     WILL_FIRE_RL_dm_tv_ifc_rl_dmi_rsp ;
-  assign dm_tv_ifc_debug_module$EN_dmi_write =
-	     WILL_FIRE_RL_dm_tv_ifc_rl_dmi_req &&
-	     !dm_tv_ifc_f_dmi_reqs$D_OUT[39] ;
-  assign dm_tv_ifc_debug_module$EN_hart0_reset_client_request_get =
-	     WILL_FIRE_RL_dm_tv_ifc_empty0_rl_cj_to_s_1 ;
-  assign dm_tv_ifc_debug_module$EN_hart0_reset_client_response_put =
-	     CAN_FIRE_RL_dm_tv_ifc_empty0_rl_cj_from_s_1 ;
-  assign dm_tv_ifc_debug_module$EN_hart0_client_run_halt_request_get =
-	     WILL_FIRE_RL_dm_tv_ifc_empty1_rl_cj_to_s_1 ;
-  assign dm_tv_ifc_debug_module$EN_hart0_client_run_halt_response_put =
-	     CAN_FIRE_RL_dm_tv_ifc_empty1_rl_cj_from_s_1 ;
-  assign dm_tv_ifc_debug_module$EN_hart0_get_other_req_get =
-	     dm_tv_ifc_debug_module$RDY_hart0_get_other_req_get ;
-  assign dm_tv_ifc_debug_module$EN_hart0_gpr_mem_client_request_get =
-	     CAN_FIRE_RL_dm_tv_ifc_2_ClientServerRequest ;
-  assign dm_tv_ifc_debug_module$EN_hart0_gpr_mem_client_response_put =
-	     CAN_FIRE_RL_dm_tv_ifc_2_ClientServerResponse ;
-  assign dm_tv_ifc_debug_module$EN_hart0_fpr_mem_client_request_get =
-	     CAN_FIRE_RL_dm_tv_ifc_1_ClientServerRequest ;
-  assign dm_tv_ifc_debug_module$EN_hart0_fpr_mem_client_response_put =
-	     CAN_FIRE_RL_dm_tv_ifc_1_ClientServerResponse ;
-  assign dm_tv_ifc_debug_module$EN_hart0_csr_mem_client_request_get =
-	     WILL_FIRE_RL_dm_tv_ifc_empty2_rl_cj_to_s_1 ;
-  assign dm_tv_ifc_debug_module$EN_hart0_csr_mem_client_response_put =
-	     CAN_FIRE_RL_dm_tv_ifc_empty2_rl_cj_from_s_1 ;
-  assign dm_tv_ifc_debug_module$EN_ndm_reset_client_request_get =
-	     CAN_FIRE_RL_dm_tv_ifc_rl_ndm_req ;
-  assign dm_tv_ifc_debug_module$EN_ndm_reset_client_response_put =
-	     CAN_FIRE_RL_dm_tv_ifc_rl_ndm_rsp ;
-
-  // submodule dm_tv_ifc_dma_server_mux
-  assign dm_tv_ifc_dma_server_mux$initiator_A_server_araddr = dma_S_araddr ;
-  assign dm_tv_ifc_dma_server_mux$initiator_A_server_arburst = dma_S_arburst ;
-  assign dm_tv_ifc_dma_server_mux$initiator_A_server_arcache = dma_S_arcache ;
-  assign dm_tv_ifc_dma_server_mux$initiator_A_server_arid = dma_S_arid ;
-  assign dm_tv_ifc_dma_server_mux$initiator_A_server_arlen = dma_S_arlen ;
-  assign dm_tv_ifc_dma_server_mux$initiator_A_server_arlock = dma_S_arlock ;
-  assign dm_tv_ifc_dma_server_mux$initiator_A_server_arprot = dma_S_arprot ;
-  assign dm_tv_ifc_dma_server_mux$initiator_A_server_arqos = dma_S_arqos ;
-  assign dm_tv_ifc_dma_server_mux$initiator_A_server_arregion =
-	     dma_S_arregion ;
-  assign dm_tv_ifc_dma_server_mux$initiator_A_server_arsize = dma_S_arsize ;
-  assign dm_tv_ifc_dma_server_mux$initiator_A_server_arvalid = dma_S_arvalid ;
-  assign dm_tv_ifc_dma_server_mux$initiator_A_server_awaddr = dma_S_awaddr ;
-  assign dm_tv_ifc_dma_server_mux$initiator_A_server_awburst = dma_S_awburst ;
-  assign dm_tv_ifc_dma_server_mux$initiator_A_server_awcache = dma_S_awcache ;
-  assign dm_tv_ifc_dma_server_mux$initiator_A_server_awid = dma_S_awid ;
-  assign dm_tv_ifc_dma_server_mux$initiator_A_server_awlen = dma_S_awlen ;
-  assign dm_tv_ifc_dma_server_mux$initiator_A_server_awlock = dma_S_awlock ;
-  assign dm_tv_ifc_dma_server_mux$initiator_A_server_awprot = dma_S_awprot ;
-  assign dm_tv_ifc_dma_server_mux$initiator_A_server_awqos = dma_S_awqos ;
-  assign dm_tv_ifc_dma_server_mux$initiator_A_server_awregion =
-	     dma_S_awregion ;
-  assign dm_tv_ifc_dma_server_mux$initiator_A_server_awsize = dma_S_awsize ;
-  assign dm_tv_ifc_dma_server_mux$initiator_A_server_awvalid = dma_S_awvalid ;
-  assign dm_tv_ifc_dma_server_mux$initiator_A_server_bready = dma_S_bready ;
-  assign dm_tv_ifc_dma_server_mux$initiator_A_server_rready = dma_S_rready ;
-  assign dm_tv_ifc_dma_server_mux$initiator_A_server_wdata = dma_S_wdata ;
-  assign dm_tv_ifc_dma_server_mux$initiator_A_server_wlast = dma_S_wlast ;
-  assign dm_tv_ifc_dma_server_mux$initiator_A_server_wstrb = dma_S_wstrb ;
-  assign dm_tv_ifc_dma_server_mux$initiator_A_server_wvalid = dma_S_wvalid ;
-  assign dm_tv_ifc_dma_server_mux$initiator_B_server_araddr =
-	     dm_tv_ifc_debug_module$master_araddr ;
-  assign dm_tv_ifc_dma_server_mux$initiator_B_server_arburst =
-	     dm_tv_ifc_debug_module$master_arburst ;
-  assign dm_tv_ifc_dma_server_mux$initiator_B_server_arcache =
-	     dm_tv_ifc_debug_module$master_arcache ;
-  assign dm_tv_ifc_dma_server_mux$initiator_B_server_arid =
-	     dm_tv_ifc_debug_module$master_arid ;
-  assign dm_tv_ifc_dma_server_mux$initiator_B_server_arlen =
-	     dm_tv_ifc_debug_module$master_arlen ;
-  assign dm_tv_ifc_dma_server_mux$initiator_B_server_arlock =
-	     dm_tv_ifc_debug_module$master_arlock ;
-  assign dm_tv_ifc_dma_server_mux$initiator_B_server_arprot =
-	     dm_tv_ifc_debug_module$master_arprot ;
-  assign dm_tv_ifc_dma_server_mux$initiator_B_server_arqos =
-	     dm_tv_ifc_debug_module$master_arqos ;
-  assign dm_tv_ifc_dma_server_mux$initiator_B_server_arregion =
-	     dm_tv_ifc_debug_module$master_arregion ;
-  assign dm_tv_ifc_dma_server_mux$initiator_B_server_arsize =
-	     dm_tv_ifc_debug_module$master_arsize ;
-  assign dm_tv_ifc_dma_server_mux$initiator_B_server_arvalid =
-	     dm_tv_ifc_debug_module$master_arvalid ;
-  assign dm_tv_ifc_dma_server_mux$initiator_B_server_awaddr =
-	     dm_tv_ifc_debug_module$master_awaddr ;
-  assign dm_tv_ifc_dma_server_mux$initiator_B_server_awburst =
-	     dm_tv_ifc_debug_module$master_awburst ;
-  assign dm_tv_ifc_dma_server_mux$initiator_B_server_awcache =
-	     dm_tv_ifc_debug_module$master_awcache ;
-  assign dm_tv_ifc_dma_server_mux$initiator_B_server_awid =
-	     dm_tv_ifc_debug_module$master_awid ;
-  assign dm_tv_ifc_dma_server_mux$initiator_B_server_awlen =
-	     dm_tv_ifc_debug_module$master_awlen ;
-  assign dm_tv_ifc_dma_server_mux$initiator_B_server_awlock =
-	     dm_tv_ifc_debug_module$master_awlock ;
-  assign dm_tv_ifc_dma_server_mux$initiator_B_server_awprot =
-	     dm_tv_ifc_debug_module$master_awprot ;
-  assign dm_tv_ifc_dma_server_mux$initiator_B_server_awqos =
-	     dm_tv_ifc_debug_module$master_awqos ;
-  assign dm_tv_ifc_dma_server_mux$initiator_B_server_awregion =
-	     dm_tv_ifc_debug_module$master_awregion ;
-  assign dm_tv_ifc_dma_server_mux$initiator_B_server_awsize =
-	     dm_tv_ifc_debug_module$master_awsize ;
-  assign dm_tv_ifc_dma_server_mux$initiator_B_server_awvalid =
-	     dm_tv_ifc_debug_module$master_awvalid ;
-  assign dm_tv_ifc_dma_server_mux$initiator_B_server_bready =
-	     dm_tv_ifc_debug_module$master_bready ;
-  assign dm_tv_ifc_dma_server_mux$initiator_B_server_rready =
-	     dm_tv_ifc_debug_module$master_rready ;
-  assign dm_tv_ifc_dma_server_mux$initiator_B_server_wdata =
-	     dm_tv_ifc_debug_module$master_wdata ;
-  assign dm_tv_ifc_dma_server_mux$initiator_B_server_wlast =
-	     dm_tv_ifc_debug_module$master_wlast ;
-  assign dm_tv_ifc_dma_server_mux$initiator_B_server_wstrb =
-	     dm_tv_ifc_debug_module$master_wstrb ;
-  assign dm_tv_ifc_dma_server_mux$initiator_B_server_wvalid =
-	     dm_tv_ifc_debug_module$master_wvalid ;
-  assign dm_tv_ifc_dma_server_mux$target_client_arready =
-	     dma_server_axi4_deburster$from_master_arready ;
-  assign dm_tv_ifc_dma_server_mux$target_client_awready =
-	     dma_server_axi4_deburster$from_master_awready ;
-  assign dm_tv_ifc_dma_server_mux$target_client_bid =
-	     dma_server_axi4_deburster$from_master_bid ;
-  assign dm_tv_ifc_dma_server_mux$target_client_bresp =
-	     dma_server_axi4_deburster$from_master_bresp ;
-  assign dm_tv_ifc_dma_server_mux$target_client_bvalid =
-	     dma_server_axi4_deburster$from_master_bvalid ;
-  assign dm_tv_ifc_dma_server_mux$target_client_rdata =
-	     dma_server_axi4_deburster$from_master_rdata ;
-  assign dm_tv_ifc_dma_server_mux$target_client_rid =
-	     dma_server_axi4_deburster$from_master_rid ;
-  assign dm_tv_ifc_dma_server_mux$target_client_rlast =
-	     dma_server_axi4_deburster$from_master_rlast ;
-  assign dm_tv_ifc_dma_server_mux$target_client_rresp =
-	     dma_server_axi4_deburster$from_master_rresp ;
-  assign dm_tv_ifc_dma_server_mux$target_client_rvalid =
-	     dma_server_axi4_deburster$from_master_rvalid ;
-  assign dm_tv_ifc_dma_server_mux$target_client_wready =
-	     dma_server_axi4_deburster$from_master_wready ;
-
-  // submodule dm_tv_ifc_empty0_f_client_id
-  assign dm_tv_ifc_empty0_f_client_id$D_IN =
-	     !WILL_FIRE_RL_dm_tv_ifc_empty0_rl_cj_to_s ;
-  assign dm_tv_ifc_empty0_f_client_id$ENQ =
-	     WILL_FIRE_RL_dm_tv_ifc_empty0_rl_cj_to_s ||
-	     WILL_FIRE_RL_dm_tv_ifc_empty0_rl_cj_to_s_1 ;
-  assign dm_tv_ifc_empty0_f_client_id$DEQ =
-	     WILL_FIRE_RL_dm_tv_ifc_empty0_rl_cj_from_s_1 ||
-	     WILL_FIRE_RL_dm_tv_ifc_empty0_rl_cj_from_s ;
-  assign dm_tv_ifc_empty0_f_client_id$CLR = 1'b0 ;
-
-  // submodule dm_tv_ifc_empty1_f_client_id
-  assign dm_tv_ifc_empty1_f_client_id$D_IN =
-	     !WILL_FIRE_RL_dm_tv_ifc_empty1_rl_cj_to_s ;
-  assign dm_tv_ifc_empty1_f_client_id$ENQ =
-	     WILL_FIRE_RL_dm_tv_ifc_empty1_rl_cj_to_s ||
-	     WILL_FIRE_RL_dm_tv_ifc_empty1_rl_cj_to_s_1 ;
-  assign dm_tv_ifc_empty1_f_client_id$DEQ =
-	     WILL_FIRE_RL_dm_tv_ifc_empty1_rl_cj_from_s_1 ||
-	     WILL_FIRE_RL_dm_tv_ifc_empty1_rl_cj_from_s ;
-  assign dm_tv_ifc_empty1_f_client_id$CLR = 1'b0 ;
-
-  // submodule dm_tv_ifc_empty2_f_client_id
-  assign dm_tv_ifc_empty2_f_client_id$D_IN =
-	     !WILL_FIRE_RL_dm_tv_ifc_empty2_rl_cj_to_s ;
-  assign dm_tv_ifc_empty2_f_client_id$ENQ =
-	     WILL_FIRE_RL_dm_tv_ifc_empty2_rl_cj_to_s ||
-	     WILL_FIRE_RL_dm_tv_ifc_empty2_rl_cj_to_s_1 ;
-  assign dm_tv_ifc_empty2_f_client_id$DEQ =
-	     WILL_FIRE_RL_dm_tv_ifc_empty2_rl_cj_from_s_1 ||
-	     WILL_FIRE_RL_dm_tv_ifc_empty2_rl_cj_from_s ;
-  assign dm_tv_ifc_empty2_f_client_id$CLR = 1'b0 ;
-
-  // submodule dm_tv_ifc_f_dmi_reqs
-  assign dm_tv_ifc_f_dmi_reqs$D_IN = se_dmi_request_enq_x ;
-  assign dm_tv_ifc_f_dmi_reqs$ENQ = EN_se_dmi_request_enq ;
-  assign dm_tv_ifc_f_dmi_reqs$DEQ = CAN_FIRE_RL_dm_tv_ifc_rl_dmi_req ;
-  assign dm_tv_ifc_f_dmi_reqs$CLR = 1'b0 ;
-
-  // submodule dm_tv_ifc_f_dmi_rsps
-  assign dm_tv_ifc_f_dmi_rsps$D_IN = dm_tv_ifc_debug_module$dmi_read_data ;
-  assign dm_tv_ifc_f_dmi_rsps$ENQ = WILL_FIRE_RL_dm_tv_ifc_rl_dmi_rsp ;
-  assign dm_tv_ifc_f_dmi_rsps$DEQ = EN_se_dmi_response_deq ;
-  assign dm_tv_ifc_f_dmi_rsps$CLR = 1'b0 ;
-
-  // submodule dm_tv_ifc_f_ndm_reqs
-  assign dm_tv_ifc_f_ndm_reqs$ENQ = CAN_FIRE_RL_dm_tv_ifc_rl_ndm_req ;
-  assign dm_tv_ifc_f_ndm_reqs$DEQ = EN_cl_ndm_reset_request_deq ;
-  assign dm_tv_ifc_f_ndm_reqs$CLR = 1'b0 ;
-
-  // submodule dm_tv_ifc_f_ndm_rsps
-  assign dm_tv_ifc_f_ndm_rsps$ENQ = EN_cl_ndm_reset_response_enq ;
-  assign dm_tv_ifc_f_ndm_rsps$DEQ = CAN_FIRE_RL_dm_tv_ifc_rl_ndm_rsp ;
-  assign dm_tv_ifc_f_ndm_rsps$CLR = 1'b0 ;
-
-  // submodule dm_tv_ifc_f_reset_reqs
-  assign dm_tv_ifc_f_reset_reqs$D_IN =
-	     WILL_FIRE_RL_dm_tv_ifc_empty0_rl_cj_to_s ?
-	       host_cs$cl_cpu_reset_request_get :
-	       dm_tv_ifc_debug_module$hart0_reset_client_request_get ;
-  assign dm_tv_ifc_f_reset_reqs$ENQ =
-	     WILL_FIRE_RL_dm_tv_ifc_empty0_rl_cj_to_s ||
-	     WILL_FIRE_RL_dm_tv_ifc_empty0_rl_cj_to_s_1 ;
-  assign dm_tv_ifc_f_reset_reqs$DEQ = CAN_FIRE_RL_rl_reinitialization_start ;
-  assign dm_tv_ifc_f_reset_reqs$CLR = 1'b0 ;
-
-  // submodule dm_tv_ifc_f_reset_rsps
-  assign dm_tv_ifc_f_reset_rsps$D_IN = cpu$hart0_server_reset_response_get ;
-  assign dm_tv_ifc_f_reset_rsps$ENQ = CAN_FIRE_RL_rl_reinitialization_finish ;
-  assign dm_tv_ifc_f_reset_rsps$DEQ =
-	     WILL_FIRE_RL_dm_tv_ifc_empty0_rl_cj_from_s_1 ||
-	     WILL_FIRE_RL_dm_tv_ifc_empty0_rl_cj_from_s ;
-  assign dm_tv_ifc_f_reset_rsps$CLR = 1'b0 ;
-
-  // submodule dma_server_axi4_deburster
-  assign dma_server_axi4_deburster$from_master_araddr =
-	     dm_tv_ifc_dma_server_mux$target_client_araddr ;
-  assign dma_server_axi4_deburster$from_master_arburst =
-	     dm_tv_ifc_dma_server_mux$target_client_arburst ;
-  assign dma_server_axi4_deburster$from_master_arcache =
-	     dm_tv_ifc_dma_server_mux$target_client_arcache ;
-  assign dma_server_axi4_deburster$from_master_arid =
-	     dm_tv_ifc_dma_server_mux$target_client_arid ;
-  assign dma_server_axi4_deburster$from_master_arlen =
-	     dm_tv_ifc_dma_server_mux$target_client_arlen ;
-  assign dma_server_axi4_deburster$from_master_arlock =
-	     dm_tv_ifc_dma_server_mux$target_client_arlock ;
-  assign dma_server_axi4_deburster$from_master_arprot =
-	     dm_tv_ifc_dma_server_mux$target_client_arprot ;
-  assign dma_server_axi4_deburster$from_master_arqos =
-	     dm_tv_ifc_dma_server_mux$target_client_arqos ;
-  assign dma_server_axi4_deburster$from_master_arregion =
-	     dm_tv_ifc_dma_server_mux$target_client_arregion ;
-  assign dma_server_axi4_deburster$from_master_arsize =
-	     dm_tv_ifc_dma_server_mux$target_client_arsize ;
-  assign dma_server_axi4_deburster$from_master_arvalid =
-	     dm_tv_ifc_dma_server_mux$target_client_arvalid ;
-  assign dma_server_axi4_deburster$from_master_awaddr =
-	     dm_tv_ifc_dma_server_mux$target_client_awaddr ;
-  assign dma_server_axi4_deburster$from_master_awburst =
-	     dm_tv_ifc_dma_server_mux$target_client_awburst ;
-  assign dma_server_axi4_deburster$from_master_awcache =
-	     dm_tv_ifc_dma_server_mux$target_client_awcache ;
-  assign dma_server_axi4_deburster$from_master_awid =
-	     dm_tv_ifc_dma_server_mux$target_client_awid ;
-  assign dma_server_axi4_deburster$from_master_awlen =
-	     dm_tv_ifc_dma_server_mux$target_client_awlen ;
-  assign dma_server_axi4_deburster$from_master_awlock =
-	     dm_tv_ifc_dma_server_mux$target_client_awlock ;
-  assign dma_server_axi4_deburster$from_master_awprot =
-	     dm_tv_ifc_dma_server_mux$target_client_awprot ;
-  assign dma_server_axi4_deburster$from_master_awqos =
-	     dm_tv_ifc_dma_server_mux$target_client_awqos ;
-  assign dma_server_axi4_deburster$from_master_awregion =
-	     dm_tv_ifc_dma_server_mux$target_client_awregion ;
-  assign dma_server_axi4_deburster$from_master_awsize =
-	     dm_tv_ifc_dma_server_mux$target_client_awsize ;
-  assign dma_server_axi4_deburster$from_master_awvalid =
-	     dm_tv_ifc_dma_server_mux$target_client_awvalid ;
-  assign dma_server_axi4_deburster$from_master_bready =
-	     dm_tv_ifc_dma_server_mux$target_client_bready ;
-  assign dma_server_axi4_deburster$from_master_rready =
-	     dm_tv_ifc_dma_server_mux$target_client_rready ;
-  assign dma_server_axi4_deburster$from_master_wdata =
-	     dm_tv_ifc_dma_server_mux$target_client_wdata ;
-  assign dma_server_axi4_deburster$from_master_wlast =
-	     dm_tv_ifc_dma_server_mux$target_client_wlast ;
-  assign dma_server_axi4_deburster$from_master_wstrb =
-	     dm_tv_ifc_dma_server_mux$target_client_wstrb ;
-  assign dma_server_axi4_deburster$from_master_wvalid =
-	     dm_tv_ifc_dma_server_mux$target_client_wvalid ;
-  assign dma_server_axi4_deburster$to_slave_arready = cpu$dma_server_arready ;
-  assign dma_server_axi4_deburster$to_slave_awready = cpu$dma_server_awready ;
-  assign dma_server_axi4_deburster$to_slave_bid = cpu$dma_server_bid ;
-  assign dma_server_axi4_deburster$to_slave_bresp = cpu$dma_server_bresp ;
-  assign dma_server_axi4_deburster$to_slave_bvalid = cpu$dma_server_bvalid ;
-  assign dma_server_axi4_deburster$to_slave_rdata = cpu$dma_server_rdata ;
-  assign dma_server_axi4_deburster$to_slave_rid = cpu$dma_server_rid ;
-  assign dma_server_axi4_deburster$to_slave_rlast = cpu$dma_server_rlast ;
-  assign dma_server_axi4_deburster$to_slave_rresp = cpu$dma_server_rresp ;
-  assign dma_server_axi4_deburster$to_slave_rvalid = cpu$dma_server_rvalid ;
-  assign dma_server_axi4_deburster$to_slave_wready = cpu$dma_server_wready ;
-  assign dma_server_axi4_deburster$EN_reset = 1'b0 ;
-
-  // submodule f_nmi
-  assign f_nmi$D_IN = fi_nmi_enq_x ;
-  assign f_nmi$ENQ = EN_fi_nmi_enq ;
-  assign f_nmi$DEQ = CAN_FIRE_RL_rl_register_nmi ;
-  assign f_nmi$CLR = 1'b0 ;
+  // submodule core_resettable
+  assign core_resettable$dma_S_araddr = dma_S_araddr ;
+  assign core_resettable$dma_S_arburst = dma_S_arburst ;
+  assign core_resettable$dma_S_arcache = dma_S_arcache ;
+  assign core_resettable$dma_S_arid = dma_S_arid ;
+  assign core_resettable$dma_S_arlen = dma_S_arlen ;
+  assign core_resettable$dma_S_arlock = dma_S_arlock ;
+  assign core_resettable$dma_S_arprot = dma_S_arprot ;
+  assign core_resettable$dma_S_arqos = dma_S_arqos ;
+  assign core_resettable$dma_S_arregion = dma_S_arregion ;
+  assign core_resettable$dma_S_arsize = dma_S_arsize ;
+  assign core_resettable$dma_S_arvalid = dma_S_arvalid ;
+  assign core_resettable$dma_S_awaddr = dma_S_awaddr ;
+  assign core_resettable$dma_S_awburst = dma_S_awburst ;
+  assign core_resettable$dma_S_awcache = dma_S_awcache ;
+  assign core_resettable$dma_S_awid = dma_S_awid ;
+  assign core_resettable$dma_S_awlen = dma_S_awlen ;
+  assign core_resettable$dma_S_awlock = dma_S_awlock ;
+  assign core_resettable$dma_S_awprot = dma_S_awprot ;
+  assign core_resettable$dma_S_awqos = dma_S_awqos ;
+  assign core_resettable$dma_S_awregion = dma_S_awregion ;
+  assign core_resettable$dma_S_awsize = dma_S_awsize ;
+  assign core_resettable$dma_S_awvalid = dma_S_awvalid ;
+  assign core_resettable$dma_S_bready = dma_S_bready ;
+  assign core_resettable$dma_S_rready = dma_S_rready ;
+  assign core_resettable$dma_S_wdata = dma_S_wdata ;
+  assign core_resettable$dma_S_wlast = dma_S_wlast ;
+  assign core_resettable$dma_S_wstrb = dma_S_wstrb ;
+  assign core_resettable$dma_S_wvalid = dma_S_wvalid ;
+  assign core_resettable$ext_interrupts_x = ext_interrupts_x ;
+  assign core_resettable$fi_misc_enq_x = fi_misc_enq_x ;
+  assign core_resettable$fi_nmi_enq_x = fi_nmi_enq_x ;
+  assign core_resettable$mem_M_arready = mem_M_arready ;
+  assign core_resettable$mem_M_awready = mem_M_awready ;
+  assign core_resettable$mem_M_bid = mem_M_bid ;
+  assign core_resettable$mem_M_bresp = mem_M_bresp ;
+  assign core_resettable$mem_M_bvalid = mem_M_bvalid ;
+  assign core_resettable$mem_M_rdata = mem_M_rdata ;
+  assign core_resettable$mem_M_rid = mem_M_rid ;
+  assign core_resettable$mem_M_rlast = mem_M_rlast ;
+  assign core_resettable$mem_M_rresp = mem_M_rresp ;
+  assign core_resettable$mem_M_rvalid = mem_M_rvalid ;
+  assign core_resettable$mem_M_wready = mem_M_wready ;
+  assign core_resettable$mmio_M_arready = mmio_M_arready ;
+  assign core_resettable$mmio_M_awready = mmio_M_awready ;
+  assign core_resettable$mmio_M_bid = mmio_M_bid ;
+  assign core_resettable$mmio_M_bresp = mmio_M_bresp ;
+  assign core_resettable$mmio_M_bvalid = mmio_M_bvalid ;
+  assign core_resettable$mmio_M_rdata = mmio_M_rdata ;
+  assign core_resettable$mmio_M_rid = mmio_M_rid ;
+  assign core_resettable$mmio_M_rlast = mmio_M_rlast ;
+  assign core_resettable$mmio_M_rresp = mmio_M_rresp ;
+  assign core_resettable$mmio_M_rvalid = mmio_M_rvalid ;
+  assign core_resettable$mmio_M_wready = mmio_M_wready ;
+  assign core_resettable$p_pc_trace_control_put =
+	     host_cs$g_pc_trace_control_get ;
+  assign core_resettable$se_dmi_request_enq_x = se_dmi_request_enq_x ;
+  assign core_resettable$set_verbosity_logdelay =
+	     host_cs$g_verbosity_get[63:0] ;
+  assign core_resettable$set_verbosity_verbosity =
+	     host_cs$g_verbosity_get[67:64] ;
+  assign core_resettable$set_watch_tohost_tohost_addr =
+	     host_cs$g_watch_tohost_get[63:0] ;
+  assign core_resettable$set_watch_tohost_watch_tohost =
+	     host_cs$g_watch_tohost_get[64] ;
+  assign core_resettable$EN_ext_interrupts = EN_ext_interrupts ;
+  assign core_resettable$EN_fi_nmi_enq = EN_fi_nmi_enq ;
+  assign core_resettable$EN_fo_misc_deq = EN_fo_misc_deq ;
+  assign core_resettable$EN_fi_misc_enq = EN_fi_misc_enq ;
+  assign core_resettable$EN_fo_tv_info_deq = EN_fo_tv_info_deq ;
+  assign core_resettable$EN_se_dmi_request_enq = EN_se_dmi_request_enq ;
+  assign core_resettable$EN_se_dmi_response_deq = EN_se_dmi_response_deq ;
+  assign core_resettable$EN_cl_ndm_reset_request_deq =
+	     EN_cl_ndm_reset_request_deq ;
+  assign core_resettable$EN_cl_ndm_reset_response_enq =
+	     EN_cl_ndm_reset_response_enq ;
+  assign core_resettable$EN_p_pc_trace_control_put =
+	     host_cs$RDY_g_pc_trace_control_get ;
+  assign core_resettable$EN_set_verbosity = host_cs$RDY_g_verbosity_get ;
+  assign core_resettable$EN_set_watch_tohost =
+	     host_cs$RDY_g_watch_tohost_get ;
 
   // submodule host_cs
-  assign host_cs$cl_cpu_reset_response_put = dm_tv_ifc_f_reset_rsps$D_OUT ;
-  assign host_cs$cl_csr_rw_response_put =
-	     cpu$hart0_csr_mem_server_response_get ;
-  assign host_cs$cl_run_halt_response_put =
-	     cpu$hart0_server_run_halt_response_get ;
-  assign host_cs$ma_tohost_value_tohost_value = cpu$mv_tohost_value ;
+  assign host_cs$ma_tohost_value_tohost_value =
+	     core_resettable$mv_tohost_value ;
   assign host_cs$se_control_status_request_enq_x =
 	     se_control_status_request_enq_x ;
   assign host_cs$EN_se_control_status_request_enq =
 	     EN_se_control_status_request_enq ;
   assign host_cs$EN_se_control_status_response_deq =
 	     EN_se_control_status_response_deq ;
-  assign host_cs$EN_cl_cpu_reset_request_get =
-	     CAN_FIRE_RL_dm_tv_ifc_empty0_rl_cj_to_s ;
-  assign host_cs$EN_cl_cpu_reset_response_put =
-	     CAN_FIRE_RL_dm_tv_ifc_empty0_rl_cj_from_s ;
-  assign host_cs$EN_cl_run_halt_request_get =
-	     CAN_FIRE_RL_dm_tv_ifc_empty1_rl_cj_to_s ;
-  assign host_cs$EN_cl_run_halt_response_put =
-	     CAN_FIRE_RL_dm_tv_ifc_empty1_rl_cj_from_s ;
-  assign host_cs$EN_cl_csr_rw_request_get =
-	     CAN_FIRE_RL_dm_tv_ifc_empty2_rl_cj_to_s ;
-  assign host_cs$EN_cl_csr_rw_response_put =
-	     CAN_FIRE_RL_dm_tv_ifc_empty2_rl_cj_from_s ;
-  assign host_cs$EN_g_watch_tohost_get = CAN_FIRE_RL_rl_watch_thost ;
-  assign host_cs$EN_g_verbosity_get = CAN_FIRE_RL_rl_set_verbosity ;
+  assign host_cs$EN_g_watch_tohost_get = host_cs$RDY_g_watch_tohost_get ;
+  assign host_cs$EN_g_verbosity_get = host_cs$RDY_g_verbosity_get ;
+  assign host_cs$EN_g_pc_trace_control_get =
+	     host_cs$RDY_g_pc_trace_control_get ;
   assign host_cs$EN_ma_tohost_value = 1'd1 ;
-
-  // submodule mmio_fabric
-  assign mmio_fabric$set_verbosity_verbosity = 4'h0 ;
-  assign mmio_fabric$v_from_masters_0_araddr = cpu$imem_master_araddr ;
-  assign mmio_fabric$v_from_masters_0_arburst = cpu$imem_master_arburst ;
-  assign mmio_fabric$v_from_masters_0_arcache = cpu$imem_master_arcache ;
-  assign mmio_fabric$v_from_masters_0_arid = cpu$imem_master_arid ;
-  assign mmio_fabric$v_from_masters_0_arlen = cpu$imem_master_arlen ;
-  assign mmio_fabric$v_from_masters_0_arlock = cpu$imem_master_arlock ;
-  assign mmio_fabric$v_from_masters_0_arprot = cpu$imem_master_arprot ;
-  assign mmio_fabric$v_from_masters_0_arqos = cpu$imem_master_arqos ;
-  assign mmio_fabric$v_from_masters_0_arregion = cpu$imem_master_arregion ;
-  assign mmio_fabric$v_from_masters_0_arsize = cpu$imem_master_arsize ;
-  assign mmio_fabric$v_from_masters_0_arvalid = cpu$imem_master_arvalid ;
-  assign mmio_fabric$v_from_masters_0_awaddr = cpu$imem_master_awaddr ;
-  assign mmio_fabric$v_from_masters_0_awburst = cpu$imem_master_awburst ;
-  assign mmio_fabric$v_from_masters_0_awcache = cpu$imem_master_awcache ;
-  assign mmio_fabric$v_from_masters_0_awid = cpu$imem_master_awid ;
-  assign mmio_fabric$v_from_masters_0_awlen = cpu$imem_master_awlen ;
-  assign mmio_fabric$v_from_masters_0_awlock = cpu$imem_master_awlock ;
-  assign mmio_fabric$v_from_masters_0_awprot = cpu$imem_master_awprot ;
-  assign mmio_fabric$v_from_masters_0_awqos = cpu$imem_master_awqos ;
-  assign mmio_fabric$v_from_masters_0_awregion = cpu$imem_master_awregion ;
-  assign mmio_fabric$v_from_masters_0_awsize = cpu$imem_master_awsize ;
-  assign mmio_fabric$v_from_masters_0_awvalid = cpu$imem_master_awvalid ;
-  assign mmio_fabric$v_from_masters_0_bready = cpu$imem_master_bready ;
-  assign mmio_fabric$v_from_masters_0_rready = cpu$imem_master_rready ;
-  assign mmio_fabric$v_from_masters_0_wdata = cpu$imem_master_wdata ;
-  assign mmio_fabric$v_from_masters_0_wlast = cpu$imem_master_wlast ;
-  assign mmio_fabric$v_from_masters_0_wstrb = cpu$imem_master_wstrb ;
-  assign mmio_fabric$v_from_masters_0_wvalid = cpu$imem_master_wvalid ;
-  assign mmio_fabric$v_to_slaves_0_arready = mmio_M_arready ;
-  assign mmio_fabric$v_to_slaves_0_awready = mmio_M_awready ;
-  assign mmio_fabric$v_to_slaves_0_bid = mmio_M_bid ;
-  assign mmio_fabric$v_to_slaves_0_bresp = mmio_M_bresp ;
-  assign mmio_fabric$v_to_slaves_0_bvalid = mmio_M_bvalid ;
-  assign mmio_fabric$v_to_slaves_0_rdata = mmio_M_rdata ;
-  assign mmio_fabric$v_to_slaves_0_rid = mmio_M_rid ;
-  assign mmio_fabric$v_to_slaves_0_rlast = mmio_M_rlast ;
-  assign mmio_fabric$v_to_slaves_0_rresp = mmio_M_rresp ;
-  assign mmio_fabric$v_to_slaves_0_rvalid = mmio_M_rvalid ;
-  assign mmio_fabric$v_to_slaves_0_wready = mmio_M_wready ;
-  assign mmio_fabric$v_to_slaves_1_arready = near_mem_io$axi4_slave_arready ;
-  assign mmio_fabric$v_to_slaves_1_awready = near_mem_io$axi4_slave_awready ;
-  assign mmio_fabric$v_to_slaves_1_bid = near_mem_io$axi4_slave_bid ;
-  assign mmio_fabric$v_to_slaves_1_bresp = near_mem_io$axi4_slave_bresp ;
-  assign mmio_fabric$v_to_slaves_1_bvalid = near_mem_io$axi4_slave_bvalid ;
-  assign mmio_fabric$v_to_slaves_1_rdata = near_mem_io$axi4_slave_rdata ;
-  assign mmio_fabric$v_to_slaves_1_rid = near_mem_io$axi4_slave_rid ;
-  assign mmio_fabric$v_to_slaves_1_rlast = near_mem_io$axi4_slave_rlast ;
-  assign mmio_fabric$v_to_slaves_1_rresp = near_mem_io$axi4_slave_rresp ;
-  assign mmio_fabric$v_to_slaves_1_rvalid = near_mem_io$axi4_slave_rvalid ;
-  assign mmio_fabric$v_to_slaves_1_wready = near_mem_io$axi4_slave_wready ;
-  assign mmio_fabric$v_to_slaves_2_arready = plic$axi4_slave_arready ;
-  assign mmio_fabric$v_to_slaves_2_awready = plic$axi4_slave_awready ;
-  assign mmio_fabric$v_to_slaves_2_bid = plic$axi4_slave_bid ;
-  assign mmio_fabric$v_to_slaves_2_bresp = plic$axi4_slave_bresp ;
-  assign mmio_fabric$v_to_slaves_2_bvalid = plic$axi4_slave_bvalid ;
-  assign mmio_fabric$v_to_slaves_2_rdata = plic$axi4_slave_rdata ;
-  assign mmio_fabric$v_to_slaves_2_rid = plic$axi4_slave_rid ;
-  assign mmio_fabric$v_to_slaves_2_rlast = plic$axi4_slave_rlast ;
-  assign mmio_fabric$v_to_slaves_2_rresp = plic$axi4_slave_rresp ;
-  assign mmio_fabric$v_to_slaves_2_rvalid = plic$axi4_slave_rvalid ;
-  assign mmio_fabric$v_to_slaves_2_wready = plic$axi4_slave_wready ;
-  assign mmio_fabric$v_to_slaves_3_arready = boot_rom$slave_arready ;
-  assign mmio_fabric$v_to_slaves_3_awready = boot_rom$slave_awready ;
-  assign mmio_fabric$v_to_slaves_3_bid = boot_rom$slave_bid ;
-  assign mmio_fabric$v_to_slaves_3_bresp = boot_rom$slave_bresp ;
-  assign mmio_fabric$v_to_slaves_3_bvalid = boot_rom$slave_bvalid ;
-  assign mmio_fabric$v_to_slaves_3_rdata = boot_rom$slave_rdata ;
-  assign mmio_fabric$v_to_slaves_3_rid = boot_rom$slave_rid ;
-  assign mmio_fabric$v_to_slaves_3_rlast = boot_rom$slave_rlast ;
-  assign mmio_fabric$v_to_slaves_3_rresp = boot_rom$slave_rresp ;
-  assign mmio_fabric$v_to_slaves_3_rvalid = boot_rom$slave_rvalid ;
-  assign mmio_fabric$v_to_slaves_3_wready = boot_rom$slave_wready ;
-  assign mmio_fabric$EN_reset =
-	     WILL_FIRE_RL_rl_reinitialization_start ||
-	     WILL_FIRE_RL_rl_first_init_start ;
-  assign mmio_fabric$EN_set_verbosity = 1'b0 ;
-
-  // submodule near_mem_io
-  assign near_mem_io$axi4_slave_araddr = mmio_fabric$v_to_slaves_1_araddr ;
-  assign near_mem_io$axi4_slave_arburst = mmio_fabric$v_to_slaves_1_arburst ;
-  assign near_mem_io$axi4_slave_arcache = mmio_fabric$v_to_slaves_1_arcache ;
-  assign near_mem_io$axi4_slave_arid = mmio_fabric$v_to_slaves_1_arid ;
-  assign near_mem_io$axi4_slave_arlen = mmio_fabric$v_to_slaves_1_arlen ;
-  assign near_mem_io$axi4_slave_arlock = mmio_fabric$v_to_slaves_1_arlock ;
-  assign near_mem_io$axi4_slave_arprot = mmio_fabric$v_to_slaves_1_arprot ;
-  assign near_mem_io$axi4_slave_arqos = mmio_fabric$v_to_slaves_1_arqos ;
-  assign near_mem_io$axi4_slave_arregion =
-	     mmio_fabric$v_to_slaves_1_arregion ;
-  assign near_mem_io$axi4_slave_arsize = mmio_fabric$v_to_slaves_1_arsize ;
-  assign near_mem_io$axi4_slave_arvalid = mmio_fabric$v_to_slaves_1_arvalid ;
-  assign near_mem_io$axi4_slave_awaddr = mmio_fabric$v_to_slaves_1_awaddr ;
-  assign near_mem_io$axi4_slave_awburst = mmio_fabric$v_to_slaves_1_awburst ;
-  assign near_mem_io$axi4_slave_awcache = mmio_fabric$v_to_slaves_1_awcache ;
-  assign near_mem_io$axi4_slave_awid = mmio_fabric$v_to_slaves_1_awid ;
-  assign near_mem_io$axi4_slave_awlen = mmio_fabric$v_to_slaves_1_awlen ;
-  assign near_mem_io$axi4_slave_awlock = mmio_fabric$v_to_slaves_1_awlock ;
-  assign near_mem_io$axi4_slave_awprot = mmio_fabric$v_to_slaves_1_awprot ;
-  assign near_mem_io$axi4_slave_awqos = mmio_fabric$v_to_slaves_1_awqos ;
-  assign near_mem_io$axi4_slave_awregion =
-	     mmio_fabric$v_to_slaves_1_awregion ;
-  assign near_mem_io$axi4_slave_awsize = mmio_fabric$v_to_slaves_1_awsize ;
-  assign near_mem_io$axi4_slave_awvalid = mmio_fabric$v_to_slaves_1_awvalid ;
-  assign near_mem_io$axi4_slave_bready = mmio_fabric$v_to_slaves_1_bready ;
-  assign near_mem_io$axi4_slave_rready = mmio_fabric$v_to_slaves_1_rready ;
-  assign near_mem_io$axi4_slave_wdata = mmio_fabric$v_to_slaves_1_wdata ;
-  assign near_mem_io$axi4_slave_wlast = mmio_fabric$v_to_slaves_1_wlast ;
-  assign near_mem_io$axi4_slave_wstrb = mmio_fabric$v_to_slaves_1_wstrb ;
-  assign near_mem_io$axi4_slave_wvalid = mmio_fabric$v_to_slaves_1_wvalid ;
-  assign near_mem_io$set_addr_map_addr_base = 64'd33554432 ;
-  assign near_mem_io$set_addr_map_addr_lim = 64'd33619968 ;
-  assign near_mem_io$EN_server_reset_request_put =
-	     WILL_FIRE_RL_rl_reinitialization_start ||
-	     WILL_FIRE_RL_rl_first_init_start ;
-  assign near_mem_io$EN_server_reset_response_get =
-	     MUX_rg_module_state$write_1__SEL_3 ;
-  assign near_mem_io$EN_set_addr_map = MUX_rg_module_state$write_1__SEL_3 ;
-  assign near_mem_io$EN_get_timer_interrupt_req_get =
-	     CAN_FIRE_RL_rl_relay_timer_interrupt ;
-  assign near_mem_io$EN_get_sw_interrupt_req_get =
-	     CAN_FIRE_RL_rl_relay_sw_interrupt ;
-
-  // submodule plic
-  assign plic$axi4_slave_araddr = mmio_fabric$v_to_slaves_2_araddr ;
-  assign plic$axi4_slave_arburst = mmio_fabric$v_to_slaves_2_arburst ;
-  assign plic$axi4_slave_arcache = mmio_fabric$v_to_slaves_2_arcache ;
-  assign plic$axi4_slave_arid = mmio_fabric$v_to_slaves_2_arid ;
-  assign plic$axi4_slave_arlen = mmio_fabric$v_to_slaves_2_arlen ;
-  assign plic$axi4_slave_arlock = mmio_fabric$v_to_slaves_2_arlock ;
-  assign plic$axi4_slave_arprot = mmio_fabric$v_to_slaves_2_arprot ;
-  assign plic$axi4_slave_arqos = mmio_fabric$v_to_slaves_2_arqos ;
-  assign plic$axi4_slave_arregion = mmio_fabric$v_to_slaves_2_arregion ;
-  assign plic$axi4_slave_arsize = mmio_fabric$v_to_slaves_2_arsize ;
-  assign plic$axi4_slave_arvalid = mmio_fabric$v_to_slaves_2_arvalid ;
-  assign plic$axi4_slave_awaddr = mmio_fabric$v_to_slaves_2_awaddr ;
-  assign plic$axi4_slave_awburst = mmio_fabric$v_to_slaves_2_awburst ;
-  assign plic$axi4_slave_awcache = mmio_fabric$v_to_slaves_2_awcache ;
-  assign plic$axi4_slave_awid = mmio_fabric$v_to_slaves_2_awid ;
-  assign plic$axi4_slave_awlen = mmio_fabric$v_to_slaves_2_awlen ;
-  assign plic$axi4_slave_awlock = mmio_fabric$v_to_slaves_2_awlock ;
-  assign plic$axi4_slave_awprot = mmio_fabric$v_to_slaves_2_awprot ;
-  assign plic$axi4_slave_awqos = mmio_fabric$v_to_slaves_2_awqos ;
-  assign plic$axi4_slave_awregion = mmio_fabric$v_to_slaves_2_awregion ;
-  assign plic$axi4_slave_awsize = mmio_fabric$v_to_slaves_2_awsize ;
-  assign plic$axi4_slave_awvalid = mmio_fabric$v_to_slaves_2_awvalid ;
-  assign plic$axi4_slave_bready = mmio_fabric$v_to_slaves_2_bready ;
-  assign plic$axi4_slave_rready = mmio_fabric$v_to_slaves_2_rready ;
-  assign plic$axi4_slave_wdata = mmio_fabric$v_to_slaves_2_wdata ;
-  assign plic$axi4_slave_wlast = mmio_fabric$v_to_slaves_2_wlast ;
-  assign plic$axi4_slave_wstrb = mmio_fabric$v_to_slaves_2_wstrb ;
-  assign plic$axi4_slave_wvalid = mmio_fabric$v_to_slaves_2_wvalid ;
-  assign plic$set_addr_map_addr_base = 64'd201326592 ;
-  assign plic$set_addr_map_addr_lim = 64'd268435456 ;
-  assign plic$set_verbosity_verbosity = 4'h0 ;
-  assign plic$v_sources_0_m_interrupt_req_set_not_clear = rg_ext_intrs[0] ;
-  assign plic$v_sources_10_m_interrupt_req_set_not_clear = rg_ext_intrs[10] ;
-  assign plic$v_sources_11_m_interrupt_req_set_not_clear = rg_ext_intrs[11] ;
-  assign plic$v_sources_12_m_interrupt_req_set_not_clear = rg_ext_intrs[12] ;
-  assign plic$v_sources_13_m_interrupt_req_set_not_clear = rg_ext_intrs[13] ;
-  assign plic$v_sources_14_m_interrupt_req_set_not_clear = rg_ext_intrs[14] ;
-  assign plic$v_sources_15_m_interrupt_req_set_not_clear = rg_ext_intrs[15] ;
-  assign plic$v_sources_1_m_interrupt_req_set_not_clear = rg_ext_intrs[1] ;
-  assign plic$v_sources_2_m_interrupt_req_set_not_clear = rg_ext_intrs[2] ;
-  assign plic$v_sources_3_m_interrupt_req_set_not_clear = rg_ext_intrs[3] ;
-  assign plic$v_sources_4_m_interrupt_req_set_not_clear = rg_ext_intrs[4] ;
-  assign plic$v_sources_5_m_interrupt_req_set_not_clear = rg_ext_intrs[5] ;
-  assign plic$v_sources_6_m_interrupt_req_set_not_clear = rg_ext_intrs[6] ;
-  assign plic$v_sources_7_m_interrupt_req_set_not_clear = rg_ext_intrs[7] ;
-  assign plic$v_sources_8_m_interrupt_req_set_not_clear = rg_ext_intrs[8] ;
-  assign plic$v_sources_9_m_interrupt_req_set_not_clear = rg_ext_intrs[9] ;
-  assign plic$EN_set_verbosity = 1'b0 ;
-  assign plic$EN_show_PLIC_state = 1'b0 ;
-  assign plic$EN_server_reset_request_put =
-	     WILL_FIRE_RL_rl_reinitialization_start ||
-	     WILL_FIRE_RL_rl_first_init_start ;
-  assign plic$EN_server_reset_response_get =
-	     MUX_rg_module_state$write_1__SEL_3 ;
-  assign plic$EN_set_addr_map = MUX_rg_module_state$write_1__SEL_3 ;
-
-  // handling of inlined registers
-
-  always@(posedge CLK)
-  begin
-    if (RST_N == `BSV_RESET_VALUE)
-      begin
-        rg_ext_intrs <= `BSV_ASSIGNMENT_DELAY 16'd0;
-	rg_m_external_interrupt <= `BSV_ASSIGNMENT_DELAY 1'd0;
-	rg_module_state <= `BSV_ASSIGNMENT_DELAY 2'd0;
-	rg_nmi <= `BSV_ASSIGNMENT_DELAY 1'd0;
-	rg_s_external_interrupt <= `BSV_ASSIGNMENT_DELAY 1'd0;
-	rg_sw_interrupt <= `BSV_ASSIGNMENT_DELAY 1'd0;
-	rg_timer_interrupt <= `BSV_ASSIGNMENT_DELAY 1'd0;
-      end
-    else
-      begin
-        if (rg_ext_intrs$EN)
-	  rg_ext_intrs <= `BSV_ASSIGNMENT_DELAY rg_ext_intrs$D_IN;
-	if (rg_m_external_interrupt$EN)
-	  rg_m_external_interrupt <= `BSV_ASSIGNMENT_DELAY
-	      rg_m_external_interrupt$D_IN;
-	if (rg_module_state$EN)
-	  rg_module_state <= `BSV_ASSIGNMENT_DELAY rg_module_state$D_IN;
-	if (rg_nmi$EN) rg_nmi <= `BSV_ASSIGNMENT_DELAY rg_nmi$D_IN;
-	if (rg_s_external_interrupt$EN)
-	  rg_s_external_interrupt <= `BSV_ASSIGNMENT_DELAY
-	      rg_s_external_interrupt$D_IN;
-	if (rg_sw_interrupt$EN)
-	  rg_sw_interrupt <= `BSV_ASSIGNMENT_DELAY rg_sw_interrupt$D_IN;
-	if (rg_timer_interrupt$EN)
-	  rg_timer_interrupt <= `BSV_ASSIGNMENT_DELAY rg_timer_interrupt$D_IN;
-      end
-  end
-
-  // synopsys translate_off
-  `ifdef BSV_NO_INITIAL_BLOCKS
-  `else // not BSV_NO_INITIAL_BLOCKS
-  initial
-  begin
-    rg_ext_intrs = 16'hAAAA;
-    rg_m_external_interrupt = 1'h0;
-    rg_module_state = 2'h2;
-    rg_nmi = 1'h0;
-    rg_s_external_interrupt = 1'h0;
-    rg_sw_interrupt = 1'h0;
-    rg_timer_interrupt = 1'h0;
-  end
-  `endif // BSV_NO_INITIAL_BLOCKS
-  // synopsys translate_on
 
   // handling of system tasks
 
@@ -4787,75 +1968,15 @@ module mkAWSteria_Core_Single_Clock(CLK,
   begin
     #0;
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_first_init_finish)
-	$display("AWSteria_Core: Initialization finished ...");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_first_init_finish) $display("    %m");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_first_init_finish)
-	begin
-	  v__h12078 = $stime;
-	  #0;
-	end
-    v__h12072 = v__h12078 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_first_init_finish)
-	$display("    %0d: rule rl_first_init_start", v__h12072);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_reinitialization_finish)
-	$display("AWSteria_Core: Re-initialization finished ...");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_reinitialization_finish) $display("    %m");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_reinitialization_finish)
-	begin
-	  v__h12648 = $stime;
-	  #0;
-	end
-    v__h12642 = v__h12648 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_reinitialization_finish)
-	$display("    %0d: rule rl_reinitialization_start", v__h12642);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_first_init_start)
-	$display("AWSteria_Core: Initialization start ...");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_first_init_start) $display("    %m");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_first_init_start)
-	begin
-	  v__h11756 = $stime;
-	  #0;
-	end
-    v__h11750 = v__h11756 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_first_init_start)
-	$display("    %0d: rule rl_first_init_start", v__h11750);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_watch_thost)
-	$display("AWSteria_Core: setting tohost watch %0d addr %0h",
-		 host_cs$g_watch_tohost_get[64],
-		 host_cs$g_watch_tohost_get[63:0]);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_set_verbosity)
+      if (host_cs$RDY_g_verbosity_get)
 	$display("AWSteria_Core: setting verbosity %0d log_delay %0d",
 		 host_cs$g_verbosity_get[67:64],
 		 host_cs$g_verbosity_get[63:0]);
     if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_reinitialization_start)
-	$display("AWSteria_Core: Re-initialization start ...");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_reinitialization_start) $display("    %m");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_reinitialization_start)
-	begin
-	  v__h12345 = $stime;
-	  #0;
-	end
-    v__h12339 = v__h12345 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_reinitialization_start)
-	$display("    %0d: rule rl_reinitialization_start", v__h12339);
+      if (host_cs$RDY_g_watch_tohost_get)
+	$display("AWSteria_Core: setting tohost watch %0d addr %0h",
+		 host_cs$g_watch_tohost_get[64],
+		 host_cs$g_watch_tohost_get[63:0]);
   end
   // synopsys translate_on
 endmodule  // mkAWSteria_Core_Single_Clock
