@@ -156,17 +156,17 @@ module mkHost_Control_Status (Host_Control_Status_IFC);
       Bit #(32) rsp0 = status_ok;
 
       if (cmd == cmd_ping) begin
-	 $display ("  mkHost_Control_Status: host_to_hw_req: ping/noop");
+	 $display ("Host_Control_Status: host_to_hw_req: ping/noop");
       end
       // ----------------
       else if (cmd == cmd_core_reset) begin
 	 if (rg_req0 [31:8] != 0) begin
 	    rg_assert_core_reset <= True;
-	    $display ("  mkHost_Control_Status: host_to_hw_req: Assert Core Reset");
+	    $display ("Host_Control_Status: host_to_hw_req: Assert Core Reset");
 	 end
 	 else begin
 	    rg_assert_core_reset <= False;
-	    $display ("  mkHost_Control_Status: host_to_hw_req: Deassert Core Reset");
+	    $display ("Host_Control_Status: host_to_hw_req: Deassert Core Reset");
 	 end
       end
       // ----------------
@@ -174,13 +174,13 @@ module mkHost_Control_Status (Host_Control_Status_IFC);
 	 if (rg_req0 [2:0] == 0) begin
 	    // OFF
 	    f_watch_tohost.enq (tuple2 (False, ?));
-	    $display ("  mkHost_Control_Status: host_to_hw_req: watch_tohost_off");
+	    $display ("Host_Control_Status: host_to_hw_req: watch_tohost_off");
 	 end
 	 else begin
 	    // ON
 	    Bit #(64) tohost_addr = { rg_req2, rg_req1 };
 	    f_watch_tohost.enq (tuple2 (True, tohost_addr));
-	    $display ("  mkHost_Control_Status: host_to_hw_req: watch_tohost_on, addr %0h",
+	    $display ("Host_Control_Status: host_to_hw_req: watch_tohost_on, addr %0h",
 		      tohost_addr);
 	 end
       end
@@ -189,7 +189,7 @@ module mkHost_Control_Status (Host_Control_Status_IFC);
 	 rsp0 = ({ dw_tohost_value, 16'h0 } | status_ok);
 	 // Only display if host value changed
 	 if (rg_prev_tohost_value != dw_tohost_value) begin
-	    $display ("  mkHost_Control_Status: host_to_hw_req: read_tohost => %0h",
+	    $display ("Host_Control_Status: host_to_hw_req: read_tohost => %0h",
 		      dw_tohost_value);
 	    rg_prev_tohost_value <= dw_tohost_value;
 	 end
@@ -199,12 +199,12 @@ module mkHost_Control_Status (Host_Control_Status_IFC);
 	 if (rg_req0 [2:0] == 0) begin
 	    // OFF
 	    f_pc_trace_control.enq (tuple2 (False, ?));
-	    $display ("  mkHost_Control_Status: host_to_hw_req: PC trace off");
+	    $display ("Host_Control_Status: host_to_hw_req: PC trace off");
 	 end
 	 else begin
 	    // ON
 	    f_pc_trace_control.enq (tuple2 (True, zeroExtend (rg_req1)));
-	    $display ("  mkHost_Control_Status: host_to_hw_req: PC trace on: interval %0h",
+	    $display ("Host_Control_Status: host_to_hw_req: PC trace on: interval %0h",
 		      rg_req1);
 	 end
       end
@@ -213,13 +213,13 @@ module mkHost_Control_Status (Host_Control_Status_IFC);
 	 Bit #(4)  verbosity = rg_req0 [11:8];
 	 Bit #(64) logdelay  = { rg_req2, rg_req1 };
 	 f_verbosity.enq (tuple2 (verbosity, logdelay));
-	 $display ("  mkHost_Control_Status: host_to_hw_req: set_sim_verbosity %0d logdelay %0h",
+	 $display ("Host_Control_Status: host_to_hw_req: set_sim_verbosity %0d logdelay %0h",
 		   verbosity, logdelay);
       end
       // ----------------
       else begin
 	 rsp0 = status_unsupported;
-	 $display ("Host-to-HW control: unsupported command %0h; request word 0 is %0h",
+	 $display ("Host_ontrol_Status: unsupported command %0h; request word 0 is %0h",
 		   cmd, rg_req0);
 	 $display ("    %m");
       end

@@ -15,9 +15,11 @@ package AWSteria_Core_Inner_Reclocked;
 // Lib imports
 
 // from BSV library
-import Vector      :: *;
-import Connectable :: *;
-import Clocks      :: *;
+import Vector       :: *;
+import GetPut       :: *;
+import ClientServer :: *;
+import Connectable  :: *;
+import Clocks       :: *;
 
 // ----------------
 // BSV additional libs
@@ -34,8 +36,11 @@ import AXI4_ClockCrossing :: *;
 import AWSteria_Core_IFC   :: *;
 import AWSteria_Core_Inner :: *;
 
+import ISA_Decls :: *;
+
 // Debug Module interface
-import DM_Common :: *;
+import DM_Common      :: *;
+import DM_CPU_Req_Rsp :: *;
 
 // Tandem Verification
 import TV_Info  :: *;
@@ -66,31 +71,32 @@ module mkAWSteria_Core_Inner_Reclocked
 
    Integer depth = 4;    // For SyncFIFOs
 
-   // ================================================================
-   // Same as AWSteria_Core_IFC minus se_control_status
-
    // ----------------------------------------------------------------
-   // AXI4 interface: Core (M) to DDR (S)
+   // Interfaces that go directly out to AWSteria_Core_IFC
+
+   // ----------------
+   // AXI4 interfaces for memory, MMIO, and DMA
+   // Note: DMA may or may not be coherent, depending on internal Core architecture.
 
    let ddr_AXI4_clock_crossing <- mkAXI4_ClockCrossing (clk_slow, rst_slow,
 							clk_fast, rst_fast);
    mkConnection (core_inner.mem_M, ddr_AXI4_clock_crossing.from_M);
 
-   // ----------------------------------------------------------------
+   // ----
    // AXI4 interface: Core (M) to MMIO (S)
 
    let mmio_AXI4_clock_crossing <- mkAXI4_ClockCrossing (clk_slow, rst_slow,
 							 clk_fast, rst_fast);
    mkConnection (core_inner.mmio_M, mmio_AXI4_clock_crossing.from_M);
 
-   // ----------------------------------------------------------------
+   // ----
    // AXI4 interface: System (M) to Core (S)
 
    let dma_AXI4_clock_crossing <- mkAXI4_ClockCrossing (clk_fast, rst_fast,
 							clk_slow, rst_slow);
    mkConnection (dma_AXI4_clock_crossing.to_S, core_inner.dma_S);
 
-   // ----------------------------------------------------------------
+   // ----------------
    // External interrupt sources
 
    // Register Wire (bus) driven by 'ext_interrupts' method
@@ -105,7 +111,7 @@ module mkAWSteria_Core_Inner_Reclocked
       core_inner.ext_interrupts (ro_sync_irqs);
    endrule
 
-   // ----------------------------------------------------------------
+   // ----------------
    // Non-maskable interrupt
 
    SyncFIFOIfc #(Bool) f_nmi <- mkSyncFIFO (depth, clk_fast, rst_fast, clk_slow);
@@ -136,27 +142,34 @@ module mkAWSteria_Core_Inner_Reclocked
    // ----------------------------------------------------------------
    // Debug Module interfaces
 
-   // DMI (Debug Module Interface) facing remote debugger
+   // GPR access
+   SyncFIFOIfc #(DM_CPU_Req #(5,  XLEN)) f_gpr_req <- mkSyncFIFO (depth, clk_fast,rst_fast,clk_slow);
+   SyncFIFOIfc #(DM_CPU_Rsp #(XLEN))     f_gpr_rsp <- mkSyncFIFO (depth, clk_slow,rst_slow,clk_fast);
+   mkConnection (toGet (f_gpr_req), core_inner.hart0_gpr_mem_server.request);
+   mkConnection (toPut (f_gpr_rsp), core_inner.hart0_gpr_mem_server.response);
 
-   SyncFIFOIfc #(DMI_Req) f_dmi_req <- mkSyncFIFO (depth, clk_fast, rst_fast, clk_slow);
-   SyncFIFOIfc #(DMI_Rsp) f_dmi_rsp <- mkSyncFIFO (depth, clk_slow, rst_slow, clk_fast);
+`ifdef ISA_F
+   // FPR access
+   SyncFIFOIfc #(DM_CPU_Req #(5,  XLEN)) f_fpr_req <- mkSyncFIFO (depth, clk_fast,rst_fast,clk_slow);
+   SyncFIFOIfc #(DM_CPU_Rsp #(XLEN))     f_fpr_rsp <- mkSyncFIFO (depth, clk_slow,rst_slow,clk_fast);
+   mkConnection (toGet (f_fpr_req), core_inner.hart0_fpr_mem_server.request);
+   mkConnection (toPut (f_fpr_rsp), core_inner.hart0_fpr_mem_server.response);
+`endif
 
-   mkConnection (fn_SyncFIFOIfc_to_FIFOF_O (f_dmi_req), core_inner.se_dmi.request);
-   mkConnection (fn_SyncFIFOIfc_to_FIFOF_I (f_dmi_rsp), core_inner.se_dmi.response);
+   // CSR access
+   SyncFIFOIfc #(DM_CPU_Req #(12, XLEN)) f_csr_req <- mkSyncFIFO (depth, clk_fast,rst_fast,clk_slow);
+   SyncFIFOIfc #(DM_CPU_Rsp #(XLEN))     f_csr_rsp <- mkSyncFIFO (depth, clk_slow,rst_slow,clk_fast);
+   mkConnection (toGet (f_csr_req), core_inner.hart0_csr_mem_server.request);
+   mkConnection (toPut (f_csr_rsp), core_inner.hart0_csr_mem_server.response);
 
-   // Non-Debug-Module Reset (reset "all" except DM)
-   // These Bit#(0) values are just tokens for signaling 'reset request' and 'reset done'
+   // System Bus access: AXI4 interface: Debug Module (M) to Inner Core (S)
 
-   SyncFIFOIfc #(Bit #(0)) f_ndm_reset_req <- mkSyncFIFO (depth, clk_slow, rst_slow,
-							  clk_fast);
-   SyncFIFOIfc #(Bit #(0)) f_ndm_reset_rsp <- mkSyncFIFO (depth, clk_fast, rst_fast,
-							  clk_slow);
-
-   mkConnection (fn_SyncFIFOIfc_to_FIFOF_I (f_ndm_reset_req), core_inner.cl_ndm_reset.request);
-   mkConnection (fn_SyncFIFOIfc_to_FIFOF_O (f_ndm_reset_rsp), core_inner.cl_ndm_reset.response);
+   let sba_AXI4_clock_crossing <- mkAXI4_ClockCrossing (clk_fast, rst_fast,
+							clk_slow, rst_slow);
+   mkConnection (sba_AXI4_clock_crossing.to_S, core_inner.sba_S);
 
    // ================================================================
-   // plus interfaces fro mkHost_Control_Status
+   // Interfaces for mkHost_Control_Status
 
    // ----------------------------------------------------------------
    // Misc. control and status
@@ -195,6 +208,9 @@ module mkAWSteria_Core_Inner_Reclocked
    // ================================================================
    // INTERFACE
 
+   // ----------------------------------------------------------------
+   // Interfaces that go directly out to AWSteria_Core_IFC
+
    // ----------------
    // AXI4 interfaces for DDR memory, MMIO, and DMA
    // Note: DMA may or may not be coherent, depending on internal Core architecture.
@@ -226,23 +242,20 @@ module mkAWSteria_Core_Inner_Reclocked
 
    interface fo_tv_info  = fn_SyncFIFOIfc_to_FIFOF_O (f_tv_info);
 
-   // ----------------
+   // ----------------------------------------------------------------
    // Debug Module interfaces
 
-   // DMI (Debug Module Interface) facing remote debugger
+   // GPR access
+   interface Server hart0_gpr_mem_server = toGPServer (f_gpr_req, f_gpr_rsp);
+`ifdef ISA_F
+   // FPR access
+   interface Server hart0_fpr_mem_server = toGPServer (f_fpr_req, f_fpr_rsp);
+`endif
+   // CSR access
+   interface Server hart0_csr_mem_server = toGPServer (f_csr_req, f_csr_rsp);
 
-   interface Server_DMI se_dmi;
-      interface request  = fn_SyncFIFOIfc_to_FIFOF_I (f_dmi_req);
-      interface response = fn_SyncFIFOIfc_to_FIFOF_O (f_dmi_rsp);
-   endinterface
-
-   // Non-Debug-Module Reset (reset "all" except DM)
-   // These Bit#(0) values are just tokens for signaling 'reset request' and 'reset done'
-
-   interface Client_Semi_FIFOF cl_ndm_reset;
-      interface request  = fn_SyncFIFOIfc_to_FIFOF_O (f_ndm_reset_req);
-      interface response = fn_SyncFIFOIfc_to_FIFOF_I (f_ndm_reset_rsp);
-   endinterface
+   // System Bus (Mem) access
+   interface AXI4_Slave_IFC sba_S        = sba_AXI4_clock_crossing.from_M;
 
    // ================================================================
    // plus interfaces fro mkHost_Control_Status

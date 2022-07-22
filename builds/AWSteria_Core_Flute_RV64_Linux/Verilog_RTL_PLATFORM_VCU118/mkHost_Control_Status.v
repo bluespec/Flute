@@ -692,41 +692,41 @@ module mkHost_Control_Status(CLK,
     #0;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_exec && rg_req0[7:3] == 5'd0)
-	$display("  mkHost_Control_Status: host_to_hw_req: ping/noop");
+	$display("Host_Control_Status: host_to_hw_req: ping/noop");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_exec && rg_req0[7:3] == 5'd1 &&
 	  rg_req0[31:8] == 24'd0)
-	$display("  mkHost_Control_Status: host_to_hw_req: Deassert Core Reset");
+	$display("Host_Control_Status: host_to_hw_req: Deassert Core Reset");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_exec && rg_req0[7:3] == 5'd1 &&
 	  rg_req0[31:8] != 24'd0)
-	$display("  mkHost_Control_Status: host_to_hw_req: Assert Core Reset");
+	$display("Host_Control_Status: host_to_hw_req: Assert Core Reset");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_exec && rg_req0[7:3] == 5'd5 &&
 	  rg_req0[2:0] == 3'd0)
-	$display("  mkHost_Control_Status: host_to_hw_req: watch_tohost_off");
+	$display("Host_Control_Status: host_to_hw_req: watch_tohost_off");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_exec && rg_req0[7:3] == 5'd5 &&
 	  rg_req0[2:0] != 3'd0)
-	$display("  mkHost_Control_Status: host_to_hw_req: watch_tohost_on, addr %0h",
+	$display("Host_Control_Status: host_to_hw_req: watch_tohost_on, addr %0h",
 		 tohost_addr__h1643);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_exec && rg_req0[7:3] == 5'd6 &&
 	  rg_prev_tohost_value != x__read__h409)
-	$display("  mkHost_Control_Status: host_to_hw_req: read_tohost => %0h",
+	$display("Host_Control_Status: host_to_hw_req: read_tohost => %0h",
 		 x__read__h409);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_exec && rg_req0[7:3] == 5'd7 &&
 	  rg_req0[2:0] == 3'd0)
-	$display("  mkHost_Control_Status: host_to_hw_req: PC trace off");
+	$display("Host_Control_Status: host_to_hw_req: PC trace off");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_exec && rg_req0[7:3] == 5'd7 &&
 	  rg_req0[2:0] != 3'd0)
-	$display("  mkHost_Control_Status: host_to_hw_req: PC trace on: interval %0h",
+	$display("Host_Control_Status: host_to_hw_req: PC trace on: interval %0h",
 		 rg_req1);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_exec && rg_req0[7:3] == 5'd8)
-	$display("  mkHost_Control_Status: host_to_hw_req: set_sim_verbosity %0d logdelay %0h",
+	$display("Host_Control_Status: host_to_hw_req: set_sim_verbosity %0d logdelay %0h",
 		 rg_req0[11:8],
 		 tohost_addr__h1643);
     if (RST_N != `BSV_RESET_VALUE)
@@ -736,7 +736,7 @@ module mkHost_Control_Status(CLK,
 	  rg_req0[7:3] != 5'd6 &&
 	  rg_req0[7:3] != 5'd7 &&
 	  rg_req0[7:3] != 5'd8)
-	$display("Host-to-HW control: unsupported command %0h; request word 0 is %0h",
+	$display("Host_ontrol_Status: unsupported command %0h; request word 0 is %0h",
 		 rg_req0[7:3],
 		 rg_req0);
     if (RST_N != `BSV_RESET_VALUE)

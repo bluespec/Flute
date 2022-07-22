@@ -55,12 +55,16 @@ import AXI4_Deburster :: *;
 import SoC_Map     :: *;
 
 // ----------------
-// Defs used in AWSteria_Core_Innter_IFC and related defs
+// Defs used in AWSteria_Core_Inner_IFC and related defs
 
 import AWSteria_Core_IFC :: *;    // For AXI4_Wd_{Id,Addr,Data_A,Data_B,_User}
                                   // and N_Core_External_Interrupt_Sources
 
+import ISA_Decls         :: *;
+import Fabric_Defs       :: *;    // for Wd_{Id,Addr,Data,User}
+
 import DM_Common         :: *;    // Debug Module interface etc.
+import DM_CPU_Req_Rsp    :: *;
 
 `ifdef INCLUDE_PC_TRACE
 import PC_Trace          :: *;    // Lightweight PC trace info
@@ -81,7 +85,7 @@ import PLIC_16_2_7 :: *;
 
 import Boot_ROM :: *;
 
-import DM_TV       :: *;    // Encapsulation of Debug Module and Tandem Verifier Encoder
+import TVE_Wrapper :: *;    // Encapsulation of Tandem Verifier Encoder
 
 import Near_Mem_IO_AXI4  :: *;
 
@@ -92,10 +96,10 @@ import Near_Mem_IO_AXI4  :: *;
 //     plus other control interfaces from mkHost_Control_Status to Core_Inner
 
 interface AWSteria_Core_Inner_IFC;
-   // ================================================================
-   // Same as AWSteria_Core_IFC minus se_control_status
-
    // ----------------------------------------------------------------
+   // Interfaces that go directly out to AWSteria_Core_IFC
+
+   // ----------------
    // AXI4 interfaces for memory, MMIO, and DMA
    // Note: DMA may or may not be coherent, depending on internal Core architecture.
 
@@ -103,23 +107,23 @@ interface AWSteria_Core_Inner_IFC;
    interface AXI4_Master_IFC #(AXI4_Wd_Id, AXI4_Wd_Addr, AXI4_Wd_Data_B, AXI4_Wd_User) mmio_M;
    interface AXI4_Slave_IFC  #(AXI4_Wd_Id, AXI4_Wd_Addr, AXI4_Wd_Data_A, AXI4_Wd_User) dma_S;
 
-   // ----------------------------------------------------------------
+   // ----------------
    // External interrupt sources
 
    method Action ext_interrupts (Bit #(N_Core_External_Interrupt_Sources) x);
 
-   // ----------------------------------------------------------------
+   // ----------------
    // Non-maskable interrupt request
 
    interface FIFOF_I #(Bool) fi_nmi;
 
-   // ----------------------------------------------------------------
+   // ----------------
    // Misc I/O streams
 
    interface FIFOF_O #(Bit #(32)) fo_misc;
    interface FIFOF_I #(Bit #(32)) fi_misc;
 
-   // ----------------------------------------------------------------
+   // ----------------
    // Tandem Verification output
 
    interface FIFOF_O #(TV_Info)  fo_tv_info;
@@ -127,17 +131,20 @@ interface AWSteria_Core_Inner_IFC;
    // ----------------------------------------------------------------
    // Debug Module interfaces
 
-   // DMI (Debug Module Interface) facing remote debugger
+   // GPR access
+   interface Server #(DM_CPU_Req #(5,  XLEN), DM_CPU_Rsp #(XLEN)) hart0_gpr_mem_server;
+`ifdef ISA_F
+   // FPR access
+   interface Server #(DM_CPU_Req #(5,  FLEN), DM_CPU_Rsp #(FLEN)) hart0_fpr_mem_server;
+`endif
+   // CSR access
+   interface Server #(DM_CPU_Req #(12, XLEN), DM_CPU_Rsp #(XLEN)) hart0_csr_mem_server;
 
-   interface Server_DMI se_dmi;
+   // System Bus (Mem) access
+   interface AXI4_Slave_IFC #(Wd_Id, Wd_Addr, Wd_Data, Wd_User) sba_S;
 
-   // Non-Debug-Module Reset (reset "all" except DM)
-   // These Bit#(0) values are just tokens for signaling 'reset request' and 'reset done'
-
-   interface Client_Semi_FIFOF #(Bit #(0), Bit #(0)) cl_ndm_reset;
-
-   // ================================================================
-   // plus interfaces fro mkHost_Control_Status
+   // ----------------------------------------------------------------
+   // Interfaces for mkHost_Control_Status
 
    // PC Trace control
    interface FIFOF_I #(Tuple2 #(Bool, Bit #(64))) fi_pc_trace_control;
@@ -154,7 +161,8 @@ interface AWSteria_Core_Inner_IFC;
 endinterface
 
 // ================================================================
-// AWSteria_Core: single clocked, resettable by control_status module
+// AWSteria_Core: single clocked, resettable by Debug_Module or
+// Host_Control_Status module
 
 typedef enum {
    MODULE_STATE_INIT_0,       // start post-reset initializations
@@ -196,29 +204,25 @@ module mkAWSteria_Core_Inner (AWSteria_Core_Inner_IFC);
 			AXI4_Wd_User)   dma_server_axi4_deburster <- mkAXI4_Deburster_A;
    mkConnection (dma_server_axi4_deburster.to_slave, cpu.dma_server);
 
-   // Debug Module and Tandem Verifier complex
-   let dm_tv_param = DM_TV_Param {
+   // Tandem Verification Encoder wrapper
+   // and its connections to CPU
+   let tve_wrapper_param = TVE_Wrapper_Param {
 `ifdef INCLUDE_TANDEM_VERIF
       cpu_trace_data_out:        cpu.trace_data_out,
 `else
       cpu_trace_data_out:        getstub,
 `endif
-      cpu_hart0_server_reset:    cpu.hart0_server_reset,
-
 `ifdef INCLUDE_GDB_CONTROL
-      cpu_hart0_server_run_halt: cpu.hart0_server_run_halt,
-      cpu_hart0_put_other_req:   cpu.hart0_put_other_req,
-
       cpu_hart0_gpr_mem_server:	 cpu.hart0_gpr_mem_server,
 `ifdef ISA_F
       cpu_hart0_fpr_mem_server:  cpu.hart0_fpr_mem_server,
 `endif
       cpu_hart0_csr_mem_server:  cpu.hart0_csr_mem_server,
 `endif
+      cpu_dma_server:            dma_server_axi4_deburster.from_master
+      };
 
-      cpu_dma_server:            dma_server_axi4_deburster.from_master};
-
-   DM_TV_IFC dm_tv <- mkDM_TV (dm_tv_param);
+   TVE_Wrapper_IFC tve_wrapper <- mkTVE_Wrapper (tve_wrapper_param);
 
    // ================================================================
    // Post-reset initialization
@@ -261,7 +265,7 @@ module mkAWSteria_Core_Inner (AWSteria_Core_Inner_IFC);
    endrule
 
    // ================================================================
-   // Connect CPU to mmio fabric, and fabric to Near_Mem_IO, PLIC and Boot ROM
+   // Connect CPU to mmio fabric, and mmio fabric to Near_Mem_IO, PLIC and Boot ROM
 
    // Initiators on mmio fabric
    mkConnection (cpu.imem_master, mmio_fabric.v_from_masters [cpu_mmio_master_num]);
@@ -437,48 +441,56 @@ module mkAWSteria_Core_Inner (AWSteria_Core_Inner_IFC);
    // INTERFACE
 
    // ----------------------------------------------------------------
+   // Interfaces that go directly out to AWSteria_Core_IFC
+
+   // ----------------
    // AXI4 interfaces for memory, MMIO, and DMA
    // Note: DMA may or may not be coherent, depending on internal Core architecture.
 
    interface AXI4_Master_IFC mem_M  = cpu.mem_master;
    interface AXI4_Master_IFC mmio_M = mmio_fabric.v_to_slaves [default_target_num];
-   interface AXI4_Slave_IFC  dma_S  = dm_tv.dma_S;
+   interface AXI4_Slave_IFC  dma_S  = tve_wrapper.dma_S;
 
-   // ----------------------------------------------------------------
+   // ----------------
    // External interrupt sources
 
    method Action ext_interrupts (Bit #(N_Core_External_Interrupt_Sources) x);
       rg_ext_intrs <= zeroExtend (x);
    endmethod
 
-   // ----------------------------------------------------------------
+   // ----------------
    // Non-maskable interrupt request
 
    interface fi_nmi = to_FIFOF_I (f_nmi);
 
-   // ----------------------------------------------------------------
-   // Misc stream I/O, and Tandem Verification output
+   // ----------------
+   // Misc I/O streams
 
    interface fo_misc = to_FIFOF_O (f_misc_to_host);
    interface fi_misc = to_FIFOF_I (f_misc_from_host);
 
-   interface fo_tv_info = dm_tv.fo_tv_info;
+   // ----------------
+   // Tandem Verification output
+
+   interface fo_tv_info = tve_wrapper.fo_tv_info;
 
    // ----------------------------------------------------------------
    // Debug Module interfaces
 
-   // DMI (Debug Module Interface) facing remote debugger
+   // GPR access
+   interface Server hart0_gpr_mem_server = tve_wrapper.hart0_gpr_mem_server;
+`ifdef ISA_F
+   // FPR access
+   interface Server hart0_fpr_mem_server = tve_wrapper.hart0_fpr_mem_server;
+`endif
+   // CSR access
+   interface Server hart0_csr_mem_server = tve_wrapper.hart0_csr_mem_server;
 
-   interface Server_DMI se_dmi = dm_tv.se_dmi;
+   // System Bus (Mem) access
+   interface AXI4_Master_IFC sba_S = tve_wrapper.sba_S;
 
-   // Non-Debug-Module Reset (reset "all" except DM)
-   // These Bit#(0) values are just tokens for signaling 'reset request' and 'reset done'
-
-   interface cl_ndm_reset = dm_tv.cl_ndm_reset;
-
-   // ================================================================
-   // plus interfaces for mkHost_Control_Status
-
+   // ----------------------------------------------------------------
+   // Interfaces for mkHost_Control_Status
 
 `ifdef INCLUDE_PC_TRACE
    // PC Trace control
@@ -496,7 +508,7 @@ module mkAWSteria_Core_Inner (AWSteria_Core_Inner_IFC);
    // To CPU
 
    // ----------------
-   // Debugging: set core's verbosity
+   // Set core's verbosity and logdelay
 
    interface FIFOF_I fi_verbosity_control;
       method Action enq (Tuple2 #(Bit #(4), Bit #(64)) xy);
@@ -507,7 +519,7 @@ module mkAWSteria_Core_Inner (AWSteria_Core_Inner_IFC);
    endinterface
 
    // ----------------
-   // For ISA tests: watch memory writes to <tohost> addr
+   // Set watch-tohost on/off with tohost address
 
 `ifdef WATCH_TOHOST
    interface FIFOF_I fi_watch_tohost_control;
@@ -518,6 +530,7 @@ module mkAWSteria_Core_Inner (AWSteria_Core_Inner_IFC);
       method notFull = True;
    endinterface
 
+   // Get tohost value
    // Note: this FIFOF_O is always notEmpty and always enabled
    interface FIFOF_O fo_tohost_value;
       method Bit #(64) first = cpu.mv_tohost_value;
