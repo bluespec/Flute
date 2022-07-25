@@ -649,23 +649,25 @@ module mkD_MMU_Cache(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h8559;
-  reg [31 : 0] v__h6532;
-  reg [31 : 0] v__h7557;
+  reg [31 : 0] v__h8657;
+  reg [31 : 0] v__h6630;
+  reg [31 : 0] v__h7655;
   reg [31 : 0] v__h2123;
   reg [31 : 0] v__h2117;
-  reg [31 : 0] v__h6526;
-  reg [31 : 0] v__h7551;
-  reg [31 : 0] v__h8553;
+  reg [31 : 0] v__h6624;
+  reg [31 : 0] v__h7649;
+  reg [31 : 0] v__h8651;
   // synopsys translate_on
 
   // remaining internal signals
+  wire [63 : 0] test_num__h4646;
   wire [3 : 0] IF_NOT_tlb_mv_vm_xlate_crg_mmu_cache_req_port0_ETC___d212,
 	       x1__h3434,
-	       x1__h4806,
-	       x1__h5626;
+	       x1__h4904,
+	       x1__h5724;
   wire IF_tlb_mv_vm_xlate_crg_mmu_cache_req_port0__re_ETC___d163,
        NOT_crg_mmu_cache_req_port0__read__05_BITS_204_ETC___d128,
+       NOT_rg_tohost_value_49_EQ_crg_mmu_cache_req_po_ETC___d251,
        NOT_tlb_mv_vm_xlate_crg_mmu_cache_req_port0__r_ETC___d185,
        NOT_tlb_mv_vm_xlate_crg_mmu_cache_req_port0__r_ETC___d190,
        NOT_tlb_mv_vm_xlate_crg_mmu_cache_req_port0__r_ETC___d230,
@@ -674,6 +676,8 @@ module mkD_MMU_Cache(CLK,
        cache_mav_request_pa_68_BITS_129_TO_128_69_EQ__ETC___d175,
        cache_mav_request_pa_68_BITS_129_TO_128_69_EQ__ETC___d207,
        crg_mmu_cache_req_port0__read__05_BITS_204_TO__ETC___d204,
+       rg_watch_tohost_41_AND_tlb_mv_vm_xlate_crg_mmu_ETC___d259,
+       rg_watch_tohost_41_AND_tlb_mv_vm_xlate_crg_mmu_ETC___d265,
        tlb_mv_vm_xlate_crg_mmu_cache_req_port0__read__ETC___d150,
        tlb_mv_vm_xlate_crg_mmu_cache_req_port0__read__ETC___d151,
        tlb_mv_vm_xlate_crg_mmu_cache_req_port0__read__ETC___d154,
@@ -1183,8 +1187,8 @@ module mkD_MMU_Cache(CLK,
 	       tlb$mv_vm_xlate[134:131] ;
   assign MUX_crg_exc_code$port0__write_1__VAL_3 =
 	     (ptw$dmem_server_response_get[131:130] == 2'd1) ?
-	       x1__h4806 :
-	       x1__h5626 ;
+	       x1__h4904 :
+	       x1__h5724 ;
   assign MUX_crg_mmu_cache_req_state$port0__write_1__VAL_3 =
 	     (ptw$dmem_server_response_get[131:130] == 2'd0) ? 2'd1 : 2'd0 ;
   assign MUX_crg_state$port0__write_1__VAL_1 =
@@ -1363,7 +1367,7 @@ module mkD_MMU_Cache(CLK,
   always@(MUX_crg_exc_code$port0__write_1__SEL_1 or
 	  MUX_crg_exc_code$port0__write_1__VAL_1 or
 	  MUX_crg_exc$port0__write_1__SEL_2 or
-	  x1__h4806 or
+	  x1__h4904 or
 	  MUX_crg_exc$port0__write_1__SEL_3 or
 	  MUX_crg_exc_code$port0__write_1__VAL_3 or
 	  WILL_FIRE_RL_rl_CPU_req_mmio_WAIT)
@@ -1373,12 +1377,12 @@ module mkD_MMU_Cache(CLK,
 	  crg_exc_code$port0__write_1 =
 	      MUX_crg_exc_code$port0__write_1__VAL_1;
       MUX_crg_exc$port0__write_1__SEL_2:
-	  crg_exc_code$port0__write_1 = x1__h4806;
+	  crg_exc_code$port0__write_1 = x1__h4904;
       MUX_crg_exc$port0__write_1__SEL_3:
 	  crg_exc_code$port0__write_1 =
 	      MUX_crg_exc_code$port0__write_1__VAL_3;
       WILL_FIRE_RL_rl_CPU_req_mmio_WAIT:
-	  crg_exc_code$port0__write_1 = x1__h4806;
+	  crg_exc_code$port0__write_1 = x1__h4904;
       default: crg_exc_code$port0__write_1 = 4'b1010 /* unspecified value */ ;
     endcase
   end
@@ -1686,6 +1690,8 @@ module mkD_MMU_Cache(CLK,
 	      crg_mmu_cache_req[140:139] != 2'b0) &&
 	     (crg_mmu_cache_req[204:203] != 2'b11 ||
 	      crg_mmu_cache_req[141:139] != 3'b0) ;
+  assign NOT_rg_tohost_value_49_EQ_crg_mmu_cache_req_po_ETC___d251 =
+	     rg_tohost_value != crg_mmu_cache_req[138:75] ;
   assign NOT_tlb_mv_vm_xlate_crg_mmu_cache_req_port0__r_ETC___d185 =
 	     (!tlb_mv_vm_xlate_crg_mmu_cache_req_port0__read__ETC___d150 &&
 	      tlb_mv_vm_xlate_crg_mmu_cache_req_port0__read__ETC___d151 ||
@@ -1735,6 +1741,15 @@ module mkD_MMU_Cache(CLK,
 	     crg_mmu_cache_req[140:139] == 2'b0 ||
 	     crg_mmu_cache_req[204:203] == 2'b11 &&
 	     crg_mmu_cache_req[141:139] == 3'b0 ;
+  assign rg_watch_tohost_41_AND_tlb_mv_vm_xlate_crg_mmu_ETC___d259 =
+	     rg_watch_tohost && tlb$mv_vm_xlate[198:135] == rg_tohost_addr &&
+	     NOT_rg_tohost_value_49_EQ_crg_mmu_cache_req_po_ETC___d251 &&
+	     crg_mmu_cache_req[138:76] == 63'd0 ;
+  assign rg_watch_tohost_41_AND_tlb_mv_vm_xlate_crg_mmu_ETC___d265 =
+	     rg_watch_tohost && tlb$mv_vm_xlate[198:135] == rg_tohost_addr &&
+	     NOT_rg_tohost_value_49_EQ_crg_mmu_cache_req_po_ETC___d251 &&
+	     crg_mmu_cache_req[138:76] != 63'd0 ;
+  assign test_num__h4646 = { 1'd0, crg_mmu_cache_req[138:76] } ;
   assign tlb_mv_vm_xlate_crg_mmu_cache_req_port0__read__ETC___d150 =
 	     tlb$mv_vm_xlate[198:135] < 64'h0000000000001000 ;
   assign tlb_mv_vm_xlate_crg_mmu_cache_req_port0__read__ETC___d151 =
@@ -1755,13 +1770,13 @@ module mkD_MMU_Cache(CLK,
 	      crg_mmu_cache_req[74:70] == 5'b00010) ?
 	       4'd4 :
 	       4'd6 ;
-  assign x1__h4806 =
+  assign x1__h4904 =
 	     (crg_mmu_cache_req[207:206] == 2'd0 ||
 	      crg_mmu_cache_req[207:206] == 2'd2 &&
 	      crg_mmu_cache_req[74:70] == 5'b00010) ?
 	       4'd5 :
 	       4'd7 ;
-  assign x1__h5626 =
+  assign x1__h5724 =
 	     (crg_mmu_cache_req[207:206] == 2'd0 ||
 	      crg_mmu_cache_req[207:206] == 2'd2 &&
 	      crg_mmu_cache_req[74:70] == 5'b00010) ?
@@ -1779,7 +1794,7 @@ module mkD_MMU_Cache(CLK,
 	crg_valid <= `BSV_ASSIGNMENT_DELAY 1'd0;
 	rg_tohost_addr <= `BSV_ASSIGNMENT_DELAY 64'h0000000080001000;
 	rg_tohost_value <= `BSV_ASSIGNMENT_DELAY 64'd0;
-	rg_watch_tohost <= `BSV_ASSIGNMENT_DELAY 1'd0;
+	rg_watch_tohost <= `BSV_ASSIGNMENT_DELAY 1'd1;
       end
     else
       begin
@@ -1845,7 +1860,7 @@ module mkD_MMU_Cache(CLK,
 	  tlb$mv_vm_xlate[200:199] != 2'd1 &&
 	  tlb$mv_vm_xlate[200:199] != 2'd2 &&
 	  tlb$mv_vm_xlate[200:199] != 2'd0)
-	$display("Dynamic assertion failed: \"../../src_Core/Near_Mem_VM_WB_L1_L2/D_MMU_Cache.bsv\", line 456, column 67\nFAIL: unknown vm_xlate result");
+	$display("Dynamic assertion failed: \"../../src_Core/Near_Mem_VM_WB_L1_L2/D_MMU_Cache.bsv\", line 466, column 67\nFAIL: unknown vm_xlate result");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_CPU_req_B &&
 	  crg_mmu_cache_req_port0__read__05_BITS_204_TO__ETC___d204 &&
@@ -1854,28 +1869,51 @@ module mkD_MMU_Cache(CLK,
 	  tlb$mv_vm_xlate[200:199] != 2'd0)
 	$finish(32'd0);
     if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_CPU_req_B &&
+	  crg_mmu_cache_req_port0__read__05_BITS_204_TO__ETC___d204 &&
+	  tlb$mv_vm_xlate[200:199] != 2'd1 &&
+	  tlb$mv_vm_xlate[200:199] != 2'd2 &&
+	  rg_watch_tohost &&
+	  tlb$mv_vm_xlate[198:135] == rg_tohost_addr &&
+	  NOT_rg_tohost_value_49_EQ_crg_mmu_cache_req_po_ETC___d251)
+	$write("Store to 'tohost': 0x%0h", crg_mmu_cache_req[138:75]);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_CPU_req_B &&
+	  crg_mmu_cache_req_port0__read__05_BITS_204_TO__ETC___d204 &&
+	  tlb$mv_vm_xlate[200:199] != 2'd1 &&
+	  tlb$mv_vm_xlate[200:199] != 2'd2 &&
+	  rg_watch_tohost_41_AND_tlb_mv_vm_xlate_crg_mmu_ETC___d259)
+	$display("    = PASS");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_CPU_req_B &&
+	  crg_mmu_cache_req_port0__read__05_BITS_204_TO__ETC___d204 &&
+	  tlb$mv_vm_xlate[200:199] != 2'd1 &&
+	  tlb$mv_vm_xlate[200:199] != 2'd2 &&
+	  rg_watch_tohost_41_AND_tlb_mv_vm_xlate_crg_mmu_ETC___d265)
+	$display("    = FAIL on test_%0d", test_num__h4646);
+    if (RST_N != `BSV_RESET_VALUE)
       if (EN_set_watch_tohost)
 	begin
-	  v__h8559 = $stime;
+	  v__h8657 = $stime;
 	  #0;
 	end
-    v__h8553 = v__h8559 / 32'd10;
+    v__h8651 = v__h8657 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_set_watch_tohost)
 	$display("%0d: %m.set_watch_tohost: watch %0d, addr %0h",
-		 v__h8553,
+		 v__h8651,
 		 set_watch_tohost_watch_tohost,
 		 set_watch_tohost_tohost_addr);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_ptw_rd_B && cache$mav_request_pa[129:128] == 2'd2)
 	begin
-	  v__h6532 = $stime;
+	  v__h6630 = $stime;
 	  #0;
 	end
-    v__h6526 = v__h6532 / 32'd10;
+    v__h6624 = v__h6630 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_ptw_rd_B && cache$mav_request_pa[129:128] == 2'd2)
-	$display("%0d: %m.rl_ptw_rd_B", v__h6526);
+	$display("%0d: %m.rl_ptw_rd_B", v__h6624);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_ptw_rd_B && cache$mav_request_pa[129:128] == 2'd2)
 	$display("    INTERNAL ERROR: cannot have CACHE_WRITE_HIT for PTW read-request to cache");
@@ -1910,14 +1948,14 @@ module mkD_MMU_Cache(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_pte_wb_cache_WAIT && !cache$mv_refill_ok)
 	begin
-	  v__h7557 = $stime;
+	  v__h7655 = $stime;
 	  #0;
 	end
-    v__h7551 = v__h7557 / 32'd10;
+    v__h7649 = v__h7655 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_pte_wb_cache_WAIT && !cache$mv_refill_ok)
 	$display("%0d: %m.rl_pte_wb_req_cache_WAIT: ERROR: unexpected cache error response",
-		 v__h7551);
+		 v__h7649);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_pte_wb_cache_WAIT && !cache$mv_refill_ok)
 	$display("    pte_pa %0d  pa %0h",

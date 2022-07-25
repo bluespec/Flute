@@ -286,8 +286,8 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
    // See NOTE: "tohost" above.
    // "tohost" addr on which to monitor writes, for standard ISA tests.
    // These are set by the 'set_watch_tohost' method but are otherwise read-only.
-   Reg #(Bool)      rg_watch_tohost <- mkReg (False);
-   Reg #(Bit #(64)) rg_tohost_addr  <- mkReg ('h_8000_1000);
+   Reg #(Bool)      rg_watch_tohost <- mkReg (True);
+   Reg #(Bit #(64)) rg_tohost_addr  <- mkReg ('h_8000_1000);    // Default for ISA tests
    Reg #(Bit #(64)) rg_tohost_value <- mkReg (0);
 `endif
 
@@ -296,15 +296,25 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
    // BEHAVIOR
 
    // ----------------------------------------------------------------
+
    // If WATCH_TOHOST is configured, this function monitors STOREs for
    // writes to the "tohost" address.  This is used only in certain
-   // ISA and other tests, in simulation.
+   // ISA and other tests.  The result is $display'ed (in simulation).
+   // Interface plumbing makes it available to surrounding hardware so
+   // it can also be used on FPGA.
 
    function Action fa_watch_tohost (Bit #(64) addr, Bit #(64) final_st_val);
       action
 `ifdef WATCH_TOHOST
-	 if (rg_watch_tohost && (addr == rg_tohost_addr))
+	 if (rg_watch_tohost && (addr == rg_tohost_addr)) begin
 	    rg_tohost_value <= final_st_val;
+	    if (rg_tohost_value != final_st_val) begin
+	       $write ("Store to 'tohost': 0x%0h", final_st_val);
+	       let test_num = (final_st_val >> 1);
+	       if (test_num == 0) $display ("    = PASS");
+	       else               $display ("    = FAIL on test_%0d", test_num);
+	    end
+	 end
 `endif
       endaction
    endfunction

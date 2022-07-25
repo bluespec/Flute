@@ -305,7 +305,7 @@ module mkCPU (CPU_IFC);
    // Debugging: print instruction trace info
 
    Reg #(Bit #(64)) rg_instret_reported <- mkReg ('1);
-   Reg #(Bit #(64)) rg_pc_reported      <- mkReg ('1);
+   Reg #(WordXL)    rg_pc_reported      <- mkReg ('1);
 
    function Action fa_emit_instr_trace (Bit #(64) instret, WordXL pc, Instr instr, Priv_Mode priv);
       action

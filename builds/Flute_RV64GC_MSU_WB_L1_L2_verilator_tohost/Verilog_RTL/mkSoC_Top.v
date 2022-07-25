@@ -21,7 +21,7 @@
 // RST_N                          I     1 reset
 // to_raw_mem_response_put        I   256
 // put_from_console_put           I     8 reg
-// set_verbosity_verbosity        I     4 reg
+// set_verbosity_verbosity        I     4
 // set_verbosity_logdelay         I    64 reg
 // set_watch_tohost_watch_tohost  I     1 reg
 // set_watch_tohost_tohost_addr   I    64 reg

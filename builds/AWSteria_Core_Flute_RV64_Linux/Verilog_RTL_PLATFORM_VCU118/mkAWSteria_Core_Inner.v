@@ -3534,9 +3534,9 @@ module mkAWSteria_Core_Inner(CLK,
 
   // rule RL_rl_first_init_finish
   assign CAN_FIRE_RL_rl_first_init_finish =
-	     cpu$RDY_hart0_server_reset_response_get &&
 	     plic$RDY_server_reset_response_get &&
 	     near_mem_io$RDY_server_reset_response_get &&
+	     cpu$RDY_hart0_server_reset_response_get &&
 	     near_mem_io$RDY_set_addr_map &&
 	     rg_module_state == 2'd1 ;
   assign WILL_FIRE_RL_rl_first_init_finish =
@@ -3544,10 +3544,10 @@ module mkAWSteria_Core_Inner(CLK,
 
   // rule RL_rl_first_init_start
   assign CAN_FIRE_RL_rl_first_init_start =
-	     cpu$RDY_hart0_server_reset_request_put &&
 	     plic$RDY_server_reset_request_put &&
 	     near_mem_io$RDY_server_reset_request_put &&
 	     mmio_fabric$RDY_reset &&
+	     cpu$RDY_hart0_server_reset_request_put &&
 	     rg_module_state == 2'd0 ;
   assign WILL_FIRE_RL_rl_first_init_start = CAN_FIRE_RL_rl_first_init_start ;
 

@@ -322,6 +322,14 @@ module mkCore
    mkConnection (fabric_2x3.v_to_slaves [plic_slave_num],        plic.axi4_slave);
 
    // ================================================================
+   // Connect MTIME from near_mem_io to csr_regfile in CPU
+
+   (* fire_when_enabled, no_implicit_conditions *)
+   rule rl_drive_time;
+      cpu.ma_set_csr_time (near_mem_io.mv_read_mtime);
+   endrule
+
+   // ================================================================
    // Connect interrupt lines from near_mem_io and PLIC to CPU
 
    rule rl_relay_sw_interrupts;    // from Near_Mem_IO (CLINT)

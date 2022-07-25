@@ -523,8 +523,8 @@ module mkI_MMU_Cache(CLK,
        MUX_crg_state$port0__write_1__SEL_2,
        MUX_crg_valid$port0__write_1__SEL_1,
        MUX_crg_valid$port0__write_1__VAL_1,
-       MUX_tlb$ma_insert_1__SEL_1,
-       MUX_tlb$ma_insert_1__SEL_2;
+       MUX_tlb$ma_insert_1__SEL_2,
+       MUX_tlb$ma_insert_4__SEL_1;
 
   // declarations used by system tasks
   // synopsys translate_off
@@ -942,14 +942,14 @@ module mkI_MMU_Cache(CLK,
 	      tlb$mv_vm_xlate[200:199] == 2'd1 ||
 	      tlb$mv_vm_xlate[200:199] == 2'd2 ||
 	      cache_mav_request_pa_61_BITS_129_TO_128_62_EQ__ETC___d166) ;
-  assign MUX_tlb$ma_insert_1__SEL_1 =
-	     WILL_FIRE_RL_rl_PTW_wait && f_ptw_rsps$D_OUT[131:130] == 2'd0 ;
   assign MUX_tlb$ma_insert_1__SEL_2 =
 	     WILL_FIRE_RL_rl_CPU_req_B &&
 	     crg_mmu_cache_req_port0__read__05_BITS_204_TO__ETC___d194 &&
 	     tlb$mv_vm_xlate[200:199] != 2'd1 &&
 	     tlb$mv_vm_xlate[200:199] != 2'd2 &&
 	     tlb$mv_vm_xlate[130] ;
+  assign MUX_tlb$ma_insert_4__SEL_1 =
+	     WILL_FIRE_RL_rl_PTW_wait && f_ptw_rsps$D_OUT[131:130] == 2'd0 ;
   assign MUX_crg_exc$port0__write_1__VAL_1 =
 	     NOT_crg_mmu_cache_req_port0__read__05_BITS_204_ETC___d128 ||
 	     tlb$mv_vm_xlate[200:199] == 2'd2 ;
@@ -1247,15 +1247,15 @@ module mkI_MMU_Cache(CLK,
   // submodule tlb
   assign tlb$ma_insert_asid = crg_mmu_cache_req[59:44] ;
   assign tlb$ma_insert_level =
-	     MUX_tlb$ma_insert_1__SEL_1 ?
+	     MUX_tlb$ma_insert_4__SEL_1 ?
 	       f_ptw_rsps$D_OUT[65:64] :
 	       tlb$mv_vm_xlate[65:64] ;
   assign tlb$ma_insert_pte =
-	     MUX_tlb$ma_insert_1__SEL_1 ?
+	     MUX_tlb$ma_insert_4__SEL_1 ?
 	       f_ptw_rsps$D_OUT[129:66] :
 	       tlb$mv_vm_xlate[129:66] ;
   assign tlb$ma_insert_pte_pa =
-	     MUX_tlb$ma_insert_1__SEL_1 ?
+	     MUX_tlb$ma_insert_4__SEL_1 ?
 	       f_ptw_rsps$D_OUT[63:0] :
 	       tlb$mv_vm_xlate[63:0] ;
   assign tlb$ma_insert_vpn = crg_mmu_cache_req[177:151] ;

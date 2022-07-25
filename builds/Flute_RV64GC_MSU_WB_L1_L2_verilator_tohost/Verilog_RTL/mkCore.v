@@ -151,7 +151,7 @@
 // core_external_interrupt_sources_14_m_interrupt_req_set_not_clear  I     1
 // core_external_interrupt_sources_15_m_interrupt_req_set_not_clear  I     1
 // nmi_req_set_not_clear          I     1
-// set_verbosity_verbosity        I     4 reg
+// set_verbosity_verbosity        I     4
 // set_verbosity_logdelay         I    64 reg
 // set_watch_tohost_watch_tohost  I     1 reg
 // set_watch_tohost_tohost_addr   I    64 reg
