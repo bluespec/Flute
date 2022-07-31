@@ -88,20 +88,20 @@
 // RDY_fo_tv_info_deq             O     1
 // fo_tv_info_notEmpty            O     1
 // RDY_fo_tv_info_notEmpty        O     1 const
-// RDY_se_dmi_request_enq         O     1
-// se_dmi_request_notFull         O     1
+// RDY_se_dmi_request_enq         O     1 reg
+// se_dmi_request_notFull         O     1 reg
 // RDY_se_dmi_request_notFull     O     1 const
-// se_dmi_response_first          O    32
-// RDY_se_dmi_response_first      O     1
-// RDY_se_dmi_response_deq        O     1
-// se_dmi_response_notEmpty       O     1
+// se_dmi_response_first          O    32 reg
+// RDY_se_dmi_response_first      O     1 reg
+// RDY_se_dmi_response_deq        O     1 reg
+// se_dmi_response_notEmpty       O     1 reg
 // RDY_se_dmi_response_notEmpty   O     1 const
 // RDY_cl_ndm_reset_request_first  O     1 const
-// RDY_cl_ndm_reset_request_deq   O     1
-// cl_ndm_reset_request_notEmpty  O     1
+// RDY_cl_ndm_reset_request_deq   O     1 const
+// cl_ndm_reset_request_notEmpty  O     1 const
 // RDY_cl_ndm_reset_request_notEmpty  O     1 const
-// RDY_cl_ndm_reset_response_enq  O     1
-// cl_ndm_reset_response_notFull  O     1
+// RDY_cl_ndm_reset_response_enq  O     1 const
+// cl_ndm_reset_response_notFull  O     1 const
 // RDY_cl_ndm_reset_response_notFull  O     1 const
 // RDY_se_control_status_request_enq  O     1 reg
 // se_control_status_request_notFull  O     1 reg
@@ -171,7 +171,7 @@
 // ext_interrupts_x               I     5 reg
 // fi_nmi_enq_x                   I     1
 // fi_misc_enq_x                  I    32
-// se_dmi_request_enq_x           I    40
+// se_dmi_request_enq_x           I    40 reg
 // se_control_status_request_enq_x  I    32 reg
 // EN_ext_interrupts              I     1
 // EN_fi_nmi_enq                  I     1
@@ -180,8 +180,8 @@
 // EN_fo_tv_info_deq              I     1
 // EN_se_dmi_request_enq          I     1
 // EN_se_dmi_response_deq         I     1
-// EN_cl_ndm_reset_request_deq    I     1
-// EN_cl_ndm_reset_response_enq   I     1
+// EN_cl_ndm_reset_request_deq    I     1 unused
+// EN_cl_ndm_reset_response_enq   I     1 unused
 // EN_se_control_status_request_enq  I     1
 // EN_se_control_status_response_deq  I     1
 //
@@ -1021,12 +1021,17 @@ module mkAWSteria_Core(CLK_clk1,
 		 core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$wget,
 		 core_inner_dma_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$wget,
 		 core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$wget,
-		 core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$wget;
-  wire [82 : 0] core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$wget;
-  wire [72 : 0] core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$wget;
+		 core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$wget,
+		 core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$wget,
+		 core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$wget;
+  wire [82 : 0] core_inner_mmio_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$wget,
+		core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$wget;
+  wire [72 : 0] core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$wget,
+		core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$wget;
   wire [17 : 0] core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$wget,
 		core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$wget,
-		core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$wget;
+		core_inner_mmio_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$wget,
+		core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$wget;
   wire core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas,
        core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas,
        core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas,
@@ -1056,12 +1061,31 @@ module mkAWSteria_Core(CLK_clk1,
        core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas,
        core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas,
        core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas,
-       core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas;
+       core_inner_mmio_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas,
+       core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas,
+       core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas,
+       core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas,
+       core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_data_deqWire$whas,
+       core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$whas,
+       core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$whas,
+       core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas,
+       core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas,
+       core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas,
+       core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas;
 
   // register core_inner_rg_irqs
   reg [4 : 0] core_inner_rg_irqs;
   wire [4 : 0] core_inner_rg_irqs$D_IN;
   wire core_inner_rg_irqs$EN;
+
+  // register rg_core_reset_message_displayed
+  reg rg_core_reset_message_displayed;
+  wire rg_core_reset_message_displayed$D_IN,
+       rg_core_reset_message_displayed$EN;
+
+  // register rg_debug_module_ndm_reset
+  reg rg_debug_module_ndm_reset;
+  wire rg_debug_module_ndm_reset$D_IN, rg_debug_module_ndm_reset$EN;
 
   // ports of submodule core_inner_ddr_AXI4_clock_crossing_f_ar
   wire [108 : 0] core_inner_ddr_AXI4_clock_crossing_f_ar$dD_OUT,
@@ -1143,19 +1167,47 @@ module mkAWSteria_Core(CLK_clk1,
        core_inner_dma_AXI4_clock_crossing_f_w$sENQ,
        core_inner_dma_AXI4_clock_crossing_f_w$sFULL_N;
 
-  // ports of submodule core_inner_f_dmi_req
-  wire [39 : 0] core_inner_f_dmi_req$dD_OUT, core_inner_f_dmi_req$sD_IN;
-  wire core_inner_f_dmi_req$dDEQ,
-       core_inner_f_dmi_req$dEMPTY_N,
-       core_inner_f_dmi_req$sENQ,
-       core_inner_f_dmi_req$sFULL_N;
+  // ports of submodule core_inner_f_csr_req
+  wire [76 : 0] core_inner_f_csr_req$dD_OUT, core_inner_f_csr_req$sD_IN;
+  wire core_inner_f_csr_req$dDEQ,
+       core_inner_f_csr_req$dEMPTY_N,
+       core_inner_f_csr_req$sENQ,
+       core_inner_f_csr_req$sFULL_N;
 
-  // ports of submodule core_inner_f_dmi_rsp
-  wire [31 : 0] core_inner_f_dmi_rsp$dD_OUT, core_inner_f_dmi_rsp$sD_IN;
-  wire core_inner_f_dmi_rsp$dDEQ,
-       core_inner_f_dmi_rsp$dEMPTY_N,
-       core_inner_f_dmi_rsp$sENQ,
-       core_inner_f_dmi_rsp$sFULL_N;
+  // ports of submodule core_inner_f_csr_rsp
+  wire [64 : 0] core_inner_f_csr_rsp$dD_OUT, core_inner_f_csr_rsp$sD_IN;
+  wire core_inner_f_csr_rsp$dDEQ,
+       core_inner_f_csr_rsp$dEMPTY_N,
+       core_inner_f_csr_rsp$sENQ,
+       core_inner_f_csr_rsp$sFULL_N;
+
+  // ports of submodule core_inner_f_fpr_req
+  wire [69 : 0] core_inner_f_fpr_req$dD_OUT, core_inner_f_fpr_req$sD_IN;
+  wire core_inner_f_fpr_req$dDEQ,
+       core_inner_f_fpr_req$dEMPTY_N,
+       core_inner_f_fpr_req$sENQ,
+       core_inner_f_fpr_req$sFULL_N;
+
+  // ports of submodule core_inner_f_fpr_rsp
+  wire [64 : 0] core_inner_f_fpr_rsp$dD_OUT, core_inner_f_fpr_rsp$sD_IN;
+  wire core_inner_f_fpr_rsp$dDEQ,
+       core_inner_f_fpr_rsp$dEMPTY_N,
+       core_inner_f_fpr_rsp$sENQ,
+       core_inner_f_fpr_rsp$sFULL_N;
+
+  // ports of submodule core_inner_f_gpr_req
+  wire [69 : 0] core_inner_f_gpr_req$dD_OUT, core_inner_f_gpr_req$sD_IN;
+  wire core_inner_f_gpr_req$dDEQ,
+       core_inner_f_gpr_req$dEMPTY_N,
+       core_inner_f_gpr_req$sENQ,
+       core_inner_f_gpr_req$sFULL_N;
+
+  // ports of submodule core_inner_f_gpr_rsp
+  wire [64 : 0] core_inner_f_gpr_rsp$dD_OUT, core_inner_f_gpr_rsp$sD_IN;
+  wire core_inner_f_gpr_rsp$dDEQ,
+       core_inner_f_gpr_rsp$dEMPTY_N,
+       core_inner_f_gpr_rsp$sENQ,
+       core_inner_f_gpr_rsp$sFULL_N;
 
   // ports of submodule core_inner_f_misc_from_host
   wire [31 : 0] core_inner_f_misc_from_host$dD_OUT,
@@ -1172,18 +1224,6 @@ module mkAWSteria_Core(CLK_clk1,
        core_inner_f_misc_to_host$dEMPTY_N,
        core_inner_f_misc_to_host$sENQ,
        core_inner_f_misc_to_host$sFULL_N;
-
-  // ports of submodule core_inner_f_ndm_reset_req
-  wire core_inner_f_ndm_reset_req$dDEQ,
-       core_inner_f_ndm_reset_req$dEMPTY_N,
-       core_inner_f_ndm_reset_req$sENQ,
-       core_inner_f_ndm_reset_req$sFULL_N;
-
-  // ports of submodule core_inner_f_ndm_reset_rsp
-  wire core_inner_f_ndm_reset_rsp$dDEQ,
-       core_inner_f_ndm_reset_rsp$dEMPTY_N,
-       core_inner_f_ndm_reset_rsp$sENQ,
-       core_inner_f_ndm_reset_rsp$sFULL_N;
 
   // ports of submodule core_inner_f_nmi
   wire core_inner_f_nmi$dDEQ,
@@ -1278,9 +1318,15 @@ module mkAWSteria_Core(CLK_clk1,
 		 core_inner_reclocked$dma_S_wdata,
 		 core_inner_reclocked$mem_M_rdata,
 		 core_inner_reclocked$mem_M_wdata;
+  wire [76 : 0] core_inner_reclocked$hart0_csr_mem_server_request_put;
+  wire [69 : 0] core_inner_reclocked$hart0_fpr_mem_server_request_put,
+		core_inner_reclocked$hart0_gpr_mem_server_request_put;
   wire [67 : 0] core_inner_reclocked$fi_verbosity_control_enq_x;
   wire [64 : 0] core_inner_reclocked$fi_pc_trace_control_enq_x,
-		core_inner_reclocked$fi_watch_tohost_control_enq_x;
+		core_inner_reclocked$fi_watch_tohost_control_enq_x,
+		core_inner_reclocked$hart0_csr_mem_server_response_get,
+		core_inner_reclocked$hart0_fpr_mem_server_response_get,
+		core_inner_reclocked$hart0_gpr_mem_server_response_get;
   wire [63 : 0] core_inner_reclocked$dma_S_araddr,
 		core_inner_reclocked$dma_S_awaddr,
 		core_inner_reclocked$dma_S_wstrb,
@@ -1291,11 +1337,13 @@ module mkAWSteria_Core(CLK_clk1,
 		core_inner_reclocked$mmio_M_araddr,
 		core_inner_reclocked$mmio_M_awaddr,
 		core_inner_reclocked$mmio_M_rdata,
-		core_inner_reclocked$mmio_M_wdata;
-  wire [39 : 0] core_inner_reclocked$se_dmi_request_enq_x;
+		core_inner_reclocked$mmio_M_wdata,
+		core_inner_reclocked$sba_S_araddr,
+		core_inner_reclocked$sba_S_awaddr,
+		core_inner_reclocked$sba_S_rdata,
+		core_inner_reclocked$sba_S_wdata;
   wire [31 : 0] core_inner_reclocked$fi_misc_enq_x,
-		core_inner_reclocked$fo_misc_first,
-		core_inner_reclocked$se_dmi_response_first;
+		core_inner_reclocked$fo_misc_first;
   wire [15 : 0] core_inner_reclocked$dma_S_arid,
 		core_inner_reclocked$dma_S_awid,
 		core_inner_reclocked$dma_S_bid,
@@ -1307,14 +1355,21 @@ module mkAWSteria_Core(CLK_clk1,
 		core_inner_reclocked$mmio_M_arid,
 		core_inner_reclocked$mmio_M_awid,
 		core_inner_reclocked$mmio_M_bid,
-		core_inner_reclocked$mmio_M_rid;
+		core_inner_reclocked$mmio_M_rid,
+		core_inner_reclocked$sba_S_arid,
+		core_inner_reclocked$sba_S_awid,
+		core_inner_reclocked$sba_S_bid,
+		core_inner_reclocked$sba_S_rid;
   wire [7 : 0] core_inner_reclocked$dma_S_arlen,
 	       core_inner_reclocked$dma_S_awlen,
 	       core_inner_reclocked$mem_M_arlen,
 	       core_inner_reclocked$mem_M_awlen,
 	       core_inner_reclocked$mmio_M_arlen,
 	       core_inner_reclocked$mmio_M_awlen,
-	       core_inner_reclocked$mmio_M_wstrb;
+	       core_inner_reclocked$mmio_M_wstrb,
+	       core_inner_reclocked$sba_S_arlen,
+	       core_inner_reclocked$sba_S_awlen,
+	       core_inner_reclocked$sba_S_wstrb;
   wire [4 : 0] core_inner_reclocked$ext_interrupts_x;
   wire [3 : 0] core_inner_reclocked$dma_S_arcache,
 	       core_inner_reclocked$dma_S_arqos,
@@ -1333,7 +1388,13 @@ module mkAWSteria_Core(CLK_clk1,
 	       core_inner_reclocked$mmio_M_arregion,
 	       core_inner_reclocked$mmio_M_awcache,
 	       core_inner_reclocked$mmio_M_awqos,
-	       core_inner_reclocked$mmio_M_awregion;
+	       core_inner_reclocked$mmio_M_awregion,
+	       core_inner_reclocked$sba_S_arcache,
+	       core_inner_reclocked$sba_S_arqos,
+	       core_inner_reclocked$sba_S_arregion,
+	       core_inner_reclocked$sba_S_awcache,
+	       core_inner_reclocked$sba_S_awqos,
+	       core_inner_reclocked$sba_S_awregion;
   wire [2 : 0] core_inner_reclocked$dma_S_arprot,
 	       core_inner_reclocked$dma_S_arsize,
 	       core_inner_reclocked$dma_S_awprot,
@@ -1345,7 +1406,11 @@ module mkAWSteria_Core(CLK_clk1,
 	       core_inner_reclocked$mmio_M_arprot,
 	       core_inner_reclocked$mmio_M_arsize,
 	       core_inner_reclocked$mmio_M_awprot,
-	       core_inner_reclocked$mmio_M_awsize;
+	       core_inner_reclocked$mmio_M_awsize,
+	       core_inner_reclocked$sba_S_arprot,
+	       core_inner_reclocked$sba_S_arsize,
+	       core_inner_reclocked$sba_S_awprot,
+	       core_inner_reclocked$sba_S_awsize;
   wire [1 : 0] core_inner_reclocked$dma_S_arburst,
 	       core_inner_reclocked$dma_S_awburst,
 	       core_inner_reclocked$dma_S_bresp,
@@ -1357,10 +1422,12 @@ module mkAWSteria_Core(CLK_clk1,
 	       core_inner_reclocked$mmio_M_arburst,
 	       core_inner_reclocked$mmio_M_awburst,
 	       core_inner_reclocked$mmio_M_bresp,
-	       core_inner_reclocked$mmio_M_rresp;
-  wire core_inner_reclocked$EN_cl_ndm_reset_request_deq,
-       core_inner_reclocked$EN_cl_ndm_reset_response_enq,
-       core_inner_reclocked$EN_ext_interrupts,
+	       core_inner_reclocked$mmio_M_rresp,
+	       core_inner_reclocked$sba_S_arburst,
+	       core_inner_reclocked$sba_S_awburst,
+	       core_inner_reclocked$sba_S_bresp,
+	       core_inner_reclocked$sba_S_rresp;
+  wire core_inner_reclocked$EN_ext_interrupts,
        core_inner_reclocked$EN_fi_misc_enq,
        core_inner_reclocked$EN_fi_nmi_enq,
        core_inner_reclocked$EN_fi_pc_trace_control_enq,
@@ -1369,20 +1436,27 @@ module mkAWSteria_Core(CLK_clk1,
        core_inner_reclocked$EN_fo_misc_deq,
        core_inner_reclocked$EN_fo_tohost_value_deq,
        core_inner_reclocked$EN_fo_tv_info_deq,
-       core_inner_reclocked$EN_se_dmi_request_enq,
-       core_inner_reclocked$EN_se_dmi_response_deq,
-       core_inner_reclocked$RDY_cl_ndm_reset_request_deq,
-       core_inner_reclocked$RDY_cl_ndm_reset_response_enq,
+       core_inner_reclocked$EN_hart0_csr_mem_server_request_put,
+       core_inner_reclocked$EN_hart0_csr_mem_server_response_get,
+       core_inner_reclocked$EN_hart0_fpr_mem_server_request_put,
+       core_inner_reclocked$EN_hart0_fpr_mem_server_response_get,
+       core_inner_reclocked$EN_hart0_gpr_mem_server_request_put,
+       core_inner_reclocked$EN_hart0_gpr_mem_server_response_get,
        core_inner_reclocked$RDY_fi_misc_enq,
        core_inner_reclocked$RDY_fi_nmi_enq,
        core_inner_reclocked$RDY_fi_pc_trace_control_enq,
        core_inner_reclocked$RDY_fo_misc_deq,
        core_inner_reclocked$RDY_fo_misc_first,
+       core_inner_reclocked$RDY_fo_tohost_value_deq,
+       core_inner_reclocked$RDY_fo_tohost_value_first,
        core_inner_reclocked$RDY_fo_tv_info_deq,
        core_inner_reclocked$RDY_fo_tv_info_first,
-       core_inner_reclocked$RDY_se_dmi_request_enq,
-       core_inner_reclocked$RDY_se_dmi_response_deq,
-       core_inner_reclocked$RDY_se_dmi_response_first,
+       core_inner_reclocked$RDY_hart0_csr_mem_server_request_put,
+       core_inner_reclocked$RDY_hart0_csr_mem_server_response_get,
+       core_inner_reclocked$RDY_hart0_fpr_mem_server_request_put,
+       core_inner_reclocked$RDY_hart0_fpr_mem_server_response_get,
+       core_inner_reclocked$RDY_hart0_gpr_mem_server_request_put,
+       core_inner_reclocked$RDY_hart0_gpr_mem_server_response_get,
        core_inner_reclocked$dma_S_arlock,
        core_inner_reclocked$dma_S_arready,
        core_inner_reclocked$dma_S_arvalid,
@@ -1425,7 +1499,158 @@ module mkAWSteria_Core(CLK_clk1,
        core_inner_reclocked$mmio_M_rvalid,
        core_inner_reclocked$mmio_M_wlast,
        core_inner_reclocked$mmio_M_wready,
-       core_inner_reclocked$mmio_M_wvalid;
+       core_inner_reclocked$mmio_M_wvalid,
+       core_inner_reclocked$sba_S_arlock,
+       core_inner_reclocked$sba_S_arready,
+       core_inner_reclocked$sba_S_arvalid,
+       core_inner_reclocked$sba_S_awlock,
+       core_inner_reclocked$sba_S_awready,
+       core_inner_reclocked$sba_S_awvalid,
+       core_inner_reclocked$sba_S_bready,
+       core_inner_reclocked$sba_S_bvalid,
+       core_inner_reclocked$sba_S_rlast,
+       core_inner_reclocked$sba_S_rready,
+       core_inner_reclocked$sba_S_rvalid,
+       core_inner_reclocked$sba_S_wlast,
+       core_inner_reclocked$sba_S_wready,
+       core_inner_reclocked$sba_S_wvalid;
+
+  // ports of submodule core_inner_sba_AXI4_clock_crossing_f_ar
+  wire [108 : 0] core_inner_sba_AXI4_clock_crossing_f_ar$dD_OUT,
+		 core_inner_sba_AXI4_clock_crossing_f_ar$sD_IN;
+  wire core_inner_sba_AXI4_clock_crossing_f_ar$dDEQ,
+       core_inner_sba_AXI4_clock_crossing_f_ar$dEMPTY_N,
+       core_inner_sba_AXI4_clock_crossing_f_ar$sENQ,
+       core_inner_sba_AXI4_clock_crossing_f_ar$sFULL_N;
+
+  // ports of submodule core_inner_sba_AXI4_clock_crossing_f_aw
+  wire [108 : 0] core_inner_sba_AXI4_clock_crossing_f_aw$dD_OUT,
+		 core_inner_sba_AXI4_clock_crossing_f_aw$sD_IN;
+  wire core_inner_sba_AXI4_clock_crossing_f_aw$dDEQ,
+       core_inner_sba_AXI4_clock_crossing_f_aw$dEMPTY_N,
+       core_inner_sba_AXI4_clock_crossing_f_aw$sENQ,
+       core_inner_sba_AXI4_clock_crossing_f_aw$sFULL_N;
+
+  // ports of submodule core_inner_sba_AXI4_clock_crossing_f_b
+  wire [17 : 0] core_inner_sba_AXI4_clock_crossing_f_b$dD_OUT,
+		core_inner_sba_AXI4_clock_crossing_f_b$sD_IN;
+  wire core_inner_sba_AXI4_clock_crossing_f_b$dDEQ,
+       core_inner_sba_AXI4_clock_crossing_f_b$dEMPTY_N,
+       core_inner_sba_AXI4_clock_crossing_f_b$sENQ,
+       core_inner_sba_AXI4_clock_crossing_f_b$sFULL_N;
+
+  // ports of submodule core_inner_sba_AXI4_clock_crossing_f_r
+  wire [82 : 0] core_inner_sba_AXI4_clock_crossing_f_r$dD_OUT,
+		core_inner_sba_AXI4_clock_crossing_f_r$sD_IN;
+  wire core_inner_sba_AXI4_clock_crossing_f_r$dDEQ,
+       core_inner_sba_AXI4_clock_crossing_f_r$dEMPTY_N,
+       core_inner_sba_AXI4_clock_crossing_f_r$sENQ,
+       core_inner_sba_AXI4_clock_crossing_f_r$sFULL_N;
+
+  // ports of submodule core_inner_sba_AXI4_clock_crossing_f_w
+  wire [72 : 0] core_inner_sba_AXI4_clock_crossing_f_w$dD_OUT,
+		core_inner_sba_AXI4_clock_crossing_f_w$sD_IN;
+  wire core_inner_sba_AXI4_clock_crossing_f_w$dDEQ,
+       core_inner_sba_AXI4_clock_crossing_f_w$dEMPTY_N,
+       core_inner_sba_AXI4_clock_crossing_f_w$sENQ,
+       core_inner_sba_AXI4_clock_crossing_f_w$sFULL_N;
+
+  // ports of submodule debug_module
+  wire [76 : 0] debug_module$hart0_csr_mem_client_request_get;
+  wire [69 : 0] debug_module$hart0_fpr_mem_client_request_get,
+		debug_module$hart0_gpr_mem_client_request_get;
+  wire [64 : 0] debug_module$hart0_csr_mem_client_response_put,
+		debug_module$hart0_fpr_mem_client_response_put,
+		debug_module$hart0_gpr_mem_client_response_put;
+  wire [63 : 0] debug_module$master_araddr,
+		debug_module$master_awaddr,
+		debug_module$master_rdata,
+		debug_module$master_wdata;
+  wire [31 : 0] debug_module$dmi_read_data, debug_module$dmi_write_dm_word;
+  wire [15 : 0] debug_module$master_arid,
+		debug_module$master_awid,
+		debug_module$master_bid,
+		debug_module$master_rid;
+  wire [7 : 0] debug_module$master_arlen,
+	       debug_module$master_awlen,
+	       debug_module$master_wstrb;
+  wire [6 : 0] debug_module$dmi_read_addr_dm_addr,
+	       debug_module$dmi_write_dm_addr;
+  wire [3 : 0] debug_module$master_arcache,
+	       debug_module$master_arqos,
+	       debug_module$master_arregion,
+	       debug_module$master_awcache,
+	       debug_module$master_awqos,
+	       debug_module$master_awregion;
+  wire [2 : 0] debug_module$master_arprot,
+	       debug_module$master_arsize,
+	       debug_module$master_awprot,
+	       debug_module$master_awsize;
+  wire [1 : 0] debug_module$master_arburst,
+	       debug_module$master_awburst,
+	       debug_module$master_bresp,
+	       debug_module$master_rresp;
+  wire debug_module$EN_dmi_read_addr,
+       debug_module$EN_dmi_read_data,
+       debug_module$EN_dmi_write,
+       debug_module$EN_hart0_client_run_halt_request_get,
+       debug_module$EN_hart0_client_run_halt_response_put,
+       debug_module$EN_hart0_csr_mem_client_request_get,
+       debug_module$EN_hart0_csr_mem_client_response_put,
+       debug_module$EN_hart0_fpr_mem_client_request_get,
+       debug_module$EN_hart0_fpr_mem_client_response_put,
+       debug_module$EN_hart0_get_other_req_get,
+       debug_module$EN_hart0_gpr_mem_client_request_get,
+       debug_module$EN_hart0_gpr_mem_client_response_put,
+       debug_module$EN_hart0_reset_client_request_get,
+       debug_module$EN_hart0_reset_client_response_put,
+       debug_module$EN_ndm_reset_client_request_get,
+       debug_module$EN_ndm_reset_client_response_put,
+       debug_module$RDY_dmi_read_addr,
+       debug_module$RDY_dmi_read_data,
+       debug_module$RDY_dmi_write,
+       debug_module$RDY_hart0_csr_mem_client_request_get,
+       debug_module$RDY_hart0_csr_mem_client_response_put,
+       debug_module$RDY_hart0_fpr_mem_client_request_get,
+       debug_module$RDY_hart0_fpr_mem_client_response_put,
+       debug_module$RDY_hart0_gpr_mem_client_request_get,
+       debug_module$RDY_hart0_gpr_mem_client_response_put,
+       debug_module$RDY_ndm_reset_client_request_get,
+       debug_module$RDY_ndm_reset_client_response_put,
+       debug_module$hart0_client_run_halt_response_put,
+       debug_module$hart0_reset_client_response_put,
+       debug_module$master_arlock,
+       debug_module$master_arready,
+       debug_module$master_arvalid,
+       debug_module$master_awlock,
+       debug_module$master_awready,
+       debug_module$master_awvalid,
+       debug_module$master_bready,
+       debug_module$master_bvalid,
+       debug_module$master_rlast,
+       debug_module$master_rready,
+       debug_module$master_rvalid,
+       debug_module$master_wlast,
+       debug_module$master_wready,
+       debug_module$master_wvalid,
+       debug_module$ndm_reset_client_request_get,
+       debug_module$ndm_reset_client_response_put;
+
+  // ports of submodule f_dmi_reqs
+  wire [39 : 0] f_dmi_reqs$D_IN, f_dmi_reqs$D_OUT;
+  wire f_dmi_reqs$CLR,
+       f_dmi_reqs$DEQ,
+       f_dmi_reqs$EMPTY_N,
+       f_dmi_reqs$ENQ,
+       f_dmi_reqs$FULL_N;
+
+  // ports of submodule f_dmi_rsps
+  wire [31 : 0] f_dmi_rsps$D_IN, f_dmi_rsps$D_OUT;
+  wire f_dmi_rsps$CLR,
+       f_dmi_rsps$DEQ,
+       f_dmi_rsps$EMPTY_N,
+       f_dmi_rsps$ENQ,
+       f_dmi_rsps$FULL_N;
 
   // ports of submodule host_cs
   wire [63 : 0] host_cs$fi_tohost_value_enq_x,
@@ -1441,6 +1666,7 @@ module mkAWSteria_Core(CLK_clk1,
        host_cs$EN_fo_watch_tohost_control_deq,
        host_cs$EN_se_control_status_request_enq,
        host_cs$EN_se_control_status_response_deq,
+       host_cs$RDY_fi_tohost_value_enq,
        host_cs$RDY_fo_pc_trace_control_deq,
        host_cs$RDY_fo_pc_trace_control_first_fst,
        host_cs$RDY_fo_pc_trace_control_first_snd,
@@ -1463,12 +1689,24 @@ module mkAWSteria_Core(CLK_clk1,
   wire innerRstIfc$ASSERT_IN, innerRstIfc$OUT_RST;
 
   // rule scheduling signals
-  wire CAN_FIRE_RL_assertInnerReset,
-       CAN_FIRE_RL_core_inner_10_rl_connect,
-       CAN_FIRE_RL_core_inner_11_rl_connect,
-       CAN_FIRE_RL_core_inner_12_rl_connect,
-       CAN_FIRE_RL_core_inner_13_rl_connect,
+  wire CAN_FIRE_RL_ClientServerRequest,
+       CAN_FIRE_RL_ClientServerRequest_1,
+       CAN_FIRE_RL_ClientServerRequest_2,
+       CAN_FIRE_RL_ClientServerResponse,
+       CAN_FIRE_RL_ClientServerResponse_1,
+       CAN_FIRE_RL_ClientServerResponse_2,
+       CAN_FIRE_RL_core_inner_10_mkConnectionGetPut,
+       CAN_FIRE_RL_core_inner_11_mkConnectionGetPut,
+       CAN_FIRE_RL_core_inner_12_mkConnectionGetPut,
+       CAN_FIRE_RL_core_inner_13_rl_rd_addr_channel,
+       CAN_FIRE_RL_core_inner_13_rl_rd_data_channel,
+       CAN_FIRE_RL_core_inner_13_rl_wr_addr_channel,
+       CAN_FIRE_RL_core_inner_13_rl_wr_data_channel,
+       CAN_FIRE_RL_core_inner_13_rl_wr_response_channel,
        CAN_FIRE_RL_core_inner_14_rl_connect,
+       CAN_FIRE_RL_core_inner_15_rl_connect,
+       CAN_FIRE_RL_core_inner_16_rl_connect,
+       CAN_FIRE_RL_core_inner_17_rl_connect,
        CAN_FIRE_RL_core_inner_1_rl_rd_addr_channel,
        CAN_FIRE_RL_core_inner_1_rl_rd_data_channel,
        CAN_FIRE_RL_core_inner_1_rl_wr_addr_channel,
@@ -1483,9 +1721,9 @@ module mkAWSteria_Core(CLK_clk1,
        CAN_FIRE_RL_core_inner_4_rl_connect,
        CAN_FIRE_RL_core_inner_5_rl_connect,
        CAN_FIRE_RL_core_inner_6_rl_connect,
-       CAN_FIRE_RL_core_inner_7_rl_connect,
-       CAN_FIRE_RL_core_inner_8_rl_connect,
-       CAN_FIRE_RL_core_inner_9_rl_connect,
+       CAN_FIRE_RL_core_inner_7_mkConnectionGetPut,
+       CAN_FIRE_RL_core_inner_8_mkConnectionGetPut,
+       CAN_FIRE_RL_core_inner_9_mkConnectionGetPut,
        CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq,
        CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst,
        CAN_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq,
@@ -1568,10 +1806,45 @@ module mkAWSteria_Core(CLK_clk1,
        CAN_FIRE_RL_core_inner_rl_wr_data_channel,
        CAN_FIRE_RL_core_inner_rl_wr_response_channel,
        CAN_FIRE_RL_core_inner_ro_sync_irqs_clock_domain_crossing,
+       CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq,
+       CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst,
+       CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq,
+       CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq,
+       CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq,
+       CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq,
+       CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst,
+       CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq,
+       CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq,
+       CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst,
+       CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq,
+       CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq,
+       CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq,
+       CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq,
+       CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq,
+       CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq,
+       CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst,
+       CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq,
+       CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq,
+       CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq,
+       CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq,
+       CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq,
+       CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq,
+       CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst,
+       CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq,
+       CAN_FIRE_RL_rl_assert_reset_for_inner_core,
        CAN_FIRE_RL_rl_connect,
        CAN_FIRE_RL_rl_connect_1,
        CAN_FIRE_RL_rl_connect_2,
        CAN_FIRE_RL_rl_connect_3,
+       CAN_FIRE_RL_rl_dmi_req,
+       CAN_FIRE_RL_rl_dmi_rsp,
+       CAN_FIRE_RL_rl_ndm_reset,
+       CAN_FIRE_RL_rl_on_deassert_core_reset,
+       CAN_FIRE_RL_rl_rd_addr_channel,
+       CAN_FIRE_RL_rl_rd_data_channel,
+       CAN_FIRE_RL_rl_wr_addr_channel,
+       CAN_FIRE_RL_rl_wr_data_channel,
+       CAN_FIRE_RL_rl_wr_response_channel,
        CAN_FIRE_cl_ndm_reset_request_deq,
        CAN_FIRE_cl_ndm_reset_response_enq,
        CAN_FIRE_dma_S_m_arvalid,
@@ -1598,12 +1871,24 @@ module mkAWSteria_Core(CLK_clk1,
        CAN_FIRE_se_control_status_response_deq,
        CAN_FIRE_se_dmi_request_enq,
        CAN_FIRE_se_dmi_response_deq,
-       WILL_FIRE_RL_assertInnerReset,
-       WILL_FIRE_RL_core_inner_10_rl_connect,
-       WILL_FIRE_RL_core_inner_11_rl_connect,
-       WILL_FIRE_RL_core_inner_12_rl_connect,
-       WILL_FIRE_RL_core_inner_13_rl_connect,
+       WILL_FIRE_RL_ClientServerRequest,
+       WILL_FIRE_RL_ClientServerRequest_1,
+       WILL_FIRE_RL_ClientServerRequest_2,
+       WILL_FIRE_RL_ClientServerResponse,
+       WILL_FIRE_RL_ClientServerResponse_1,
+       WILL_FIRE_RL_ClientServerResponse_2,
+       WILL_FIRE_RL_core_inner_10_mkConnectionGetPut,
+       WILL_FIRE_RL_core_inner_11_mkConnectionGetPut,
+       WILL_FIRE_RL_core_inner_12_mkConnectionGetPut,
+       WILL_FIRE_RL_core_inner_13_rl_rd_addr_channel,
+       WILL_FIRE_RL_core_inner_13_rl_rd_data_channel,
+       WILL_FIRE_RL_core_inner_13_rl_wr_addr_channel,
+       WILL_FIRE_RL_core_inner_13_rl_wr_data_channel,
+       WILL_FIRE_RL_core_inner_13_rl_wr_response_channel,
        WILL_FIRE_RL_core_inner_14_rl_connect,
+       WILL_FIRE_RL_core_inner_15_rl_connect,
+       WILL_FIRE_RL_core_inner_16_rl_connect,
+       WILL_FIRE_RL_core_inner_17_rl_connect,
        WILL_FIRE_RL_core_inner_1_rl_rd_addr_channel,
        WILL_FIRE_RL_core_inner_1_rl_rd_data_channel,
        WILL_FIRE_RL_core_inner_1_rl_wr_addr_channel,
@@ -1618,9 +1903,9 @@ module mkAWSteria_Core(CLK_clk1,
        WILL_FIRE_RL_core_inner_4_rl_connect,
        WILL_FIRE_RL_core_inner_5_rl_connect,
        WILL_FIRE_RL_core_inner_6_rl_connect,
-       WILL_FIRE_RL_core_inner_7_rl_connect,
-       WILL_FIRE_RL_core_inner_8_rl_connect,
-       WILL_FIRE_RL_core_inner_9_rl_connect,
+       WILL_FIRE_RL_core_inner_7_mkConnectionGetPut,
+       WILL_FIRE_RL_core_inner_8_mkConnectionGetPut,
+       WILL_FIRE_RL_core_inner_9_mkConnectionGetPut,
        WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq,
        WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst,
        WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq,
@@ -1703,10 +1988,45 @@ module mkAWSteria_Core(CLK_clk1,
        WILL_FIRE_RL_core_inner_rl_wr_data_channel,
        WILL_FIRE_RL_core_inner_rl_wr_response_channel,
        WILL_FIRE_RL_core_inner_ro_sync_irqs_clock_domain_crossing,
+       WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq,
+       WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst,
+       WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq,
+       WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq,
+       WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq,
+       WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq,
+       WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst,
+       WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq,
+       WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq,
+       WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst,
+       WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq,
+       WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq,
+       WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq,
+       WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq,
+       WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq,
+       WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq,
+       WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst,
+       WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq,
+       WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq,
+       WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq,
+       WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq,
+       WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq,
+       WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq,
+       WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst,
+       WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq,
+       WILL_FIRE_RL_rl_assert_reset_for_inner_core,
        WILL_FIRE_RL_rl_connect,
        WILL_FIRE_RL_rl_connect_1,
        WILL_FIRE_RL_rl_connect_2,
        WILL_FIRE_RL_rl_connect_3,
+       WILL_FIRE_RL_rl_dmi_req,
+       WILL_FIRE_RL_rl_dmi_rsp,
+       WILL_FIRE_RL_rl_ndm_reset,
+       WILL_FIRE_RL_rl_on_deassert_core_reset,
+       WILL_FIRE_RL_rl_rd_addr_channel,
+       WILL_FIRE_RL_rl_rd_data_channel,
+       WILL_FIRE_RL_rl_wr_addr_channel,
+       WILL_FIRE_RL_rl_wr_data_channel,
+       WILL_FIRE_RL_rl_wr_response_channel,
        WILL_FIRE_cl_ndm_reset_request_deq,
        WILL_FIRE_cl_ndm_reset_response_enq,
        WILL_FIRE_dma_S_m_arvalid,
@@ -1733,6 +2053,9 @@ module mkAWSteria_Core(CLK_clk1,
        WILL_FIRE_se_control_status_response_deq,
        WILL_FIRE_se_dmi_request_enq,
        WILL_FIRE_se_dmi_response_deq;
+
+  // inputs to muxes for submodule ports
+  wire MUX_rg_core_reset_message_displayed$write_1__SEL_1;
 
   // value method mem_M_m_awvalid
   assign mem_M_awvalid = core_inner_ddr_AXI4_clock_crossing_f_aw$dEMPTY_N ;
@@ -2194,48 +2517,46 @@ module mkAWSteria_Core(CLK_clk1,
   assign RDY_fo_tv_info_notEmpty = 1'd1 ;
 
   // action method se_dmi_request_enq
-  assign RDY_se_dmi_request_enq = core_inner_f_dmi_req$sFULL_N ;
-  assign CAN_FIRE_se_dmi_request_enq = core_inner_f_dmi_req$sFULL_N ;
+  assign RDY_se_dmi_request_enq = f_dmi_reqs$FULL_N ;
+  assign CAN_FIRE_se_dmi_request_enq = f_dmi_reqs$FULL_N ;
   assign WILL_FIRE_se_dmi_request_enq = EN_se_dmi_request_enq ;
 
   // value method se_dmi_request_notFull
-  assign se_dmi_request_notFull = core_inner_f_dmi_req$sFULL_N ;
+  assign se_dmi_request_notFull = f_dmi_reqs$FULL_N ;
   assign RDY_se_dmi_request_notFull = 1'd1 ;
 
   // value method se_dmi_response_first
-  assign se_dmi_response_first = core_inner_f_dmi_rsp$dD_OUT ;
-  assign RDY_se_dmi_response_first = core_inner_f_dmi_rsp$dEMPTY_N ;
+  assign se_dmi_response_first = f_dmi_rsps$D_OUT ;
+  assign RDY_se_dmi_response_first = f_dmi_rsps$EMPTY_N ;
 
   // action method se_dmi_response_deq
-  assign RDY_se_dmi_response_deq = core_inner_f_dmi_rsp$dEMPTY_N ;
-  assign CAN_FIRE_se_dmi_response_deq = core_inner_f_dmi_rsp$dEMPTY_N ;
+  assign RDY_se_dmi_response_deq = f_dmi_rsps$EMPTY_N ;
+  assign CAN_FIRE_se_dmi_response_deq = f_dmi_rsps$EMPTY_N ;
   assign WILL_FIRE_se_dmi_response_deq = EN_se_dmi_response_deq ;
 
   // value method se_dmi_response_notEmpty
-  assign se_dmi_response_notEmpty = core_inner_f_dmi_rsp$dEMPTY_N ;
+  assign se_dmi_response_notEmpty = f_dmi_rsps$EMPTY_N ;
   assign RDY_se_dmi_response_notEmpty = 1'd1 ;
 
   // value method cl_ndm_reset_request_first
-  assign RDY_cl_ndm_reset_request_first = 1'd1 ;
+  assign RDY_cl_ndm_reset_request_first = 1'd0 ;
 
   // action method cl_ndm_reset_request_deq
-  assign RDY_cl_ndm_reset_request_deq = core_inner_f_ndm_reset_req$dEMPTY_N ;
-  assign CAN_FIRE_cl_ndm_reset_request_deq =
-	     core_inner_f_ndm_reset_req$dEMPTY_N ;
+  assign RDY_cl_ndm_reset_request_deq = 1'd0 ;
+  assign CAN_FIRE_cl_ndm_reset_request_deq = 1'd0 ;
   assign WILL_FIRE_cl_ndm_reset_request_deq = EN_cl_ndm_reset_request_deq ;
 
   // value method cl_ndm_reset_request_notEmpty
-  assign cl_ndm_reset_request_notEmpty = core_inner_f_ndm_reset_req$dEMPTY_N ;
+  assign cl_ndm_reset_request_notEmpty = 1'd0 ;
   assign RDY_cl_ndm_reset_request_notEmpty = 1'd1 ;
 
   // action method cl_ndm_reset_response_enq
-  assign RDY_cl_ndm_reset_response_enq = core_inner_f_ndm_reset_rsp$sFULL_N ;
-  assign CAN_FIRE_cl_ndm_reset_response_enq =
-	     core_inner_f_ndm_reset_rsp$sFULL_N ;
+  assign RDY_cl_ndm_reset_response_enq = 1'd0 ;
+  assign CAN_FIRE_cl_ndm_reset_response_enq = 1'd0 ;
   assign WILL_FIRE_cl_ndm_reset_response_enq = EN_cl_ndm_reset_response_enq ;
 
   // value method cl_ndm_reset_response_notFull
-  assign cl_ndm_reset_response_notFull = core_inner_f_ndm_reset_rsp$sFULL_N ;
+  assign cl_ndm_reset_response_notFull = 1'd0 ;
   assign RDY_cl_ndm_reset_response_notFull = 1'd1 ;
 
   // action method se_control_status_request_enq
@@ -2400,31 +2721,83 @@ module mkAWSteria_Core(CLK_clk1,
 								       .dEMPTY_N(core_inner_dma_AXI4_clock_crossing_f_w$dEMPTY_N),
 								       .dD_OUT(core_inner_dma_AXI4_clock_crossing_f_w$dD_OUT));
 
-  // submodule core_inner_f_dmi_req
-  SyncFIFO #(.dataWidth(32'd40),
+  // submodule core_inner_f_csr_req
+  SyncFIFO #(.dataWidth(32'd77),
 	     .depth(32'd4),
-	     .indxWidth(32'd2)) core_inner_f_dmi_req(.sCLK(CLK),
+	     .indxWidth(32'd2)) core_inner_f_csr_req(.sCLK(CLK),
 						     .dCLK(CLK_clk4),
 						     .sRST(RST_N),
-						     .sD_IN(core_inner_f_dmi_req$sD_IN),
-						     .sENQ(core_inner_f_dmi_req$sENQ),
-						     .dDEQ(core_inner_f_dmi_req$dDEQ),
-						     .sFULL_N(core_inner_f_dmi_req$sFULL_N),
-						     .dEMPTY_N(core_inner_f_dmi_req$dEMPTY_N),
-						     .dD_OUT(core_inner_f_dmi_req$dD_OUT));
+						     .sD_IN(core_inner_f_csr_req$sD_IN),
+						     .sENQ(core_inner_f_csr_req$sENQ),
+						     .dDEQ(core_inner_f_csr_req$dDEQ),
+						     .sFULL_N(core_inner_f_csr_req$sFULL_N),
+						     .dEMPTY_N(core_inner_f_csr_req$dEMPTY_N),
+						     .dD_OUT(core_inner_f_csr_req$dD_OUT));
 
-  // submodule core_inner_f_dmi_rsp
-  SyncFIFO #(.dataWidth(32'd32),
+  // submodule core_inner_f_csr_rsp
+  SyncFIFO #(.dataWidth(32'd65),
 	     .depth(32'd4),
-	     .indxWidth(32'd2)) core_inner_f_dmi_rsp(.sCLK(CLK_clk4),
+	     .indxWidth(32'd2)) core_inner_f_csr_rsp(.sCLK(CLK_clk4),
 						     .dCLK(CLK),
 						     .sRST(innerRstIfc$OUT_RST),
-						     .sD_IN(core_inner_f_dmi_rsp$sD_IN),
-						     .sENQ(core_inner_f_dmi_rsp$sENQ),
-						     .dDEQ(core_inner_f_dmi_rsp$dDEQ),
-						     .sFULL_N(core_inner_f_dmi_rsp$sFULL_N),
-						     .dEMPTY_N(core_inner_f_dmi_rsp$dEMPTY_N),
-						     .dD_OUT(core_inner_f_dmi_rsp$dD_OUT));
+						     .sD_IN(core_inner_f_csr_rsp$sD_IN),
+						     .sENQ(core_inner_f_csr_rsp$sENQ),
+						     .dDEQ(core_inner_f_csr_rsp$dDEQ),
+						     .sFULL_N(core_inner_f_csr_rsp$sFULL_N),
+						     .dEMPTY_N(core_inner_f_csr_rsp$dEMPTY_N),
+						     .dD_OUT(core_inner_f_csr_rsp$dD_OUT));
+
+  // submodule core_inner_f_fpr_req
+  SyncFIFO #(.dataWidth(32'd70),
+	     .depth(32'd4),
+	     .indxWidth(32'd2)) core_inner_f_fpr_req(.sCLK(CLK),
+						     .dCLK(CLK_clk4),
+						     .sRST(RST_N),
+						     .sD_IN(core_inner_f_fpr_req$sD_IN),
+						     .sENQ(core_inner_f_fpr_req$sENQ),
+						     .dDEQ(core_inner_f_fpr_req$dDEQ),
+						     .sFULL_N(core_inner_f_fpr_req$sFULL_N),
+						     .dEMPTY_N(core_inner_f_fpr_req$dEMPTY_N),
+						     .dD_OUT(core_inner_f_fpr_req$dD_OUT));
+
+  // submodule core_inner_f_fpr_rsp
+  SyncFIFO #(.dataWidth(32'd65),
+	     .depth(32'd4),
+	     .indxWidth(32'd2)) core_inner_f_fpr_rsp(.sCLK(CLK_clk4),
+						     .dCLK(CLK),
+						     .sRST(innerRstIfc$OUT_RST),
+						     .sD_IN(core_inner_f_fpr_rsp$sD_IN),
+						     .sENQ(core_inner_f_fpr_rsp$sENQ),
+						     .dDEQ(core_inner_f_fpr_rsp$dDEQ),
+						     .sFULL_N(core_inner_f_fpr_rsp$sFULL_N),
+						     .dEMPTY_N(core_inner_f_fpr_rsp$dEMPTY_N),
+						     .dD_OUT(core_inner_f_fpr_rsp$dD_OUT));
+
+  // submodule core_inner_f_gpr_req
+  SyncFIFO #(.dataWidth(32'd70),
+	     .depth(32'd4),
+	     .indxWidth(32'd2)) core_inner_f_gpr_req(.sCLK(CLK),
+						     .dCLK(CLK_clk4),
+						     .sRST(RST_N),
+						     .sD_IN(core_inner_f_gpr_req$sD_IN),
+						     .sENQ(core_inner_f_gpr_req$sENQ),
+						     .dDEQ(core_inner_f_gpr_req$dDEQ),
+						     .sFULL_N(core_inner_f_gpr_req$sFULL_N),
+						     .dEMPTY_N(core_inner_f_gpr_req$dEMPTY_N),
+						     .dD_OUT(core_inner_f_gpr_req$dD_OUT));
+
+  // submodule core_inner_f_gpr_rsp
+  SyncFIFO #(.dataWidth(32'd65),
+	     .depth(32'd4),
+	     .indxWidth(32'd2)) core_inner_f_gpr_rsp(.sCLK(CLK_clk4),
+						     .dCLK(CLK),
+						     .sRST(innerRstIfc$OUT_RST),
+						     .sD_IN(core_inner_f_gpr_rsp$sD_IN),
+						     .sENQ(core_inner_f_gpr_rsp$sENQ),
+						     .dDEQ(core_inner_f_gpr_rsp$dDEQ),
+						     .sFULL_N(core_inner_f_gpr_rsp$sFULL_N),
+						     .dEMPTY_N(core_inner_f_gpr_rsp$dEMPTY_N),
+						     .dD_OUT(core_inner_f_gpr_rsp$dD_OUT));
 
   // submodule core_inner_f_misc_from_host
   SyncFIFO #(.dataWidth(32'd32),
@@ -2451,26 +2824,6 @@ module mkAWSteria_Core(CLK_clk1,
 							  .sFULL_N(core_inner_f_misc_to_host$sFULL_N),
 							  .dEMPTY_N(core_inner_f_misc_to_host$dEMPTY_N),
 							  .dD_OUT(core_inner_f_misc_to_host$dD_OUT));
-
-  // submodule core_inner_f_ndm_reset_req
-  SyncFIFO0 #(.depth(32'd4),
-	      .indxWidth(32'd2)) core_inner_f_ndm_reset_req(.sCLK(CLK_clk4),
-							    .dCLK(CLK),
-							    .sRST(innerRstIfc$OUT_RST),
-							    .sENQ(core_inner_f_ndm_reset_req$sENQ),
-							    .dDEQ(core_inner_f_ndm_reset_req$dDEQ),
-							    .sFULL_N(core_inner_f_ndm_reset_req$sFULL_N),
-							    .dEMPTY_N(core_inner_f_ndm_reset_req$dEMPTY_N));
-
-  // submodule core_inner_f_ndm_reset_rsp
-  SyncFIFO0 #(.depth(32'd4),
-	      .indxWidth(32'd2)) core_inner_f_ndm_reset_rsp(.sCLK(CLK),
-							    .dCLK(CLK_clk4),
-							    .sRST(RST_N),
-							    .sENQ(core_inner_f_ndm_reset_rsp$sENQ),
-							    .dDEQ(core_inner_f_ndm_reset_rsp$dDEQ),
-							    .sFULL_N(core_inner_f_ndm_reset_rsp$sFULL_N),
-							    .dEMPTY_N(core_inner_f_ndm_reset_rsp$dEMPTY_N));
 
   // submodule core_inner_f_nmi
   SyncFIFO #(.dataWidth(32'd1),
@@ -2652,6 +3005,9 @@ module mkAWSteria_Core(CLK_clk1,
 					     .fi_pc_trace_control_enq_x(core_inner_reclocked$fi_pc_trace_control_enq_x),
 					     .fi_verbosity_control_enq_x(core_inner_reclocked$fi_verbosity_control_enq_x),
 					     .fi_watch_tohost_control_enq_x(core_inner_reclocked$fi_watch_tohost_control_enq_x),
+					     .hart0_csr_mem_server_request_put(core_inner_reclocked$hart0_csr_mem_server_request_put),
+					     .hart0_fpr_mem_server_request_put(core_inner_reclocked$hart0_fpr_mem_server_request_put),
+					     .hart0_gpr_mem_server_request_put(core_inner_reclocked$hart0_gpr_mem_server_request_put),
 					     .mem_M_arready(core_inner_reclocked$mem_M_arready),
 					     .mem_M_awready(core_inner_reclocked$mem_M_awready),
 					     .mem_M_bid(core_inner_reclocked$mem_M_bid),
@@ -2674,16 +3030,45 @@ module mkAWSteria_Core(CLK_clk1,
 					     .mmio_M_rresp(core_inner_reclocked$mmio_M_rresp),
 					     .mmio_M_rvalid(core_inner_reclocked$mmio_M_rvalid),
 					     .mmio_M_wready(core_inner_reclocked$mmio_M_wready),
-					     .se_dmi_request_enq_x(core_inner_reclocked$se_dmi_request_enq_x),
+					     .sba_S_araddr(core_inner_reclocked$sba_S_araddr),
+					     .sba_S_arburst(core_inner_reclocked$sba_S_arburst),
+					     .sba_S_arcache(core_inner_reclocked$sba_S_arcache),
+					     .sba_S_arid(core_inner_reclocked$sba_S_arid),
+					     .sba_S_arlen(core_inner_reclocked$sba_S_arlen),
+					     .sba_S_arlock(core_inner_reclocked$sba_S_arlock),
+					     .sba_S_arprot(core_inner_reclocked$sba_S_arprot),
+					     .sba_S_arqos(core_inner_reclocked$sba_S_arqos),
+					     .sba_S_arregion(core_inner_reclocked$sba_S_arregion),
+					     .sba_S_arsize(core_inner_reclocked$sba_S_arsize),
+					     .sba_S_arvalid(core_inner_reclocked$sba_S_arvalid),
+					     .sba_S_awaddr(core_inner_reclocked$sba_S_awaddr),
+					     .sba_S_awburst(core_inner_reclocked$sba_S_awburst),
+					     .sba_S_awcache(core_inner_reclocked$sba_S_awcache),
+					     .sba_S_awid(core_inner_reclocked$sba_S_awid),
+					     .sba_S_awlen(core_inner_reclocked$sba_S_awlen),
+					     .sba_S_awlock(core_inner_reclocked$sba_S_awlock),
+					     .sba_S_awprot(core_inner_reclocked$sba_S_awprot),
+					     .sba_S_awqos(core_inner_reclocked$sba_S_awqos),
+					     .sba_S_awregion(core_inner_reclocked$sba_S_awregion),
+					     .sba_S_awsize(core_inner_reclocked$sba_S_awsize),
+					     .sba_S_awvalid(core_inner_reclocked$sba_S_awvalid),
+					     .sba_S_bready(core_inner_reclocked$sba_S_bready),
+					     .sba_S_rready(core_inner_reclocked$sba_S_rready),
+					     .sba_S_wdata(core_inner_reclocked$sba_S_wdata),
+					     .sba_S_wlast(core_inner_reclocked$sba_S_wlast),
+					     .sba_S_wstrb(core_inner_reclocked$sba_S_wstrb),
+					     .sba_S_wvalid(core_inner_reclocked$sba_S_wvalid),
 					     .EN_ext_interrupts(core_inner_reclocked$EN_ext_interrupts),
 					     .EN_fi_nmi_enq(core_inner_reclocked$EN_fi_nmi_enq),
 					     .EN_fo_misc_deq(core_inner_reclocked$EN_fo_misc_deq),
 					     .EN_fi_misc_enq(core_inner_reclocked$EN_fi_misc_enq),
 					     .EN_fo_tv_info_deq(core_inner_reclocked$EN_fo_tv_info_deq),
-					     .EN_se_dmi_request_enq(core_inner_reclocked$EN_se_dmi_request_enq),
-					     .EN_se_dmi_response_deq(core_inner_reclocked$EN_se_dmi_response_deq),
-					     .EN_cl_ndm_reset_request_deq(core_inner_reclocked$EN_cl_ndm_reset_request_deq),
-					     .EN_cl_ndm_reset_response_enq(core_inner_reclocked$EN_cl_ndm_reset_response_enq),
+					     .EN_hart0_gpr_mem_server_request_put(core_inner_reclocked$EN_hart0_gpr_mem_server_request_put),
+					     .EN_hart0_gpr_mem_server_response_get(core_inner_reclocked$EN_hart0_gpr_mem_server_response_get),
+					     .EN_hart0_fpr_mem_server_request_put(core_inner_reclocked$EN_hart0_fpr_mem_server_request_put),
+					     .EN_hart0_fpr_mem_server_response_get(core_inner_reclocked$EN_hart0_fpr_mem_server_response_get),
+					     .EN_hart0_csr_mem_server_request_put(core_inner_reclocked$EN_hart0_csr_mem_server_request_put),
+					     .EN_hart0_csr_mem_server_response_get(core_inner_reclocked$EN_hart0_csr_mem_server_response_get),
 					     .EN_fi_pc_trace_control_enq(core_inner_reclocked$EN_fi_pc_trace_control_enq),
 					     .EN_fi_verbosity_control_enq(core_inner_reclocked$EN_fi_verbosity_control_enq),
 					     .EN_fi_watch_tohost_control_enq(core_inner_reclocked$EN_fi_watch_tohost_control_enq),
@@ -2772,21 +3157,26 @@ module mkAWSteria_Core(CLK_clk1,
 					     .RDY_fo_tv_info_deq(core_inner_reclocked$RDY_fo_tv_info_deq),
 					     .fo_tv_info_notEmpty(),
 					     .RDY_fo_tv_info_notEmpty(),
-					     .RDY_se_dmi_request_enq(core_inner_reclocked$RDY_se_dmi_request_enq),
-					     .se_dmi_request_notFull(),
-					     .RDY_se_dmi_request_notFull(),
-					     .se_dmi_response_first(core_inner_reclocked$se_dmi_response_first),
-					     .RDY_se_dmi_response_first(core_inner_reclocked$RDY_se_dmi_response_first),
-					     .RDY_se_dmi_response_deq(core_inner_reclocked$RDY_se_dmi_response_deq),
-					     .se_dmi_response_notEmpty(),
-					     .RDY_se_dmi_response_notEmpty(),
-					     .RDY_cl_ndm_reset_request_first(),
-					     .RDY_cl_ndm_reset_request_deq(core_inner_reclocked$RDY_cl_ndm_reset_request_deq),
-					     .cl_ndm_reset_request_notEmpty(),
-					     .RDY_cl_ndm_reset_request_notEmpty(),
-					     .RDY_cl_ndm_reset_response_enq(core_inner_reclocked$RDY_cl_ndm_reset_response_enq),
-					     .cl_ndm_reset_response_notFull(),
-					     .RDY_cl_ndm_reset_response_notFull(),
+					     .RDY_hart0_gpr_mem_server_request_put(core_inner_reclocked$RDY_hart0_gpr_mem_server_request_put),
+					     .hart0_gpr_mem_server_response_get(core_inner_reclocked$hart0_gpr_mem_server_response_get),
+					     .RDY_hart0_gpr_mem_server_response_get(core_inner_reclocked$RDY_hart0_gpr_mem_server_response_get),
+					     .RDY_hart0_fpr_mem_server_request_put(core_inner_reclocked$RDY_hart0_fpr_mem_server_request_put),
+					     .hart0_fpr_mem_server_response_get(core_inner_reclocked$hart0_fpr_mem_server_response_get),
+					     .RDY_hart0_fpr_mem_server_response_get(core_inner_reclocked$RDY_hart0_fpr_mem_server_response_get),
+					     .RDY_hart0_csr_mem_server_request_put(core_inner_reclocked$RDY_hart0_csr_mem_server_request_put),
+					     .hart0_csr_mem_server_response_get(core_inner_reclocked$hart0_csr_mem_server_response_get),
+					     .RDY_hart0_csr_mem_server_response_get(core_inner_reclocked$RDY_hart0_csr_mem_server_response_get),
+					     .sba_S_awready(core_inner_reclocked$sba_S_awready),
+					     .sba_S_wready(core_inner_reclocked$sba_S_wready),
+					     .sba_S_bvalid(core_inner_reclocked$sba_S_bvalid),
+					     .sba_S_bid(core_inner_reclocked$sba_S_bid),
+					     .sba_S_bresp(core_inner_reclocked$sba_S_bresp),
+					     .sba_S_arready(core_inner_reclocked$sba_S_arready),
+					     .sba_S_rvalid(core_inner_reclocked$sba_S_rvalid),
+					     .sba_S_rid(core_inner_reclocked$sba_S_rid),
+					     .sba_S_rdata(core_inner_reclocked$sba_S_rdata),
+					     .sba_S_rresp(core_inner_reclocked$sba_S_rresp),
+					     .sba_S_rlast(core_inner_reclocked$sba_S_rlast),
 					     .RDY_fi_pc_trace_control_enq(core_inner_reclocked$RDY_fi_pc_trace_control_enq),
 					     .fi_pc_trace_control_notFull(),
 					     .RDY_fi_pc_trace_control_notFull(),
@@ -2797,10 +3187,189 @@ module mkAWSteria_Core(CLK_clk1,
 					     .fi_watch_tohost_control_notFull(),
 					     .RDY_fi_watch_tohost_control_notFull(),
 					     .fo_tohost_value_first(core_inner_reclocked$fo_tohost_value_first),
-					     .RDY_fo_tohost_value_first(),
-					     .RDY_fo_tohost_value_deq(),
+					     .RDY_fo_tohost_value_first(core_inner_reclocked$RDY_fo_tohost_value_first),
+					     .RDY_fo_tohost_value_deq(core_inner_reclocked$RDY_fo_tohost_value_deq),
 					     .fo_tohost_value_notEmpty(),
 					     .RDY_fo_tohost_value_notEmpty());
+
+  // submodule core_inner_sba_AXI4_clock_crossing_f_ar
+  SyncFIFO #(.dataWidth(32'd109),
+	     .depth(32'd4),
+	     .indxWidth(32'd2)) core_inner_sba_AXI4_clock_crossing_f_ar(.sCLK(CLK),
+									.dCLK(CLK_clk4),
+									.sRST(RST_N),
+									.sD_IN(core_inner_sba_AXI4_clock_crossing_f_ar$sD_IN),
+									.sENQ(core_inner_sba_AXI4_clock_crossing_f_ar$sENQ),
+									.dDEQ(core_inner_sba_AXI4_clock_crossing_f_ar$dDEQ),
+									.sFULL_N(core_inner_sba_AXI4_clock_crossing_f_ar$sFULL_N),
+									.dEMPTY_N(core_inner_sba_AXI4_clock_crossing_f_ar$dEMPTY_N),
+									.dD_OUT(core_inner_sba_AXI4_clock_crossing_f_ar$dD_OUT));
+
+  // submodule core_inner_sba_AXI4_clock_crossing_f_aw
+  SyncFIFO #(.dataWidth(32'd109),
+	     .depth(32'd4),
+	     .indxWidth(32'd2)) core_inner_sba_AXI4_clock_crossing_f_aw(.sCLK(CLK),
+									.dCLK(CLK_clk4),
+									.sRST(RST_N),
+									.sD_IN(core_inner_sba_AXI4_clock_crossing_f_aw$sD_IN),
+									.sENQ(core_inner_sba_AXI4_clock_crossing_f_aw$sENQ),
+									.dDEQ(core_inner_sba_AXI4_clock_crossing_f_aw$dDEQ),
+									.sFULL_N(core_inner_sba_AXI4_clock_crossing_f_aw$sFULL_N),
+									.dEMPTY_N(core_inner_sba_AXI4_clock_crossing_f_aw$dEMPTY_N),
+									.dD_OUT(core_inner_sba_AXI4_clock_crossing_f_aw$dD_OUT));
+
+  // submodule core_inner_sba_AXI4_clock_crossing_f_b
+  SyncFIFO #(.dataWidth(32'd18),
+	     .depth(32'd4),
+	     .indxWidth(32'd2)) core_inner_sba_AXI4_clock_crossing_f_b(.sCLK(CLK_clk4),
+								       .dCLK(CLK),
+								       .sRST(innerRstIfc$OUT_RST),
+								       .sD_IN(core_inner_sba_AXI4_clock_crossing_f_b$sD_IN),
+								       .sENQ(core_inner_sba_AXI4_clock_crossing_f_b$sENQ),
+								       .dDEQ(core_inner_sba_AXI4_clock_crossing_f_b$dDEQ),
+								       .sFULL_N(core_inner_sba_AXI4_clock_crossing_f_b$sFULL_N),
+								       .dEMPTY_N(core_inner_sba_AXI4_clock_crossing_f_b$dEMPTY_N),
+								       .dD_OUT(core_inner_sba_AXI4_clock_crossing_f_b$dD_OUT));
+
+  // submodule core_inner_sba_AXI4_clock_crossing_f_r
+  SyncFIFO #(.dataWidth(32'd83),
+	     .depth(32'd4),
+	     .indxWidth(32'd2)) core_inner_sba_AXI4_clock_crossing_f_r(.sCLK(CLK_clk4),
+								       .dCLK(CLK),
+								       .sRST(innerRstIfc$OUT_RST),
+								       .sD_IN(core_inner_sba_AXI4_clock_crossing_f_r$sD_IN),
+								       .sENQ(core_inner_sba_AXI4_clock_crossing_f_r$sENQ),
+								       .dDEQ(core_inner_sba_AXI4_clock_crossing_f_r$dDEQ),
+								       .sFULL_N(core_inner_sba_AXI4_clock_crossing_f_r$sFULL_N),
+								       .dEMPTY_N(core_inner_sba_AXI4_clock_crossing_f_r$dEMPTY_N),
+								       .dD_OUT(core_inner_sba_AXI4_clock_crossing_f_r$dD_OUT));
+
+  // submodule core_inner_sba_AXI4_clock_crossing_f_w
+  SyncFIFO #(.dataWidth(32'd73),
+	     .depth(32'd4),
+	     .indxWidth(32'd2)) core_inner_sba_AXI4_clock_crossing_f_w(.sCLK(CLK),
+								       .dCLK(CLK_clk4),
+								       .sRST(RST_N),
+								       .sD_IN(core_inner_sba_AXI4_clock_crossing_f_w$sD_IN),
+								       .sENQ(core_inner_sba_AXI4_clock_crossing_f_w$sENQ),
+								       .dDEQ(core_inner_sba_AXI4_clock_crossing_f_w$dDEQ),
+								       .sFULL_N(core_inner_sba_AXI4_clock_crossing_f_w$sFULL_N),
+								       .dEMPTY_N(core_inner_sba_AXI4_clock_crossing_f_w$dEMPTY_N),
+								       .dD_OUT(core_inner_sba_AXI4_clock_crossing_f_w$dD_OUT));
+
+  // submodule debug_module
+  mkDebug_Module debug_module(.CLK(CLK),
+			      .RST_N(RST_N),
+			      .dmi_read_addr_dm_addr(debug_module$dmi_read_addr_dm_addr),
+			      .dmi_write_dm_addr(debug_module$dmi_write_dm_addr),
+			      .dmi_write_dm_word(debug_module$dmi_write_dm_word),
+			      .hart0_client_run_halt_response_put(debug_module$hart0_client_run_halt_response_put),
+			      .hart0_csr_mem_client_response_put(debug_module$hart0_csr_mem_client_response_put),
+			      .hart0_fpr_mem_client_response_put(debug_module$hart0_fpr_mem_client_response_put),
+			      .hart0_gpr_mem_client_response_put(debug_module$hart0_gpr_mem_client_response_put),
+			      .hart0_reset_client_response_put(debug_module$hart0_reset_client_response_put),
+			      .master_arready(debug_module$master_arready),
+			      .master_awready(debug_module$master_awready),
+			      .master_bid(debug_module$master_bid),
+			      .master_bresp(debug_module$master_bresp),
+			      .master_bvalid(debug_module$master_bvalid),
+			      .master_rdata(debug_module$master_rdata),
+			      .master_rid(debug_module$master_rid),
+			      .master_rlast(debug_module$master_rlast),
+			      .master_rresp(debug_module$master_rresp),
+			      .master_rvalid(debug_module$master_rvalid),
+			      .master_wready(debug_module$master_wready),
+			      .ndm_reset_client_response_put(debug_module$ndm_reset_client_response_put),
+			      .EN_dmi_read_addr(debug_module$EN_dmi_read_addr),
+			      .EN_dmi_read_data(debug_module$EN_dmi_read_data),
+			      .EN_dmi_write(debug_module$EN_dmi_write),
+			      .EN_hart0_reset_client_request_get(debug_module$EN_hart0_reset_client_request_get),
+			      .EN_hart0_reset_client_response_put(debug_module$EN_hart0_reset_client_response_put),
+			      .EN_hart0_client_run_halt_request_get(debug_module$EN_hart0_client_run_halt_request_get),
+			      .EN_hart0_client_run_halt_response_put(debug_module$EN_hart0_client_run_halt_response_put),
+			      .EN_hart0_get_other_req_get(debug_module$EN_hart0_get_other_req_get),
+			      .EN_hart0_gpr_mem_client_request_get(debug_module$EN_hart0_gpr_mem_client_request_get),
+			      .EN_hart0_gpr_mem_client_response_put(debug_module$EN_hart0_gpr_mem_client_response_put),
+			      .EN_hart0_fpr_mem_client_request_get(debug_module$EN_hart0_fpr_mem_client_request_get),
+			      .EN_hart0_fpr_mem_client_response_put(debug_module$EN_hart0_fpr_mem_client_response_put),
+			      .EN_hart0_csr_mem_client_request_get(debug_module$EN_hart0_csr_mem_client_request_get),
+			      .EN_hart0_csr_mem_client_response_put(debug_module$EN_hart0_csr_mem_client_response_put),
+			      .EN_ndm_reset_client_request_get(debug_module$EN_ndm_reset_client_request_get),
+			      .EN_ndm_reset_client_response_put(debug_module$EN_ndm_reset_client_response_put),
+			      .RDY_dmi_read_addr(debug_module$RDY_dmi_read_addr),
+			      .dmi_read_data(debug_module$dmi_read_data),
+			      .RDY_dmi_read_data(debug_module$RDY_dmi_read_data),
+			      .RDY_dmi_write(debug_module$RDY_dmi_write),
+			      .hart0_reset_client_request_get(),
+			      .RDY_hart0_reset_client_request_get(),
+			      .RDY_hart0_reset_client_response_put(),
+			      .hart0_client_run_halt_request_get(),
+			      .RDY_hart0_client_run_halt_request_get(),
+			      .RDY_hart0_client_run_halt_response_put(),
+			      .hart0_get_other_req_get(),
+			      .RDY_hart0_get_other_req_get(),
+			      .hart0_gpr_mem_client_request_get(debug_module$hart0_gpr_mem_client_request_get),
+			      .RDY_hart0_gpr_mem_client_request_get(debug_module$RDY_hart0_gpr_mem_client_request_get),
+			      .RDY_hart0_gpr_mem_client_response_put(debug_module$RDY_hart0_gpr_mem_client_response_put),
+			      .hart0_fpr_mem_client_request_get(debug_module$hart0_fpr_mem_client_request_get),
+			      .RDY_hart0_fpr_mem_client_request_get(debug_module$RDY_hart0_fpr_mem_client_request_get),
+			      .RDY_hart0_fpr_mem_client_response_put(debug_module$RDY_hart0_fpr_mem_client_response_put),
+			      .hart0_csr_mem_client_request_get(debug_module$hart0_csr_mem_client_request_get),
+			      .RDY_hart0_csr_mem_client_request_get(debug_module$RDY_hart0_csr_mem_client_request_get),
+			      .RDY_hart0_csr_mem_client_response_put(debug_module$RDY_hart0_csr_mem_client_response_put),
+			      .ndm_reset_client_request_get(debug_module$ndm_reset_client_request_get),
+			      .RDY_ndm_reset_client_request_get(debug_module$RDY_ndm_reset_client_request_get),
+			      .RDY_ndm_reset_client_response_put(debug_module$RDY_ndm_reset_client_response_put),
+			      .master_awvalid(debug_module$master_awvalid),
+			      .master_awid(debug_module$master_awid),
+			      .master_awaddr(debug_module$master_awaddr),
+			      .master_awlen(debug_module$master_awlen),
+			      .master_awsize(debug_module$master_awsize),
+			      .master_awburst(debug_module$master_awburst),
+			      .master_awlock(debug_module$master_awlock),
+			      .master_awcache(debug_module$master_awcache),
+			      .master_awprot(debug_module$master_awprot),
+			      .master_awqos(debug_module$master_awqos),
+			      .master_awregion(debug_module$master_awregion),
+			      .master_wvalid(debug_module$master_wvalid),
+			      .master_wdata(debug_module$master_wdata),
+			      .master_wstrb(debug_module$master_wstrb),
+			      .master_wlast(debug_module$master_wlast),
+			      .master_bready(debug_module$master_bready),
+			      .master_arvalid(debug_module$master_arvalid),
+			      .master_arid(debug_module$master_arid),
+			      .master_araddr(debug_module$master_araddr),
+			      .master_arlen(debug_module$master_arlen),
+			      .master_arsize(debug_module$master_arsize),
+			      .master_arburst(debug_module$master_arburst),
+			      .master_arlock(debug_module$master_arlock),
+			      .master_arcache(debug_module$master_arcache),
+			      .master_arprot(debug_module$master_arprot),
+			      .master_arqos(debug_module$master_arqos),
+			      .master_arregion(debug_module$master_arregion),
+			      .master_rready(debug_module$master_rready));
+
+  // submodule f_dmi_reqs
+  FIFO2 #(.width(32'd40), .guarded(1'd1)) f_dmi_reqs(.RST(RST_N),
+						     .CLK(CLK),
+						     .D_IN(f_dmi_reqs$D_IN),
+						     .ENQ(f_dmi_reqs$ENQ),
+						     .DEQ(f_dmi_reqs$DEQ),
+						     .CLR(f_dmi_reqs$CLR),
+						     .D_OUT(f_dmi_reqs$D_OUT),
+						     .FULL_N(f_dmi_reqs$FULL_N),
+						     .EMPTY_N(f_dmi_reqs$EMPTY_N));
+
+  // submodule f_dmi_rsps
+  FIFO2 #(.width(32'd32), .guarded(1'd1)) f_dmi_rsps(.RST(RST_N),
+						     .CLK(CLK),
+						     .D_IN(f_dmi_rsps$D_IN),
+						     .ENQ(f_dmi_rsps$ENQ),
+						     .DEQ(f_dmi_rsps$DEQ),
+						     .CLR(f_dmi_rsps$CLR),
+						     .D_OUT(f_dmi_rsps$D_OUT),
+						     .FULL_N(f_dmi_rsps$FULL_N),
+						     .EMPTY_N(f_dmi_rsps$EMPTY_N));
 
   // submodule host_cs
   mkHost_Control_Status host_cs(.CLK(CLK),
@@ -2844,7 +3413,7 @@ module mkAWSteria_Core(CLK_clk1,
 				.RDY_fo_pc_trace_control_deq(host_cs$RDY_fo_pc_trace_control_deq),
 				.fo_pc_trace_control_notEmpty(),
 				.RDY_fo_pc_trace_control_notEmpty(),
-				.RDY_fi_tohost_value_enq(),
+				.RDY_fi_tohost_value_enq(host_cs$RDY_fi_tohost_value_enq),
 				.fi_tohost_value_notFull(),
 				.RDY_fi_tohost_value_notFull());
 
@@ -2856,9 +3425,19 @@ module mkAWSteria_Core(CLK_clk1,
 							  .ASSERT_OUT(),
 							  .OUT_RST(innerRstIfc$OUT_RST));
 
-  // rule RL_assertInnerReset
-  assign CAN_FIRE_RL_assertInnerReset = host_cs$mv_assert_core_reset ;
-  assign WILL_FIRE_RL_assertInnerReset = host_cs$mv_assert_core_reset ;
+  // rule RL_rl_assert_reset_for_inner_core
+  assign CAN_FIRE_RL_rl_assert_reset_for_inner_core =
+	     host_cs$mv_assert_core_reset || rg_debug_module_ndm_reset ;
+  assign WILL_FIRE_RL_rl_assert_reset_for_inner_core =
+	     CAN_FIRE_RL_rl_assert_reset_for_inner_core ;
+
+  // rule RL_rl_on_deassert_core_reset
+  assign CAN_FIRE_RL_rl_on_deassert_core_reset =
+	     rg_core_reset_message_displayed &&
+	     !host_cs$mv_assert_core_reset ;
+  assign WILL_FIRE_RL_rl_on_deassert_core_reset =
+	     CAN_FIRE_RL_rl_on_deassert_core_reset &&
+	     !WILL_FIRE_RL_rl_assert_reset_for_inner_core ;
 
   // rule RL_rl_connect
   assign CAN_FIRE_RL_rl_connect =
@@ -2885,8 +3464,83 @@ module mkAWSteria_Core(CLK_clk1,
   assign WILL_FIRE_RL_rl_connect_2 = CAN_FIRE_RL_rl_connect_2 ;
 
   // rule RL_rl_connect_3
-  assign CAN_FIRE_RL_rl_connect_3 = core_inner_f_tohost_value$dEMPTY_N ;
-  assign WILL_FIRE_RL_rl_connect_3 = core_inner_f_tohost_value$dEMPTY_N ;
+  assign CAN_FIRE_RL_rl_connect_3 =
+	     core_inner_f_tohost_value$dEMPTY_N &&
+	     host_cs$RDY_fi_tohost_value_enq ;
+  assign WILL_FIRE_RL_rl_connect_3 = CAN_FIRE_RL_rl_connect_3 ;
+
+  // rule RL_ClientServerRequest
+  assign CAN_FIRE_RL_ClientServerRequest =
+	     core_inner_f_gpr_req$sFULL_N &&
+	     debug_module$RDY_hart0_gpr_mem_client_request_get ;
+  assign WILL_FIRE_RL_ClientServerRequest = CAN_FIRE_RL_ClientServerRequest ;
+
+  // rule RL_ClientServerResponse
+  assign CAN_FIRE_RL_ClientServerResponse =
+	     core_inner_f_gpr_rsp$dEMPTY_N &&
+	     debug_module$RDY_hart0_gpr_mem_client_response_put ;
+  assign WILL_FIRE_RL_ClientServerResponse =
+	     CAN_FIRE_RL_ClientServerResponse ;
+
+  // rule RL_ClientServerRequest_1
+  assign CAN_FIRE_RL_ClientServerRequest_1 =
+	     core_inner_f_fpr_req$sFULL_N &&
+	     debug_module$RDY_hart0_fpr_mem_client_request_get ;
+  assign WILL_FIRE_RL_ClientServerRequest_1 =
+	     CAN_FIRE_RL_ClientServerRequest_1 ;
+
+  // rule RL_ClientServerResponse_1
+  assign CAN_FIRE_RL_ClientServerResponse_1 =
+	     core_inner_f_fpr_rsp$dEMPTY_N &&
+	     debug_module$RDY_hart0_fpr_mem_client_response_put ;
+  assign WILL_FIRE_RL_ClientServerResponse_1 =
+	     CAN_FIRE_RL_ClientServerResponse_1 ;
+
+  // rule RL_ClientServerRequest_2
+  assign CAN_FIRE_RL_ClientServerRequest_2 =
+	     core_inner_f_csr_req$sFULL_N &&
+	     debug_module$RDY_hart0_csr_mem_client_request_get ;
+  assign WILL_FIRE_RL_ClientServerRequest_2 =
+	     CAN_FIRE_RL_ClientServerRequest_2 ;
+
+  // rule RL_ClientServerResponse_2
+  assign CAN_FIRE_RL_ClientServerResponse_2 =
+	     core_inner_f_csr_rsp$dEMPTY_N &&
+	     debug_module$RDY_hart0_csr_mem_client_response_put ;
+  assign WILL_FIRE_RL_ClientServerResponse_2 =
+	     CAN_FIRE_RL_ClientServerResponse_2 ;
+
+  // rule RL_rl_wr_addr_channel
+  assign CAN_FIRE_RL_rl_wr_addr_channel = 1'd1 ;
+  assign WILL_FIRE_RL_rl_wr_addr_channel = 1'd1 ;
+
+  // rule RL_rl_wr_data_channel
+  assign CAN_FIRE_RL_rl_wr_data_channel = 1'd1 ;
+  assign WILL_FIRE_RL_rl_wr_data_channel = 1'd1 ;
+
+  // rule RL_rl_rd_addr_channel
+  assign CAN_FIRE_RL_rl_rd_addr_channel = 1'd1 ;
+  assign WILL_FIRE_RL_rl_rd_addr_channel = 1'd1 ;
+
+  // rule RL_rl_dmi_req
+  assign CAN_FIRE_RL_rl_dmi_req =
+	     f_dmi_reqs$EMPTY_N &&
+	     (f_dmi_reqs$D_OUT[39] ?
+		debug_module$RDY_dmi_read_addr :
+		debug_module$RDY_dmi_write) ;
+  assign WILL_FIRE_RL_rl_dmi_req = CAN_FIRE_RL_rl_dmi_req ;
+
+  // rule RL_rl_dmi_rsp
+  assign CAN_FIRE_RL_rl_dmi_rsp =
+	     debug_module$RDY_dmi_read_data && f_dmi_rsps$FULL_N ;
+  assign WILL_FIRE_RL_rl_dmi_rsp =
+	     CAN_FIRE_RL_rl_dmi_rsp && !WILL_FIRE_RL_rl_dmi_req ;
+
+  // rule RL_rl_ndm_reset
+  assign CAN_FIRE_RL_rl_ndm_reset =
+	     debug_module$RDY_ndm_reset_client_response_put &&
+	     debug_module$RDY_ndm_reset_client_request_get ;
+  assign WILL_FIRE_RL_rl_ndm_reset = CAN_FIRE_RL_rl_ndm_reset ;
 
   // rule RL_core_inner_rl_wr_addr_channel
   assign CAN_FIRE_RL_core_inner_rl_wr_addr_channel = 1'd1 ;
@@ -3496,59 +4150,278 @@ module mkAWSteria_Core(CLK_clk1,
   assign WILL_FIRE_RL_core_inner_6_rl_connect =
 	     CAN_FIRE_RL_core_inner_6_rl_connect ;
 
-  // rule RL_core_inner_7_rl_connect
-  assign CAN_FIRE_RL_core_inner_7_rl_connect =
-	     core_inner_f_dmi_req$dEMPTY_N &&
-	     core_inner_reclocked$RDY_se_dmi_request_enq ;
-  assign WILL_FIRE_RL_core_inner_7_rl_connect =
-	     CAN_FIRE_RL_core_inner_7_rl_connect ;
+  // rule RL_core_inner_7_mkConnectionGetPut
+  assign CAN_FIRE_RL_core_inner_7_mkConnectionGetPut =
+	     core_inner_f_gpr_req$dEMPTY_N &&
+	     core_inner_reclocked$RDY_hart0_gpr_mem_server_request_put ;
+  assign WILL_FIRE_RL_core_inner_7_mkConnectionGetPut =
+	     CAN_FIRE_RL_core_inner_7_mkConnectionGetPut ;
 
-  // rule RL_core_inner_8_rl_connect
-  assign CAN_FIRE_RL_core_inner_8_rl_connect =
-	     core_inner_f_dmi_rsp$sFULL_N &&
-	     core_inner_reclocked$RDY_se_dmi_response_deq &&
-	     core_inner_reclocked$RDY_se_dmi_response_first ;
-  assign WILL_FIRE_RL_core_inner_8_rl_connect =
-	     CAN_FIRE_RL_core_inner_8_rl_connect ;
+  // rule RL_core_inner_8_mkConnectionGetPut
+  assign CAN_FIRE_RL_core_inner_8_mkConnectionGetPut =
+	     core_inner_f_gpr_rsp$sFULL_N &&
+	     core_inner_reclocked$RDY_hart0_gpr_mem_server_response_get ;
+  assign WILL_FIRE_RL_core_inner_8_mkConnectionGetPut =
+	     CAN_FIRE_RL_core_inner_8_mkConnectionGetPut ;
 
-  // rule RL_core_inner_9_rl_connect
-  assign CAN_FIRE_RL_core_inner_9_rl_connect =
-	     core_inner_f_ndm_reset_req$sFULL_N &&
-	     core_inner_reclocked$RDY_cl_ndm_reset_request_deq ;
-  assign WILL_FIRE_RL_core_inner_9_rl_connect =
-	     CAN_FIRE_RL_core_inner_9_rl_connect ;
+  // rule RL_core_inner_9_mkConnectionGetPut
+  assign CAN_FIRE_RL_core_inner_9_mkConnectionGetPut =
+	     core_inner_f_fpr_req$dEMPTY_N &&
+	     core_inner_reclocked$RDY_hart0_fpr_mem_server_request_put ;
+  assign WILL_FIRE_RL_core_inner_9_mkConnectionGetPut =
+	     CAN_FIRE_RL_core_inner_9_mkConnectionGetPut ;
 
-  // rule RL_core_inner_10_rl_connect
-  assign CAN_FIRE_RL_core_inner_10_rl_connect =
-	     core_inner_f_ndm_reset_rsp$dEMPTY_N &&
-	     core_inner_reclocked$RDY_cl_ndm_reset_response_enq ;
-  assign WILL_FIRE_RL_core_inner_10_rl_connect =
-	     CAN_FIRE_RL_core_inner_10_rl_connect ;
+  // rule RL_core_inner_10_mkConnectionGetPut
+  assign CAN_FIRE_RL_core_inner_10_mkConnectionGetPut =
+	     core_inner_f_fpr_rsp$sFULL_N &&
+	     core_inner_reclocked$RDY_hart0_fpr_mem_server_response_get ;
+  assign WILL_FIRE_RL_core_inner_10_mkConnectionGetPut =
+	     CAN_FIRE_RL_core_inner_10_mkConnectionGetPut ;
 
-  // rule RL_core_inner_11_rl_connect
-  assign CAN_FIRE_RL_core_inner_11_rl_connect =
-	     core_inner_f_pc_trace_control$dEMPTY_N &&
-	     core_inner_reclocked$RDY_fi_pc_trace_control_enq ;
-  assign WILL_FIRE_RL_core_inner_11_rl_connect =
-	     CAN_FIRE_RL_core_inner_11_rl_connect ;
+  // rule RL_core_inner_11_mkConnectionGetPut
+  assign CAN_FIRE_RL_core_inner_11_mkConnectionGetPut =
+	     core_inner_f_csr_req$dEMPTY_N &&
+	     core_inner_reclocked$RDY_hart0_csr_mem_server_request_put ;
+  assign WILL_FIRE_RL_core_inner_11_mkConnectionGetPut =
+	     CAN_FIRE_RL_core_inner_11_mkConnectionGetPut ;
 
-  // rule RL_core_inner_12_rl_connect
-  assign CAN_FIRE_RL_core_inner_12_rl_connect =
-	     core_inner_f_verbosity_control$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_inner_12_rl_connect =
-	     core_inner_f_verbosity_control$dEMPTY_N ;
+  // rule RL_core_inner_12_mkConnectionGetPut
+  assign CAN_FIRE_RL_core_inner_12_mkConnectionGetPut =
+	     core_inner_f_csr_rsp$sFULL_N &&
+	     core_inner_reclocked$RDY_hart0_csr_mem_server_response_get ;
+  assign WILL_FIRE_RL_core_inner_12_mkConnectionGetPut =
+	     CAN_FIRE_RL_core_inner_12_mkConnectionGetPut ;
+
+  // rule RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq
+  assign CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq =
+	     core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas &&
+	     !core_inner_sba_AXI4_clock_crossing_f_aw$sFULL_N ;
+  assign WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq ;
+
+  // rule RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq
+  assign CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq =
+	     core_inner_sba_AXI4_clock_crossing_f_aw$sFULL_N &&
+	     core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq ;
+
+  // rule RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq
+  assign CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq =
+	     core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas &&
+	     !core_inner_sba_AXI4_clock_crossing_f_w$sFULL_N ;
+  assign WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq ;
+
+  // rule RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq
+  assign CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq =
+	     core_inner_sba_AXI4_clock_crossing_f_w$sFULL_N &&
+	     core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq ;
+
+  // rule RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst
+  assign CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst =
+	     core_inner_sba_AXI4_clock_crossing_f_b$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_resp_setFirst =
+	     core_inner_sba_AXI4_clock_crossing_f_b$dEMPTY_N ;
+
+  // rule RL_rl_wr_response_channel
+  assign CAN_FIRE_RL_rl_wr_response_channel = 1'd1 ;
+  assign WILL_FIRE_RL_rl_wr_response_channel = 1'd1 ;
+
+  // rule RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq
+  assign CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq =
+	     core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas &&
+	     !core_inner_sba_AXI4_clock_crossing_f_b$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq ;
+
+  // rule RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq
+  assign CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq =
+	     core_inner_sba_AXI4_clock_crossing_f_b$dEMPTY_N &&
+	     core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq ;
+
+  // rule RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq
+  assign CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq =
+	     core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$whas &&
+	     !core_inner_sba_AXI4_clock_crossing_f_ar$sFULL_N ;
+  assign WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq ;
+
+  // rule RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq
+  assign CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq =
+	     core_inner_sba_AXI4_clock_crossing_f_ar$sFULL_N &&
+	     core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq ;
+
+  // rule RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst
+  assign CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst =
+	     core_inner_sba_AXI4_clock_crossing_f_r$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_data_setFirst =
+	     core_inner_sba_AXI4_clock_crossing_f_r$dEMPTY_N ;
+
+  // rule RL_rl_rd_data_channel
+  assign CAN_FIRE_RL_rl_rd_data_channel = 1'd1 ;
+  assign WILL_FIRE_RL_rl_rd_data_channel = 1'd1 ;
+
+  // rule RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq
+  assign CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq =
+	     core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas &&
+	     !core_inner_sba_AXI4_clock_crossing_f_r$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq ;
+
+  // rule RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq
+  assign CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq =
+	     core_inner_sba_AXI4_clock_crossing_f_r$dEMPTY_N &&
+	     core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq ;
+
+  // rule RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst
+  assign CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst =
+	     core_inner_sba_AXI4_clock_crossing_f_aw$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_addr_setFirst =
+	     core_inner_sba_AXI4_clock_crossing_f_aw$dEMPTY_N ;
+
+  // rule RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst
+  assign CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst =
+	     core_inner_sba_AXI4_clock_crossing_f_w$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_data_setFirst =
+	     core_inner_sba_AXI4_clock_crossing_f_w$dEMPTY_N ;
+
+  // rule RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst
+  assign CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst =
+	     core_inner_sba_AXI4_clock_crossing_f_ar$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_addr_setFirst =
+	     core_inner_sba_AXI4_clock_crossing_f_ar$dEMPTY_N ;
+
+  // rule RL_core_inner_13_rl_wr_addr_channel
+  assign CAN_FIRE_RL_core_inner_13_rl_wr_addr_channel = 1'd1 ;
+  assign WILL_FIRE_RL_core_inner_13_rl_wr_addr_channel = 1'd1 ;
+
+  // rule RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq
+  assign CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq =
+	     core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas &&
+	     !core_inner_sba_AXI4_clock_crossing_f_aw$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq ;
+
+  // rule RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq
+  assign CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq =
+	     core_inner_sba_AXI4_clock_crossing_f_aw$dEMPTY_N &&
+	     core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq ;
+
+  // rule RL_core_inner_13_rl_wr_data_channel
+  assign CAN_FIRE_RL_core_inner_13_rl_wr_data_channel = 1'd1 ;
+  assign WILL_FIRE_RL_core_inner_13_rl_wr_data_channel = 1'd1 ;
+
+  // rule RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq
+  assign CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq =
+	     core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_data_deqWire$whas &&
+	     !core_inner_sba_AXI4_clock_crossing_f_w$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq ;
+
+  // rule RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq
+  assign CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq =
+	     core_inner_sba_AXI4_clock_crossing_f_w$dEMPTY_N &&
+	     core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_data_deqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq ;
+
+  // rule RL_core_inner_13_rl_wr_response_channel
+  assign CAN_FIRE_RL_core_inner_13_rl_wr_response_channel = 1'd1 ;
+  assign WILL_FIRE_RL_core_inner_13_rl_wr_response_channel = 1'd1 ;
+
+  // rule RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq
+  assign CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq =
+	     core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$whas &&
+	     !core_inner_sba_AXI4_clock_crossing_f_b$sFULL_N ;
+  assign WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq ;
+
+  // rule RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq
+  assign CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq =
+	     core_inner_sba_AXI4_clock_crossing_f_b$sFULL_N &&
+	     core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq ;
+
+  // rule RL_core_inner_13_rl_rd_addr_channel
+  assign CAN_FIRE_RL_core_inner_13_rl_rd_addr_channel = 1'd1 ;
+  assign WILL_FIRE_RL_core_inner_13_rl_rd_addr_channel = 1'd1 ;
+
+  // rule RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq
+  assign CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq =
+	     core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas &&
+	     !core_inner_sba_AXI4_clock_crossing_f_ar$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq ;
+
+  // rule RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq
+  assign CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq =
+	     core_inner_sba_AXI4_clock_crossing_f_ar$dEMPTY_N &&
+	     core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq ;
+
+  // rule RL_core_inner_13_rl_rd_data_channel
+  assign CAN_FIRE_RL_core_inner_13_rl_rd_data_channel = 1'd1 ;
+  assign WILL_FIRE_RL_core_inner_13_rl_rd_data_channel = 1'd1 ;
+
+  // rule RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq
+  assign CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq =
+	     core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas &&
+	     !core_inner_sba_AXI4_clock_crossing_f_r$sFULL_N ;
+  assign WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq ;
+
+  // rule RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq
+  assign CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq =
+	     core_inner_sba_AXI4_clock_crossing_f_r$sFULL_N &&
+	     core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas ;
+  assign WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq ;
 
   // rule RL_core_inner_14_rl_connect
   assign CAN_FIRE_RL_core_inner_14_rl_connect =
-	     core_inner_f_tohost_value$sFULL_N ;
+	     core_inner_f_pc_trace_control$dEMPTY_N &&
+	     core_inner_reclocked$RDY_fi_pc_trace_control_enq ;
   assign WILL_FIRE_RL_core_inner_14_rl_connect =
-	     core_inner_f_tohost_value$sFULL_N ;
+	     CAN_FIRE_RL_core_inner_14_rl_connect ;
 
-  // rule RL_core_inner_13_rl_connect
-  assign CAN_FIRE_RL_core_inner_13_rl_connect =
+  // rule RL_core_inner_15_rl_connect
+  assign CAN_FIRE_RL_core_inner_15_rl_connect =
+	     core_inner_f_verbosity_control$dEMPTY_N ;
+  assign WILL_FIRE_RL_core_inner_15_rl_connect =
+	     core_inner_f_verbosity_control$dEMPTY_N ;
+
+  // rule RL_core_inner_16_rl_connect
+  assign CAN_FIRE_RL_core_inner_16_rl_connect =
 	     core_inner_f_watch_tohost_control$dEMPTY_N ;
-  assign WILL_FIRE_RL_core_inner_13_rl_connect =
+  assign WILL_FIRE_RL_core_inner_16_rl_connect =
 	     core_inner_f_watch_tohost_control$dEMPTY_N ;
+
+  // rule RL_core_inner_17_rl_connect
+  assign CAN_FIRE_RL_core_inner_17_rl_connect =
+	     core_inner_f_tohost_value$sFULL_N &&
+	     core_inner_reclocked$RDY_fo_tohost_value_deq &&
+	     core_inner_reclocked$RDY_fo_tohost_value_first ;
+  assign WILL_FIRE_RL_core_inner_17_rl_connect =
+	     CAN_FIRE_RL_core_inner_17_rl_connect ;
+
+  // inputs to muxes for submodule ports
+  assign MUX_rg_core_reset_message_displayed$write_1__SEL_1 =
+	     WILL_FIRE_RL_rl_assert_reset_for_inner_core &&
+	     host_cs$mv_assert_core_reset &&
+	     !rg_core_reset_message_displayed ;
 
   // inlined wires
   assign core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$wget =
@@ -3685,6 +4558,55 @@ module mkAWSteria_Core(CLK_clk1,
   assign core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas =
 	     core_inner_reclocked$dma_S_rvalid &&
 	     core_inner_dma_AXI4_clock_crossing_f_r$sFULL_N ;
+  assign core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$wget =
+	     { debug_module$master_awid,
+	       debug_module$master_awaddr,
+	       debug_module$master_awlen,
+	       debug_module$master_awsize,
+	       debug_module$master_awburst,
+	       debug_module$master_awlock,
+	       debug_module$master_awcache,
+	       debug_module$master_awprot,
+	       debug_module$master_awqos,
+	       debug_module$master_awregion } ;
+  assign core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$whas =
+	     debug_module$master_awvalid &&
+	     core_inner_sba_AXI4_clock_crossing_f_aw$sFULL_N ;
+  assign core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$wget =
+	     { debug_module$master_wdata,
+	       debug_module$master_wstrb,
+	       debug_module$master_wlast } ;
+  assign core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$whas =
+	     debug_module$master_wvalid &&
+	     core_inner_sba_AXI4_clock_crossing_f_w$sFULL_N ;
+  assign core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$wget =
+	     { debug_module$master_arid,
+	       debug_module$master_araddr,
+	       debug_module$master_arlen,
+	       debug_module$master_arsize,
+	       debug_module$master_arburst,
+	       debug_module$master_arlock,
+	       debug_module$master_arcache,
+	       debug_module$master_arprot,
+	       debug_module$master_arqos,
+	       debug_module$master_arregion } ;
+  assign core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$whas =
+	     debug_module$master_arvalid &&
+	     core_inner_sba_AXI4_clock_crossing_f_ar$sFULL_N ;
+  assign core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$wget =
+	     { core_inner_reclocked$sba_S_bid,
+	       core_inner_reclocked$sba_S_bresp } ;
+  assign core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$whas =
+	     core_inner_reclocked$sba_S_bvalid &&
+	     core_inner_sba_AXI4_clock_crossing_f_b$sFULL_N ;
+  assign core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$wget =
+	     { core_inner_reclocked$sba_S_rid,
+	       core_inner_reclocked$sba_S_rdata,
+	       core_inner_reclocked$sba_S_rresp,
+	       core_inner_reclocked$sba_S_rlast } ;
+  assign core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$whas =
+	     core_inner_reclocked$sba_S_rvalid &&
+	     core_inner_sba_AXI4_clock_crossing_f_r$sFULL_N ;
   assign core_inner_ddr_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas =
 	     core_inner_reclocked$mem_M_bready &&
 	     core_inner_ddr_AXI4_clock_crossing_f_b$dEMPTY_N ;
@@ -3727,10 +4649,40 @@ module mkAWSteria_Core(CLK_clk1,
   assign core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas =
 	     core_inner_dma_AXI4_clock_crossing_f_ar$dEMPTY_N &&
 	     core_inner_reclocked$dma_S_arready ;
+  assign core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_resp_deqWire$whas =
+	     debug_module$master_bready &&
+	     core_inner_sba_AXI4_clock_crossing_f_b$dEMPTY_N ;
+  assign core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_data_deqWire$whas =
+	     debug_module$master_rready &&
+	     core_inner_sba_AXI4_clock_crossing_f_r$dEMPTY_N ;
+  assign core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_addr_deqWire$whas =
+	     core_inner_sba_AXI4_clock_crossing_f_aw$dEMPTY_N &&
+	     core_inner_reclocked$sba_S_awready ;
+  assign core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_data_deqWire$whas =
+	     core_inner_sba_AXI4_clock_crossing_f_w$dEMPTY_N &&
+	     core_inner_reclocked$sba_S_wready ;
+  assign core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_addr_deqWire$whas =
+	     core_inner_sba_AXI4_clock_crossing_f_ar$dEMPTY_N &&
+	     core_inner_reclocked$sba_S_arready ;
 
   // register core_inner_rg_irqs
   assign core_inner_rg_irqs$D_IN = ext_interrupts_x ;
   assign core_inner_rg_irqs$EN = EN_ext_interrupts ;
+
+  // register rg_core_reset_message_displayed
+  assign rg_core_reset_message_displayed$D_IN =
+	     MUX_rg_core_reset_message_displayed$write_1__SEL_1 ;
+  assign rg_core_reset_message_displayed$EN =
+	     WILL_FIRE_RL_rl_assert_reset_for_inner_core &&
+	     host_cs$mv_assert_core_reset &&
+	     !rg_core_reset_message_displayed ||
+	     WILL_FIRE_RL_rl_on_deassert_core_reset ;
+
+  // register rg_debug_module_ndm_reset
+  assign rg_debug_module_ndm_reset$D_IN = WILL_FIRE_RL_rl_ndm_reset ;
+  assign rg_debug_module_ndm_reset$EN =
+	     WILL_FIRE_RL_rl_assert_reset_for_inner_core ||
+	     WILL_FIRE_RL_rl_ndm_reset ;
 
   // submodule core_inner_ddr_AXI4_clock_crossing_f_ar
   assign core_inner_ddr_AXI4_clock_crossing_f_ar$sD_IN =
@@ -3812,16 +4764,47 @@ module mkAWSteria_Core(CLK_clk1,
   assign core_inner_dma_AXI4_clock_crossing_f_w$dDEQ =
 	     CAN_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq ;
 
-  // submodule core_inner_f_dmi_req
-  assign core_inner_f_dmi_req$sD_IN = se_dmi_request_enq_x ;
-  assign core_inner_f_dmi_req$sENQ = EN_se_dmi_request_enq ;
-  assign core_inner_f_dmi_req$dDEQ = CAN_FIRE_RL_core_inner_7_rl_connect ;
+  // submodule core_inner_f_csr_req
+  assign core_inner_f_csr_req$sD_IN =
+	     debug_module$hart0_csr_mem_client_request_get ;
+  assign core_inner_f_csr_req$sENQ = CAN_FIRE_RL_ClientServerRequest_2 ;
+  assign core_inner_f_csr_req$dDEQ =
+	     CAN_FIRE_RL_core_inner_11_mkConnectionGetPut ;
 
-  // submodule core_inner_f_dmi_rsp
-  assign core_inner_f_dmi_rsp$sD_IN =
-	     core_inner_reclocked$se_dmi_response_first ;
-  assign core_inner_f_dmi_rsp$sENQ = CAN_FIRE_RL_core_inner_8_rl_connect ;
-  assign core_inner_f_dmi_rsp$dDEQ = EN_se_dmi_response_deq ;
+  // submodule core_inner_f_csr_rsp
+  assign core_inner_f_csr_rsp$sD_IN =
+	     core_inner_reclocked$hart0_csr_mem_server_response_get ;
+  assign core_inner_f_csr_rsp$sENQ =
+	     CAN_FIRE_RL_core_inner_12_mkConnectionGetPut ;
+  assign core_inner_f_csr_rsp$dDEQ = CAN_FIRE_RL_ClientServerResponse_2 ;
+
+  // submodule core_inner_f_fpr_req
+  assign core_inner_f_fpr_req$sD_IN =
+	     debug_module$hart0_fpr_mem_client_request_get ;
+  assign core_inner_f_fpr_req$sENQ = CAN_FIRE_RL_ClientServerRequest_1 ;
+  assign core_inner_f_fpr_req$dDEQ =
+	     CAN_FIRE_RL_core_inner_9_mkConnectionGetPut ;
+
+  // submodule core_inner_f_fpr_rsp
+  assign core_inner_f_fpr_rsp$sD_IN =
+	     core_inner_reclocked$hart0_fpr_mem_server_response_get ;
+  assign core_inner_f_fpr_rsp$sENQ =
+	     CAN_FIRE_RL_core_inner_10_mkConnectionGetPut ;
+  assign core_inner_f_fpr_rsp$dDEQ = CAN_FIRE_RL_ClientServerResponse_1 ;
+
+  // submodule core_inner_f_gpr_req
+  assign core_inner_f_gpr_req$sD_IN =
+	     debug_module$hart0_gpr_mem_client_request_get ;
+  assign core_inner_f_gpr_req$sENQ = CAN_FIRE_RL_ClientServerRequest ;
+  assign core_inner_f_gpr_req$dDEQ =
+	     CAN_FIRE_RL_core_inner_7_mkConnectionGetPut ;
+
+  // submodule core_inner_f_gpr_rsp
+  assign core_inner_f_gpr_rsp$sD_IN =
+	     core_inner_reclocked$hart0_gpr_mem_server_response_get ;
+  assign core_inner_f_gpr_rsp$sENQ =
+	     CAN_FIRE_RL_core_inner_8_mkConnectionGetPut ;
+  assign core_inner_f_gpr_rsp$dDEQ = CAN_FIRE_RL_ClientServerResponse ;
 
   // submodule core_inner_f_misc_from_host
   assign core_inner_f_misc_from_host$sD_IN = fi_misc_enq_x ;
@@ -3836,16 +4819,6 @@ module mkAWSteria_Core(CLK_clk1,
 	     CAN_FIRE_RL_core_inner_5_rl_connect ;
   assign core_inner_f_misc_to_host$dDEQ = EN_fo_misc_deq ;
 
-  // submodule core_inner_f_ndm_reset_req
-  assign core_inner_f_ndm_reset_req$sENQ =
-	     CAN_FIRE_RL_core_inner_9_rl_connect ;
-  assign core_inner_f_ndm_reset_req$dDEQ = EN_cl_ndm_reset_request_deq ;
-
-  // submodule core_inner_f_ndm_reset_rsp
-  assign core_inner_f_ndm_reset_rsp$sENQ = EN_cl_ndm_reset_response_enq ;
-  assign core_inner_f_ndm_reset_rsp$dDEQ =
-	     CAN_FIRE_RL_core_inner_10_rl_connect ;
-
   // submodule core_inner_f_nmi
   assign core_inner_f_nmi$sD_IN = fi_nmi_enq_x ;
   assign core_inner_f_nmi$sENQ = EN_fi_nmi_enq ;
@@ -3857,13 +4830,14 @@ module mkAWSteria_Core(CLK_clk1,
 	       host_cs$fo_pc_trace_control_first_snd } ;
   assign core_inner_f_pc_trace_control$sENQ = CAN_FIRE_RL_rl_connect ;
   assign core_inner_f_pc_trace_control$dDEQ =
-	     CAN_FIRE_RL_core_inner_11_rl_connect ;
+	     CAN_FIRE_RL_core_inner_14_rl_connect ;
 
   // submodule core_inner_f_tohost_value
   assign core_inner_f_tohost_value$sD_IN =
 	     core_inner_reclocked$fo_tohost_value_first ;
-  assign core_inner_f_tohost_value$sENQ = core_inner_f_tohost_value$sFULL_N ;
-  assign core_inner_f_tohost_value$dDEQ = core_inner_f_tohost_value$dEMPTY_N ;
+  assign core_inner_f_tohost_value$sENQ =
+	     CAN_FIRE_RL_core_inner_17_rl_connect ;
+  assign core_inner_f_tohost_value$dDEQ = CAN_FIRE_RL_rl_connect_3 ;
 
   // submodule core_inner_f_tv_info
   assign core_inner_f_tv_info$sD_IN = core_inner_reclocked$fo_tv_info_first ;
@@ -4036,6 +5010,12 @@ module mkAWSteria_Core(CLK_clk1,
 	     core_inner_f_verbosity_control$dD_OUT ;
   assign core_inner_reclocked$fi_watch_tohost_control_enq_x =
 	     core_inner_f_watch_tohost_control$dD_OUT ;
+  assign core_inner_reclocked$hart0_csr_mem_server_request_put =
+	     core_inner_f_csr_req$dD_OUT ;
+  assign core_inner_reclocked$hart0_fpr_mem_server_request_put =
+	     core_inner_f_fpr_req$dD_OUT ;
+  assign core_inner_reclocked$hart0_gpr_mem_server_request_put =
+	     core_inner_f_gpr_req$dD_OUT ;
   assign core_inner_reclocked$mem_M_arready =
 	     core_inner_ddr_AXI4_clock_crossing_f_ar$sFULL_N ;
   assign core_inner_reclocked$mem_M_awready =
@@ -4102,8 +5082,105 @@ module mkAWSteria_Core(CLK_clk1,
 	     core_inner_mmio_AXI4_clock_crossing_f_r$dEMPTY_N ;
   assign core_inner_reclocked$mmio_M_wready =
 	     core_inner_mmio_AXI4_clock_crossing_f_w$sFULL_N ;
-  assign core_inner_reclocked$se_dmi_request_enq_x =
-	     core_inner_f_dmi_req$dD_OUT ;
+  assign core_inner_reclocked$sba_S_araddr =
+	     core_inner_sba_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_sba_AXI4_clock_crossing_f_ar$dD_OUT[92:29] :
+	       64'd0 ;
+  assign core_inner_reclocked$sba_S_arburst =
+	     core_inner_sba_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_sba_AXI4_clock_crossing_f_ar$dD_OUT[17:16] :
+	       2'd0 ;
+  assign core_inner_reclocked$sba_S_arcache =
+	     core_inner_sba_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_sba_AXI4_clock_crossing_f_ar$dD_OUT[14:11] :
+	       4'd0 ;
+  assign core_inner_reclocked$sba_S_arid =
+	     core_inner_sba_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_sba_AXI4_clock_crossing_f_ar$dD_OUT[108:93] :
+	       16'd0 ;
+  assign core_inner_reclocked$sba_S_arlen =
+	     core_inner_sba_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_sba_AXI4_clock_crossing_f_ar$dD_OUT[28:21] :
+	       8'd0 ;
+  assign core_inner_reclocked$sba_S_arlock =
+	     core_inner_sba_AXI4_clock_crossing_f_ar$dEMPTY_N &&
+	     core_inner_sba_AXI4_clock_crossing_f_ar$dD_OUT[15] ;
+  assign core_inner_reclocked$sba_S_arprot =
+	     core_inner_sba_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_sba_AXI4_clock_crossing_f_ar$dD_OUT[10:8] :
+	       3'd0 ;
+  assign core_inner_reclocked$sba_S_arqos =
+	     core_inner_sba_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_sba_AXI4_clock_crossing_f_ar$dD_OUT[7:4] :
+	       4'd0 ;
+  assign core_inner_reclocked$sba_S_arregion =
+	     core_inner_sba_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_sba_AXI4_clock_crossing_f_ar$dD_OUT[3:0] :
+	       4'd0 ;
+  assign core_inner_reclocked$sba_S_arsize =
+	     core_inner_sba_AXI4_clock_crossing_f_ar$dEMPTY_N ?
+	       core_inner_sba_AXI4_clock_crossing_f_ar$dD_OUT[20:18] :
+	       3'd0 ;
+  assign core_inner_reclocked$sba_S_arvalid =
+	     core_inner_sba_AXI4_clock_crossing_f_ar$dEMPTY_N ;
+  assign core_inner_reclocked$sba_S_awaddr =
+	     core_inner_sba_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_sba_AXI4_clock_crossing_f_aw$dD_OUT[92:29] :
+	       64'd0 ;
+  assign core_inner_reclocked$sba_S_awburst =
+	     core_inner_sba_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_sba_AXI4_clock_crossing_f_aw$dD_OUT[17:16] :
+	       2'd0 ;
+  assign core_inner_reclocked$sba_S_awcache =
+	     core_inner_sba_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_sba_AXI4_clock_crossing_f_aw$dD_OUT[14:11] :
+	       4'd0 ;
+  assign core_inner_reclocked$sba_S_awid =
+	     core_inner_sba_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_sba_AXI4_clock_crossing_f_aw$dD_OUT[108:93] :
+	       16'd0 ;
+  assign core_inner_reclocked$sba_S_awlen =
+	     core_inner_sba_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_sba_AXI4_clock_crossing_f_aw$dD_OUT[28:21] :
+	       8'd0 ;
+  assign core_inner_reclocked$sba_S_awlock =
+	     core_inner_sba_AXI4_clock_crossing_f_aw$dEMPTY_N &&
+	     core_inner_sba_AXI4_clock_crossing_f_aw$dD_OUT[15] ;
+  assign core_inner_reclocked$sba_S_awprot =
+	     core_inner_sba_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_sba_AXI4_clock_crossing_f_aw$dD_OUT[10:8] :
+	       3'd0 ;
+  assign core_inner_reclocked$sba_S_awqos =
+	     core_inner_sba_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_sba_AXI4_clock_crossing_f_aw$dD_OUT[7:4] :
+	       4'd0 ;
+  assign core_inner_reclocked$sba_S_awregion =
+	     core_inner_sba_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_sba_AXI4_clock_crossing_f_aw$dD_OUT[3:0] :
+	       4'd0 ;
+  assign core_inner_reclocked$sba_S_awsize =
+	     core_inner_sba_AXI4_clock_crossing_f_aw$dEMPTY_N ?
+	       core_inner_sba_AXI4_clock_crossing_f_aw$dD_OUT[20:18] :
+	       3'd0 ;
+  assign core_inner_reclocked$sba_S_awvalid =
+	     core_inner_sba_AXI4_clock_crossing_f_aw$dEMPTY_N ;
+  assign core_inner_reclocked$sba_S_bready =
+	     core_inner_sba_AXI4_clock_crossing_f_b$sFULL_N ;
+  assign core_inner_reclocked$sba_S_rready =
+	     core_inner_sba_AXI4_clock_crossing_f_r$sFULL_N ;
+  assign core_inner_reclocked$sba_S_wdata =
+	     core_inner_sba_AXI4_clock_crossing_f_w$dEMPTY_N ?
+	       core_inner_sba_AXI4_clock_crossing_f_w$dD_OUT[72:9] :
+	       64'd0 ;
+  assign core_inner_reclocked$sba_S_wlast =
+	     core_inner_sba_AXI4_clock_crossing_f_w$dEMPTY_N &&
+	     core_inner_sba_AXI4_clock_crossing_f_w$dD_OUT[0] ;
+  assign core_inner_reclocked$sba_S_wstrb =
+	     core_inner_sba_AXI4_clock_crossing_f_w$dEMPTY_N ?
+	       core_inner_sba_AXI4_clock_crossing_f_w$dD_OUT[8:1] :
+	       8'd0 ;
+  assign core_inner_reclocked$sba_S_wvalid =
+	     core_inner_sba_AXI4_clock_crossing_f_w$dEMPTY_N ;
   assign core_inner_reclocked$EN_ext_interrupts = 1'd1 ;
   assign core_inner_reclocked$EN_fi_nmi_enq =
 	     CAN_FIRE_RL_core_inner_3_rl_connect ;
@@ -4113,22 +5190,152 @@ module mkAWSteria_Core(CLK_clk1,
 	     CAN_FIRE_RL_core_inner_4_rl_connect ;
   assign core_inner_reclocked$EN_fo_tv_info_deq =
 	     CAN_FIRE_RL_core_inner_6_rl_connect ;
-  assign core_inner_reclocked$EN_se_dmi_request_enq =
-	     CAN_FIRE_RL_core_inner_7_rl_connect ;
-  assign core_inner_reclocked$EN_se_dmi_response_deq =
-	     CAN_FIRE_RL_core_inner_8_rl_connect ;
-  assign core_inner_reclocked$EN_cl_ndm_reset_request_deq =
-	     CAN_FIRE_RL_core_inner_9_rl_connect ;
-  assign core_inner_reclocked$EN_cl_ndm_reset_response_enq =
-	     CAN_FIRE_RL_core_inner_10_rl_connect ;
+  assign core_inner_reclocked$EN_hart0_gpr_mem_server_request_put =
+	     CAN_FIRE_RL_core_inner_7_mkConnectionGetPut ;
+  assign core_inner_reclocked$EN_hart0_gpr_mem_server_response_get =
+	     CAN_FIRE_RL_core_inner_8_mkConnectionGetPut ;
+  assign core_inner_reclocked$EN_hart0_fpr_mem_server_request_put =
+	     CAN_FIRE_RL_core_inner_9_mkConnectionGetPut ;
+  assign core_inner_reclocked$EN_hart0_fpr_mem_server_response_get =
+	     CAN_FIRE_RL_core_inner_10_mkConnectionGetPut ;
+  assign core_inner_reclocked$EN_hart0_csr_mem_server_request_put =
+	     CAN_FIRE_RL_core_inner_11_mkConnectionGetPut ;
+  assign core_inner_reclocked$EN_hart0_csr_mem_server_response_get =
+	     CAN_FIRE_RL_core_inner_12_mkConnectionGetPut ;
   assign core_inner_reclocked$EN_fi_pc_trace_control_enq =
-	     CAN_FIRE_RL_core_inner_11_rl_connect ;
+	     CAN_FIRE_RL_core_inner_14_rl_connect ;
   assign core_inner_reclocked$EN_fi_verbosity_control_enq =
 	     core_inner_f_verbosity_control$dEMPTY_N ;
   assign core_inner_reclocked$EN_fi_watch_tohost_control_enq =
 	     core_inner_f_watch_tohost_control$dEMPTY_N ;
   assign core_inner_reclocked$EN_fo_tohost_value_deq =
-	     core_inner_f_tohost_value$sFULL_N ;
+	     CAN_FIRE_RL_core_inner_17_rl_connect ;
+
+  // submodule core_inner_sba_AXI4_clock_crossing_f_ar
+  assign core_inner_sba_AXI4_clock_crossing_f_ar$sD_IN =
+	     core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_addr_enqWire$wget ;
+  assign core_inner_sba_AXI4_clock_crossing_f_ar$sENQ =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_addr_doEnq ;
+  assign core_inner_sba_AXI4_clock_crossing_f_ar$dDEQ =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_addr_doDeq ;
+
+  // submodule core_inner_sba_AXI4_clock_crossing_f_aw
+  assign core_inner_sba_AXI4_clock_crossing_f_aw$sD_IN =
+	     core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_addr_enqWire$wget ;
+  assign core_inner_sba_AXI4_clock_crossing_f_aw$sENQ =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_addr_doEnq ;
+  assign core_inner_sba_AXI4_clock_crossing_f_aw$dDEQ =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_addr_doDeq ;
+
+  // submodule core_inner_sba_AXI4_clock_crossing_f_b
+  assign core_inner_sba_AXI4_clock_crossing_f_b$sD_IN =
+	     core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_resp_enqWire$wget ;
+  assign core_inner_sba_AXI4_clock_crossing_f_b$sENQ =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_resp_doEnq ;
+  assign core_inner_sba_AXI4_clock_crossing_f_b$dDEQ =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_resp_doDeq ;
+
+  // submodule core_inner_sba_AXI4_clock_crossing_f_r
+  assign core_inner_sba_AXI4_clock_crossing_f_r$sD_IN =
+	     core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_data_enqWire$wget ;
+  assign core_inner_sba_AXI4_clock_crossing_f_r$sENQ =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_data_doEnq ;
+  assign core_inner_sba_AXI4_clock_crossing_f_r$dDEQ =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_data_doDeq ;
+
+  // submodule core_inner_sba_AXI4_clock_crossing_f_w
+  assign core_inner_sba_AXI4_clock_crossing_f_w$sD_IN =
+	     core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_data_enqWire$wget ;
+  assign core_inner_sba_AXI4_clock_crossing_f_w$sENQ =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_data_doEnq ;
+  assign core_inner_sba_AXI4_clock_crossing_f_w$dDEQ =
+	     CAN_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_data_doDeq ;
+
+  // submodule debug_module
+  assign debug_module$dmi_read_addr_dm_addr = f_dmi_reqs$D_OUT[38:32] ;
+  assign debug_module$dmi_write_dm_addr = f_dmi_reqs$D_OUT[38:32] ;
+  assign debug_module$dmi_write_dm_word = f_dmi_reqs$D_OUT[31:0] ;
+  assign debug_module$hart0_client_run_halt_response_put = 1'b0 ;
+  assign debug_module$hart0_csr_mem_client_response_put =
+	     core_inner_f_csr_rsp$dD_OUT ;
+  assign debug_module$hart0_fpr_mem_client_response_put =
+	     core_inner_f_fpr_rsp$dD_OUT ;
+  assign debug_module$hart0_gpr_mem_client_response_put =
+	     core_inner_f_gpr_rsp$dD_OUT ;
+  assign debug_module$hart0_reset_client_response_put = 1'b0 ;
+  assign debug_module$master_arready =
+	     core_inner_sba_AXI4_clock_crossing_f_ar$sFULL_N ;
+  assign debug_module$master_awready =
+	     core_inner_sba_AXI4_clock_crossing_f_aw$sFULL_N ;
+  assign debug_module$master_bid =
+	     core_inner_sba_AXI4_clock_crossing_f_b$dEMPTY_N ?
+	       core_inner_sba_AXI4_clock_crossing_f_b$dD_OUT[17:2] :
+	       16'd0 ;
+  assign debug_module$master_bresp =
+	     core_inner_sba_AXI4_clock_crossing_f_b$dEMPTY_N ?
+	       core_inner_sba_AXI4_clock_crossing_f_b$dD_OUT[1:0] :
+	       2'd0 ;
+  assign debug_module$master_bvalid =
+	     core_inner_sba_AXI4_clock_crossing_f_b$dEMPTY_N ;
+  assign debug_module$master_rdata =
+	     core_inner_sba_AXI4_clock_crossing_f_r$dEMPTY_N ?
+	       core_inner_sba_AXI4_clock_crossing_f_r$dD_OUT[66:3] :
+	       64'd0 ;
+  assign debug_module$master_rid =
+	     core_inner_sba_AXI4_clock_crossing_f_r$dEMPTY_N ?
+	       core_inner_sba_AXI4_clock_crossing_f_r$dD_OUT[82:67] :
+	       16'd0 ;
+  assign debug_module$master_rlast =
+	     core_inner_sba_AXI4_clock_crossing_f_r$dEMPTY_N &&
+	     core_inner_sba_AXI4_clock_crossing_f_r$dD_OUT[0] ;
+  assign debug_module$master_rresp =
+	     core_inner_sba_AXI4_clock_crossing_f_r$dEMPTY_N ?
+	       core_inner_sba_AXI4_clock_crossing_f_r$dD_OUT[2:1] :
+	       2'd0 ;
+  assign debug_module$master_rvalid =
+	     core_inner_sba_AXI4_clock_crossing_f_r$dEMPTY_N ;
+  assign debug_module$master_wready =
+	     core_inner_sba_AXI4_clock_crossing_f_w$sFULL_N ;
+  assign debug_module$ndm_reset_client_response_put =
+	     debug_module$ndm_reset_client_request_get ;
+  assign debug_module$EN_dmi_read_addr =
+	     WILL_FIRE_RL_rl_dmi_req && f_dmi_reqs$D_OUT[39] ;
+  assign debug_module$EN_dmi_read_data = WILL_FIRE_RL_rl_dmi_rsp ;
+  assign debug_module$EN_dmi_write =
+	     WILL_FIRE_RL_rl_dmi_req && !f_dmi_reqs$D_OUT[39] ;
+  assign debug_module$EN_hart0_reset_client_request_get = 1'b0 ;
+  assign debug_module$EN_hart0_reset_client_response_put = 1'b0 ;
+  assign debug_module$EN_hart0_client_run_halt_request_get = 1'b0 ;
+  assign debug_module$EN_hart0_client_run_halt_response_put = 1'b0 ;
+  assign debug_module$EN_hart0_get_other_req_get = 1'b0 ;
+  assign debug_module$EN_hart0_gpr_mem_client_request_get =
+	     CAN_FIRE_RL_ClientServerRequest ;
+  assign debug_module$EN_hart0_gpr_mem_client_response_put =
+	     CAN_FIRE_RL_ClientServerResponse ;
+  assign debug_module$EN_hart0_fpr_mem_client_request_get =
+	     CAN_FIRE_RL_ClientServerRequest_1 ;
+  assign debug_module$EN_hart0_fpr_mem_client_response_put =
+	     CAN_FIRE_RL_ClientServerResponse_1 ;
+  assign debug_module$EN_hart0_csr_mem_client_request_get =
+	     CAN_FIRE_RL_ClientServerRequest_2 ;
+  assign debug_module$EN_hart0_csr_mem_client_response_put =
+	     CAN_FIRE_RL_ClientServerResponse_2 ;
+  assign debug_module$EN_ndm_reset_client_request_get =
+	     CAN_FIRE_RL_rl_ndm_reset ;
+  assign debug_module$EN_ndm_reset_client_response_put =
+	     CAN_FIRE_RL_rl_ndm_reset ;
+
+  // submodule f_dmi_reqs
+  assign f_dmi_reqs$D_IN = se_dmi_request_enq_x ;
+  assign f_dmi_reqs$ENQ = EN_se_dmi_request_enq ;
+  assign f_dmi_reqs$DEQ = CAN_FIRE_RL_rl_dmi_req ;
+  assign f_dmi_reqs$CLR = 1'b0 ;
+
+  // submodule f_dmi_rsps
+  assign f_dmi_rsps$D_IN = debug_module$dmi_read_data ;
+  assign f_dmi_rsps$ENQ = WILL_FIRE_RL_rl_dmi_rsp ;
+  assign f_dmi_rsps$DEQ = EN_se_dmi_response_deq ;
+  assign f_dmi_rsps$CLR = 1'b0 ;
 
   // submodule host_cs
   assign host_cs$fi_tohost_value_enq_x = core_inner_f_tohost_value$dD_OUT ;
@@ -4141,10 +5348,10 @@ module mkAWSteria_Core(CLK_clk1,
   assign host_cs$EN_fo_watch_tohost_control_deq = CAN_FIRE_RL_rl_connect_2 ;
   assign host_cs$EN_fo_verbosity_control_deq = CAN_FIRE_RL_rl_connect_1 ;
   assign host_cs$EN_fo_pc_trace_control_deq = CAN_FIRE_RL_rl_connect ;
-  assign host_cs$EN_fi_tohost_value_enq = core_inner_f_tohost_value$dEMPTY_N ;
+  assign host_cs$EN_fi_tohost_value_enq = CAN_FIRE_RL_rl_connect_3 ;
 
   // submodule innerRstIfc
-  assign innerRstIfc$ASSERT_IN = host_cs$mv_assert_core_reset ;
+  assign innerRstIfc$ASSERT_IN = CAN_FIRE_RL_rl_assert_reset_for_inner_core ;
 
   // handling of inlined registers
 
@@ -4153,11 +5360,19 @@ module mkAWSteria_Core(CLK_clk1,
     if (RST_N == `BSV_RESET_VALUE)
       begin
         core_inner_rg_irqs <= `BSV_ASSIGNMENT_DELAY 5'd0;
+	rg_core_reset_message_displayed <= `BSV_ASSIGNMENT_DELAY 1'd0;
+	rg_debug_module_ndm_reset <= `BSV_ASSIGNMENT_DELAY 1'd0;
       end
     else
       begin
         if (core_inner_rg_irqs$EN)
 	  core_inner_rg_irqs <= `BSV_ASSIGNMENT_DELAY core_inner_rg_irqs$D_IN;
+	if (rg_core_reset_message_displayed$EN)
+	  rg_core_reset_message_displayed <= `BSV_ASSIGNMENT_DELAY
+	      rg_core_reset_message_displayed$D_IN;
+	if (rg_debug_module_ndm_reset$EN)
+	  rg_debug_module_ndm_reset <= `BSV_ASSIGNMENT_DELAY
+	      rg_debug_module_ndm_reset$D_IN;
       end
   end
 
@@ -4167,6 +5382,8 @@ module mkAWSteria_Core(CLK_clk1,
   initial
   begin
     core_inner_rg_irqs = 5'h0A;
+    rg_core_reset_message_displayed = 1'h0;
+    rg_debug_module_ndm_reset = 1'h0;
   end
   `endif // BSV_NO_INITIAL_BLOCKS
   // synopsys translate_on
@@ -4178,6 +5395,21 @@ module mkAWSteria_Core(CLK_clk1,
   begin
     #0;
     if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_assert_reset_for_inner_core &&
+	  host_cs$mv_assert_core_reset &&
+	  !rg_core_reset_message_displayed)
+	$display("AWSteria_Core: asserting Core_Inner reset due to host-control");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_assert_reset_for_inner_core &&
+	  !host_cs$mv_assert_core_reset)
+	$display("AWSteria_Core: asserting Core_Inner reset due to NDM reset from Debug Module");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_on_deassert_core_reset)
+	$display("AWSteria_Core: de-asserting Core_Inner reset due to host-control");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_rl_ndm_reset)
+	$display("AWSteria_Core: Debug Module requesting NDM reset (non-Debug-Module)");
+    if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_core_inner_ddr_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq)
 	$display("WARNING: deqing from empty FIFOF_O");
     if (RST_N != `BSV_RESET_VALUE)
@@ -4266,6 +5498,36 @@ module mkAWSteria_Core(CLK_clk1,
 	$display("WARNING: deqing from empty FIFOF_O");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq)
+	$finish(32'd0);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq)
+	$display("WARNING: enqing into an already full FIFOF_I");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_addr_warnDoEnq)
+	$finish(32'd0);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq)
+	$display("WARNING: enqing into an already full FIFOF_I");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_data_warnDoEnq)
+	$finish(32'd0);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq)
+	$display("WARNING: deqing from empty FIFOF_O");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_wr_resp_warnDoDeq)
+	$finish(32'd0);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq)
+	$display("WARNING: enqing into an already full FIFOF_I");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_addr_warnDoEnq)
+	$finish(32'd0);
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq)
+	$display("WARNING: deqing from empty FIFOF_O");
+    if (RST_N != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_slave_xactor_f_rd_data_warnDoDeq)
 	$finish(32'd0);
   end
   // synopsys translate_on
@@ -4363,6 +5625,36 @@ module mkAWSteria_Core(CLK_clk1,
 	$display("WARNING: enqing into an already full FIFOF_I");
     if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_core_inner_dma_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq)
+	$finish(32'd0);
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq)
+	$display("WARNING: deqing from empty FIFOF_O");
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_addr_warnDoDeq)
+	$finish(32'd0);
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq)
+	$display("WARNING: deqing from empty FIFOF_O");
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_data_warnDoDeq)
+	$finish(32'd0);
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq)
+	$display("WARNING: enqing into an already full FIFOF_I");
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_wr_resp_warnDoEnq)
+	$finish(32'd0);
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq)
+	$display("WARNING: deqing from empty FIFOF_O");
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_addr_warnDoDeq)
+	$finish(32'd0);
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq)
+	$display("WARNING: enqing into an already full FIFOF_I");
+    if (innerRstIfc$OUT_RST != `BSV_RESET_VALUE)
+      if (WILL_FIRE_RL_core_inner_sba_AXI4_clock_crossing_master_xactor_f_rd_data_warnDoEnq)
 	$finish(32'd0);
   end
   // synopsys translate_on

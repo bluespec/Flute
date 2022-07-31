@@ -706,12 +706,12 @@ module mkNear_Mem_IO_AXI4(CLK,
   assign WILL_FIRE_RL_rl_mtip = CAN_FIRE_RL_rl_mtip ;
 
   // rule RL_rl_process_rd_req
-  assign CAN_FIRE_RL_rl_process_rd_req =
+  assign CAN_FIRE_RL_rl_process_rd_req = WILL_FIRE_RL_rl_process_rd_req ;
+  assign WILL_FIRE_RL_rl_process_rd_req =
 	     slave_xactor_f_rd_addr$EMPTY_N &&
 	     slave_xactor_f_rd_data$FULL_N &&
 	     rg_state &&
 	     !f_reset_reqs$EMPTY_N ;
-  assign WILL_FIRE_RL_rl_process_rd_req = CAN_FIRE_RL_rl_process_rd_req ;
 
   // rule RL_rl_tick_timer
   assign CAN_FIRE_RL_rl_tick_timer =
@@ -875,7 +875,7 @@ module mkNear_Mem_IO_AXI4(CLK,
 	       axi4_slave_arregion } ;
   assign slave_xactor_f_rd_addr$ENQ =
 	     axi4_slave_arvalid && slave_xactor_f_rd_addr$FULL_N ;
-  assign slave_xactor_f_rd_addr$DEQ = CAN_FIRE_RL_rl_process_rd_req ;
+  assign slave_xactor_f_rd_addr$DEQ = WILL_FIRE_RL_rl_process_rd_req ;
   assign slave_xactor_f_rd_addr$CLR = MUX_rg_state$write_1__SEL_2 ;
 
   // submodule slave_xactor_f_rd_data
@@ -884,7 +884,7 @@ module mkNear_Mem_IO_AXI4(CLK,
 	       x__h2787,
 	       rresp__h2586,
 	       1'd1 } ;
-  assign slave_xactor_f_rd_data$ENQ = CAN_FIRE_RL_rl_process_rd_req ;
+  assign slave_xactor_f_rd_data$ENQ = WILL_FIRE_RL_rl_process_rd_req ;
   assign slave_xactor_f_rd_data$DEQ =
 	     axi4_slave_rready && slave_xactor_f_rd_data$EMPTY_N ;
   assign slave_xactor_f_rd_data$CLR = MUX_rg_state$write_1__SEL_2 ;
@@ -1008,19 +1008,6 @@ module mkNear_Mem_IO_AXI4(CLK,
 	       ~SEXT_slave_xactor_f_wr_data_first__04_BIT_3_69___d170,
 	       ~SEXT_slave_xactor_f_wr_data_first__04_BIT_2_73___d174,
 	       ~SEXT_slave_xactor_f_wr_data_first__04_BIT_1_76___d177 } ;
-  always@(byte_addr__h3274)
-  begin
-    case (byte_addr__h3274)
-      64'h0,
-      64'h0000000000000004,
-      64'h0000000000004000,
-      64'h0000000000004004,
-      64'h000000000000BFF8,
-      64'h000000000000BFFC:
-	  v__h3463 = 2'b0;
-      default: v__h3463 = 2'b11;
-    endcase
-  end
   always@(byte_addr__h2432)
   begin
     case (byte_addr__h2432)
@@ -1044,6 +1031,19 @@ module mkNear_Mem_IO_AXI4(CLK,
       64'h000000000000BFF8, 64'h000000000000BFFC:
 	  _theResult___fst__h2604 = crg_time;
       default: _theResult___fst__h2604 = 64'd0;
+    endcase
+  end
+  always@(byte_addr__h3274)
+  begin
+    case (byte_addr__h3274)
+      64'h0,
+      64'h0000000000000004,
+      64'h0000000000004000,
+      64'h0000000000004004,
+      64'h000000000000BFF8,
+      64'h000000000000BFFC:
+	  v__h3463 = 2'b0;
+      default: v__h3463 = 2'b11;
     endcase
   end
 

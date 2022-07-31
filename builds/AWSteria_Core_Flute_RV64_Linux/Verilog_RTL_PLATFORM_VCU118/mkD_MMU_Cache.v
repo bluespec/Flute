@@ -1005,8 +1005,8 @@ module mkD_MMU_Cache(CLK,
 
   // rule RL_rl_CPU_req_mmio_WAIT
   assign CAN_FIRE_RL_rl_CPU_req_mmio_WAIT =
-	     mmio$RDY_result_fst && mmio$RDY_result_snd_fst &&
-	     mmio$RDY_result_snd_snd &&
+	     mmio$RDY_result_snd_snd && mmio$RDY_result_snd_fst &&
+	     mmio$RDY_result_fst &&
 	     crg_state == 4'd3 ;
   assign WILL_FIRE_RL_rl_CPU_req_mmio_WAIT =
 	     CAN_FIRE_RL_rl_CPU_req_mmio_WAIT ;
@@ -1834,7 +1834,7 @@ module mkD_MMU_Cache(CLK,
 	  tlb$mv_vm_xlate[200:199] != 2'd1 &&
 	  tlb$mv_vm_xlate[200:199] != 2'd2 &&
 	  tlb$mv_vm_xlate[200:199] != 2'd0)
-	$display("Dynamic assertion failed: \"/home/nikhil/Git/Flute/src_Core/Near_Mem_VM_WB_L1_L2/D_MMU_Cache.bsv\", line 463, column 67\nFAIL: unknown vm_xlate result");
+	$display("Dynamic assertion failed: \"/home/nikhil/Git/Flute/src_Core/Near_Mem_VM_WB_L1_L2/D_MMU_Cache.bsv\", line 466, column 67\nFAIL: unknown vm_xlate result");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_CPU_req_B &&
 	  crg_mmu_cache_req_port0__read__05_BITS_204_TO__ETC___d196 &&

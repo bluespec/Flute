@@ -118,9 +118,9 @@
 // fi_watch_tohost_control_notFull  O     1 const
 // RDY_fi_watch_tohost_control_notFull  O     1 const
 // fo_tohost_value_first          O    64 reg
-// RDY_fo_tohost_value_first      O     1 const
-// RDY_fo_tohost_value_deq        O     1 const
-// fo_tohost_value_notEmpty       O     1 const
+// RDY_fo_tohost_value_first      O     1 reg
+// RDY_fo_tohost_value_deq        O     1 reg
+// fo_tohost_value_notEmpty       O     1 reg
 // RDY_fo_tohost_value_notEmpty   O     1 const
 // CLK                            I     1 clock
 // RST_N                          I     1 reset
@@ -222,7 +222,7 @@
 // EN_fi_pc_trace_control_enq     I     1 unused
 // EN_fi_verbosity_control_enq    I     1
 // EN_fi_watch_tohost_control_enq  I     1
-// EN_fo_tohost_value_deq         I     1 unused
+// EN_fo_tohost_value_deq         I     1
 // EN_hart0_gpr_mem_server_response_get  I     1
 // EN_hart0_fpr_mem_server_response_get  I     1
 // EN_hart0_csr_mem_server_response_get  I     1
@@ -1219,6 +1219,11 @@ module mkAWSteria_Core_Inner(CLK,
   reg rg_nmi;
   wire rg_nmi$D_IN, rg_nmi$EN;
 
+  // register rg_prev_tohost_value
+  reg [63 : 0] rg_prev_tohost_value;
+  wire [63 : 0] rg_prev_tohost_value$D_IN;
+  wire rg_prev_tohost_value$EN;
+
   // register rg_s_external_interrupt
   reg rg_s_external_interrupt;
   wire rg_s_external_interrupt$D_IN, rg_s_external_interrupt$EN;
@@ -1525,6 +1530,14 @@ module mkAWSteria_Core_Inner(CLK,
        f_nmi$EMPTY_N,
        f_nmi$ENQ,
        f_nmi$FULL_N;
+
+  // ports of submodule f_tohost_value
+  wire [63 : 0] f_tohost_value$D_IN, f_tohost_value$D_OUT;
+  wire f_tohost_value$CLR,
+       f_tohost_value$DEQ,
+       f_tohost_value$EMPTY_N,
+       f_tohost_value$ENQ,
+       f_tohost_value$FULL_N;
 
   // ports of submodule mmio_fabric
   wire [63 : 0] mmio_fabric$v_from_masters_0_araddr,
@@ -1994,6 +2007,7 @@ module mkAWSteria_Core_Inner(CLK,
        CAN_FIRE_RL_rl_relay_external_interrupt,
        CAN_FIRE_RL_rl_relay_sw_interrupt,
        CAN_FIRE_RL_rl_relay_timer_interrupt,
+       CAN_FIRE_RL_rl_tohost_value,
        CAN_FIRE_RL_rl_wr_addr_channel,
        CAN_FIRE_RL_rl_wr_addr_channel_1,
        CAN_FIRE_RL_rl_wr_addr_channel_2,
@@ -2071,6 +2085,7 @@ module mkAWSteria_Core_Inner(CLK,
        WILL_FIRE_RL_rl_relay_external_interrupt,
        WILL_FIRE_RL_rl_relay_sw_interrupt,
        WILL_FIRE_RL_rl_relay_timer_interrupt,
+       WILL_FIRE_RL_rl_tohost_value,
        WILL_FIRE_RL_rl_wr_addr_channel,
        WILL_FIRE_RL_rl_wr_addr_channel_1,
        WILL_FIRE_RL_rl_wr_addr_channel_2,
@@ -2129,11 +2144,14 @@ module mkAWSteria_Core_Inner(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h7891;
-  reg [31 : 0] v__h7583;
-  reg [31 : 0] v__h7577;
-  reg [31 : 0] v__h7885;
+  reg [31 : 0] v__h7892;
+  reg [31 : 0] v__h7584;
+  reg [31 : 0] v__h7578;
+  reg [31 : 0] v__h7886;
   // synopsys translate_on
+
+  // remaining internal signals
+  wire cpu_mv_tohost_value__23_EQ_rg_prev_tohost_valu_ETC___d325;
 
   // value method mem_M_m_awvalid
   assign mem_M_awvalid = cpu$mem_master_awvalid ;
@@ -2600,16 +2618,16 @@ module mkAWSteria_Core_Inner(CLK,
   assign RDY_fi_watch_tohost_control_notFull = 1'd1 ;
 
   // value method fo_tohost_value_first
-  assign fo_tohost_value_first = cpu$mv_tohost_value ;
-  assign RDY_fo_tohost_value_first = 1'd1 ;
+  assign fo_tohost_value_first = f_tohost_value$D_OUT ;
+  assign RDY_fo_tohost_value_first = f_tohost_value$EMPTY_N ;
 
   // action method fo_tohost_value_deq
-  assign RDY_fo_tohost_value_deq = 1'd1 ;
-  assign CAN_FIRE_fo_tohost_value_deq = 1'd1 ;
+  assign RDY_fo_tohost_value_deq = f_tohost_value$EMPTY_N ;
+  assign CAN_FIRE_fo_tohost_value_deq = f_tohost_value$EMPTY_N ;
   assign WILL_FIRE_fo_tohost_value_deq = EN_fo_tohost_value_deq ;
 
   // value method fo_tohost_value_notEmpty
-  assign fo_tohost_value_notEmpty = 1'd1 ;
+  assign fo_tohost_value_notEmpty = f_tohost_value$EMPTY_N ;
   assign RDY_fo_tohost_value_notEmpty = 1'd1 ;
 
   // submodule boot_rom
@@ -2926,6 +2944,17 @@ module mkAWSteria_Core_Inner(CLK,
 					       .D_OUT(f_nmi$D_OUT),
 					       .FULL_N(f_nmi$FULL_N),
 					       .EMPTY_N(f_nmi$EMPTY_N));
+
+  // submodule f_tohost_value
+  FIFO2 #(.width(32'd64), .guarded(1'd1)) f_tohost_value(.RST(RST_N),
+							 .CLK(CLK),
+							 .D_IN(f_tohost_value$D_IN),
+							 .ENQ(f_tohost_value$ENQ),
+							 .DEQ(f_tohost_value$DEQ),
+							 .CLR(f_tohost_value$CLR),
+							 .D_OUT(f_tohost_value$D_OUT),
+							 .FULL_N(f_tohost_value$FULL_N),
+							 .EMPTY_N(f_tohost_value$EMPTY_N));
 
   // submodule mmio_fabric
   mkCore_MMIO_Fabric mmio_fabric(.CLK(CLK),
@@ -3518,11 +3547,6 @@ module mkAWSteria_Core_Inner(CLK,
   assign WILL_FIRE_RL_rl_relay_timer_interrupt =
 	     CAN_FIRE_RL_rl_relay_timer_interrupt ;
 
-  // rule RL_rl_register_nmi
-  assign CAN_FIRE_RL_rl_register_nmi =
-	     f_nmi$EMPTY_N && rg_module_state == 2'd2 ;
-  assign WILL_FIRE_RL_rl_register_nmi = CAN_FIRE_RL_rl_register_nmi ;
-
   // rule RL_rl_drive_external_interrupt
   assign CAN_FIRE_RL_rl_drive_external_interrupt = 1'd1 ;
   assign WILL_FIRE_RL_rl_drive_external_interrupt = 1'd1 ;
@@ -3534,9 +3558,9 @@ module mkAWSteria_Core_Inner(CLK,
 
   // rule RL_rl_first_init_finish
   assign CAN_FIRE_RL_rl_first_init_finish =
+	     cpu$RDY_hart0_server_reset_response_get &&
 	     plic$RDY_server_reset_response_get &&
 	     near_mem_io$RDY_server_reset_response_get &&
-	     cpu$RDY_hart0_server_reset_response_get &&
 	     near_mem_io$RDY_set_addr_map &&
 	     rg_module_state == 2'd1 ;
   assign WILL_FIRE_RL_rl_first_init_finish =
@@ -3544,16 +3568,27 @@ module mkAWSteria_Core_Inner(CLK,
 
   // rule RL_rl_first_init_start
   assign CAN_FIRE_RL_rl_first_init_start =
+	     cpu$RDY_hart0_server_reset_request_put &&
 	     plic$RDY_server_reset_request_put &&
 	     near_mem_io$RDY_server_reset_request_put &&
 	     mmio_fabric$RDY_reset &&
-	     cpu$RDY_hart0_server_reset_request_put &&
 	     rg_module_state == 2'd0 ;
   assign WILL_FIRE_RL_rl_first_init_start = CAN_FIRE_RL_rl_first_init_start ;
+
+  // rule RL_rl_register_nmi
+  assign CAN_FIRE_RL_rl_register_nmi =
+	     f_nmi$EMPTY_N && rg_module_state == 2'd2 ;
+  assign WILL_FIRE_RL_rl_register_nmi = CAN_FIRE_RL_rl_register_nmi ;
 
   // rule RL_tve_wrapper_ifc_rl_wr_addr_channel
   assign CAN_FIRE_RL_tve_wrapper_ifc_rl_wr_addr_channel = 1'd1 ;
   assign WILL_FIRE_RL_tve_wrapper_ifc_rl_wr_addr_channel = 1'd1 ;
+
+  // rule RL_rl_tohost_value
+  assign CAN_FIRE_RL_rl_tohost_value =
+	     cpu_mv_tohost_value__23_EQ_rg_prev_tohost_valu_ETC___d325 ||
+	     f_tohost_value$FULL_N ;
+  assign WILL_FIRE_RL_rl_tohost_value = CAN_FIRE_RL_rl_tohost_value ;
 
   // rule RL_tve_wrapper_ifc_rl_wr_data_channel
   assign CAN_FIRE_RL_tve_wrapper_ifc_rl_wr_data_channel = 1'd1 ;
@@ -3590,6 +3625,12 @@ module mkAWSteria_Core_Inner(CLK,
   // register rg_nmi
   assign rg_nmi$D_IN = f_nmi$D_OUT ;
   assign rg_nmi$EN = CAN_FIRE_RL_rl_register_nmi ;
+
+  // register rg_prev_tohost_value
+  assign rg_prev_tohost_value$D_IN = cpu$mv_tohost_value ;
+  assign rg_prev_tohost_value$EN =
+	     WILL_FIRE_RL_rl_tohost_value &&
+	     !cpu_mv_tohost_value__23_EQ_rg_prev_tohost_valu_ETC___d325 ;
 
   // register rg_s_external_interrupt
   assign rg_s_external_interrupt$D_IN = plic$v_targets_1_m_eip ;
@@ -3811,6 +3852,14 @@ module mkAWSteria_Core_Inner(CLK,
   assign f_nmi$ENQ = EN_fi_nmi_enq ;
   assign f_nmi$DEQ = CAN_FIRE_RL_rl_register_nmi ;
   assign f_nmi$CLR = 1'b0 ;
+
+  // submodule f_tohost_value
+  assign f_tohost_value$D_IN = cpu$mv_tohost_value ;
+  assign f_tohost_value$ENQ =
+	     WILL_FIRE_RL_rl_tohost_value &&
+	     !cpu_mv_tohost_value__23_EQ_rg_prev_tohost_valu_ETC___d325 ;
+  assign f_tohost_value$DEQ = EN_fo_tohost_value_deq ;
+  assign f_tohost_value$CLR = 1'b0 ;
 
   // submodule mmio_fabric
   assign mmio_fabric$set_verbosity_verbosity = 4'h0 ;
@@ -4119,6 +4168,10 @@ module mkAWSteria_Core_Inner(CLK,
   assign tve_wrapper_ifc_dma_server_mux$target_client_wready =
 	     dma_server_axi4_deburster$from_master_wready ;
 
+  // remaining internal signals
+  assign cpu_mv_tohost_value__23_EQ_rg_prev_tohost_valu_ETC___d325 =
+	     cpu$mv_tohost_value == rg_prev_tohost_value ;
+
   // handling of inlined registers
 
   always@(posedge CLK)
@@ -4129,6 +4182,7 @@ module mkAWSteria_Core_Inner(CLK,
 	rg_m_external_interrupt <= `BSV_ASSIGNMENT_DELAY 1'd0;
 	rg_module_state <= `BSV_ASSIGNMENT_DELAY 2'd0;
 	rg_nmi <= `BSV_ASSIGNMENT_DELAY 1'd0;
+	rg_prev_tohost_value <= `BSV_ASSIGNMENT_DELAY 64'd0;
 	rg_s_external_interrupt <= `BSV_ASSIGNMENT_DELAY 1'd0;
 	rg_sw_interrupt <= `BSV_ASSIGNMENT_DELAY 1'd0;
 	rg_timer_interrupt <= `BSV_ASSIGNMENT_DELAY 1'd0;
@@ -4143,6 +4197,9 @@ module mkAWSteria_Core_Inner(CLK,
 	if (rg_module_state$EN)
 	  rg_module_state <= `BSV_ASSIGNMENT_DELAY rg_module_state$D_IN;
 	if (rg_nmi$EN) rg_nmi <= `BSV_ASSIGNMENT_DELAY rg_nmi$D_IN;
+	if (rg_prev_tohost_value$EN)
+	  rg_prev_tohost_value <= `BSV_ASSIGNMENT_DELAY
+	      rg_prev_tohost_value$D_IN;
 	if (rg_s_external_interrupt$EN)
 	  rg_s_external_interrupt <= `BSV_ASSIGNMENT_DELAY
 	      rg_s_external_interrupt$D_IN;
@@ -4162,6 +4219,7 @@ module mkAWSteria_Core_Inner(CLK,
     rg_m_external_interrupt = 1'h0;
     rg_module_state = 2'h2;
     rg_nmi = 1'h0;
+    rg_prev_tohost_value = 64'hAAAAAAAAAAAAAAAA;
     rg_s_external_interrupt = 1'h0;
     rg_sw_interrupt = 1'h0;
     rg_timer_interrupt = 1'h0;
@@ -4183,13 +4241,13 @@ module mkAWSteria_Core_Inner(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_first_init_finish)
 	begin
-	  v__h7891 = $stime;
+	  v__h7892 = $stime;
 	  #0;
 	end
-    v__h7885 = v__h7891 / 32'd10;
+    v__h7886 = v__h7892 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_first_init_finish)
-	$display("    %0d: rule rl_first_init_start", v__h7885);
+	$display("    %0d: rule rl_first_init_start", v__h7886);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_first_init_start)
 	$display("AWSteria_Core_Inner: start post-reset initializations ...");
@@ -4198,13 +4256,13 @@ module mkAWSteria_Core_Inner(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_first_init_start)
 	begin
-	  v__h7583 = $stime;
+	  v__h7584 = $stime;
 	  #0;
 	end
-    v__h7577 = v__h7583 / 32'd10;
+    v__h7578 = v__h7584 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_first_init_start)
-	$display("    %0d: rule rl_first_init_start", v__h7577);
+	$display("    %0d: rule rl_first_init_start", v__h7578);
   end
   // synopsys translate_on
 endmodule  // mkAWSteria_Core_Inner

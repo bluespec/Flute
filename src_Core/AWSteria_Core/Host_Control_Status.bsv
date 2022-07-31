@@ -108,8 +108,9 @@ module mkHost_Control_Status (Host_Control_Status_IFC);
 
    FIFOF #(Tuple2 #(Bool, Bit #(64))) f_watch_tohost <- mkFIFOF;
 
-   Wire #(Bit #(16)) dw_tohost_value      <- mkDWire (0);
-   Reg  #(Bit #(16)) rg_prev_tohost_value <- mkReg (0);
+   FIFOF #(Bit #(64)) f_tohost_value       <- mkFIFOF;
+   Reg #(Bit #(16))   rg_tohost_value      <- mkReg (0);
+   Reg #(Bit #(16))   rg_prev_tohost_value <- mkReg (0);
 
    FIFOF #(Tuple2 #(Bit #(4), Bit #(64))) f_verbosity <- mkFIFOF;
 
@@ -162,11 +163,11 @@ module mkHost_Control_Status (Host_Control_Status_IFC);
       else if (cmd == cmd_core_reset) begin
 	 if (rg_req0 [31:8] != 0) begin
 	    rg_assert_core_reset <= True;
-	    $display ("Host_Control_Status: host_to_hw_req: Assert Core Reset");
+	    $display ("Host_Control_Status: Assert Core Reset");
 	 end
 	 else begin
 	    rg_assert_core_reset <= False;
-	    $display ("Host_Control_Status: host_to_hw_req: Deassert Core Reset");
+	    $display ("Host_Control_Status: Deassert Core Reset");
 	 end
       end
       // ----------------
@@ -174,24 +175,23 @@ module mkHost_Control_Status (Host_Control_Status_IFC);
 	 if (rg_req0 [2:0] == 0) begin
 	    // OFF
 	    f_watch_tohost.enq (tuple2 (False, ?));
-	    $display ("Host_Control_Status: host_to_hw_req: watch_tohost_off");
+	    $display ("Host_Control_Status: watch_tohost_off");
 	 end
 	 else begin
 	    // ON
 	    Bit #(64) tohost_addr = { rg_req2, rg_req1 };
 	    f_watch_tohost.enq (tuple2 (True, tohost_addr));
-	    $display ("Host_Control_Status: host_to_hw_req: watch_tohost_on, addr %0h",
+	    $display ("Host_Control_Status: watch_tohost_on, addr %0h",
 		      tohost_addr);
 	 end
       end
       // ----------------
       else if (cmd == cmd_read_tohost) begin
-	 rsp0 = ({ dw_tohost_value, 16'h0 } | status_ok);
+	 rsp0 = ({ rg_tohost_value, 16'h0 } | status_ok);
 	 // Only display if host value changed
-	 if (rg_prev_tohost_value != dw_tohost_value) begin
-	    $display ("Host_Control_Status: host_to_hw_req: read_tohost => %0h",
-		      dw_tohost_value);
-	    rg_prev_tohost_value <= dw_tohost_value;
+	 if (rg_prev_tohost_value != rg_tohost_value) begin
+	    // $display ("Host_Control_Status: read_tohost => %0h", rg_tohost_value);
+	    rg_prev_tohost_value <= rg_tohost_value;
 	 end
       end
       // ----------------
@@ -199,12 +199,12 @@ module mkHost_Control_Status (Host_Control_Status_IFC);
 	 if (rg_req0 [2:0] == 0) begin
 	    // OFF
 	    f_pc_trace_control.enq (tuple2 (False, ?));
-	    $display ("Host_Control_Status: host_to_hw_req: PC trace off");
+	    $display ("Host_Control_Status: PC trace off");
 	 end
 	 else begin
 	    // ON
 	    f_pc_trace_control.enq (tuple2 (True, zeroExtend (rg_req1)));
-	    $display ("Host_Control_Status: host_to_hw_req: PC trace on: interval %0h",
+	    $display ("Host_Control_Status: PC trace on: interval %0h",
 		      rg_req1);
 	 end
       end
@@ -213,7 +213,7 @@ module mkHost_Control_Status (Host_Control_Status_IFC);
 	 Bit #(4)  verbosity = rg_req0 [11:8];
 	 Bit #(64) logdelay  = { rg_req2, rg_req1 };
 	 f_verbosity.enq (tuple2 (verbosity, logdelay));
-	 $display ("Host_Control_Status: host_to_hw_req: set_sim_verbosity %0d logdelay %0h",
+	 $display ("Host_Control_Status: set_sim_verbosity %0d logdelay %0h",
 		   verbosity, logdelay);
       end
       // ----------------
@@ -226,6 +226,14 @@ module mkHost_Control_Status (Host_Control_Status_IFC);
 
       f_hw_to_host.enq (rsp0);
       rg_state <= STATE_REQ0;
+   endrule
+
+   // ================================================================
+   // Drain tohost value from CPU
+
+   rule rl_tohost_value;
+      Bit #(64) x <- pop (f_tohost_value);
+      rg_tohost_value <= truncate (x);
    endrule
 
    // ================================================================
@@ -242,14 +250,7 @@ module mkHost_Control_Status (Host_Control_Status_IFC);
 
    interface FIFOF_O fo_pc_trace_control = to_FIFOF_O (f_pc_trace_control);
 
-   interface FIFOF_I fi_tohost_value;
-      method Action enq (Bit #(64) tohost_value);
-	 action
-	    dw_tohost_value <= truncate (tohost_value);
-	 endaction
-      endmethod
-      method notFull = True;
-   endinterface
+   interface FIFOF_I fi_tohost_value = to_FIFOF_I (f_tohost_value);
 endmodule
 
 // ================================================================

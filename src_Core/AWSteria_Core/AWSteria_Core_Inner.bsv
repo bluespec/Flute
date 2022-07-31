@@ -438,6 +438,22 @@ module mkAWSteria_Core_Inner (AWSteria_Core_Inner_IFC);
 `endif
 
    // ================================================================
+   // To_Host value
+   // Enqueue each changed value
+
+   FIFOF #(Bit #(64)) f_tohost_value <- mkFIFOF;
+   Reg #(Bit #(64))   rg_prev_tohost_value <- mkReg (0);
+
+   rule rl_tohost_value;
+      Bit #(64) tohost_value = cpu.mv_tohost_value;
+      if (tohost_value != rg_prev_tohost_value) begin
+	 f_tohost_value.enq (tohost_value);
+	 rg_prev_tohost_value <= tohost_value;
+	 // $display ("AWSteria_Core_Inner: new tohost_value = 0x%0h", tohost_value);
+      end
+   endrule
+
+   // ================================================================
    // INTERFACE
 
    // ----------------------------------------------------------------
@@ -531,12 +547,7 @@ module mkAWSteria_Core_Inner (AWSteria_Core_Inner_IFC);
    endinterface
 
    // Get tohost value
-   // Note: this FIFOF_O is always notEmpty and always enabled
-   interface FIFOF_O fo_tohost_value;
-      method Bit #(64) first = cpu.mv_tohost_value;
-      method deq = noAction;
-      method notEmpty = True;
-   endinterface
+   interface FIFOF_O fo_tohost_value = to_FIFOF_O (f_tohost_value);
 `endif
 
 endmodule

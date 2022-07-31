@@ -35,13 +35,13 @@
 // RDY_fo_pc_trace_control_deq    O     1 reg
 // fo_pc_trace_control_notEmpty   O     1 reg
 // RDY_fo_pc_trace_control_notEmpty  O     1 const
-// RDY_fi_tohost_value_enq        O     1 const
-// fi_tohost_value_notFull        O     1 const
+// RDY_fi_tohost_value_enq        O     1 reg
+// fi_tohost_value_notFull        O     1 reg
 // RDY_fi_tohost_value_notFull    O     1 const
 // CLK                            I     1 clock
 // RST_N                          I     1 reset
 // se_control_status_request_enq_x  I    32 reg
-// fi_tohost_value_enq_x          I    64
+// fi_tohost_value_enq_x          I    64 reg
 // EN_se_control_status_request_enq  I     1
 // EN_se_control_status_response_deq  I     1
 // EN_fo_watch_tohost_control_deq  I     1
@@ -285,6 +285,11 @@ module mkHost_Control_Status(CLK,
   reg [2 : 0] rg_state$D_IN;
   wire rg_state$EN;
 
+  // register rg_tohost_value
+  reg [15 : 0] rg_tohost_value;
+  wire [15 : 0] rg_tohost_value$D_IN;
+  wire rg_tohost_value$EN;
+
   // ports of submodule f_host_to_hw
   wire [31 : 0] f_host_to_hw$D_IN, f_host_to_hw$D_OUT;
   wire f_host_to_hw$CLR,
@@ -310,6 +315,14 @@ module mkHost_Control_Status(CLK,
        f_pc_trace_control$ENQ,
        f_pc_trace_control$FULL_N;
 
+  // ports of submodule f_tohost_value
+  wire [63 : 0] f_tohost_value$D_IN, f_tohost_value$D_OUT;
+  wire f_tohost_value$CLR,
+       f_tohost_value$DEQ,
+       f_tohost_value$EMPTY_N,
+       f_tohost_value$ENQ,
+       f_tohost_value$FULL_N;
+
   // ports of submodule f_verbosity
   wire [67 : 0] f_verbosity$D_IN, f_verbosity$D_OUT;
   wire f_verbosity$CLR,
@@ -332,6 +345,7 @@ module mkHost_Control_Status(CLK,
        CAN_FIRE_RL_rl_req1,
        CAN_FIRE_RL_rl_req2,
        CAN_FIRE_RL_rl_req3,
+       CAN_FIRE_RL_rl_tohost_value,
        CAN_FIRE_fi_tohost_value_enq,
        CAN_FIRE_fo_pc_trace_control_deq,
        CAN_FIRE_fo_verbosity_control_deq,
@@ -343,6 +357,7 @@ module mkHost_Control_Status(CLK,
        WILL_FIRE_RL_rl_req1,
        WILL_FIRE_RL_rl_req2,
        WILL_FIRE_RL_rl_req3,
+       WILL_FIRE_RL_rl_tohost_value,
        WILL_FIRE_fi_tohost_value_enq,
        WILL_FIRE_fo_pc_trace_control_deq,
        WILL_FIRE_fo_verbosity_control_deq,
@@ -356,10 +371,9 @@ module mkHost_Control_Status(CLK,
 	       MUX_rg_state$write_1__VAL_3;
 
   // remaining internal signals
-  wire [63 : 0] tohost_addr__h1641;
-  wire [31 : 0] v__h1727;
-  wire [15 : 0] x__read__h409;
-  wire rg_req0_0_BITS_7_TO_3_1_EQ_0_2_OR_rg_req0_0_BI_ETC___d37;
+  wire [63 : 0] tohost_addr__h1702;
+  wire [31 : 0] v__h1788;
+  wire rg_req0_1_BITS_7_TO_3_2_EQ_0_3_OR_rg_req0_1_BI_ETC___d38;
 
   // action method se_control_status_request_enq
   assign RDY_se_control_status_request_enq = f_host_to_hw$FULL_N ;
@@ -442,12 +456,12 @@ module mkHost_Control_Status(CLK,
   assign RDY_fo_pc_trace_control_notEmpty = 1'd1 ;
 
   // action method fi_tohost_value_enq
-  assign RDY_fi_tohost_value_enq = 1'd1 ;
-  assign CAN_FIRE_fi_tohost_value_enq = 1'd1 ;
+  assign RDY_fi_tohost_value_enq = f_tohost_value$FULL_N ;
+  assign CAN_FIRE_fi_tohost_value_enq = f_tohost_value$FULL_N ;
   assign WILL_FIRE_fi_tohost_value_enq = EN_fi_tohost_value_enq ;
 
   // value method fi_tohost_value_notFull
-  assign fi_tohost_value_notFull = 1'd1 ;
+  assign fi_tohost_value_notFull = f_tohost_value$FULL_N ;
   assign RDY_fi_tohost_value_notFull = 1'd1 ;
 
   // submodule f_host_to_hw
@@ -482,6 +496,17 @@ module mkHost_Control_Status(CLK,
 							     .D_OUT(f_pc_trace_control$D_OUT),
 							     .FULL_N(f_pc_trace_control$FULL_N),
 							     .EMPTY_N(f_pc_trace_control$EMPTY_N));
+
+  // submodule f_tohost_value
+  FIFO2 #(.width(32'd64), .guarded(1'd1)) f_tohost_value(.RST(RST_N),
+							 .CLK(CLK),
+							 .D_IN(f_tohost_value$D_IN),
+							 .ENQ(f_tohost_value$ENQ),
+							 .DEQ(f_tohost_value$DEQ),
+							 .CLR(f_tohost_value$CLR),
+							 .D_OUT(f_tohost_value$D_OUT),
+							 .FULL_N(f_tohost_value$FULL_N),
+							 .EMPTY_N(f_tohost_value$EMPTY_N));
 
   // submodule f_verbosity
   FIFO2 #(.width(32'd68), .guarded(1'd1)) f_verbosity(.RST(RST_N),
@@ -524,17 +549,19 @@ module mkHost_Control_Status(CLK,
   // rule RL_rl_exec
   assign CAN_FIRE_RL_rl_exec =
 	     f_hw_to_host$FULL_N &&
-	     rg_req0_0_BITS_7_TO_3_1_EQ_0_2_OR_rg_req0_0_BI_ETC___d37 &&
+	     rg_req0_1_BITS_7_TO_3_2_EQ_0_3_OR_rg_req0_1_BI_ETC___d38 &&
 	     rg_state == 3'd4 ;
   assign WILL_FIRE_RL_rl_exec = CAN_FIRE_RL_rl_exec ;
+
+  // rule RL_rl_tohost_value
+  assign CAN_FIRE_RL_rl_tohost_value = f_tohost_value$EMPTY_N ;
+  assign WILL_FIRE_RL_rl_tohost_value = f_tohost_value$EMPTY_N ;
 
   // inputs to muxes for submodule ports
   assign MUX_rg_state$write_1__VAL_1 =
 	     (f_host_to_hw$D_OUT[2:0] == 3'd0) ? 3'd4 : 3'd1 ;
-  assign MUX_rg_state$write_1__VAL_2 =
-	     (f_host_to_hw$D_OUT[2:0] == 3'd1) ? 3'd4 : 3'd2 ;
-  assign MUX_rg_state$write_1__VAL_3 =
-	     (f_host_to_hw$D_OUT[2:0] == 3'd2) ? 3'd4 : 3'd3 ;
+  assign MUX_rg_state$write_1__VAL_2 = (rg_req0[2:0] == 3'd1) ? 3'd4 : 3'd2 ;
+  assign MUX_rg_state$write_1__VAL_3 = (rg_req0[2:0] == 3'd2) ? 3'd4 : 3'd3 ;
 
   // register rg_assert_core_reset
   assign rg_assert_core_reset$D_IN = rg_req0[31:8] != 24'd0 ;
@@ -542,10 +569,10 @@ module mkHost_Control_Status(CLK,
 	     WILL_FIRE_RL_rl_exec && rg_req0[7:3] == 5'd1 ;
 
   // register rg_prev_tohost_value
-  assign rg_prev_tohost_value$D_IN = x__read__h409 ;
+  assign rg_prev_tohost_value$D_IN = rg_tohost_value ;
   assign rg_prev_tohost_value$EN =
 	     WILL_FIRE_RL_rl_exec && rg_req0[7:3] == 5'd6 &&
-	     rg_prev_tohost_value != x__read__h409 ;
+	     rg_prev_tohost_value != rg_tohost_value ;
 
   // register rg_req0
   assign rg_req0$D_IN = f_host_to_hw$D_OUT ;
@@ -587,6 +614,10 @@ module mkHost_Control_Status(CLK,
 	     WILL_FIRE_RL_rl_exec ||
 	     WILL_FIRE_RL_rl_req3 ;
 
+  // register rg_tohost_value
+  assign rg_tohost_value$D_IN = f_tohost_value$D_OUT[15:0] ;
+  assign rg_tohost_value$EN = f_tohost_value$EMPTY_N ;
+
   // submodule f_host_to_hw
   assign f_host_to_hw$D_IN = se_control_status_request_enq_x ;
   assign f_host_to_hw$ENQ = EN_se_control_status_request_enq ;
@@ -597,11 +628,11 @@ module mkHost_Control_Status(CLK,
   assign f_host_to_hw$CLR = 1'b0 ;
 
   // submodule f_hw_to_host
-  always@(rg_req0 or v__h1727)
+  always@(rg_req0 or v__h1788)
   begin
     case (rg_req0[7:3])
       5'd0, 5'd1, 5'd5, 5'd7, 5'd8: f_hw_to_host$D_IN = 32'd0;
-      5'd6: f_hw_to_host$D_IN = v__h1727;
+      5'd6: f_hw_to_host$D_IN = v__h1788;
       default: f_hw_to_host$D_IN = 32'd2;
     endcase
   end
@@ -619,30 +650,34 @@ module mkHost_Control_Status(CLK,
   assign f_pc_trace_control$DEQ = EN_fo_pc_trace_control_deq ;
   assign f_pc_trace_control$CLR = 1'b0 ;
 
+  // submodule f_tohost_value
+  assign f_tohost_value$D_IN = fi_tohost_value_enq_x ;
+  assign f_tohost_value$ENQ = EN_fi_tohost_value_enq ;
+  assign f_tohost_value$DEQ = f_tohost_value$EMPTY_N ;
+  assign f_tohost_value$CLR = 1'b0 ;
+
   // submodule f_verbosity
-  assign f_verbosity$D_IN = { rg_req0[11:8], tohost_addr__h1641 } ;
+  assign f_verbosity$D_IN = { rg_req0[11:8], tohost_addr__h1702 } ;
   assign f_verbosity$ENQ = WILL_FIRE_RL_rl_exec && rg_req0[7:3] == 5'd8 ;
   assign f_verbosity$DEQ = EN_fo_verbosity_control_deq ;
   assign f_verbosity$CLR = 1'b0 ;
 
   // submodule f_watch_tohost
-  assign f_watch_tohost$D_IN = { rg_req0[2:0] != 3'd0, tohost_addr__h1641 } ;
+  assign f_watch_tohost$D_IN = { rg_req0[2:0] != 3'd0, tohost_addr__h1702 } ;
   assign f_watch_tohost$ENQ = WILL_FIRE_RL_rl_exec && rg_req0[7:3] == 5'd5 ;
   assign f_watch_tohost$DEQ = EN_fo_watch_tohost_control_deq ;
   assign f_watch_tohost$CLR = 1'b0 ;
 
   // remaining internal signals
-  assign rg_req0_0_BITS_7_TO_3_1_EQ_0_2_OR_rg_req0_0_BI_ETC___d37 =
+  assign rg_req0_1_BITS_7_TO_3_2_EQ_0_3_OR_rg_req0_1_BI_ETC___d38 =
 	     rg_req0[7:3] == 5'd0 || rg_req0[7:3] == 5'd1 ||
 	     ((rg_req0[7:3] == 5'd5) ?
 		f_watch_tohost$FULL_N :
 		((rg_req0[7:3] == 5'd7) ?
 		   f_pc_trace_control$FULL_N :
 		   rg_req0[7:3] != 5'd8 || f_verbosity$FULL_N)) ;
-  assign tohost_addr__h1641 = { rg_req2, rg_req1 } ;
-  assign v__h1727 = { x__read__h409, 16'h0 } ;
-  assign x__read__h409 =
-	     EN_fi_tohost_value_enq ? fi_tohost_value_enq_x[15:0] : 16'd0 ;
+  assign tohost_addr__h1702 = { rg_req2, rg_req1 } ;
+  assign v__h1788 = { rg_tohost_value, 16'h0 } ;
 
   // handling of inlined registers
 
@@ -653,6 +688,7 @@ module mkHost_Control_Status(CLK,
         rg_assert_core_reset <= `BSV_ASSIGNMENT_DELAY 1'd0;
 	rg_prev_tohost_value <= `BSV_ASSIGNMENT_DELAY 16'd0;
 	rg_state <= `BSV_ASSIGNMENT_DELAY 3'd0;
+	rg_tohost_value <= `BSV_ASSIGNMENT_DELAY 16'd0;
       end
     else
       begin
@@ -663,6 +699,8 @@ module mkHost_Control_Status(CLK,
 	  rg_prev_tohost_value <= `BSV_ASSIGNMENT_DELAY
 	      rg_prev_tohost_value$D_IN;
 	if (rg_state$EN) rg_state <= `BSV_ASSIGNMENT_DELAY rg_state$D_IN;
+	if (rg_tohost_value$EN)
+	  rg_tohost_value <= `BSV_ASSIGNMENT_DELAY rg_tohost_value$D_IN;
       end
     if (rg_req0$EN) rg_req0 <= `BSV_ASSIGNMENT_DELAY rg_req0$D_IN;
     if (rg_req1$EN) rg_req1 <= `BSV_ASSIGNMENT_DELAY rg_req1$D_IN;
@@ -682,6 +720,7 @@ module mkHost_Control_Status(CLK,
     rg_req2 = 32'hAAAAAAAA;
     rg_req3 = 32'hAAAAAAAA;
     rg_state = 3'h2;
+    rg_tohost_value = 16'hAAAA;
   end
   `endif // BSV_NO_INITIAL_BLOCKS
   // synopsys translate_on
@@ -694,43 +733,37 @@ module mkHost_Control_Status(CLK,
     #0;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_exec && rg_req0[7:3] == 5'd0)
-	$display("  mkHost_Control_Status: host_to_hw_req: ping/noop");
+	$display("Host_Control_Status: host_to_hw_req: ping/noop");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_exec && rg_req0[7:3] == 5'd1 &&
 	  rg_req0[31:8] == 24'd0)
-	$display("  mkHost_Control_Status: host_to_hw_req: Deassert Core Reset");
+	$display("Host_Control_Status: Deassert Core Reset");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_exec && rg_req0[7:3] == 5'd1 &&
 	  rg_req0[31:8] != 24'd0)
-	$display("  mkHost_Control_Status: host_to_hw_req: Assert Core Reset");
+	$display("Host_Control_Status: Assert Core Reset");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_exec && rg_req0[7:3] == 5'd5 &&
 	  rg_req0[2:0] == 3'd0)
-	$display("  mkHost_Control_Status: host_to_hw_req: watch_tohost_off");
+	$display("Host_Control_Status: watch_tohost_off");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_exec && rg_req0[7:3] == 5'd5 &&
 	  rg_req0[2:0] != 3'd0)
-	$display("  mkHost_Control_Status: host_to_hw_req: watch_tohost_on, addr %0h",
-		 tohost_addr__h1641);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_exec && rg_req0[7:3] == 5'd6 &&
-	  rg_prev_tohost_value != x__read__h409)
-	$display("  mkHost_Control_Status: host_to_hw_req: read_tohost => %0h",
-		 x__read__h409);
+	$display("Host_Control_Status: watch_tohost_on, addr %0h",
+		 tohost_addr__h1702);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_exec && rg_req0[7:3] == 5'd7 &&
 	  rg_req0[2:0] == 3'd0)
-	$display("  mkHost_Control_Status: host_to_hw_req: PC trace off");
+	$display("Host_Control_Status: PC trace off");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_exec && rg_req0[7:3] == 5'd7 &&
 	  rg_req0[2:0] != 3'd0)
-	$display("  mkHost_Control_Status: host_to_hw_req: PC trace on: interval %0h",
-		 rg_req1);
+	$display("Host_Control_Status: PC trace on: interval %0h", rg_req1);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_exec && rg_req0[7:3] == 5'd8)
-	$display("  mkHost_Control_Status: host_to_hw_req: set_sim_verbosity %0d logdelay %0h",
+	$display("Host_Control_Status: set_sim_verbosity %0d logdelay %0h",
 		 rg_req0[11:8],
-		 tohost_addr__h1641);
+		 tohost_addr__h1702);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_exec && rg_req0[7:3] != 5'd0 &&
 	  rg_req0[7:3] != 5'd1 &&
@@ -738,7 +771,7 @@ module mkHost_Control_Status(CLK,
 	  rg_req0[7:3] != 5'd6 &&
 	  rg_req0[7:3] != 5'd7 &&
 	  rg_req0[7:3] != 5'd8)
-	$display("Host-to-HW control: unsupported command %0h; request word 0 is %0h",
+	$display("Host_ontrol_Status: unsupported command %0h; request word 0 is %0h",
 		 rg_req0[7:3],
 		 rg_req0);
     if (RST_N != `BSV_RESET_VALUE)
