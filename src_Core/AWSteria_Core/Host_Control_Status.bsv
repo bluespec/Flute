@@ -116,11 +116,28 @@ module mkHost_Control_Status (Host_Control_Status_IFC);
 
    FIFOF #(Tuple2 #(Bool,Bit #(64))) f_pc_trace_control <- mkFIFOF;
 
+   // State for FSM for multi-word requests/responses
    Reg #(FSM_State) rg_state <- mkReg (STATE_REQ0);
+   // Multi-word requests
    Reg #(Bit #(32)) rg_req0  <- mkRegU;
    Reg #(Bit #(32)) rg_req1  <- mkRegU;
    Reg #(Bit #(32)) rg_req2  <- mkRegU;
    Reg #(Bit #(32)) rg_req3  <- mkRegU;
+
+   // ================================================================
+   // On command 'assert_reset' and 'deassert_reset'
+   // we clear local state.
+
+   function Action fa_clear_local_state;
+      action
+	 f_watch_tohost.clear;
+	 f_tohost_value.clear;
+	 rg_tohost_value      <= 0;
+	 rg_prev_tohost_value <= 0;
+	 f_verbosity.clear;
+	 f_pc_trace_control.clear;
+      endaction
+   endfunction
 
    // ================================================================
    // FSM to receive a command and move to STATE_EXEC to execute it
@@ -169,6 +186,7 @@ module mkHost_Control_Status (Host_Control_Status_IFC);
 	    rg_assert_core_reset <= False;
 	    $display ("Host_Control_Status: Deassert Core Reset");
 	 end
+	 fa_clear_local_state;
       end
       // ----------------
       else if (cmd == cmd_watch_tohost) begin

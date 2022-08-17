@@ -2792,8 +2792,8 @@ module mkNear_Mem(CLK,
   // rule RL_sendPRq
   assign CAN_FIRE_RL_sendPRq =
 	     i_mmu_cache$RDY_l2_to_l1_server_request_enq &&
-	     llc$RDY_to_child_toC_first &&
 	     llc$RDY_to_child_toC_deq &&
+	     llc$RDY_to_child_toC_first &&
 	     !llc$to_child_toC_first[584] &&
 	     llc$to_child_toC_first[1:0] == 2'd0 ;
   assign WILL_FIRE_RL_sendPRq = CAN_FIRE_RL_sendPRq ;
@@ -2801,8 +2801,8 @@ module mkNear_Mem(CLK,
   // rule RL_sendPRs
   assign CAN_FIRE_RL_sendPRs =
 	     i_mmu_cache$RDY_l1_to_l2_client_response_enq &&
-	     llc$RDY_to_child_toC_first &&
 	     llc$RDY_to_child_toC_deq &&
+	     llc$RDY_to_child_toC_first &&
 	     llc$to_child_toC_first[584] &&
 	     llc$to_child_toC_first[517:516] == 2'd0 ;
   assign WILL_FIRE_RL_sendPRs = CAN_FIRE_RL_sendPRs ;
@@ -2810,8 +2810,8 @@ module mkNear_Mem(CLK,
   // rule RL_sendPRq_1
   assign CAN_FIRE_RL_sendPRq_1 =
 	     d_mmu_cache$RDY_l2_to_l1_server_request_enq &&
-	     llc$RDY_to_child_toC_first &&
 	     llc$RDY_to_child_toC_deq &&
+	     llc$RDY_to_child_toC_first &&
 	     !llc$to_child_toC_first[584] &&
 	     llc$to_child_toC_first[1:0] == 2'd1 ;
   assign WILL_FIRE_RL_sendPRq_1 = CAN_FIRE_RL_sendPRq_1 ;
@@ -2819,8 +2819,8 @@ module mkNear_Mem(CLK,
   // rule RL_sendPRs_1
   assign CAN_FIRE_RL_sendPRs_1 =
 	     d_mmu_cache$RDY_l1_to_l2_client_response_enq &&
-	     llc$RDY_to_child_toC_first &&
 	     llc$RDY_to_child_toC_deq &&
+	     llc$RDY_to_child_toC_first &&
 	     llc$to_child_toC_first[584] &&
 	     llc$to_child_toC_first[517:516] == 2'd1 ;
   assign WILL_FIRE_RL_sendPRs_1 = CAN_FIRE_RL_sendPRs_1 ;
@@ -2828,8 +2828,8 @@ module mkNear_Mem(CLK,
   // rule RL_sendPRq_2
   assign CAN_FIRE_RL_sendPRq_2 =
 	     dma_cache$RDY_l2_to_l1_server_request_enq &&
-	     llc$RDY_to_child_toC_first &&
 	     llc$RDY_to_child_toC_deq &&
+	     llc$RDY_to_child_toC_first &&
 	     !llc$to_child_toC_first[584] &&
 	     llc$to_child_toC_first[1:0] == 2'd2 ;
   assign WILL_FIRE_RL_sendPRq_2 = CAN_FIRE_RL_sendPRq_2 ;
@@ -2837,8 +2837,8 @@ module mkNear_Mem(CLK,
   // rule RL_sendPRs_2
   assign CAN_FIRE_RL_sendPRs_2 =
 	     dma_cache$RDY_l1_to_l2_client_response_enq &&
-	     llc$RDY_to_child_toC_first &&
 	     llc$RDY_to_child_toC_deq &&
+	     llc$RDY_to_child_toC_first &&
 	     llc$to_child_toC_first[584] &&
 	     llc$to_child_toC_first[517:516] == 2'd2 ;
   assign WILL_FIRE_RL_sendPRs_2 = CAN_FIRE_RL_sendPRs_2 ;
@@ -2906,8 +2906,8 @@ module mkNear_Mem(CLK,
 	     !llc_axi4_adapter_master_xactor_crg_wr_addr_full$port2__read &&
 	     !llc_axi4_adapter_master_xactor_crg_wr_data_full$port2__read &&
 	     llc_axi4_adapter_ctr_wr_rsps_pending_crg != 4'd15 &&
-	     llc$RDY_to_mem_toM_first &&
 	     llc$RDY_to_mem_toM_deq &&
+	     llc$RDY_to_mem_toM_first &&
 	     llc$to_mem_toM_first[640] &&
 	     llc_axi4_adapter_rg_ddr4_ready ;
   assign WILL_FIRE_RL_llc_axi4_adapter_rl_handle_write_req =
@@ -2916,8 +2916,8 @@ module mkNear_Mem(CLK,
   // rule RL_llc_axi4_adapter_rl_handle_read_req
   assign CAN_FIRE_RL_llc_axi4_adapter_rl_handle_read_req =
 	     !llc_axi4_adapter_master_xactor_crg_rd_addr_full$port2__read &&
-	     llc$RDY_to_mem_toM_first &&
 	     llc$RDY_to_mem_toM_deq &&
+	     llc$RDY_to_mem_toM_first &&
 	     llc_axi4_adapter_f_pending_reads$FULL_N &&
 	     !llc$to_mem_toM_first[640] &&
 	     b__h13361 == 4'd0 &&

@@ -4900,15 +4900,15 @@ module mkCPU(CLK,
   assign f_csr_reqs$CLR = 1'b0 ;
 
   // submodule f_csr_rsps
-  always@(WILL_FIRE_RL_rl_debug_write_csr or
-	  WILL_FIRE_RL_rl_debug_csr_access_busy or
+  always@(WILL_FIRE_RL_rl_debug_csr_access_busy or
+	  WILL_FIRE_RL_rl_debug_write_csr or
 	  WILL_FIRE_RL_rl_debug_read_csr or MUX_f_csr_rsps$enq_1__VAL_3)
   begin
     case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_rl_debug_write_csr:
-	  f_csr_rsps$D_IN = 65'h1AAAAAAAAAAAAAAAA;
       WILL_FIRE_RL_rl_debug_csr_access_busy:
 	  f_csr_rsps$D_IN = 65'h0AAAAAAAAAAAAAAAA;
+      WILL_FIRE_RL_rl_debug_write_csr:
+	  f_csr_rsps$D_IN = 65'h1AAAAAAAAAAAAAAAA;
       WILL_FIRE_RL_rl_debug_read_csr:
 	  f_csr_rsps$D_IN = MUX_f_csr_rsps$enq_1__VAL_3;
       default: f_csr_rsps$D_IN =
@@ -4916,8 +4916,8 @@ module mkCPU(CLK,
     endcase
   end
   assign f_csr_rsps$ENQ =
-	     WILL_FIRE_RL_rl_debug_write_csr ||
 	     WILL_FIRE_RL_rl_debug_csr_access_busy ||
+	     WILL_FIRE_RL_rl_debug_write_csr ||
 	     WILL_FIRE_RL_rl_debug_read_csr ;
   assign f_csr_rsps$DEQ = EN_hart0_csr_mem_server_response_get ;
   assign f_csr_rsps$CLR = 1'b0 ;
@@ -4932,15 +4932,15 @@ module mkCPU(CLK,
   assign f_fpr_reqs$CLR = 1'b0 ;
 
   // submodule f_fpr_rsps
-  always@(WILL_FIRE_RL_rl_debug_write_fpr or
-	  WILL_FIRE_RL_rl_debug_fpr_access_busy or
+  always@(WILL_FIRE_RL_rl_debug_fpr_access_busy or
+	  WILL_FIRE_RL_rl_debug_write_fpr or
 	  WILL_FIRE_RL_rl_debug_read_fpr or MUX_f_fpr_rsps$enq_1__VAL_3)
   begin
     case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_rl_debug_write_fpr:
-	  f_fpr_rsps$D_IN = 65'h1AAAAAAAAAAAAAAAA;
       WILL_FIRE_RL_rl_debug_fpr_access_busy:
 	  f_fpr_rsps$D_IN = 65'h0AAAAAAAAAAAAAAAA;
+      WILL_FIRE_RL_rl_debug_write_fpr:
+	  f_fpr_rsps$D_IN = 65'h1AAAAAAAAAAAAAAAA;
       WILL_FIRE_RL_rl_debug_read_fpr:
 	  f_fpr_rsps$D_IN = MUX_f_fpr_rsps$enq_1__VAL_3;
       default: f_fpr_rsps$D_IN =
@@ -4948,8 +4948,8 @@ module mkCPU(CLK,
     endcase
   end
   assign f_fpr_rsps$ENQ =
-	     WILL_FIRE_RL_rl_debug_write_fpr ||
 	     WILL_FIRE_RL_rl_debug_fpr_access_busy ||
+	     WILL_FIRE_RL_rl_debug_write_fpr ||
 	     WILL_FIRE_RL_rl_debug_read_fpr ;
   assign f_fpr_rsps$DEQ = EN_hart0_fpr_mem_server_response_get ;
   assign f_fpr_rsps$CLR = 1'b0 ;
@@ -4964,15 +4964,15 @@ module mkCPU(CLK,
   assign f_gpr_reqs$CLR = 1'b0 ;
 
   // submodule f_gpr_rsps
-  always@(WILL_FIRE_RL_rl_debug_write_gpr or
-	  WILL_FIRE_RL_rl_debug_gpr_access_busy or
+  always@(WILL_FIRE_RL_rl_debug_gpr_access_busy or
+	  WILL_FIRE_RL_rl_debug_write_gpr or
 	  WILL_FIRE_RL_rl_debug_read_gpr or MUX_f_gpr_rsps$enq_1__VAL_3)
   begin
     case (1'b1) // synopsys parallel_case
-      WILL_FIRE_RL_rl_debug_write_gpr:
-	  f_gpr_rsps$D_IN = 65'h1AAAAAAAAAAAAAAAA;
       WILL_FIRE_RL_rl_debug_gpr_access_busy:
 	  f_gpr_rsps$D_IN = 65'h0AAAAAAAAAAAAAAAA;
+      WILL_FIRE_RL_rl_debug_write_gpr:
+	  f_gpr_rsps$D_IN = 65'h1AAAAAAAAAAAAAAAA;
       WILL_FIRE_RL_rl_debug_read_gpr:
 	  f_gpr_rsps$D_IN = MUX_f_gpr_rsps$enq_1__VAL_3;
       default: f_gpr_rsps$D_IN =
@@ -4980,8 +4980,8 @@ module mkCPU(CLK,
     endcase
   end
   assign f_gpr_rsps$ENQ =
-	     WILL_FIRE_RL_rl_debug_write_gpr ||
 	     WILL_FIRE_RL_rl_debug_gpr_access_busy ||
+	     WILL_FIRE_RL_rl_debug_write_gpr ||
 	     WILL_FIRE_RL_rl_debug_read_gpr ;
   assign f_gpr_rsps$DEQ = EN_hart0_gpr_mem_server_response_get ;
   assign f_gpr_rsps$CLR = 1'b0 ;
