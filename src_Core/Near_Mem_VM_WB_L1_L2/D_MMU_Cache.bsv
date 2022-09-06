@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2021 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2016-2022 Bluespec, Inc. All Rights Reserved.
 
 package D_MMU_Cache;
 
@@ -287,7 +287,8 @@ module mkD_MMU_Cache (D_MMU_Cache_IFC);
    // "tohost" addr on which to monitor writes, for standard ISA tests.
    // These are set by the 'set_watch_tohost' method but are otherwise read-only.
    Reg #(Bool)      rg_watch_tohost <- mkReg (True);
-   Reg #(Bit #(64)) rg_tohost_addr  <- mkReg ('h_8000_1000);    // Default for ISA tests
+   // Reg #(Bit #(64)) rg_tohost_addr  <- mkReg ('h_8000_1000);    // Default for ISA tests
+   Reg #(Bit #(64)) rg_tohost_addr  <- mkReg ('h_6FFF_0010);    // Default for ISA tests
    Reg #(Bit #(64)) rg_tohost_value <- mkReg (0);
 `endif
 

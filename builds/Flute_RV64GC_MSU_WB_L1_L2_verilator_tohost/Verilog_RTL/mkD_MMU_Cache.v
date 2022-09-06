@@ -1792,7 +1792,7 @@ module mkD_MMU_Cache(CLK,
         crg_mmu_cache_req_state <= `BSV_ASSIGNMENT_DELAY 2'd0;
 	crg_state <= `BSV_ASSIGNMENT_DELAY 4'd0;
 	crg_valid <= `BSV_ASSIGNMENT_DELAY 1'd0;
-	rg_tohost_addr <= `BSV_ASSIGNMENT_DELAY 64'h0000000080001000;
+	rg_tohost_addr <= `BSV_ASSIGNMENT_DELAY 64'h000000006FFF0010;
 	rg_tohost_value <= `BSV_ASSIGNMENT_DELAY 64'd0;
 	rg_watch_tohost <= `BSV_ASSIGNMENT_DELAY 1'd1;
       end
@@ -1860,7 +1860,7 @@ module mkD_MMU_Cache(CLK,
 	  tlb$mv_vm_xlate[200:199] != 2'd1 &&
 	  tlb$mv_vm_xlate[200:199] != 2'd2 &&
 	  tlb$mv_vm_xlate[200:199] != 2'd0)
-	$display("Dynamic assertion failed: \"../../src_Core/Near_Mem_VM_WB_L1_L2/D_MMU_Cache.bsv\", line 466, column 67\nFAIL: unknown vm_xlate result");
+	$display("Dynamic assertion failed: \"../../src_Core/Near_Mem_VM_WB_L1_L2/D_MMU_Cache.bsv\", line 467, column 67\nFAIL: unknown vm_xlate result");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_CPU_req_B &&
 	  crg_mmu_cache_req_port0__read__05_BITS_204_TO__ETC___d204 &&

@@ -487,19 +487,19 @@ module mkMMIO(CLK,
   always@(rg_req)
   begin
     case (rg_req[204:203])
-      2'b0: y__h1286 = 64'hFFFFFFFFFFFFFF00;
-      2'b01: y__h1286 = 64'hFFFFFFFFFFFF0000;
-      2'b10: y__h1286 = 64'hFFFFFFFF00000000;
-      2'd3: y__h1286 = 64'd0;
+      2'b0: mask__h1029 = 64'h00000000000000FF;
+      2'b01: mask__h1029 = 64'h000000000000FFFF;
+      2'b10: mask__h1029 = 64'h00000000FFFFFFFF;
+      2'd3: mask__h1029 = 64'hFFFFFFFFFFFFFFFF;
     endcase
   end
   always@(rg_req)
   begin
     case (rg_req[204:203])
-      2'b0: mask__h1029 = 64'h00000000000000FF;
-      2'b01: mask__h1029 = 64'h000000000000FFFF;
-      2'b10: mask__h1029 = 64'h00000000FFFFFFFF;
-      2'd3: mask__h1029 = 64'hFFFFFFFFFFFFFFFF;
+      2'b0: y__h1286 = 64'hFFFFFFFFFFFFFF00;
+      2'b01: y__h1286 = 64'hFFFFFFFFFFFF0000;
+      2'b10: y__h1286 = 64'hFFFFFFFF00000000;
+      2'd3: y__h1286 = 64'd0;
     endcase
   end
   always@(rg_req or f_single_rsps$D_OUT)

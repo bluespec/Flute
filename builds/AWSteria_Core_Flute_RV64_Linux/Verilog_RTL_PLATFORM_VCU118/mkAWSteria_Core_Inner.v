@@ -3558,18 +3558,19 @@ module mkAWSteria_Core_Inner(CLK,
 
   // rule RL_rl_first_init_finish
   assign CAN_FIRE_RL_rl_first_init_finish =
-	     near_mem_io$RDY_set_addr_map &&
 	     plic$RDY_server_reset_response_get &&
 	     near_mem_io$RDY_server_reset_response_get &&
 	     cpu$RDY_hart0_server_reset_response_get &&
+	     near_mem_io$RDY_set_addr_map &&
 	     rg_module_state == 2'd1 ;
   assign WILL_FIRE_RL_rl_first_init_finish =
 	     CAN_FIRE_RL_rl_first_init_finish ;
 
   // rule RL_rl_first_init_start
   assign CAN_FIRE_RL_rl_first_init_start =
-	     mmio_fabric$RDY_reset && plic$RDY_server_reset_request_put &&
+	     plic$RDY_server_reset_request_put &&
 	     near_mem_io$RDY_server_reset_request_put &&
+	     mmio_fabric$RDY_reset &&
 	     cpu$RDY_hart0_server_reset_request_put &&
 	     rg_module_state == 2'd0 ;
   assign WILL_FIRE_RL_rl_first_init_start = CAN_FIRE_RL_rl_first_init_start ;
@@ -3623,7 +3624,7 @@ module mkAWSteria_Core_Inner(CLK,
 
   // register rg_nmi
   assign rg_nmi$D_IN = f_nmi$D_OUT ;
-  assign rg_nmi$EN = f_nmi$EMPTY_N && rg_module_state == 2'd2 ;
+  assign rg_nmi$EN = CAN_FIRE_RL_rl_register_nmi ;
 
   // register rg_prev_tohost_value
   assign rg_prev_tohost_value$D_IN = cpu$mv_tohost_value ;
@@ -4234,7 +4235,7 @@ module mkAWSteria_Core_Inner(CLK,
     #0;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_first_init_finish)
-	$display("AWSteria_Core_Inner: finish post-reeest Initializations ...");
+	$display("AWSteria_Core_Inner: finish post-reset Initializations ...");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_first_init_finish) $display("    %m");
     if (RST_N != `BSV_RESET_VALUE)

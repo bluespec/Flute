@@ -4234,7 +4234,7 @@ module mkAWSteria_Core_Inner(CLK,
     #0;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_first_init_finish)
-	$display("AWSteria_Core_Inner: finish post-reeest Initializations ...");
+	$display("AWSteria_Core_Inner: finish post-reset Initializations ...");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_first_init_finish) $display("    %m");
     if (RST_N != `BSV_RESET_VALUE)

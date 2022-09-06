@@ -1733,20 +1733,20 @@ module mkNear_Mem(CLK,
        WILL_FIRE_sfence_vma_server_response_get;
 
   // inputs to muxes for submodule ports
-  wire MUX_rg_state$write_1__SEL_3;
+  wire MUX_rg_state$write_1__SEL_2, MUX_rg_state$write_1__SEL_3;
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h84135;
-  reg [31 : 0] v__h84241;
+  reg [31 : 0] v__h84173;
+  reg [31 : 0] v__h84279;
   reg [31 : 0] v__h13951;
-  reg [31 : 0] v__h85786;
+  reg [31 : 0] v__h85820;
   reg [31 : 0] v__h31896;
   reg [31 : 0] v__h13945;
   reg [31 : 0] v__h31890;
-  reg [31 : 0] v__h84129;
-  reg [31 : 0] v__h84235;
-  reg [31 : 0] v__h85780;
+  reg [31 : 0] v__h84167;
+  reg [31 : 0] v__h84273;
+  reg [31 : 0] v__h85814;
   // synopsys translate_on
 
   // remaining internal signals
@@ -2940,7 +2940,7 @@ module mkNear_Mem(CLK,
 
   // rule RL_rl_reset
   assign CAN_FIRE_RL_rl_reset = rg_state == 2'd0 ;
-  assign WILL_FIRE_RL_rl_reset = rg_state == 2'd0 ;
+  assign WILL_FIRE_RL_rl_reset = MUX_rg_state$write_1__SEL_2 ;
 
   // rule RL_rl_reset_complete
   assign CAN_FIRE_RL_rl_reset_complete = MUX_rg_state$write_1__SEL_3 ;
@@ -3043,6 +3043,8 @@ module mkNear_Mem(CLK,
   assign WILL_FIRE_RL_enqDst_1_0_canon = 1'd1 ;
 
   // inputs to muxes for submodule ports
+  assign MUX_rg_state$write_1__SEL_2 =
+	     CAN_FIRE_RL_rl_reset && !EN_sfence_vma_server_request_put ;
   assign MUX_rg_state$write_1__SEL_3 =
 	     f_reset_rsps$FULL_N && rg_state == 2'd1 ;
 
@@ -3395,7 +3397,8 @@ module mkNear_Mem(CLK,
   assign d_mmu_cache$EN_ma_req = EN_dmem_req ;
   assign d_mmu_cache$EN_flush_server_request_put = 1'b0 ;
   assign d_mmu_cache$EN_flush_server_response_get = 1'b0 ;
-  assign d_mmu_cache$EN_tlb_flush = EN_sfence_vma_server_request_put ;
+  assign d_mmu_cache$EN_tlb_flush =
+	     EN_sfence_vma_server_request_put || WILL_FIRE_RL_rl_reset ;
   assign d_mmu_cache$EN_imem_ptw_server_request_put =
 	     CAN_FIRE_RL_ClientServerRequest ;
   assign d_mmu_cache$EN_imem_ptw_server_response_get =
@@ -3500,7 +3503,8 @@ module mkNear_Mem(CLK,
   assign i_mmu_cache$EN_ma_req = EN_imem_req ;
   assign i_mmu_cache$EN_flush_server_request_put = 1'b0 ;
   assign i_mmu_cache$EN_flush_server_response_get = 1'b0 ;
-  assign i_mmu_cache$EN_tlb_flush = EN_sfence_vma_server_request_put ;
+  assign i_mmu_cache$EN_tlb_flush =
+	     EN_sfence_vma_server_request_put || WILL_FIRE_RL_rl_reset ;
   assign i_mmu_cache$EN_ptw_client_request_get =
 	     CAN_FIRE_RL_ClientServerRequest ;
   assign i_mmu_cache$EN_ptw_client_response_put =
@@ -4779,25 +4783,25 @@ module mkNear_Mem(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset && NOT_cfg_verbosity_read__38_ULE_1_39___d740)
 	begin
-	  v__h84135 = $stime;
+	  v__h84173 = $stime;
 	  #0;
 	end
-    v__h84129 = v__h84135 / 32'd10;
+    v__h84167 = v__h84173 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset && NOT_cfg_verbosity_read__38_ULE_1_39___d740)
-	$display("%0d: Near_Mem.rl_reset", v__h84129);
+	$display("%0d: Near_Mem.rl_reset", v__h84167);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset_complete &&
 	  NOT_cfg_verbosity_read__38_ULE_1_39___d740)
 	begin
-	  v__h84241 = $stime;
+	  v__h84279 = $stime;
 	  #0;
 	end
-    v__h84235 = v__h84241 / 32'd10;
+    v__h84273 = v__h84279 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset_complete &&
 	  NOT_cfg_verbosity_read__38_ULE_1_39___d740)
-	$display("%0d: Near_Mem.rl_reset_complete", v__h84235);
+	$display("%0d: Near_Mem.rl_reset_complete", v__h84273);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_llc_axi4_adapter_rl_handle_read_rsps &&
 	  llc_axi4_adapter_master_xactor_rg_rd_data[2:1] != 2'b0)
@@ -4872,14 +4876,14 @@ module mkNear_Mem(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_ma_ddr4_ready)
 	begin
-	  v__h85786 = $stime;
+	  v__h85820 = $stime;
 	  #0;
 	end
-    v__h85780 = v__h85786 / 32'd10;
+    v__h85814 = v__h85820 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_ma_ddr4_ready)
 	$display("%0d: %m.LLC_AXI4_Adapter.ma_ddr4_ready: enabling all rules",
-		 v__h85780);
+		 v__h85814);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_llc_axi4_adapter_rl_discard_write_rsp &&
 	  llc_axi4_adapter_master_xactor_rg_wr_resp[1:0] != 2'b0)

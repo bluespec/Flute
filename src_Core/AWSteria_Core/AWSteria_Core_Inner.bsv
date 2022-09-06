@@ -259,7 +259,7 @@ module mkAWSteria_Core_Inner (AWSteria_Core_Inner_IFC);
 
       rg_module_state <= MODULE_STATE_READY;
 
-      $display ("AWSteria_Core_Inner: finish post-reeest Initializations ...");
+      $display ("AWSteria_Core_Inner: finish post-reset Initializations ...");
       $display ("    %m");
       $display ("    %0d: rule rl_first_init_start", cur_cycle);
    endrule

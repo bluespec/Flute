@@ -238,6 +238,9 @@ module mkNear_Mem (Near_Mem_IFC);
    rule rl_reset (rg_state == STATE_RESET);
       rg_state <= STATE_RESETTING;
 
+      i_mmu_cache.tlb_flush;
+      d_mmu_cache.tlb_flush;
+
       if (cfg_verbosity > 1)
 	 $display ("%0d: Near_Mem.rl_reset", cur_cycle);
    endrule
