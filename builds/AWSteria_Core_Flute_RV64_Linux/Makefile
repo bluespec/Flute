@@ -34,8 +34,8 @@ $(info INFO: Including Makefile_Params.mk which should define paths to external 
 include Makefile_Params.mk
 
 # Target platform (chooses clock speed etc.)
-# PLATFORM_TARGET = PLATFORM_AWSF1
-PLATFORM_TARGET = PLATFORM_VCU118
+PLATFORM_TARGET = PLATFORM_AWSF1
+# PLATFORM_TARGET = PLATFORM_VCU118
 
 # ================================================================
 # Core/CPU architectural configs

@@ -1698,6 +1698,9 @@ module mkNear_Mem(CLK,
        WILL_FIRE_sfence_vma_server_request_put,
        WILL_FIRE_sfence_vma_server_response_get;
 
+  // inputs to muxes for submodule ports
+  wire MUX_rg_state$write_1__SEL_2, MUX_rg_state$write_1__SEL_3;
+
   // declarations used by system tasks
   // synopsys translate_off
   reg [31 : 0] v__h77457;
@@ -2717,24 +2720,24 @@ module mkNear_Mem(CLK,
 
   // rule RL_srcPropose
   assign CAN_FIRE_RL_srcPropose =
-	     i_mmu_cache$RDY_l1_to_l2_client_request_first &&
 	     i_mmu_cache$RDY_l1_to_l2_client_request_deq &&
+	     i_mmu_cache$RDY_l1_to_l2_client_request_first &&
 	     (!propDstIdx_0_dummy2_0$Q_OUT || !propDstIdx_0_dummy2_1$Q_OUT ||
 	      !propDstIdx_0_rl) ;
   assign WILL_FIRE_RL_srcPropose = CAN_FIRE_RL_srcPropose ;
 
   // rule RL_srcPropose_1
   assign CAN_FIRE_RL_srcPropose_1 =
-	     d_mmu_cache$RDY_l1_to_l2_client_request_first &&
 	     d_mmu_cache$RDY_l1_to_l2_client_request_deq &&
+	     d_mmu_cache$RDY_l1_to_l2_client_request_first &&
 	     (!propDstIdx_1_dummy2_0$Q_OUT || !propDstIdx_1_dummy2_1$Q_OUT ||
 	      !propDstIdx_1_rl) ;
   assign WILL_FIRE_RL_srcPropose_1 = CAN_FIRE_RL_srcPropose_1 ;
 
   // rule RL_srcPropose_2
   assign CAN_FIRE_RL_srcPropose_2 =
-	     dma_cache$RDY_l1_to_l2_client_request_first &&
 	     dma_cache$RDY_l1_to_l2_client_request_deq &&
+	     dma_cache$RDY_l1_to_l2_client_request_first &&
 	     (!propDstIdx_2_dummy2_0$Q_OUT || !propDstIdx_2_dummy2_1$Q_OUT ||
 	      !propDstIdx_2_rl) ;
   assign WILL_FIRE_RL_srcPropose_2 = CAN_FIRE_RL_srcPropose_2 ;
@@ -2751,8 +2754,8 @@ module mkNear_Mem(CLK,
 
   // rule RL_srcPropose_3
   assign CAN_FIRE_RL_srcPropose_3 =
-	     i_mmu_cache$RDY_l2_to_l1_server_response_first &&
 	     i_mmu_cache$RDY_l2_to_l1_server_response_deq &&
+	     i_mmu_cache$RDY_l2_to_l1_server_response_first &&
 	     (!propDstIdx_1_0_dummy2_0$Q_OUT ||
 	      !propDstIdx_1_0_dummy2_1$Q_OUT ||
 	      !propDstIdx_1_0_rl) ;
@@ -2760,8 +2763,8 @@ module mkNear_Mem(CLK,
 
   // rule RL_srcPropose_4
   assign CAN_FIRE_RL_srcPropose_4 =
-	     d_mmu_cache$RDY_l2_to_l1_server_response_first &&
 	     d_mmu_cache$RDY_l2_to_l1_server_response_deq &&
+	     d_mmu_cache$RDY_l2_to_l1_server_response_first &&
 	     (!propDstIdx_1_1_dummy2_0$Q_OUT ||
 	      !propDstIdx_1_1_dummy2_1$Q_OUT ||
 	      !propDstIdx_1_1_rl) ;
@@ -2769,8 +2772,8 @@ module mkNear_Mem(CLK,
 
   // rule RL_srcPropose_5
   assign CAN_FIRE_RL_srcPropose_5 =
-	     dma_cache$RDY_l2_to_l1_server_response_first &&
 	     dma_cache$RDY_l2_to_l1_server_response_deq &&
+	     dma_cache$RDY_l2_to_l1_server_response_first &&
 	     (!propDstIdx_1_2_dummy2_0$Q_OUT ||
 	      !propDstIdx_1_2_dummy2_1$Q_OUT ||
 	      !propDstIdx_1_2_rl) ;
@@ -2789,8 +2792,8 @@ module mkNear_Mem(CLK,
   // rule RL_sendPRq
   assign CAN_FIRE_RL_sendPRq =
 	     i_mmu_cache$RDY_l2_to_l1_server_request_enq &&
-	     llc$RDY_to_child_toC_deq &&
 	     llc$RDY_to_child_toC_first &&
+	     llc$RDY_to_child_toC_deq &&
 	     !llc$to_child_toC_first[584] &&
 	     llc$to_child_toC_first[1:0] == 2'd0 ;
   assign WILL_FIRE_RL_sendPRq = CAN_FIRE_RL_sendPRq ;
@@ -2798,8 +2801,8 @@ module mkNear_Mem(CLK,
   // rule RL_sendPRs
   assign CAN_FIRE_RL_sendPRs =
 	     i_mmu_cache$RDY_l1_to_l2_client_response_enq &&
-	     llc$RDY_to_child_toC_deq &&
 	     llc$RDY_to_child_toC_first &&
+	     llc$RDY_to_child_toC_deq &&
 	     llc$to_child_toC_first[584] &&
 	     llc$to_child_toC_first[517:516] == 2'd0 ;
   assign WILL_FIRE_RL_sendPRs = CAN_FIRE_RL_sendPRs ;
@@ -2807,8 +2810,8 @@ module mkNear_Mem(CLK,
   // rule RL_sendPRq_1
   assign CAN_FIRE_RL_sendPRq_1 =
 	     d_mmu_cache$RDY_l2_to_l1_server_request_enq &&
-	     llc$RDY_to_child_toC_deq &&
 	     llc$RDY_to_child_toC_first &&
+	     llc$RDY_to_child_toC_deq &&
 	     !llc$to_child_toC_first[584] &&
 	     llc$to_child_toC_first[1:0] == 2'd1 ;
   assign WILL_FIRE_RL_sendPRq_1 = CAN_FIRE_RL_sendPRq_1 ;
@@ -2816,8 +2819,8 @@ module mkNear_Mem(CLK,
   // rule RL_sendPRs_1
   assign CAN_FIRE_RL_sendPRs_1 =
 	     d_mmu_cache$RDY_l1_to_l2_client_response_enq &&
-	     llc$RDY_to_child_toC_deq &&
 	     llc$RDY_to_child_toC_first &&
+	     llc$RDY_to_child_toC_deq &&
 	     llc$to_child_toC_first[584] &&
 	     llc$to_child_toC_first[517:516] == 2'd1 ;
   assign WILL_FIRE_RL_sendPRs_1 = CAN_FIRE_RL_sendPRs_1 ;
@@ -2825,8 +2828,8 @@ module mkNear_Mem(CLK,
   // rule RL_sendPRq_2
   assign CAN_FIRE_RL_sendPRq_2 =
 	     dma_cache$RDY_l2_to_l1_server_request_enq &&
-	     llc$RDY_to_child_toC_deq &&
 	     llc$RDY_to_child_toC_first &&
+	     llc$RDY_to_child_toC_deq &&
 	     !llc$to_child_toC_first[584] &&
 	     llc$to_child_toC_first[1:0] == 2'd2 ;
   assign WILL_FIRE_RL_sendPRq_2 = CAN_FIRE_RL_sendPRq_2 ;
@@ -2834,63 +2837,61 @@ module mkNear_Mem(CLK,
   // rule RL_sendPRs_2
   assign CAN_FIRE_RL_sendPRs_2 =
 	     dma_cache$RDY_l1_to_l2_client_response_enq &&
-	     llc$RDY_to_child_toC_deq &&
 	     llc$RDY_to_child_toC_first &&
+	     llc$RDY_to_child_toC_deq &&
 	     llc$to_child_toC_first[584] &&
 	     llc$to_child_toC_first[517:516] == 2'd2 ;
   assign WILL_FIRE_RL_sendPRs_2 = CAN_FIRE_RL_sendPRs_2 ;
 
   // rule RL_ClientServerRequest_1
   assign CAN_FIRE_RL_ClientServerRequest_1 =
-	     i_mmu_cache$RDY_mmio_client_request_get &&
-	     mmio_axi4_adapter$RDY_v_mmio_server_0_request_put ;
+	     mmio_axi4_adapter$RDY_v_mmio_server_0_request_put &&
+	     i_mmu_cache$RDY_mmio_client_request_get ;
   assign WILL_FIRE_RL_ClientServerRequest_1 =
 	     CAN_FIRE_RL_ClientServerRequest_1 ;
 
   // rule RL_ClientServerResponse_1
   assign CAN_FIRE_RL_ClientServerResponse_1 =
-	     i_mmu_cache$RDY_mmio_client_response_put &&
-	     mmio_axi4_adapter$RDY_v_mmio_server_0_response_get ;
+	     mmio_axi4_adapter$RDY_v_mmio_server_0_response_get &&
+	     i_mmu_cache$RDY_mmio_client_response_put ;
   assign WILL_FIRE_RL_ClientServerResponse_1 =
 	     CAN_FIRE_RL_ClientServerResponse_1 ;
 
   // rule RL_ClientServerRequest_2
   assign CAN_FIRE_RL_ClientServerRequest_2 =
-	     d_mmu_cache$RDY_mmio_client_request_get &&
-	     mmio_axi4_adapter$RDY_v_mmio_server_1_request_put ;
+	     mmio_axi4_adapter$RDY_v_mmio_server_1_request_put &&
+	     d_mmu_cache$RDY_mmio_client_request_get ;
   assign WILL_FIRE_RL_ClientServerRequest_2 =
 	     CAN_FIRE_RL_ClientServerRequest_2 ;
 
   // rule RL_ClientServerResponse_2
   assign CAN_FIRE_RL_ClientServerResponse_2 =
-	     d_mmu_cache$RDY_mmio_client_response_put &&
-	     mmio_axi4_adapter$RDY_v_mmio_server_1_response_get ;
+	     mmio_axi4_adapter$RDY_v_mmio_server_1_response_get &&
+	     d_mmu_cache$RDY_mmio_client_response_put ;
   assign WILL_FIRE_RL_ClientServerResponse_2 =
 	     CAN_FIRE_RL_ClientServerResponse_2 ;
 
   // rule RL_ClientServerRequest_3
   assign CAN_FIRE_RL_ClientServerRequest_3 =
-	     dma_cache$RDY_mmio_client_request_get &&
-	     mmio_axi4_adapter$RDY_v_mmio_server_2_request_put ;
+	     mmio_axi4_adapter$RDY_v_mmio_server_2_request_put &&
+	     dma_cache$RDY_mmio_client_request_get ;
   assign WILL_FIRE_RL_ClientServerRequest_3 =
 	     CAN_FIRE_RL_ClientServerRequest_3 ;
 
   // rule RL_ClientServerResponse_3
   assign CAN_FIRE_RL_ClientServerResponse_3 =
-	     dma_cache$RDY_mmio_client_response_put &&
-	     mmio_axi4_adapter$RDY_v_mmio_server_2_response_get ;
+	     mmio_axi4_adapter$RDY_v_mmio_server_2_response_get &&
+	     dma_cache$RDY_mmio_client_response_put ;
   assign WILL_FIRE_RL_ClientServerResponse_3 =
 	     CAN_FIRE_RL_ClientServerResponse_3 ;
 
   // rule RL_rl_reset
   assign CAN_FIRE_RL_rl_reset = rg_state == 2'd0 ;
-  assign WILL_FIRE_RL_rl_reset =
-	     CAN_FIRE_RL_rl_reset && !EN_sfence_vma_server_request_put ;
+  assign WILL_FIRE_RL_rl_reset = MUX_rg_state$write_1__SEL_2 ;
 
   // rule RL_rl_reset_complete
-  assign CAN_FIRE_RL_rl_reset_complete =
-	     f_reset_rsps$FULL_N && rg_state == 2'd1 ;
-  assign WILL_FIRE_RL_rl_reset_complete = CAN_FIRE_RL_rl_reset_complete ;
+  assign CAN_FIRE_RL_rl_reset_complete = MUX_rg_state$write_1__SEL_3 ;
+  assign WILL_FIRE_RL_rl_reset_complete = MUX_rg_state$write_1__SEL_3 ;
 
   // rule RL_llc_axi4_adapter_rl_handle_read_rsps
   assign CAN_FIRE_RL_llc_axi4_adapter_rl_handle_read_rsps =
@@ -2905,8 +2906,8 @@ module mkNear_Mem(CLK,
 	     !llc_axi4_adapter_master_xactor_crg_wr_addr_full$port2__read &&
 	     !llc_axi4_adapter_master_xactor_crg_wr_data_full$port2__read &&
 	     llc_axi4_adapter_ctr_wr_rsps_pending_crg != 4'd15 &&
-	     llc$RDY_to_mem_toM_deq &&
 	     llc$RDY_to_mem_toM_first &&
+	     llc$RDY_to_mem_toM_deq &&
 	     llc$to_mem_toM_first[640] &&
 	     llc_axi4_adapter_rg_ddr4_ready ;
   assign WILL_FIRE_RL_llc_axi4_adapter_rl_handle_write_req =
@@ -2915,8 +2916,8 @@ module mkNear_Mem(CLK,
   // rule RL_llc_axi4_adapter_rl_handle_read_req
   assign CAN_FIRE_RL_llc_axi4_adapter_rl_handle_read_req =
 	     !llc_axi4_adapter_master_xactor_crg_rd_addr_full$port2__read &&
-	     llc$RDY_to_mem_toM_deq &&
 	     llc$RDY_to_mem_toM_first &&
+	     llc$RDY_to_mem_toM_deq &&
 	     llc_axi4_adapter_f_pending_reads$FULL_N &&
 	     !llc$to_mem_toM_first[640] &&
 	     b__h13361 == 4'd0 &&
@@ -2986,6 +2987,12 @@ module mkNear_Mem(CLK,
   // rule RL_enqDst_1_0_canon
   assign CAN_FIRE_RL_enqDst_1_0_canon = 1'd1 ;
   assign WILL_FIRE_RL_enqDst_1_0_canon = 1'd1 ;
+
+  // inputs to muxes for submodule ports
+  assign MUX_rg_state$write_1__SEL_2 =
+	     CAN_FIRE_RL_rl_reset && !EN_sfence_vma_server_request_put ;
+  assign MUX_rg_state$write_1__SEL_3 =
+	     f_reset_rsps$FULL_N && rg_state == 2'd1 ;
 
   // inlined wires
   assign propDstIdx_0_lat_1$whas =
@@ -3310,7 +3317,7 @@ module mkNear_Mem(CLK,
   assign d_mmu_cache$EN_flush_server_request_put = 1'b0 ;
   assign d_mmu_cache$EN_flush_server_response_get = 1'b0 ;
   assign d_mmu_cache$EN_tlb_flush =
-	     WILL_FIRE_RL_rl_reset || EN_sfence_vma_server_request_put ;
+	     EN_sfence_vma_server_request_put || WILL_FIRE_RL_rl_reset ;
   assign d_mmu_cache$EN_imem_ptw_server_request_put =
 	     CAN_FIRE_RL_ClientServerRequest ;
   assign d_mmu_cache$EN_imem_ptw_server_response_get =
@@ -3393,7 +3400,7 @@ module mkNear_Mem(CLK,
   assign enqDst_1_0_dummy2_1$EN = CAN_FIRE_RL_doEnq_1 ;
 
   // submodule f_reset_rsps
-  assign f_reset_rsps$ENQ = CAN_FIRE_RL_rl_reset_complete ;
+  assign f_reset_rsps$ENQ = MUX_rg_state$write_1__SEL_3 ;
   assign f_reset_rsps$DEQ = EN_server_reset_response_get ;
   assign f_reset_rsps$CLR = 1'b0 ;
 
@@ -3416,7 +3423,7 @@ module mkNear_Mem(CLK,
   assign i_mmu_cache$EN_flush_server_request_put = 1'b0 ;
   assign i_mmu_cache$EN_flush_server_response_get = 1'b0 ;
   assign i_mmu_cache$EN_tlb_flush =
-	     WILL_FIRE_RL_rl_reset || EN_sfence_vma_server_request_put ;
+	     EN_sfence_vma_server_request_put || WILL_FIRE_RL_rl_reset ;
   assign i_mmu_cache$EN_ptw_client_request_get =
 	     CAN_FIRE_RL_ClientServerRequest ;
   assign i_mmu_cache$EN_ptw_client_response_put =
