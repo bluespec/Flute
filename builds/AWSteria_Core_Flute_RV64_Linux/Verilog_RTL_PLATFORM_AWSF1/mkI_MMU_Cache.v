@@ -528,14 +528,14 @@ module mkI_MMU_Cache(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h3954;
-  reg [31 : 0] v__h4049;
-  reg [31 : 0] v__h4110;
-  reg [31 : 0] v__h2002;
-  reg [31 : 0] v__h1996;
-  reg [31 : 0] v__h3948;
-  reg [31 : 0] v__h4043;
-  reg [31 : 0] v__h4104;
+  reg [31 : 0] v__h3958;
+  reg [31 : 0] v__h4053;
+  reg [31 : 0] v__h4114;
+  reg [31 : 0] v__h2003;
+  reg [31 : 0] v__h1997;
+  reg [31 : 0] v__h3952;
+  reg [31 : 0] v__h4047;
+  reg [31 : 0] v__h4108;
   // synopsys translate_on
 
   // remaining internal signals
@@ -844,7 +844,7 @@ module mkI_MMU_Cache(CLK,
 
   // rule RL_rl_CPU_req_mmio_WAIT
   assign CAN_FIRE_RL_rl_CPU_req_mmio_WAIT =
-	     mmio$RDY_result_snd_fst && mmio$RDY_result_fst &&
+	     mmio$RDY_result_fst && mmio$RDY_result_snd_fst &&
 	     crg_state == 3'd3 ;
   assign WILL_FIRE_RL_rl_CPU_req_mmio_WAIT =
 	     CAN_FIRE_RL_rl_CPU_req_mmio_WAIT ;
@@ -1434,49 +1434,49 @@ module mkI_MMU_Cache(CLK,
 	  tlb$mv_vm_xlate[200:199] != 2'd1 &&
 	  NOT_tlb_mv_vm_xlate_crg_mmu_cache_req_port0__r_ETC___d219)
 	begin
-	  v__h3954 = $stime;
+	  v__h3958 = $stime;
 	  #0;
 	end
-    v__h3948 = v__h3954 / 32'd10;
+    v__h3952 = v__h3958 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_CPU_req_B &&
 	  crg_mmu_cache_req_port0__read__05_BITS_204_TO__ETC___d186 &&
 	  tlb$mv_vm_xlate[200:199] != 2'd1 &&
 	  NOT_tlb_mv_vm_xlate_crg_mmu_cache_req_port0__r_ETC___d219)
-	$display("%0d: %m.rl_CPU_req_B", v__h3948);
+	$display("%0d: %m.rl_CPU_req_B", v__h3952);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_CPU_req_B &&
 	  crg_mmu_cache_req_port0__read__05_BITS_204_TO__ETC___d186 &&
 	  tlb$mv_vm_xlate[200:199] != 2'd1 &&
 	  NOT_tlb_mv_vm_xlate_crg_mmu_cache_req_port0__r_ETC___d219)
 	begin
-	  v__h4049 = $stime;
+	  v__h4053 = $stime;
 	  #0;
 	end
-    v__h4043 = v__h4049 / 32'd10;
+    v__h4047 = v__h4053 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_CPU_req_B &&
 	  crg_mmu_cache_req_port0__read__05_BITS_204_TO__ETC___d186 &&
 	  tlb$mv_vm_xlate[200:199] != 2'd1 &&
 	  NOT_tlb_mv_vm_xlate_crg_mmu_cache_req_port0__r_ETC___d219)
 	$display("    INTERNAL ERROR: Impossible CACHE_WRITE_HIT in IMem",
-		 v__h4043);
+		 v__h4047);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_CPU_req_B &&
 	  crg_mmu_cache_req_port0__read__05_BITS_204_TO__ETC___d186 &&
 	  tlb$mv_vm_xlate[200:199] != 2'd1 &&
 	  NOT_tlb_mv_vm_xlate_crg_mmu_cache_req_port0__r_ETC___d219)
 	begin
-	  v__h4110 = $stime;
+	  v__h4114 = $stime;
 	  #0;
 	end
-    v__h4104 = v__h4110 / 32'd10;
+    v__h4108 = v__h4114 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_CPU_req_B &&
 	  crg_mmu_cache_req_port0__read__05_BITS_204_TO__ETC___d186 &&
 	  tlb$mv_vm_xlate[200:199] != 2'd1 &&
 	  NOT_tlb_mv_vm_xlate_crg_mmu_cache_req_port0__r_ETC___d219)
-	$write("    ", v__h4104);
+	$write("    ", v__h4108);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_CPU_req_B &&
 	  crg_mmu_cache_req_port0__read__05_BITS_204_TO__ETC___d186 &&
@@ -1758,13 +1758,13 @@ module mkI_MMU_Cache(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_ma_req && crg_mmu_cache_req_state$port1__read != 2'd0)
 	begin
-	  v__h2002 = $stime;
+	  v__h2003 = $stime;
 	  #0;
 	end
-    v__h1996 = v__h2002 / 32'd10;
+    v__h1997 = v__h2003 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_ma_req && crg_mmu_cache_req_state$port1__read != 2'd0)
-	$display("%0d: %m.rl_CPU_req", v__h1996);
+	$display("%0d: %m.rl_CPU_req", v__h1997);
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_ma_req && crg_mmu_cache_req_state$port1__read != 2'd0)
 	$write("    INTERNAL ERROR: crg_mmu_cache_req_state: ");

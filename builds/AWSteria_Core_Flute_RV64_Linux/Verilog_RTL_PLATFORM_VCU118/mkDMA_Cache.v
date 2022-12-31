@@ -835,170 +835,167 @@ module mkDMA_Cache(CLK,
        MUX_axi4_to_st_rg_bytelane_slice_lo$write_1__SEL_3,
        MUX_axi4_to_st_rg_discard_count$write_1__SEL_1,
        MUX_f_L1_to_L2_Rsps$enq_1__SEL_1,
-       MUX_f_single_reqs$enq_1__SEL_1,
-       MUX_f_single_reqs$enq_1__SEL_2,
        MUX_rg_state$write_1__SEL_1,
-       MUX_rg_state$write_1__SEL_2,
-       MUX_rg_state$write_1__SEL_3;
+       MUX_rg_state$write_1__SEL_2;
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h1939;
-  reg [31 : 0] v__h2378;
-  reg [31 : 0] v__h21932;
-  reg [31 : 0] v__h22215;
-  reg [31 : 0] v__h22447;
-  reg [31 : 0] v__h41916;
-  reg [31 : 0] v__h42084;
-  reg [31 : 0] v__h52156;
-  reg [31 : 0] v__h52329;
-  reg [31 : 0] v__h52523;
-  reg [31 : 0] v__h1933;
-  reg [31 : 0] v__h2372;
-  reg [31 : 0] v__h21926;
-  reg [31 : 0] v__h22209;
-  reg [31 : 0] v__h22441;
-  reg [31 : 0] v__h41910;
-  reg [31 : 0] v__h42078;
-  reg [31 : 0] v__h52150;
-  reg [31 : 0] v__h52323;
-  reg [31 : 0] v__h52517;
+  reg [31 : 0] v__h1943;
+  reg [31 : 0] v__h2385;
+  reg [31 : 0] v__h21939;
+  reg [31 : 0] v__h22222;
+  reg [31 : 0] v__h22454;
+  reg [31 : 0] v__h41923;
+  reg [31 : 0] v__h42091;
+  reg [31 : 0] v__h52166;
+  reg [31 : 0] v__h52339;
+  reg [31 : 0] v__h52533;
+  reg [31 : 0] v__h1937;
+  reg [31 : 0] v__h2379;
+  reg [31 : 0] v__h21933;
+  reg [31 : 0] v__h22216;
+  reg [31 : 0] v__h22448;
+  reg [31 : 0] v__h41917;
+  reg [31 : 0] v__h42085;
+  reg [31 : 0] v__h52160;
+  reg [31 : 0] v__h52333;
+  reg [31 : 0] v__h52527;
   // synopsys translate_on
 
   // remaining internal signals
-  wire [511 : 0] new_data___1__h23230, new_data___1__h4237, v__h22154;
-  wire [63 : 0] addr_axi_bus_lo__h41748,
-		addr_axi_bus_lo__h51956,
-		f_rd_addrD_OUT_BITS_92_TO_29_AND_mask3317__q3,
-		f_wr_addrD_OUT_BITS_92_TO_29_AND_mask6365__q4,
-		line_addr__h2667,
-		line_addr__h3095,
-		mask__h43317,
-		mask__h56365,
-		shifted_slice__h55210,
-		shifted_slice__h62290,
-		shifted_slice__h65741,
-		slice__h45650,
-		x__h44638,
-		x__h45186,
-		x__h55502,
-		x__h55884,
-		x__h62557,
-		x__h62560,
-		x__h66010,
-		x__h66013,
-		y_avValue_snd_snd__h55886,
-		y_avValue_snd_snd__h55888,
-		y_avValue_snd_snd__h56135,
-		y_avValue_snd_snd__h56137,
-		y_avValue_snd_snd__h56142,
-		y_avValue_snd_snd__h62562,
-		y_avValue_snd_snd__h62564,
-		y_avValue_snd_snd__h62806,
-		y_avValue_snd_snd__h62808,
-		y_avValue_snd_snd__h62813,
-		y_avValue_snd_snd__h66015,
-		y_avValue_snd_snd__h66017,
-		y_avValue_snd_snd__h66048,
-		y_avValue_snd_snd__h66050,
-		y_avValue_snd_snd__h66055;
+  wire [511 : 0] new_data___1__h23237, new_data___1__h4244, v__h22161;
+  wire [63 : 0] addr_axi_bus_lo__h41755,
+		addr_axi_bus_lo__h51966,
+		f_rd_addrD_OUT_BITS_92_TO_29_AND_mask3324__q3,
+		f_wr_addrD_OUT_BITS_92_TO_29_AND_mask6375__q4,
+		line_addr__h2674,
+		line_addr__h3102,
+		mask__h43324,
+		mask__h56375,
+		shifted_slice__h55220,
+		shifted_slice__h62300,
+		shifted_slice__h65751,
+		slice__h45657,
+		x__h44645,
+		x__h45193,
+		x__h55512,
+		x__h55894,
+		x__h62567,
+		x__h62570,
+		x__h66020,
+		x__h66023,
+		y_avValue_snd_snd__h55896,
+		y_avValue_snd_snd__h55898,
+		y_avValue_snd_snd__h56145,
+		y_avValue_snd_snd__h56147,
+		y_avValue_snd_snd__h56152,
+		y_avValue_snd_snd__h62572,
+		y_avValue_snd_snd__h62574,
+		y_avValue_snd_snd__h62816,
+		y_avValue_snd_snd__h62818,
+		y_avValue_snd_snd__h62823,
+		y_avValue_snd_snd__h66025,
+		y_avValue_snd_snd__h66027,
+		y_avValue_snd_snd__h66058,
+		y_avValue_snd_snd__h66060,
+		y_avValue_snd_snd__h66065;
   wire [7 : 0] _1_SL_f_rd_addr_first__52_BITS_20_TO_18_56___d657,
 	       _1_SL_f_wr_addr_first__11_BITS_20_TO_18_15___d916,
-	       addr_bytelane__h51957,
+	       addr_bytelane__h51967,
 	       axi4_to_st_rg_bytelane_lo_MINUS_axi4_to_st_rg__ETC__q1,
-	       bytelane_hi__h52834,
-	       bytelane_hi__h59952,
-	       bytelane_lo9951_MINUS_axi4_to_st_rg_bytelane_s_ETC__q2,
-	       bytelane_lo__h42336,
-	       bytelane_lo__h44283,
-	       bytelane_lo__h52833,
-	       bytelane_lo__h59951,
-	       bytelane_slice_hi__h44264,
-	       bytelane_slice_hi__h59916,
-	       bytes_processed__h42723,
-	       bytes_processed__h44620,
-	       bytes_processed__h45168,
-	       bytes_processed__h55465,
-	       bytes_processed__h62536,
-	       bytes_processed__h65989,
-	       num_bytes__h42466,
-	       num_bytes__h44372,
-	       num_bytes__h44918,
-	       num_bytes__h55195,
-	       num_bytes__h62275,
-	       num_bytes__h65726,
-	       num_lsb_zero_bytes__h59937,
-	       num_msb_zero_bytes__h52820,
-	       num_msb_zero_bytes__h59938,
-	       szwindow_bytelane_hi__h41753,
-	       szwindow_bytelane_hi__h51961,
-	       szwindow_bytelane_lo__h41752,
-	       szwindow_bytelane_lo__h51960,
-	       v__h42341,
-	       v__h42441,
-	       v__h44288,
-	       v__h44350,
-	       v__h44911,
-	       v__h52839,
-	       v__h55171,
-	       v__h59957,
-	       v__h62254,
-	       v__h65719,
-	       x__h42505,
-	       x__h44411,
-	       x__h44663,
-	       x__h44957,
-	       x__h45211,
-	       x__h55235,
-	       x__h56110,
-	       x__h62315,
-	       x__h62781,
-	       x__h65766,
-	       x__h66023,
-	       y__h43293,
-	       y__h54379,
-	       y__h56341,
-	       y__h61489,
-	       y__h61497,
-	       y_avValue_snd__h42700,
-	       y_avValue_snd__h42716,
-	       y_avValue_snd__h44597,
-	       y_avValue_snd__h44613,
-	       y_avValue_snd__h45145,
-	       y_avValue_snd__h45161,
-	       y_avValue_snd_fst__h55887,
-	       y_avValue_snd_fst__h56136,
-	       y_avValue_snd_fst__h62563,
-	       y_avValue_snd_fst__h62807,
-	       y_avValue_snd_fst__h66016,
-	       y_avValue_snd_fst__h66049;
-  wire [3 : 0] x__h44078,
-	       x__h53064,
-	       x__h54388,
-	       x__h57126,
-	       x__h60174,
-	       x__h61498;
+	       bytelane_hi__h52844,
+	       bytelane_hi__h59962,
+	       bytelane_lo9961_MINUS_axi4_to_st_rg_bytelane_s_ETC__q2,
+	       bytelane_lo__h42343,
+	       bytelane_lo__h44290,
+	       bytelane_lo__h52843,
+	       bytelane_lo__h59961,
+	       bytelane_slice_hi__h44271,
+	       bytelane_slice_hi__h59926,
+	       bytes_processed__h42730,
+	       bytes_processed__h44627,
+	       bytes_processed__h45175,
+	       bytes_processed__h55475,
+	       bytes_processed__h62546,
+	       bytes_processed__h65999,
+	       num_bytes__h42473,
+	       num_bytes__h44379,
+	       num_bytes__h44925,
+	       num_bytes__h55205,
+	       num_bytes__h62285,
+	       num_bytes__h65736,
+	       num_lsb_zero_bytes__h59947,
+	       num_msb_zero_bytes__h52830,
+	       num_msb_zero_bytes__h59948,
+	       szwindow_bytelane_hi__h41760,
+	       szwindow_bytelane_hi__h51971,
+	       szwindow_bytelane_lo__h41759,
+	       szwindow_bytelane_lo__h51970,
+	       v__h42348,
+	       v__h42448,
+	       v__h44295,
+	       v__h44357,
+	       v__h44918,
+	       v__h52849,
+	       v__h55181,
+	       v__h59967,
+	       v__h62264,
+	       v__h65729,
+	       x__h42512,
+	       x__h44418,
+	       x__h44670,
+	       x__h44964,
+	       x__h45218,
+	       x__h55245,
+	       x__h56120,
+	       x__h62325,
+	       x__h62791,
+	       x__h65776,
+	       x__h66033,
+	       y__h43300,
+	       y__h54389,
+	       y__h56351,
+	       y__h61499,
+	       y__h61507,
+	       y_avValue_snd__h42707,
+	       y_avValue_snd__h42723,
+	       y_avValue_snd__h44604,
+	       y_avValue_snd__h44620,
+	       y_avValue_snd__h45152,
+	       y_avValue_snd__h45168,
+	       y_avValue_snd_fst__h55897,
+	       y_avValue_snd_fst__h56146,
+	       y_avValue_snd_fst__h62573,
+	       y_avValue_snd_fst__h62817,
+	       y_avValue_snd_fst__h66026,
+	       y_avValue_snd_fst__h66059;
+  wire [3 : 0] x__h44085,
+	       x__h53074,
+	       x__h54398,
+	       x__h57136,
+	       x__h60184,
+	       x__h61508;
   wire [2 : 0] IF_axi4_to_ld_rg_bytelane_slice_lo_44_PLUS_7_4_ETC___d786,
 	       IF_axi4_to_st_rg_bytelane_slice_lo_066_PLUS_7__ETC___d1159;
-  wire [1 : 0] rd_data_S_rresp__h49779,
-	       x__h42748,
-	       x__h44636,
-	       x__h45184,
-	       x__h55490,
-	       x__h62552,
-	       x__h66005,
-	       y_avValue_fst__h42699,
-	       y_avValue_fst__h42715,
-	       y_avValue_fst__h44596,
-	       y_avValue_fst__h44612,
-	       y_avValue_fst__h45144,
-	       y_avValue_fst__h45160,
-	       y_avValue_fst__h55438,
-	       y_avValue_fst__h55456,
-	       y_avValue_fst__h62509,
-	       y_avValue_fst__h62527,
-	       y_avValue_fst__h65962,
-	       y_avValue_fst__h65980;
+  wire [1 : 0] rd_data_S_rresp__h49786,
+	       x__h42755,
+	       x__h44643,
+	       x__h45191,
+	       x__h55500,
+	       x__h62562,
+	       x__h66015,
+	       y_avValue_fst__h42706,
+	       y_avValue_fst__h42722,
+	       y_avValue_fst__h44603,
+	       y_avValue_fst__h44619,
+	       y_avValue_fst__h45151,
+	       y_avValue_fst__h45167,
+	       y_avValue_fst__h55448,
+	       y_avValue_fst__h55466,
+	       y_avValue_fst__h62519,
+	       y_avValue_fst__h62537,
+	       y_avValue_fst__h65972,
+	       y_avValue_fst__h65990;
   wire IF_f_reqs_first__5_BIT_685_14_THEN_axi4_s_xact_ETC___d117,
        NOT_f_L2_to_L1_Rsps_first__39_BITS_578_TO_515__ETC___d442,
        NOT_f_rd_addr_first__52_BITS_28_TO_21_53_EQ_0__ETC___d669,
@@ -1533,8 +1530,10 @@ module mkDMA_Cache(CLK,
   assign WILL_FIRE_RL_rl_hit = CAN_FIRE_RL_rl_hit ;
 
   // rule RL_rl_upgrade_req
-  assign CAN_FIRE_RL_rl_upgrade_req = MUX_rg_state$write_1__SEL_3 ;
-  assign WILL_FIRE_RL_rl_upgrade_req = MUX_rg_state$write_1__SEL_3 ;
+  assign CAN_FIRE_RL_rl_upgrade_req =
+	     f_reqs$EMPTY_N && f_L1_to_L2_Reqs$FULL_N &&
+	     rg_state_EQ_1_1_AND_NOT_f_L2_to_L1_Reqs_notEmp_ETC___d428 ;
+  assign WILL_FIRE_RL_rl_upgrade_req = CAN_FIRE_RL_rl_upgrade_req ;
 
   // rule RL_rl_upgrade_rsp
   assign CAN_FIRE_RL_rl_upgrade_rsp = MUX_rg_state$write_1__SEL_2 ;
@@ -1548,8 +1547,10 @@ module mkDMA_Cache(CLK,
   assign WILL_FIRE_RL_rl_mmio_AXI_rd_req = CAN_FIRE_RL_rl_mmio_AXI_rd_req ;
 
   // rule RL_rl_mmio_LD_req
-  assign CAN_FIRE_RL_rl_mmio_LD_req = MUX_f_single_reqs$enq_1__SEL_1 ;
-  assign WILL_FIRE_RL_rl_mmio_LD_req = MUX_f_single_reqs$enq_1__SEL_1 ;
+  assign CAN_FIRE_RL_rl_mmio_LD_req =
+	     axi4_to_ld_f_reqs$EMPTY_N && f_single_reqs$FULL_N &&
+	     f_mmio_rsp_is_load$FULL_N ;
+  assign WILL_FIRE_RL_rl_mmio_LD_req = CAN_FIRE_RL_rl_mmio_LD_req ;
 
   // rule RL_rl_mmio_LD_rsp
   assign CAN_FIRE_RL_rl_mmio_LD_rsp =
@@ -1579,7 +1580,8 @@ module mkDMA_Cache(CLK,
   assign CAN_FIRE_RL_rl_mmio_ST_req =
 	     f_single_reqs$FULL_N && f_mmio_rsp_is_load$FULL_N &&
 	     axi4_to_st_f_reqs$EMPTY_N ;
-  assign WILL_FIRE_RL_rl_mmio_ST_req = MUX_f_single_reqs$enq_1__SEL_2 ;
+  assign WILL_FIRE_RL_rl_mmio_ST_req =
+	     CAN_FIRE_RL_rl_mmio_ST_req && !WILL_FIRE_RL_rl_mmio_LD_req ;
 
   // rule RL_rl_mmio_st_rsp
   assign CAN_FIRE_RL_rl_mmio_st_rsp =
@@ -1684,7 +1686,7 @@ module mkDMA_Cache(CLK,
 	     axi4_to_st_rg_v_strb_062_BITS_7_TO_0_063_EQ_0__ETC___d1103 &&
 	     (axi4_to_st_rg_v_strb[7:0] != 8'd0 &&
 	      !axi4_to_st_rg_bytelane_slice_lo_066_PLUS_7_067_ETC___d1100 ||
-	      v__h59957 != 8'd0 ||
+	      v__h59967 != 8'd0 ||
 	      f_wr_addr$EMPTY_N) &&
 	     axi4_to_st_rg_state == 3'd2 ;
   assign WILL_FIRE_RL_axi4_to_st_rl_next_slice =
@@ -1761,13 +1763,13 @@ module mkDMA_Cache(CLK,
 	     WILL_FIRE_RL_axi4_to_ld_rl_start_xaction &&
 	     f_rd_addr$D_OUT[28:21] == 8'd0 &&
 	     _1_SL_f_rd_addr_first__52_BITS_20_TO_18_56_57_U_ETC___d658 &&
-	     (v__h42341 != 8'd0 ||
+	     (v__h42348 != 8'd0 ||
 	      !_0_CONCAT_f_rd_addr_first__52_BITS_92_TO_29_80__ETC___d736) ;
   assign MUX_axi4_to_ld_rg_bytelane_slice_lo$write_1__SEL_2 =
-	     WILL_FIRE_RL_axi4_to_ld_rl_next_slice && v__h44288 == 8'd0 &&
+	     WILL_FIRE_RL_axi4_to_ld_rl_next_slice && v__h44295 == 8'd0 &&
 	     axi4_to_ld_rg_bytelane_slice_lo_44_PLUS_7_45_U_ETC___d783 ;
   assign MUX_axi4_to_ld_rg_bytelane_slice_lo$write_1__SEL_3 =
-	     WILL_FIRE_RL_axi4_to_ld_rl_partial && v__h44911 == 8'd0 &&
+	     WILL_FIRE_RL_axi4_to_ld_rl_partial && v__h44918 == 8'd0 &&
 	     axi4_to_ld_rg_bytelane_slice_lo_44_PLUS_7_45_U_ETC___d783 ;
   assign MUX_axi4_to_ld_rg_remaining_slices$write_1__SEL_1 =
 	     WILL_FIRE_RL_axi4_to_ld_rl_handle_ld_rsp &&
@@ -1789,10 +1791,10 @@ module mkDMA_Cache(CLK,
 	     WILL_FIRE_RL_axi4_to_st_rl_start_xaction &&
 	     f_wr_data_first__08_BIT_0_09_AND_f_wr_addr_fir_ETC___d1053 ;
   assign MUX_axi4_to_st_rg_bytelane_slice_lo$write_1__SEL_2 =
-	     WILL_FIRE_RL_axi4_to_st_rl_next_slice && v__h59957 == 8'd0 &&
+	     WILL_FIRE_RL_axi4_to_st_rl_next_slice && v__h59967 == 8'd0 &&
 	     axi4_to_st_rg_bytelane_slice_lo_066_PLUS_7_067_ETC___d1152 ;
   assign MUX_axi4_to_st_rg_bytelane_slice_lo$write_1__SEL_3 =
-	     WILL_FIRE_RL_axi4_to_st_rl_partial && v__h65719 == 8'd0 &&
+	     WILL_FIRE_RL_axi4_to_st_rl_partial && v__h65729 == 8'd0 &&
 	     axi4_to_st_rg_bytelane_slice_lo_066_PLUS_7_067_ETC___d1152 ;
   assign MUX_axi4_to_st_rg_discard_count$write_1__SEL_1 =
 	     WILL_FIRE_RL_axi4_to_st_rl_start_xaction &&
@@ -1803,11 +1805,6 @@ module mkDMA_Cache(CLK,
 	     rf_tag_sets$D_OUT_2[65:64] != 2'd0 &&
 	     !rf_tag_sets_sub_f_L2_to_L1_Reqs_first__1_BITS__ETC___d67 &&
 	     rf_tag_sets_sub_f_L2_to_L1_Reqs_first__1_BITS__ETC___d72 ;
-  assign MUX_f_single_reqs$enq_1__SEL_1 =
-	     axi4_to_ld_f_reqs$EMPTY_N && f_single_reqs$FULL_N &&
-	     f_mmio_rsp_is_load$FULL_N ;
-  assign MUX_f_single_reqs$enq_1__SEL_2 =
-	     CAN_FIRE_RL_rl_mmio_ST_req && !WILL_FIRE_RL_rl_mmio_LD_req ;
   assign MUX_rg_state$write_1__SEL_1 =
 	     WILL_FIRE_RL_rl_init && rg_init_index == 6'd63 ;
   assign MUX_rg_state$write_1__SEL_2 =
@@ -1815,13 +1812,10 @@ module mkDMA_Cache(CLK,
 	     IF_f_reqs_first__5_BIT_685_14_THEN_axi4_s_xact_ETC___d117 &&
 	     rg_state == 2'd3 &&
 	     !f_L2_to_L1_Reqs$EMPTY_N ;
-  assign MUX_rg_state$write_1__SEL_3 =
-	     f_reqs$EMPTY_N && f_L1_to_L2_Reqs$FULL_N &&
-	     rg_state_EQ_1_1_AND_NOT_f_L2_to_L1_Reqs_notEmp_ETC___d428 ;
   assign MUX_axi4_s_xactor_f_rd_data$enq_1__VAL_1 =
 	     { f_reqs$D_OUT[684:669], rf_data_sets$D_OUT_1, 3'd1 } ;
   assign MUX_axi4_s_xactor_f_rd_data$enq_1__VAL_2 =
-	     { f_reqs$D_OUT[684:669], v__h22154, 3'd1 } ;
+	     { f_reqs$D_OUT[684:669], v__h22161, 3'd1 } ;
   assign MUX_axi4_s_xactor_f_wr_resp$enq_1__VAL_1 =
 	     { f_reqs$D_OUT[684:669], 2'd0 } ;
   assign MUX_axi4_to_ld_f_axi_rsp_info$enq_1__VAL_1 =
@@ -1835,20 +1829,20 @@ module mkDMA_Cache(CLK,
   assign MUX_axi4_to_ld_f_ld_rsp_info$enq_1__VAL_3 =
 	     axi4_to_ld_rg_bytelane_slice_lo_44_PLUS_7_45_U_ETC___d748 ?
 	       10'd682 :
-	       { 2'd0, x__h44663 } ;
-  assign MUX_axi4_to_ld_f_ld_rsp_info$enq_1__VAL_4 = { 2'd1, x__h45211 } ;
+	       { 2'd0, x__h44670 } ;
+  assign MUX_axi4_to_ld_f_ld_rsp_info$enq_1__VAL_4 = { 2'd1, x__h45218 } ;
   assign MUX_axi4_to_ld_f_reqs$enq_1__VAL_1 =
-	     { x__h42748, f_rd_addr$D_OUT[92:29] } ;
-  assign MUX_axi4_to_ld_f_reqs$enq_1__VAL_2 = { x__h44636, x__h44638 } ;
-  assign MUX_axi4_to_ld_f_reqs$enq_1__VAL_3 = { x__h45184, x__h45186 } ;
+	     { x__h42755, f_rd_addr$D_OUT[92:29] } ;
+  assign MUX_axi4_to_ld_f_reqs$enq_1__VAL_2 = { x__h44643, x__h44645 } ;
+  assign MUX_axi4_to_ld_f_reqs$enq_1__VAL_3 = { x__h45191, x__h45193 } ;
   assign MUX_axi4_to_ld_rg_bytelane_lo$write_1__VAL_1 =
-	     bytelane_lo__h42336 + bytes_processed__h42723 ;
+	     bytelane_lo__h42343 + bytes_processed__h42730 ;
   assign MUX_axi4_to_ld_rg_bytelane_lo$write_1__VAL_2 =
-	     bytelane_lo__h44283 + bytes_processed__h44620 ;
+	     bytelane_lo__h44290 + bytes_processed__h44627 ;
   assign MUX_axi4_to_ld_rg_bytelane_lo$write_1__VAL_3 =
-	     axi4_to_ld_rg_bytelane_lo + bytes_processed__h45168 ;
+	     axi4_to_ld_rg_bytelane_lo + bytes_processed__h45175 ;
   assign MUX_axi4_to_ld_rg_bytelane_slice_lo$write_1__VAL_1 =
-	     (v__h42341 == 8'd0) ? 8'd8 : 8'd0 ;
+	     (v__h42348 == 8'd0) ? 8'd8 : 8'd0 ;
   assign MUX_axi4_to_ld_rg_bytelane_slice_lo$write_1__VAL_2 =
 	     axi4_to_ld_rg_bytelane_slice_lo + 8'd8 ;
   assign MUX_axi4_to_ld_rg_remaining_slices$write_1__VAL_1 =
@@ -1857,44 +1851,44 @@ module mkDMA_Cache(CLK,
 	     (f_rd_addr$D_OUT[28:21] != 8'd0 ||
 	      !_1_SL_f_rd_addr_first__52_BITS_20_TO_18_56_57_U_ETC___d658) ?
 	       3'd4 :
-	       ((v__h42341 == 8'd0) ?
+	       ((v__h42348 == 8'd0) ?
 		  (_0_CONCAT_f_rd_addr_first__52_BITS_92_TO_29_80__ETC___d736 ?
 		     3'd3 :
 		     3'd2) :
 		  3'd1) ;
   assign MUX_axi4_to_ld_rg_state$write_1__VAL_2 =
-	     (v__h44288 == 8'd0) ?
+	     (v__h44295 == 8'd0) ?
 	       IF_axi4_to_ld_rg_bytelane_slice_lo_44_PLUS_7_4_ETC___d786 :
 	       3'd1 ;
   assign MUX_axi4_to_ld_rg_state$write_1__VAL_3 =
-	     (v__h44911 == 8'd0) ?
+	     (v__h44918 == 8'd0) ?
 	       IF_axi4_to_ld_rg_bytelane_slice_lo_44_PLUS_7_4_ETC___d786 :
 	       3'd1 ;
   assign MUX_axi4_to_ld_rg_v_slice$write_1__VAL_1 =
 	     { 64'd0, axi4_to_ld_rg_v_slice[511:64] } ;
   assign MUX_axi4_to_ld_rg_v_slice$write_1__VAL_2 =
 	     (axi4_to_ld_f_ld_rsp_info$D_OUT[9:8] == 2'd0) ?
-	       { slice__h45650, axi4_to_ld_rg_v_slice[511:64] } :
-	       { axi4_to_ld_rg_v_slice[511:448] | slice__h45650,
+	       { slice__h45657, axi4_to_ld_rg_v_slice[511:64] } :
+	       { axi4_to_ld_rg_v_slice[511:448] | slice__h45657,
 		 axi4_to_ld_rg_v_slice[447:0] } ;
   assign MUX_axi4_to_st_f_axi_rsp_info$enq_1__VAL_1 =
 	     { 1'd1, f_wr_addr$D_OUT[108:93] } ;
   assign MUX_axi4_to_st_f_axi_rsp_info$enq_1__VAL_2 =
 	     { 1'd0, f_wr_addr$D_OUT[108:93] } ;
   assign MUX_axi4_to_st_f_reqs$enq_1__VAL_1 =
-	     { x__h62552, x__h62557, x__h62560 } ;
+	     { x__h62562, x__h62567, x__h62570 } ;
   assign MUX_axi4_to_st_f_reqs$enq_1__VAL_2 =
-	     { x__h55490, x__h55502, x__h55884 } ;
+	     { x__h55500, x__h55512, x__h55894 } ;
   assign MUX_axi4_to_st_f_reqs$enq_1__VAL_3 =
-	     { x__h66005, x__h66010, x__h66013 } ;
+	     { x__h66015, x__h66020, x__h66023 } ;
   assign MUX_axi4_to_st_rg_bytelane_lo$write_1__VAL_1 =
-	     bytelane_lo__h59951 + bytes_processed__h62536 ;
+	     bytelane_lo__h59961 + bytes_processed__h62546 ;
   assign MUX_axi4_to_st_rg_bytelane_lo$write_1__VAL_2 =
-	     bytelane_lo__h52833 + bytes_processed__h55465 ;
+	     bytelane_lo__h52843 + bytes_processed__h55475 ;
   assign MUX_axi4_to_st_rg_bytelane_lo$write_1__VAL_3 =
-	     axi4_to_st_rg_bytelane_lo + bytes_processed__h65989 ;
+	     axi4_to_st_rg_bytelane_lo + bytes_processed__h65999 ;
   assign MUX_axi4_to_st_rg_bytelane_slice_lo$write_1__VAL_1 =
-	     (v__h52839 == 8'd0) ? 8'd8 : 8'd0 ;
+	     (v__h52849 == 8'd0) ? 8'd8 : 8'd0 ;
   assign MUX_axi4_to_st_rg_bytelane_slice_lo$write_1__VAL_2 =
 	     axi4_to_st_rg_bytelane_slice_lo + 8'd8 ;
   assign MUX_axi4_to_st_rg_discard_count$write_1__VAL_2 =
@@ -1903,17 +1897,17 @@ module mkDMA_Cache(CLK,
 	     (!f_wr_data$D_OUT[0] || f_wr_addr$D_OUT[28:21] != 8'd0 ||
 	      !_1_SL_f_wr_addr_first__11_BITS_20_TO_18_15_16_U_ETC___d917) ?
 	       3'd4 :
-	       ((v__h52839 == 8'd0) ?
+	       ((v__h52849 == 8'd0) ?
 		  (_0_CONCAT_f_wr_addr_first__11_BITS_92_TO_29_76__ETC___d1050 ?
 		     3'd3 :
 		     3'd2) :
 		  3'd1) ;
   assign MUX_axi4_to_st_rg_state$write_1__VAL_3 =
-	     (v__h59957 == 8'd0) ?
+	     (v__h59967 == 8'd0) ?
 	       IF_axi4_to_st_rg_bytelane_slice_lo_066_PLUS_7__ETC___d1159 :
 	       3'd1 ;
   assign MUX_axi4_to_st_rg_state$write_1__VAL_4 =
-	     (v__h65719 == 8'd0) ?
+	     (v__h65729 == 8'd0) ?
 	       IF_axi4_to_st_rg_bytelane_slice_lo_066_PLUS_7__ETC___d1159 :
 	       3'd1 ;
   assign MUX_axi4_to_st_rg_v_slice$write_1__VAL_1 =
@@ -1925,7 +1919,7 @@ module mkDMA_Cache(CLK,
   assign MUX_axi4_to_st_rg_v_strb$write_1__VAL_2 =
 	     { 8'd0, axi4_to_st_rg_v_strb[63:8] } ;
   assign MUX_f_L1_to_L2_Rsps$enq_1__VAL_1 =
-	     { line_addr__h2667,
+	     { line_addr__h2674,
 	       f_L2_to_L1_Reqs$D_OUT[1:0],
 	       rf_tag_sets$D_OUT_2[65:64] == 2'd3,
 	       rf_data_sets$D_OUT_1 } ;
@@ -1953,31 +1947,31 @@ module mkDMA_Cache(CLK,
 	       axi4_to_st_f_reqs$D_OUT[129:128],
 	       axi4_to_st_f_reqs$D_OUT[63:0] } ;
   assign MUX_rf_data_sets$upd_2__VAL_1 =
-	     f_reqs$D_OUT[685] ? new_data___1__h4237 : rf_data_sets$D_OUT_1 ;
+	     f_reqs$D_OUT[685] ? new_data___1__h4244 : rf_data_sets$D_OUT_1 ;
   assign MUX_rf_data_sets$upd_2__VAL_2 =
-	     f_reqs$D_OUT[685] ? new_data___1__h23230 : v__h22154 ;
+	     f_reqs$D_OUT[685] ? new_data___1__h23237 : v__h22161 ;
   assign MUX_rf_tag_sets$upd_2__VAL_1 =
 	     { f_L2_to_L1_Reqs$D_OUT[1:0],
 	       f_L2_to_L1_Reqs$D_OUT[65:8],
 	       6'd0 } ;
   assign MUX_rf_tag_sets$upd_2__VAL_3 =
 	     { f_reqs$D_OUT[685] ? 2'd3 : rf_tag_sets$D_OUT_1[65:64],
-	       line_addr__h3095 } ;
+	       line_addr__h3102 } ;
   assign MUX_rf_tag_sets$upd_2__VAL_4 =
 	     { f_reqs$D_OUT[685] ? 2'd3 : f_L2_to_L1_Rsps$D_OUT[514:513],
-	       line_addr__h3095 } ;
+	       line_addr__h3102 } ;
 
   // register axi4_to_ld_rg_bytelane_hi
   always@(MUX_axi4_to_ld_f_reqs$enq_1__SEL_1 or
 	  MUX_axi4_to_ld_f_reqs$enq_1__SEL_2 or
-	  bytelane_slice_hi__h44264 or
+	  bytelane_slice_hi__h44271 or
 	  WILL_FIRE_RL_axi4_to_ld_rl_partial or axi4_to_ld_rg_bytelane_hi)
   begin
     case (1'b1) // synopsys parallel_case
       MUX_axi4_to_ld_f_reqs$enq_1__SEL_1:
 	  axi4_to_ld_rg_bytelane_hi$D_IN = 8'd7;
       MUX_axi4_to_ld_f_reqs$enq_1__SEL_2:
-	  axi4_to_ld_rg_bytelane_hi$D_IN = bytelane_slice_hi__h44264;
+	  axi4_to_ld_rg_bytelane_hi$D_IN = bytelane_slice_hi__h44271;
       WILL_FIRE_RL_axi4_to_ld_rl_partial:
 	  axi4_to_ld_rg_bytelane_hi$D_IN = axi4_to_ld_rg_bytelane_hi;
       default: axi4_to_ld_rg_bytelane_hi$D_IN =
@@ -2047,9 +2041,9 @@ module mkDMA_Cache(CLK,
   end
   assign axi4_to_ld_rg_bytelane_slice_lo$EN =
 	     MUX_axi4_to_ld_rg_bytelane_slice_lo$write_1__SEL_1 ||
-	     WILL_FIRE_RL_axi4_to_ld_rl_next_slice && v__h44288 == 8'd0 &&
+	     WILL_FIRE_RL_axi4_to_ld_rl_next_slice && v__h44295 == 8'd0 &&
 	     axi4_to_ld_rg_bytelane_slice_lo_44_PLUS_7_45_U_ETC___d783 ||
-	     WILL_FIRE_RL_axi4_to_ld_rl_partial && v__h44911 == 8'd0 &&
+	     WILL_FIRE_RL_axi4_to_ld_rl_partial && v__h44918 == 8'd0 &&
 	     axi4_to_ld_rg_bytelane_slice_lo_44_PLUS_7_45_U_ETC___d783 ;
 
   // register axi4_to_ld_rg_cumulative_err
@@ -2128,16 +2122,16 @@ module mkDMA_Cache(CLK,
 
   // register axi4_to_st_rg_bytelane_hi
   always@(MUX_axi4_to_st_f_reqs$enq_1__SEL_1 or
-	  bytelane_hi__h59952 or
+	  bytelane_hi__h59962 or
 	  MUX_axi4_to_st_f_reqs$enq_1__SEL_2 or
-	  bytelane_hi__h52834 or
+	  bytelane_hi__h52844 or
 	  WILL_FIRE_RL_axi4_to_st_rl_partial or axi4_to_st_rg_bytelane_hi)
   begin
     case (1'b1) // synopsys parallel_case
       MUX_axi4_to_st_f_reqs$enq_1__SEL_1:
-	  axi4_to_st_rg_bytelane_hi$D_IN = bytelane_hi__h59952;
+	  axi4_to_st_rg_bytelane_hi$D_IN = bytelane_hi__h59962;
       MUX_axi4_to_st_f_reqs$enq_1__SEL_2:
-	  axi4_to_st_rg_bytelane_hi$D_IN = bytelane_hi__h52834;
+	  axi4_to_st_rg_bytelane_hi$D_IN = bytelane_hi__h52844;
       WILL_FIRE_RL_axi4_to_st_rl_partial:
 	  axi4_to_st_rg_bytelane_hi$D_IN = axi4_to_st_rg_bytelane_hi;
       default: axi4_to_st_rg_bytelane_hi$D_IN =
@@ -2206,9 +2200,9 @@ module mkDMA_Cache(CLK,
   assign axi4_to_st_rg_bytelane_slice_lo$EN =
 	     WILL_FIRE_RL_axi4_to_st_rl_start_xaction &&
 	     f_wr_data_first__08_BIT_0_09_AND_f_wr_addr_fir_ETC___d1053 ||
-	     WILL_FIRE_RL_axi4_to_st_rl_next_slice && v__h59957 == 8'd0 &&
+	     WILL_FIRE_RL_axi4_to_st_rl_next_slice && v__h59967 == 8'd0 &&
 	     axi4_to_st_rg_bytelane_slice_lo_066_PLUS_7_067_ETC___d1152 ||
-	     WILL_FIRE_RL_axi4_to_st_rl_partial && v__h65719 == 8'd0 &&
+	     WILL_FIRE_RL_axi4_to_st_rl_partial && v__h65729 == 8'd0 &&
 	     axi4_to_st_rg_bytelane_slice_lo_066_PLUS_7_067_ETC___d1152 ;
 
   // register axi4_to_st_rg_cumulative_err
@@ -2310,9 +2304,9 @@ module mkDMA_Cache(CLK,
   assign axi4_to_st_rg_v_slice$EN =
 	     WILL_FIRE_RL_axi4_to_st_rl_start_xaction &&
 	     f_wr_data_first__08_BIT_0_09_AND_f_wr_addr_fir_ETC___d1053 ||
-	     WILL_FIRE_RL_axi4_to_st_rl_next_slice && v__h59957 == 8'd0 &&
+	     WILL_FIRE_RL_axi4_to_st_rl_next_slice && v__h59967 == 8'd0 &&
 	     axi4_to_st_rg_bytelane_slice_lo_066_PLUS_7_067_ETC___d1152 ||
-	     WILL_FIRE_RL_axi4_to_st_rl_partial && v__h65719 == 8'd0 &&
+	     WILL_FIRE_RL_axi4_to_st_rl_partial && v__h65729 == 8'd0 &&
 	     axi4_to_st_rg_bytelane_slice_lo_066_PLUS_7_067_ETC___d1152 ;
 
   // register axi4_to_st_rg_v_strb
@@ -2336,9 +2330,9 @@ module mkDMA_Cache(CLK,
   assign axi4_to_st_rg_v_strb$EN =
 	     WILL_FIRE_RL_axi4_to_st_rl_start_xaction &&
 	     f_wr_data_first__08_BIT_0_09_AND_f_wr_addr_fir_ETC___d1053 ||
-	     WILL_FIRE_RL_axi4_to_st_rl_next_slice && v__h59957 == 8'd0 &&
+	     WILL_FIRE_RL_axi4_to_st_rl_next_slice && v__h59967 == 8'd0 &&
 	     axi4_to_st_rg_bytelane_slice_lo_066_PLUS_7_067_ETC___d1152 ||
-	     WILL_FIRE_RL_axi4_to_st_rl_partial && v__h65719 == 8'd0 &&
+	     WILL_FIRE_RL_axi4_to_st_rl_partial && v__h65729 == 8'd0 &&
 	     axi4_to_st_rg_bytelane_slice_lo_066_PLUS_7_067_ETC___d1152 ;
 
   // register rg_init_index
@@ -2519,7 +2513,7 @@ module mkDMA_Cache(CLK,
 	     WILL_FIRE_RL_axi4_to_ld_rl_next_slice &&
 	     !axi4_to_ld_rg_bytelane_slice_lo_44_PLUS_7_45_U_ETC___d748 ||
 	     WILL_FIRE_RL_axi4_to_ld_rl_partial ;
-  assign axi4_to_ld_f_reqs$DEQ = MUX_f_single_reqs$enq_1__SEL_1 ;
+  assign axi4_to_ld_f_reqs$DEQ = CAN_FIRE_RL_rl_mmio_LD_req ;
   assign axi4_to_ld_f_reqs$CLR = 1'b0 ;
 
   // submodule axi4_to_ld_f_rsps
@@ -2568,7 +2562,7 @@ module mkDMA_Cache(CLK,
 	     WILL_FIRE_RL_axi4_to_st_rl_start_xaction &&
 	     f_wr_data_first__08_BIT_0_09_AND_f_wr_addr_fir_ETC___d988 ||
 	     WILL_FIRE_RL_axi4_to_st_rl_partial ;
-  assign axi4_to_st_f_reqs$DEQ = MUX_f_single_reqs$enq_1__SEL_2 ;
+  assign axi4_to_st_f_reqs$DEQ = WILL_FIRE_RL_rl_mmio_ST_req ;
   assign axi4_to_st_f_reqs$CLR = 1'b0 ;
 
   // submodule axi4_to_st_f_rsps
@@ -2599,11 +2593,11 @@ module mkDMA_Cache(CLK,
 
   // submodule f_L1_to_L2_Reqs
   assign f_L1_to_L2_Reqs$D_IN =
-	     { line_addr__h3095,
+	     { line_addr__h3102,
 	       rf_tag_sets$D_OUT_1[65:64],
 	       f_reqs$D_OUT[685] ? 2'd2 : 2'd1,
 	       f_reqs$D_OUT[685] } ;
-  assign f_L1_to_L2_Reqs$ENQ = MUX_rg_state$write_1__SEL_3 ;
+  assign f_L1_to_L2_Reqs$ENQ = CAN_FIRE_RL_rl_upgrade_req ;
   assign f_L1_to_L2_Reqs$DEQ = EN_l1_to_l2_client_request_deq ;
   assign f_L1_to_L2_Reqs$CLR = 1'b0 ;
 
@@ -2651,7 +2645,7 @@ module mkDMA_Cache(CLK,
   assign f_rd_data$D_IN =
 	     { axi4_to_ld_f_axi_rsp_info$D_OUT[15:0],
 	       axi4_to_ld_rg_v_slice,
-	       rd_data_S_rresp__h49779,
+	       rd_data_S_rresp__h49786,
 	       1'd1 } ;
   assign f_rd_data$ENQ = CAN_FIRE_RL_axi4_to_ld_rl_send_axi_response ;
   assign f_rd_data$DEQ = WILL_FIRE_RL_rl_mmio_AXI_rd_rsp ;
@@ -2680,10 +2674,7 @@ module mkDMA_Cache(CLK,
   // submodule f_single_rsps
   assign f_single_rsps$D_IN = mmio_client_response_put ;
   assign f_single_rsps$ENQ = EN_mmio_client_response_put ;
-  assign f_single_rsps$DEQ =
-	     f_mmio_rsp_is_load$EMPTY_N && f_single_rsps$EMPTY_N &&
-	     axi4_to_ld_f_rsps$FULL_N &&
-	     f_mmio_rsp_is_load$D_OUT ;
+  assign f_single_rsps$DEQ = CAN_FIRE_RL_rl_mmio_LD_rsp ;
   assign f_single_rsps$CLR = 1'b0 ;
 
   // submodule f_wr_addr
@@ -2798,7 +2789,7 @@ module mkDMA_Cache(CLK,
 	       axi4_s_xactor_f_wr_resp$FULL_N :
 	       axi4_s_xactor_f_rd_data$FULL_N ;
   assign NOT_f_L2_to_L1_Rsps_first__39_BITS_578_TO_515__ETC___d442 =
-	     f_L2_to_L1_Rsps$D_OUT[578:515] != line_addr__h3095 ;
+	     f_L2_to_L1_Rsps$D_OUT[578:515] != line_addr__h3102 ;
   assign NOT_f_rd_addr_first__52_BITS_28_TO_21_53_EQ_0__ETC___d669 =
 	     f_rd_addr$D_OUT[28:21] != 8'd0 ||
 	     !_1_SL_f_rd_addr_first__52_BITS_20_TO_18_56_57_U_ETC___d658 ||
@@ -2810,13 +2801,13 @@ module mkDMA_Cache(CLK,
 	      f_reqs$D_OUT[685] && rf_tag_sets$D_OUT_1[65:64] >= 2'd2) &&
 	     rf_tag_sets_sub_f_reqs_first__5_BITS_616_TO_61_ETC___d104 ;
   assign _0_CONCAT_IF_f_wr_data_first__08_BIT_1_23_THEN__ETC___d942 =
-	     y__h54379 <= addr_bytelane__h51957 ;
+	     y__h54389 <= addr_bytelane__h51967 ;
   assign _0_CONCAT_f_rd_addr_first__52_BITS_34_TO_29_62__ETC___d664 =
-	     bytelane_lo__h42336 <= 8'd7 ;
+	     bytelane_lo__h42343 <= 8'd7 ;
   assign _0_CONCAT_f_rd_addr_first__52_BITS_92_TO_29_80__ETC___d736 =
-	     szwindow_bytelane_hi__h41753 <= 8'd7 ;
+	     szwindow_bytelane_hi__h41760 <= 8'd7 ;
   assign _0_CONCAT_f_wr_addr_first__11_BITS_92_TO_29_76__ETC___d1050 =
-	     szwindow_bytelane_hi__h51961 <= 8'd7 ;
+	     szwindow_bytelane_hi__h51971 <= 8'd7 ;
   assign _1_SL_f_rd_addr_first__52_BITS_20_TO_18_56_57_U_ETC___d658 =
 	     _1_SL_f_rd_addr_first__52_BITS_20_TO_18_56___d657 <= 8'd64 ;
   assign _1_SL_f_rd_addr_first__52_BITS_20_TO_18_56___d657 =
@@ -2826,14 +2817,14 @@ module mkDMA_Cache(CLK,
   assign _1_SL_f_wr_addr_first__11_BITS_20_TO_18_15___d916 =
 	     8'd1 << f_wr_addr$D_OUT[20:18] ;
   assign _7_MINUS_0_CONCAT_IF_f_wr_data_first__08_BIT_8__ETC___d956 =
-	     bytelane_hi__h52834 < bytelane_lo__h52833 ;
+	     bytelane_hi__h52844 < bytelane_lo__h52843 ;
   assign _7_MINUS_0_CONCAT_IF_f_wr_data_first__08_BIT_8__ETC___d998 =
-	     num_bytes__h55195 < 8'd8 ;
+	     num_bytes__h55205 < 8'd8 ;
   assign _7_MINUS_0_CONCAT_f_rd_addr_first__52_BITS_34_T_ETC___d701 =
-	     num_bytes__h42466 < 8'd8 ;
-  assign addr_axi_bus_lo__h41748 = { f_rd_addr$D_OUT[92:35], 6'd0 } ;
-  assign addr_axi_bus_lo__h51956 = { f_wr_addr$D_OUT[92:35], 6'd0 } ;
-  assign addr_bytelane__h51957 = { 2'd0, f_wr_addr$D_OUT[34:29] } ;
+	     num_bytes__h42473 < 8'd8 ;
+  assign addr_axi_bus_lo__h41755 = { f_rd_addr$D_OUT[92:35], 6'd0 } ;
+  assign addr_axi_bus_lo__h51966 = { f_wr_addr$D_OUT[92:35], 6'd0 } ;
+  assign addr_bytelane__h51967 = { 2'd0, f_wr_addr$D_OUT[34:29] } ;
   assign axi4_s_xactor_f_rd_addr_first__0_BITS_92_TO_29_ETC___d12 =
 	     axi4_s_xactor_f_rd_addr$D_OUT[92:29] < 64'h0000000080000000 ;
   assign axi4_s_xactor_f_rd_addr_first__0_BITS_92_TO_29_ETC___d14 =
@@ -2843,76 +2834,76 @@ module mkDMA_Cache(CLK,
   assign axi4_s_xactor_f_wr_addr_first__5_BITS_92_TO_29_ETC___d39 =
 	     axi4_s_xactor_f_wr_addr$D_OUT[92:29] < 64'h0000000100000000 ;
   assign axi4_to_ld_rg_bytelane_hi_92_MINUS_axi4_to_ld__ETC___d803 =
-	     num_bytes__h44918 < 8'd8 ;
+	     num_bytes__h44925 < 8'd8 ;
   assign axi4_to_ld_rg_bytelane_slice_lo_44_PLUS_7_45_M_ETC___d767 =
-	     num_bytes__h44372 < 8'd8 ;
+	     num_bytes__h44379 < 8'd8 ;
   assign axi4_to_ld_rg_bytelane_slice_lo_44_PLUS_7_45_U_ETC___d748 =
-	     bytelane_slice_hi__h44264 < bytelane_lo__h44283 ;
+	     bytelane_slice_hi__h44271 < bytelane_lo__h44290 ;
   assign axi4_to_ld_rg_bytelane_slice_lo_44_PLUS_7_45_U_ETC___d783 =
-	     bytelane_slice_hi__h44264 < szwindow_bytelane_hi__h41753 ;
+	     bytelane_slice_hi__h44271 < szwindow_bytelane_hi__h41760 ;
   assign axi4_to_st_rg_bytelane_hi_163_MINUS_axi4_to_st_ETC___d1174 =
-	     num_bytes__h65726 < 8'd8 ;
+	     num_bytes__h65736 < 8'd8 ;
   assign axi4_to_st_rg_bytelane_lo_MINUS_axi4_to_st_rg__ETC__q1 =
 	     axi4_to_st_rg_bytelane_lo - axi4_to_st_rg_bytelane_slice_lo ;
   assign axi4_to_st_rg_bytelane_slice_lo_066_PLUS_7_067_ETC___d1100 =
-	     bytelane_hi__h59952 < bytelane_lo__h59951 ;
+	     bytelane_hi__h59962 < bytelane_lo__h59961 ;
   assign axi4_to_st_rg_bytelane_slice_lo_066_PLUS_7_067_ETC___d1116 =
-	     num_bytes__h62275 < 8'd8 ;
+	     num_bytes__h62285 < 8'd8 ;
   assign axi4_to_st_rg_bytelane_slice_lo_066_PLUS_7_067_ETC___d1152 =
-	     bytelane_slice_hi__h59916 < szwindow_bytelane_hi__h51961 ;
+	     bytelane_slice_hi__h59926 < szwindow_bytelane_hi__h51971 ;
   assign axi4_to_st_rg_v_strb_062_BITS_7_TO_0_063_EQ_0__ETC___d1103 =
 	     axi4_to_st_rg_v_strb[7:0] == 8'd0 ||
 	     axi4_to_st_rg_bytelane_slice_lo_066_PLUS_7_067_ETC___d1100 ||
 	     f_wr_addr$EMPTY_N && axi4_to_st_f_reqs$FULL_N &&
 	     axi4_to_st_f_st_rsp_info$FULL_N ;
-  assign bytelane_hi__h52834 = 8'd7 - num_msb_zero_bytes__h52820 ;
-  assign bytelane_hi__h59952 =
-	     bytelane_slice_hi__h59916 - num_msb_zero_bytes__h59938 ;
-  assign bytelane_lo9951_MINUS_axi4_to_st_rg_bytelane_s_ETC__q2 =
-	     bytelane_lo__h59951 - axi4_to_st_rg_bytelane_slice_lo ;
-  assign bytelane_lo__h42336 = { 2'd0, f_rd_addr$D_OUT[34:29] } ;
-  assign bytelane_lo__h44283 =
-	     (axi4_to_ld_rg_bytelane_slice_lo <= bytelane_lo__h42336) ?
-	       bytelane_lo__h42336 :
+  assign bytelane_hi__h52844 = 8'd7 - num_msb_zero_bytes__h52830 ;
+  assign bytelane_hi__h59962 =
+	     bytelane_slice_hi__h59926 - num_msb_zero_bytes__h59948 ;
+  assign bytelane_lo9961_MINUS_axi4_to_st_rg_bytelane_s_ETC__q2 =
+	     bytelane_lo__h59961 - axi4_to_st_rg_bytelane_slice_lo ;
+  assign bytelane_lo__h42343 = { 2'd0, f_rd_addr$D_OUT[34:29] } ;
+  assign bytelane_lo__h44290 =
+	     (axi4_to_ld_rg_bytelane_slice_lo <= bytelane_lo__h42343) ?
+	       bytelane_lo__h42343 :
 	       axi4_to_ld_rg_bytelane_slice_lo ;
-  assign bytelane_lo__h52833 =
+  assign bytelane_lo__h52843 =
 	     _0_CONCAT_IF_f_wr_data_first__08_BIT_1_23_THEN__ETC___d942 ?
-	       addr_bytelane__h51957 :
-	       y__h54379 ;
-  assign bytelane_lo__h59951 =
-	     (axi4_to_st_rg_bytelane_slice_lo <= y__h61497) ?
-	       y__h61497 :
+	       addr_bytelane__h51967 :
+	       y__h54389 ;
+  assign bytelane_lo__h59961 =
+	     (axi4_to_st_rg_bytelane_slice_lo <= y__h61507) ?
+	       y__h61507 :
 	       axi4_to_st_rg_bytelane_slice_lo ;
-  assign bytelane_slice_hi__h44264 = axi4_to_ld_rg_bytelane_slice_lo + 8'd7 ;
-  assign bytelane_slice_hi__h59916 = axi4_to_st_rg_bytelane_slice_lo + 8'd7 ;
-  assign bytes_processed__h42723 =
-	     (x__h42505 == 8'd0 || f_rd_addr$D_OUT[29]) ?
+  assign bytelane_slice_hi__h44271 = axi4_to_ld_rg_bytelane_slice_lo + 8'd7 ;
+  assign bytelane_slice_hi__h59926 = axi4_to_st_rg_bytelane_slice_lo + 8'd7 ;
+  assign bytes_processed__h42730 =
+	     (x__h42512 == 8'd0 || f_rd_addr$D_OUT[29]) ?
 	       8'd1 :
-	       y_avValue_snd__h42716 ;
-  assign bytes_processed__h44620 =
-	     (x__h44411 == 8'd0 || bytelane_lo__h44283[0]) ?
+	       y_avValue_snd__h42723 ;
+  assign bytes_processed__h44627 =
+	     (x__h44418 == 8'd0 || bytelane_lo__h44290[0]) ?
 	       8'd1 :
-	       y_avValue_snd__h44613 ;
-  assign bytes_processed__h45168 =
-	     (x__h44957 == 8'd0 || axi4_to_ld_rg_bytelane_lo[0]) ?
+	       y_avValue_snd__h44620 ;
+  assign bytes_processed__h45175 =
+	     (x__h44964 == 8'd0 || axi4_to_ld_rg_bytelane_lo[0]) ?
 	       8'd1 :
-	       y_avValue_snd__h45161 ;
-  assign bytes_processed__h55465 =
-	     (x__h55235 == 8'd0 || bytelane_lo__h52833[0]) ?
+	       y_avValue_snd__h45168 ;
+  assign bytes_processed__h55475 =
+	     (x__h55245 == 8'd0 || bytelane_lo__h52843[0]) ?
 	       8'd1 :
-	       y_avValue_snd_fst__h55887 ;
-  assign bytes_processed__h62536 =
-	     (x__h62315 == 8'd0 || bytelane_lo__h59951[0]) ?
+	       y_avValue_snd_fst__h55897 ;
+  assign bytes_processed__h62546 =
+	     (x__h62325 == 8'd0 || bytelane_lo__h59961[0]) ?
 	       8'd1 :
-	       y_avValue_snd_fst__h62563 ;
-  assign bytes_processed__h65989 =
-	     (x__h65766 == 8'd0 || axi4_to_st_rg_bytelane_lo[0]) ?
+	       y_avValue_snd_fst__h62573 ;
+  assign bytes_processed__h65999 =
+	     (x__h65776 == 8'd0 || axi4_to_st_rg_bytelane_lo[0]) ?
 	       8'd1 :
-	       y_avValue_snd_fst__h66016 ;
-  assign f_rd_addrD_OUT_BITS_92_TO_29_AND_mask3317__q3 =
-	     f_rd_addr$D_OUT[92:29] & mask__h43317 ;
-  assign f_wr_addrD_OUT_BITS_92_TO_29_AND_mask6365__q4 =
-	     f_wr_addr$D_OUT[92:29] & mask__h56365 ;
+	       y_avValue_snd_fst__h66026 ;
+  assign f_rd_addrD_OUT_BITS_92_TO_29_AND_mask3324__q3 =
+	     f_rd_addr$D_OUT[92:29] & mask__h43324 ;
+  assign f_wr_addrD_OUT_BITS_92_TO_29_AND_mask6375__q4 =
+	     f_wr_addr$D_OUT[92:29] & mask__h56375 ;
   assign f_wr_data_first__08_BITS_8_TO_1_21_EQ_0_22_OR__ETC___d944 =
 	     f_wr_data$D_OUT[8:1] == 8'd0 ||
 	     (_0_CONCAT_IF_f_wr_data_first__08_BIT_1_23_THEN__ETC___d942 ?
@@ -2926,83 +2917,83 @@ module mkDMA_Cache(CLK,
   assign f_wr_data_first__08_BIT_0_09_AND_f_wr_addr_fir_ETC___d1053 =
 	     f_wr_data$D_OUT[0] && f_wr_addr$D_OUT[28:21] == 8'd0 &&
 	     _1_SL_f_wr_addr_first__11_BITS_20_TO_18_15_16_U_ETC___d917 &&
-	     (v__h52839 != 8'd0 ||
+	     (v__h52849 != 8'd0 ||
 	      !_0_CONCAT_f_wr_addr_first__11_BITS_92_TO_29_76__ETC___d1050) ;
   assign f_wr_data_first__08_BIT_0_09_AND_f_wr_addr_fir_ETC___d988 =
 	     f_wr_data$D_OUT[0] && f_wr_addr$D_OUT[28:21] == 8'd0 &&
 	     _1_SL_f_wr_addr_first__11_BITS_20_TO_18_15_16_U_ETC___d917 &&
 	     f_wr_data$D_OUT[8:1] != 8'd0 &&
 	     !_7_MINUS_0_CONCAT_IF_f_wr_data_first__08_BIT_8__ETC___d956 ;
-  assign line_addr__h2667 = { f_L2_to_L1_Reqs$D_OUT[65:8], 6'd0 } ;
-  assign line_addr__h3095 = { f_reqs$D_OUT[668:611], 6'd0 } ;
-  assign mask__h43317 = 64'hFFFFFFFFFFFFFFFF << x__h44078 ;
-  assign mask__h56365 = 64'hFFFFFFFFFFFFFFFF << x__h57126 ;
-  assign new_data___1__h23230 =
-	     { f_reqs$D_OUT[575] ? f_reqs$D_OUT[511:504] : v__h22154[511:504],
-	       f_reqs$D_OUT[574] ? f_reqs$D_OUT[503:496] : v__h22154[503:496],
-	       f_reqs$D_OUT[573] ? f_reqs$D_OUT[495:488] : v__h22154[495:488],
-	       f_reqs$D_OUT[572] ? f_reqs$D_OUT[487:480] : v__h22154[487:480],
-	       f_reqs$D_OUT[571] ? f_reqs$D_OUT[479:472] : v__h22154[479:472],
-	       f_reqs$D_OUT[570] ? f_reqs$D_OUT[471:464] : v__h22154[471:464],
-	       f_reqs$D_OUT[569] ? f_reqs$D_OUT[463:456] : v__h22154[463:456],
-	       f_reqs$D_OUT[568] ? f_reqs$D_OUT[455:448] : v__h22154[455:448],
-	       f_reqs$D_OUT[567] ? f_reqs$D_OUT[447:440] : v__h22154[447:440],
-	       f_reqs$D_OUT[566] ? f_reqs$D_OUT[439:432] : v__h22154[439:432],
-	       f_reqs$D_OUT[565] ? f_reqs$D_OUT[431:424] : v__h22154[431:424],
-	       f_reqs$D_OUT[564] ? f_reqs$D_OUT[423:416] : v__h22154[423:416],
-	       f_reqs$D_OUT[563] ? f_reqs$D_OUT[415:408] : v__h22154[415:408],
-	       f_reqs$D_OUT[562] ? f_reqs$D_OUT[407:400] : v__h22154[407:400],
-	       f_reqs$D_OUT[561] ? f_reqs$D_OUT[399:392] : v__h22154[399:392],
-	       f_reqs$D_OUT[560] ? f_reqs$D_OUT[391:384] : v__h22154[391:384],
-	       f_reqs$D_OUT[559] ? f_reqs$D_OUT[383:376] : v__h22154[383:376],
-	       f_reqs$D_OUT[558] ? f_reqs$D_OUT[375:368] : v__h22154[375:368],
-	       f_reqs$D_OUT[557] ? f_reqs$D_OUT[367:360] : v__h22154[367:360],
-	       f_reqs$D_OUT[556] ? f_reqs$D_OUT[359:352] : v__h22154[359:352],
-	       f_reqs$D_OUT[555] ? f_reqs$D_OUT[351:344] : v__h22154[351:344],
-	       f_reqs$D_OUT[554] ? f_reqs$D_OUT[343:336] : v__h22154[343:336],
-	       f_reqs$D_OUT[553] ? f_reqs$D_OUT[335:328] : v__h22154[335:328],
-	       f_reqs$D_OUT[552] ? f_reqs$D_OUT[327:320] : v__h22154[327:320],
-	       f_reqs$D_OUT[551] ? f_reqs$D_OUT[319:312] : v__h22154[319:312],
-	       f_reqs$D_OUT[550] ? f_reqs$D_OUT[311:304] : v__h22154[311:304],
-	       f_reqs$D_OUT[549] ? f_reqs$D_OUT[303:296] : v__h22154[303:296],
-	       f_reqs$D_OUT[548] ? f_reqs$D_OUT[295:288] : v__h22154[295:288],
-	       f_reqs$D_OUT[547] ? f_reqs$D_OUT[287:280] : v__h22154[287:280],
-	       f_reqs$D_OUT[546] ? f_reqs$D_OUT[279:272] : v__h22154[279:272],
-	       f_reqs$D_OUT[545] ? f_reqs$D_OUT[271:264] : v__h22154[271:264],
-	       f_reqs$D_OUT[544] ? f_reqs$D_OUT[263:256] : v__h22154[263:256],
-	       f_reqs$D_OUT[543] ? f_reqs$D_OUT[255:248] : v__h22154[255:248],
-	       f_reqs$D_OUT[542] ? f_reqs$D_OUT[247:240] : v__h22154[247:240],
-	       f_reqs$D_OUT[541] ? f_reqs$D_OUT[239:232] : v__h22154[239:232],
-	       f_reqs$D_OUT[540] ? f_reqs$D_OUT[231:224] : v__h22154[231:224],
-	       f_reqs$D_OUT[539] ? f_reqs$D_OUT[223:216] : v__h22154[223:216],
-	       f_reqs$D_OUT[538] ? f_reqs$D_OUT[215:208] : v__h22154[215:208],
-	       f_reqs$D_OUT[537] ? f_reqs$D_OUT[207:200] : v__h22154[207:200],
-	       f_reqs$D_OUT[536] ? f_reqs$D_OUT[199:192] : v__h22154[199:192],
-	       f_reqs$D_OUT[535] ? f_reqs$D_OUT[191:184] : v__h22154[191:184],
-	       f_reqs$D_OUT[534] ? f_reqs$D_OUT[183:176] : v__h22154[183:176],
-	       f_reqs$D_OUT[533] ? f_reqs$D_OUT[175:168] : v__h22154[175:168],
-	       f_reqs$D_OUT[532] ? f_reqs$D_OUT[167:160] : v__h22154[167:160],
-	       f_reqs$D_OUT[531] ? f_reqs$D_OUT[159:152] : v__h22154[159:152],
-	       f_reqs$D_OUT[530] ? f_reqs$D_OUT[151:144] : v__h22154[151:144],
-	       f_reqs$D_OUT[529] ? f_reqs$D_OUT[143:136] : v__h22154[143:136],
-	       f_reqs$D_OUT[528] ? f_reqs$D_OUT[135:128] : v__h22154[135:128],
-	       f_reqs$D_OUT[527] ? f_reqs$D_OUT[127:120] : v__h22154[127:120],
-	       f_reqs$D_OUT[526] ? f_reqs$D_OUT[119:112] : v__h22154[119:112],
-	       f_reqs$D_OUT[525] ? f_reqs$D_OUT[111:104] : v__h22154[111:104],
-	       f_reqs$D_OUT[524] ? f_reqs$D_OUT[103:96] : v__h22154[103:96],
-	       f_reqs$D_OUT[523] ? f_reqs$D_OUT[95:88] : v__h22154[95:88],
-	       f_reqs$D_OUT[522] ? f_reqs$D_OUT[87:80] : v__h22154[87:80],
-	       f_reqs$D_OUT[521] ? f_reqs$D_OUT[79:72] : v__h22154[79:72],
-	       f_reqs$D_OUT[520] ? f_reqs$D_OUT[71:64] : v__h22154[71:64],
-	       f_reqs$D_OUT[519] ? f_reqs$D_OUT[63:56] : v__h22154[63:56],
-	       f_reqs$D_OUT[518] ? f_reqs$D_OUT[55:48] : v__h22154[55:48],
-	       f_reqs$D_OUT[517] ? f_reqs$D_OUT[47:40] : v__h22154[47:40],
-	       f_reqs$D_OUT[516] ? f_reqs$D_OUT[39:32] : v__h22154[39:32],
-	       f_reqs$D_OUT[515] ? f_reqs$D_OUT[31:24] : v__h22154[31:24],
-	       f_reqs$D_OUT[514] ? f_reqs$D_OUT[23:16] : v__h22154[23:16],
-	       f_reqs$D_OUT[513] ? f_reqs$D_OUT[15:8] : v__h22154[15:8],
-	       f_reqs$D_OUT[512] ? f_reqs$D_OUT[7:0] : v__h22154[7:0] } ;
-  assign new_data___1__h4237 =
+  assign line_addr__h2674 = { f_L2_to_L1_Reqs$D_OUT[65:8], 6'd0 } ;
+  assign line_addr__h3102 = { f_reqs$D_OUT[668:611], 6'd0 } ;
+  assign mask__h43324 = 64'hFFFFFFFFFFFFFFFF << x__h44085 ;
+  assign mask__h56375 = 64'hFFFFFFFFFFFFFFFF << x__h57136 ;
+  assign new_data___1__h23237 =
+	     { f_reqs$D_OUT[575] ? f_reqs$D_OUT[511:504] : v__h22161[511:504],
+	       f_reqs$D_OUT[574] ? f_reqs$D_OUT[503:496] : v__h22161[503:496],
+	       f_reqs$D_OUT[573] ? f_reqs$D_OUT[495:488] : v__h22161[495:488],
+	       f_reqs$D_OUT[572] ? f_reqs$D_OUT[487:480] : v__h22161[487:480],
+	       f_reqs$D_OUT[571] ? f_reqs$D_OUT[479:472] : v__h22161[479:472],
+	       f_reqs$D_OUT[570] ? f_reqs$D_OUT[471:464] : v__h22161[471:464],
+	       f_reqs$D_OUT[569] ? f_reqs$D_OUT[463:456] : v__h22161[463:456],
+	       f_reqs$D_OUT[568] ? f_reqs$D_OUT[455:448] : v__h22161[455:448],
+	       f_reqs$D_OUT[567] ? f_reqs$D_OUT[447:440] : v__h22161[447:440],
+	       f_reqs$D_OUT[566] ? f_reqs$D_OUT[439:432] : v__h22161[439:432],
+	       f_reqs$D_OUT[565] ? f_reqs$D_OUT[431:424] : v__h22161[431:424],
+	       f_reqs$D_OUT[564] ? f_reqs$D_OUT[423:416] : v__h22161[423:416],
+	       f_reqs$D_OUT[563] ? f_reqs$D_OUT[415:408] : v__h22161[415:408],
+	       f_reqs$D_OUT[562] ? f_reqs$D_OUT[407:400] : v__h22161[407:400],
+	       f_reqs$D_OUT[561] ? f_reqs$D_OUT[399:392] : v__h22161[399:392],
+	       f_reqs$D_OUT[560] ? f_reqs$D_OUT[391:384] : v__h22161[391:384],
+	       f_reqs$D_OUT[559] ? f_reqs$D_OUT[383:376] : v__h22161[383:376],
+	       f_reqs$D_OUT[558] ? f_reqs$D_OUT[375:368] : v__h22161[375:368],
+	       f_reqs$D_OUT[557] ? f_reqs$D_OUT[367:360] : v__h22161[367:360],
+	       f_reqs$D_OUT[556] ? f_reqs$D_OUT[359:352] : v__h22161[359:352],
+	       f_reqs$D_OUT[555] ? f_reqs$D_OUT[351:344] : v__h22161[351:344],
+	       f_reqs$D_OUT[554] ? f_reqs$D_OUT[343:336] : v__h22161[343:336],
+	       f_reqs$D_OUT[553] ? f_reqs$D_OUT[335:328] : v__h22161[335:328],
+	       f_reqs$D_OUT[552] ? f_reqs$D_OUT[327:320] : v__h22161[327:320],
+	       f_reqs$D_OUT[551] ? f_reqs$D_OUT[319:312] : v__h22161[319:312],
+	       f_reqs$D_OUT[550] ? f_reqs$D_OUT[311:304] : v__h22161[311:304],
+	       f_reqs$D_OUT[549] ? f_reqs$D_OUT[303:296] : v__h22161[303:296],
+	       f_reqs$D_OUT[548] ? f_reqs$D_OUT[295:288] : v__h22161[295:288],
+	       f_reqs$D_OUT[547] ? f_reqs$D_OUT[287:280] : v__h22161[287:280],
+	       f_reqs$D_OUT[546] ? f_reqs$D_OUT[279:272] : v__h22161[279:272],
+	       f_reqs$D_OUT[545] ? f_reqs$D_OUT[271:264] : v__h22161[271:264],
+	       f_reqs$D_OUT[544] ? f_reqs$D_OUT[263:256] : v__h22161[263:256],
+	       f_reqs$D_OUT[543] ? f_reqs$D_OUT[255:248] : v__h22161[255:248],
+	       f_reqs$D_OUT[542] ? f_reqs$D_OUT[247:240] : v__h22161[247:240],
+	       f_reqs$D_OUT[541] ? f_reqs$D_OUT[239:232] : v__h22161[239:232],
+	       f_reqs$D_OUT[540] ? f_reqs$D_OUT[231:224] : v__h22161[231:224],
+	       f_reqs$D_OUT[539] ? f_reqs$D_OUT[223:216] : v__h22161[223:216],
+	       f_reqs$D_OUT[538] ? f_reqs$D_OUT[215:208] : v__h22161[215:208],
+	       f_reqs$D_OUT[537] ? f_reqs$D_OUT[207:200] : v__h22161[207:200],
+	       f_reqs$D_OUT[536] ? f_reqs$D_OUT[199:192] : v__h22161[199:192],
+	       f_reqs$D_OUT[535] ? f_reqs$D_OUT[191:184] : v__h22161[191:184],
+	       f_reqs$D_OUT[534] ? f_reqs$D_OUT[183:176] : v__h22161[183:176],
+	       f_reqs$D_OUT[533] ? f_reqs$D_OUT[175:168] : v__h22161[175:168],
+	       f_reqs$D_OUT[532] ? f_reqs$D_OUT[167:160] : v__h22161[167:160],
+	       f_reqs$D_OUT[531] ? f_reqs$D_OUT[159:152] : v__h22161[159:152],
+	       f_reqs$D_OUT[530] ? f_reqs$D_OUT[151:144] : v__h22161[151:144],
+	       f_reqs$D_OUT[529] ? f_reqs$D_OUT[143:136] : v__h22161[143:136],
+	       f_reqs$D_OUT[528] ? f_reqs$D_OUT[135:128] : v__h22161[135:128],
+	       f_reqs$D_OUT[527] ? f_reqs$D_OUT[127:120] : v__h22161[127:120],
+	       f_reqs$D_OUT[526] ? f_reqs$D_OUT[119:112] : v__h22161[119:112],
+	       f_reqs$D_OUT[525] ? f_reqs$D_OUT[111:104] : v__h22161[111:104],
+	       f_reqs$D_OUT[524] ? f_reqs$D_OUT[103:96] : v__h22161[103:96],
+	       f_reqs$D_OUT[523] ? f_reqs$D_OUT[95:88] : v__h22161[95:88],
+	       f_reqs$D_OUT[522] ? f_reqs$D_OUT[87:80] : v__h22161[87:80],
+	       f_reqs$D_OUT[521] ? f_reqs$D_OUT[79:72] : v__h22161[79:72],
+	       f_reqs$D_OUT[520] ? f_reqs$D_OUT[71:64] : v__h22161[71:64],
+	       f_reqs$D_OUT[519] ? f_reqs$D_OUT[63:56] : v__h22161[63:56],
+	       f_reqs$D_OUT[518] ? f_reqs$D_OUT[55:48] : v__h22161[55:48],
+	       f_reqs$D_OUT[517] ? f_reqs$D_OUT[47:40] : v__h22161[47:40],
+	       f_reqs$D_OUT[516] ? f_reqs$D_OUT[39:32] : v__h22161[39:32],
+	       f_reqs$D_OUT[515] ? f_reqs$D_OUT[31:24] : v__h22161[31:24],
+	       f_reqs$D_OUT[514] ? f_reqs$D_OUT[23:16] : v__h22161[23:16],
+	       f_reqs$D_OUT[513] ? f_reqs$D_OUT[15:8] : v__h22161[15:8],
+	       f_reqs$D_OUT[512] ? f_reqs$D_OUT[7:0] : v__h22161[7:0] } ;
+  assign new_data___1__h4244 =
 	     { f_reqs$D_OUT[575] ?
 		 f_reqs$D_OUT[511:504] :
 		 rf_data_sets$D_OUT_1[511:504],
@@ -3195,16 +3186,16 @@ module mkDMA_Cache(CLK,
 	       f_reqs$D_OUT[512] ?
 		 f_reqs$D_OUT[7:0] :
 		 rf_data_sets$D_OUT_1[7:0] } ;
-  assign num_bytes__h42466 = x__h42505 + 8'd1 ;
-  assign num_bytes__h44372 = x__h44411 + 8'd1 ;
-  assign num_bytes__h44918 = x__h44957 + 8'd1 ;
-  assign num_bytes__h55195 = x__h55235 + 8'd1 ;
-  assign num_bytes__h62275 = x__h62315 + 8'd1 ;
-  assign num_bytes__h65726 = x__h65766 + 8'd1 ;
-  assign num_lsb_zero_bytes__h59937 = { 4'd0, x__h61498 } ;
-  assign num_msb_zero_bytes__h52820 = { 4'd0, x__h53064 } ;
-  assign num_msb_zero_bytes__h59938 = { 4'd0, x__h60174 } ;
-  assign rd_data_S_rresp__h49779 =
+  assign num_bytes__h42473 = x__h42512 + 8'd1 ;
+  assign num_bytes__h44379 = x__h44418 + 8'd1 ;
+  assign num_bytes__h44925 = x__h44964 + 8'd1 ;
+  assign num_bytes__h55205 = x__h55245 + 8'd1 ;
+  assign num_bytes__h62285 = x__h62325 + 8'd1 ;
+  assign num_bytes__h65736 = x__h65776 + 8'd1 ;
+  assign num_lsb_zero_bytes__h59947 = { 4'd0, x__h61508 } ;
+  assign num_msb_zero_bytes__h52830 = { 4'd0, x__h53074 } ;
+  assign num_msb_zero_bytes__h59948 = { 4'd0, x__h60184 } ;
+  assign rd_data_S_rresp__h49786 =
 	     (axi4_to_ld_f_axi_rsp_info$D_OUT[16] ||
 	      axi4_to_ld_rg_cumulative_err) ?
 	       2'b10 :
@@ -3212,63 +3203,63 @@ module mkDMA_Cache(CLK,
   assign rf_tag_sets_sub_f_L2_to_L1_Reqs_first__1_BITS__ETC___d67 =
 	     rf_tag_sets$D_OUT_2[65:64] <= f_L2_to_L1_Reqs$D_OUT[1:0] ;
   assign rf_tag_sets_sub_f_L2_to_L1_Reqs_first__1_BITS__ETC___d72 =
-	     rf_tag_sets$D_OUT_2[63:0] == line_addr__h2667 ;
+	     rf_tag_sets$D_OUT_2[63:0] == line_addr__h2674 ;
   assign rf_tag_sets_sub_f_reqs_first__5_BITS_616_TO_61_ETC___d104 =
-	     rf_tag_sets$D_OUT_1[63:0] == line_addr__h3095 ;
+	     rf_tag_sets$D_OUT_1[63:0] == line_addr__h3102 ;
   assign rg_state_EQ_1_1_AND_NOT_f_L2_to_L1_Reqs_notEmp_ETC___d428 =
 	     rg_state == 2'd1 && !f_L2_to_L1_Reqs$EMPTY_N &&
 	     (rf_tag_sets$D_OUT_1[65:64] == 2'd0 ||
 	      rf_tag_sets_sub_f_reqs_first__5_BITS_616_TO_61_ETC___d104 &&
 	      f_reqs$D_OUT[685] &&
 	      rf_tag_sets$D_OUT_1[65:64] == 2'd1) ;
-  assign shifted_slice__h55210 = f_wr_data$D_OUT[128:65] >> x__h56110 ;
-  assign shifted_slice__h62290 = axi4_to_st_rg_v_slice[63:0] >> x__h62781 ;
-  assign shifted_slice__h65741 = axi4_to_st_rg_slice >> x__h66023 ;
-  assign slice__h45650 =
+  assign shifted_slice__h55220 = f_wr_data$D_OUT[128:65] >> x__h56120 ;
+  assign shifted_slice__h62300 = axi4_to_st_rg_v_slice[63:0] >> x__h62791 ;
+  assign shifted_slice__h65751 = axi4_to_st_rg_slice >> x__h66033 ;
+  assign slice__h45657 =
 	     axi4_to_ld_f_rsps$D_OUT[63:0] <<
 	     { axi4_to_ld_f_ld_rsp_info$D_OUT[4:0], 3'd0 } ;
-  assign szwindow_bytelane_hi__h41753 =
-	     szwindow_bytelane_lo__h41752 + y__h43293 ;
-  assign szwindow_bytelane_hi__h51961 =
-	     szwindow_bytelane_lo__h51960 + y__h56341 ;
-  assign szwindow_bytelane_lo__h41752 =
-	     { 2'd0, f_rd_addrD_OUT_BITS_92_TO_29_AND_mask3317__q3[5:0] } ;
-  assign szwindow_bytelane_lo__h51960 =
-	     { 2'd0, f_wr_addrD_OUT_BITS_92_TO_29_AND_mask6365__q4[5:0] } ;
-  assign v__h22154 =
+  assign szwindow_bytelane_hi__h41760 =
+	     szwindow_bytelane_lo__h41759 + y__h43300 ;
+  assign szwindow_bytelane_hi__h51971 =
+	     szwindow_bytelane_lo__h51970 + y__h56351 ;
+  assign szwindow_bytelane_lo__h41759 =
+	     { 2'd0, f_rd_addrD_OUT_BITS_92_TO_29_AND_mask3324__q3[5:0] } ;
+  assign szwindow_bytelane_lo__h51970 =
+	     { 2'd0, f_wr_addrD_OUT_BITS_92_TO_29_AND_mask6375__q4[5:0] } ;
+  assign v__h22161 =
 	     f_L2_to_L1_Rsps$D_OUT[512] ?
 	       f_L2_to_L1_Rsps$D_OUT[511:0] :
 	       rf_data_sets$D_OUT_1 ;
-  assign v__h42341 =
+  assign v__h42348 =
 	     _0_CONCAT_f_rd_addr_first__52_BITS_34_TO_29_62__ETC___d664 ?
-	       v__h42441 :
+	       v__h42448 :
 	       8'd0 ;
-  assign v__h42441 = num_bytes__h42466 - bytes_processed__h42723 ;
-  assign v__h44288 =
+  assign v__h42448 = num_bytes__h42473 - bytes_processed__h42730 ;
+  assign v__h44295 =
 	     axi4_to_ld_rg_bytelane_slice_lo_44_PLUS_7_45_U_ETC___d748 ?
 	       8'd0 :
-	       v__h44350 ;
-  assign v__h44350 = num_bytes__h44372 - bytes_processed__h44620 ;
-  assign v__h44911 = num_bytes__h44918 - bytes_processed__h45168 ;
-  assign v__h52839 =
+	       v__h44357 ;
+  assign v__h44357 = num_bytes__h44379 - bytes_processed__h44627 ;
+  assign v__h44918 = num_bytes__h44925 - bytes_processed__h45175 ;
+  assign v__h52849 =
 	     (f_wr_data$D_OUT[8:1] == 8'd0 ||
 	      _7_MINUS_0_CONCAT_IF_f_wr_data_first__08_BIT_8__ETC___d956) ?
 	       8'd0 :
-	       v__h55171 ;
-  assign v__h55171 = num_bytes__h55195 - bytes_processed__h55465 ;
-  assign v__h59957 =
+	       v__h55181 ;
+  assign v__h55181 = num_bytes__h55205 - bytes_processed__h55475 ;
+  assign v__h59967 =
 	     (axi4_to_st_rg_v_strb[7:0] == 8'd0 ||
 	      axi4_to_st_rg_bytelane_slice_lo_066_PLUS_7_067_ETC___d1100) ?
 	       8'd0 :
-	       v__h62254 ;
-  assign v__h62254 = num_bytes__h62275 - bytes_processed__h62536 ;
-  assign v__h65719 = num_bytes__h65726 - bytes_processed__h65989 ;
-  assign x__h42505 = 8'd7 - bytelane_lo__h42336 ;
-  assign x__h42748 =
-	     (x__h42505 == 8'd0 || f_rd_addr$D_OUT[29]) ?
+	       v__h62264 ;
+  assign v__h62264 = num_bytes__h62285 - bytes_processed__h62546 ;
+  assign v__h65729 = num_bytes__h65736 - bytes_processed__h65999 ;
+  assign x__h42512 = 8'd7 - bytelane_lo__h42343 ;
+  assign x__h42755 =
+	     (x__h42512 == 8'd0 || f_rd_addr$D_OUT[29]) ?
 	       2'b0 :
-	       y_avValue_fst__h42715 ;
-  assign x__h44078 =
+	       y_avValue_fst__h42722 ;
+  assign x__h44085 =
 	     _1_SL_f_rd_addr_first__52_BITS_20_TO_18_56___d657[0] ?
 	       4'd0 :
 	       (_1_SL_f_rd_addr_first__52_BITS_20_TO_18_56___d657[1] ?
@@ -3286,24 +3277,24 @@ module mkDMA_Cache(CLK,
 				 (_1_SL_f_rd_addr_first__52_BITS_20_TO_18_56___d657[7] ?
 				    4'd7 :
 				    4'd8))))))) ;
-  assign x__h44411 = bytelane_slice_hi__h44264 - bytelane_lo__h44283 ;
-  assign x__h44636 =
-	     (x__h44411 == 8'd0 || bytelane_lo__h44283[0]) ?
+  assign x__h44418 = bytelane_slice_hi__h44271 - bytelane_lo__h44290 ;
+  assign x__h44643 =
+	     (x__h44418 == 8'd0 || bytelane_lo__h44290[0]) ?
 	       2'b0 :
-	       y_avValue_fst__h44612 ;
-  assign x__h44638 =
-	     addr_axi_bus_lo__h41748 | { 56'd0, bytelane_lo__h44283 } ;
-  assign x__h44663 = bytelane_lo__h44283 - axi4_to_ld_rg_bytelane_slice_lo ;
-  assign x__h44957 = axi4_to_ld_rg_bytelane_hi - axi4_to_ld_rg_bytelane_lo ;
-  assign x__h45184 =
-	     (x__h44957 == 8'd0 || axi4_to_ld_rg_bytelane_lo[0]) ?
+	       y_avValue_fst__h44619 ;
+  assign x__h44645 =
+	     addr_axi_bus_lo__h41755 | { 56'd0, bytelane_lo__h44290 } ;
+  assign x__h44670 = bytelane_lo__h44290 - axi4_to_ld_rg_bytelane_slice_lo ;
+  assign x__h44964 = axi4_to_ld_rg_bytelane_hi - axi4_to_ld_rg_bytelane_lo ;
+  assign x__h45191 =
+	     (x__h44964 == 8'd0 || axi4_to_ld_rg_bytelane_lo[0]) ?
 	       2'b0 :
-	       y_avValue_fst__h45160 ;
-  assign x__h45186 =
-	     addr_axi_bus_lo__h41748 | { 56'd0, axi4_to_ld_rg_bytelane_lo } ;
-  assign x__h45211 =
+	       y_avValue_fst__h45167 ;
+  assign x__h45193 =
+	     addr_axi_bus_lo__h41755 | { 56'd0, axi4_to_ld_rg_bytelane_lo } ;
+  assign x__h45218 =
 	     axi4_to_ld_rg_bytelane_lo - axi4_to_ld_rg_bytelane_slice_lo ;
-  assign x__h53064 =
+  assign x__h53074 =
 	     f_wr_data$D_OUT[8] ?
 	       4'd0 :
 	       (f_wr_data$D_OUT[7] ?
@@ -3319,7 +3310,7 @@ module mkDMA_Cache(CLK,
 			      (f_wr_data$D_OUT[2] ?
 				 4'd6 :
 				 (f_wr_data$D_OUT[1] ? 4'd7 : 4'd8))))))) ;
-  assign x__h54388 =
+  assign x__h54398 =
 	     f_wr_data$D_OUT[1] ?
 	       4'd0 :
 	       (f_wr_data$D_OUT[2] ?
@@ -3335,19 +3326,19 @@ module mkDMA_Cache(CLK,
 			      (f_wr_data$D_OUT[7] ?
 				 4'd6 :
 				 (f_wr_data$D_OUT[8] ? 4'd7 : 4'd8))))))) ;
-  assign x__h55235 = bytelane_hi__h52834 - bytelane_lo__h52833 ;
-  assign x__h55490 =
-	     (x__h55235 == 8'd0 || bytelane_lo__h52833[0]) ?
+  assign x__h55245 = bytelane_hi__h52844 - bytelane_lo__h52843 ;
+  assign x__h55500 =
+	     (x__h55245 == 8'd0 || bytelane_lo__h52843[0]) ?
 	       2'b0 :
-	       y_avValue_fst__h55456 ;
-  assign x__h55502 =
-	     addr_axi_bus_lo__h51956 | { 56'd0, bytelane_lo__h52833 } ;
-  assign x__h55884 =
-	     (x__h55235 == 8'd0 || bytelane_lo__h52833[0]) ?
-	       y_avValue_snd_snd__h55886 :
-	       y_avValue_snd_snd__h55888 ;
-  assign x__h56110 = { bytelane_lo__h52833[4:0], 3'd0 } ;
-  assign x__h57126 =
+	       y_avValue_fst__h55466 ;
+  assign x__h55512 =
+	     addr_axi_bus_lo__h51966 | { 56'd0, bytelane_lo__h52843 } ;
+  assign x__h55894 =
+	     (x__h55245 == 8'd0 || bytelane_lo__h52843[0]) ?
+	       y_avValue_snd_snd__h55896 :
+	       y_avValue_snd_snd__h55898 ;
+  assign x__h56120 = { bytelane_lo__h52843[4:0], 3'd0 } ;
+  assign x__h57136 =
 	     _1_SL_f_wr_addr_first__11_BITS_20_TO_18_15___d916[0] ?
 	       4'd0 :
 	       (_1_SL_f_wr_addr_first__11_BITS_20_TO_18_15___d916[1] ?
@@ -3365,7 +3356,7 @@ module mkDMA_Cache(CLK,
 				 (_1_SL_f_wr_addr_first__11_BITS_20_TO_18_15___d916[7] ?
 				    4'd7 :
 				    4'd8))))))) ;
-  assign x__h60174 =
+  assign x__h60184 =
 	     axi4_to_st_rg_v_strb[7] ?
 	       4'd0 :
 	       (axi4_to_st_rg_v_strb[6] ?
@@ -3383,7 +3374,7 @@ module mkDMA_Cache(CLK,
 				 (axi4_to_st_rg_v_strb[0] ?
 				    4'd7 :
 				    4'd8))))))) ;
-  assign x__h61498 =
+  assign x__h61508 =
 	     axi4_to_st_rg_v_strb[0] ?
 	       4'd0 :
 	       (axi4_to_st_rg_v_strb[1] ?
@@ -3401,179 +3392,179 @@ module mkDMA_Cache(CLK,
 				 (axi4_to_st_rg_v_strb[7] ?
 				    4'd7 :
 				    4'd8))))))) ;
-  assign x__h62315 = bytelane_hi__h59952 - bytelane_lo__h59951 ;
-  assign x__h62552 =
-	     (x__h62315 == 8'd0 || bytelane_lo__h59951[0]) ?
+  assign x__h62325 = bytelane_hi__h59962 - bytelane_lo__h59961 ;
+  assign x__h62562 =
+	     (x__h62325 == 8'd0 || bytelane_lo__h59961[0]) ?
 	       2'b0 :
-	       y_avValue_fst__h62527 ;
-  assign x__h62557 =
-	     addr_axi_bus_lo__h51956 | { 56'd0, bytelane_lo__h59951 } ;
-  assign x__h62560 =
-	     (x__h62315 == 8'd0 || bytelane_lo__h59951[0]) ?
-	       y_avValue_snd_snd__h62562 :
-	       y_avValue_snd_snd__h62564 ;
-  assign x__h62781 =
-	     { bytelane_lo9951_MINUS_axi4_to_st_rg_bytelane_s_ETC__q2[4:0],
+	       y_avValue_fst__h62537 ;
+  assign x__h62567 =
+	     addr_axi_bus_lo__h51966 | { 56'd0, bytelane_lo__h59961 } ;
+  assign x__h62570 =
+	     (x__h62325 == 8'd0 || bytelane_lo__h59961[0]) ?
+	       y_avValue_snd_snd__h62572 :
+	       y_avValue_snd_snd__h62574 ;
+  assign x__h62791 =
+	     { bytelane_lo9961_MINUS_axi4_to_st_rg_bytelane_s_ETC__q2[4:0],
 	       3'd0 } ;
-  assign x__h65766 = axi4_to_st_rg_bytelane_hi - axi4_to_st_rg_bytelane_lo ;
-  assign x__h66005 =
-	     (x__h65766 == 8'd0 || axi4_to_st_rg_bytelane_lo[0]) ?
+  assign x__h65776 = axi4_to_st_rg_bytelane_hi - axi4_to_st_rg_bytelane_lo ;
+  assign x__h66015 =
+	     (x__h65776 == 8'd0 || axi4_to_st_rg_bytelane_lo[0]) ?
 	       2'b0 :
-	       y_avValue_fst__h65980 ;
-  assign x__h66010 =
-	     addr_axi_bus_lo__h51956 | { 56'd0, axi4_to_st_rg_bytelane_lo } ;
-  assign x__h66013 =
-	     (x__h65766 == 8'd0 || axi4_to_st_rg_bytelane_lo[0]) ?
-	       y_avValue_snd_snd__h66015 :
-	       y_avValue_snd_snd__h66017 ;
+	       y_avValue_fst__h65990 ;
+  assign x__h66020 =
+	     addr_axi_bus_lo__h51966 | { 56'd0, axi4_to_st_rg_bytelane_lo } ;
   assign x__h66023 =
+	     (x__h65776 == 8'd0 || axi4_to_st_rg_bytelane_lo[0]) ?
+	       y_avValue_snd_snd__h66025 :
+	       y_avValue_snd_snd__h66027 ;
+  assign x__h66033 =
 	     { axi4_to_st_rg_bytelane_lo_MINUS_axi4_to_st_rg__ETC__q1[4:0],
 	       3'd0 } ;
-  assign y__h43293 =
+  assign y__h43300 =
 	     _1_SL_f_rd_addr_first__52_BITS_20_TO_18_56___d657 - 8'd1 ;
-  assign y__h54379 = { 4'd0, x__h54388 } ;
-  assign y__h56341 =
+  assign y__h54389 = { 4'd0, x__h54398 } ;
+  assign y__h56351 =
 	     _1_SL_f_wr_addr_first__11_BITS_20_TO_18_15___d916 - 8'd1 ;
-  assign y__h61489 =
-	     axi4_to_st_rg_bytelane_slice_lo + num_lsb_zero_bytes__h59937 ;
-  assign y__h61497 =
-	     (y__h61489 <= addr_bytelane__h51957) ?
-	       addr_bytelane__h51957 :
-	       y__h61489 ;
-  assign y_avValue_fst__h42699 =
+  assign y__h61499 =
+	     axi4_to_st_rg_bytelane_slice_lo + num_lsb_zero_bytes__h59947 ;
+  assign y__h61507 =
+	     (y__h61499 <= addr_bytelane__h51967) ?
+	       addr_bytelane__h51967 :
+	       y__h61499 ;
+  assign y_avValue_fst__h42706 =
 	     _7_MINUS_0_CONCAT_f_rd_addr_first__52_BITS_34_T_ETC___d701 ?
 	       2'b10 :
 	       2'b11 ;
-  assign y_avValue_fst__h42715 =
-	     (num_bytes__h42466 < 8'd4 || f_rd_addr$D_OUT[30:29] == 2'b10) ?
+  assign y_avValue_fst__h42722 =
+	     (num_bytes__h42473 < 8'd4 || f_rd_addr$D_OUT[30:29] == 2'b10) ?
 	       2'b01 :
-	       y_avValue_fst__h42699 ;
-  assign y_avValue_fst__h44596 =
+	       y_avValue_fst__h42706 ;
+  assign y_avValue_fst__h44603 =
 	     axi4_to_ld_rg_bytelane_slice_lo_44_PLUS_7_45_M_ETC___d767 ?
 	       2'b10 :
 	       2'b11 ;
-  assign y_avValue_fst__h44612 =
-	     (num_bytes__h44372 < 8'd4 || bytelane_lo__h44283[1:0] == 2'b10) ?
+  assign y_avValue_fst__h44619 =
+	     (num_bytes__h44379 < 8'd4 || bytelane_lo__h44290[1:0] == 2'b10) ?
 	       2'b01 :
-	       y_avValue_fst__h44596 ;
-  assign y_avValue_fst__h45144 =
+	       y_avValue_fst__h44603 ;
+  assign y_avValue_fst__h45151 =
 	     axi4_to_ld_rg_bytelane_hi_92_MINUS_axi4_to_ld__ETC___d803 ?
 	       2'b10 :
 	       2'b11 ;
-  assign y_avValue_fst__h45160 =
-	     (num_bytes__h44918 < 8'd4 ||
+  assign y_avValue_fst__h45167 =
+	     (num_bytes__h44925 < 8'd4 ||
 	      axi4_to_ld_rg_bytelane_lo[1:0] == 2'b10) ?
 	       2'b01 :
-	       y_avValue_fst__h45144 ;
-  assign y_avValue_fst__h55438 =
+	       y_avValue_fst__h45151 ;
+  assign y_avValue_fst__h55448 =
 	     _7_MINUS_0_CONCAT_IF_f_wr_data_first__08_BIT_8__ETC___d998 ?
 	       2'b10 :
 	       2'b11 ;
-  assign y_avValue_fst__h55456 =
-	     (num_bytes__h55195 < 8'd4 || bytelane_lo__h52833[1:0] == 2'b10) ?
+  assign y_avValue_fst__h55466 =
+	     (num_bytes__h55205 < 8'd4 || bytelane_lo__h52843[1:0] == 2'b10) ?
 	       2'b01 :
-	       y_avValue_fst__h55438 ;
-  assign y_avValue_fst__h62509 =
+	       y_avValue_fst__h55448 ;
+  assign y_avValue_fst__h62519 =
 	     axi4_to_st_rg_bytelane_slice_lo_066_PLUS_7_067_ETC___d1116 ?
 	       2'b10 :
 	       2'b11 ;
-  assign y_avValue_fst__h62527 =
-	     (num_bytes__h62275 < 8'd4 || bytelane_lo__h59951[1:0] == 2'b10) ?
+  assign y_avValue_fst__h62537 =
+	     (num_bytes__h62285 < 8'd4 || bytelane_lo__h59961[1:0] == 2'b10) ?
 	       2'b01 :
-	       y_avValue_fst__h62509 ;
-  assign y_avValue_fst__h65962 =
+	       y_avValue_fst__h62519 ;
+  assign y_avValue_fst__h65972 =
 	     axi4_to_st_rg_bytelane_hi_163_MINUS_axi4_to_st_ETC___d1174 ?
 	       2'b10 :
 	       2'b11 ;
-  assign y_avValue_fst__h65980 =
-	     (num_bytes__h65726 < 8'd4 ||
+  assign y_avValue_fst__h65990 =
+	     (num_bytes__h65736 < 8'd4 ||
 	      axi4_to_st_rg_bytelane_lo[1:0] == 2'b10) ?
 	       2'b01 :
-	       y_avValue_fst__h65962 ;
-  assign y_avValue_snd__h42700 =
+	       y_avValue_fst__h65972 ;
+  assign y_avValue_snd__h42707 =
 	     _7_MINUS_0_CONCAT_f_rd_addr_first__52_BITS_34_T_ETC___d701 ?
 	       8'd4 :
 	       8'd8 ;
-  assign y_avValue_snd__h42716 =
-	     (num_bytes__h42466 < 8'd4 || f_rd_addr$D_OUT[30:29] == 2'b10) ?
+  assign y_avValue_snd__h42723 =
+	     (num_bytes__h42473 < 8'd4 || f_rd_addr$D_OUT[30:29] == 2'b10) ?
 	       8'd2 :
-	       y_avValue_snd__h42700 ;
-  assign y_avValue_snd__h44597 =
+	       y_avValue_snd__h42707 ;
+  assign y_avValue_snd__h44604 =
 	     axi4_to_ld_rg_bytelane_slice_lo_44_PLUS_7_45_M_ETC___d767 ?
 	       8'd4 :
 	       8'd8 ;
-  assign y_avValue_snd__h44613 =
-	     (num_bytes__h44372 < 8'd4 || bytelane_lo__h44283[1:0] == 2'b10) ?
+  assign y_avValue_snd__h44620 =
+	     (num_bytes__h44379 < 8'd4 || bytelane_lo__h44290[1:0] == 2'b10) ?
 	       8'd2 :
-	       y_avValue_snd__h44597 ;
-  assign y_avValue_snd__h45145 =
+	       y_avValue_snd__h44604 ;
+  assign y_avValue_snd__h45152 =
 	     axi4_to_ld_rg_bytelane_hi_92_MINUS_axi4_to_ld__ETC___d803 ?
 	       8'd4 :
 	       8'd8 ;
-  assign y_avValue_snd__h45161 =
-	     (num_bytes__h44918 < 8'd4 ||
+  assign y_avValue_snd__h45168 =
+	     (num_bytes__h44925 < 8'd4 ||
 	      axi4_to_ld_rg_bytelane_lo[1:0] == 2'b10) ?
 	       8'd2 :
-	       y_avValue_snd__h45145 ;
-  assign y_avValue_snd_fst__h55887 =
-	     (num_bytes__h55195 < 8'd4 || bytelane_lo__h52833[1:0] == 2'b10) ?
+	       y_avValue_snd__h45152 ;
+  assign y_avValue_snd_fst__h55897 =
+	     (num_bytes__h55205 < 8'd4 || bytelane_lo__h52843[1:0] == 2'b10) ?
 	       8'd2 :
-	       y_avValue_snd_fst__h56136 ;
-  assign y_avValue_snd_fst__h56136 =
+	       y_avValue_snd_fst__h56146 ;
+  assign y_avValue_snd_fst__h56146 =
 	     _7_MINUS_0_CONCAT_IF_f_wr_data_first__08_BIT_8__ETC___d998 ?
 	       8'd4 :
 	       8'd8 ;
-  assign y_avValue_snd_fst__h62563 =
-	     (num_bytes__h62275 < 8'd4 || bytelane_lo__h59951[1:0] == 2'b10) ?
+  assign y_avValue_snd_fst__h62573 =
+	     (num_bytes__h62285 < 8'd4 || bytelane_lo__h59961[1:0] == 2'b10) ?
 	       8'd2 :
-	       y_avValue_snd_fst__h62807 ;
-  assign y_avValue_snd_fst__h62807 =
+	       y_avValue_snd_fst__h62817 ;
+  assign y_avValue_snd_fst__h62817 =
 	     axi4_to_st_rg_bytelane_slice_lo_066_PLUS_7_067_ETC___d1116 ?
 	       8'd4 :
 	       8'd8 ;
-  assign y_avValue_snd_fst__h66016 =
-	     (num_bytes__h65726 < 8'd4 ||
+  assign y_avValue_snd_fst__h66026 =
+	     (num_bytes__h65736 < 8'd4 ||
 	      axi4_to_st_rg_bytelane_lo[1:0] == 2'b10) ?
 	       8'd2 :
-	       y_avValue_snd_fst__h66049 ;
-  assign y_avValue_snd_fst__h66049 =
+	       y_avValue_snd_fst__h66059 ;
+  assign y_avValue_snd_fst__h66059 =
 	     axi4_to_st_rg_bytelane_hi_163_MINUS_axi4_to_st_ETC___d1174 ?
 	       8'd4 :
 	       8'd8 ;
-  assign y_avValue_snd_snd__h55886 = { 56'd0, shifted_slice__h55210[7:0] } ;
-  assign y_avValue_snd_snd__h55888 =
-	     (num_bytes__h55195 < 8'd4 || bytelane_lo__h52833[1:0] == 2'b10) ?
-	       y_avValue_snd_snd__h56135 :
-	       y_avValue_snd_snd__h56137 ;
-  assign y_avValue_snd_snd__h56135 = { 48'd0, shifted_slice__h55210[15:0] } ;
-  assign y_avValue_snd_snd__h56137 =
+  assign y_avValue_snd_snd__h55896 = { 56'd0, shifted_slice__h55220[7:0] } ;
+  assign y_avValue_snd_snd__h55898 =
+	     (num_bytes__h55205 < 8'd4 || bytelane_lo__h52843[1:0] == 2'b10) ?
+	       y_avValue_snd_snd__h56145 :
+	       y_avValue_snd_snd__h56147 ;
+  assign y_avValue_snd_snd__h56145 = { 48'd0, shifted_slice__h55220[15:0] } ;
+  assign y_avValue_snd_snd__h56147 =
 	     _7_MINUS_0_CONCAT_IF_f_wr_data_first__08_BIT_8__ETC___d998 ?
-	       y_avValue_snd_snd__h56142 :
-	       shifted_slice__h55210 ;
-  assign y_avValue_snd_snd__h56142 = { 32'd0, shifted_slice__h55210[31:0] } ;
-  assign y_avValue_snd_snd__h62562 = { 56'd0, shifted_slice__h62290[7:0] } ;
-  assign y_avValue_snd_snd__h62564 =
-	     (num_bytes__h62275 < 8'd4 || bytelane_lo__h59951[1:0] == 2'b10) ?
-	       y_avValue_snd_snd__h62806 :
-	       y_avValue_snd_snd__h62808 ;
-  assign y_avValue_snd_snd__h62806 = { 48'd0, shifted_slice__h62290[15:0] } ;
-  assign y_avValue_snd_snd__h62808 =
+	       y_avValue_snd_snd__h56152 :
+	       shifted_slice__h55220 ;
+  assign y_avValue_snd_snd__h56152 = { 32'd0, shifted_slice__h55220[31:0] } ;
+  assign y_avValue_snd_snd__h62572 = { 56'd0, shifted_slice__h62300[7:0] } ;
+  assign y_avValue_snd_snd__h62574 =
+	     (num_bytes__h62285 < 8'd4 || bytelane_lo__h59961[1:0] == 2'b10) ?
+	       y_avValue_snd_snd__h62816 :
+	       y_avValue_snd_snd__h62818 ;
+  assign y_avValue_snd_snd__h62816 = { 48'd0, shifted_slice__h62300[15:0] } ;
+  assign y_avValue_snd_snd__h62818 =
 	     axi4_to_st_rg_bytelane_slice_lo_066_PLUS_7_067_ETC___d1116 ?
-	       y_avValue_snd_snd__h62813 :
-	       shifted_slice__h62290 ;
-  assign y_avValue_snd_snd__h62813 = { 32'd0, shifted_slice__h62290[31:0] } ;
-  assign y_avValue_snd_snd__h66015 = { 56'd0, shifted_slice__h65741[7:0] } ;
-  assign y_avValue_snd_snd__h66017 =
-	     (num_bytes__h65726 < 8'd4 ||
+	       y_avValue_snd_snd__h62823 :
+	       shifted_slice__h62300 ;
+  assign y_avValue_snd_snd__h62823 = { 32'd0, shifted_slice__h62300[31:0] } ;
+  assign y_avValue_snd_snd__h66025 = { 56'd0, shifted_slice__h65751[7:0] } ;
+  assign y_avValue_snd_snd__h66027 =
+	     (num_bytes__h65736 < 8'd4 ||
 	      axi4_to_st_rg_bytelane_lo[1:0] == 2'b10) ?
-	       y_avValue_snd_snd__h66048 :
-	       y_avValue_snd_snd__h66050 ;
-  assign y_avValue_snd_snd__h66048 = { 48'd0, shifted_slice__h65741[15:0] } ;
-  assign y_avValue_snd_snd__h66050 =
+	       y_avValue_snd_snd__h66058 :
+	       y_avValue_snd_snd__h66060 ;
+  assign y_avValue_snd_snd__h66058 = { 48'd0, shifted_slice__h65751[15:0] } ;
+  assign y_avValue_snd_snd__h66060 =
 	     axi4_to_st_rg_bytelane_hi_163_MINUS_axi4_to_st_ETC___d1174 ?
-	       y_avValue_snd_snd__h66055 :
-	       shifted_slice__h65741 ;
-  assign y_avValue_snd_snd__h66055 = { 32'd0, shifted_slice__h65741[31:0] } ;
+	       y_avValue_snd_snd__h66065 :
+	       shifted_slice__h65751 ;
+  assign y_avValue_snd_snd__h66065 = { 32'd0, shifted_slice__h65751[31:0] } ;
 
   // handling of inlined registers
 
@@ -3685,15 +3676,15 @@ module mkDMA_Cache(CLK,
       if (WILL_FIRE_RL_rl_merge_rd_req &&
 	  axi4_s_xactor_f_rd_addr$D_OUT[28:21] != 8'd0)
 	begin
-	  v__h1939 = $stime;
+	  v__h1943 = $stime;
 	  #0;
 	end
-    v__h1933 = v__h1939 / 32'd10;
+    v__h1937 = v__h1943 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_merge_rd_req &&
 	  axi4_s_xactor_f_rd_addr$D_OUT[28:21] != 8'd0)
 	$display("%0d: ERROR: %m.rl_merge_rd_req: burst requests not supported",
-		 v__h1933);
+		 v__h1937);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_merge_rd_req &&
 	  axi4_s_xactor_f_rd_addr$D_OUT[28:21] != 8'd0)
@@ -3798,15 +3789,15 @@ module mkDMA_Cache(CLK,
       if (WILL_FIRE_RL_rl_merge_wr_req &&
 	  axi4_s_xactor_f_wr_addr$D_OUT[28:21] != 8'd0)
 	begin
-	  v__h2378 = $stime;
+	  v__h2385 = $stime;
 	  #0;
 	end
-    v__h2372 = v__h2378 / 32'd10;
+    v__h2379 = v__h2385 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_merge_wr_req &&
 	  axi4_s_xactor_f_wr_addr$D_OUT[28:21] != 8'd0)
 	$display("%0d: ERROR: %m.rl_merge_wr_req: burst requests not supported",
-		 v__h2372);
+		 v__h2379);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_merge_wr_req &&
 	  axi4_s_xactor_f_wr_addr$D_OUT[28:21] != 8'd0)
@@ -3911,16 +3902,16 @@ module mkDMA_Cache(CLK,
       if (WILL_FIRE_RL_rl_upgrade_rsp &&
 	  NOT_f_L2_to_L1_Rsps_first__39_BITS_578_TO_515__ETC___d442)
 	begin
-	  v__h21932 = $stime;
+	  v__h21939 = $stime;
 	  #0;
 	end
-    v__h21926 = v__h21932 / 32'd10;
+    v__h21933 = v__h21939 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_upgrade_rsp &&
 	  NOT_f_L2_to_L1_Rsps_first__39_BITS_578_TO_515__ETC___d442)
 	$display("%0d: %m.rl_upgrade_rsp: ERROR: rsp is not for addr %0h",
-		 v__h21926,
-		 line_addr__h3095);
+		 v__h21933,
+		 line_addr__h3102);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_upgrade_rsp &&
 	  NOT_f_L2_to_L1_Rsps_first__39_BITS_578_TO_515__ETC___d442)
@@ -3989,15 +3980,15 @@ module mkDMA_Cache(CLK,
       if (WILL_FIRE_RL_rl_upgrade_rsp && f_L2_to_L1_Rsps$D_OUT[512] &&
 	  rf_tag_sets$D_OUT_1[65:64] != 2'd0)
 	begin
-	  v__h22215 = $stime;
+	  v__h22222 = $stime;
 	  #0;
 	end
-    v__h22209 = v__h22215 / 32'd10;
+    v__h22216 = v__h22222 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_upgrade_rsp && f_L2_to_L1_Rsps$D_OUT[512] &&
 	  rf_tag_sets$D_OUT_1[65:64] != 2'd0)
 	$display("%0d: %m.rl_upgrade_rsp: ERROR: rsp has refill data for non-INVALID frame",
-		 v__h22209);
+		 v__h22216);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_upgrade_rsp && f_L2_to_L1_Rsps$D_OUT[512] &&
 	  rf_tag_sets$D_OUT_1[65:64] != 2'd0)
@@ -4060,15 +4051,15 @@ module mkDMA_Cache(CLK,
       if (WILL_FIRE_RL_rl_upgrade_rsp && !f_L2_to_L1_Rsps$D_OUT[512] &&
 	  rf_tag_sets$D_OUT_1[65:64] == 2'd0)
 	begin
-	  v__h22447 = $stime;
+	  v__h22454 = $stime;
 	  #0;
 	end
-    v__h22441 = v__h22447 / 32'd10;
+    v__h22448 = v__h22454 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_upgrade_rsp && !f_L2_to_L1_Rsps$D_OUT[512] &&
 	  rf_tag_sets$D_OUT_1[65:64] == 2'd0)
 	$display("%0d: %m.rl_upgrade_rsp: ERROR: rsp has no data for INVALID frame",
-		 v__h22441);
+		 v__h22448);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_upgrade_rsp && !f_L2_to_L1_Rsps$D_OUT[512] &&
 	  rf_tag_sets$D_OUT_1[65:64] == 2'd0)
@@ -4131,15 +4122,15 @@ module mkDMA_Cache(CLK,
       if (WILL_FIRE_RL_axi4_to_ld_rl_start_xaction &&
 	  !_1_SL_f_rd_addr_first__52_BITS_20_TO_18_56_57_U_ETC___d658)
 	begin
-	  v__h41916 = $stime;
+	  v__h41923 = $stime;
 	  #0;
 	end
-    v__h41910 = v__h41916 / 32'd10;
+    v__h41917 = v__h41923 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_axi4_to_ld_rl_start_xaction &&
 	  !_1_SL_f_rd_addr_first__52_BITS_20_TO_18_56_57_U_ETC___d658)
 	$display("%0d: %m.AXI4_to_LD:rl_start_xaction ================",
-		 v__h41910);
+		 v__h41917);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_axi4_to_ld_rl_start_xaction &&
 	  !_1_SL_f_rd_addr_first__52_BITS_20_TO_18_56_57_U_ETC___d658)
@@ -4154,15 +4145,15 @@ module mkDMA_Cache(CLK,
       if (WILL_FIRE_RL_axi4_to_ld_rl_start_xaction &&
 	  f_rd_addr$D_OUT[28:21] != 8'd0)
 	begin
-	  v__h42084 = $stime;
+	  v__h42091 = $stime;
 	  #0;
 	end
-    v__h42078 = v__h42084 / 32'd10;
+    v__h42085 = v__h42091 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_axi4_to_ld_rl_start_xaction &&
 	  f_rd_addr$D_OUT[28:21] != 8'd0)
 	$display("%0d: %m.AXI4_to_LD:rl_start_xaction ================",
-		 v__h42078);
+		 v__h42085);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_axi4_to_ld_rl_start_xaction &&
 	  f_rd_addr$D_OUT[28:21] != 8'd0)
@@ -4296,15 +4287,15 @@ module mkDMA_Cache(CLK,
       if (WILL_FIRE_RL_axi4_to_st_rl_start_xaction &&
 	  !_1_SL_f_wr_addr_first__11_BITS_20_TO_18_15_16_U_ETC___d917)
 	begin
-	  v__h52156 = $stime;
+	  v__h52166 = $stime;
 	  #0;
 	end
-    v__h52150 = v__h52156 / 32'd10;
+    v__h52160 = v__h52166 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_axi4_to_st_rl_start_xaction &&
 	  !_1_SL_f_wr_addr_first__11_BITS_20_TO_18_15_16_U_ETC___d917)
 	$display("%0d: %m.AXI4_to_ST:rl_start_xaction ================",
-		 v__h52150);
+		 v__h52160);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_axi4_to_st_rl_start_xaction &&
 	  !_1_SL_f_wr_addr_first__11_BITS_20_TO_18_15_16_U_ETC___d917)
@@ -4319,15 +4310,15 @@ module mkDMA_Cache(CLK,
       if (WILL_FIRE_RL_axi4_to_st_rl_start_xaction &&
 	  f_wr_addr$D_OUT[28:21] != 8'd0)
 	begin
-	  v__h52329 = $stime;
+	  v__h52339 = $stime;
 	  #0;
 	end
-    v__h52323 = v__h52329 / 32'd10;
+    v__h52333 = v__h52339 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_axi4_to_st_rl_start_xaction &&
 	  f_wr_addr$D_OUT[28:21] != 8'd0)
 	$display("%0d: %m.AXI4_to_ST:rl_start_xaction ================",
-		 v__h52323);
+		 v__h52333);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_axi4_to_st_rl_start_xaction &&
 	  f_wr_addr$D_OUT[28:21] != 8'd0)
@@ -4340,14 +4331,14 @@ module mkDMA_Cache(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_axi4_to_st_rl_start_xaction && !f_wr_data$D_OUT[0])
 	begin
-	  v__h52523 = $stime;
+	  v__h52533 = $stime;
 	  #0;
 	end
-    v__h52517 = v__h52523 / 32'd10;
+    v__h52527 = v__h52533 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_axi4_to_st_rl_start_xaction && !f_wr_data$D_OUT[0])
 	$display("%0d: %m.AXI4_to_ST:rl_start_xaction ================",
-		 v__h52517);
+		 v__h52527);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_axi4_to_st_rl_start_xaction && !f_wr_data$D_OUT[0])
 	$display("  ERROR: illegal AXI4 request");

@@ -1,0 +1,17 @@
+// SoC_Map for Catamaran
+
+VAL pc_reset_value      8000_0000
+VAL mtvec_reset_value        1000
+VAL nmivec_reset_value          0
+
+IO  boot_rom          0001_0000    0001_0000    // 4KiB
+
+IO  near_mem_io       0200_0000    0001_0000    // 64KiB
+IO  plic              0C00_0000    0400_0000    // 64MiB
+IO  host_access       4000_0000    0000_4000    // 16KiB
+IO  uart16550_0       6010_0000    0000_1000    // 4KiB
+IO  msi               6020_0000    0000_0004    // 4B
+IO  gpio              6FFF_0000    0001_0000    // 64K
+IO  sram              7000_0000    0040_0000    // 4MiB
+
+MEM ddr4_0_cached     8000_0000    8000_0000    // 2GiB

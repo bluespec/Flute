@@ -3442,25 +3442,25 @@ module mkAWSteria_Core(CLK_clk1,
   // rule RL_rl_connect
   assign CAN_FIRE_RL_rl_connect =
 	     core_inner_f_pc_trace_control$sFULL_N &&
-	     host_cs$RDY_fo_pc_trace_control_deq &&
+	     host_cs$RDY_fo_pc_trace_control_first_fst &&
 	     host_cs$RDY_fo_pc_trace_control_first_snd &&
-	     host_cs$RDY_fo_pc_trace_control_first_fst ;
+	     host_cs$RDY_fo_pc_trace_control_deq ;
   assign WILL_FIRE_RL_rl_connect = CAN_FIRE_RL_rl_connect ;
 
   // rule RL_rl_connect_1
   assign CAN_FIRE_RL_rl_connect_1 =
 	     core_inner_f_verbosity_control$sFULL_N &&
-	     host_cs$RDY_fo_verbosity_control_deq &&
+	     host_cs$RDY_fo_verbosity_control_first_fst &&
 	     host_cs$RDY_fo_verbosity_control_first_snd &&
-	     host_cs$RDY_fo_verbosity_control_first_fst ;
+	     host_cs$RDY_fo_verbosity_control_deq ;
   assign WILL_FIRE_RL_rl_connect_1 = CAN_FIRE_RL_rl_connect_1 ;
 
   // rule RL_rl_connect_2
   assign CAN_FIRE_RL_rl_connect_2 =
 	     core_inner_f_watch_tohost_control$sFULL_N &&
-	     host_cs$RDY_fo_watch_tohost_control_deq &&
+	     host_cs$RDY_fo_watch_tohost_control_first_fst &&
 	     host_cs$RDY_fo_watch_tohost_control_first_snd &&
-	     host_cs$RDY_fo_watch_tohost_control_first_fst ;
+	     host_cs$RDY_fo_watch_tohost_control_deq ;
   assign WILL_FIRE_RL_rl_connect_2 = CAN_FIRE_RL_rl_connect_2 ;
 
   // rule RL_rl_connect_3
@@ -3538,8 +3538,8 @@ module mkAWSteria_Core(CLK_clk1,
 
   // rule RL_rl_ndm_reset
   assign CAN_FIRE_RL_rl_ndm_reset =
-	     debug_module$RDY_ndm_reset_client_response_put &&
-	     debug_module$RDY_ndm_reset_client_request_get ;
+	     debug_module$RDY_ndm_reset_client_request_get &&
+	     debug_module$RDY_ndm_reset_client_response_put ;
   assign WILL_FIRE_RL_rl_ndm_reset = CAN_FIRE_RL_rl_ndm_reset ;
 
   // rule RL_core_inner_rl_wr_addr_channel

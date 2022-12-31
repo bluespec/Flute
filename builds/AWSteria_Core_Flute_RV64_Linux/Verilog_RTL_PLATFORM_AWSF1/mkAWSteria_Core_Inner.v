@@ -2144,10 +2144,10 @@ module mkAWSteria_Core_Inner(CLK,
 
   // declarations used by system tasks
   // synopsys translate_off
-  reg [31 : 0] v__h7892;
-  reg [31 : 0] v__h7584;
-  reg [31 : 0] v__h7578;
-  reg [31 : 0] v__h7886;
+  reg [31 : 0] v__h7893;
+  reg [31 : 0] v__h7585;
+  reg [31 : 0] v__h7579;
+  reg [31 : 0] v__h7887;
   // synopsys translate_on
 
   // remaining internal signals
@@ -3558,10 +3558,10 @@ module mkAWSteria_Core_Inner(CLK,
 
   // rule RL_rl_first_init_finish
   assign CAN_FIRE_RL_rl_first_init_finish =
-	     near_mem_io$RDY_set_addr_map &&
 	     plic$RDY_server_reset_response_get &&
 	     near_mem_io$RDY_server_reset_response_get &&
 	     cpu$RDY_hart0_server_reset_response_get &&
+	     near_mem_io$RDY_set_addr_map &&
 	     rg_module_state == 2'd1 ;
   assign WILL_FIRE_RL_rl_first_init_finish =
 	     CAN_FIRE_RL_rl_first_init_finish ;
@@ -4240,13 +4240,13 @@ module mkAWSteria_Core_Inner(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_first_init_finish)
 	begin
-	  v__h7892 = $stime;
+	  v__h7893 = $stime;
 	  #0;
 	end
-    v__h7886 = v__h7892 / 32'd10;
+    v__h7887 = v__h7893 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_first_init_finish)
-	$display("    %0d: rule rl_first_init_start", v__h7886);
+	$display("    %0d: rule rl_first_init_start", v__h7887);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_first_init_start)
 	$display("AWSteria_Core_Inner: start post-reset initializations ...");
@@ -4255,13 +4255,13 @@ module mkAWSteria_Core_Inner(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_first_init_start)
 	begin
-	  v__h7584 = $stime;
+	  v__h7585 = $stime;
 	  #0;
 	end
-    v__h7578 = v__h7584 / 32'd10;
+    v__h7579 = v__h7585 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_first_init_start)
-	$display("    %0d: rule rl_first_init_start", v__h7578);
+	$display("    %0d: rule rl_first_init_start", v__h7579);
   end
   // synopsys translate_on
 endmodule  // mkAWSteria_Core_Inner
