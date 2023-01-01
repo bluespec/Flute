@@ -835,8 +835,11 @@ module mkDMA_Cache(CLK,
        MUX_axi4_to_st_rg_bytelane_slice_lo$write_1__SEL_3,
        MUX_axi4_to_st_rg_discard_count$write_1__SEL_1,
        MUX_f_L1_to_L2_Rsps$enq_1__SEL_1,
+       MUX_f_single_reqs$enq_1__SEL_1,
+       MUX_f_single_reqs$enq_1__SEL_2,
        MUX_rg_state$write_1__SEL_1,
-       MUX_rg_state$write_1__SEL_2;
+       MUX_rg_state$write_1__SEL_2,
+       MUX_rg_state$write_1__SEL_3;
 
   // declarations used by system tasks
   // synopsys translate_off
@@ -1530,10 +1533,8 @@ module mkDMA_Cache(CLK,
   assign WILL_FIRE_RL_rl_hit = CAN_FIRE_RL_rl_hit ;
 
   // rule RL_rl_upgrade_req
-  assign CAN_FIRE_RL_rl_upgrade_req =
-	     f_reqs$EMPTY_N && f_L1_to_L2_Reqs$FULL_N &&
-	     rg_state_EQ_1_1_AND_NOT_f_L2_to_L1_Reqs_notEmp_ETC___d428 ;
-  assign WILL_FIRE_RL_rl_upgrade_req = CAN_FIRE_RL_rl_upgrade_req ;
+  assign CAN_FIRE_RL_rl_upgrade_req = MUX_rg_state$write_1__SEL_3 ;
+  assign WILL_FIRE_RL_rl_upgrade_req = MUX_rg_state$write_1__SEL_3 ;
 
   // rule RL_rl_upgrade_rsp
   assign CAN_FIRE_RL_rl_upgrade_rsp = MUX_rg_state$write_1__SEL_2 ;
@@ -1547,10 +1548,8 @@ module mkDMA_Cache(CLK,
   assign WILL_FIRE_RL_rl_mmio_AXI_rd_req = CAN_FIRE_RL_rl_mmio_AXI_rd_req ;
 
   // rule RL_rl_mmio_LD_req
-  assign CAN_FIRE_RL_rl_mmio_LD_req =
-	     axi4_to_ld_f_reqs$EMPTY_N && f_single_reqs$FULL_N &&
-	     f_mmio_rsp_is_load$FULL_N ;
-  assign WILL_FIRE_RL_rl_mmio_LD_req = CAN_FIRE_RL_rl_mmio_LD_req ;
+  assign CAN_FIRE_RL_rl_mmio_LD_req = MUX_f_single_reqs$enq_1__SEL_1 ;
+  assign WILL_FIRE_RL_rl_mmio_LD_req = MUX_f_single_reqs$enq_1__SEL_1 ;
 
   // rule RL_rl_mmio_LD_rsp
   assign CAN_FIRE_RL_rl_mmio_LD_rsp =
@@ -1580,8 +1579,7 @@ module mkDMA_Cache(CLK,
   assign CAN_FIRE_RL_rl_mmio_ST_req =
 	     f_single_reqs$FULL_N && f_mmio_rsp_is_load$FULL_N &&
 	     axi4_to_st_f_reqs$EMPTY_N ;
-  assign WILL_FIRE_RL_rl_mmio_ST_req =
-	     CAN_FIRE_RL_rl_mmio_ST_req && !WILL_FIRE_RL_rl_mmio_LD_req ;
+  assign WILL_FIRE_RL_rl_mmio_ST_req = MUX_f_single_reqs$enq_1__SEL_2 ;
 
   // rule RL_rl_mmio_st_rsp
   assign CAN_FIRE_RL_rl_mmio_st_rsp =
@@ -1805,6 +1803,11 @@ module mkDMA_Cache(CLK,
 	     rf_tag_sets$D_OUT_2[65:64] != 2'd0 &&
 	     !rf_tag_sets_sub_f_L2_to_L1_Reqs_first__1_BITS__ETC___d67 &&
 	     rf_tag_sets_sub_f_L2_to_L1_Reqs_first__1_BITS__ETC___d72 ;
+  assign MUX_f_single_reqs$enq_1__SEL_1 =
+	     axi4_to_ld_f_reqs$EMPTY_N && f_single_reqs$FULL_N &&
+	     f_mmio_rsp_is_load$FULL_N ;
+  assign MUX_f_single_reqs$enq_1__SEL_2 =
+	     CAN_FIRE_RL_rl_mmio_ST_req && !WILL_FIRE_RL_rl_mmio_LD_req ;
   assign MUX_rg_state$write_1__SEL_1 =
 	     WILL_FIRE_RL_rl_init && rg_init_index == 6'd63 ;
   assign MUX_rg_state$write_1__SEL_2 =
@@ -1812,6 +1815,9 @@ module mkDMA_Cache(CLK,
 	     IF_f_reqs_first__5_BIT_685_14_THEN_axi4_s_xact_ETC___d117 &&
 	     rg_state == 2'd3 &&
 	     !f_L2_to_L1_Reqs$EMPTY_N ;
+  assign MUX_rg_state$write_1__SEL_3 =
+	     f_reqs$EMPTY_N && f_L1_to_L2_Reqs$FULL_N &&
+	     rg_state_EQ_1_1_AND_NOT_f_L2_to_L1_Reqs_notEmp_ETC___d428 ;
   assign MUX_axi4_s_xactor_f_rd_data$enq_1__VAL_1 =
 	     { f_reqs$D_OUT[684:669], rf_data_sets$D_OUT_1, 3'd1 } ;
   assign MUX_axi4_s_xactor_f_rd_data$enq_1__VAL_2 =
@@ -2513,7 +2519,7 @@ module mkDMA_Cache(CLK,
 	     WILL_FIRE_RL_axi4_to_ld_rl_next_slice &&
 	     !axi4_to_ld_rg_bytelane_slice_lo_44_PLUS_7_45_U_ETC___d748 ||
 	     WILL_FIRE_RL_axi4_to_ld_rl_partial ;
-  assign axi4_to_ld_f_reqs$DEQ = CAN_FIRE_RL_rl_mmio_LD_req ;
+  assign axi4_to_ld_f_reqs$DEQ = MUX_f_single_reqs$enq_1__SEL_1 ;
   assign axi4_to_ld_f_reqs$CLR = 1'b0 ;
 
   // submodule axi4_to_ld_f_rsps
@@ -2562,7 +2568,7 @@ module mkDMA_Cache(CLK,
 	     WILL_FIRE_RL_axi4_to_st_rl_start_xaction &&
 	     f_wr_data_first__08_BIT_0_09_AND_f_wr_addr_fir_ETC___d988 ||
 	     WILL_FIRE_RL_axi4_to_st_rl_partial ;
-  assign axi4_to_st_f_reqs$DEQ = WILL_FIRE_RL_rl_mmio_ST_req ;
+  assign axi4_to_st_f_reqs$DEQ = MUX_f_single_reqs$enq_1__SEL_2 ;
   assign axi4_to_st_f_reqs$CLR = 1'b0 ;
 
   // submodule axi4_to_st_f_rsps
@@ -2597,7 +2603,7 @@ module mkDMA_Cache(CLK,
 	       rf_tag_sets$D_OUT_1[65:64],
 	       f_reqs$D_OUT[685] ? 2'd2 : 2'd1,
 	       f_reqs$D_OUT[685] } ;
-  assign f_L1_to_L2_Reqs$ENQ = CAN_FIRE_RL_rl_upgrade_req ;
+  assign f_L1_to_L2_Reqs$ENQ = MUX_rg_state$write_1__SEL_3 ;
   assign f_L1_to_L2_Reqs$DEQ = EN_l1_to_l2_client_request_deq ;
   assign f_L1_to_L2_Reqs$CLR = 1'b0 ;
 
@@ -2674,7 +2680,10 @@ module mkDMA_Cache(CLK,
   // submodule f_single_rsps
   assign f_single_rsps$D_IN = mmio_client_response_put ;
   assign f_single_rsps$ENQ = EN_mmio_client_response_put ;
-  assign f_single_rsps$DEQ = CAN_FIRE_RL_rl_mmio_LD_rsp ;
+  assign f_single_rsps$DEQ =
+	     f_mmio_rsp_is_load$EMPTY_N && f_single_rsps$EMPTY_N &&
+	     axi4_to_ld_f_rsps$FULL_N &&
+	     f_mmio_rsp_is_load$D_OUT ;
   assign f_single_rsps$CLR = 1'b0 ;
 
   // submodule f_wr_addr

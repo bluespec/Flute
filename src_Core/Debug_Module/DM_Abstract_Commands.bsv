@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2022 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2017-2023 Bluespec, Inc. All Rights Reserved.
 
 package DM_Abstract_Commands;
 
@@ -112,7 +112,6 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 	    $display ("ERROR: Debug Module: Abstract Command write: [abstractcs] <= 0x%08h:",
 		      dm_word);
 	    $display ("    Debug Module is busy with a previous abstract command");
-
 	 end
 	 else if (fn_abstractcs_cmderr (dm_word) != DM_ABSTRACTCS_CMDERR_NONE) begin
 	    rg_abstractcs_cmderr <= DM_ABSTRACTCS_CMDERR_NONE;
@@ -297,7 +296,7 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
 			     && is_csr);
       let rsp <- pop (f_hart0_csr_rsps);
       rg_abstractcs_cmderr <= (rsp.ok
-			       ? DM_ABSTRACTCS_CMDERR_NONE 
+			       ? DM_ABSTRACTCS_CMDERR_NONE
 			       : DM_ABSTRACTCS_CMDERR_HALT_RESUME);
       rg_abstractcs_busy   <= False;
 
@@ -571,7 +570,8 @@ module mkDM_Abstract_Commands (DM_Abstract_Commands_IFC);
       rg_data2 <= 0;
       rg_data3 <= 0;
 
-      $display ("Debug Module: debug module reset");
+      if (verbosity != 0)
+	 $display ("Debug Module: debug module reset");
       fa_debug_show_location (verbosity);
       if (verbosity != 0) $display ("ma_reset");
    endmethod

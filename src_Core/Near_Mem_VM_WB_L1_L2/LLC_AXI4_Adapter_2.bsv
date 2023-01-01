@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2021 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2016-2023 Bluespec, Inc. All Rights Reserved.
 
 package LLC_AXI4_Adapter_2;
 
@@ -225,9 +225,11 @@ module mkLLC_AXi4_Adapter #(MemFifoClient #(idT, childT) llc)
    // Inform core that DDR4 has been initialized and is ready to accept requests
    method Action ma_ddr4_ready;
       rg_ddr4_ready <= True;
-      $display ("%0d: LLC_AXI4_Adapter_2: enabling all rules", cur_cycle);
-      $display ("        At: %m");
-      $display ("            method ma_ddr4_ready");
+      if (verbosity != 0) begin
+	 $display ("%0d: LLC_AXI4_Adapter_2: enabling all rules", cur_cycle);
+	 $display ("        At: %m");
+	 $display ("            method ma_ddr4_ready");
+      end
    endmethod
 
    // Misc. status; 0 = running, no error

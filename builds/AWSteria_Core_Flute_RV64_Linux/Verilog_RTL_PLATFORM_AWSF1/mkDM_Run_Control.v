@@ -894,8 +894,6 @@ module mkDM_Run_Control(CLK,
 	$write("False");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_hart0_run_rsp) $write("\n");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (EN_reset) $display("Debug Module: reset");
   end
   // synopsys translate_on
 endmodule  // mkDM_Run_Control

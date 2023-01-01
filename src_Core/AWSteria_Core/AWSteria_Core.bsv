@@ -96,6 +96,8 @@ module mkAWSteria_Core #(Clock clk1,        // extra clock
 			 Clock clk5)        // extra clock
                        (AWSteria_Core_IFC_Specialized);
 
+   Integer verbosity = 0;
+
    let clk_cur  <- exposeCurrentClock;
    let rstn_cur <- exposeCurrentReset;
 
@@ -187,19 +189,23 @@ module mkAWSteria_Core #(Clock clk1,        // extra clock
    rule rl_assert_reset_for_inner_core (host_cs.mv_assert_core_reset || rg_debug_module_ndm_reset);
       if (host_cs.mv_assert_core_reset) begin
 	 if (! rg_core_reset_message_displayed) begin
-	    $display ("AWSteria_Core: asserting Core_Inner reset due to host-control");
+	    if (verbosity != 0)
+	       $display ("AWSteria_Core: asserting Core_Inner reset due to host-control");
 	    rg_core_reset_message_displayed <= True;
 	 end
       end
-      else
-	 $display ("AWSteria_Core: asserting Core_Inner reset due to NDM reset from Debug Module");
+      else begin
+	 if (verbosity != 0)
+	    $display ("AWSteria_Core: asserting Core_Inner reset due to NDM reset from Debug Module");
+      end
       innerRstIfc.assertReset();
       rg_debug_module_ndm_reset <= False;
    endrule
 
    rule rl_on_deassert_core_reset (rg_core_reset_message_displayed
 				   && (! host_cs.mv_assert_core_reset));
-      $display ("AWSteria_Core: de-asserting Core_Inner reset due to host-control");
+      if (verbosity != 0)
+	 $display ("AWSteria_Core: de-asserting Core_Inner reset due to host-control");
       // Prepare for next core reset
       rg_core_reset_message_displayed <= False;
    endrule

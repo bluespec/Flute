@@ -654,12 +654,6 @@ module mkDebug_Module(CLK,
        WILL_FIRE_ndm_reset_client_request_get,
        WILL_FIRE_ndm_reset_client_response_put;
 
-  // declarations used by system tasks
-  // synopsys translate_off
-  reg [31 : 0] v__h897;
-  reg [31 : 0] v__h891;
-  // synopsys translate_on
-
   // action method dmi_read_addr
   assign RDY_dmi_read_addr = !f_read_addr_rv[7] ;
   assign CAN_FIRE_dmi_read_addr = !f_read_addr_rv[7] ;
@@ -1249,24 +1243,6 @@ module mkDebug_Module(CLK,
     f_read_addr_rv = 8'hAA;
   end
   `endif // BSV_NO_INITIAL_BLOCKS
-  // synopsys translate_on
-
-  // handling of system tasks
-
-  // synopsys translate_off
-  always@(negedge CLK)
-  begin
-    #0;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_reset)
-	begin
-	  v__h897 = $stime;
-	  #0;
-	end
-    v__h891 = v__h897 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_reset) $display("%0d: Debug_Module reset", v__h891);
-  end
   // synopsys translate_on
 endmodule  // mkDebug_Module
 

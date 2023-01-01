@@ -1,4 +1,4 @@
-// Copyright (c) 2022 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2022-2023 Bluespec, Inc. All Rights Reserved.
 // Author: Rishiyur S. Nikhil
 
 package AWSteria_Core_Inner;
@@ -237,9 +237,11 @@ module mkAWSteria_Core_Inner (AWSteria_Core_Inner_IFC);
 
       rg_module_state <= MODULE_STATE_INIT_1;
 
-      $display ("AWSteria_Core_Inner: start post-reset initializations ...");
-      $display ("    %m");
-      $display ("    %0d: rule rl_first_init_start", cur_cycle);
+      if (verbosity != 0) begin
+	 $display ("AWSteria_Core_Inner: start post-reset initializations ...");
+	 $display ("    %m");
+	 $display ("    %0d: rule rl_first_init_start", cur_cycle);
+      end
    endrule
 
    rule rl_first_init_finish (rg_module_state == MODULE_STATE_INIT_1);
@@ -259,9 +261,11 @@ module mkAWSteria_Core_Inner (AWSteria_Core_Inner_IFC);
 
       rg_module_state <= MODULE_STATE_READY;
 
-      $display ("AWSteria_Core_Inner: finish post-reset Initializations ...");
-      $display ("    %m");
-      $display ("    %0d: rule rl_first_init_start", cur_cycle);
+      if (verbosity != 0) begin
+	 $display ("AWSteria_Core_Inner: finish post-reset Initializations ...");
+	 $display ("    %m");
+	 $display ("    %0d: rule rl_first_init_finish", cur_cycle);
+      end
    endrule
 
    // ================================================================

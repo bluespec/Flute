@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2022 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2016-2023 Bluespec, Inc. All Rights Reserved.
 
 package Cache;
 
@@ -1114,15 +1114,17 @@ module mkCache #(parameter Bool      dcache_not_icache,
       if (rg_cset_in_cache == fromInteger (csets_per_cache - 1)) begin
 	 rg_fsm_state <= FSM_IDLE;
 
-	 $display ("%0d: INFO: %m.rl_initialize", cur_cycle);
-	 $display ("    Size %0d KB, Associativity %0d, CLine size %0d bytes (= %0d XLEN words)",
-		   kb_per_cache, ways_per_cset, (cwords_per_cline * 8),
+	 if (verbosity != 0) begin
+	    $display ("%0d: INFO: %m.rl_initialize", cur_cycle);
+	    $display ("    Size %0d KB, Associativity %0d, CLine size %0d bytes (= %0d XLEN words)",
+		      kb_per_cache, ways_per_cset, (cwords_per_cline * 8),
 `ifdef RV32
-		   (cwords_per_cline * 2)
+		      (cwords_per_cline * 2)
 `else
-		   (cwords_per_cline * 1)
+		      (cwords_per_cline * 1)
 `endif
-		   );
+		      );
+	 end
 	 if (verbosity >= 1)
 	    $display ("    All clines (%0d sets %0d ways) initialized to INVALID",
 		      cur_cycle, csets_per_cache, ways_per_cset);

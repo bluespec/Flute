@@ -2142,16 +2142,8 @@ module mkAWSteria_Core_Inner(CLK,
        WILL_FIRE_sba_S_m_rready,
        WILL_FIRE_sba_S_m_wvalid;
 
-  // declarations used by system tasks
-  // synopsys translate_off
-  reg [31 : 0] v__h7893;
-  reg [31 : 0] v__h7585;
-  reg [31 : 0] v__h7579;
-  reg [31 : 0] v__h7887;
-  // synopsys translate_on
-
   // remaining internal signals
-  wire cpu_mv_tohost_value__23_EQ_rg_prev_tohost_valu_ETC___d325;
+  wire cpu_mv_tohost_value__19_EQ_rg_prev_tohost_valu_ETC___d321;
 
   // value method mem_M_m_awvalid
   assign mem_M_awvalid = cpu$mem_master_awvalid ;
@@ -3568,8 +3560,9 @@ module mkAWSteria_Core_Inner(CLK,
 
   // rule RL_rl_first_init_start
   assign CAN_FIRE_RL_rl_first_init_start =
-	     mmio_fabric$RDY_reset && plic$RDY_server_reset_request_put &&
+	     plic$RDY_server_reset_request_put &&
 	     near_mem_io$RDY_server_reset_request_put &&
+	     mmio_fabric$RDY_reset &&
 	     cpu$RDY_hart0_server_reset_request_put &&
 	     rg_module_state == 2'd0 ;
   assign WILL_FIRE_RL_rl_first_init_start = CAN_FIRE_RL_rl_first_init_start ;
@@ -3585,7 +3578,7 @@ module mkAWSteria_Core_Inner(CLK,
 
   // rule RL_rl_tohost_value
   assign CAN_FIRE_RL_rl_tohost_value =
-	     cpu_mv_tohost_value__23_EQ_rg_prev_tohost_valu_ETC___d325 ||
+	     cpu_mv_tohost_value__19_EQ_rg_prev_tohost_valu_ETC___d321 ||
 	     f_tohost_value$FULL_N ;
   assign WILL_FIRE_RL_rl_tohost_value = CAN_FIRE_RL_rl_tohost_value ;
 
@@ -3623,13 +3616,13 @@ module mkAWSteria_Core_Inner(CLK,
 
   // register rg_nmi
   assign rg_nmi$D_IN = f_nmi$D_OUT ;
-  assign rg_nmi$EN = f_nmi$EMPTY_N && rg_module_state == 2'd2 ;
+  assign rg_nmi$EN = CAN_FIRE_RL_rl_register_nmi ;
 
   // register rg_prev_tohost_value
   assign rg_prev_tohost_value$D_IN = cpu$mv_tohost_value ;
   assign rg_prev_tohost_value$EN =
 	     WILL_FIRE_RL_rl_tohost_value &&
-	     !cpu_mv_tohost_value__23_EQ_rg_prev_tohost_valu_ETC___d325 ;
+	     !cpu_mv_tohost_value__19_EQ_rg_prev_tohost_valu_ETC___d321 ;
 
   // register rg_s_external_interrupt
   assign rg_s_external_interrupt$D_IN = plic$v_targets_1_m_eip ;
@@ -3856,7 +3849,7 @@ module mkAWSteria_Core_Inner(CLK,
   assign f_tohost_value$D_IN = cpu$mv_tohost_value ;
   assign f_tohost_value$ENQ =
 	     WILL_FIRE_RL_rl_tohost_value &&
-	     !cpu_mv_tohost_value__23_EQ_rg_prev_tohost_valu_ETC___d325 ;
+	     !cpu_mv_tohost_value__19_EQ_rg_prev_tohost_valu_ETC___d321 ;
   assign f_tohost_value$DEQ = EN_fo_tohost_value_deq ;
   assign f_tohost_value$CLR = 1'b0 ;
 
@@ -4168,7 +4161,7 @@ module mkAWSteria_Core_Inner(CLK,
 	     dma_server_axi4_deburster$from_master_wready ;
 
   // remaining internal signals
-  assign cpu_mv_tohost_value__23_EQ_rg_prev_tohost_valu_ETC___d325 =
+  assign cpu_mv_tohost_value__19_EQ_rg_prev_tohost_valu_ETC___d321 =
 	     cpu$mv_tohost_value == rg_prev_tohost_value ;
 
   // handling of inlined registers
@@ -4224,45 +4217,6 @@ module mkAWSteria_Core_Inner(CLK,
     rg_timer_interrupt = 1'h0;
   end
   `endif // BSV_NO_INITIAL_BLOCKS
-  // synopsys translate_on
-
-  // handling of system tasks
-
-  // synopsys translate_off
-  always@(negedge CLK)
-  begin
-    #0;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_first_init_finish)
-	$display("AWSteria_Core_Inner: finish post-reset Initializations ...");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_first_init_finish) $display("    %m");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_first_init_finish)
-	begin
-	  v__h7893 = $stime;
-	  #0;
-	end
-    v__h7887 = v__h7893 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_first_init_finish)
-	$display("    %0d: rule rl_first_init_start", v__h7887);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_first_init_start)
-	$display("AWSteria_Core_Inner: start post-reset initializations ...");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_first_init_start) $display("    %m");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_first_init_start)
-	begin
-	  v__h7585 = $stime;
-	  #0;
-	end
-    v__h7579 = v__h7585 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_first_init_start)
-	$display("    %0d: rule rl_first_init_start", v__h7579);
-  end
   // synopsys translate_on
 endmodule  // mkAWSteria_Core_Inner
 

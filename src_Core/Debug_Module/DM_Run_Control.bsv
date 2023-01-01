@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2021 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2017-2023 Bluespec, Inc. All Rights Reserved.
 
 package DM_Run_Control;
 
@@ -227,7 +227,6 @@ module mkDM_Run_Control (DM_Run_Control_IFC);
 
 	 // Run/Halt commands
 	 else begin
-	    // (! hartreset)
 	    if (rg_dmcontrol_hartreset && (verbosity > 0))
 	       $display ("Debug Module: clearing hartreset");
 

@@ -315,7 +315,7 @@ module mkDM_Abstract_Commands(CLK,
   // remaining internal signals
   wire [63 : 0] req_data__h908;
   wire [31 : 0] virt_rg_abstractcs__h774, virt_rg_command__h824;
-  wire [15 : 0] regno__h3459;
+  wire [15 : 0] regno__h3442;
   wire [12 : 0] x__h1525, x__h2106;
   wire NOT_rg_abstractcs_busy_51_AND_write_dm_word_BI_ETC___d161,
        NOT_rg_abstractcs_busy_51_AND_write_dm_word_BI_ETC___d170,
@@ -920,7 +920,7 @@ module mkDM_Abstract_Commands(CLK,
 	     write_dm_word[22:20] == 3'd3 &&
 	     !write_dm_word[18] &&
 	     !write_dm_word[17] ;
-  assign regno__h3459 = { 3'd0, rg_command_access_reg_regno } ;
+  assign regno__h3442 = { 3'd0, rg_command_access_reg_regno } ;
   assign req_data__h908 = { rg_data1, rg_data0 } ;
   assign rg_abstractcs_busy_AND_rg_start_reg_access_AND_ETC___d38 =
 	     rg_abstractcs_busy && rg_start_reg_access &&
@@ -959,7 +959,7 @@ module mkDM_Abstract_Commands(CLK,
   assign virt_rg_abstractcs__h774 =
 	     { 19'd0, rg_abstractcs_busy, 1'b0, rg_abstractcs_cmderr, 8'd4 } ;
   assign virt_rg_command__h824 =
-	     { 15'd17, rg_command_access_reg_write, regno__h3459 } ;
+	     { 15'd17, rg_command_access_reg_write, regno__h3442 } ;
   assign write_dm_addr_EQ_0x16_08_AND_rg_abstractcs_bus_ETC___d131 =
 	     write_dm_addr == 7'h16 &&
 	     (rg_abstractcs_busy || write_dm_word[10:8] != 3'd0) ||
@@ -1489,8 +1489,6 @@ module mkDM_Abstract_Commands(CLK,
       if (WILL_FIRE_RL_rl_unknown_read_start)
 	$display("ERROR: Debug Module: Abstract Command READ: unknown regno [0x%0h]",
 		 rg_command_access_reg_regno);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (EN_reset) $display("Debug Module: debug module reset");
   end
   // synopsys translate_on
 endmodule  // mkDM_Abstract_Commands

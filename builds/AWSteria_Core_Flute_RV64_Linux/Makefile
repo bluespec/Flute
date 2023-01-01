@@ -117,7 +117,6 @@ BSC_PATH := $(BSC_PATH):$(FLUTE_REPO)/src_Core/Cache_Config
 BSC_PATH := $(BSC_PATH):$(FLUTE_REPO)/src_Core/$(NEAR_MEM_VM_DIR)
 BSC_PATH := $(BSC_PATH):$(FLUTE_REPO)/src_Core/PLIC
 BSC_PATH := $(BSC_PATH):$(FLUTE_REPO)/src_Core/Near_Mem_IO
-BSC_PATH := $(BSC_PATH):$(FLUTE_REPO)/src_Core/Debug_Module
 
 # Additional libs
 BSC_PATH := $(BSC_PATH):$(BSV_ADDITIONAL_LIBS)
@@ -125,6 +124,9 @@ BSC_PATH := $(BSC_PATH):$(BSV_ADDITIONAL_LIBS)
 # Fabrics
 BSC_PATH := $(BSC_PATH):$(AMBA_FABRICS)/AXI4
 BSC_PATH := $(BSC_PATH):$(AMBA_FABRICS)/AXI4_Lite
+
+# From Debug Module
+BSC_PATH := $(BSC_PATH):$(DEBUG_MODULE)/src
 
 # bsc standard libs
 BSC_PATH := $(BSC_PATH):+

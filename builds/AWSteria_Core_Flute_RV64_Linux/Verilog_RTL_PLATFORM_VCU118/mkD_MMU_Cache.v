@@ -1005,8 +1005,8 @@ module mkD_MMU_Cache(CLK,
 
   // rule RL_rl_CPU_req_mmio_WAIT
   assign CAN_FIRE_RL_rl_CPU_req_mmio_WAIT =
-	     mmio$RDY_result_fst && mmio$RDY_result_snd_fst &&
-	     mmio$RDY_result_snd_snd &&
+	     mmio$RDY_result_snd_snd && mmio$RDY_result_snd_fst &&
+	     mmio$RDY_result_fst &&
 	     crg_state == 4'd3 ;
   assign WILL_FIRE_RL_rl_CPU_req_mmio_WAIT =
 	     CAN_FIRE_RL_rl_CPU_req_mmio_WAIT ;

@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2022 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2023 Bluespec, Inc. All Rights Reserved
 
 package Near_Mem_IO_AXI4;
 
@@ -422,7 +422,7 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
    // set_addr_map should be called after this module's reset
    method Action  set_addr_map (Fabric_Addr addr_base,
 				Fabric_Addr addr_lim) if (rg_state == MODULE_STATE_READY);
-      if (addr_base [1:0] != 0)
+      if (addr_base [1:0] != 0) 
 	 $display ("%0d: WARNING: Near_Mem_IO_AXI4.set_addr_map: addr_base 0x%0h is not 4-Byte-aligned",
 		   cur_cycle, addr_base);
 
@@ -432,8 +432,9 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
 
       rg_addr_base <= addr_base;
       rg_addr_lim  <= addr_lim;
-      $display ("%0d: Near_Mem_IO_AXI4.set_addr_map: addr_base 0x%0h addr_lim 0x%0h",
-		cur_cycle, addr_base, addr_lim);
+      if (cfg_verbosity != 0)
+	 $display ("%0d: Near_Mem_IO_AXI4.set_addr_map: addr_base 0x%0h addr_lim 0x%0h",
+		   cur_cycle, addr_base, addr_lim);
    endmethod
 
    // Memory-mapped access

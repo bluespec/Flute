@@ -4137,16 +4137,16 @@ module mkAWSteria_Core(CLK_clk1,
   // rule RL_core_inner_5_rl_connect
   assign CAN_FIRE_RL_core_inner_5_rl_connect =
 	     core_inner_f_misc_to_host$sFULL_N &&
-	     core_inner_reclocked$RDY_fo_misc_deq &&
-	     core_inner_reclocked$RDY_fo_misc_first ;
+	     core_inner_reclocked$RDY_fo_misc_first &&
+	     core_inner_reclocked$RDY_fo_misc_deq ;
   assign WILL_FIRE_RL_core_inner_5_rl_connect =
 	     CAN_FIRE_RL_core_inner_5_rl_connect ;
 
   // rule RL_core_inner_6_rl_connect
   assign CAN_FIRE_RL_core_inner_6_rl_connect =
 	     core_inner_f_tv_info$sFULL_N &&
-	     core_inner_reclocked$RDY_fo_tv_info_deq &&
-	     core_inner_reclocked$RDY_fo_tv_info_first ;
+	     core_inner_reclocked$RDY_fo_tv_info_first &&
+	     core_inner_reclocked$RDY_fo_tv_info_deq ;
   assign WILL_FIRE_RL_core_inner_6_rl_connect =
 	     CAN_FIRE_RL_core_inner_6_rl_connect ;
 
@@ -4412,8 +4412,8 @@ module mkAWSteria_Core(CLK_clk1,
   // rule RL_core_inner_17_rl_connect
   assign CAN_FIRE_RL_core_inner_17_rl_connect =
 	     core_inner_f_tohost_value$sFULL_N &&
-	     core_inner_reclocked$RDY_fo_tohost_value_deq &&
-	     core_inner_reclocked$RDY_fo_tohost_value_first ;
+	     core_inner_reclocked$RDY_fo_tohost_value_first &&
+	     core_inner_reclocked$RDY_fo_tohost_value_deq ;
   assign WILL_FIRE_RL_core_inner_17_rl_connect =
 	     CAN_FIRE_RL_core_inner_17_rl_connect ;
 
@@ -5394,18 +5394,6 @@ module mkAWSteria_Core(CLK_clk1,
   always@(negedge CLK)
   begin
     #0;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_assert_reset_for_inner_core &&
-	  host_cs$mv_assert_core_reset &&
-	  !rg_core_reset_message_displayed)
-	$display("AWSteria_Core: asserting Core_Inner reset due to host-control");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_assert_reset_for_inner_core &&
-	  !host_cs$mv_assert_core_reset)
-	$display("AWSteria_Core: asserting Core_Inner reset due to NDM reset from Debug Module");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (WILL_FIRE_RL_rl_on_deassert_core_reset)
-	$display("AWSteria_Core: de-asserting Core_Inner reset due to host-control");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_ndm_reset)
 	$display("AWSteria_Core: Debug Module requesting NDM reset (non-Debug-Module)");

@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2022 Bluespec, Inc. All Rights Reserved
+// Copyright (c) 2016-2023 Bluespec, Inc. All Rights Reserved
 
 package CPU;
 
@@ -459,7 +459,7 @@ module mkCPU (CPU_IFC);
 	 $display (" (RV32)");
       else
 	 $display (" (RV64)");
-      $display ("Copyright (c) 2016-2022 Bluespec, Inc. All Rights Reserved.");
+      $display ("Copyright (c) 2016-2023 Bluespec, Inc. All Rights Reserved.");
       $display ("================================================================");
 
       gpr_regfile.server_reset.request.put (?);
@@ -521,7 +521,9 @@ module mkCPU (CPU_IFC);
       f_reset_rsps.enq (rg_run_on_reset);
 
       if (rg_run_on_reset) begin
-	 $display ("%0d: %m.rl_reset_complete: restart at PC = 0x%0h", mcycle, dpc);
+	 if (cur_verbosity != 0)
+	    $display ("%0d: %m.rl_reset_complete", mcycle);
+	 $display ("CPU: Restart at PC = 0x%0h", dpc);
 	 fa_restart_from_halt (dpc);
       end
       else begin
@@ -530,7 +532,9 @@ module mkCPU (CPU_IFC);
 	 csr_regfile.write_dcsr_cause_priv (DCSR_CAUSE_HALTREQ, m_Priv_Mode);
 	 csr_regfile.write_dpc (dpc);
 `endif
-	 $display ("%0d: %m.rl_reset_complete: entering DEBUG_MODE", mcycle);
+	 if (cur_verbosity != 0)
+	    $display ("%0d: %m.rl_reset_complete", mcycle);
+	 $display ("CPU: Entering DEBUG_MODE", mcycle);
       end
    endrule: rl_reset_complete
 

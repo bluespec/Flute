@@ -1698,21 +1698,16 @@ module mkNear_Mem(CLK,
        WILL_FIRE_sfence_vma_server_request_put,
        WILL_FIRE_sfence_vma_server_response_get;
 
-  // inputs to muxes for submodule ports
-  wire MUX_rg_state$write_1__SEL_2, MUX_rg_state$write_1__SEL_3;
-
   // declarations used by system tasks
   // synopsys translate_off
   reg [31 : 0] v__h77457;
   reg [31 : 0] v__h77563;
   reg [31 : 0] v__h13737;
-  reg [31 : 0] v__h79113;
   reg [31 : 0] v__h25308;
   reg [31 : 0] v__h13731;
   reg [31 : 0] v__h25302;
   reg [31 : 0] v__h77451;
   reg [31 : 0] v__h77557;
-  reg [31 : 0] v__h79107;
   // synopsys translate_on
 
   // remaining internal signals
@@ -2720,24 +2715,24 @@ module mkNear_Mem(CLK,
 
   // rule RL_srcPropose
   assign CAN_FIRE_RL_srcPropose =
-	     i_mmu_cache$RDY_l1_to_l2_client_request_first &&
 	     i_mmu_cache$RDY_l1_to_l2_client_request_deq &&
+	     i_mmu_cache$RDY_l1_to_l2_client_request_first &&
 	     (!propDstIdx_0_dummy2_0$Q_OUT || !propDstIdx_0_dummy2_1$Q_OUT ||
 	      !propDstIdx_0_rl) ;
   assign WILL_FIRE_RL_srcPropose = CAN_FIRE_RL_srcPropose ;
 
   // rule RL_srcPropose_1
   assign CAN_FIRE_RL_srcPropose_1 =
-	     d_mmu_cache$RDY_l1_to_l2_client_request_first &&
 	     d_mmu_cache$RDY_l1_to_l2_client_request_deq &&
+	     d_mmu_cache$RDY_l1_to_l2_client_request_first &&
 	     (!propDstIdx_1_dummy2_0$Q_OUT || !propDstIdx_1_dummy2_1$Q_OUT ||
 	      !propDstIdx_1_rl) ;
   assign WILL_FIRE_RL_srcPropose_1 = CAN_FIRE_RL_srcPropose_1 ;
 
   // rule RL_srcPropose_2
   assign CAN_FIRE_RL_srcPropose_2 =
-	     dma_cache$RDY_l1_to_l2_client_request_first &&
 	     dma_cache$RDY_l1_to_l2_client_request_deq &&
+	     dma_cache$RDY_l1_to_l2_client_request_first &&
 	     (!propDstIdx_2_dummy2_0$Q_OUT || !propDstIdx_2_dummy2_1$Q_OUT ||
 	      !propDstIdx_2_rl) ;
   assign WILL_FIRE_RL_srcPropose_2 = CAN_FIRE_RL_srcPropose_2 ;
@@ -2754,8 +2749,8 @@ module mkNear_Mem(CLK,
 
   // rule RL_srcPropose_3
   assign CAN_FIRE_RL_srcPropose_3 =
-	     i_mmu_cache$RDY_l2_to_l1_server_response_first &&
 	     i_mmu_cache$RDY_l2_to_l1_server_response_deq &&
+	     i_mmu_cache$RDY_l2_to_l1_server_response_first &&
 	     (!propDstIdx_1_0_dummy2_0$Q_OUT ||
 	      !propDstIdx_1_0_dummy2_1$Q_OUT ||
 	      !propDstIdx_1_0_rl) ;
@@ -2763,8 +2758,8 @@ module mkNear_Mem(CLK,
 
   // rule RL_srcPropose_4
   assign CAN_FIRE_RL_srcPropose_4 =
-	     d_mmu_cache$RDY_l2_to_l1_server_response_first &&
 	     d_mmu_cache$RDY_l2_to_l1_server_response_deq &&
+	     d_mmu_cache$RDY_l2_to_l1_server_response_first &&
 	     (!propDstIdx_1_1_dummy2_0$Q_OUT ||
 	      !propDstIdx_1_1_dummy2_1$Q_OUT ||
 	      !propDstIdx_1_1_rl) ;
@@ -2772,8 +2767,8 @@ module mkNear_Mem(CLK,
 
   // rule RL_srcPropose_5
   assign CAN_FIRE_RL_srcPropose_5 =
-	     dma_cache$RDY_l2_to_l1_server_response_first &&
 	     dma_cache$RDY_l2_to_l1_server_response_deq &&
+	     dma_cache$RDY_l2_to_l1_server_response_first &&
 	     (!propDstIdx_1_2_dummy2_0$Q_OUT ||
 	      !propDstIdx_1_2_dummy2_1$Q_OUT ||
 	      !propDstIdx_1_2_rl) ;
@@ -2887,11 +2882,13 @@ module mkNear_Mem(CLK,
 
   // rule RL_rl_reset
   assign CAN_FIRE_RL_rl_reset = rg_state == 2'd0 ;
-  assign WILL_FIRE_RL_rl_reset = MUX_rg_state$write_1__SEL_2 ;
+  assign WILL_FIRE_RL_rl_reset =
+	     CAN_FIRE_RL_rl_reset && !EN_sfence_vma_server_request_put ;
 
   // rule RL_rl_reset_complete
-  assign CAN_FIRE_RL_rl_reset_complete = MUX_rg_state$write_1__SEL_3 ;
-  assign WILL_FIRE_RL_rl_reset_complete = MUX_rg_state$write_1__SEL_3 ;
+  assign CAN_FIRE_RL_rl_reset_complete =
+	     f_reset_rsps$FULL_N && rg_state == 2'd1 ;
+  assign WILL_FIRE_RL_rl_reset_complete = CAN_FIRE_RL_rl_reset_complete ;
 
   // rule RL_llc_axi4_adapter_rl_handle_read_rsps
   assign CAN_FIRE_RL_llc_axi4_adapter_rl_handle_read_rsps =
@@ -2987,12 +2984,6 @@ module mkNear_Mem(CLK,
   // rule RL_enqDst_1_0_canon
   assign CAN_FIRE_RL_enqDst_1_0_canon = 1'd1 ;
   assign WILL_FIRE_RL_enqDst_1_0_canon = 1'd1 ;
-
-  // inputs to muxes for submodule ports
-  assign MUX_rg_state$write_1__SEL_2 =
-	     CAN_FIRE_RL_rl_reset && !EN_sfence_vma_server_request_put ;
-  assign MUX_rg_state$write_1__SEL_3 =
-	     f_reset_rsps$FULL_N && rg_state == 2'd1 ;
 
   // inlined wires
   assign propDstIdx_0_lat_1$whas =
@@ -3400,7 +3391,7 @@ module mkNear_Mem(CLK,
   assign enqDst_1_0_dummy2_1$EN = CAN_FIRE_RL_doEnq_1 ;
 
   // submodule f_reset_rsps
-  assign f_reset_rsps$ENQ = f_reset_rsps$FULL_N && rg_state == 2'd1 ;
+  assign f_reset_rsps$ENQ = CAN_FIRE_RL_rl_reset_complete ;
   assign f_reset_rsps$DEQ = EN_server_reset_response_get ;
   assign f_reset_rsps$CLR = 1'b0 ;
 
@@ -4712,20 +4703,6 @@ module mkNear_Mem(CLK,
       if (WILL_FIRE_RL_llc_axi4_adapter_rl_handle_read_rsps &&
 	  llc_axi4_adapter_master_xactor_rg_rd_data[2:1] != 2'b0)
 	$finish(32'd1);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (EN_ma_ddr4_ready)
-	begin
-	  v__h79113 = $stime;
-	  #0;
-	end
-    v__h79107 = v__h79113 / 32'd10;
-    if (RST_N != `BSV_RESET_VALUE)
-      if (EN_ma_ddr4_ready)
-	$display("%0d: LLC_AXI4_Adapter_2: enabling all rules", v__h79107);
-    if (RST_N != `BSV_RESET_VALUE)
-      if (EN_ma_ddr4_ready) $display("        At: %m");
-    if (RST_N != `BSV_RESET_VALUE)
-      if (EN_ma_ddr4_ready) $display("            method ma_ddr4_ready");
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_llc_axi4_adapter_rl_discard_write_rsp &&
 	  llc_axi4_adapter_master_xactor_rg_wr_resp[1:0] != 2'b0)

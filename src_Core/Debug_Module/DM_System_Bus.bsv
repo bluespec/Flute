@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2019 Bluespec, Inc. All Rights Reserved.
+// Copyright (c) 2017-2023 Bluespec, Inc. All Rights Reserved.
 
 package DM_System_Bus;
 
@@ -407,16 +407,21 @@ module mkDM_System_Bus (DM_System_Bus_IFC);
 	 end
 
 	 if (sbbusy) begin
-	    $display ("DM_System_Bus.sbaddress.write: busy, setting sbbusyerror");
+	    if (verbosity != 0)
+	       $display ("DM_System_Bus.sbaddress.write: busy, setting sbbusyerror");
 	    rg_sbcs_sbbusyerror <= True;
 	 end
 
-	 else if (rg_sbcs_sbbusyerror)
-	    $display ("DM_System_Bus.sbaddress.write: ignoring due to sbbusyerror");
+	 else if (rg_sbcs_sbbusyerror) begin
+	    if (verbosity != 0)
+	       $display ("DM_System_Bus.sbaddress.write: ignoring due to sbbusyerror");
+	 end
 
-	 else if (rg_sbcs_sberror != DM_SBERROR_NONE)
-	    $display ("DM_System_Bus.sbaddress.write: ignoring due to sberror = 0x%0h",
-		      rg_sbcs_sberror);
+	 else if (rg_sbcs_sberror != DM_SBERROR_NONE) begin
+	    if (verbosity != 0)
+	       $display ("DM_System_Bus.sbaddress.write: ignoring due to sberror = 0x%0h",
+			 rg_sbcs_sberror);
+	 end
 
 	 else if (dm_addr == dm_addr_sbaddress0) begin
 	    Bit #(64) addr64 = { rg_sbaddress1, dm_word };
