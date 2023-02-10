@@ -8,7 +8,8 @@ AMBA_FABRICS        ?= $(HOME)/Git/AMBA_Fabrics
 BSV_ADDITIONAL_LIBS ?= $(HOME)/Git/BSV_Additional_Libs
 DEBUG_MODULE        ?= $(HOME)/Git/RISCV_Debug_Module
 
-BSC_LIBS            ?= $(HOME)/NoBak/bsc-2022.01-ubuntu-20.04/lib/Verilog
+BLUESPEC_HOME       ?= PLEASE_DEFINE_BLUESPEC_HOME
+BSC_LIBS            ?= $(BLUESPEC_HOME)/lib/Verilog
 
 .PHONY: show_Makefile_Params
 show_Makefile_Params:
