@@ -441,9 +441,7 @@ module mkNear_Mem_IO_AXI4(CLK,
   wire MUX_crg_time$port1__write_1__SEL_1,
        MUX_crg_timecmp$port1__write_1__SEL_1,
        MUX_rg_msip$write_1__SEL_1,
-       MUX_rg_mtip$write_1__VAL_2,
-       MUX_rg_state$write_1__SEL_1,
-       MUX_rg_state$write_1__SEL_2;
+       MUX_rg_mtip$write_1__VAL_2;
 
   // declarations used by system tasks
   // synopsys translate_off
@@ -698,20 +696,21 @@ module mkNear_Mem_IO_AXI4(CLK,
   assign WILL_FIRE_RL_rl_mtip_edge = CAN_FIRE_RL_rl_mtip_edge ;
 
   // rule RL_rl_reset
-  assign CAN_FIRE_RL_rl_reset = MUX_rg_state$write_1__SEL_2 ;
-  assign WILL_FIRE_RL_rl_reset = MUX_rg_state$write_1__SEL_2 ;
+  assign CAN_FIRE_RL_rl_reset =
+	     f_reset_reqs$EMPTY_N && f_reset_rsps$FULL_N && !rg_state ;
+  assign WILL_FIRE_RL_rl_reset = CAN_FIRE_RL_rl_reset ;
 
   // rule RL_rl_mtip
   assign CAN_FIRE_RL_rl_mtip = rg_state && !f_reset_reqs$EMPTY_N ;
   assign WILL_FIRE_RL_rl_mtip = CAN_FIRE_RL_rl_mtip ;
 
   // rule RL_rl_process_rd_req
-  assign CAN_FIRE_RL_rl_process_rd_req = WILL_FIRE_RL_rl_process_rd_req ;
-  assign WILL_FIRE_RL_rl_process_rd_req =
+  assign CAN_FIRE_RL_rl_process_rd_req =
 	     slave_xactor_f_rd_addr$EMPTY_N &&
 	     slave_xactor_f_rd_data$FULL_N &&
 	     rg_state &&
 	     !f_reset_reqs$EMPTY_N ;
+  assign WILL_FIRE_RL_rl_process_rd_req = CAN_FIRE_RL_rl_process_rd_req ;
 
   // rule RL_rl_tick_timer
   assign CAN_FIRE_RL_rl_tick_timer =
@@ -728,7 +727,8 @@ module mkNear_Mem_IO_AXI4(CLK,
 
   // rule RL_rl_soft_reset
   assign CAN_FIRE_RL_rl_soft_reset = f_reset_reqs$EMPTY_N ;
-  assign WILL_FIRE_RL_rl_soft_reset = MUX_rg_state$write_1__SEL_1 ;
+  assign WILL_FIRE_RL_rl_soft_reset =
+	     f_reset_reqs$EMPTY_N && !WILL_FIRE_RL_rl_reset ;
 
   // inputs to muxes for submodule ports
   assign MUX_crg_time$port1__write_1__SEL_1 =
@@ -746,10 +746,6 @@ module mkNear_Mem_IO_AXI4(CLK,
 	     !slave_xactor_f_wr_addr_first__8_BITS_92_TO_29__ETC___d100 &&
 	     byte_addr__h3274 == 64'h0 &&
 	     !rg_msip_7_EQ_slave_xactor_f_wr_data_first__04__ETC___d106 ;
-  assign MUX_rg_state$write_1__SEL_1 =
-	     f_reset_reqs$EMPTY_N && !WILL_FIRE_RL_rl_reset ;
-  assign MUX_rg_state$write_1__SEL_2 =
-	     f_reset_reqs$EMPTY_N && f_reset_rsps$FULL_N && !rg_state ;
   assign MUX_rg_mtip$write_1__VAL_2 = crg_time >= crg_timecmp ;
 
   // inlined wires
@@ -840,11 +836,11 @@ module mkNear_Mem_IO_AXI4(CLK,
 
   // submodule f_reset_reqs
   assign f_reset_reqs$ENQ = EN_server_reset_request_put ;
-  assign f_reset_reqs$DEQ = MUX_rg_state$write_1__SEL_2 ;
+  assign f_reset_reqs$DEQ = CAN_FIRE_RL_rl_reset ;
   assign f_reset_reqs$CLR = 1'b0 ;
 
   // submodule f_reset_rsps
-  assign f_reset_rsps$ENQ = MUX_rg_state$write_1__SEL_2 ;
+  assign f_reset_rsps$ENQ = CAN_FIRE_RL_rl_reset ;
   assign f_reset_rsps$DEQ = EN_server_reset_response_get ;
   assign f_reset_rsps$CLR = 1'b0 ;
 
@@ -852,14 +848,14 @@ module mkNear_Mem_IO_AXI4(CLK,
   assign f_sw_interrupt_req$D_IN = slave_xactor_f_wr_data$D_OUT[9] ;
   assign f_sw_interrupt_req$ENQ = MUX_rg_msip$write_1__SEL_1 ;
   assign f_sw_interrupt_req$DEQ = EN_get_sw_interrupt_req_get ;
-  assign f_sw_interrupt_req$CLR = MUX_rg_state$write_1__SEL_2 ;
+  assign f_sw_interrupt_req$CLR = CAN_FIRE_RL_rl_reset ;
 
   // submodule f_timer_interrupt_req
   assign f_timer_interrupt_req$D_IN = rg_mtip ;
   assign f_timer_interrupt_req$ENQ =
 	     WILL_FIRE_RL_rl_mtip_edge && !rg_mtip_4_EQ_rg_mtip_prev_5___d26 ;
   assign f_timer_interrupt_req$DEQ = EN_get_timer_interrupt_req_get ;
-  assign f_timer_interrupt_req$CLR = MUX_rg_state$write_1__SEL_2 ;
+  assign f_timer_interrupt_req$CLR = CAN_FIRE_RL_rl_reset ;
 
   // submodule slave_xactor_f_rd_addr
   assign slave_xactor_f_rd_addr$D_IN =
@@ -875,8 +871,8 @@ module mkNear_Mem_IO_AXI4(CLK,
 	       axi4_slave_arregion } ;
   assign slave_xactor_f_rd_addr$ENQ =
 	     axi4_slave_arvalid && slave_xactor_f_rd_addr$FULL_N ;
-  assign slave_xactor_f_rd_addr$DEQ = WILL_FIRE_RL_rl_process_rd_req ;
-  assign slave_xactor_f_rd_addr$CLR = MUX_rg_state$write_1__SEL_2 ;
+  assign slave_xactor_f_rd_addr$DEQ = CAN_FIRE_RL_rl_process_rd_req ;
+  assign slave_xactor_f_rd_addr$CLR = CAN_FIRE_RL_rl_reset ;
 
   // submodule slave_xactor_f_rd_data
   assign slave_xactor_f_rd_data$D_IN =
@@ -884,10 +880,10 @@ module mkNear_Mem_IO_AXI4(CLK,
 	       x__h2787,
 	       rresp__h2586,
 	       1'd1 } ;
-  assign slave_xactor_f_rd_data$ENQ = WILL_FIRE_RL_rl_process_rd_req ;
+  assign slave_xactor_f_rd_data$ENQ = CAN_FIRE_RL_rl_process_rd_req ;
   assign slave_xactor_f_rd_data$DEQ =
 	     axi4_slave_rready && slave_xactor_f_rd_data$EMPTY_N ;
-  assign slave_xactor_f_rd_data$CLR = MUX_rg_state$write_1__SEL_2 ;
+  assign slave_xactor_f_rd_data$CLR = CAN_FIRE_RL_rl_reset ;
 
   // submodule slave_xactor_f_wr_addr
   assign slave_xactor_f_wr_addr$D_IN =
@@ -904,7 +900,7 @@ module mkNear_Mem_IO_AXI4(CLK,
   assign slave_xactor_f_wr_addr$ENQ =
 	     axi4_slave_awvalid && slave_xactor_f_wr_addr$FULL_N ;
   assign slave_xactor_f_wr_addr$DEQ = CAN_FIRE_RL_rl_process_wr_req ;
-  assign slave_xactor_f_wr_addr$CLR = MUX_rg_state$write_1__SEL_2 ;
+  assign slave_xactor_f_wr_addr$CLR = CAN_FIRE_RL_rl_reset ;
 
   // submodule slave_xactor_f_wr_data
   assign slave_xactor_f_wr_data$D_IN =
@@ -912,7 +908,7 @@ module mkNear_Mem_IO_AXI4(CLK,
   assign slave_xactor_f_wr_data$ENQ =
 	     axi4_slave_wvalid && slave_xactor_f_wr_data$FULL_N ;
   assign slave_xactor_f_wr_data$DEQ = CAN_FIRE_RL_rl_process_wr_req ;
-  assign slave_xactor_f_wr_data$CLR = MUX_rg_state$write_1__SEL_2 ;
+  assign slave_xactor_f_wr_data$CLR = CAN_FIRE_RL_rl_reset ;
 
   // submodule slave_xactor_f_wr_resp
   assign slave_xactor_f_wr_resp$D_IN =
@@ -920,7 +916,7 @@ module mkNear_Mem_IO_AXI4(CLK,
   assign slave_xactor_f_wr_resp$ENQ = CAN_FIRE_RL_rl_process_wr_req ;
   assign slave_xactor_f_wr_resp$DEQ =
 	     axi4_slave_bready && slave_xactor_f_wr_resp$EMPTY_N ;
-  assign slave_xactor_f_wr_resp$CLR = MUX_rg_state$write_1__SEL_2 ;
+  assign slave_xactor_f_wr_resp$CLR = CAN_FIRE_RL_rl_reset ;
 
   // remaining internal signals
   assign NOT_cfg_verbosity_read_ULE_1_0___d31 = cfg_verbosity > 4'd1 ;
@@ -1113,7 +1109,7 @@ module mkNear_Mem_IO_AXI4(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_get_timer_interrupt_req_get &&
 	  NOT_cfg_verbosity_read_ULE_1_0___d31)
-	$display("%0d: Near_Mem_IO_AXI4: get_timer_interrupt_req: %x",
+	$display("%0d: CLINT_AXI4: get_timer_interrupt_req: %x",
 		 v__h9700,
 		 f_timer_interrupt_req$D_OUT);
     if (RST_N != `BSV_RESET_VALUE)
@@ -1125,7 +1121,7 @@ module mkNear_Mem_IO_AXI4(CLK,
     v__h9822 = v__h9828 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_get_sw_interrupt_req_get && NOT_cfg_verbosity_read_ULE_1_0___d31)
-	$display("%0d: Near_Mem_IO_AXI4: get_sw_interrupt_req: %x",
+	$display("%0d: CLINT_AXI4: get_sw_interrupt_req: %x",
 		 v__h9822,
 		 f_sw_interrupt_req$D_OUT);
     if (RST_N != `BSV_RESET_VALUE)
@@ -1139,7 +1135,7 @@ module mkNear_Mem_IO_AXI4(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_mtip_edge && !rg_mtip_4_EQ_rg_mtip_prev_5___d26 &&
 	  NOT_cfg_verbosity_read_ULE_1_0___d31)
-	$display("%0d: Near_Mem_IO_AXI4.rl_mtip_edge: rg_mtip change to %0d",
+	$display("%0d: CLINT_AXI4.rl_mtip_edge: rg_mtip change to %0d",
 		 v__h2100,
 		 rg_mtip);
     if (RST_N != `BSV_RESET_VALUE)
@@ -1151,7 +1147,7 @@ module mkNear_Mem_IO_AXI4(CLK,
     v__h1839 = v__h1845 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_reset && cfg_verbosity != 4'd0)
-	$display("%0d: Near_Mem_IO_AXI4.rl_reset", v__h1839);
+	$display("%0d: CLINT_AXI4.rl_reset", v__h1839);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req &&
 	  NOT_cfg_verbosity_read_ULE_1_0___d31)
@@ -1163,7 +1159,7 @@ module mkNear_Mem_IO_AXI4(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req &&
 	  NOT_cfg_verbosity_read_ULE_1_0___d31)
-	$display("%0d: Near_Mem_IO_AXI4.rl_process_rd_req", v__h2292);
+	$display("%0d: CLINT_AXI4.rl_process_rd_req", v__h2292);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req &&
 	  NOT_cfg_verbosity_read_ULE_1_0___d31)
@@ -1271,7 +1267,7 @@ module mkNear_Mem_IO_AXI4(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req &&
 	  slave_xactor_f_rd_addr_first__1_BITS_92_TO_29__ETC___d53)
-	$display("%0d: ERROR: Near_Mem_IO_AXI4.rl_process_rd_req: unrecognized addr",
+	$display("%0d: ERROR: CLINT_AXI4.rl_process_rd_req: unrecognized addr",
 		 v__h2467);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req &&
@@ -1392,7 +1388,7 @@ module mkNear_Mem_IO_AXI4(CLK,
 	   byte_addr__h2432 != 64'h0000000000000004 &&
 	   byte_addr__h2432 != 64'h0000000000004004 &&
 	   byte_addr__h2432 != 64'h000000000000BFFC))
-	$display("%0d: ERROR: Near_Mem_IO_AXI4.rl_process_rd_req: unrecognized addr",
+	$display("%0d: ERROR: CLINT_AXI4.rl_process_rd_req: unrecognized addr",
 		 v__h2672);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_rd_req &&
@@ -1693,7 +1689,7 @@ module mkNear_Mem_IO_AXI4(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req &&
 	  NOT_cfg_verbosity_read_ULE_1_0___d31)
-	$display("%0d: Near_Mem_IO_AXI4.rl_process_wr_req", v__h3073);
+	$display("%0d: CLINT_AXI4.rl_process_wr_req", v__h3073);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req &&
 	  NOT_cfg_verbosity_read_ULE_1_0___d31)
@@ -1847,7 +1843,7 @@ module mkNear_Mem_IO_AXI4(CLK,
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req &&
 	  slave_xactor_f_wr_addr_first__8_BITS_92_TO_29__ETC___d100)
-	$display("%0d: ERROR: Near_Mem_IO_AXI4.rl_process_wr_req: unrecognized addr",
+	$display("%0d: ERROR: CLINT_AXI4.rl_process_wr_req: unrecognized addr",
 		 v__h3306);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req &&
@@ -2094,7 +2090,7 @@ module mkNear_Mem_IO_AXI4(CLK,
 	   byte_addr__h3274 != 64'h0000000000004004 &&
 	   byte_addr__h3274 != 64'h000000000000BFF8 &&
 	   byte_addr__h3274 != 64'h000000000000BFFC))
-	$display("%0d: ERROR: Near_Mem_IO_AXI4.rl_process_wr_req: unrecognized addr",
+	$display("%0d: ERROR: CLINT_AXI4.rl_process_wr_req: unrecognized addr",
 		 v__h8692);
     if (RST_N != `BSV_RESET_VALUE)
       if (WILL_FIRE_RL_rl_process_wr_req &&
@@ -2489,7 +2485,7 @@ module mkNear_Mem_IO_AXI4(CLK,
     v__h9092 = v__h9098 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_set_addr_map && set_addr_map_addr_base[1:0] != 2'd0)
-	$display("%0d: WARNING: Near_Mem_IO_AXI4.set_addr_map: addr_base 0x%0h is not 4-Byte-aligned",
+	$display("%0d: WARNING: CLINT_AXI4.set_addr_map: addr_base 0x%0h is not 4-Byte-aligned",
 		 v__h9092,
 		 set_addr_map_addr_base);
     if (RST_N != `BSV_RESET_VALUE)
@@ -2501,7 +2497,7 @@ module mkNear_Mem_IO_AXI4(CLK,
     v__h9198 = v__h9204 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_set_addr_map && set_addr_map_addr_lim[1:0] != 2'd0)
-	$display("%0d: WARNING: Near_Mem_IO_AXI4.set_addr_map: addr_lim 0x%0h is not 4-Byte-aligned",
+	$display("%0d: WARNING: CLINT_AXI4.set_addr_map: addr_lim 0x%0h is not 4-Byte-aligned",
 		 v__h9198,
 		 set_addr_map_addr_lim);
     if (RST_N != `BSV_RESET_VALUE)
@@ -2513,7 +2509,7 @@ module mkNear_Mem_IO_AXI4(CLK,
     v__h9325 = v__h9331 / 32'd10;
     if (RST_N != `BSV_RESET_VALUE)
       if (EN_set_addr_map && cfg_verbosity != 4'd0)
-	$display("%0d: Near_Mem_IO_AXI4.set_addr_map: addr_base 0x%0h addr_lim 0x%0h",
+	$display("%0d: CLINT_AXI4.set_addr_map: addr_base 0x%0h addr_lim 0x%0h",
 		 v__h9325,
 		 set_addr_map_addr_base,
 		 set_addr_map_addr_lim);

@@ -102,7 +102,7 @@ endinterface
 (* synthesize *)
 module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
 
-   // Verbosity: 0: quiet; 1: reset; 2: timer interrupts, all reads and writes
+   // Verbosity: 0: quiet; 1: reset; 2: timer and sw interrupts, all reads and writes
    Reg #(Bit #(4)) cfg_verbosity <- mkConfigReg (0);
 
    Reg #(Module_State) rg_state <- mkReg (MODULE_STATE_START);
@@ -166,7 +166,7 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
       f_reset_rsps.enq (?);
 
       if (cfg_verbosity != 0)
-	 $display ("%0d: Near_Mem_IO_AXI4.rl_reset", cur_cycle);
+	 $display ("%0d: CLINT_AXI4.rl_reset", cur_cycle);
    endrule
 
    rule rl_soft_reset (f_reset_reqs.notEmpty);
@@ -195,7 +195,7 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
       if (rg_mtip != rg_mtip_prev) begin
 	 f_timer_interrupt_req.enq (rg_mtip);
 	 if (cfg_verbosity > 1)
-	    $display ("%0d: Near_Mem_IO_AXI4.rl_mtip_edge: rg_mtip change to %0d",
+	    $display ("%0d: CLINT_AXI4.rl_mtip_edge: rg_mtip change to %0d",
 		      cur_cycle, rg_mtip);
       end
       rg_mtip_prev <= rg_mtip;
@@ -209,7 +209,7 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
 
       let rda <- pop_o (slave_xactor.o_rd_addr);
       if (cfg_verbosity > 1) begin
-	 $display ("%0d: Near_Mem_IO_AXI4.rl_process_rd_req", cur_cycle);
+	 $display ("%0d: CLINT_AXI4.rl_process_rd_req", cur_cycle);
 	 $display ("    ", fshow (rda));
       end
 
@@ -218,7 +218,7 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
       AXI4_Resp  rresp = axi4_resp_okay;
 
       if (rda.araddr < rg_addr_base) begin
-	 $display ("%0d: ERROR: Near_Mem_IO_AXI4.rl_process_rd_req: unrecognized addr", cur_cycle);
+	 $display ("%0d: ERROR: CLINT_AXI4.rl_process_rd_req: unrecognized addr", cur_cycle);
 	 $display ("    ", fshow (rda));
 	 rresp = axi4_resp_decerr;
       end
@@ -260,7 +260,7 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
 	 rresp = axi4_resp_decerr;
 
       if (rresp != axi4_resp_okay) begin
-	 $display ("%0d: ERROR: Near_Mem_IO_AXI4.rl_process_rd_req: unrecognized addr", cur_cycle);
+	 $display ("%0d: ERROR: CLINT_AXI4.rl_process_rd_req: unrecognized addr", cur_cycle);
 	 $display ("    ", fshow (rda));
       end
 
@@ -287,7 +287,7 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
       let wra <- pop_o (slave_xactor.o_wr_addr);
       let wrd <- pop_o (slave_xactor.o_wr_data);
       if (cfg_verbosity > 1) begin
-	 $display ("%0d: Near_Mem_IO_AXI4.rl_process_wr_req", cur_cycle);
+	 $display ("%0d: CLINT_AXI4.rl_process_wr_req", cur_cycle);
 	 $display ("    ", fshow (wra));
 	 $display ("    ", fshow (wrd));
       end
@@ -300,7 +300,7 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
       AXI4_Resp  bresp     = axi4_resp_okay;
 
       if (wra.awaddr < rg_addr_base) begin
-	 $display ("%0d: ERROR: Near_Mem_IO_AXI4.rl_process_wr_req: unrecognized addr", cur_cycle);
+	 $display ("%0d: ERROR: CLINT_AXI4.rl_process_wr_req: unrecognized addr", cur_cycle);
 	 $display ("            ", fshow (wra));
 	 $display ("            ", fshow (wrd));
 	 bresp = axi4_resp_decerr;
@@ -397,7 +397,7 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
 	 bresp = axi4_resp_decerr;
 
       if (bresp != axi4_resp_okay) begin
-	 $display ("%0d: ERROR: Near_Mem_IO_AXI4.rl_process_wr_req: unrecognized addr", cur_cycle);
+	 $display ("%0d: ERROR: CLINT_AXI4.rl_process_wr_req: unrecognized addr", cur_cycle);
 	 $display ("    ", fshow (wra));
 	 $display ("    ", fshow (wrd));
       end
@@ -423,17 +423,17 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
    method Action  set_addr_map (Fabric_Addr addr_base,
 				Fabric_Addr addr_lim) if (rg_state == MODULE_STATE_READY);
       if (addr_base [1:0] != 0) 
-	 $display ("%0d: WARNING: Near_Mem_IO_AXI4.set_addr_map: addr_base 0x%0h is not 4-Byte-aligned",
+	 $display ("%0d: WARNING: CLINT_AXI4.set_addr_map: addr_base 0x%0h is not 4-Byte-aligned",
 		   cur_cycle, addr_base);
 
       if (addr_lim [1:0] != 0)
-	 $display ("%0d: WARNING: Near_Mem_IO_AXI4.set_addr_map: addr_lim 0x%0h is not 4-Byte-aligned",
+	 $display ("%0d: WARNING: CLINT_AXI4.set_addr_map: addr_lim 0x%0h is not 4-Byte-aligned",
 		   cur_cycle, addr_lim);
 
       rg_addr_base <= addr_base;
       rg_addr_lim  <= addr_lim;
       if (cfg_verbosity != 0)
-	 $display ("%0d: Near_Mem_IO_AXI4.set_addr_map: addr_base 0x%0h addr_lim 0x%0h",
+	 $display ("%0d: CLINT_AXI4.set_addr_map: addr_base 0x%0h addr_lim 0x%0h",
 		   cur_cycle, addr_base, addr_lim);
    endmethod
 
@@ -450,7 +450,7 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
      method ActionValue#(Bool) get();
        let x <- toGet (f_timer_interrupt_req).get;
        if (cfg_verbosity > 1)
-          $display ("%0d: Near_Mem_IO_AXI4: get_timer_interrupt_req: %x", cur_cycle, x);
+          $display ("%0d: CLINT_AXI4: get_timer_interrupt_req: %x", cur_cycle, x);
        return x;
      endmethod
    endinterface
@@ -460,7 +460,7 @@ module mkNear_Mem_IO_AXI4 (Near_Mem_IO_AXI4_IFC);
      method ActionValue#(Bool) get();
        let x <- toGet (f_sw_interrupt_req).get;
        if (cfg_verbosity > 1)
-          $display ("%0d: Near_Mem_IO_AXI4: get_sw_interrupt_req: %x", cur_cycle, x);
+          $display ("%0d: CLINT_AXI4: get_sw_interrupt_req: %x", cur_cycle, x);
        return x;
      endmethod
    endinterface

@@ -1829,7 +1829,6 @@ module mkCPU(CLK,
        MUX_rg_next_pc$write_1__SEL_1,
        MUX_rg_next_pc$write_1__SEL_2,
        MUX_rg_pc_reported$write_1__SEL_4,
-       MUX_rg_state$write_1__PSEL_1,
        MUX_rg_state$write_1__SEL_1,
        MUX_rg_state$write_1__SEL_10,
        MUX_rg_state$write_1__SEL_11,
@@ -3453,7 +3452,7 @@ module mkCPU(CLK,
 
   // rule RL_rl_stage1_CSRR_W_2
   assign CAN_FIRE_RL_rl_stage1_CSRR_W_2 = rg_state == 4'd7 ;
-  assign WILL_FIRE_RL_rl_stage1_CSRR_W_2 = rg_state == 4'd7 ;
+  assign WILL_FIRE_RL_rl_stage1_CSRR_W_2 = CAN_FIRE_RL_rl_stage1_CSRR_W_2 ;
 
   // rule RL_rl_stage1_CSRR_W
   assign CAN_FIRE_RL_rl_stage1_CSRR_W =
@@ -3474,7 +3473,8 @@ module mkCPU(CLK,
 
   // rule RL_rl_stage1_CSRR_S_or_C_2
   assign CAN_FIRE_RL_rl_stage1_CSRR_S_or_C_2 = rg_state == 4'd8 ;
-  assign WILL_FIRE_RL_rl_stage1_CSRR_S_or_C_2 = rg_state == 4'd8 ;
+  assign WILL_FIRE_RL_rl_stage1_CSRR_S_or_C_2 =
+	     CAN_FIRE_RL_rl_stage1_CSRR_S_or_C_2 ;
 
   // rule RL_rl_stage1_restart_after_csrrx
   assign CAN_FIRE_RL_rl_stage1_restart_after_csrrx =
@@ -3664,7 +3664,10 @@ module mkCPU(CLK,
 	      IF_NOT_stage1_rg_full_51_007_OR_NOT_stage1_rg__ETC___d2381 ||
 	      stage2_rg_full ||
 	      stage3_rg_full) ;
-  assign WILL_FIRE_RL_rl_pipe = MUX_rg_state$write_1__PSEL_1 ;
+  assign WILL_FIRE_RL_rl_pipe =
+	     CAN_FIRE_RL_rl_pipe && !WILL_FIRE_RL_imem_rl_fetch_next_32b &&
+	     !WILL_FIRE_RL_rl_debug_halt &&
+	     !WILL_FIRE_RL_rl_reset_from_Debug_Module ;
 
   // rule RL_rl_reset_start
   assign CAN_FIRE_RL_rl_reset_start =
@@ -3781,10 +3784,6 @@ module mkCPU(CLK,
 	     WILL_FIRE_RL_rl_finish_FENCE ||
 	     WILL_FIRE_RL_rl_finish_FENCE_I ||
 	     WILL_FIRE_RL_rl_stage1_xRET ;
-  assign MUX_rg_state$write_1__PSEL_1 =
-	     CAN_FIRE_RL_rl_pipe && !WILL_FIRE_RL_imem_rl_fetch_next_32b &&
-	     !WILL_FIRE_RL_rl_debug_halt &&
-	     !WILL_FIRE_RL_rl_reset_from_Debug_Module ;
   assign MUX_rg_state$write_1__SEL_1 =
 	     WILL_FIRE_RL_rl_pipe &&
 	     IF_stage2_rg_full_20_AND_NOT_stage2_rg_stage2__ETC___d2720 &&
@@ -3934,7 +3933,7 @@ module mkCPU(CLK,
 	     EN_set_verbosity ?
 	       set_verbosity_verbosity :
 	       hart0_put_other_req_put ;
-  assign cfg_verbosity$EN = EN_set_verbosity || EN_hart0_put_other_req_put ;
+  assign cfg_verbosity$EN = EN_hart0_put_other_req_put || EN_set_verbosity ;
 
   // register imem_rg_cache_addr
   always@(MUX_imem_rg_cache_addr$write_1__SEL_1 or
