@@ -17,6 +17,7 @@ help:
 	@echo "      (affects choice of clock in AWSteria_Core)"
 	@echo ""
 	@echo "Resources:"
+	@echo "  FLUTE_REPO          = $(FLUTE_REPO)"
 	@echo "  AMBA_FABRICS        = $(AMBA_FABRICS)"
 	@echo "  BSV_ADDITIONAL_LIBS = $(BSV_ADDITIONAL_LIBS)"
 	@echo "  DEBUG_MODULE        = $(DEBUG_MODULE)"
@@ -37,6 +38,8 @@ PLATFORM_TARGET = PLATFORM_AWSF1
 # ================================================================
 # Defs of resources etc.
 # Please change these as necessary for your environment.
+
+FLUTE_REPO          ?= ../..
 
 AMBA_FABRICS        ?= $(HOME)/Git/AMBA_Fabrics
 BSV_ADDITIONAL_LIBS ?= $(HOME)/Git/BSV_Additional_Libs/src
